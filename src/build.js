@@ -40,13 +40,21 @@ export async function buildFigure(source, { baseDir = '.', strict = false, requi
     checkChartFigure(chart, problems);
     return finish({ figure, chart, timeline }, problems, strict);
   }
-  const sizes = new Map(figure.nodes.map((n) => [n.id, sizeNode(n, cards.contents.get(n.id))]));
+  const sizes = new Map(figure.nodes.map((n) => [n.id, sizeNode(n, cards.contents.get(n.id), figure.kind === 'sequence' ? undefined : countLines(figure, n.id))]));
   const scene = figure.kind === 'sequence' ? layoutSequence(figure, sizes) : await layoutGraph(figure, sizes);
   widenForChips(scene, timeline);
   // 태그 색은 원본에 처음 나온 순서로 정한다(docs/design/figure-syntax.md 카드 줄).
   scene.tagOrder = figure.steps.flatMap((s) => s.beats.flatMap((b) => b.ops.filter((o) => o.row?.tag && !o.row.tone).map((o) => o.row.tag)));
   checkFigure(figure, scene, timeline, problems);
   return finish({ figure, scene, timeline }, problems, strict);
+}
+
+// cost: time O(e), heap O(1), stack O(1)
+// vars: e = 선 수
+// basis: estimate
+// 도형 하나에서 나가고 들어오는 선 수. 사람 몸통 높이를 배치 전에 정하는 데 쓴다.
+function countLines(figure, id) {
+  return { out: figure.edges.filter((e) => e.from === id).length, in: figure.edges.filter((e) => e.to === id).length };
 }
 
 // cost: time O(h·l + s + e·p), heap O(1), stack O(1)

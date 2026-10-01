@@ -35,10 +35,11 @@ const INNER_Y = SPACE['6'];
  * 도형 하나의 크기. box는 배치에 넘기는 사각형, margin은 배치 바깥 여백(위, 아래)이다.
  * @param node 그림 모형의 도형. shape: person, box, external, store, decision, state, table, start, final
  * @param contents 시간 흐름에서 이 도형 카드에 보일 내용 목록. 내용은 카드 줄 목록이다
+ * @param lineCounts 사람 몸통 높이를 정할 선 수. { out: 나가는 선 수, in: 들어오는 선 수 }
  * @returns { w, h, marginTop, marginBottom, marginSide?, labelLines, subLines, card?: { w, h, layouts } }
  */
-export function sizeNode(node, contents = []) {
-  if (node.shape === 'person') return sizePerson(node, contents);
+export function sizeNode(node, contents = [], lineCounts = { out: 0, in: 0 }) {
+  if (node.shape === 'person') return sizePerson(node, contents, lineCounts);
   if (node.shape === 'table') return sizeTable(node, contents);
   if (node.shape === 'start' || node.shape === 'final') return { w: SIZE['state-dot'], h: SIZE['state-dot'], marginTop: 0, marginBottom: 0, labelLines: [], subLines: [] };
   const maxInner = SIZE['node-max'] - INNER_X * 2;
@@ -62,7 +63,8 @@ export function sizeNode(node, contents = []) {
 // vars: r = 카드 줄 수, n = 글자 수
 // basis: estimate
 // 사람 모양: 배치 사각형은 몸통의 곧은 옆면. 머리와 어깨는 위 여백, 이름표와 카드는 아래 여백이다.
-function sizePerson(node, contents) {
+// 몸통 높이는 토큰 기본값이고, 한 면의 연결점 간격이 선 굵기와 틈의 합보다 좁아질 때만 그 면이 필요한 만큼 늘어난다.
+function sizePerson(node, contents, lineCounts) {
   const labelLines = wrap(node.label, SIZE['node-max'], STYLE.label.size, STYLE.label.face);
   const labelW = Math.max(...labelLines.map((l) => measure(l, STYLE.label.size, STYLE.label.face)));
   const card = contents.length ? sizeCard(contents, SIZE.card - CARD.margin * 2) : undefined;
@@ -70,7 +72,18 @@ function sizePerson(node, contents) {
   const w = SIZE['person-w'];
   const wide = Math.max(w, card ? SIZE.card : 0, labelW);
   const below = SPACE['3'] + labelLines.length * STYLE.label.line + (card ? CARD.margin + card.h : 0);
-  return { w, h: SIZE['person-body'], marginTop: SIZE['person-head'] + SIZE['person-shoulder'] + SPACE['1'], marginBottom: below, marginSide: (wide - w) / 2, labelLines, subLines: [], card };
+  const h = bodyHeight(Math.max(lineCounts.out, lineCounts.in));
+  return { w, h, marginTop: SIZE['person-head'] + SIZE['person-shoulder'] + SPACE['1'], marginBottom: below, marginSide: (wide - w) / 2, labelLines, subLines: [], card };
+}
+
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+/**
+ * 사람 몸통 높이. 한 면에 선 n개가 서로 닿지 않으려면 연결점 간격이 선 굵기와 틈의 합 이상이어야 하므로 (n + 1) × 간격이 필요하다.
+ * @param lines 두 면(오른쪽, 왼쪽) 가운데 선이 더 많은 면의 선 수
+ */
+export function bodyHeight(lines) {
+  return Math.max(SIZE['person-body'], (lines + 1) * (values.border.edge + SPACE['0-5']));
 }
 
 // cost: time O(c + r·n²), heap O(r·n), stack O(1)
