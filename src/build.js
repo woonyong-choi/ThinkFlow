@@ -1,14 +1,14 @@
 // 원본 하나를 장면과 시간표로 만든다. 읽기, 차트 값 읽기, 크기, 배치, 시간표, 그림 검사를 차례로 부른다(docs/architecture.md 그림 만들기).
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { checkFigure } from './check.js';
+import { checkChartFigure, checkFigure } from './check.js';
 import { drawChart } from './chart/draw.js';
 import { layoutGraph } from './layout/graph.js';
 import { layoutSequence } from './layout/sequence.js';
-import { measure, wrap } from './measure/fonts.js';
+import { findMissingGlyph, wrap } from './measure/fonts.js';
 import { STYLE, sizeNode } from './measure/sizes.js';
 import { checkChartLightTargets, checkChartRows } from './source/chart-rules.js';
-import { parseFigure } from './source/parse.js';
+import { readFigure } from './source/parse.js';
 import { createProblems, FigureError } from './source/problems.js';
 import { collectCards, buildTimeline } from './timeline.js';
 import { values } from './tokens.js';
@@ -26,9 +26,8 @@ const LABEL_KEY = { bar: 'label', dumbbell: 'label', box: 'label', scatter: 'nam
  * @throws FigureError 원본 오류나 그림 검사 오류가 있을 때. 모든 문제를 담는다
  */
 export async function buildFigure(source, { baseDir = '.', strict = false, requireData = false, requireCi = false } = {}) {
-  const { figure, warnings } = parseFigure(source);
   const problems = createProblems();
-  problems.warnings.push(...warnings);
+  const figure = readFigure(source, problems);
   if (figure.kind === 'chart' && figure.chart.data) loadChartData(figure, baseDir, problems);
   checkGlyphs(figure, problems);
   if (figure.kind === 'chart') checkSkillRules(figure, { requireData, requireCi }, problems);
@@ -37,10 +36,13 @@ export async function buildFigure(source, { baseDir = '.', strict = false, requi
   const timeline = buildTimeline(figure, cards, wrapChip);
   if (figure.kind === 'chart') {
     const chart = drawChart(figure);
+    checkChartFigure(figure, problems);
     return finish({ figure, chart, timeline }, problems, strict);
   }
   const sizes = new Map(figure.nodes.map((n) => [n.id, sizeNode(n, cards.contents.get(n.id))]));
   const scene = figure.kind === 'sequence' ? layoutSequence(figure, sizes) : await layoutGraph(figure, sizes);
+  // 태그 색은 원본에 처음 나온 순서로 정한다(docs/design/figure-syntax.md 카드 줄).
+  scene.tagOrder = figure.steps.flatMap((s) => s.beats.flatMap((b) => b.ops.filter((o) => o.row?.tag && !o.row.tone).map((o) => o.row.tag)));
   checkFigure(figure, scene, timeline, problems);
   return finish({ figure, scene, timeline }, problems, strict);
 }
@@ -145,24 +147,35 @@ function pointer(document, path) {
     }, document);
 }
 
-// cost: time O(n), heap O(1), stack O(1)
-// vars: n = 원본의 글 글자 수
+// cost: time O(n), heap O(t), stack O(d)
+// vars: n = 그림 모형의 글 글자 수, t = 글 수, d = 모형 깊이
 // basis: estimate
 // 그림 글꼴에 없는 글자를 줄 번호와 함께 알린다. 대신 그릴 글꼴의 폭을 알 수 없기 때문이다.
+// 모형의 모든 글을 본문 글꼴로, 고정폭으로 그리는 글은 고정폭 글꼴로도 본다. 글 종류를 빠뜨리지 않기 위해 모형 전체를 훑는다.
 function checkGlyphs(figure, problems) {
-  const texts = [
-    ...figure.nodes.flatMap((n) => [[n.label, n.line], [n.sub, n.line]]),
-    ...figure.groups.map((g) => [g.label, g.line]),
-    ...figure.edges.map((e) => [e.label, e.line]),
-    ...figure.steps.flatMap((s) => [[s.label, s.line], [s.caption, s.line], ...s.beats.flatMap((b) => [[b.say, b.line], ...b.hops.map((h) => [h.data, h.line]), ...b.ops.map((o) => [o.row?.text, o.line])])]),
-  ];
-  for (const [text, line] of texts) {
-    if (!text) continue;
-    try {
-      measure(text, 1);
-    } catch (error) {
-      problems.error(line, error.message);
-    }
+  const texts = [];
+  collectTexts(figure, figure.line ?? 1, texts);
+  const mono = [...figure.edges.map((e) => [e.label, e.line]), ...figure.nodes.flatMap((n) => (n.columns ?? []).map((c) => [c.type, c.line ?? n.line]))];
+  if (figure.kind === 'sequence') mono.push(...figure.steps.flatMap((s) => s.beats.flatMap((b) => b.hops.map((h) => [h.data, h.line]))));
+  const reported = new Set();
+  for (const [text, line, face] of [...texts.map(([t, l]) => [t, l, 'regular']), ...mono.map(([t, l]) => [t, l, 'mono'])]) {
+    const missing = text ? findMissingGlyph(text, face) : undefined;
+    if (missing === undefined || reported.has(`${line}\u0000${missing}`)) continue;
+    reported.add(`${line}\u0000${missing}`);
+    problems.error(line, `the font has no glyph for "${missing}". Remove the character`);
+  }
+}
+
+// cost: time O(n), heap O(t), stack O(d)
+// vars: n = 모형 원소 수, t = 글 수, d = 모형 깊이
+// basis: estimate
+function collectTexts(value, line, out) {
+  // 차트 행 이름처럼 \u0000으로 이은 안쪽 키는 그리지 않는 글이라 이음 글자를 빼고 본다.
+  if (typeof value === 'string') out.push([value.replaceAll('\u0000', ' '), line]);
+  else if (Array.isArray(value)) for (const item of value) collectTexts(item, line, out);
+  else if (value && typeof value === 'object') {
+    const own = typeof value.line === 'number' ? value.line : line;
+    for (const item of Object.values(value)) collectTexts(item, own, out);
   }
 }
 

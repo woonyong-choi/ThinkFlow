@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
+import { fileURLToPath } from 'node:url';
 import { buildFigure } from '../src/build.js';
 import { sizeNode } from '../src/measure/sizes.js';
 import { toSvg } from '../src/svg.js';
@@ -10,6 +11,15 @@ test('buildFigure_doc_examples_pass_figure_check', async () => {
     const result = await buildFigure(source, { strict: true });
     assert.ok(result, file);
   }
+});
+
+test('buildFigure_doc_data_examples_read_fixture_summary', async () => {
+  // 문서 예시의 경로 "../summary.json"이 test/fixtures/summary.json을 가리키게 하는 기준 폴더다.
+  const baseDir = fileURLToPath(new URL('./fixtures/charts/', import.meta.url));
+  const examples = docExamples().filter(({ source }) => source.includes('data "'));
+
+  for (const { file, source } of examples) assert.ok(await buildFigure(source, { baseDir, strict: true }), file);
+  assert.ok(examples.length > 0);
 });
 
 test('layoutGraph_box_sizes_equal_measured_sizes', async () => {

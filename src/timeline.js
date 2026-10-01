@@ -40,20 +40,31 @@ export function collectCards(figure) {
   return { contents, beats };
 }
 
+/** 계열이 없는 차트(상자, 히트맵, 계열 없는 산점도)가 통째로 자랄 때 쓰는 계열 id */
+export const WHOLE_CHART = '*';
+
+// cost: time O(s), heap O(s), stack O(1)
+// vars: s = 계열 수
+// basis: estimate
+/** 시간표가 다루는 차트 계열 id. 계열이 없으면 차트 전체를 계열 하나로 본다. */
+export function chartSeriesIds(figure) {
+  return figure.chart.series.length ? figure.chart.series.map((s) => s.id) : [WHOLE_CHART];
+}
+
 // cost: time O(b·(h + e + k)), heap O(b·(e + k)), stack O(1)
 // vars: b = 박자 수, h = 박자의 이동 수, e = 선 수, k = 카드 있는 도형 수
 // basis: estimate
 /**
  * 시간표를 만든다.
  * @param chips 이동 글을 글 상자 줄로 나누는 함수
- * @returns { segs, total, steps }. seg: { si, bi, t0, t1, move, hops, edgesOn, nodesOn, columnsOn, cards, cardsBefore, cardsAt, caption, series, growing, lights }
+ * @returns { segs, total, steps, growMs }. growMs는 차트 계열이 자라는 시간이다. seg: { si, bi, t0, t1, move, hops, edgesOn, nodesOn, columnsOn, cards, cardsBefore, cardsAt, caption, series, growing, lights }
  */
 export function buildTimeline(figure, cards, chips) {
   const speed = figure.speedMs ?? (figure.kind === 'chart' ? DWELL.reveal : DWELL.hop);
   const segs = [];
   const revealed = [];
   const hasReveal = figure.steps.some((s) => s.beats.some((b) => b.reveal.length));
-  const seriesIds = figure.chart.series.map((s) => s.id);
+  const seriesIds = chartSeriesIds(figure);
   let t = 0;
   let messageIndex = 0;
   figure.steps.forEach((step, si) => {
@@ -101,7 +112,7 @@ export function buildTimeline(figure, cards, chips) {
       t = seg.t1;
     });
   });
-  return { segs, total: t || 1, steps: figure.steps.map((s) => s.label) };
+  return { segs, total: t || 1, steps: figure.steps.map((s) => s.label), growMs: speed };
 }
 
 // cost: time O(h + k), heap O(k), stack O(1)

@@ -20,6 +20,19 @@ const SECTIONS = ['header', 'declare', 'timeline'];
  */
 export function parseFigure(source) {
   const problems = createProblems();
+  const figure = readFigure(source, problems);
+  problems.throwIfAny();
+  return { figure, warnings: problems.warnings };
+}
+
+// cost: time O(n + s·k), heap O(n), stack O(1)
+// vars: n = 원본 글자 수, s = 문장 수, k = 이름 수
+// basis: estimate
+/**
+ * 원본을 읽고 오류와 경고를 problems에 모은다. 뒤 단계(글꼴, data) 오류와 함께 한 번에 알리기 위해 오류가 있어도 모형을 돌려준다.
+ * @throws FigureError 파일이 비었거나 종류를 모를 때. 다음 줄을 읽을 규칙이 없기 때문이다
+ */
+export function readFigure(source, problems) {
   const statements = splitStatements(source, problems);
   const figure = emptyFigure();
   const ctx = { figure, problems, section: 'header', groups: [], table: undefined, step: undefined, headers: new Map(), previous: undefined };
@@ -34,8 +47,7 @@ export function parseFigure(source) {
   if (ctx.table) problems.error(ctx.table.line, `close table "${ctx.table.id}" with "}"`);
   for (const group of ctx.groups) problems.error(group.line, `close group "${group.id}" with "}"`);
   validateFigure(figure, problems);
-  problems.throwIfAny();
-  return { figure, warnings: problems.warnings };
+  return figure;
 }
 
 /**
@@ -57,7 +69,7 @@ function emptyFigure() {
     edges: [],
     start: undefined,
     finals: [],
-    chart: { series: [], rules: [], missing: undefined, data: undefined, x: undefined, y: undefined, scale: 'linear', rows: [], links: [] },
+    chart: { series: [], rules: [], missing: undefined, data: undefined, x: undefined, y: undefined, scale: 'linear', scaleLine: undefined, rows: [], links: [] },
     steps: [],
   };
 }
@@ -113,7 +125,7 @@ function readStatement(statement, ctx) {
     return;
   }
   const isArrowLine = second?.type === 'arrow';
-  const word = isArrowLine ? (ctx.section === 'timeline' || figure.kind === 'sequence' ? 'hop' : 'edge') : head.value;
+  const word = isArrowLine ? (ctx.section === 'timeline' ? 'hop' : 'edge') : head.value;
   if (head.type !== 'word') {
     problems.error(line, 'start a statement with a word, not with quoted text or an option');
     return;
@@ -177,6 +189,6 @@ function readHeader({ tokens, line }, { figure, problems }) {
     else figure.aspect = ratio;
   } else if (key === 'scale') {
     if (!['linear', 'log'].includes(value?.value)) problems.error(line, 'scale is "linear" or "log"');
-    else figure.chart.scale = value.value;
+    else Object.assign(figure.chart, { scale: value.value, scaleLine: line });
   }
 }

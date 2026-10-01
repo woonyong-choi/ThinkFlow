@@ -112,7 +112,9 @@ function report(file, problems, json) {
   for (const p of problems) {
     const check = /^\[check (\d+)\] /.exec(p.message);
     const message = check ? p.message.slice(check[0].length) : p.message;
-    if (json) process.stdout.write(`${JSON.stringify({ file, line: p.line, lines: [p.line], check: check ? Number(check[1]) : 'syntax', level: p.level, message })}\n`);
+    // 함께 문제를 일으킨 줄은 메시지 안 "(line N)"에 있다(docs/design/figure-check.md 메시지).
+    const lines = [p.line, ...[...message.matchAll(/\(line (\d+)\)/g)].map((m) => Number(m[1]))];
+    if (json) process.stdout.write(`${JSON.stringify({ file, line: p.line, lines, check: check ? Number(check[1]) : 'syntax', level: p.level, message })}\n`);
     else process.stderr.write(`${file}:${p.line}: ${p.level === 'warning' ? 'warning: ' : ''}${message}\n`);
   }
 }

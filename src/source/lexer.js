@@ -24,10 +24,11 @@ export function tokenizeLine(text, line, problems) {
       const quoted = readQuoted(text, i, line, problems);
       tokens.push({ type: 'text', value: quoted.value });
       i = quoted.end;
-      if (i < text.length && !/\s/.test(text[i])) problems.error(line, `put a space after the closing quote. Found "${text[i]}"`);
+      if (i < text.length && !/\s/.test(text[i]) && text[i] !== '#') problems.error(line, `put a space after the closing quote. Found "${text[i]}"`);
     } else {
       const start = i;
-      while (i < text.length && !/\s/.test(text[i]) && text[i] !== '"') i++;
+      // 따옴표 밖의 `#`는 낱말 중간이어도 주석의 시작이다.
+      while (i < text.length && !/\s/.test(text[i]) && text[i] !== '"' && text[i] !== '#') i++;
       const word = text.slice(start, i);
       if (text[i] === '"' && word.endsWith('=')) {
         const quoted = readQuoted(text, i, line, problems);

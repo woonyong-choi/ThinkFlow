@@ -94,3 +94,15 @@ test('parseFigure_all_errors_are_reported_together', () => {
 
   assert.equal(errors.length, 3);
 });
+
+test('tokenizeLine_hash_outside_quotes_starts_comment', () => {
+  const errors = errorsOf('flow right\nbox api "API"# 설명\nbox b "B#1"\napi -> b# 쓰기');
+
+  assert.deepEqual(errors, []);
+});
+
+test('readSeries_flag_word_as_series_id_is_error', () => {
+  const errors = errorsOf('chart bar\nseries quiet "A"\nrow "x" quiet=1');
+
+  assert.ok(errors.some((e) => e.startsWith('2: "quiet" is not a valid series name')), errors.join('\n'));
+});

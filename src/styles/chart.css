@@ -45,6 +45,15 @@
   fill: var(--color-accent);
 }
 
+.fl .chart-value.first {
+  fill: var(--color-series-1);
+}
+
+.fl .chart-value.second {
+  font-weight: var(--weight-semibold);
+  fill: var(--color-series-2);
+}
+
 .fl .chart-missing {
   font-size: var(--size-text-11);
   font-style: italic;
@@ -118,13 +127,13 @@
 
 .fl .chart-before {
   fill: var(--color-bg);
-  stroke: var(--color-muted);
+  stroke: var(--color-series-1);
   stroke-width: var(--border-tag);
 }
 
 .fl .chart-arrow,
 .fl .chart-link {
-  stroke: var(--color-accent);
+  stroke: var(--color-series-2);
   stroke-width: var(--border-strong);
   stroke-dasharray: 1;
 }
@@ -151,106 +160,4 @@
 .fl .cs-1,
 .fl [class*="cr-"] {
   transition: opacity var(--duration-fast);
-}
-
-/* 재생기: 드러내는 박자에 play가 붙으면 한 번 자란다. */
-.fl .play .grow,
-.fl .play.grow {
-  animation: chart-grow var(--duration-reveal) ease-out both;
-}
-
-.fl .play .draw,
-.fl .play.draw {
-  animation: chart-draw var(--duration-reveal) ease-out both;
-}
-
-.fl .play .pop,
-.fl .play.pop,
-.fl .play .late,
-.fl .play.late {
-  animation: chart-fade var(--duration-reveal) ease-out both;
-}
-
-/* 시간 흐름이 없는 차트 SVG: 한 바퀴의 앞 13%에 자라고 나머지는 머문다. README 이미지에서도 보이게 되풀이한다. */
-.fl.chart-loop .grow {
-  animation: chart-grow-loop var(--duration-chart-cycle) ease-out infinite both;
-}
-
-.fl.chart-loop .draw {
-  animation: chart-draw-loop var(--duration-chart-cycle) ease-out infinite both;
-}
-
-.fl.chart-loop .pop,
-.fl.chart-loop .late {
-  animation: chart-fade-loop var(--duration-chart-cycle) ease-out infinite both;
-}
-
-@keyframes chart-grow {
-  from {
-    transform: scaleX(0);
-  }
-}
-
-@keyframes chart-draw {
-  from {
-    stroke-dashoffset: 1;
-  }
-}
-
-@keyframes chart-fade {
-  0%,
-  50% {
-    opacity: 0;
-  }
-}
-
-@keyframes chart-grow-loop {
-  0% {
-    transform: scaleX(0);
-  }
-
-  13%,
-  100% {
-    transform: none;
-  }
-}
-
-@keyframes chart-draw-loop {
-  0% {
-    stroke-dashoffset: 1;
-  }
-
-  13%,
-  100% {
-    stroke-dashoffset: 0;
-  }
-}
-
-@keyframes chart-fade-loop {
-  0%,
-  9% {
-    opacity: 0;
-  }
-
-  16%,
-  100% {
-    opacity: 1;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .fl .play .grow,
-  .fl .play.grow,
-  .fl .play .draw,
-  .fl .play.draw,
-  .fl .play .pop,
-  .fl .play.pop,
-  .fl .play .late,
-  .fl .play.late,
-  .fl.chart-loop .grow,
-  .fl.chart-loop .draw,
-  .fl.chart-loop .pop,
-  .fl.chart-loop .late {
-    animation: none;
-  }
 }

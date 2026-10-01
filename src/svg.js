@@ -1,12 +1,14 @@
 // 스크립트 없이 움직이는 SVG와 멈춘 SVG. 시간표의 박자 상태를 CSS keyframes와 SMIL로 옮긴다(docs/design/playback.md).
 import { chartText } from './chart/draw.js';
 import { CHIP_GAP, placeChip, sampleRoute, sizeChip } from './chip.js';
+import { curveOf, keySpline, timeAt } from './easing.js';
 import { drawScene } from './draw/figure.js';
 import { createGlyphSet, embedFonts, measure } from './measure/fonts.js';
 import { STYLE } from './measure/sizes.js';
 import { DEFS, STYLES } from './styles.js';
 import { escapeXml, roundCoord as r } from './text.js';
-import { litIds } from './timeline.js';
+import { chartMotionCss } from './chart/motion.js';
+import { chartSeriesIds, litIds } from './timeline.js';
 import { tokens, values } from './tokens.js';
 
 const SPACE = values.space;
@@ -15,6 +17,8 @@ const CAPTION = { size: values.size.text['13-5'], face: 'regular' };
 const STEP_LABEL = { size: values.size.text['13'], face: 'mono' };
 // 켜짐 구간 끝을 다음 구간 시작보다 이만큼(ms) 앞당긴다. 같은 퍼센트에 두 값이 겹치지 않게 하기 위해서다.
 const EPSILON_MS = 0.1;
+// 점이 선을 지나는 곡선. HTML 재생기와 같다
+const MOVE = curveOf('move');
 
 // cost: time O(g·b + b·h + out), heap O(out), stack O(1), io 1
 // vars: g = 켜고 끄는 요소 수, b = 박자 수, h = 박자의 이동 수, out = 만든 SVG 글자 수
@@ -37,7 +41,7 @@ export async function toSvg(result, { isStatic = false } = {}) {
   return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="fl${content.className}" width="${r(width)}" height="${r(height)}" viewBox="0 0 ${r(width)} ${r(height)}" role="img">
 <title>${escapeXml(title)}</title>
 <style>${fonts}
-${STYLES.tokens}${STYLES.figure}${STYLES.animated}${result.chart ? STYLES.chart : ''}
+${STYLES.tokens}${STYLES.figure}${STYLES.animated}${result.chart ? STYLES.chart + chartMotionCss(timeline.growMs) : ''}
 ${animator.css.join('\n')}
 </style>
 <defs>${DEFS}</defs>
@@ -119,7 +123,7 @@ function staticAnimator() {
 // cost: time O(1), heap O(1), stack O(1)
 // basis: estimate
 // 박자별 상태를 CSS keyframes class로 바꾼다. 같은 켜짐 순서는 class 하나를 나눠 쓴다.
-function createAnimator({ segs, total }) {
+function createAnimator({ segs, total, growMs }) {
   const duration = `${r(total / 1000)}s`;
   const css = [];
   const names = new Map();
@@ -189,7 +193,7 @@ function createAnimator({ segs, total }) {
     const chip = hop.data ? drawChip(hop.data, glyphs) + pushChip(seg, hop, scene) : '';
     return (
       `<g class="${name}" opacity="0"><circle r="${values.size.halo}" fill="${tokens.color.accent}" opacity="${values.opacity.halo}"/><circle r="${values.size.packet}" fill="${tokens.color.accent}"/>${chip ? `<g>${chip}</g>` : ''}` +
-      `<animateMotion dur="${duration}" repeatCount="indefinite" calcMode="linear" keyTimes="${keyTimes}" keyPoints="${hop.isBack ? '1;1;0;0' : '0;0;1;1'}">` +
+      `<animateMotion dur="${duration}" repeatCount="indefinite" calcMode="spline" keyTimes="${keyTimes}" keySplines="0 0 1 1;${keySpline(MOVE)};0 0 1 1" keyPoints="${hop.isBack ? '1;1;0;0' : '0;0;1;1'}">` +
       `<mpath href="#p-${hop.edge}" xlink:href="#p-${hop.edge}"/></animateMotion></g>`
     );
   }
@@ -197,13 +201,13 @@ function createAnimator({ segs, total }) {
   // cost: time O(k·p), heap O(k), stack O(1)
   // vars: k = 재는 지점 수(11), p = 경로 점 수
   // basis: estimate
-  // 글 상자가 그림 밖으로 나가는 선이면, 경로 10% 지점마다 밀어 넣은 양을 옮김 움직임으로 건다. 점의 움직임이 일정한 속도라 경로 비율이 곧 시간 비율이다.
+  // 글 상자가 그림 밖으로 나가는 선이면, 경로 10% 지점마다 밀어 넣은 양을 옮김 움직임으로 건다. 점이 그 지점에 닿는 시각은 이동 곡선을 거꾸로 풀어 구한다.
   function pushChip(seg, hop, scene) {
     const size = sizeChip(hop.data);
     const samples = sampleRoute(scene.edges[hop.edge].points).map(({ fraction, point }) => ({ fraction: hop.isBack ? 1 - fraction : fraction, ...placeChip(point, size, scene.width) }));
     if (hop.isBack) samples.reverse();
     if (samples.every((p) => p.dx === 0 && p.dy === 0)) return '';
-    const at = (fraction) => round4((seg.t0 + fraction * hop.ms) / total);
+    const at = (fraction) => round4((seg.t0 + timeAt(MOVE, fraction) * hop.ms) / total);
     const times = [0, ...samples.map((p) => at(p.fraction)), 1];
     const moves = [samples[0], ...samples, samples.at(-1)].map((p) => `${r(p.dx)} ${r(p.dy)}`);
     return `<animateTransform attributeName="transform" type="translate" dur="${duration}" repeatCount="indefinite" calcMode="linear" keyTimes="${times.join(';')}" values="${moves.join(';')}"/>`;
@@ -214,17 +218,19 @@ function createAnimator({ segs, total }) {
   // basis: estimate
   // 차트: 계열마다 보임 keyframes와, 드러내는 박자에서 자라는 keyframes. 밝히지 않은 행은 흐린다.
   function chart(figure, drawn) {
-    const grow = values.duration.reveal;
-    figure.chart.series.forEach((series, s) => {
-      const show = windows(segs.map((g) => g.series.includes(series.id)), 'opacity: 1', 'opacity: 0', `cs${s}`);
-      const reveal = segs.find((g) => g.growing.includes(series.id));
+    const grow = growMs;
+    chartSeriesIds(figure).forEach((id, s) => {
+      const show = windows(segs.map((g) => g.series.includes(id)), 'opacity: 1', 'opacity: 0', `cs${s}`);
+      const reveal = segs.find((g) => g.growing.includes(id));
       css.push(`.fl .cs-${s} { animation: ${show} ${duration} infinite step-end; }`);
       if (!reveal) return;
-      const [a, b] = [percent(reveal.t0), percent(reveal.t0 + grow)];
+      // 막대와 선은 자라는 시간 내내, 점과 값 글자는 그 뒤 절반에 나타난다. HTML 재생기(chart/motion.js)와 같다.
+      const [a, half, b] = [percent(reveal.t0), percent(reveal.t0 + grow / 2), percent(reveal.t0 + grow)];
+      const ease = `animation-timing-function: ${tokens.easing.reveal}`;
       css.push(
-        `@keyframes g${s} { 0%,${a} { transform: scaleX(0) } ${b},100% { transform: none } }\n.fl .cs-${s} .grow, .fl .cs-${s}.grow { animation: g${s} ${duration} infinite; }\n` +
-          `@keyframes d${s} { 0%,${a} { stroke-dashoffset: 1 } ${b},100% { stroke-dashoffset: 0 } }\n.fl .cs-${s} .draw, .fl .cs-${s}.draw { animation: d${s} ${duration} infinite; }\n` +
-          `@keyframes f${s} { 0%,${a} { opacity: 0 } ${b},100% { opacity: 1 } }\n.fl .cs-${s} .late, .fl .cs-${s} .pop, .fl .cs-${s}.pop { animation: f${s} ${duration} infinite; }`,
+        `@keyframes g${s} { 0%,${a} { transform: scaleX(0); ${ease} } ${b},100% { transform: none } }\n.fl .cs-${s} .grow, .fl .cs-${s}.grow { animation: g${s} ${duration} infinite; }\n` +
+          `@keyframes d${s} { 0%,${a} { stroke-dashoffset: 1; ${ease} } ${b},100% { stroke-dashoffset: 0 } }\n.fl .cs-${s} .draw, .fl .cs-${s}.draw { animation: d${s} ${duration} infinite; }\n` +
+          `@keyframes f${s} { 0%,${half} { opacity: 0; ${ease} } ${b},100% { opacity: 1 } }\n.fl .cs-${s} .late, .fl .cs-${s} .pop, .fl .cs-${s}.pop { animation: f${s} ${duration} infinite; }`,
       );
     });
     drawn.rowKeys.forEach((key, k) => {

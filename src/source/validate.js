@@ -114,7 +114,7 @@ function checkTimeline(figure, names, problems) {
     }
   }
   figure.edges.forEach((edge, i) => {
-    if (edge.quiet && !usedEdges.has(i)) problems.warn(edge.line, `quiet edge ${edge.from} -> ${edge.to} is never passed, so it never shows. Pass it in a step or remove quiet`);
+    if (edge.quiet && !usedEdges.has(i)) problems.warn(edge.line, `[check 11] quiet edge ${edge.from} -> ${edge.to} is never passed, so it never shows. Pass it in a step or remove quiet`);
   });
   if (figure.kind === 'sequence') checkParticipantOrder(figure, problems);
 }
@@ -144,7 +144,7 @@ function resolveHop(hop, figure, names, problems, usedEdges) {
   hop.isBack = !forward.length;
   usedEdges.add(hop.edge);
   const label = figure.edges[hop.edge].label;
-  if (hop.data !== undefined && hop.data === label) problems.warn(hop.line, `the moving text "${hop.data}" repeats the edge label. Remove one of them`);
+  if (hop.data !== undefined && hop.data === label) problems.warn(hop.line, `[check 8] the moving text "${hop.data}" repeats the edge label. Remove one of them`);
 }
 
 // cost: time O(k), heap O(k), stack O(1)

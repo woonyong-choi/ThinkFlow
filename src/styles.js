@@ -19,9 +19,12 @@ export const STYLES = Object.freeze({
   chart: readStyle('./styles/chart.css'),
 });
 
-/** 점 격자 바탕과 화살촉. 화살촉은 평소(`fl-arrow`)와 밝힌 선(`fl-arrow-on`) 두 가지다. */
+/** 점 격자 바탕과 화살촉. 화살촉은 평소(`fl-arrow`), 밝힌 선(`fl-arrow-on`), 덤벨 둘째 계열(`fl-arrow-second`) 세 가지다. */
 export const DEFS =
-  drawDotPattern() + drawArrowMarker('fl-arrow', tokens.color.muted, values.size.marker) + drawArrowMarker('fl-arrow-on', tokens.color.accent, values.size['marker-on']);
+  drawDotPattern() +
+  drawArrowMarker('fl-arrow', tokens.color.muted, values.size.marker) +
+  drawArrowMarker('fl-arrow-on', tokens.color.accent, values.size['marker-on']) +
+  drawArrowMarker('fl-arrow-second', tokens.color['series-2'], values.size['marker-on']);
 
 function drawDotPattern() {
   const grid = values.size.grid;

@@ -81,3 +81,24 @@ test('main_gallery_writes_index_with_each_figure', () => {
     assert.match(index, /src="b\.html"/);
   });
 });
+
+test('main_json_lists_related_lines_and_check_number', () => {
+  withFolder((folder) => {
+    writeFileSync(join(folder, 'warn.flow'), 'flow right\nbox a "A"\nbox b "B"\na -> b "보냄" quiet\nb -> a\nstep "s"\n  b -> a\n');
+
+    const [message] = run(['check', 'warn.flow', '--json'], folder).stdout.trim().split('\n').map((l) => JSON.parse(l));
+
+    assert.deepEqual([message.check, message.level, message.lines], [11, 'warning', [4]]);
+  });
+});
+
+test('main_check_reports_syntax_and_glyph_errors_together', () => {
+  withFolder((folder) => {
+    writeFileSync(join(folder, 'bad.flow'), 'flow right\nbox a "A 😀"\nbox b "B"\na -> cdex\n');
+
+    const { stderr } = run(['check', 'bad.flow'], folder);
+
+    assert.match(stderr, /bad\.flow:2: the font has no glyph/);
+    assert.match(stderr, /bad\.flow:4: unknown node "cdex"/);
+  });
+});

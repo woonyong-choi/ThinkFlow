@@ -70,3 +70,50 @@ test('toSvg_moving_text_near_side_edge_is_pushed_inside', async () => {
 
   assert.match(svg, /<animateTransform attributeName="transform" type="translate"[^>]*values="[1-9][\d.]* 0;/);
 });
+
+const GROUPED = 'flow right\nbox a "A"\ngroup g "묶음" {\n  box b "B"\n}\nbox c "C"\na -> b "보냄"\nb -> c';
+
+test('checkFigure_edge_through_unrelated_group_is_check_3_error', async () => {
+  const result = await buildFigure(GROUPED);
+  const g = result.scene.groups[0];
+  const edge = result.scene.edges.find((e) => e.from === 'b');
+  edge.points = [{ x: g.x - 20, y: g.y + g.h / 2 }, { x: g.x + g.w + 20, y: g.y + g.h / 2 }];
+  edge.from = 'a';
+
+  const messages = recheck(result);
+
+  assert.ok(messages.some((m) => m.includes('[check 3]') && m.includes('group "g"')), messages.join('\n'));
+});
+
+test('checkFigure_node_inside_unrelated_group_is_check_6_internal_error', async () => {
+  const result = await buildFigure(GROUPED);
+  const g = result.scene.groups[0];
+  const c = result.scene.items.find((it) => it.id === 'c');
+  Object.assign(c, { x: g.x + 2, y: g.y + 2 });
+
+  const messages = recheck(result);
+
+  assert.ok(messages.some((m) => m.includes('[check 6] internal: node "c" overlaps group "g"') || m.includes('[check 6] internal: group "g" overlaps node "c"')), messages.join('\n'));
+});
+
+test('checkFigure_edge_label_on_group_title_is_check_2_error', async () => {
+  const result = await buildFigure(GROUPED);
+  const g = result.scene.groups[0];
+  const edge = result.scene.edges.find((e) => e.label);
+  edge.labelAt = { x: g.x + 30, y: g.y + 8 };
+
+  const messages = recheck(result);
+
+  assert.ok(messages.some((m) => m.includes('[check 2]') && m.includes('title of group "g"')), messages.join('\n'));
+});
+
+test('checkFigure_decision_edge_off_vertex_is_check_4_internal_error', async () => {
+  const result = await buildFigure('flow right\nbox a "A"\ndecision d "확인"\nbox b "B"\na -> d\nd -> b');
+  const d = result.scene.items.find((it) => it.id === 'd');
+  const edge = result.scene.edges.find((e) => e.from === 'd');
+  edge.points[0] = { x: d.x + d.w, y: d.y };
+
+  const messages = recheck(result);
+
+  assert.ok(messages.some((m) => m.includes('[check 4] internal')), messages.join('\n'));
+});

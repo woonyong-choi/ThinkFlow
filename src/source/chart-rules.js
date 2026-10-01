@@ -19,7 +19,8 @@ export function checkChart(figure, problems) {
   }
   if (chart.missing !== undefined && chartType !== 'bar') problems.error(figure.line, 'missing is only for bar charts');
   if (chartType === 'bar' && chart.scale === 'log') problems.error(figure.line, 'a bar chart starts at 0, so scale log is not allowed');
-  if (chartType === 'heatmap' && (chart.scale !== 'linear' || chart.rules.length)) problems.error(chart.rules[0]?.line ?? figure.line, 'a heatmap has no value axis. Remove scale and rule');
+  if (chartType === 'heatmap' && (chart.scaleLine !== undefined || chart.rules.length)) problems.error(chart.scaleLine ?? chart.rules[0].line, 'a heatmap has no value axis. Remove scale and rule');
+  for (const rule of chart.rules) if (chart.scale === 'log' && rule.value <= 0) problems.error(rule.line, 'log scale needs values above 0');
   for (const s of chart.series) if (FIXED_KEYS.includes(s.key)) problems.error(s.line, `series key "${s.key}" is a fixed data key. Set key="..." to another name`);
   if (chart.data && chart.rows.length) problems.error(chart.data.line, 'use either data or row lines, not both');
   if (!chart.data) {
@@ -46,10 +47,12 @@ export function checkChartRows(figure, problems) {
     if (labels.has(key)) problems.error(row.line, `"${key.replace('\u0000', '" "')}" appears twice (line ${labels.get(key)}). Names in a chart are unique`);
     labels.set(key, row.line);
   }
-  const numbers = chart.rows.flatMap((r) => Object.entries(r.values).filter(([k, v]) => k !== 'series' && v !== null).map(([, v]) => v));
+  // 선 차트의 x는 값 축이 아니라 늘 linear다. 로그와 "모두 0" 검사에서 뺀다.
+  const isValue = (k) => k !== 'series' && !(chartType === 'line' && k === 'x');
+  const numbers = chart.rows.flatMap((r) => Object.entries(r.values).filter(([k, v]) => isValue(k) && v !== null).map(([, v]) => v));
   const valueAxis = chartType === 'scatter' || chartType === 'line' ? [] : numbers;
   if (valueAxis.some((v) => v < 0)) problems.error(chart.rows.find((r) => Object.values(r.values).some((v) => v < 0)).line, 'values cannot be negative');
-  if (chart.scale === 'log' && numbers.some((v) => v <= 0)) problems.error(chart.rows.find((r) => Object.values(r.values).some((v) => v <= 0)).line, 'log scale needs values above 0');
+  if (chart.scale === 'log' && numbers.some((v) => v <= 0)) problems.error(chart.rows.find((r) => Object.entries(r.values).some(([k, v]) => isValue(k) && v !== null && v <= 0)).line, 'log scale needs values above 0');
   if (numbers.length && numbers.every((v) => v === 0)) problems.error(chart.rows[0].line, 'all values are 0, so lengths cannot be set');
   for (const link of chart.links) {
     for (const name of [link.from, link.to]) if (!labels.has(name)) problems.error(link.line, unknownName('point', name, [...labels.keys()]));

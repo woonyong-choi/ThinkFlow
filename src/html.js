@@ -2,10 +2,12 @@
 import { readFileSync } from 'node:fs';
 import { chartText } from './chart/draw.js';
 import { drawScene } from './draw/figure.js';
+import { curveOf } from './easing.js';
 import { createGlyphSet, embedFonts } from './measure/fonts.js';
 import { DEFS, STYLES } from './styles.js';
 import { escapeXml, roundCoord as r } from './text.js';
-import { litIds } from './timeline.js';
+import { chartMotionCss } from './chart/motion.js';
+import { chartSeriesIds, litIds } from './timeline.js';
 import { tokens, values } from './tokens.js';
 
 const PLAYER = readFileSync(new URL('./player.js', import.meta.url), 'utf8');
@@ -27,10 +29,12 @@ const PLAYER_METRICS = Object.freeze({
   chipPadX: values.space['9'],
   chipPadY: values.space['4'],
   chipGap: values.space['6'],
+  icon: values.size.icon,
   iconStroke: values.border.edge,
   pauseStroke: values.border.strong,
   zoomMax: values.scale['zoom-max'],
   zoomStep: values.scale['zoom-step'],
+  move: curveOf('move'),
 });
 
 // cost: time O(s + e + b·(e + k) + out), heap O(out), stack O(1), io 1
@@ -59,7 +63,7 @@ export async function toHtml(result, name) {
 <title>${escapeXml(figure.title ?? name)}</title>
 ${EMBED_SCRIPT}
 <style>${fonts}
-${STYLES.tokens}${STYLES.player}${STYLES.figure}${STYLES.chart}</style>
+${STYLES.tokens}${STYLES.player}${STYLES.figure}${STYLES.chart}${result.chart ? chartMotionCss(timeline.growMs) : ''}</style>
 </head>
 <body>
 <figure class="fl-figure${result.chart ? ' fl-chart-page' : ''}" tabindex="0">
@@ -128,7 +132,7 @@ function figureContent(result, glyphs) {
 function chartContent(result, glyphs) {
   const { figure, chart, timeline } = result;
   for (const face of ['regular', 'mono', 'semibold']) glyphs.add(chartText(figure), face);
-  const ids = figure.chart.series.map((s) => s.id);
+  const ids = chartSeriesIds(figure);
   const segs = timeline.segs.map((seg) => ({
     si: seg.si,
     t0: seg.t0,

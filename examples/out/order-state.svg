@@ -76,7 +76,7 @@
   --size-control: 30px;
   --size-pill: 18px;
   --size-tag: 14px;
-  --size-icon: 20px;
+  --size-icon: 12px;
   --size-packet: 4.5px;
   --size-halo: 10px;
   --size-marker: 5px;
@@ -87,7 +87,6 @@
   --size-node-min: 100px;
   --size-node-max: 210px;
   --size-node-min-h: 46px;
-  --size-store-min-h: 70px;
   --size-store-cap: 12px;
   --size-figure-min: 560px;
   --size-chip-max: 210px;
@@ -99,6 +98,7 @@
   --size-embedded-chrome: 150px;
   --size-chart-width: 640px;
   --size-chart-label: 140px;
+  --size-chart-label-max: 240px;
   --size-chart-bar: 12px;
   --size-chart-row: 40px;
   --size-chart-dot: 5px;
@@ -166,6 +166,8 @@
   --opacity-halo: 0.2;
   --opacity-tab-on: 0.06;
   --opacity-dim: 0.3;
+  --opacity-heat-min: 0.08;
+  --opacity-heat-text: 0.55;
   --z-raised: 2;
   --z-overlay: 10;
   --duration-fast: 200ms;
@@ -174,9 +176,10 @@
   --duration-dwell-per-char: 45ms;
   --duration-dwell-max: 3200ms;
   --duration-step-end: 1600ms;
-  --duration-stagger: 120ms;
   --duration-chart-cycle: 7000ms;
   --duration-reveal: 900ms;
+  --easing-move: cubic-bezier(0.455, 0.03, 0.515, 0.955);
+  --easing-reveal: cubic-bezier(0, 0, 0.58, 1);
   --scale-zoom-max: 6;
   --scale-zoom-step: 1.25;
 }
@@ -439,7 +442,7 @@
 @keyframes a23 { 0%,18.068% { opacity: 0 } 18.068%,35.193% { opacity: 0 } 35.193%,58.476% { opacity: 0 } 58.476%,76.717% { opacity: 1 } 76.717%,100% { opacity: 1 } }
 .fl .a23 { animation: a23 26s infinite step-end; }
 </style>
-<defs><pattern id="fl-dots" width="16" height="16" patternUnits="userSpaceOnUse"><circle cx="1.5" cy="1.5" r="1" fill="var(--color-dot)"/></pattern><marker id="fl-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-muted)"/></marker><marker id="fl-arrow-on" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-accent)"/></marker></defs>
+<defs><pattern id="fl-dots" width="16" height="16" patternUnits="userSpaceOnUse"><circle cx="1.5" cy="1.5" r="1" fill="var(--color-dot)"/></pattern><marker id="fl-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-muted)"/></marker><marker id="fl-arrow-on" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-accent)"/></marker><marker id="fl-arrow-second" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-series-2)"/></marker></defs>
 <rect width="100%" height="100%" fill="var(--color-bg)"/><rect width="100%" height="100%" fill="url(#fl-dots)"/>
 <g transform="translate(131.7 0)">
 <g id="n-0" class="fl-node" data-id="created"><rect x="168.7" y="102" width="100" height="46" rx="10" fill="var(--color-bg)" class="fl-stroke a0"/><text x="218.7" y="130" class="label">생성됨</text></g>
@@ -458,11 +461,11 @@
 <g id="e-5" class="fl-edge mark"><path id="p-5" d="M 218.66666666666669 42 L 218.7 102" class="fl-path a14" marker-end="url(#fl-arrow)"/></g>
 <g id="e-6" class="fl-edge mark"><path id="p-6" d="M 78 700 L 78 760" class="fl-path a14" marker-end="url(#fl-arrow)"/></g>
 <g id="e-7" class="fl-edge mark"><path id="p-7" d="M 218.66666666666669 516 L 218.7 576" class="fl-path a14" marker-end="url(#fl-arrow)"/></g>
-<g class="p0-0" opacity="0"><circle r="10" fill="var(--color-accent)" opacity="0.2"/><circle r="4.5" fill="var(--color-accent)"/><g><rect x="-32.5" y="-35" width="65" height="23" rx="8" fill="var(--color-accent)"/><text x="0" y="-20" class="chip">39,000원</text></g><animateMotion dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0;0.1443;1" keyPoints="0;0;1;1"><mpath href="#p-0" xlink:href="#p-0"/></animateMotion></g>
-<g class="p1-0" opacity="0"><circle r="10" fill="var(--color-accent)" opacity="0.2"/><circle r="4.5" fill="var(--color-accent)"/><animateMotion dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.1807;0.325;1" keyPoints="0;0;1;1"><mpath href="#p-1" xlink:href="#p-1"/></animateMotion></g>
-<g class="p2-0" opacity="0"><circle r="10" fill="var(--color-accent)" opacity="0.2"/><circle r="4.5" fill="var(--color-accent)"/><animateMotion dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.3519;0.4962;1" keyPoints="0;0;1;1"><mpath href="#p-2" xlink:href="#p-2"/></animateMotion></g>
-<g class="p3-0" opacity="0"><circle r="10" fill="var(--color-accent)" opacity="0.2"/><circle r="4.5" fill="var(--color-accent)"/><animateMotion dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.5848;0.7291;1" keyPoints="0;0;1;1"><mpath href="#p-0" xlink:href="#p-0"/></animateMotion></g>
-<g class="p4-0" opacity="0"><circle r="10" fill="var(--color-accent)" opacity="0.2"/><circle r="4.5" fill="var(--color-accent)"/><g><rect x="-18.9" y="-35" width="37.9" height="23" rx="8" fill="var(--color-accent)"/><text x="0" y="-20" class="chip">환불</text></g><animateMotion dur="26s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.7672;0.9115;1" keyPoints="0;0;1;1"><mpath href="#p-4" xlink:href="#p-4"/></animateMotion></g>
+<g class="p0-0" opacity="0"><circle r="10" fill="var(--color-accent)" opacity="0.2"/><circle r="4.5" fill="var(--color-accent)"/><g><rect x="-32.5" y="-35" width="65" height="23" rx="8" fill="var(--color-accent)"/><text x="0" y="-20" class="chip">39,000원</text></g><animateMotion dur="26s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0;0.1443;1" keySplines="0 0 1 1;0.455 0.03 0.515 0.955;0 0 1 1" keyPoints="0;0;1;1"><mpath href="#p-0" xlink:href="#p-0"/></animateMotion></g>
+<g class="p1-0" opacity="0"><circle r="10" fill="var(--color-accent)" opacity="0.2"/><circle r="4.5" fill="var(--color-accent)"/><animateMotion dur="26s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.1807;0.325;1" keySplines="0 0 1 1;0.455 0.03 0.515 0.955;0 0 1 1" keyPoints="0;0;1;1"><mpath href="#p-1" xlink:href="#p-1"/></animateMotion></g>
+<g class="p2-0" opacity="0"><circle r="10" fill="var(--color-accent)" opacity="0.2"/><circle r="4.5" fill="var(--color-accent)"/><animateMotion dur="26s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.3519;0.4962;1" keySplines="0 0 1 1;0.455 0.03 0.515 0.955;0 0 1 1" keyPoints="0;0;1;1"><mpath href="#p-2" xlink:href="#p-2"/></animateMotion></g>
+<g class="p3-0" opacity="0"><circle r="10" fill="var(--color-accent)" opacity="0.2"/><circle r="4.5" fill="var(--color-accent)"/><animateMotion dur="26s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5848;0.7291;1" keySplines="0 0 1 1;0.455 0.03 0.515 0.955;0 0 1 1" keyPoints="0;0;1;1"><mpath href="#p-0" xlink:href="#p-0"/></animateMotion></g>
+<g class="p4-0" opacity="0"><circle r="10" fill="var(--color-accent)" opacity="0.2"/><circle r="4.5" fill="var(--color-accent)"/><g><rect x="-18.9" y="-35" width="37.9" height="23" rx="8" fill="var(--color-accent)"/><text x="0" y="-20" class="chip">환불</text></g><animateMotion dur="26s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.7672;0.9115;1" keySplines="0 0 1 1;0.455 0.03 0.515 0.955;0 0 1 1" keyPoints="0;0;1;1"><mpath href="#p-4" xlink:href="#p-4"/></animateMotion></g>
 </g>
 <text x="280" y="820" opacity="0" class="steplabel a20">정상 주문</text>
 <text x="280" y="820" opacity="0" class="steplabel a21">취소</text>

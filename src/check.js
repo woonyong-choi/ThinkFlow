@@ -1,4 +1,5 @@
 // 그림 검사. 배치가 끝난 장면에서 화면 오류를 찾아 원본 줄 번호와 함께 알린다(docs/design/figure-check.md).
+import { LABEL_ROOM, measureLabel } from './chart/draw.js';
 import { CHIP_GAP, placeChip, sampleRoute, sizeChip } from './chip.js';
 import { measure } from './measure/fonts.js';
 import { CARD, STYLE, groupTitleWidth, sizePill } from './measure/sizes.js';
@@ -21,20 +22,58 @@ export function checkFigure(figure, scene, timeline, problems) {
   const boxes = scene.items.map((it) => ({ ...drawnBox(it), id: it.id, line: it.line, it }));
   const edges = scene.edges.filter((e) => !e.isMark && e.points.length > 1);
   const pills = edges.filter((e) => e.label && e.labelAt).map((e) => ({ ...pillBox(e), edge: e }));
-  checkLabels(pills, boxes, problems);
-  checkThrough(edges, boxes, figure, problems);
+  const titles = scene.groups.filter((g) => g.label).map((g) => ({ ...titleBox(g), group: g }));
+  const family = createFamily(scene);
+  checkLabels({ pills, titles, boxes }, family, problems);
+  checkThrough(edges, boxes, scene.groups, family, problems);
   checkEnds(edges, scene, figure, problems);
   checkCrowding(edges, problems);
-  checkNodes(boxes, problems);
+  checkNodes(boxes, scene.groups, family, problems);
   checkChips(scene, timeline, problems);
   if (['flow', 'state', 'data'].includes(figure.kind)) checkAspect(figure, scene, problems);
   checkReadable(figure, scene, problems);
+}
+
+// cost: time O(r·n), heap O(r), stack O(1)
+// vars: r = 항목 수, n = 이름 글자 수
+// basis: estimate
+/** 차트 검사. 차트에는 선과 도형이 없어 1번(항목 이름이 이름 칸에 들어간다)만 해당한다. */
+export function checkChartFigure(figure, problems) {
+  if (!['bar', 'dumbbell', 'box', 'heatmap'].includes(figure.chartType)) return;
+  const reported = new Set();
+  for (const row of figure.chart.rows) {
+    const name = figure.chartType === 'heatmap' ? row.row : row.label;
+    if (reported.has(name) || measureLabel(name) <= LABEL_ROOM + FIT_SLACK) continue;
+    reported.add(name);
+    problems.error(row.line ?? figure.line, `[check 1] item name "${name}" is wider than the label column (${LABEL_ROOM}px). Shorten the name`);
+  }
 }
 
 // 사람과 원통은 배치 사각형 위아래 여백까지 그린다.
 function drawnBox(it) {
   const side = it.marginSide ?? 0;
   return { x: it.x - side, y: it.y - (it.marginTop ?? 0), w: it.w + side * 2, h: it.h + (it.marginTop ?? 0) + (it.marginBottom ?? 0) };
+}
+
+// 그룹 제목 글이 차지하는 사각형. 그리는 자리는 draw/figure.js drawGroup이다.
+function titleBox(g) {
+  return { x: g.x + INNER_X, y: g.y, w: measure(g.label, STYLE.group.size, STYLE.group.face), h: values.size['group-title'] };
+}
+
+// cost: time O(s + g), heap O(s + g), stack O(1)
+// vars: s = 도형 수, g = 그룹 수
+// basis: estimate
+// 도형과 그룹의 부모 관계. contains(a, b)는 그룹 a가 b(도형이나 그룹)를 품는지다.
+function createFamily(scene) {
+  const parents = new Map([...scene.items, ...scene.groups].map((it) => [it.id, it.parent]));
+  // cost: time O(d), heap O(1), stack O(1)
+  // vars: d = 그룹 깊이
+  // basis: estimate
+  const contains = (a, b) => {
+    for (let p = parents.get(b); p !== undefined && p !== 'root'; p = parents.get(p)) if (p === a) return true;
+    return false;
+  };
+  return { contains, isRelated: (a, b) => a === b || contains(a, b) || contains(b, a) };
 }
 
 function pillBox(e) {
@@ -109,11 +148,12 @@ function fits(size, room) {
   return size <= room + FIT_SLACK;
 }
 
-// cost: time O(l² + l·s), heap O(1), stack O(1)
-// vars: l = 라벨 수, s = 도형 수
+// cost: time O((l + t)² + (l + t)·s), heap O(1), stack O(1)
+// vars: l = 선 라벨 수, t = 그룹 제목 수, s = 도형 수
 // basis: estimate
-// 2번: 선 라벨끼리, 선 라벨과 도형이 겹치지 않는다.
-function checkLabels(pills, boxes, problems) {
+// 2번: 선 라벨, 그룹 제목, 도형(이름과 카드를 품은 사각형)끼리 겹치지 않는다. 그룹 제목과 그 그룹 안 도형은 서로 비켜 배치되므로 함께 본다.
+// 박자 상태는 멈춘 SVG 상태(모든 선, 가장 큰 카드 칸)의 부분이라 이 상태 하나만 본다.
+function checkLabels({ pills, titles, boxes }, family, problems) {
   pills.forEach((a, i) => {
     for (const b of pills.slice(i + 1)) {
       if (overlaps(a, b)) problems.error(a.edge.line, `[check 2] edge label "${a.edge.label}" overlaps edge label "${b.edge.label}" (line ${b.edge.line}). Shorten a label or change a group direction`);
@@ -121,22 +161,34 @@ function checkLabels(pills, boxes, problems) {
     for (const box of boxes) {
       if (overlaps(a, box)) problems.error(a.edge.line, `[check 2] edge label "${a.edge.label}" overlaps node "${box.id}" (line ${box.line}). Shorten the label`);
     }
+    for (const t of titles) {
+      if (overlaps(a, t)) problems.error(a.edge.line, `[check 2] edge label "${a.edge.label}" overlaps the title of group "${t.group.id}" (line ${t.group.line}). Shorten the label or change the direction of group "${t.group.id}"`);
+    }
+  });
+  titles.forEach((a, i) => {
+    for (const b of titles.slice(i + 1)) {
+      if (overlaps(a, b)) problems.error(a.group.line, `[check 2] internal: the titles of groups "${a.group.id}" and "${b.group.id}" overlap. Please report this`);
+    }
+    for (const box of boxes) {
+      if (overlaps(a, box)) problems.error(a.group.line, `[check 2] internal: the title of group "${a.group.id}" overlaps node "${box.id}". Please report this`);
+    }
   });
 }
 
-// cost: time O(e·s·p), heap O(1), stack O(1)
-// vars: e = 선 수, s = 도형 수, p = 경로 점 수
+// cost: time O(e·(s + g)·p·d), heap O(1), stack O(1)
+// vars: e = 선 수, s = 도형 수, g = 그룹 수, p = 경로 점 수, d = 그룹 깊이
 // basis: estimate
-// 3번: 선이 끝 도형이 아닌 도형 안을 지나지 않는다.
-function checkThrough(edges, boxes, figure, problems) {
+// 3번: 선이 끝 도형이 아닌 도형 안을 지나지 않는다. 그룹은 선 끝을 품은 그룹(선이 드나드는 그룹)만 빼고 본다.
+function checkThrough(edges, boxes, groups, family, problems) {
   for (const e of edges) {
-    const ends = new Set([e.from.split('.')[0], e.to.split('.')[0]]);
+    const ends = [e.from.split('.')[0], e.to.split('.')[0]];
+    const hits = (r) => e.points.slice(1).some((q, i) => segmentHits(e.points[i], q, { x: r.x + 1, y: r.y + 1, w: r.w - 2, h: r.h - 2 }));
     for (const box of boxes) {
-      if (ends.has(box.id)) continue;
-      const inner = { x: box.x + 1, y: box.y + 1, w: box.w - 2, h: box.h - 2 };
-      if (e.points.slice(1).some((q, i) => segmentHits(e.points[i], q, inner))) {
-        problems.error(e.line, `[check 3] edge ${e.from} -> ${e.to} passes through node "${box.id}" (line ${box.line}). Change a group direction or the declaration order`);
-      }
+      if (!ends.includes(box.id) && hits(box)) problems.error(e.line, `[check 3] edge ${e.from} -> ${e.to} passes through node "${box.id}" (line ${box.line}). Change a group direction or the declaration order`);
+    }
+    for (const g of groups) {
+      const isCrossed = ends.some((end) => end === g.id || family.contains(g.id, end));
+      if (!isCrossed && hits(g)) problems.error(e.line, `[check 3] edge ${e.from} -> ${e.to} passes through group "${g.id}" (line ${g.line}). Change a group direction or the declaration order`);
     }
   }
 }
@@ -150,17 +202,36 @@ function segmentHits(p, q, r) {
 // cost: time O(e), heap O(1), stack O(1)
 // vars: e = 선 수
 // basis: estimate
-// 4번: 선 끝이 끝 도형 경계 위에 있다. 순서 그림은 생명선 위다. 실패는 이 도구의 버그다.
+// 4번: 선 끝이 도형별 연결점 규칙 자리에 있다(docs/design/layout.md 연결점). 순서 그림은 메시지가 생명선에서 시작하고 끝나므로 보지 않는다. 실패는 이 도구의 버그다.
 function checkEnds(edges, scene, figure, problems) {
   if (figure.kind === 'sequence') return;
-  // 원통은 뚜껑 윤곽까지가 선이 닿는 면이라 그린 사각형으로 본다.
-  const rects = new Map([...scene.items.map((it) => (it.shape === 'store' ? { ...it, ...drawnBox(it) } : it)), ...scene.groups].map((it) => [it.id, it]));
+  const rects = new Map([...scene.items, ...scene.groups].map((it) => [it.id, it]));
   for (const e of edges) {
-    for (const [id, point] of [[e.from, e.points[0]], [e.to, e.points.at(-1)]]) {
-      const r = rects.get(id.split('.')[0]);
-      if (r && !onBorder(point, r)) problems.error(e.line, `[check 4] internal: edge ${e.from} -> ${e.to} does not touch "${r.id}". Please report this`);
+    for (const [end, point, way] of [[e.from, e.points[0], 'out'], [e.to, e.points.at(-1), 'in']]) {
+      const [id, column] = end.split('.');
+      const it = rects.get(id);
+      if (it && !isPortPlace(point, it, way, column)) problems.error(e.line, `[check 4] internal: edge ${e.from} -> ${e.to} does not touch "${id}" at its connection point. Please report this`);
     }
   }
+}
+
+// cost: time O(c), heap O(1), stack O(1)
+// vars: c = 테이블 열 수
+// basis: estimate
+// 도형별 연결점. 나가는 선은 오른쪽(세로 원통은 아래), 들어오는 선은 왼쪽(세로 원통은 위)이다. 그 밖의 도형과 그룹은 경계 어디나다.
+function isPortPlace(p, it, way, column) {
+  const near = (a, b) => Math.abs(a - b) <= 0.5;
+  const side = way === 'out' ? it.x + it.w : it.x;
+  if (it.shape === 'table' && column) return near(p.x, side) && near(p.y, it.y + it.rowH * (it.columns.findIndex((c) => c.name === column) + 1.5));
+  if (it.shape === 'decision') return near(p.x, side) && near(p.y, it.y + it.h / 2);
+  if (it.shape === 'person' && it.direction === 'down') return near(p.x, side) && onBorder(p, it);
+  // 원통은 뚜껑 윤곽까지가 선이 닿는 면이라 그린 사각형으로 본다.
+  if (it.shape === 'store') {
+    const drawn = drawnBox(it);
+    if (it.direction !== 'down') return onBorder(p, drawn);
+    return near(p.y, way === 'out' ? drawn.y + drawn.h : drawn.y) && onBorder(p, drawn);
+  }
+  return onBorder(p, it);
 }
 
 function onBorder(p, r) {
@@ -201,13 +272,17 @@ function crowded(a, b, c, d) {
   return overlap > CROWD && gap > 0.5 && gap < CROWD;
 }
 
-// cost: time O(s²), heap O(1), stack O(1)
-// vars: s = 도형 수
+// cost: time O((s + g)²·d), heap O(1), stack O(1)
+// vars: s = 도형 수, g = 그룹 수, d = 그룹 깊이
 // basis: estimate
-// 6번: 도형끼리 겹치지 않는다. 실패는 이 도구의 버그다.
-function checkNodes(boxes, problems) {
-  boxes.forEach((a, i) => {
-    for (const b of boxes.slice(i + 1)) if (overlaps(a, b)) problems.error(a.line, `[check 6] internal: node "${a.id}" overlaps node "${b.id}". Please report this`);
+// 6번: 도형과 그룹이 겹치지 않는다. 그룹과 그 안의 도형, 그룹과 그 안의 그룹은 뺀다. 실패는 이 도구의 버그다.
+function checkNodes(boxes, groups, family, problems) {
+  const all = [...boxes.map((b) => ({ ...b, kind: 'node' })), ...groups.map((g) => ({ ...g, kind: 'group' }))];
+  all.forEach((a, i) => {
+    for (const b of all.slice(i + 1)) {
+      if (family.isRelated(a.id, b.id) || !overlaps(a, b)) continue;
+      problems.error(a.line, `[check 6] internal: ${a.kind} "${a.id}" overlaps ${b.kind} "${b.id}". Please report this`);
+    }
   });
 }
 

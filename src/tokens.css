@@ -71,7 +71,7 @@
   --size-control: 30px;
   --size-pill: 18px;
   --size-tag: 14px;
-  --size-icon: 20px;
+  --size-icon: 12px;
   --size-packet: 4.5px;
   --size-halo: 10px;
   --size-marker: 5px;
@@ -82,7 +82,6 @@
   --size-node-min: 100px;
   --size-node-max: 210px;
   --size-node-min-h: 46px;
-  --size-store-min-h: 70px;
   --size-store-cap: 12px;
   --size-figure-min: 560px;
   --size-chip-max: 210px;
@@ -94,6 +93,7 @@
   --size-embedded-chrome: 150px;
   --size-chart-width: 640px;
   --size-chart-label: 140px;
+  --size-chart-label-max: 240px;
   --size-chart-bar: 12px;
   --size-chart-row: 40px;
   --size-chart-dot: 5px;
@@ -161,6 +161,8 @@
   --opacity-halo: 0.2;
   --opacity-tab-on: 0.06;
   --opacity-dim: 0.3;
+  --opacity-heat-min: 0.08;
+  --opacity-heat-text: 0.55;
   --z-raised: 2;
   --z-overlay: 10;
   --duration-fast: 200ms;
@@ -169,9 +171,10 @@
   --duration-dwell-per-char: 45ms;
   --duration-dwell-max: 3200ms;
   --duration-step-end: 1600ms;
-  --duration-stagger: 120ms;
   --duration-chart-cycle: 7000ms;
   --duration-reveal: 900ms;
+  --easing-move: cubic-bezier(0.455, 0.03, 0.515, 0.955);
+  --easing-reveal: cubic-bezier(0, 0, 0.58, 1);
   --scale-zoom-max: 6;
   --scale-zoom-step: 1.25;
 }

@@ -77,7 +77,7 @@
   --size-control: 30px;
   --size-pill: 18px;
   --size-tag: 14px;
-  --size-icon: 20px;
+  --size-icon: 12px;
   --size-packet: 4.5px;
   --size-halo: 10px;
   --size-marker: 5px;
@@ -88,7 +88,6 @@
   --size-node-min: 100px;
   --size-node-max: 210px;
   --size-node-min-h: 46px;
-  --size-store-min-h: 70px;
   --size-store-cap: 12px;
   --size-figure-min: 560px;
   --size-chip-max: 210px;
@@ -100,6 +99,7 @@
   --size-embedded-chrome: 150px;
   --size-chart-width: 640px;
   --size-chart-label: 140px;
+  --size-chart-label-max: 240px;
   --size-chart-bar: 12px;
   --size-chart-row: 40px;
   --size-chart-dot: 5px;
@@ -167,6 +167,8 @@
   --opacity-halo: 0.2;
   --opacity-tab-on: 0.06;
   --opacity-dim: 0.3;
+  --opacity-heat-min: 0.08;
+  --opacity-heat-text: 0.55;
   --z-raised: 2;
   --z-overlay: 10;
   --duration-fast: 200ms;
@@ -175,9 +177,10 @@
   --duration-dwell-per-char: 45ms;
   --duration-dwell-max: 3200ms;
   --duration-step-end: 1600ms;
-  --duration-stagger: 120ms;
   --duration-chart-cycle: 7000ms;
   --duration-reveal: 900ms;
+  --easing-move: cubic-bezier(0.455, 0.03, 0.515, 0.955);
+  --easing-reveal: cubic-bezier(0, 0, 0.58, 1);
   --scale-zoom-max: 6;
   --scale-zoom-step: 1.25;
 }
@@ -470,7 +473,7 @@
 @keyframes a35 { 0%,10.96% { opacity: 0 } 10.96%,21.552% { opacity: 0 } 21.552%,35.951% { opacity: 0 } 35.951%,47.876% { opacity: 0 } 47.876%,58.467% { opacity: 0 } 58.467%,72.867% { opacity: 0 } 72.867%,75.009% { opacity: 1 } 75.009%,85.6% { opacity: 1 } 85.6%,100% { opacity: 1 } }
 .fl .a35 { animation: a35 42s infinite step-end; }
 </style>
-<defs><pattern id="fl-dots" width="16" height="16" patternUnits="userSpaceOnUse"><circle cx="1.5" cy="1.5" r="1" fill="var(--color-dot)"/></pattern><marker id="fl-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-muted)"/></marker><marker id="fl-arrow-on" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-accent)"/></marker></defs>
+<defs><pattern id="fl-dots" width="16" height="16" patternUnits="userSpaceOnUse"><circle cx="1.5" cy="1.5" r="1" fill="var(--color-dot)"/></pattern><marker id="fl-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-muted)"/></marker><marker id="fl-arrow-on" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-accent)"/></marker><marker id="fl-arrow-second" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-series-2)"/></marker></defs>
 <rect width="100%" height="100%" fill="var(--color-bg)"/><rect width="100%" height="100%" fill="url(#fl-dots)"/>
 <g transform="translate(0 0)">
 <g id="g-0" class="fl-group" data-id="memory"><rect x="240" y="28" width="224" height="665" rx="14" class="frame-box fl-stroke a0"/><text x="258" y="46" class="frame">기억 엔진</text></g>
@@ -484,14 +487,14 @@
 <g id="e-2" class="fl-edge"><path id="p-2" d="M 352 425 L 352 485" class="fl-path a24" marker-end="url(#fl-arrow)"/></g>
 <g id="e-3" class="fl-edge"><path id="p-3" d="M 352 609 L 352 647 Q 352 669, 374 669 L 524 669" class="fl-path a25" marker-end="url(#fl-arrow)"/></g>
 <g id="e-4" class="fl-edge quiet a27"><path id="p-4" d="M 84 75.33333333333333 L 92 75.3 Q 100 75.3, 100 83.3 L 100 687 Q 100 709, 122 709 L 524 709" class="fl-path a26" marker-end="url(#fl-arrow)"/><g class="fl-pill"><rect x="144" y="699.5" width="36" height="18" rx="9" class="pill a28"/><text x="162" y="712.5" class="edgelabel a29">질문</text></g></g>
-<g class="p0-0" opacity="0"><circle r="10" fill="var(--color-accent)" opacity="0.2"/><circle r="4.5" fill="var(--color-accent)"/><g><rect x="-71.5" y="-35" width="143.1" height="23" rx="8" fill="var(--color-accent)"/><text x="0" y="-20" class="chip">민지는 3월에 토스로 옮겼어</text></g><animateMotion dur="42s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0;0.0893;1" keyPoints="0;0;1;1"><mpath href="#p-0" xlink:href="#p-0"/></animateMotion></g>
-<g class="p1-0" opacity="0"><circle r="10" fill="var(--color-accent)" opacity="0.2"/><circle r="4.5" fill="var(--color-accent)"/><animateMotion dur="42s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.1096;0.1989;1" keyPoints="0;0;1;1"><mpath href="#p-1" xlink:href="#p-1"/></animateMotion></g>
-<g class="p2-0" opacity="0"><circle r="10" fill="var(--color-accent)" opacity="0.2"/><circle r="4.5" fill="var(--color-accent)"/><animateMotion dur="42s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.2155;0.3048;1" keyPoints="0;0;1;1"><mpath href="#p-2" xlink:href="#p-2"/></animateMotion></g>
-<g class="p3-0" opacity="0"><circle r="10" fill="var(--color-accent)" opacity="0.2"/><circle r="4.5" fill="var(--color-accent)"/><g><rect x="-66.6" y="-35" width="133.1" height="23" rx="8" fill="var(--color-accent)"/><text x="0" y="-20" class="chip">김민지가 결제팀을 맡았대</text></g><animateMotion dur="42s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.3595;0.4488;1" keyPoints="0;0;1;1"><mpath href="#p-0" xlink:href="#p-0"/></animateMotion></g>
-<g class="p4-0" opacity="0"><circle r="10" fill="var(--color-accent)" opacity="0.2"/><circle r="4.5" fill="var(--color-accent)"/><animateMotion dur="42s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.4788;0.568;1" keyPoints="0;0;1;1"><mpath href="#p-1" xlink:href="#p-1"/></animateMotion></g>
-<g class="p5-0" opacity="0"><circle r="10" fill="var(--color-accent)" opacity="0.2"/><circle r="4.5" fill="var(--color-accent)"/><animateMotion dur="42s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.5847;0.6739;1" keyPoints="0;0;1;1"><mpath href="#p-2" xlink:href="#p-2"/></animateMotion></g>
-<g class="p7-0" opacity="0"><circle r="10" fill="var(--color-accent)" opacity="0.2"/><circle r="4.5" fill="var(--color-accent)"/><g><rect x="-60.8" y="-35" width="121.6" height="23" rx="8" fill="var(--color-accent)"/><text x="0" y="-20" class="chip">민지 지금 어디 팀이야?</text></g><animateMotion dur="42s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.7501;0.8393;1" keyPoints="0;0;1;1"><mpath href="#p-4" xlink:href="#p-4"/></animateMotion></g>
-<g class="p8-0" opacity="0"><circle r="10" fill="var(--color-accent)" opacity="0.2"/><circle r="4.5" fill="var(--color-accent)"/><g><rect x="-42" y="-35" width="84" height="23" rx="8" fill="var(--color-accent)"/><text x="0" y="-20" class="chip">민지 → 결제팀</text></g><animateMotion dur="42s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.856;0.9453;1" keyPoints="0;0;1;1"><mpath href="#p-3" xlink:href="#p-3"/></animateMotion></g>
+<g class="p0-0" opacity="0"><circle r="10" fill="var(--color-accent)" opacity="0.2"/><circle r="4.5" fill="var(--color-accent)"/><g><rect x="-71.5" y="-35" width="143.1" height="23" rx="8" fill="var(--color-accent)"/><text x="0" y="-20" class="chip">민지는 3월에 토스로 옮겼어</text></g><animateMotion dur="42s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0;0.0893;1" keySplines="0 0 1 1;0.455 0.03 0.515 0.955;0 0 1 1" keyPoints="0;0;1;1"><mpath href="#p-0" xlink:href="#p-0"/></animateMotion></g>
+<g class="p1-0" opacity="0"><circle r="10" fill="var(--color-accent)" opacity="0.2"/><circle r="4.5" fill="var(--color-accent)"/><animateMotion dur="42s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.1096;0.1989;1" keySplines="0 0 1 1;0.455 0.03 0.515 0.955;0 0 1 1" keyPoints="0;0;1;1"><mpath href="#p-1" xlink:href="#p-1"/></animateMotion></g>
+<g class="p2-0" opacity="0"><circle r="10" fill="var(--color-accent)" opacity="0.2"/><circle r="4.5" fill="var(--color-accent)"/><animateMotion dur="42s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.2155;0.3048;1" keySplines="0 0 1 1;0.455 0.03 0.515 0.955;0 0 1 1" keyPoints="0;0;1;1"><mpath href="#p-2" xlink:href="#p-2"/></animateMotion></g>
+<g class="p3-0" opacity="0"><circle r="10" fill="var(--color-accent)" opacity="0.2"/><circle r="4.5" fill="var(--color-accent)"/><g><rect x="-66.6" y="-35" width="133.1" height="23" rx="8" fill="var(--color-accent)"/><text x="0" y="-20" class="chip">김민지가 결제팀을 맡았대</text></g><animateMotion dur="42s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.3595;0.4488;1" keySplines="0 0 1 1;0.455 0.03 0.515 0.955;0 0 1 1" keyPoints="0;0;1;1"><mpath href="#p-0" xlink:href="#p-0"/></animateMotion></g>
+<g class="p4-0" opacity="0"><circle r="10" fill="var(--color-accent)" opacity="0.2"/><circle r="4.5" fill="var(--color-accent)"/><animateMotion dur="42s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.4788;0.568;1" keySplines="0 0 1 1;0.455 0.03 0.515 0.955;0 0 1 1" keyPoints="0;0;1;1"><mpath href="#p-1" xlink:href="#p-1"/></animateMotion></g>
+<g class="p5-0" opacity="0"><circle r="10" fill="var(--color-accent)" opacity="0.2"/><circle r="4.5" fill="var(--color-accent)"/><animateMotion dur="42s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5847;0.6739;1" keySplines="0 0 1 1;0.455 0.03 0.515 0.955;0 0 1 1" keyPoints="0;0;1;1"><mpath href="#p-2" xlink:href="#p-2"/></animateMotion></g>
+<g class="p7-0" opacity="0"><circle r="10" fill="var(--color-accent)" opacity="0.2"/><circle r="4.5" fill="var(--color-accent)"/><g><rect x="-60.8" y="-35" width="121.6" height="23" rx="8" fill="var(--color-accent)"/><text x="0" y="-20" class="chip">민지 지금 어디 팀이야?</text></g><animateMotion dur="42s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.7501;0.8393;1" keySplines="0 0 1 1;0.455 0.03 0.515 0.955;0 0 1 1" keyPoints="0;0;1;1"><mpath href="#p-4" xlink:href="#p-4"/></animateMotion></g>
+<g class="p8-0" opacity="0"><circle r="10" fill="var(--color-accent)" opacity="0.2"/><circle r="4.5" fill="var(--color-accent)"/><g><rect x="-42" y="-35" width="84" height="23" rx="8" fill="var(--color-accent)"/><text x="0" y="-20" class="chip">민지 → 결제팀</text></g><animateMotion dur="42s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.856;0.9453;1" keySplines="0 0 1 1;0.455 0.03 0.515 0.955;0 0 1 1" keyPoints="0;0;1;1"><mpath href="#p-3" xlink:href="#p-3"/></animateMotion></g>
 </g>
 <text x="364" y="787.7" opacity="0" class="steplabel a30">첫 대화</text>
 <text x="364" y="787.7" opacity="0" class="steplabel a31">다음 대화</text>

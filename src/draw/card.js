@@ -10,9 +10,16 @@ const RADIUS = values.radius;
 // tone 없는 태그에 돌아가며 붙이는 색. gray는 tone으로 고를 때만 쓴다.
 const TONE_ORDER = ['blue', 'purple', 'green', 'orange'];
 
-/** 그림 하나에서 태그 색을 고정하는 그릇. tone 없는 태그는 처음 나온 순서대로 색을 받는다. */
-export function createTones() {
+// cost: time O(t), heap O(t), stack O(1)
+// vars: t = 태그 종류 수
+// basis: estimate
+/**
+ * 그림 하나에서 태그 색을 고정하는 그릇. tone 없는 태그는 원본에 처음 나온 순서대로 색을 받는다.
+ * @param tagOrder 원본 시간 흐름에 처음 나온 순서의 tone 없는 태그 목록
+ */
+export function createTones(tagOrder = []) {
   const tones = new Map();
+  for (const tag of tagOrder) if (!tones.has(tag)) tones.set(tag, TONE_ORDER[tones.size % TONE_ORDER.length]);
   return (row) => {
     if (row.tone) return tokens.color.tag[row.tone];
     if (!tones.has(row.tag)) tones.set(row.tag, TONE_ORDER[tones.size % TONE_ORDER.length]);

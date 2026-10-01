@@ -257,7 +257,7 @@ function readElk(laid, model, figure) {
       const y = oy + node.y + child.y;
       if (model.containers.has(child.id)) {
         const c = model.containers.get(child.id);
-        groups.push({ id: child.id, label: c.label, line: c.line, x, y, w: child.width, h: child.height });
+        groups.push({ id: child.id, label: c.label, line: c.line, parent: c.parent, x, y, w: child.width, h: child.height });
         offsets.set(child.id, { x, y });
       } else {
         const n = model.nodes.get(child.id);

@@ -111,7 +111,6 @@ export const tokens = freeze({
     "node-min": "var(--size-node-min)",
     "node-max": "var(--size-node-max)",
     "node-min-h": "var(--size-node-min-h)",
-    "store-min-h": "var(--size-store-min-h)",
     "store-cap": "var(--size-store-cap)",
     "figure-min": "var(--size-figure-min)",
     "chip-max": "var(--size-chip-max)",
@@ -123,6 +122,7 @@ export const tokens = freeze({
     "embedded-chrome": "var(--size-embedded-chrome)",
     "chart-width": "var(--size-chart-width)",
     "chart-label": "var(--size-chart-label)",
+    "chart-label-max": "var(--size-chart-label-max)",
     "chart-bar": "var(--size-chart-bar)",
     "chart-row": "var(--size-chart-row)",
     "chart-dot": "var(--size-chart-dot)",
@@ -205,7 +205,9 @@ export const tokens = freeze({
     "tag": "var(--opacity-tag)",
     "halo": "var(--opacity-halo)",
     "tab-on": "var(--opacity-tab-on)",
-    "dim": "var(--opacity-dim)"
+    "dim": "var(--opacity-dim)",
+    "heat-min": "var(--opacity-heat-min)",
+    "heat-text": "var(--opacity-heat-text)"
   },
   "z": {
     "raised": "var(--z-raised)",
@@ -218,9 +220,12 @@ export const tokens = freeze({
     "dwell-per-char": "var(--duration-dwell-per-char)",
     "dwell-max": "var(--duration-dwell-max)",
     "step-end": "var(--duration-step-end)",
-    "stagger": "var(--duration-stagger)",
     "chart-cycle": "var(--duration-chart-cycle)",
     "reveal": "var(--duration-reveal)"
+  },
+  "easing": {
+    "move": "var(--easing-move)",
+    "reveal": "var(--easing-reveal)"
   },
   "scale": {
     "zoom-max": "var(--scale-zoom-max)",
@@ -324,7 +329,7 @@ export const values = freeze({
     "control": 30,
     "pill": 18,
     "tag": 14,
-    "icon": 20,
+    "icon": 12,
     "packet": 4.5,
     "halo": 10,
     "marker": 5,
@@ -335,7 +340,6 @@ export const values = freeze({
     "node-min": 100,
     "node-max": 210,
     "node-min-h": 46,
-    "store-min-h": 70,
     "store-cap": 12,
     "figure-min": 560,
     "chip-max": 210,
@@ -347,6 +351,7 @@ export const values = freeze({
     "embedded-chrome": 150,
     "chart-width": 640,
     "chart-label": 140,
+    "chart-label-max": 240,
     "chart-bar": 12,
     "chart-row": 40,
     "chart-dot": 5,
@@ -429,7 +434,9 @@ export const values = freeze({
     "tag": 0.15,
     "halo": 0.2,
     "tab-on": 0.06,
-    "dim": 0.3
+    "dim": 0.3,
+    "heat-min": 0.08,
+    "heat-text": 0.55
   },
   "z": {
     "raised": 2,
@@ -442,9 +449,12 @@ export const values = freeze({
     "dwell-per-char": 45,
     "dwell-max": 3200,
     "step-end": 1600,
-    "stagger": 120,
     "chart-cycle": 7000,
     "reveal": 900
+  },
+  "easing": {
+    "move": "cubic-bezier(0.455, 0.03, 0.515, 0.955)",
+    "reveal": "cubic-bezier(0, 0, 0.58, 1)"
   },
   "scale": {
     "zoom-max": 6,

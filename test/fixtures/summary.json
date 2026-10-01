@@ -1,1 +1,7 @@
-{ "rows": [{ "label": "A", "new_judge": 3.1, "new_judge.low": 2.2, "new_judge.high": 4.3 }] }
+{
+  "rows": [{ "label": "A", "new_judge": 3.1, "new_judge.low": 2.2, "new_judge.high": 4.3 }],
+  "misclassification": [
+    { "label": "짧은 입력", "new_judge": 3.1, "new_judge.low": 2.2, "new_judge.high": 4.3 },
+    { "label": "긴 입력", "new_judge": 6.4, "new_judge.low": 5.1, "new_judge.high": 7.9 }
+  ]
+}

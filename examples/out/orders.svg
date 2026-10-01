@@ -77,7 +77,7 @@
   --size-control: 30px;
   --size-pill: 18px;
   --size-tag: 14px;
-  --size-icon: 20px;
+  --size-icon: 12px;
   --size-packet: 4.5px;
   --size-halo: 10px;
   --size-marker: 5px;
@@ -88,7 +88,6 @@
   --size-node-min: 100px;
   --size-node-max: 210px;
   --size-node-min-h: 46px;
-  --size-store-min-h: 70px;
   --size-store-cap: 12px;
   --size-figure-min: 560px;
   --size-chip-max: 210px;
@@ -100,6 +99,7 @@
   --size-embedded-chrome: 150px;
   --size-chart-width: 640px;
   --size-chart-label: 140px;
+  --size-chart-label-max: 240px;
   --size-chart-bar: 12px;
   --size-chart-row: 40px;
   --size-chart-dot: 5px;
@@ -167,6 +167,8 @@
   --opacity-halo: 0.2;
   --opacity-tab-on: 0.06;
   --opacity-dim: 0.3;
+  --opacity-heat-min: 0.08;
+  --opacity-heat-text: 0.55;
   --z-raised: 2;
   --z-overlay: 10;
   --duration-fast: 200ms;
@@ -175,9 +177,10 @@
   --duration-dwell-per-char: 45ms;
   --duration-dwell-max: 3200ms;
   --duration-step-end: 1600ms;
-  --duration-stagger: 120ms;
   --duration-chart-cycle: 7000ms;
   --duration-reveal: 900ms;
+  --easing-move: cubic-bezier(0.455, 0.03, 0.515, 0.955);
+  --easing-reveal: cubic-bezier(0, 0, 0.58, 1);
   --scale-zoom-max: 6;
   --scale-zoom-step: 1.25;
 }
@@ -381,28 +384,28 @@
   fill: var(--color-muted);
 }
 
-@keyframes a0 { 0%,14.061% { stroke: var(--color-border) } 14.063%,99.999% { stroke: var(--color-accent) } }
-.fl .a0 { animation: a0 7s infinite step-end; }
-@keyframes a1 { 0%,14.061% { fill: var(--color-card-on) } 14.063%,99.999% { fill: var(--color-card-on) } }
-.fl .a1 { animation: a1 7s infinite step-end; }
-@keyframes a2 { 0%,14.061% { fill: transparent } 14.063%,99.999% { fill: transparent } }
-.fl .a2 { animation: a2 7s infinite step-end; }
-@keyframes a3 { 0%,14.061% { stroke: var(--color-muted); stroke-width: var(--border-edge); marker-end: url(#fl-arrow) } 14.063%,99.999% { stroke: var(--color-accent); stroke-width: var(--border-strong); marker-end: url(#fl-arrow-on) } }
-.fl .a3 { animation: a3 7s infinite step-end; }
-@keyframes p1-0 { 0%,14.063% { opacity: 0 } 14.064%,67.328% { opacity: 1 } 67.33%,100% { opacity: 0 } }
-.fl .p1-0 { animation: p1-0 7s infinite step-end; }
-@keyframes a4 { 0%,14.061% { opacity: 1 } 14.063%,99.999% { opacity: 1 } }
-.fl .a4 { animation: a4 7s infinite step-end; }
-@keyframes a5 { 0%,14.061% { opacity: 1 } 14.063%,99.999% { opacity: 1 } }
-.fl .a5 { animation: a5 7s infinite step-end; }
+@keyframes a0 { 0%,43.929% { stroke: var(--color-border) } 43.93%,99.999% { stroke: var(--color-accent) } }
+.fl .a0 { animation: a0 10.8s infinite step-end; }
+@keyframes a1 { 0%,43.929% { fill: var(--color-card-on) } 43.93%,99.999% { fill: var(--color-card-on) } }
+.fl .a1 { animation: a1 10.8s infinite step-end; }
+@keyframes a2 { 0%,43.929% { fill: transparent } 43.93%,99.999% { fill: transparent } }
+.fl .a2 { animation: a2 10.8s infinite step-end; }
+@keyframes a3 { 0%,43.929% { stroke: var(--color-muted); stroke-width: var(--border-edge); marker-end: url(#fl-arrow) } 43.93%,99.999% { stroke: var(--color-accent); stroke-width: var(--border-strong); marker-end: url(#fl-arrow-on) } }
+.fl .a3 { animation: a3 10.8s infinite step-end; }
+@keyframes p1-0 { 0%,43.93% { opacity: 0 } 43.93%,78.683% { opacity: 1 } 78.684%,100% { opacity: 0 } }
+.fl .p1-0 { animation: p1-0 10.8s infinite step-end; }
+@keyframes a4 { 0%,43.929% { opacity: 1 } 43.93%,99.999% { opacity: 1 } }
+.fl .a4 { animation: a4 10.8s infinite step-end; }
+@keyframes a5 { 0%,43.929% { opacity: 1 } 43.93%,99.999% { opacity: 1 } }
+.fl .a5 { animation: a5 10.8s infinite step-end; }
 </style>
-<defs><pattern id="fl-dots" width="16" height="16" patternUnits="userSpaceOnUse"><circle cx="1.5" cy="1.5" r="1" fill="var(--color-dot)"/></pattern><marker id="fl-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-muted)"/></marker><marker id="fl-arrow-on" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-accent)"/></marker></defs>
+<defs><pattern id="fl-dots" width="16" height="16" patternUnits="userSpaceOnUse"><circle cx="1.5" cy="1.5" r="1" fill="var(--color-dot)"/></pattern><marker id="fl-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-muted)"/></marker><marker id="fl-arrow-on" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-accent)"/></marker><marker id="fl-arrow-second" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-series-2)"/></marker></defs>
 <rect width="100%" height="100%" fill="var(--color-bg)"/><rect width="100%" height="100%" fill="url(#fl-dots)"/>
 <g transform="translate(62.6 0)">
 <g id="n-0" class="fl-node" data-id="orders"><rect x="281" y="54" width="125.8" height="104" rx="10" fill="var(--color-bg)" class="fl-stroke a0"/><text x="343.9" y="72" class="label">orders</text><g class="fl-col" data-col="orders.id"><rect x="282" y="80" width="123.8" height="26" class="col-bg a1"/><line x1="281" x2="406.8" y1="80" y2="80" class="col-line"/><text x="299" y="97.1" class="cell">id<tspan class="key" dx="6">PK</tspan></text><text x="388.8" y="97.1" class="cell type">bigint</text></g><g class="fl-col" data-col="orders.user_id"><rect x="282" y="106" width="123.8" height="26" class="col-bg a2"/><line x1="281" x2="406.8" y1="106" y2="106" class="col-line"/><text x="299" y="123.1" class="cell">user_id</text><text x="388.8" y="123.1" class="cell type">bigint</text></g><g class="fl-col" data-col="orders.status"><rect x="282" y="132" width="123.8" height="26" class="col-bg a2"/><line x1="281" x2="406.8" y1="132" y2="132" class="col-line"/><text x="299" y="149.1" class="cell">status</text><text x="388.8" y="149.1" class="cell type">varchar</text></g></g>
 <g id="n-1" class="fl-node" data-id="payments"><rect x="28" y="28" width="193" height="104" rx="10" fill="var(--color-bg)" class="fl-stroke a0"/><text x="124.5" y="46" class="label">payments</text><g class="fl-col" data-col="payments.id"><rect x="29" y="54" width="191" height="26" class="col-bg a2"/><line x1="28" x2="221" y1="54" y2="54" class="col-line"/><text x="46" y="71.1" class="cell">id<tspan class="key" dx="6">PK</tspan></text><text x="203" y="71.1" class="cell type">bigint</text></g><g class="fl-col" data-col="payments.order_id"><rect x="29" y="80" width="191" height="26" class="col-bg a1"/><line x1="28" x2="221" y1="80" y2="80" class="col-line"/><text x="46" y="97.1" class="cell">order_id<tspan class="key" dx="6">FK</tspan></text><text x="203" y="97.1" class="cell type">bigint</text></g><g class="fl-col" data-col="payments.amount"><rect x="29" y="106" width="191" height="26" class="col-bg a2"/><line x1="28" x2="221" y1="106" y2="106" class="col-line"/><text x="46" y="123.1" class="cell">amount</text><text x="203" y="123.1" class="cell type">numeric(10, 2)</text></g></g>
 <g id="e-0" class="fl-edge"><path id="p-0" d="M 221.045166015625 93 L 281 93" class="fl-path a3" marker-end="url(#fl-arrow)"/></g>
-<g class="p1-0" opacity="0"><circle r="10" fill="var(--color-accent)" opacity="0.2"/><circle r="4.5" fill="var(--color-accent)"/><g><rect x="-44.4" y="-35" width="88.8" height="23" rx="8" fill="var(--color-accent)"/><text x="0" y="-20" class="chip">order_id 1042</text></g><animateMotion dur="7s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.1406;0.6733;1" keyPoints="0;0;1;1"><mpath href="#p-0" xlink:href="#p-0"/></animateMotion></g>
+<g class="p1-0" opacity="0"><circle r="10" fill="var(--color-accent)" opacity="0.2"/><circle r="4.5" fill="var(--color-accent)"/><g><rect x="-44.4" y="-35" width="88.8" height="23" rx="8" fill="var(--color-accent)"/><text x="0" y="-20" class="chip">order_id 1042</text></g><animateMotion dur="10.8s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.4393;0.7868;1" keySplines="0 0 1 1;0.455 0.03 0.515 0.955;0 0 1 1" keyPoints="0;0;1;1"><mpath href="#p-0" xlink:href="#p-0"/></animateMotion></g>
 </g>
 <text x="280" y="204" opacity="0" class="steplabel a4">결제</text>
 <g opacity="0" class="a5"><text x="280" y="230" class="caption">결제 행은 주문 행을 외래 키로 가리킨다</text></g>

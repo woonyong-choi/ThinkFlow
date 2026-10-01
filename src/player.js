@@ -79,8 +79,8 @@ function figurePlay(root, data) {
   function setPlaying(value) {
     isPlaying = value;
     pauseButton.innerHTML = isPlaying
-      ? `<svg width="12" height="12" viewBox="0 0 16 16"><path d="M5 2.5v11M11 2.5v11" stroke="currentColor" stroke-width="${metrics.pauseStroke}" stroke-linecap="round"/></svg>`
-      : '<svg width="12" height="12" viewBox="0 0 16 16"><path d="M4 2.5v11l9.5-5.5z" fill="currentColor"/></svg>';
+      ? `<svg width="${metrics.icon}" height="${metrics.icon}" viewBox="0 0 16 16"><path d="M5 2.5v11M11 2.5v11" stroke="currentColor" stroke-width="${metrics.pauseStroke}" stroke-linecap="round"/></svg>`
+      : '<svg width="${metrics.icon}" height="${metrics.icon}" viewBox="0 0 16 16"><path d="M4 2.5v11l9.5-5.5z" fill="currentColor"/></svg>';
     pauseButton.setAttribute('aria-label', isPlaying ? '일시정지' : '재생');
   }
 
@@ -174,7 +174,7 @@ function figurePlay(root, data) {
       remove: () => g.remove(),
       move(t) {
         const p = Math.min(1, t / hop.ms);
-        const eased = p < 0.5 ? 2 * p * p : 1 - (-2 * p + 2) ** 2 / 2;
+        const eased = progressAt(metrics.move, p);
         const point = path.getPointAtLength(length * (hop.isBack ? 1 - eased : eased));
         g.setAttribute('transform', `translate(${point.x} ${point.y})`);
         if (chip) placeChip(chip, point);
@@ -209,6 +209,21 @@ function figurePlay(root, data) {
     rect.setAttribute('height', h);
     texts.forEach((t, li) => t.setAttribute('y', top + metrics.chipLine * (li + 1)));
     return { g: chip, w, h };
+  }
+
+  // cost: time O(STEPS), heap O(1), stack O(1)
+  // vars: STEPS = 이분 탐색 횟수(30)
+  // basis: estimate
+  // 시간 비율 p에서 이동 곡선의 진행 비율. easing.js의 timeAt과 같은 곡선을 반대 방향으로 푼다.
+  function progressAt([x1, y1, x2, y2], p) {
+    const axis = (a, b, t) => 3 * a * t * (1 - t) ** 2 + 3 * b * t * t * (1 - t) + t ** 3;
+    let [low, high] = [0, 1];
+    for (let i = 0; i < 30; i++) {
+      const mid = (low + high) / 2;
+      if (axis(x1, x2, mid) < p) low = mid;
+      else high = mid;
+    }
+    return axis(y1, y2, (low + high) / 2);
   }
 
   // 글 상자가 그림 밖으로 나가면 옆으로 밀어 넣고, 위가 모자라면 점 아래로 내린다.

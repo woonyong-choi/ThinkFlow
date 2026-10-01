@@ -76,7 +76,7 @@
   --size-control: 30px;
   --size-pill: 18px;
   --size-tag: 14px;
-  --size-icon: 20px;
+  --size-icon: 12px;
   --size-packet: 4.5px;
   --size-halo: 10px;
   --size-marker: 5px;
@@ -87,7 +87,6 @@
   --size-node-min: 100px;
   --size-node-max: 210px;
   --size-node-min-h: 46px;
-  --size-store-min-h: 70px;
   --size-store-cap: 12px;
   --size-figure-min: 560px;
   --size-chip-max: 210px;
@@ -99,6 +98,7 @@
   --size-embedded-chrome: 150px;
   --size-chart-width: 640px;
   --size-chart-label: 140px;
+  --size-chart-label-max: 240px;
   --size-chart-bar: 12px;
   --size-chart-row: 40px;
   --size-chart-dot: 5px;
@@ -166,6 +166,8 @@
   --opacity-halo: 0.2;
   --opacity-tab-on: 0.06;
   --opacity-dim: 0.3;
+  --opacity-heat-min: 0.08;
+  --opacity-heat-text: 0.55;
   --z-raised: 2;
   --z-overlay: 10;
   --duration-fast: 200ms;
@@ -174,9 +176,10 @@
   --duration-dwell-per-char: 45ms;
   --duration-dwell-max: 3200ms;
   --duration-step-end: 1600ms;
-  --duration-stagger: 120ms;
   --duration-chart-cycle: 7000ms;
   --duration-reveal: 900ms;
+  --easing-move: cubic-bezier(0.455, 0.03, 0.515, 0.955);
+  --easing-reveal: cubic-bezier(0, 0, 0.58, 1);
   --scale-zoom-max: 6;
   --scale-zoom-step: 1.25;
 }
@@ -426,6 +429,15 @@
   fill: var(--color-accent);
 }
 
+.fl .chart-value.first {
+  fill: var(--color-series-1);
+}
+
+.fl .chart-value.second {
+  font-weight: var(--weight-semibold);
+  fill: var(--color-series-2);
+}
+
 .fl .chart-missing {
   font-size: var(--size-text-11);
   font-style: italic;
@@ -499,13 +511,13 @@
 
 .fl .chart-before {
   fill: var(--color-bg);
-  stroke: var(--color-muted);
+  stroke: var(--color-series-1);
   stroke-width: var(--border-tag);
 }
 
 .fl .chart-arrow,
 .fl .chart-link {
-  stroke: var(--color-accent);
+  stroke: var(--color-series-2);
   stroke-width: var(--border-strong);
   stroke-dasharray: 1;
 }
@@ -534,125 +546,36 @@
   transition: opacity var(--duration-fast);
 }
 
-/* 재생기: 드러내는 박자에 play가 붙으면 한 번 자란다. */
-.fl .play .grow,
-.fl .play.grow {
-  animation: chart-grow var(--duration-reveal) ease-out both;
-}
-
-.fl .play .draw,
-.fl .play.draw {
-  animation: chart-draw var(--duration-reveal) ease-out both;
-}
-
-.fl .play .pop,
-.fl .play.pop,
-.fl .play .late,
-.fl .play.late {
-  animation: chart-fade var(--duration-reveal) ease-out both;
-}
-
-/* 시간 흐름이 없는 차트 SVG: 한 바퀴의 앞 13%에 자라고 나머지는 머문다. README 이미지에서도 보이게 되풀이한다. */
-.fl.chart-loop .grow {
-  animation: chart-grow-loop var(--duration-chart-cycle) ease-out infinite both;
-}
-
-.fl.chart-loop .draw {
-  animation: chart-draw-loop var(--duration-chart-cycle) ease-out infinite both;
-}
-
-.fl.chart-loop .pop,
-.fl.chart-loop .late {
-  animation: chart-fade-loop var(--duration-chart-cycle) ease-out infinite both;
-}
-
-@keyframes chart-grow {
-  from {
-    transform: scaleX(0);
-  }
-}
-
-@keyframes chart-draw {
-  from {
-    stroke-dashoffset: 1;
-  }
-}
-
-@keyframes chart-fade {
-  0%,
-  50% {
-    opacity: 0;
-  }
-}
-
-@keyframes chart-grow-loop {
-  0% {
-    transform: scaleX(0);
-  }
-
-  13%,
-  100% {
-    transform: none;
-  }
-}
-
-@keyframes chart-draw-loop {
-  0% {
-    stroke-dashoffset: 1;
-  }
-
-  13%,
-  100% {
-    stroke-dashoffset: 0;
-  }
-}
-
-@keyframes chart-fade-loop {
-  0%,
-  9% {
-    opacity: 0;
-  }
-
-  16%,
-  100% {
-    opacity: 1;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .fl .play .grow,
-  .fl .play.grow,
-  .fl .play .draw,
-  .fl .play.draw,
-  .fl .play .pop,
-  .fl .play.pop,
-  .fl .play .late,
-  .fl .play.late,
-  .fl.chart-loop .grow,
-  .fl.chart-loop .draw,
-  .fl.chart-loop .pop,
-  .fl.chart-loop .late {
-    animation: none;
-  }
-}
+.fl .play .grow, .fl .play.grow { animation: chart-grow 900ms var(--easing-reveal) both; }
+.fl .play .draw, .fl .play.draw { animation: chart-draw 900ms var(--easing-reveal) both; }
+.fl .play .pop, .fl .play.pop, .fl .play .late, .fl .play.late { animation: chart-fade 900ms var(--easing-reveal) both; }
+.fl.chart-loop .grow { animation: chart-grow-loop 7000ms infinite both; }
+.fl.chart-loop .draw { animation: chart-draw-loop 7000ms infinite both; }
+.fl.chart-loop .pop, .fl.chart-loop .late { animation: chart-fade-loop 7000ms infinite both; }
+@keyframes chart-grow { from { transform: scaleX(0); } }
+@keyframes chart-draw { from { stroke-dashoffset: 1; } }
+@keyframes chart-fade { 0%, 50% { opacity: 0; } }
+@keyframes chart-grow-loop { 0% { transform: scaleX(0); animation-timing-function: var(--easing-reveal); } 12.86%, 100% { transform: none; } }
+@keyframes chart-draw-loop { 0% { stroke-dashoffset: 1; animation-timing-function: var(--easing-reveal); } 12.86%, 100% { stroke-dashoffset: 0; } }
+@keyframes chart-fade-loop { 0%, 6.43% { opacity: 0; animation-timing-function: var(--easing-reveal); } 12.86%, 100% { opacity: 1; } }
 
 @keyframes a0 { 0%,39.456% { opacity: 1 } 39.457%,62.761% { opacity: 1 } 62.762%,71.639% { opacity: 1 } 71.64%,99.999% { opacity: 1 } }
 .fl .a0 { animation: a0 8.1s infinite step-end; }
 .fl .cs-0 { animation: a0 8.1s infinite step-end; }
-@keyframes g0 { 0%,0% { transform: scaleX(0) } 11.097%,100% { transform: none } }
+@keyframes g0 { 0%,0% { transform: scaleX(0); animation-timing-function: var(--easing-reveal) } 11.097%,100% { transform: none } }
 .fl .cs-0 .grow, .fl .cs-0.grow { animation: g0 8.1s infinite; }
-@keyframes d0 { 0%,0% { stroke-dashoffset: 1 } 11.097%,100% { stroke-dashoffset: 0 } }
+@keyframes d0 { 0%,0% { stroke-dashoffset: 1; animation-timing-function: var(--easing-reveal) } 11.097%,100% { stroke-dashoffset: 0 } }
 .fl .cs-0 .draw, .fl .cs-0.draw { animation: d0 8.1s infinite; }
-@keyframes f0 { 0%,0% { opacity: 0 } 11.097%,100% { opacity: 1 } }
+@keyframes f0 { 0%,5.549% { opacity: 0; animation-timing-function: var(--easing-reveal) } 11.097%,100% { opacity: 1 } }
 .fl .cs-0 .late, .fl .cs-0 .pop, .fl .cs-0.pop { animation: f0 8.1s infinite; }
 @keyframes a1 { 0%,39.456% { opacity: 0 } 39.457%,62.761% { opacity: 1 } 62.762%,71.639% { opacity: 1 } 71.64%,99.999% { opacity: 1 } }
 .fl .a1 { animation: a1 8.1s infinite step-end; }
 .fl .cs-1 { animation: a1 8.1s infinite step-end; }
-@keyframes g1 { 0%,39.457% { transform: scaleX(0) } 50.555%,100% { transform: none } }
+@keyframes g1 { 0%,39.457% { transform: scaleX(0); animation-timing-function: var(--easing-reveal) } 50.555%,100% { transform: none } }
 .fl .cs-1 .grow, .fl .cs-1.grow { animation: g1 8.1s infinite; }
-@keyframes d1 { 0%,39.457% { stroke-dashoffset: 1 } 50.555%,100% { stroke-dashoffset: 0 } }
+@keyframes d1 { 0%,39.457% { stroke-dashoffset: 1; animation-timing-function: var(--easing-reveal) } 50.555%,100% { stroke-dashoffset: 0 } }
 .fl .cs-1 .draw, .fl .cs-1.draw { animation: d1 8.1s infinite; }
-@keyframes f1 { 0%,39.457% { opacity: 0 } 50.555%,100% { opacity: 1 } }
+@keyframes f1 { 0%,45.006% { opacity: 0; animation-timing-function: var(--easing-reveal) } 50.555%,100% { opacity: 1 } }
 .fl .cs-1 .late, .fl .cs-1 .pop, .fl .cs-1.pop { animation: f1 8.1s infinite; }
 @keyframes a2 { 0%,39.456% { opacity: 1 } 39.457%,62.761% { opacity: 1 } 62.762%,71.639% { opacity: 1 } 71.64%,99.999% { opacity: 0.3 } }
 .fl .a2 { animation: a2 8.1s infinite step-end; }
@@ -677,17 +600,17 @@
 @keyframes a10 { 0%,39.456% { opacity: 0 } 39.457%,62.761% { opacity: 0 } 62.762%,71.639% { opacity: 1 } 71.64%,99.999% { opacity: 1 } }
 .fl .a10 { animation: a10 8.1s infinite step-end; }
 </style>
-<defs><pattern id="fl-dots" width="16" height="16" patternUnits="userSpaceOnUse"><circle cx="1.5" cy="1.5" r="1" fill="var(--color-dot)"/></pattern><marker id="fl-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-muted)"/></marker><marker id="fl-arrow-on" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-accent)"/></marker></defs>
+<defs><pattern id="fl-dots" width="16" height="16" patternUnits="userSpaceOnUse"><circle cx="1.5" cy="1.5" r="1" fill="var(--color-dot)"/></pattern><marker id="fl-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-muted)"/></marker><marker id="fl-arrow-on" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-accent)"/></marker><marker id="fl-arrow-second" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-series-2)"/></marker></defs>
 <rect width="100%" height="100%" fill="var(--color-bg)"/>
 <g transform="translate(0 0)">
 <text x="28" y="43" class="chart-title">작업당 토큰</text>
 <text x="28" y="63" class="chart-sub">예시 데이터. 에이전트마다 작업 61개 평균</text>
 <g class="cs-0"><rect x="28" y="77" width="12" height="12" rx="4" fill="var(--color-series-1)"/><text x="46" y="85" class="chart-legend">기억 없음</text></g>
 <g class="cs-1"><rect x="108.49609375" y="77" width="12" height="12" rx="4" fill="var(--color-series-2)"/><text x="126.49609375" y="85" class="chart-legend">기억 붙임</text></g>
-<text x="28" y="133.7" class="chart-label cr-0">코딩 에이전트 A</text><g class="cr-0"><g class="cs-0"><circle cx="428.6" cy="129" r="5" class="chart-before"/><text x="439.6" y="133" class="chart-value start">120k</text></g><g class="cs-1"><line x1="428.6" y1="129" x2="354.9" y2="129" pathLength="1" class="chart-arrow draw" marker-end="url(#fl-arrow-on)"/><text x="343.9" y="133" class="chart-value ours late end">31k</text><text x="612" y="133.3" class="chart-ratio late">−74%</text></g></g>
-<text x="28" y="173.7" class="chart-label cr-1">코딩 에이전트 B</text><g class="cr-1"><g class="cs-0"><circle cx="415.9" cy="169" r="5" class="chart-before"/><text x="426.9" y="173" class="chart-value start">95k</text></g><g class="cs-1"><line x1="415.9" y1="169" x2="349.4" y2="169" pathLength="1" class="chart-arrow draw" marker-end="url(#fl-arrow-on)"/><text x="338.4" y="173" class="chart-value ours late end">28k</text><text x="612" y="173.3" class="chart-ratio late">−71%</text></g></g>
-<text x="28" y="213.7" class="chart-label cr-2">편집기 도우미</text><g class="cr-2"><g class="cs-0"><circle cx="390.9" cy="209" r="5" class="chart-before"/><text x="401.9" y="213" class="chart-value start">60k</text></g><g class="cs-1"><line x1="390.9" y1="209" x2="333.7" y2="209" pathLength="1" class="chart-arrow draw" marker-end="url(#fl-arrow-on)"/><text x="322.7" y="213" class="chart-value ours late end">21k</text><text x="612" y="213.3" class="chart-ratio late">−65%</text></g></g>
-<text x="28" y="253.7" class="chart-label cr-3">사내 에이전트</text><g class="cr-3"><g class="cs-0"><circle cx="281.2" cy="249" r="5" class="chart-before"/><text x="270.2" y="253" class="chart-value end">8k</text></g><g class="cs-1"><line x1="281.2" y1="249" x2="288.8" y2="249" pathLength="1" class="chart-arrow draw" marker-end="url(#fl-arrow-on)"/><text x="299.8" y="253" class="chart-value ours late start">9.2k</text><text x="612" y="253.3" class="chart-ratio late">+15%</text></g></g>
+<text x="28" y="133.7" class="chart-label cr-0">코딩 에이전트 A</text><g class="cr-0"><g class="cs-0"><circle cx="428.6" cy="129" r="5" class="chart-before pop"/><text x="439.6" y="133" class="chart-value first late start">120k</text></g><g class="cs-1"><line x1="428.6" y1="129" x2="354.9" y2="129" pathLength="1" class="chart-arrow draw" marker-end="url(#fl-arrow-second)"/><text x="343.9" y="133" class="chart-value second late end">31k</text><text x="612" y="133.3" class="chart-ratio late">−74%</text></g></g>
+<text x="28" y="173.7" class="chart-label cr-1">코딩 에이전트 B</text><g class="cr-1"><g class="cs-0"><circle cx="415.9" cy="169" r="5" class="chart-before pop"/><text x="426.9" y="173" class="chart-value first late start">95k</text></g><g class="cs-1"><line x1="415.9" y1="169" x2="349.4" y2="169" pathLength="1" class="chart-arrow draw" marker-end="url(#fl-arrow-second)"/><text x="338.4" y="173" class="chart-value second late end">28k</text><text x="612" y="173.3" class="chart-ratio late">−71%</text></g></g>
+<text x="28" y="213.7" class="chart-label cr-2">편집기 도우미</text><g class="cr-2"><g class="cs-0"><circle cx="390.9" cy="209" r="5" class="chart-before pop"/><text x="401.9" y="213" class="chart-value first late start">60k</text></g><g class="cs-1"><line x1="390.9" y1="209" x2="333.7" y2="209" pathLength="1" class="chart-arrow draw" marker-end="url(#fl-arrow-second)"/><text x="322.7" y="213" class="chart-value second late end">21k</text><text x="612" y="213.3" class="chart-ratio late">−65%</text></g></g>
+<text x="28" y="253.7" class="chart-label cr-3">사내 에이전트</text><g class="cr-3"><g class="cs-0"><circle cx="281.2" cy="249" r="5" class="chart-before pop"/><text x="270.2" y="253" class="chart-value first late end">8k</text></g><g class="cs-1"><line x1="281.2" y1="249" x2="288.8" y2="249" pathLength="1" class="chart-arrow draw" marker-end="url(#fl-arrow-second)"/><text x="299.8" y="253" class="chart-value second late start">9.2k</text><text x="612" y="253.3" class="chart-ratio late">+15%</text></g></g>
 
 <line x1="168" x2="544" y1="277" y2="277" class="chart-axis"/><text x="168" y="294" class="chart-tick">1k</text><text x="293.3" y="294" class="chart-tick">10k</text><text x="418.7" y="294" class="chart-tick">100k</text><text x="544" y="294" class="chart-tick">1M</text><text x="544" y="311" class="chart-unit">토큰(로그 눈금)</text>
 </g>

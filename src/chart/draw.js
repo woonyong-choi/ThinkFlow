@@ -10,12 +10,17 @@ const SIZE = values.size;
 const TEXT = values.size.text;
 const WIDTH = SIZE['chart-width'];
 const LABEL_W = SIZE['chart-label'];
+const LABEL_MAX = SIZE['chart-label-max'];
+const LABEL_GAP = SPACE['6'];
+/** 차트 항목 이름이 칸에 들어가는 최대 폭 */
+export const LABEL_ROOM = LABEL_MAX - LABEL_GAP;
 const BAR = SIZE['chart-bar'];
 const ROW = SIZE['chart-row'];
 const DOT = SIZE['chart-dot'];
 const PAD = SPACE['14'];
 // 값 글자가 막대 끝 바깥에 들어갈 자리
 const VALUE_W = SPACE['30'] + SPACE['18'];
+const HEAT_MIN = values.opacity['heat-min'];
 const SERIES_COLOR = [tokens.color['series-1'], tokens.color['series-2']];
 
 // cost: time O(r·s + t), heap O(out), stack O(1)
@@ -29,7 +34,22 @@ export function drawChart(figure) {
   const header = drawHeader(figure);
   const draw = { bar: drawBars, dumbbell: drawDumbbells, box: drawBoxes, scatter: drawScatter, line: drawLine, heatmap: drawHeatmap }[figure.chartType];
   const plot = draw(figure, header.bottom);
-  return { body: `${header.svg}\n${plot.svg}`, width: WIDTH, height: plot.bottom + PAD, rowKeys: plot.rowKeys };
+  // 계열이 없는 차트는 그림 전체를 계열 0으로 묶는다. 시간표가 차트 전체를 계열 하나로 보기 때문이다(timeline.js chartSeriesIds).
+  const marks = figure.chart.series.length ? plot.svg : `<g class="cs-0">${plot.svg}</g>`;
+  return { body: `${header.svg}\n${marks}`, width: WIDTH, height: plot.bottom + PAD, rowKeys: plot.rowKeys };
+}
+
+// cost: time O(r·n), heap O(1), stack O(1)
+// vars: r = 항목 수, n = 이름 글자 수
+// basis: estimate
+/** 항목 이름 칸 너비. 가장 긴 이름에 맞추되 LABEL_W와 LABEL_MAX 사이다. 넘는 이름은 그림 검사 1번이 알린다. */
+export function labelColumn(names) {
+  return Math.min(LABEL_MAX, Math.max(LABEL_W, ...names.map((name) => measureLabel(name) + LABEL_GAP)));
+}
+
+/** 차트 항목 이름의 잰 폭 */
+export function measureLabel(name) {
+  return measure(name, TEXT['13']);
 }
 
 // cost: time O(s·n), heap O(out), stack O(1)
@@ -64,7 +84,7 @@ function drawHeader(figure) {
 // 막대: 행마다 계열 막대를 쌓고, 신뢰구간 막대기와 값 글자를 붙인다. 값이 없으면 missing 글이다.
 function drawBars(figure, top) {
   const { chart } = figure;
-  const plotX = LABEL_W + PAD;
+  const plotX = labelColumn(chart.rows.map((row) => row.label)) + PAD;
   const plotW = WIDTH - plotX - VALUE_W;
   const all = chart.rows.flatMap((row) => chart.series.flatMap((s) => [row.values[s.id], row.values[`${s.id}.high`]])).filter((v) => typeof v === 'number');
   const scale = makeScale('linear', 0, Math.max(...all, ...chart.rules.map((x) => x.value)), plotX, plotW);
@@ -77,14 +97,14 @@ function drawBars(figure, top) {
       const by = y + i * (BAR + SPACE['2']);
       const v = row.values[s.id];
       if (v === null) {
-        parts.push(`<g class="cr-${k}"><g class="cs-${i}"><text x="${plotX}" y="${r(by + BAR - SPACE['1'])}" class="chart-missing">${escapeXml(chart.missing ?? '비교 없음')}</text></g></g>`);
+        parts.push(`<g class="cr-${k}"><g class="cs-${i}"><text x="${r(plotX)}" y="${r(by + BAR - SPACE['1'])}" class="chart-missing">${escapeXml(chart.missing ?? '비교 없음')}</text></g></g>`);
         return;
       }
       const end = scale.at(v);
       const [low, high] = [row.values[`${s.id}.low`], row.values[`${s.id}.high`]];
       const ci = low !== undefined && high !== undefined ? `<line x1="${r(scale.at(low))}" x2="${r(scale.at(high))}" y1="${r(by + BAR / 2)}" y2="${r(by + BAR / 2)}" class="chart-ci"/>` : '';
       parts.push(
-        `<g class="cr-${k}"><g class="cs-${i}"><rect x="${plotX}" y="${r(by)}" width="${r(Math.max(SPACE['1'], end - plotX))}" height="${BAR}" rx="${values.radius.sm}" fill="${SERIES_COLOR[i]}" class="grow"/>${ci}` +
+        `<g class="cr-${k}"><g class="cs-${i}"><rect x="${r(plotX)}" y="${r(by)}" width="${r(Math.max(SPACE['1'], end - plotX))}" height="${BAR}" rx="${values.radius.sm}" fill="${SERIES_COLOR[i]}" class="grow"/>${ci}` +
           `<text x="${r(Math.max(end, high !== undefined ? scale.at(high) : end) + SPACE['3'])}" y="${r(by + BAR - SPACE['1'])}" class="chart-value${i === 0 ? ' ours' : ''} late">${formatNumber(v)}</text></g></g>`,
       );
     });
@@ -99,14 +119,15 @@ function drawBars(figure, top) {
 // cost: time O(r + t), heap O(out), stack O(1)
 // vars: r = 행 수, t = 눈금 수, out = 만든 SVG 글자 수
 // basis: estimate
-// 덤벨: 첫 계열 값(빈 점)에서 둘째 계열 값(화살촉)으로 화살표, 오른쪽에 바뀐 비율
+// 덤벨: 첫 계열 값(핵심 색 1 빈 점)에서 둘째 계열 값(핵심 색 2 화살촉)으로 화살표, 오른쪽에 바뀐 비율
 function drawDumbbells(figure, top) {
   const { chart } = figure;
   const [first, second] = chart.series;
-  const plotX = LABEL_W + PAD;
+  const plotX = labelColumn(chart.rows.map((row) => row.label)) + PAD;
   const plotW = WIDTH - plotX - VALUE_W;
   const all = chart.rows.flatMap((row) => [row.values[first.id], row.values[second.id]]);
-  const scale = makeScale(chart.scale, Math.min(...all), Math.max(...all), plotX, plotW);
+  const ruled = [...all, ...chart.rules.map((x) => x.value)];
+  const scale = makeScale(chart.scale, Math.min(...ruled), Math.max(...ruled), plotX, plotW);
   const parts = [];
   chart.rows.forEach((row, k) => {
     const cy = top + k * ROW + ROW / 2;
@@ -116,9 +137,9 @@ function drawDumbbells(figure, top) {
     const base = r(centerBaseline(cy, TEXT['11']));
     parts.push(
       `<text x="${PAD}" y="${r(centerBaseline(cy, TEXT['13']))}" class="chart-label cr-${k}">${escapeXml(row.label)}</text>` +
-        `<g class="cr-${k}"><g class="cs-0"><circle cx="${r(x1)}" cy="${r(cy)}" r="${DOT}" class="chart-before"/><text x="${r(x1 + outward * (DOT + SPACE['3']))}" y="${base}" class="chart-value ${outward > 0 ? 'start' : 'end'}">${formatNumber(before)}</text></g>` +
-        `<g class="cs-1"><line x1="${r(x1)}" y1="${r(cy)}" x2="${r(x2)}" y2="${r(cy)}" pathLength="1" class="chart-arrow draw" marker-end="url(#fl-arrow-on)"/>` +
-        `<text x="${r(x2 - outward * (DOT + SPACE['3']))}" y="${base}" class="chart-value ours late ${outward > 0 ? 'end' : 'start'}">${formatNumber(after)}</text>` +
+        `<g class="cr-${k}"><g class="cs-0"><circle cx="${r(x1)}" cy="${r(cy)}" r="${DOT}" class="chart-before pop"/><text x="${r(x1 + outward * (DOT + SPACE['3']))}" y="${base}" class="chart-value first late ${outward > 0 ? 'start' : 'end'}">${formatNumber(before)}</text></g>` +
+        `<g class="cs-1"><line x1="${r(x1)}" y1="${r(cy)}" x2="${r(x2)}" y2="${r(cy)}" pathLength="1" class="chart-arrow draw" marker-end="url(#fl-arrow-second)"/>` +
+        `<text x="${r(x2 - outward * (DOT + SPACE['3']))}" y="${base}" class="chart-value second late ${outward > 0 ? 'end' : 'start'}">${formatNumber(after)}</text>` +
         `<text x="${WIDTH - PAD}" y="${r(centerBaseline(cy, TEXT['12']))}" class="chart-ratio late">${formatChange(before, after)}</text></g></g>`,
     );
   });
@@ -134,10 +155,11 @@ function drawDumbbells(figure, top) {
 // 상자: 최소-최대 수염, q1-q3 상자, 가운데 값 선
 function drawBoxes(figure, top) {
   const { chart } = figure;
-  const plotX = LABEL_W + PAD;
+  const plotX = labelColumn(chart.rows.map((row) => row.label)) + PAD;
   const plotW = WIDTH - plotX - VALUE_W;
   const all = chart.rows.flatMap((row) => [row.values.min, row.values.max]);
-  const scale = makeScale(chart.scale, Math.min(...all), Math.max(...all), plotX, plotW);
+  const ruled = [...all, ...chart.rules.map((x) => x.value)];
+  const scale = makeScale(chart.scale, Math.min(...ruled), Math.max(...ruled), plotX, plotW);
   const parts = chart.rows.map((row, k) => {
     const cy = top + k * ROW + ROW / 2;
     const v = row.values;
@@ -214,7 +236,7 @@ function drawHeatmap(figure, top) {
   const { chart } = figure;
   const rows = [...new Set(chart.rows.map((c) => c.row))];
   const cols = [...new Set(chart.rows.map((c) => c.col))];
-  const plotX = LABEL_W + PAD;
+  const plotX = labelColumn(rows) + PAD;
   const cell = Math.min(SIZE['chart-cell'], (WIDTH - plotX - PAD) / cols.length);
   const max = Math.max(...chart.rows.map((c) => c.values.value));
   const parts = cols.map((c, j) => `<text x="${r(plotX + j * cell + cell / 2)}" y="${r(top + TEXT['11'])}" class="chart-tick">${escapeXml(c)}</text>`);
@@ -224,8 +246,8 @@ function drawHeatmap(figure, top) {
     const [x, y] = [plotX + cols.indexOf(c.col) * cell, gridTop + rows.indexOf(c.row) * cell];
     const strength = max ? c.values.value / max : 0;
     parts.push(
-      `<g class="cr-${k}"><rect x="${r(x)}" y="${r(y)}" width="${r(cell - SPACE['1'])}" height="${r(cell - SPACE['1'])}" rx="${values.radius.sm}" fill="${SERIES_COLOR[0]}" fill-opacity="${r(0.08 + strength * 0.92)}"/>` +
-        `<text x="${r(x + cell / 2)}" y="${r(centerBaseline(y + cell / 2, TEXT['11']))}" class="chart-cell${strength > 0.55 ? ' on' : ''}">${formatNumber(c.values.value)}</text></g>`,
+      `<g class="cr-${k}"><rect x="${r(x)}" y="${r(y)}" width="${r(cell - SPACE['1'])}" height="${r(cell - SPACE['1'])}" rx="${values.radius.sm}" fill="${SERIES_COLOR[0]}" fill-opacity="${r(HEAT_MIN + strength * (1 - HEAT_MIN))}"/>` +
+        `<text x="${r(x + cell / 2)}" y="${r(centerBaseline(y + cell / 2, TEXT['11']))}" class="chart-cell${HEAT_MIN + strength * (1 - HEAT_MIN) > values.opacity['heat-text'] ? ' on' : ''}">${formatNumber(c.values.value)}</text></g>`,
     );
   });
   return { svg: parts.join('\n'), bottom: gridTop + rows.length * cell, rowKeys: chart.rows.map((c) => `${c.row}\u0000${c.col}`) };
@@ -246,7 +268,9 @@ function plotFrame(figure, top, xs, ys) {
   const xKind = figure.chartType === 'scatter' ? chart.scale : 'linear';
   // 선 차트 가로축은 값 축이 아니라 0에서 시작하지 않는다(docs/design/charts.md 값 축 표).
   const sx = makeScale(xKind, Math.min(...xs), Math.max(...xs), left, plotW, { fromZero: figure.chartType === 'scatter' });
-  const yScale = makeScale(chart.scale, Math.min(...ys), Math.max(...ys), 0, plotH);
+  // 기준선은 세로 값 축에 긋는다. 기준선이 그림 밖에 그려지지 않게 값 범위에 넣는다.
+  const ruledYs = [...ys, ...chart.rules.map((x) => x.value)];
+  const yScale = makeScale(chart.scale, Math.min(...ruledYs), Math.max(...ruledYs), 0, plotH);
   const sy = { ...yScale, at: (v) => top + plotH - (yScale.at(v) - 0) };
   const parts = [];
   for (const t of sy.ticks) parts.push(`<line x1="${left}" x2="${r(left + plotW)}" y1="${r(sy.at(t))}" y2="${r(sy.at(t))}" class="chart-grid"/><text x="${r(left - SPACE['3'])}" y="${r(centerBaseline(sy.at(t), TEXT['11']))}" class="chart-tick end">${formatNumber(t)}</text>`);

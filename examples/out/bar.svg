@@ -76,7 +76,7 @@
   --size-control: 30px;
   --size-pill: 18px;
   --size-tag: 14px;
-  --size-icon: 20px;
+  --size-icon: 12px;
   --size-packet: 4.5px;
   --size-halo: 10px;
   --size-marker: 5px;
@@ -87,7 +87,6 @@
   --size-node-min: 100px;
   --size-node-max: 210px;
   --size-node-min-h: 46px;
-  --size-store-min-h: 70px;
   --size-store-cap: 12px;
   --size-figure-min: 560px;
   --size-chip-max: 210px;
@@ -99,6 +98,7 @@
   --size-embedded-chrome: 150px;
   --size-chart-width: 640px;
   --size-chart-label: 140px;
+  --size-chart-label-max: 240px;
   --size-chart-bar: 12px;
   --size-chart-row: 40px;
   --size-chart-dot: 5px;
@@ -166,6 +166,8 @@
   --opacity-halo: 0.2;
   --opacity-tab-on: 0.06;
   --opacity-dim: 0.3;
+  --opacity-heat-min: 0.08;
+  --opacity-heat-text: 0.55;
   --z-raised: 2;
   --z-overlay: 10;
   --duration-fast: 200ms;
@@ -174,9 +176,10 @@
   --duration-dwell-per-char: 45ms;
   --duration-dwell-max: 3200ms;
   --duration-step-end: 1600ms;
-  --duration-stagger: 120ms;
   --duration-chart-cycle: 7000ms;
   --duration-reveal: 900ms;
+  --easing-move: cubic-bezier(0.455, 0.03, 0.515, 0.955);
+  --easing-reveal: cubic-bezier(0, 0, 0.58, 1);
   --scale-zoom-max: 6;
   --scale-zoom-step: 1.25;
 }
@@ -426,6 +429,15 @@
   fill: var(--color-accent);
 }
 
+.fl .chart-value.first {
+  fill: var(--color-series-1);
+}
+
+.fl .chart-value.second {
+  font-weight: var(--weight-semibold);
+  fill: var(--color-series-2);
+}
+
 .fl .chart-missing {
   font-size: var(--size-text-11);
   font-style: italic;
@@ -499,13 +511,13 @@
 
 .fl .chart-before {
   fill: var(--color-bg);
-  stroke: var(--color-muted);
+  stroke: var(--color-series-1);
   stroke-width: var(--border-tag);
 }
 
 .fl .chart-arrow,
 .fl .chart-link {
-  stroke: var(--color-accent);
+  stroke: var(--color-series-2);
   stroke-width: var(--border-strong);
   stroke-dasharray: 1;
 }
@@ -534,125 +546,36 @@
   transition: opacity var(--duration-fast);
 }
 
-/* 재생기: 드러내는 박자에 play가 붙으면 한 번 자란다. */
-.fl .play .grow,
-.fl .play.grow {
-  animation: chart-grow var(--duration-reveal) ease-out both;
-}
-
-.fl .play .draw,
-.fl .play.draw {
-  animation: chart-draw var(--duration-reveal) ease-out both;
-}
-
-.fl .play .pop,
-.fl .play.pop,
-.fl .play .late,
-.fl .play.late {
-  animation: chart-fade var(--duration-reveal) ease-out both;
-}
-
-/* 시간 흐름이 없는 차트 SVG: 한 바퀴의 앞 13%에 자라고 나머지는 머문다. README 이미지에서도 보이게 되풀이한다. */
-.fl.chart-loop .grow {
-  animation: chart-grow-loop var(--duration-chart-cycle) ease-out infinite both;
-}
-
-.fl.chart-loop .draw {
-  animation: chart-draw-loop var(--duration-chart-cycle) ease-out infinite both;
-}
-
-.fl.chart-loop .pop,
-.fl.chart-loop .late {
-  animation: chart-fade-loop var(--duration-chart-cycle) ease-out infinite both;
-}
-
-@keyframes chart-grow {
-  from {
-    transform: scaleX(0);
-  }
-}
-
-@keyframes chart-draw {
-  from {
-    stroke-dashoffset: 1;
-  }
-}
-
-@keyframes chart-fade {
-  0%,
-  50% {
-    opacity: 0;
-  }
-}
-
-@keyframes chart-grow-loop {
-  0% {
-    transform: scaleX(0);
-  }
-
-  13%,
-  100% {
-    transform: none;
-  }
-}
-
-@keyframes chart-draw-loop {
-  0% {
-    stroke-dashoffset: 1;
-  }
-
-  13%,
-  100% {
-    stroke-dashoffset: 0;
-  }
-}
-
-@keyframes chart-fade-loop {
-  0%,
-  9% {
-    opacity: 0;
-  }
-
-  16%,
-  100% {
-    opacity: 1;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .fl .play .grow,
-  .fl .play.grow,
-  .fl .play .draw,
-  .fl .play.draw,
-  .fl .play .pop,
-  .fl .play.pop,
-  .fl .play .late,
-  .fl .play.late,
-  .fl.chart-loop .grow,
-  .fl.chart-loop .draw,
-  .fl.chart-loop .pop,
-  .fl.chart-loop .late {
-    animation: none;
-  }
-}
+.fl .play .grow, .fl .play.grow { animation: chart-grow 900ms var(--easing-reveal) both; }
+.fl .play .draw, .fl .play.draw { animation: chart-draw 900ms var(--easing-reveal) both; }
+.fl .play .pop, .fl .play.pop, .fl .play .late, .fl .play.late { animation: chart-fade 900ms var(--easing-reveal) both; }
+.fl.chart-loop .grow { animation: chart-grow-loop 7000ms infinite both; }
+.fl.chart-loop .draw { animation: chart-draw-loop 7000ms infinite both; }
+.fl.chart-loop .pop, .fl.chart-loop .late { animation: chart-fade-loop 7000ms infinite both; }
+@keyframes chart-grow { from { transform: scaleX(0); } }
+@keyframes chart-draw { from { stroke-dashoffset: 1; } }
+@keyframes chart-fade { 0%, 50% { opacity: 0; } }
+@keyframes chart-grow-loop { 0% { transform: scaleX(0); animation-timing-function: var(--easing-reveal); } 12.86%, 100% { transform: none; } }
+@keyframes chart-draw-loop { 0% { stroke-dashoffset: 1; animation-timing-function: var(--easing-reveal); } 12.86%, 100% { stroke-dashoffset: 0; } }
+@keyframes chart-fade-loop { 0%, 6.43% { opacity: 0; animation-timing-function: var(--easing-reveal); } 12.86%, 100% { opacity: 1; } }
 
 @keyframes a0 { 0%,45.442% { opacity: 0 } 45.443%,71.864% { opacity: 1 } 71.865%,99.999% { opacity: 1 } }
 .fl .a0 { animation: a0 8.2s infinite step-end; }
 .fl .cs-0 { animation: a0 8.2s infinite step-end; }
-@keyframes g0 { 0%,45.443% { transform: scaleX(0) } 56.453%,100% { transform: none } }
+@keyframes g0 { 0%,45.443% { transform: scaleX(0); animation-timing-function: var(--easing-reveal) } 56.453%,100% { transform: none } }
 .fl .cs-0 .grow, .fl .cs-0.grow { animation: g0 8.2s infinite; }
-@keyframes d0 { 0%,45.443% { stroke-dashoffset: 1 } 56.453%,100% { stroke-dashoffset: 0 } }
+@keyframes d0 { 0%,45.443% { stroke-dashoffset: 1; animation-timing-function: var(--easing-reveal) } 56.453%,100% { stroke-dashoffset: 0 } }
 .fl .cs-0 .draw, .fl .cs-0.draw { animation: d0 8.2s infinite; }
-@keyframes f0 { 0%,45.443% { opacity: 0 } 56.453%,100% { opacity: 1 } }
+@keyframes f0 { 0%,50.948% { opacity: 0; animation-timing-function: var(--easing-reveal) } 56.453%,100% { opacity: 1 } }
 .fl .cs-0 .late, .fl .cs-0 .pop, .fl .cs-0.pop { animation: f0 8.2s infinite; }
 @keyframes a1 { 0%,45.442% { opacity: 1 } 45.443%,71.864% { opacity: 1 } 71.865%,99.999% { opacity: 1 } }
 .fl .a1 { animation: a1 8.2s infinite step-end; }
 .fl .cs-1 { animation: a1 8.2s infinite step-end; }
-@keyframes g1 { 0%,0% { transform: scaleX(0) } 11.009%,100% { transform: none } }
+@keyframes g1 { 0%,0% { transform: scaleX(0); animation-timing-function: var(--easing-reveal) } 11.009%,100% { transform: none } }
 .fl .cs-1 .grow, .fl .cs-1.grow { animation: g1 8.2s infinite; }
-@keyframes d1 { 0%,0% { stroke-dashoffset: 1 } 11.009%,100% { stroke-dashoffset: 0 } }
+@keyframes d1 { 0%,0% { stroke-dashoffset: 1; animation-timing-function: var(--easing-reveal) } 11.009%,100% { stroke-dashoffset: 0 } }
 .fl .cs-1 .draw, .fl .cs-1.draw { animation: d1 8.2s infinite; }
-@keyframes f1 { 0%,0% { opacity: 0 } 11.009%,100% { opacity: 1 } }
+@keyframes f1 { 0%,5.505% { opacity: 0; animation-timing-function: var(--easing-reveal) } 11.009%,100% { opacity: 1 } }
 .fl .cs-1 .late, .fl .cs-1 .pop, .fl .cs-1.pop { animation: f1 8.2s infinite; }
 @keyframes a2 { 0%,45.442% { opacity: 1 } 45.443%,71.864% { opacity: 1 } 71.865%,99.999% { opacity: 0.3 } }
 .fl .a2 { animation: a2 8.2s infinite step-end; }
@@ -675,7 +598,7 @@
 @keyframes a9 { 0%,45.442% { opacity: 0 } 45.443%,71.864% { opacity: 1 } 71.865%,99.999% { opacity: 1 } }
 .fl .a9 { animation: a9 8.2s infinite step-end; }
 </style>
-<defs><pattern id="fl-dots" width="16" height="16" patternUnits="userSpaceOnUse"><circle cx="1.5" cy="1.5" r="1" fill="var(--color-dot)"/></pattern><marker id="fl-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-muted)"/></marker><marker id="fl-arrow-on" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-accent)"/></marker></defs>
+<defs><pattern id="fl-dots" width="16" height="16" patternUnits="userSpaceOnUse"><circle cx="1.5" cy="1.5" r="1" fill="var(--color-dot)"/></pattern><marker id="fl-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-muted)"/></marker><marker id="fl-arrow-on" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-accent)"/></marker><marker id="fl-arrow-second" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-series-2)"/></marker></defs>
 <rect width="100%" height="100%" fill="var(--color-bg)"/>
 <g transform="translate(0 0)">
 <text x="28" y="43" class="chart-title">장기 기억 정확도</text>

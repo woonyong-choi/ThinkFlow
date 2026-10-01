@@ -43,3 +43,50 @@ test('buildFigure_require_data_and_ci_reject_hand_rows', async () => {
   await assert.rejects(buildFigure(source, { requireData: true }), /require-data/);
   await assert.rejects(buildFigure(source, { requireCi: true }), /require-ci/);
 });
+
+// cost: time O(build), heap O(m), stack O(1)
+// vars: build = 원본 하나를 만드는 비용, m = 메시지 수
+// basis: estimate
+async function buildErrors(source) {
+  try {
+    await buildFigure(source);
+    return [];
+  } catch (error) {
+    if (!error.problems) throw error;
+    return error.problems.map((p) => `${p.line}: ${p.message}`);
+  }
+}
+
+test('checkChartFigure_name_wider_than_label_column_is_check_1_error', async () => {
+  const source = 'chart bar\nseries a "A"\nrow "아주 긴 항목 이름이 이름 칸을 넘어서 막대와 겹치는 경우를 만든다" a=3\nrow "b" a=1';
+
+  const errors = await buildErrors(source);
+
+  assert.ok(errors.some((e) => e.startsWith('3: [check 1] item name')), errors.join('\n'));
+});
+
+test('checkChart_heatmap_with_scale_line_is_error', () => {
+  const errors = errorsOf('chart heatmap\nscale linear\ncell "a" "b" 1');
+
+  assert.ok(errors.some((e) => e.startsWith('2: a heatmap has no value axis')), errors.join('\n'));
+});
+
+test('checkChartRows_line_log_scale_ignores_x_values', async () => {
+  const errors = await buildErrors('chart line\nscale log\nseries a "A"\npoint x=0 a=1\npoint x=1 a=10');
+
+  assert.deepEqual(errors, []);
+});
+
+test('drawChart_series_less_chart_grows_as_one_series', async () => {
+  const { chart, timeline } = await buildFigure('chart box\nrow "a" min=1 q1=2 median=3 q3=4 max=5\nstep "보기"\n  say "분포"');
+
+  assert.match(chart.body, /<g class="cs-0">/);
+  assert.deepEqual(timeline.segs[0].growing, ['*']);
+});
+
+test('drawChart_rule_outside_values_stays_inside_plot', async () => {
+  const { chart } = await buildFigure('chart dumbbell\nseries a "전"\nseries b "후"\nrule 100 "기준"\nrow "x" a=10 b=20');
+  const ruleX = Number(/<line x1="([\d.]+)"[^>]*class="chart-rule"/.exec(chart.body)[1]);
+
+  assert.ok(ruleX < chart.width, `${ruleX} >= ${chart.width}`);
+});

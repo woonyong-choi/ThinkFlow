@@ -20,7 +20,7 @@ const INNER_Y = SPACE['6'];
  * @param glyphs 쓴 글자를 모으는 그릇(createGlyphSet)
  */
 export function drawScene(scene, decorate, glyphs) {
-  const toneOf = createTones();
+  const toneOf = createTones(scene.tagOrder);
   const parts = [];
   scene.groups.forEach((g, j) => parts.push(drawGroup(g, j, decorate, glyphs)));
   for (const line of scene.lifelines ?? []) parts.push(`<line x1="${r(line.x)}" x2="${r(line.x)}" y1="${r(line.y1)}" y2="${r(line.y2)}" class="lifeline"/>`);
