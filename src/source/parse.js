@@ -69,6 +69,8 @@ function emptyFigure() {
     speedMs: undefined,
     aspect: undefined,
     nodes: [],
+    // 이름 오류로 버린 선언의 이름. 그 이름을 가리키는 줄에 "모르는 이름" 오류를 덧붙이지 않기 위해 둔다.
+    rejectedNames: new Set(),
     groups: [],
     edges: [],
     start: undefined,

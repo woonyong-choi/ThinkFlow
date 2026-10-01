@@ -55,6 +55,8 @@
   --color-ink-200: #e6e5e1;
   --color-series-1: var(--color-accent);
   --color-series-2: var(--color-orange-600);
+  --color-heat-low: var(--color-blue-50);
+  --color-heat-high: var(--color-blue-800);
   --color-grid: var(--color-ink-200);
   --font-sans: FigSans, Pretendard, -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
   --font-mono: FigMono, D2Coding, ui-monospace, SFMono-Regular, Menlo, monospace;
@@ -166,7 +168,6 @@
   --opacity-halo: 0.2;
   --opacity-tab-on: 0.06;
   --opacity-dim: 0.3;
-  --opacity-heat-min: 0.08;
   --opacity-heat-text: 0.55;
   --z-raised: 2;
   --z-overlay: 10;
@@ -611,21 +612,21 @@
 <g transform="translate(0 0)">
 <text x="28" y="43" class="chart-title">판단 교차표</text>
 <text x="28" y="63" class="chart-sub">예시 데이터. 행은 정답, 열은 판단</text>
-<g class="cs-0"><text x="188" y="96" class="chart-tick">Codex</text>
-<text x="228" y="96" class="chart-tick">Claude</text>
-<text x="268" y="96" class="chart-tick">둘 다</text>
+<g class="cs-0"><text x="188.5" y="96" class="chart-tick">Codex</text>
+<text x="229.5" y="96" class="chart-tick">Claude</text>
+<text x="270.5" y="96" class="chart-tick">둘 다</text>
 <text x="28" y="128.7" class="chart-label">Codex</text>
 <text x="28" y="168.7" class="chart-label">Claude</text>
 <text x="28" y="208.7" class="chart-label">둘 다</text>
-<g class="cr-0"><rect x="168" y="104" width="38" height="38" rx="4" fill="var(--color-series-1)" fill-opacity="1"/><text x="188" y="128" class="chart-cell on">182</text></g>
-<g class="cr-1"><rect x="208" y="104" width="38" height="38" rx="4" fill="var(--color-series-1)" fill-opacity="0.2"/><text x="228" y="128" class="chart-cell">14</text></g>
-<g class="cr-2"><rect x="248" y="104" width="38" height="38" rx="4" fill="var(--color-series-1)" fill-opacity="0.1"/><text x="268" y="128" class="chart-cell">4</text></g>
-<g class="cr-3"><rect x="168" y="144" width="38" height="38" rx="4" fill="var(--color-series-1)" fill-opacity="0.1"/><text x="188" y="168" class="chart-cell">9</text></g>
-<g class="cr-4"><rect x="208" y="144" width="38" height="38" rx="4" fill="var(--color-series-1)" fill-opacity="0.9"/><text x="228" y="168" class="chart-cell on">171</text></g>
-<g class="cr-5"><rect x="248" y="144" width="38" height="38" rx="4" fill="var(--color-series-1)" fill-opacity="0.1"/><text x="268" y="168" class="chart-cell">6</text></g>
-<g class="cr-6"><rect x="168" y="184" width="38" height="38" rx="4" fill="var(--color-series-1)" fill-opacity="0.1"/><text x="188" y="208" class="chart-cell">3</text></g>
-<g class="cr-7"><rect x="208" y="184" width="38" height="38" rx="4" fill="var(--color-series-1)" fill-opacity="0.1"/><text x="228" y="208" class="chart-cell">5</text></g>
-<g class="cr-8"><rect x="248" y="184" width="38" height="38" rx="4" fill="var(--color-series-1)" fill-opacity="0.6"/><text x="268" y="208" class="chart-cell on">106</text></g></g>
+<g class="cr-0"><rect x="168" y="104" width="39" height="38" rx="4" fill="#1d4f91"/><text x="188.5" y="128" class="chart-cell on">182</text></g>
+<g class="cr-1"><rect x="209" y="104" width="39" height="38" rx="4" fill="#dde6f3"/><text x="229.5" y="128" class="chart-cell">14</text></g>
+<g class="cr-2"><rect x="250" y="104" width="39" height="38" rx="4" fill="#e8eff9"/><text x="270.5" y="128" class="chart-cell">4</text></g>
+<g class="cr-3"><rect x="168" y="144" width="39" height="38" rx="4" fill="#e3ebf6"/><text x="188.5" y="168" class="chart-cell">9</text></g>
+<g class="cr-4"><rect x="209" y="144" width="39" height="38" rx="4" fill="#2a5997"/><text x="229.5" y="168" class="chart-cell on">171</text></g>
+<g class="cr-5"><rect x="250" y="144" width="39" height="38" rx="4" fill="#e6eef8"/><text x="270.5" y="168" class="chart-cell">6</text></g>
+<g class="cr-6"><rect x="168" y="184" width="39" height="38" rx="4" fill="#eaf0f9"/><text x="188.5" y="208" class="chart-cell">3</text></g>
+<g class="cr-7"><rect x="209" y="184" width="39" height="38" rx="4" fill="#e7eef8"/><text x="229.5" y="208" class="chart-cell">5</text></g>
+<g class="cr-8"><rect x="250" y="184" width="39" height="38" rx="4" fill="#7493bd"/><text x="270.5" y="208" class="chart-cell on">106</text></g></g>
 </g>
 <text x="320" y="270" opacity="0" class="steplabel a10">읽기</text>
 <g opacity="0" class="a11"><text x="320" y="296" class="caption">대각선이 맞힌 수다</text></g>

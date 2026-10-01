@@ -147,3 +147,9 @@ test('loadChartData_pointer_without_slash_is_error', async () => {
 
   assert.ok(error.problems.some((p) => p.message.includes('starts with "/"')), JSON.stringify(error.problems));
 });
+
+test('drawChart_heatmap_column_fits_long_name', async () => {
+  const errors = await buildErrors('chart heatmap\ncell "정답" "통과" 10\ncell "정답" "판단 보류" 1\ncell "오답" "통과" 3\ncell "오답" "판단 보류" 4');
+
+  assert.deepEqual(errors, []);
+});

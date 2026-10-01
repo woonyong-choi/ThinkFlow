@@ -22,7 +22,7 @@ function readNode({ tokens, line }, ctx) {
   const [head, id, label, sub, ...rest] = tokens;
   const shape = head.value;
   const takesSub = ['box', 'external', 'store'].includes(shape);
-  if (!checkId(id, line, ctx, ID_PATTERN)) return;
+  if (!checkId(id, line, ctx, ID_PATTERN)) return rejectName(id, ctx);
   if (label?.type !== 'text') {
     ctx.problems.error(line, `write ${shape} as: ${shape} ${id.value} "${shape === 'decision' ? 'question' : 'name'}"`);
     return;
@@ -38,7 +38,12 @@ function readNode({ tokens, line }, ctx) {
 // `group id "이름" [direction=down] {`
 function readGroup({ tokens, line }, ctx) {
   const [, id, label, ...rest] = tokens;
-  if (!checkId(id, line, ctx, ID_PATTERN)) return;
+  if (!checkId(id, line, ctx, ID_PATTERN)) {
+    rejectName(id, ctx);
+    // 닫는 `}`가 짝을 찾도록 자리만 연다.
+    if (tokens.at(-1).type === 'open') ctx.groups.push({ isRejected: true, line });
+    return;
+  }
   if (label?.type !== 'text') ctx.problems.error(line, `write group as: group ${id.value} "name" {`);
   const openAt = rest.findIndex((t) => t.type === 'open');
   if (openAt === -1) ctx.problems.error(line, 'end the group line with "{"');
@@ -83,7 +88,12 @@ function readStateMark({ tokens, line }, ctx) {
 // `table id "이름" {`
 function readTable({ tokens, line }, ctx) {
   const [, id, label, open, extra] = tokens;
-  if (!checkId(id, line, ctx, TABLE_PATTERN)) return;
+  if (!checkId(id, line, ctx, TABLE_PATTERN)) {
+    rejectName(id, ctx);
+    // 열 줄을 그 테이블의 열로 읽어 넘기도록 버린 테이블 자리를 연다.
+    if (tokens.at(-1).type === 'open') ctx.table = { id: id?.value, columns: [], isRejected: true };
+    return;
+  }
   if (label?.type !== 'text' || open?.type !== 'open' || extra) {
     ctx.problems.error(line, `write table as: table ${id.value} "name" {`);
     return;
@@ -110,6 +120,11 @@ export function readColumn({ tokens, line }, ctx) {
   }
   if (!type || (type.type !== 'word' && type.type !== 'text') || ['pk', 'unique'].includes(type.value)) {
     ctx.problems.error(line, `write the column as: ${name.value} type [pk] [unique] [fk=table.column]`);
+    return;
+  }
+  if (type.type === 'word' && !/^[a-z][a-z0-9_]*$/i.test(type.value)) {
+    // 괄호나 쉼표가 든 타입은 따옴표 글로 적는다. 적는 방법을 하나로 두기 위해서다.
+    ctx.problems.error(line, `write a type with symbols as quoted text: "${type.value}"`);
     return;
   }
   const column = { name: name.value, type: type.value, pk: false, unique: false, fk: undefined, line };
@@ -146,6 +161,13 @@ export function readEdge({ tokens, line }, ctx) {
   ctx.figure.edges.push(edge);
 }
 
+// 버린 선언의 이름과, 그 선언이 있던 그룹을 적는다. 그 그룹은 비어 보여도 원인이 이름 오류라 빈 그룹 오류를 덧붙이지 않는다.
+function rejectName(token, ctx) {
+  if (token?.type === 'word') ctx.figure.rejectedNames.add(token.value);
+  const parent = currentGroup(ctx);
+  if (parent) ctx.figure.rejectedNames.add(`group:${parent}`);
+}
+
 // cost: time O(1), heap O(1), stack O(1)
 // basis: estimate
 // 이름 낱말 형식과 예약어를 확인한다.
@@ -155,7 +177,8 @@ function checkId(token, line, ctx, pattern) {
     return false;
   }
   if (!pattern.test(token.value)) {
-    ctx.problems.error(line, `"${token.value}" is not a valid name. Use lowercase letters, digits, and "-", starting with a letter`);
+    const joiner = pattern === TABLE_PATTERN ? '_' : '-';
+    ctx.problems.error(line, `"${token.value}" is not a valid name. Use lowercase letters and digits, joined by single "${joiner}", starting with a letter`);
     return false;
   }
   if (RESERVED.has(token.value) || FLAGS.includes(token.value)) {

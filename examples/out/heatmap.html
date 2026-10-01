@@ -63,6 +63,8 @@
   --color-ink-200: #e6e5e1;
   --color-series-1: var(--color-accent);
   --color-series-2: var(--color-orange-600);
+  --color-heat-low: var(--color-blue-50);
+  --color-heat-high: var(--color-blue-800);
   --color-grid: var(--color-ink-200);
   --font-sans: FigSans, Pretendard, -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
   --font-mono: FigMono, D2Coding, ui-monospace, SFMono-Regular, Menlo, monospace;
@@ -174,7 +176,6 @@
   --opacity-halo: 0.2;
   --opacity-tab-on: 0.06;
   --opacity-dim: 0.3;
-  --opacity-heat-min: 0.08;
   --opacity-heat-text: 0.55;
   --z-raised: 2;
   --z-overlay: 10;
@@ -834,21 +835,21 @@ html.embedded .fl-canvas svg {
 <button type="button" class="fl-round fl-full"></button><div class="fl-zoom"><button type="button" class="fl-round" data-zoom="in" aria-label="확대"></button><button type="button" class="fl-round" data-zoom="out" aria-label="축소"></button><button type="button" class="fl-round" data-zoom="fit" aria-label="전체 보기"></button></div>
 <div class="fl-canvas"><svg xmlns="http://www.w3.org/2000/svg" class="fl" width="640" height="252" style="aspect-ratio: 640 / 252" viewBox="0 0 640 252" role="img"><title>판단 교차표</title><defs><pattern id="fl-dots" width="16" height="16" patternUnits="userSpaceOnUse"><circle cx="1.5" cy="1.5" r="1" fill="var(--color-dot)"/></pattern><marker id="fl-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-muted)"/></marker><marker id="fl-arrow-on" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-accent)"/></marker><marker id="fl-arrow-second" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-series-2)"/></marker></defs><rect width="100%" height="100%" fill="var(--color-bg)"/><text x="28" y="43" class="chart-title">판단 교차표</text>
 <text x="28" y="63" class="chart-sub">예시 데이터. 행은 정답, 열은 판단</text>
-<g class="cs-0"><text x="188" y="96" class="chart-tick">Codex</text>
-<text x="228" y="96" class="chart-tick">Claude</text>
-<text x="268" y="96" class="chart-tick">둘 다</text>
+<g class="cs-0"><text x="188.5" y="96" class="chart-tick">Codex</text>
+<text x="229.5" y="96" class="chart-tick">Claude</text>
+<text x="270.5" y="96" class="chart-tick">둘 다</text>
 <text x="28" y="128.7" class="chart-label">Codex</text>
 <text x="28" y="168.7" class="chart-label">Claude</text>
 <text x="28" y="208.7" class="chart-label">둘 다</text>
-<g class="cr-0"><rect x="168" y="104" width="38" height="38" rx="4" fill="var(--color-series-1)" fill-opacity="1"/><text x="188" y="128" class="chart-cell on">182</text></g>
-<g class="cr-1"><rect x="208" y="104" width="38" height="38" rx="4" fill="var(--color-series-1)" fill-opacity="0.2"/><text x="228" y="128" class="chart-cell">14</text></g>
-<g class="cr-2"><rect x="248" y="104" width="38" height="38" rx="4" fill="var(--color-series-1)" fill-opacity="0.1"/><text x="268" y="128" class="chart-cell">4</text></g>
-<g class="cr-3"><rect x="168" y="144" width="38" height="38" rx="4" fill="var(--color-series-1)" fill-opacity="0.1"/><text x="188" y="168" class="chart-cell">9</text></g>
-<g class="cr-4"><rect x="208" y="144" width="38" height="38" rx="4" fill="var(--color-series-1)" fill-opacity="0.9"/><text x="228" y="168" class="chart-cell on">171</text></g>
-<g class="cr-5"><rect x="248" y="144" width="38" height="38" rx="4" fill="var(--color-series-1)" fill-opacity="0.1"/><text x="268" y="168" class="chart-cell">6</text></g>
-<g class="cr-6"><rect x="168" y="184" width="38" height="38" rx="4" fill="var(--color-series-1)" fill-opacity="0.1"/><text x="188" y="208" class="chart-cell">3</text></g>
-<g class="cr-7"><rect x="208" y="184" width="38" height="38" rx="4" fill="var(--color-series-1)" fill-opacity="0.1"/><text x="228" y="208" class="chart-cell">5</text></g>
-<g class="cr-8"><rect x="248" y="184" width="38" height="38" rx="4" fill="var(--color-series-1)" fill-opacity="0.6"/><text x="268" y="208" class="chart-cell on">106</text></g></g><g class="fl-packets"></g></svg></div>
+<g class="cr-0"><rect x="168" y="104" width="39" height="38" rx="4" fill="#1d4f91"/><text x="188.5" y="128" class="chart-cell on">182</text></g>
+<g class="cr-1"><rect x="209" y="104" width="39" height="38" rx="4" fill="#dde6f3"/><text x="229.5" y="128" class="chart-cell">14</text></g>
+<g class="cr-2"><rect x="250" y="104" width="39" height="38" rx="4" fill="#e8eff9"/><text x="270.5" y="128" class="chart-cell">4</text></g>
+<g class="cr-3"><rect x="168" y="144" width="39" height="38" rx="4" fill="#e3ebf6"/><text x="188.5" y="168" class="chart-cell">9</text></g>
+<g class="cr-4"><rect x="209" y="144" width="39" height="38" rx="4" fill="#2a5997"/><text x="229.5" y="168" class="chart-cell on">171</text></g>
+<g class="cr-5"><rect x="250" y="144" width="39" height="38" rx="4" fill="#e6eef8"/><text x="270.5" y="168" class="chart-cell">6</text></g>
+<g class="cr-6"><rect x="168" y="184" width="39" height="38" rx="4" fill="#eaf0f9"/><text x="188.5" y="208" class="chart-cell">3</text></g>
+<g class="cr-7"><rect x="209" y="184" width="39" height="38" rx="4" fill="#e7eef8"/><text x="229.5" y="208" class="chart-cell">5</text></g>
+<g class="cr-8"><rect x="250" y="184" width="39" height="38" rx="4" fill="#7493bd"/><text x="270.5" y="208" class="chart-cell on">106</text></g></g><g class="fl-packets"></g></svg></div>
 <figcaption class="fl-foot">
 <div class="fl-bar"><button type="button" class="fl-round fl-pause"></button><div class="fl-tabs" role="tablist"></div><button type="button" class="fl-round fl-rate" aria-label="배속">1×</button></div>
 <p class="fl-caption" aria-live="polite"></p>

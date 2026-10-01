@@ -48,7 +48,7 @@ function checkEdges(figure, names, problems) {
   };
   const seen = new Map();
   figure.edges.forEach((edge) => {
-    for (const end of [edge.from, edge.to]) if (!names.has(end)) problems.error(edge.line, unknownName('node', end, names.keys()));
+    for (const end of [edge.from, edge.to]) if (!names.has(end) && !figure.rejectedNames.has(end)) problems.error(edge.line, unknownName('node', end, names.keys()));
     // 자기 전이(재시도, 대기)는 상태 그림에서만 뜻이 있다. 다른 그림의 자기 선은 그릴 내용이 없다.
     if (edge.from === edge.to && figure.kind !== 'state') problems.error(edge.line, `an edge cannot go from "${edge.from}" to itself. Only state figures have self transitions`);
     if (isInside(edge.from, edge.to) || isInside(edge.to, edge.from)) problems.error(edge.line, 'an edge cannot join a group and a node inside it');
@@ -89,7 +89,7 @@ function checkNotEmpty(figure, problems) {
     problems.error(figure.line ?? 1, `a ${figure.kind} figure needs at least one ${what}`);
   }
   const parents = new Set([...figure.nodes, ...figure.groups].map((n) => n.parent));
-  for (const group of figure.groups) if (!parents.has(group.id) && !group.hasError) problems.error(group.line, `group "${group.id}" is empty. Put nodes inside or remove it`);
+  for (const group of figure.groups) if (!parents.has(group.id) && !group.hasError && !figure.rejectedNames.has(`group:${group.id}`)) problems.error(group.line, `group "${group.id}" is empty. Put nodes inside or remove it`);
   for (const table of figure.nodes.filter((n) => n.shape === 'table')) if (!table.columns.length) problems.error(table.line, `table "${table.id}" has no columns`);
 }
 
@@ -116,7 +116,7 @@ function checkTimeline(figure, names, problems) {
       for (const hop of beat.hops) resolveHop(hop, figure, names, problems, usedEdges);
       for (const op of beat.ops) checkCardTarget(op, figure, names, problems);
       for (const target of beat.light) checkLightTarget(target, beat.line, figure, names, problems);
-      for (const note of beat.notes) if (!names.has(note.node)) problems.error(note.line, unknownName('participant', note.node, names.keys()));
+      for (const note of beat.notes) if (!names.has(note.node) && !figure.rejectedNames.has(note.node)) problems.error(note.line, unknownName('participant', note.node, names.keys()));
     }
   }
   figure.edges.forEach((edge, i) => {
@@ -133,7 +133,7 @@ function resolveHop(hop, figure, names, problems, usedEdges) {
   const [fromId, fromColumn] = hop.from.split('.');
   const [toId, toColumn] = hop.to.split('.');
   if (!checkColumnRefs([hop.from, hop.to], figure, hop.line, problems)) return;
-  for (const id of [fromId, toId]) if (!names.has(id)) problems.error(hop.line, unknownName('node', id, names.keys()));
+  for (const id of [fromId, toId]) if (!names.has(id) && !figure.rejectedNames.has(id)) problems.error(hop.line, unknownName('node', id, names.keys()));
   if (figure.kind === 'sequence' || !names.has(fromId) || !names.has(toId)) return;
   const matches = (e, a, b, ca, cb) => e.from === a && e.to === b && (ca === undefined || e.fromColumn === ca) && (cb === undefined || e.toColumn === cb);
   const forward = figure.edges.map((e, i) => (matches(e, fromId, toId, fromColumn, toColumn) ? i : -1)).filter((i) => i >= 0);
@@ -160,8 +160,8 @@ function resolveHop(hop, figure, names, problems, usedEdges) {
 // show, clear 대상: 구조 그림의 상자, 외부, 저장소, 사람, 데이터 그림의 테이블
 function checkCardTarget(op, figure, names, problems) {
   const target = names.get(op.node);
-  if (!target) problems.error(op.line, unknownName('node', op.node, names.keys()));
-  else if (!CARD_SHAPES.includes(target.shape)) problems.error(op.line, `a ${target.shape} has no card. Use show on ${CARD_SHAPES.slice(0, 4).join(', ')} or table`);
+  if (!target && !figure.rejectedNames.has(op.node)) problems.error(op.line, unknownName('node', op.node, names.keys()));
+  else if (target && !CARD_SHAPES.includes(target.shape)) problems.error(op.line, `a ${target.shape} has no card. Use show on ${CARD_SHAPES.slice(0, 4).join(', ')} or table`);
 }
 
 // cost: time O(k + c), heap O(k), stack O(1)
@@ -172,7 +172,7 @@ function checkLightTarget(target, line, figure, names, problems) {
   const [id, column] = target.split('.');
   const item = names.get(id);
   if (!checkColumnRefs([target], figure, line, problems)) return;
-  if (!item) problems.error(line, unknownName('node', id, names.keys()));
+  if (!item && !figure.rejectedNames.has(id)) problems.error(line, unknownName('node', id, names.keys()));
   else if (column !== undefined && item.shape !== 'table') problems.error(line, `"${id}" is not a table, so "${target}" has no column`);
   else if (column !== undefined && !item.columns.some((c) => c.name === column)) problems.error(line, `table "${id}" has no column "${column}"`);
 }

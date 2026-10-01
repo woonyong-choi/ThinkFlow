@@ -81,7 +81,7 @@ async function processFile(input, args) {
   const name = basename(input).replace(/\.muto$/, '');
   const folder = args.out ?? dirname(input);
   mkdirSync(folder, { recursive: true });
-  writeOutput(join(folder, `${name}.svg`), await toSvg(result, { isStatic: args.flags.has('static') }), json);
+  writeOutput(join(folder, `${name}.svg`), await toSvg(result, { isStatic: args.flags.has('static'), name }), json);
   if (args.flags.has('html')) writeOutput(join(folder, `${name}.html`), await toHtml(result, name), json);
   return true;
 }

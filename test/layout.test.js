@@ -85,3 +85,33 @@ test('readme_example_equals_rendered_asset_source', () => {
 
   assert.equal(block, read('../docs/assets/how-it-works.muto'));
 });
+
+test('layoutGraph_two_people_and_grouped_stores_do_not_overlap', async () => {
+  const sources = [
+    'flow right\nperson a "사용자"\nperson b "관리자"\nbox c "시스템"\na -> c "요청"\nb -> c "설정"',
+    'flow right\nbox eng "엔진"\ngroup g "저장" {\n  store a "기록"\n  store b "캐시"\n}\neng -> a\neng -> b',
+  ];
+
+  for (const source of sources) assert.ok(await buildFigure(source, { strict: true }), source);
+});
+
+test('layoutGraph_person_declared_first_stays_before_group', async () => {
+  const { scene } = await buildFigure('flow right\nperson a "사용자"\ngroup g "G" {\n  box c "서버"\n}\na -> c "요청"');
+  const [a, c] = ['a', 'c'].map((id) => scene.items.find((it) => it.id === id));
+
+  assert.ok(a.x < c.x, `${a.x} >= ${c.x}`);
+});
+
+test('layoutGraph_data_chain_with_aspect_lays_out', async () => {
+  const tables = [1, 2, 3, 4].map((i) => `table t${i} "t${i}" {\n  id bigint pk\n${i > 1 ? `  t${i - 1}_id bigint fk=t${i - 1}.id\n` : ''}}`).join('\n');
+
+  const result = await buildFigure(`data right\naspect 1.6\n${tables}`);
+
+  assert.ok(result.scene.items.length === 4);
+});
+
+test('toSvg_title_falls_back_to_file_name', async () => {
+  const svg = await toSvg(await buildFigure('flow right\nbox a "A"'), { isStatic: true, name: 'context' });
+
+  assert.match(svg, /<title>context<\/title>/);
+});

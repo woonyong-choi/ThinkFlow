@@ -2,6 +2,7 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { checkChartFigure, checkFigure } from './check.js';
+import { CHIP_GAP, sizeChip } from './chip.js';
 import { drawChart } from './chart/draw.js';
 import { layoutGraph } from './layout/graph.js';
 import { layoutSequence } from './layout/sequence.js';
@@ -41,10 +42,29 @@ export async function buildFigure(source, { baseDir = '.', strict = false, requi
   }
   const sizes = new Map(figure.nodes.map((n) => [n.id, sizeNode(n, cards.contents.get(n.id))]));
   const scene = figure.kind === 'sequence' ? layoutSequence(figure, sizes) : await layoutGraph(figure, sizes);
+  widenForChips(scene, timeline);
   // 태그 색은 원본에 처음 나온 순서로 정한다(docs/design/figure-syntax.md 카드 줄).
   scene.tagOrder = figure.steps.flatMap((s) => s.beats.flatMap((b) => b.ops.filter((o) => o.row?.tag && !o.row.tone).map((o) => o.row.tag)));
   checkFigure(figure, scene, timeline, problems);
   return finish({ figure, scene, timeline }, problems, strict);
+}
+
+// cost: time O(h·l + s + e·p), heap O(1), stack O(1)
+// vars: h = 이동 수, l = 글 상자 줄 수, s = 도형 수, e = 선 수, p = 경로 점 수
+// basis: estimate
+// 가장 넓은 글 상자가 그림 폭에 들어가도록 그림을 넓히고 내용을 가운데로 옮긴다. 좁은 세로 그림에서 글 상자가 밖으로 나가지 않게 하기 위해서다.
+function widenForChips(scene, timeline) {
+  const widest = Math.max(0, ...timeline.segs.flatMap((seg) => seg.hops.filter((h) => h.data).map((h) => sizeChip(h.data).w)));
+  const need = widest + CHIP_GAP * 2;
+  if (need <= scene.width) return;
+  const dx = (need - scene.width) / 2;
+  for (const box of [...scene.items, ...scene.groups, ...(scene.notes ?? [])]) box.x += dx;
+  for (const line of scene.lifelines ?? []) line.x += dx;
+  for (const e of scene.edges) {
+    e.points = e.points.map((p) => ({ x: p.x + dx, y: p.y }));
+    if (e.labelAt) e.labelAt = { x: e.labelAt.x + dx, y: e.labelAt.y };
+  }
+  scene.width = need;
 }
 
 // cost: time O(w), heap O(w), stack O(1)

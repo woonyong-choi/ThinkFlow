@@ -24,9 +24,37 @@ let engine;
 export async function layoutGraph(figure, sizes) {
   engine ??= new ELK();
   const model = buildModel(figure, sizes);
-  const graph = toElk(model, figure);
-  const laid = await engine.layout(graph);
+  // 사람과 원통은 두 번 배치한다. 처음에는 연결점 순서를 elkjs에 맡기고, 그 순서대로 몸통 범위에 연결점을 고정해 다시 배치한다.
+  // 순서를 미리 정하면 선이 엇갈리고, 맡기기만 하면 연결점이 머리나 뚜껑 자리에 놓이기 때문이다.
+  const hasBodyPorts = [...model.nodes.values()].some((n) => isBodyShape(n) && n.ports.length);
+  if (hasBodyPorts) recordPortOrder(await engine.layout(toElk(model, figure)), model);
+  const laid = await engine.layout(toElk(model, figure));
   return readElk(laid, model, figure);
+}
+
+function isBodyShape(n) {
+  return n.shape === 'person' || n.shape === 'store';
+}
+
+// cost: time O(s·q log q), heap O(q), stack O(d)
+// vars: s = 도형 수, q = 도형의 연결점 수, d = 그룹 깊이
+// basis: estimate
+// 첫 배치에서 elkjs가 고른 연결점 순서(면마다 위에서 아래, 왼쪽에서 오른쪽)를 도형에 적는다.
+function recordPortOrder(laid, model) {
+  // cost: time O(c·q log q), heap O(q), stack O(d)
+  // vars: c = 자식 수, q = 연결점 수, d = 그룹 깊이
+  // basis: estimate
+  const visit = (node) => {
+    for (const child of node.children ?? []) {
+      const n = model.nodes.get(child.id);
+      if (n && isBodyShape(n)) {
+        const at = new Map((child.ports ?? []).map((p) => [p.id, p.y * 10000 + p.x]));
+        n.portOrder = new Map([...at.entries()].sort((a, b) => a[1] - b[1]).map(([id], i) => [id, i]));
+      }
+      visit(child);
+    }
+  };
+  visit(laid);
 }
 
 // cost: time O(s + e·d), heap O(s + e·d), stack O(1)
@@ -125,7 +153,7 @@ function addPort(container, way, edge) {
 
 // cost: time O(1), heap O(1), stack O(1)
 // basis: estimate
-// 선 끝. 사람, 갈림길, 원통(세로 배치), 테이블 열은 연결점 제약을 둔 포트를 만든다.
+// 선 끝. 사람, 갈림길, 원통, 테이블 열은 연결점 제약을 둔 포트를 만든다.
 function endpoint(id, way, edge, nodes) {
   const node = nodes.get(id);
   if (!node) return id;
@@ -136,10 +164,10 @@ function endpoint(id, way, edge, nodes) {
     const y = node.size.rowH * (row + 1.5);
     return addNodePort(node, way, edge, way === 'out' ? 'EAST' : 'WEST', { x: way === 'out' ? node.size.w : 0, y });
   }
-  // 가로 그림은 elkjs가 원래 옆면에 선을 붙인다. 세로 그림에서만 위아래 면을 막으려고 옆면 연결점을 둔다.
-  if (node.shape === 'person' && direction === 'down') return addNodePort(node, way, edge, way === 'out' ? 'EAST' : 'WEST');
+  // 사람과 원통은 바깥 여백(머리, 이름표, 뚜껑)까지 배치 사각형에 넣으므로, 선이 몸통에만 닿도록 모든 선에 연결점을 둔다.
+  if (node.shape === 'person') return addNodePort(node, way, edge, way === 'out' ? 'EAST' : 'WEST');
   if (node.shape === 'decision') return addNodePort(node, way, edge, way === 'out' ? 'EAST' : 'WEST', way === 'out' ? { x: node.size.w, y: node.size.h / 2 } : { x: 0, y: node.size.h / 2 });
-  if (node.shape === 'store' && direction === 'down') return addNodePort(node, way, edge, way === 'out' ? 'SOUTH' : 'NORTH');
+  if (node.shape === 'store') return addNodePort(node, way, edge, direction === 'down' ? (way === 'out' ? 'SOUTH' : 'NORTH') : way === 'out' ? 'EAST' : 'WEST');
   return id;
 }
 
@@ -172,19 +200,17 @@ function toElk(model, figure) {
   const toNode = (id) => {
     if (containers.has(id)) return toContainer(containers.get(id));
     const n = nodes.get(id);
-    const vertical = n.shape === 'store' && n.direction === 'down';
+    const outer = outerBox(n.size);
     const ports = n.ports.map((p) => ({ id: p.id, width: 0, height: 0, ...(p.position ?? {}), layoutOptions: { 'elk.port.side': p.side } }));
-    if (vertical) spreadVerticalPorts(ports, n.size);
-    const isFixed = n.shape === 'table' || n.shape === 'decision' || vertical;
+    // 사람과 원통: 첫 배치는 순서를 맡기고(FIXED_SIDE), 둘째 배치는 그 순서로 몸통 범위에 고정한다(FIXED_POS).
+    const isFirstPass = isBodyShape(n) && !n.portOrder;
+    if (isBodyShape(n) && n.portOrder) spreadBodyPorts(ports, n.size, n.portOrder);
     return {
       id,
-      width: n.size.w,
-      height: n.size.h,
+      width: outer.w,
+      height: outer.h,
       ports,
-      layoutOptions: {
-        'elk.portConstraints': ports.length ? (isFixed ? 'FIXED_POS' : 'FIXED_SIDE') : 'FREE',
-        'elk.margins': `[top=${n.size.marginTop},left=${n.size.marginSide ?? 0},bottom=${n.size.marginBottom},right=${n.size.marginSide ?? 0}]`,
-      },
+      layoutOptions: { 'elk.portConstraints': ports.length ? (isFirstPass ? 'FIXED_SIDE' : 'FIXED_POS') : 'FREE' },
     };
   };
   const toContainer = (c) => ({
@@ -200,7 +226,7 @@ function toElk(model, figure) {
       'elk.randomSeed': '1',
       'elk.layered.considerModelOrder.strategy': 'NODES_AND_EDGES',
       // 되도는 선이 있으면 선언 순서를 거스르는 선을 거꾸로 놓는다. 먼저 적은 도형이 앞(왼쪽, 위)에 오게 하기 위해서다.
-      'elk.layered.cycleBreaking.strategy': 'MODEL_ORDER',
+      'elk.layered.cycleBreaking.strategy': 'GREEDY_MODEL_ORDER',
       'elk.spacing.nodeNode': String(SPACE['16']),
       'elk.layered.spacing.nodeNodeBetweenLayers': String(SPACE['30']),
       'elk.spacing.edgeEdge': String(SPACE['5']),
@@ -232,15 +258,27 @@ function sizeOf({ w, h }) {
 // basis: estimate
 // 원통 위아래 면 연결점은 가운데 1/3 안에 고르게 두고, 뚜껑 윤곽(몸통 사각형 바깥 cap 거리)에 놓는다.
 // 몸통 사각형 위 변은 뚜껑 가운데 줄이라, 거기서 끝나면 화살표가 윗면을 파고들기 때문이다.
-function spreadVerticalPorts(ports, size) {
-  for (const side of ['NORTH', 'SOUTH']) {
-    const list = ports.filter((p) => p.layoutOptions['elk.port.side'] === side);
+// cost: time O(q log q), heap O(q), stack O(1)
+// vars: q = 도형의 연결점 수
+// basis: estimate
+// 연결점을 몸통 범위에 첫 배치의 순서대로 고르게 놓는다. 위아래 면은 가운데 1/3, 옆면은 몸통 높이이고, 사람의 옆면은 넓은 이름표 여백만큼 안쪽 몸통 변이다(음수 borderOffset).
+function spreadBodyPorts(ports, size, order) {
+  const side = size.marginSide ?? 0;
+  const outer = outerBox(size);
+  for (const face of ['NORTH', 'SOUTH', 'EAST', 'WEST']) {
+    const list = ports.filter((p) => p.layoutOptions['elk.port.side'] === face).sort((a, b) => order.get(a.id) - order.get(b.id));
     list.forEach((p, i) => {
-      p.x = size.w / 3 + ((i + 1) * (size.w / 3)) / (list.length + 1);
-      p.y = side === 'NORTH' ? 0 : size.h;
-      p.layoutOptions['elk.port.borderOffset'] = String(side === 'NORTH' ? size.marginTop : size.marginBottom);
+      const t = (i + 1) / (list.length + 1);
+      if (face === 'NORTH' || face === 'SOUTH') Object.assign(p, { x: side + size.w / 3 + (t * size.w) / 3, y: face === 'NORTH' ? 0 : outer.h });
+      else Object.assign(p, { x: face === 'WEST' ? 0 : outer.w, y: size.marginTop + t * size.h, layoutOptions: { ...p.layoutOptions, 'elk.port.borderOffset': String(-side) } });
     });
   }
+}
+
+// 배치 사각형. 바깥 여백까지 넣어야 elkjs가 다른 도형과 선을 그 자리에서 비켜 놓는다.
+function outerBox(size) {
+  const side = size.marginSide ?? 0;
+  return { w: size.w + side * 2, h: size.h + size.marginTop + size.marginBottom };
 }
 
 // cost: time O(s + e·(d + p)), heap O(s + e·p), stack O(d)
@@ -266,7 +304,8 @@ function readElk(laid, model, figure) {
         offsets.set(child.id, { x, y });
       } else {
         const n = model.nodes.get(child.id);
-        items.push({ ...n, ...n.size, x, y, w: child.width, h: child.height });
+        // 배치 사각형에서 바깥 여백을 빼서 몸통 사각형으로 되돌린다.
+        items.push({ ...n, ...n.size, x: x + (n.size.marginSide ?? 0), y: y + n.size.marginTop, w: n.size.w, h: n.size.h });
       }
       walk(child, ox + node.x, oy + node.y);
     }

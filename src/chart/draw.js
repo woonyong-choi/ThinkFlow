@@ -20,7 +20,9 @@ const DOT = SIZE['chart-dot'];
 const PAD = SPACE['14'];
 // 값 글자가 막대 끝 바깥에 들어갈 자리
 const VALUE_W = SPACE['30'] + SPACE['18'];
-const HEAT_MIN = values.opacity['heat-min'];
+// 히트맵 칸 색. 값 0은 핵심 1 옅게, 최댓값은 핵심 1 진하게이고 그 사이는 sRGB 보간이다(문서 스킬 색표).
+const HEAT_LOW = values.color['heat-low'];
+const HEAT_HIGH = values.color['heat-high'];
 const SERIES_COLOR = [tokens.color['series-1'], tokens.color['series-2']];
 
 // cost: time O(r·s + t), heap O(out), stack O(1)
@@ -45,6 +47,14 @@ export function drawChart(figure) {
 /** 항목 이름 칸 너비. 가장 긴 이름에 맞추되 LABEL_W와 LABEL_MAX 사이다. 넘는 이름은 그림 검사 1번이 알린다. */
 export function labelColumn(names) {
   return Math.min(LABEL_MAX, Math.max(LABEL_W, ...names.map((name) => measure(name, TEXT['13']) + LABEL_GAP)));
+}
+
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+function heatColor(strength) {
+  const channel = (hex, i) => parseInt(hex.slice(1 + i * 2, 3 + i * 2), 16);
+  const mix = [0, 1, 2].map((i) => Math.round(channel(HEAT_LOW, i) + (channel(HEAT_HIGH, i) - channel(HEAT_LOW, i)) * strength));
+  return `#${mix.map((v) => v.toString(16).padStart(2, '0')).join('')}`;
 }
 
 function labelFit(name, line) {
@@ -243,23 +253,26 @@ function drawHeatmap(figure, top) {
   const rows = [...new Set(chart.rows.map((c) => c.row))];
   const cols = [...new Set(chart.rows.map((c) => c.col))];
   const plotX = labelColumn(rows) + PAD;
-  const cell = Math.min(SIZE['chart-cell'], (WIDTH - plotX - PAD) / cols.length);
+  // 칸 너비는 가장 긴 열 이름에 맞추되 남은 폭을 열 수로 나눈 값을 넘지 않는다. 칸 높이는 토큰 그대로다.
+  const widestCol = Math.max(...cols.map((c) => measure(c, TEXT['11'], 'mono'))) + SPACE['4'];
+  const cellW = Math.min(Math.max(SIZE['chart-cell'], widestCol), (WIDTH - plotX - PAD) / cols.length);
+  const cellH = SIZE['chart-cell'];
   const max = Math.max(...chart.rows.map((c) => c.values.value));
-  const parts = cols.map((c, j) => `<text x="${r(plotX + j * cell + cell / 2)}" y="${r(top + TEXT['11'])}" class="chart-tick">${escapeXml(c)}</text>`);
+  const parts = cols.map((c, j) => `<text x="${r(plotX + j * cellW + cellW / 2)}" y="${r(top + TEXT['11'])}" class="chart-tick">${escapeXml(c)}</text>`);
   const gridTop = top + TEXT['11'] + SPACE['4'];
-  rows.forEach((row, i) => parts.push(`<text x="${PAD}" y="${r(centerBaseline(gridTop + i * cell + cell / 2, TEXT['13']))}" class="chart-label">${escapeXml(row)}</text>`));
+  rows.forEach((row, i) => parts.push(`<text x="${PAD}" y="${r(centerBaseline(gridTop + i * cellH + cellH / 2, TEXT['13']))}" class="chart-label">${escapeXml(row)}</text>`));
   chart.rows.forEach((c, k) => {
-    const [x, y] = [plotX + cols.indexOf(c.col) * cell, gridTop + rows.indexOf(c.row) * cell];
+    const [x, y] = [plotX + cols.indexOf(c.col) * cellW, gridTop + rows.indexOf(c.row) * cellH];
     const strength = max ? c.values.value / max : 0;
     parts.push(
-      `<g class="cr-${k}"><rect x="${r(x)}" y="${r(y)}" width="${r(cell - SPACE['1'])}" height="${r(cell - SPACE['1'])}" rx="${values.radius.sm}" fill="${SERIES_COLOR[0]}" fill-opacity="${r(HEAT_MIN + strength * (1 - HEAT_MIN))}"/>` +
-        `<text x="${r(x + cell / 2)}" y="${r(centerBaseline(y + cell / 2, TEXT['11']))}" class="chart-cell${HEAT_MIN + strength * (1 - HEAT_MIN) > values.opacity['heat-text'] ? ' on' : ''}">${formatNumber(c.values.value)}</text></g>`,
+      `<g class="cr-${k}"><rect x="${r(x)}" y="${r(y)}" width="${r(cellW - SPACE['1'])}" height="${r(cellH - SPACE['1'])}" rx="${values.radius.sm}" fill="${heatColor(strength)}"/>` +
+        `<text x="${r(x + cellW / 2)}" y="${r(centerBaseline(y + cellH / 2, TEXT['11']))}" class="chart-cell${strength > values.opacity['heat-text'] ? ' on' : ''}">${formatNumber(c.values.value)}</text></g>`,
     );
   });
   // 열 이름은 칸 너비 안에 들어가야 한다. 넘으면 옆 열 이름과 겹친다.
-  const fits = cols.map((c) => ({ text: c, width: measure(c, TEXT['11'], 'mono'), room: cell - SPACE['1'], line: chart.rows.find((row) => row.col === c).line, what: 'column name' }));
+  const fits = cols.map((c) => ({ text: c, width: measure(c, TEXT['11'], 'mono'), room: cellW - SPACE['1'], line: chart.rows.find((row) => row.col === c).line, what: 'column name' }));
   fits.push(...rows.map((row) => labelFit(row, chart.rows.find((c) => c.row === row).line)));
-  return { svg: parts.join('\n'), bottom: gridTop + rows.length * cell, rowKeys: chart.rows.map((c) => `${c.row}\u0000${c.col}`), fits };
+  return { svg: parts.join('\n'), bottom: gridTop + rows.length * cellH, rowKeys: chart.rows.map((c) => `${c.row}\u0000${c.col}`), fits };
 }
 
 // cost: time O(t), heap O(out), stack O(1)

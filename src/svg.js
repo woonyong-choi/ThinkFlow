@@ -27,8 +27,9 @@ const MOVE = curveOf('move');
  * SVG 문서를 만든다.
  * @param result buildFigure 결과
  * @param isStatic 멈춘 SVG면 true. 모든 선과 계열을 보이고 카드는 비운다
+ * @param name 원본 파일 이름. 그림 제목(title)이 없을 때 SVG 제목으로 쓴다
  */
-export async function toSvg(result, { isStatic = false } = {}) {
+export async function toSvg(result, { isStatic = false, name = '' } = {}) {
   const { figure, timeline } = result;
   const glyphs = createGlyphSet();
   const animator = isStatic || !timeline.segs.length ? staticAnimator() : createAnimator(timeline);
@@ -37,7 +38,7 @@ export async function toSvg(result, { isStatic = false } = {}) {
   const captions = isStatic ? { svg: '', height: 0 } : drawCaptions(timeline, animator, width, content.height, glyphs);
   const height = content.height + captions.height;
   const fonts = await embedFonts(glyphs.used);
-  const title = figure.title ?? '';
+  const title = figure.title ?? name;
   return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="fl${content.className}" width="${r(width)}" height="${r(height)}" viewBox="0 0 ${r(width)} ${r(height)}" role="img">
 <title>${escapeXml(title)}</title>
 <style>${fonts}

@@ -326,10 +326,13 @@ function checkAspect(figure, scene, problems) {
   const turn = isWide ? 'down' : 'right';
   const size = (g) => (isWide ? g.w : g.h);
   const own = new Map(figure.groups.map((g) => [g.id, g.direction]));
-  const group = [...scene.groups].filter((g) => own.get(g.id) !== turn).sort((a, b) => size(b) - size(a))[0];
+  // 방향을 바꿔 비율이 달라지는 그룹은 안에 둘 이상(도형이나 하위 그룹)이 있는 그룹뿐이다.
+  const members = (id) => [...scene.items, ...scene.groups].filter((it) => (it.parent ?? 'root') === id).length;
+  const group = [...scene.groups].filter((g) => own.get(g.id) !== turn && members(g.id) > 1).sort((a, b) => size(b) - size(a))[0];
   let fix;
   if (group) fix = `Set direction=${turn} on group "${group.id}"`;
-  else if (scene.groups.length) fix = `Change the figure direction to ${turn}`;
+  else if (scene.groups.length && figure.direction !== turn) fix = `Change the figure direction to ${turn}`;
+  else if (scene.groups.length) fix = 'Split the figure into smaller figures';
   else if (figure.aspect !== undefined) fix = `Use a ${isWide ? 'smaller' : 'larger'} aspect than ${figure.aspect}`;
   else fix = 'Add "aspect 1.6"';
   problems.warn(figure.line, `[check 9] figure aspect ${ratio.toFixed(1)} is outside 1/3 to 3. ${fix}`);

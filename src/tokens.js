@@ -71,6 +71,8 @@ export const tokens = freeze({
     },
     "series-1": "var(--color-series-1)",
     "series-2": "var(--color-series-2)",
+    "heat-low": "var(--color-heat-low)",
+    "heat-high": "var(--color-heat-high)",
     "grid": "var(--color-grid)"
   },
   "font": {
@@ -206,7 +208,6 @@ export const tokens = freeze({
     "halo": "var(--opacity-halo)",
     "tab-on": "var(--opacity-tab-on)",
     "dim": "var(--opacity-dim)",
-    "heat-min": "var(--opacity-heat-min)",
     "heat-text": "var(--opacity-heat-text)"
   },
   "z": {
@@ -300,6 +301,8 @@ export const values = freeze({
     },
     "series-1": "#2a78d6",
     "series-2": "#eb6834",
+    "heat-low": "#edf3fb",
+    "heat-high": "#1d4f91",
     "grid": "#e6e5e1"
   },
   "font": {
@@ -435,7 +438,6 @@ export const values = freeze({
     "halo": 0.2,
     "tab-on": 0.06,
     "dim": 0.3,
-    "heat-min": 0.08,
     "heat-text": 0.55
   },
   "z": {

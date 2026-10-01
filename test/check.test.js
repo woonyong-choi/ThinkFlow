@@ -26,12 +26,18 @@ function recheck({ figure, scene, timeline }) {
   return problems.errors.map((p) => `${p.line}: ${p.message}`);
 }
 
-test('checkFigure_moving_text_wider_than_figure_is_check_7_error', async () => {
-  const source = 'flow down\nbox a "A"\nbox b "B"\na -> b\nstep "보내기"\n  a -> b "이동 글이 그림 폭보다 넓어서 어느 쪽으로 밀어도 그림 밖으로 나간다"';
+test('checkFigure_moving_text_taller_than_short_figure_is_check_7_error', async () => {
+  const source = 'flow right\nbox a "A"\nbox b "B"\nbox c "C"\na -> b\nb -> c\nstep "보내기"\n  a -> b "세 줄로 나뉘는 긴 이동 글이라서 점 위에 두면 그림 위쪽 경계를 넘고 점 아래로 내려도 아래쪽 경계를 넘는다"';
 
   const messages = await problemsOf(source);
 
-  assert.ok(messages.some((m) => m.startsWith('6: [check 7]')), messages.join('\n'));
+  assert.ok(messages.some((m) => m.startsWith('8: [check 7]')), messages.join('\n'));
+});
+
+test('buildFigure_narrow_figure_widens_for_moving_text', async () => {
+  const { scene } = await buildFigure('flow down\nbox a "가"\nbox b "나"\na -> b\nstep "s"\n  a -> b "민지는 3월에 토스로 옮겼고 결제팀을 맡았다"');
+
+  assert.ok(scene.width > 200, String(scene.width));
 });
 
 test('checkFigure_moving_text_near_left_edge_is_pushed_inside', async () => {

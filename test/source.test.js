@@ -151,3 +151,15 @@ test('tokenizeLine_empty_text_is_error', () => {
 
   assert.equal(errors.length, 2, errors.join('\n'));
 });
+
+test('readColumn_type_with_symbols_needs_quotes', () => {
+  const errors = errorsOf('data right\ntable t "T" {\n  name varchar(255)\n}');
+
+  assert.ok(errors.some((e) => e.includes('write a type with symbols as quoted text')), errors.join('\n'));
+});
+
+test('validateFigure_rejected_name_adds_no_unknown_name_errors', () => {
+  const errors = errorsOf('flow right\ngroup a "A" {\n  box step "나"\n}\nbox c "C"\nstep -> c');
+
+  assert.deepEqual(errors, ['3: "step" is a reserved word. Choose another name']);
+});
