@@ -123,6 +123,9 @@
   --size-chart-plot-h: 260px;
   --size-chart-axis: 48px;
   --size-chart-cell: 40px;
+  --size-chart-cap: 8px;
+  --size-chart-range: 6px;
+  --size-chart-arrow-min: 16px;
   --weight-medium: 500;
   --weight-semibold: 600;
   --leading-normal: 1.5;
@@ -169,6 +172,7 @@
   --border-tag: 1.5px;
   --border-edge: 1.75px;
   --border-strong: 2.5px;
+  --border-halo: 8px;
   --dash-line: 5;
   --dash-gap: 4;
   --dash-card: 3;
@@ -176,6 +180,8 @@
   --opacity-halo: 0.2;
   --opacity-tab-on: 0.06;
   --opacity-dim: 0.3;
+  --opacity-band: 0.16;
+  --opacity-range: 0.32;
   --opacity-heat-text: 0.55;
   --z-raised: 2;
   --z-overlay: 10;
@@ -674,6 +680,13 @@ html.embedded .fl-canvas svg {
   fill: var(--color-muted);
 }
 
+.fl .chart-value {
+  paint-order: stroke;
+  stroke: var(--color-bg);
+  stroke-width: var(--border-halo);
+  stroke-linejoin: round;
+}
+
 .fl .chart-tick {
   text-anchor: middle;
 }
@@ -766,10 +779,34 @@ html.embedded .fl-canvas svg {
   stroke-dasharray: var(--dash-line) var(--dash-gap);
 }
 
-.fl .chart-ci,
 .fl .chart-whisker,
 .fl .chart-median {
   stroke: var(--color-fg);
+  stroke-width: var(--border-tag);
+}
+
+.fl .chart-ci {
+  stroke: var(--color-fg);
+  stroke-width: var(--border-strong);
+}
+
+.fl .chart-interval {
+  fill: none;
+  stroke: var(--color-muted);
+  stroke-width: var(--border-edge);
+}
+
+.fl .chart-band {
+  fill-opacity: var(--opacity-band);
+}
+
+.fl .chart-range {
+  stroke-linecap: round;
+  stroke-opacity: var(--opacity-range);
+}
+
+.fl .chart-after {
+  stroke: var(--color-bg);
   stroke-width: var(--border-tag);
 }
 
@@ -789,12 +826,22 @@ html.embedded .fl-canvas svg {
 .fl .chart-link {
   stroke: var(--color-series-2);
   stroke-width: var(--border-strong);
-  stroke-dasharray: 1;
 }
 
 .fl .chart-link {
   stroke: var(--color-muted);
-  stroke-width: var(--border-thin);
+  stroke-width: var(--border-strong);
+  stroke-linecap: round;
+}
+
+.fl .chart-label.shift {
+  transform: translateY(var(--label-shift));
+  transition: transform var(--duration-fast);
+}
+
+/* pathLength 1인 선이 stroke-dashoffset으로 그려진다. 선 차트의 선, 덤벨 화살표, 산점도 link가 함께 쓴다. */
+.fl .draw {
+  stroke-dasharray: 1;
 }
 
 .fl .grow {
@@ -816,17 +863,24 @@ html.embedded .fl-canvas svg {
   transition: opacity var(--duration-fast);
 }
 
+.fl .play .dot, .fl .play.dot { animation: chart-dot 200ms var(--easing-reveal) both; }
+@keyframes chart-dot { from { opacity: 0; } }
+
 .fl .play .grow, .fl .play.grow { animation: chart-grow 900ms var(--easing-reveal) both; }
 .fl .play .draw, .fl .play.draw { animation: chart-draw 900ms var(--easing-reveal) both; }
+.fl .play .wipe, .fl .play.wipe { animation: chart-wipe 900ms var(--easing-reveal) both; }
 .fl .play .pop, .fl .play.pop, .fl .play .late, .fl .play.late { animation: chart-fade 900ms var(--easing-reveal) both; }
 .fl.chart-loop .grow { animation: chart-grow-loop 7000ms infinite both; }
 .fl.chart-loop .draw { animation: chart-draw-loop 7000ms infinite both; }
+.fl.chart-loop .wipe { animation: chart-wipe-loop 7000ms infinite both; }
 .fl.chart-loop .pop, .fl.chart-loop .late { animation: chart-fade-loop 7000ms infinite both; }
 @keyframes chart-grow { from { transform: scaleX(0); } }
 @keyframes chart-draw { from { stroke-dashoffset: 1; } }
+@keyframes chart-wipe { from { clip-path: inset(0 100% 0 0); } }
 @keyframes chart-fade { 0%, 50% { opacity: 0; } }
 @keyframes chart-grow-loop { 0% { transform: scaleX(0); animation-timing-function: var(--easing-reveal); } 12.86%, 100% { transform: none; } }
 @keyframes chart-draw-loop { 0% { stroke-dashoffset: 1; animation-timing-function: var(--easing-reveal); } 12.86%, 100% { stroke-dashoffset: 0; } }
+@keyframes chart-wipe-loop { 0% { clip-path: inset(0 100% 0 0); animation-timing-function: var(--easing-reveal); } 12.86%, 100% { clip-path: inset(0 0 0 0); } }
 @keyframes chart-fade-loop { 0%, 6.43% { opacity: 0; animation-timing-function: var(--easing-reveal); } 12.86%, 100% { opacity: 1; } }
 </style>
 </head>
@@ -1125,6 +1179,7 @@ function figurePlay(root, data) {
         }
       }
     });
+    svg.style.setProperty('--label-shift', `${seg.labelShift}px`);
     rowEls.forEach((els, k) => els.forEach((el) => el.classList.toggle('dim', seg.lights.length > 0 && !seg.lights.includes(k))));
   }
 
@@ -1229,7 +1284,7 @@ function figurePlay(root, data) {
   }
 }
 
-figurePlay(document.querySelector('.fl-figure'), {"segs":[{"si":0,"t0":0,"t1":3310,"hops":[],"edgesOn":[],"nodesOn":[],"groupsOn":[],"columnsOn":[],"cards":{},"cardsBefore":{},"cardsAt":{},"caption":"기억 없이 쓴 비용과 수정 횟수다","series":[0],"growing":[0],"lights":[]},{"si":1,"t0":3310,"t1":7025,"hops":[],"edgesOn":[],"nodesOn":[],"groupsOn":[],"columnsOn":[],"cards":{},"cardsBefore":{},"cardsAt":{},"caption":"기억을 붙이면 두 에이전트 모두 왼쪽 아래로 간다","series":[0,1],"growing":[1],"lights":[]}],"steps":["기억 없음","기억 붙임"],"cardCounts":[],"edgeEnds":[],"seriesCount":2,"rowCount":4,"metrics":{"accent":"var(--color-accent)","halo":10,"haloOpacity":0.2,"packet":4.5,"chipRadius":8,"chipLine":15,"chipPadX":18,"chipPadY":8,"chipGap":12,"icon":12,"iconStroke":1.75,"pauseStroke":2.5,"zoomMax":6,"zoomStep":1.25,"move":[0.455,0.03,0.515,0.955]}});
+figurePlay(document.querySelector('.fl-figure'), {"segs":[{"si":0,"t0":0,"t1":3310,"hops":[],"edgesOn":[],"nodesOn":[],"groupsOn":[],"columnsOn":[],"cards":{},"cardsBefore":{},"cardsAt":{},"caption":"기억 없이 쓴 비용과 수정 횟수다","labelShift":0,"series":[0],"growing":[0],"lights":[]},{"si":1,"t0":3310,"t1":7025,"hops":[],"edgesOn":[],"nodesOn":[],"groupsOn":[],"columnsOn":[],"cards":{},"cardsBefore":{},"cardsAt":{},"caption":"기억을 붙이면 두 에이전트 모두 왼쪽 아래로 간다","labelShift":0,"series":[0,1],"growing":[1],"lights":[]}],"steps":["기억 없음","기억 붙임"],"cardCounts":[],"edgeEnds":[],"seriesCount":2,"rowCount":4,"metrics":{"accent":"var(--color-accent)","halo":10,"haloOpacity":0.2,"packet":4.5,"chipRadius":8,"chipLine":15,"chipPadX":18,"chipPadY":8,"chipGap":12,"icon":12,"iconStroke":1.75,"pauseStroke":2.5,"zoomMax":6,"zoomStep":1.25,"move":[0.455,0.03,0.515,0.955]}});
 </script>
 </body>
 </html>

@@ -110,6 +110,9 @@
   --size-chart-plot-h: 260px;
   --size-chart-axis: 48px;
   --size-chart-cell: 40px;
+  --size-chart-cap: 8px;
+  --size-chart-range: 6px;
+  --size-chart-arrow-min: 16px;
   --weight-medium: 500;
   --weight-semibold: 600;
   --leading-normal: 1.5;
@@ -156,6 +159,7 @@
   --border-tag: 1.5px;
   --border-edge: 1.75px;
   --border-strong: 2.5px;
+  --border-halo: 8px;
   --dash-line: 5;
   --dash-gap: 4;
   --dash-card: 3;
@@ -163,6 +167,8 @@
   --opacity-halo: 0.2;
   --opacity-tab-on: 0.06;
   --opacity-dim: 0.3;
+  --opacity-band: 0.16;
+  --opacity-range: 0.32;
   --opacity-heat-text: 0.55;
   --z-raised: 2;
   --z-overlay: 10;

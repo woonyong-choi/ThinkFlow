@@ -115,6 +115,9 @@
   --size-chart-plot-h: 260px;
   --size-chart-axis: 48px;
   --size-chart-cell: 40px;
+  --size-chart-cap: 8px;
+  --size-chart-range: 6px;
+  --size-chart-arrow-min: 16px;
   --weight-medium: 500;
   --weight-semibold: 600;
   --leading-normal: 1.5;
@@ -161,6 +164,7 @@
   --border-tag: 1.5px;
   --border-edge: 1.75px;
   --border-strong: 2.5px;
+  --border-halo: 8px;
   --dash-line: 5;
   --dash-gap: 4;
   --dash-card: 3;
@@ -168,6 +172,8 @@
   --opacity-halo: 0.2;
   --opacity-tab-on: 0.06;
   --opacity-dim: 0.3;
+  --opacity-band: 0.16;
+  --opacity-range: 0.32;
   --opacity-heat-text: 0.55;
   --z-raised: 2;
   --z-overlay: 10;
@@ -409,6 +415,13 @@
   fill: var(--color-muted);
 }
 
+.fl .chart-value {
+  paint-order: stroke;
+  stroke: var(--color-bg);
+  stroke-width: var(--border-halo);
+  stroke-linejoin: round;
+}
+
 .fl .chart-tick {
   text-anchor: middle;
 }
@@ -501,10 +514,34 @@
   stroke-dasharray: var(--dash-line) var(--dash-gap);
 }
 
-.fl .chart-ci,
 .fl .chart-whisker,
 .fl .chart-median {
   stroke: var(--color-fg);
+  stroke-width: var(--border-tag);
+}
+
+.fl .chart-ci {
+  stroke: var(--color-fg);
+  stroke-width: var(--border-strong);
+}
+
+.fl .chart-interval {
+  fill: none;
+  stroke: var(--color-muted);
+  stroke-width: var(--border-edge);
+}
+
+.fl .chart-band {
+  fill-opacity: var(--opacity-band);
+}
+
+.fl .chart-range {
+  stroke-linecap: round;
+  stroke-opacity: var(--opacity-range);
+}
+
+.fl .chart-after {
+  stroke: var(--color-bg);
   stroke-width: var(--border-tag);
 }
 
@@ -524,12 +561,22 @@
 .fl .chart-link {
   stroke: var(--color-series-2);
   stroke-width: var(--border-strong);
-  stroke-dasharray: 1;
 }
 
 .fl .chart-link {
   stroke: var(--color-muted);
-  stroke-width: var(--border-thin);
+  stroke-width: var(--border-strong);
+  stroke-linecap: round;
+}
+
+.fl .chart-label.shift {
+  transform: translateY(var(--label-shift));
+  transition: transform var(--duration-fast);
+}
+
+/* pathLength 1인 선이 stroke-dashoffset으로 그려진다. 선 차트의 선, 덤벨 화살표, 산점도 link가 함께 쓴다. */
+.fl .draw {
+  stroke-dasharray: 1;
 }
 
 .fl .grow {
@@ -551,17 +598,24 @@
   transition: opacity var(--duration-fast);
 }
 
+.fl .play .dot, .fl .play.dot { animation: chart-dot 200ms var(--easing-reveal) both; }
+@keyframes chart-dot { from { opacity: 0; } }
+
 .fl .play .grow, .fl .play.grow { animation: chart-grow 900ms var(--easing-reveal) both; }
 .fl .play .draw, .fl .play.draw { animation: chart-draw 900ms var(--easing-reveal) both; }
+.fl .play .wipe, .fl .play.wipe { animation: chart-wipe 900ms var(--easing-reveal) both; }
 .fl .play .pop, .fl .play.pop, .fl .play .late, .fl .play.late { animation: chart-fade 900ms var(--easing-reveal) both; }
 .fl.chart-loop .grow { animation: chart-grow-loop 7000ms infinite both; }
 .fl.chart-loop .draw { animation: chart-draw-loop 7000ms infinite both; }
+.fl.chart-loop .wipe { animation: chart-wipe-loop 7000ms infinite both; }
 .fl.chart-loop .pop, .fl.chart-loop .late { animation: chart-fade-loop 7000ms infinite both; }
 @keyframes chart-grow { from { transform: scaleX(0); } }
 @keyframes chart-draw { from { stroke-dashoffset: 1; } }
+@keyframes chart-wipe { from { clip-path: inset(0 100% 0 0); } }
 @keyframes chart-fade { 0%, 50% { opacity: 0; } }
 @keyframes chart-grow-loop { 0% { transform: scaleX(0); animation-timing-function: var(--easing-reveal); } 12.86%, 100% { transform: none; } }
 @keyframes chart-draw-loop { 0% { stroke-dashoffset: 1; animation-timing-function: var(--easing-reveal); } 12.86%, 100% { stroke-dashoffset: 0; } }
+@keyframes chart-wipe-loop { 0% { clip-path: inset(0 100% 0 0); animation-timing-function: var(--easing-reveal); } 12.86%, 100% { clip-path: inset(0 0 0 0); } }
 @keyframes chart-fade-loop { 0%, 6.43% { opacity: 0; animation-timing-function: var(--easing-reveal); } 12.86%, 100% { opacity: 1; } }
 
 @keyframes a0 { 0%,47.116% { opacity: 1 } 47.117%,99.999% { opacity: 1 } }
@@ -571,6 +625,8 @@
 .fl .cs-0 .grow, .fl .cs-0.grow { animation: g0 7s infinite; }
 @keyframes d0 { 0%,0% { stroke-dashoffset: 1; animation-timing-function: var(--easing-reveal) } 12.811%,100% { stroke-dashoffset: 0 } }
 .fl .cs-0 .draw, .fl .cs-0.draw { animation: d0 7s infinite; }
+@keyframes w0 { 0%,0% { clip-path: inset(0 100% 0 0); animation-timing-function: var(--easing-reveal) } 12.811%,100% { clip-path: inset(0 0 0 0) } }
+.fl .cs-0 .wipe, .fl .cs-0.wipe { animation: w0 7s infinite; }
 @keyframes f0 { 0%,6.406% { opacity: 0; animation-timing-function: var(--easing-reveal) } 12.811%,100% { opacity: 1 } }
 .fl .cs-0 .late, .fl .cs-0 .pop, .fl .cs-0.pop { animation: f0 7s infinite; }
 @keyframes a1 { 0%,47.116% { opacity: 0 } 47.117%,99.999% { opacity: 1 } }
@@ -580,6 +636,8 @@
 .fl .cs-1 .grow, .fl .cs-1.grow { animation: g1 7s infinite; }
 @keyframes d1 { 0%,47.117% { stroke-dashoffset: 1; animation-timing-function: var(--easing-reveal) } 59.929%,100% { stroke-dashoffset: 0 } }
 .fl .cs-1 .draw, .fl .cs-1.draw { animation: d1 7s infinite; }
+@keyframes w1 { 0%,47.117% { clip-path: inset(0 100% 0 0); animation-timing-function: var(--easing-reveal) } 59.929%,100% { clip-path: inset(0 0 0 0) } }
+.fl .cs-1 .wipe, .fl .cs-1.wipe { animation: w1 7s infinite; }
 @keyframes f1 { 0%,53.523% { opacity: 0; animation-timing-function: var(--easing-reveal) } 59.929%,100% { opacity: 1 } }
 .fl .cs-1 .late, .fl .cs-1 .pop, .fl .cs-1.pop { animation: f1 7s infinite; }
 @keyframes a2 { 0%,47.116% { opacity: 1 } 47.117%,99.999% { opacity: 1 } }

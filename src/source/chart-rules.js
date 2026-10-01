@@ -3,6 +3,8 @@ import { unknownName } from './problems.js';
 
 // 종류마다 계열 수의 [최소, 최대]
 const SERIES_RANGE = { bar: [1, 2], dumbbell: [2, 2], box: [0, 0], scatter: [0, 2], line: [1, 2], heatmap: [0, 0] };
+// 신뢰구간(`값.low`, `값.high`)을 받는 종류
+export const INTERVAL_TYPES = ['bar', 'dumbbell', 'line'];
 const BOX_KEYS = ['min', 'q1', 'median', 'q3', 'max'];
 // 값의 절댓값 상한. 이보다 크면 십진 반올림이 12자리 정밀도를 넘어 눈금과 글자를 정확히 쓸 수 없다.
 const MAX_VALUE = 1e15;
@@ -92,11 +94,11 @@ function checkRowKeys(row, figure, problems) {
   const ids = chart.series.map((s) => s.id);
   const keys = Object.keys(row.values);
   const allowed = {
-    bar: ids.flatMap((id) => [id, `${id}.low`, `${id}.high`]),
-    dumbbell: ids,
+    bar: ids.flatMap(withInterval),
+    dumbbell: ids.flatMap(withInterval),
     box: BOX_KEYS,
     scatter: ['x', 'y', 'series'],
-    line: ['x', ...ids],
+    line: ['x', ...ids.flatMap(withInterval)],
     heatmap: ['value'],
   }[chartType];
   const required = { bar: ids, dumbbell: ids, box: BOX_KEYS, scatter: ['x', 'y', ...(ids.length ? ['series'] : [])], line: ['x', ...ids], heatmap: ['value'] }[chartType];
@@ -107,11 +109,18 @@ function checkRowKeys(row, figure, problems) {
     if (value === null && !isBarSeries) problems.error(row.line, `"-" (missing) is only for bar series values. Found ${key}=-`);
   }
   if (row.values.series !== undefined && !ids.includes(row.values.series)) problems.error(row.line, unknownName('series', row.values.series, ids));
-  if (chartType === 'bar') for (const id of ids) checkInterval(row, id, problems);
+  if (INTERVAL_TYPES.includes(chartType)) for (const id of ids) checkInterval(row, id, problems);
   if (chartType === 'box' && BOX_KEYS.every((k) => typeof row.values[k] === 'number')) checkQuartiles(row, problems);
 }
 
-// 막대 신뢰구간: low와 high는 함께 적고, low ≤ 값 ≤ high다. 같은 값은 반올림한 실험 값에서 생기므로 허용한다.
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+// 값 키 하나와 그 신뢰구간 키 둘
+function withInterval(id) {
+  return [id, `${id}.low`, `${id}.high`];
+}
+
+// 신뢰구간: low와 high는 함께 적고, low ≤ 값 ≤ high다. 같은 값은 반올림한 실험 값에서 생기므로 허용한다.
 function checkInterval(row, id, problems) {
   const [value, low, high] = [row.values[id], row.values[`${id}.low`], row.values[`${id}.high`]];
   if (low === undefined && high === undefined) return;

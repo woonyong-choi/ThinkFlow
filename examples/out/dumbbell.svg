@@ -115,6 +115,9 @@
   --size-chart-plot-h: 260px;
   --size-chart-axis: 48px;
   --size-chart-cell: 40px;
+  --size-chart-cap: 8px;
+  --size-chart-range: 6px;
+  --size-chart-arrow-min: 16px;
   --weight-medium: 500;
   --weight-semibold: 600;
   --leading-normal: 1.5;
@@ -161,6 +164,7 @@
   --border-tag: 1.5px;
   --border-edge: 1.75px;
   --border-strong: 2.5px;
+  --border-halo: 8px;
   --dash-line: 5;
   --dash-gap: 4;
   --dash-card: 3;
@@ -168,6 +172,8 @@
   --opacity-halo: 0.2;
   --opacity-tab-on: 0.06;
   --opacity-dim: 0.3;
+  --opacity-band: 0.16;
+  --opacity-range: 0.32;
   --opacity-heat-text: 0.55;
   --z-raised: 2;
   --z-overlay: 10;
@@ -409,6 +415,13 @@
   fill: var(--color-muted);
 }
 
+.fl .chart-value {
+  paint-order: stroke;
+  stroke: var(--color-bg);
+  stroke-width: var(--border-halo);
+  stroke-linejoin: round;
+}
+
 .fl .chart-tick {
   text-anchor: middle;
 }
@@ -501,10 +514,34 @@
   stroke-dasharray: var(--dash-line) var(--dash-gap);
 }
 
-.fl .chart-ci,
 .fl .chart-whisker,
 .fl .chart-median {
   stroke: var(--color-fg);
+  stroke-width: var(--border-tag);
+}
+
+.fl .chart-ci {
+  stroke: var(--color-fg);
+  stroke-width: var(--border-strong);
+}
+
+.fl .chart-interval {
+  fill: none;
+  stroke: var(--color-muted);
+  stroke-width: var(--border-edge);
+}
+
+.fl .chart-band {
+  fill-opacity: var(--opacity-band);
+}
+
+.fl .chart-range {
+  stroke-linecap: round;
+  stroke-opacity: var(--opacity-range);
+}
+
+.fl .chart-after {
+  stroke: var(--color-bg);
   stroke-width: var(--border-tag);
 }
 
@@ -524,12 +561,22 @@
 .fl .chart-link {
   stroke: var(--color-series-2);
   stroke-width: var(--border-strong);
-  stroke-dasharray: 1;
 }
 
 .fl .chart-link {
   stroke: var(--color-muted);
-  stroke-width: var(--border-thin);
+  stroke-width: var(--border-strong);
+  stroke-linecap: round;
+}
+
+.fl .chart-label.shift {
+  transform: translateY(var(--label-shift));
+  transition: transform var(--duration-fast);
+}
+
+/* pathLength 1인 선이 stroke-dashoffset으로 그려진다. 선 차트의 선, 덤벨 화살표, 산점도 link가 함께 쓴다. */
+.fl .draw {
+  stroke-dasharray: 1;
 }
 
 .fl .grow {
@@ -551,17 +598,24 @@
   transition: opacity var(--duration-fast);
 }
 
+.fl .play .dot, .fl .play.dot { animation: chart-dot 200ms var(--easing-reveal) both; }
+@keyframes chart-dot { from { opacity: 0; } }
+
 .fl .play .grow, .fl .play.grow { animation: chart-grow 900ms var(--easing-reveal) both; }
 .fl .play .draw, .fl .play.draw { animation: chart-draw 900ms var(--easing-reveal) both; }
+.fl .play .wipe, .fl .play.wipe { animation: chart-wipe 900ms var(--easing-reveal) both; }
 .fl .play .pop, .fl .play.pop, .fl .play .late, .fl .play.late { animation: chart-fade 900ms var(--easing-reveal) both; }
 .fl.chart-loop .grow { animation: chart-grow-loop 7000ms infinite both; }
 .fl.chart-loop .draw { animation: chart-draw-loop 7000ms infinite both; }
+.fl.chart-loop .wipe { animation: chart-wipe-loop 7000ms infinite both; }
 .fl.chart-loop .pop, .fl.chart-loop .late { animation: chart-fade-loop 7000ms infinite both; }
 @keyframes chart-grow { from { transform: scaleX(0); } }
 @keyframes chart-draw { from { stroke-dashoffset: 1; } }
+@keyframes chart-wipe { from { clip-path: inset(0 100% 0 0); } }
 @keyframes chart-fade { 0%, 50% { opacity: 0; } }
 @keyframes chart-grow-loop { 0% { transform: scaleX(0); animation-timing-function: var(--easing-reveal); } 12.86%, 100% { transform: none; } }
 @keyframes chart-draw-loop { 0% { stroke-dashoffset: 1; animation-timing-function: var(--easing-reveal); } 12.86%, 100% { stroke-dashoffset: 0; } }
+@keyframes chart-wipe-loop { 0% { clip-path: inset(0 100% 0 0); animation-timing-function: var(--easing-reveal); } 12.86%, 100% { clip-path: inset(0 0 0 0); } }
 @keyframes chart-fade-loop { 0%, 6.43% { opacity: 0; animation-timing-function: var(--easing-reveal); } 12.86%, 100% { opacity: 1; } }
 
 @keyframes a0 { 0%,39.456% { opacity: 1 } 39.457%,62.761% { opacity: 1 } 62.762%,71.639% { opacity: 1 } 71.64%,99.999% { opacity: 1 } }
@@ -571,6 +625,8 @@
 .fl .cs-0 .grow, .fl .cs-0.grow { animation: g0 8.1s infinite; }
 @keyframes d0 { 0%,0% { stroke-dashoffset: 1; animation-timing-function: var(--easing-reveal) } 11.097%,100% { stroke-dashoffset: 0 } }
 .fl .cs-0 .draw, .fl .cs-0.draw { animation: d0 8.1s infinite; }
+@keyframes w0 { 0%,0% { clip-path: inset(0 100% 0 0); animation-timing-function: var(--easing-reveal) } 11.097%,100% { clip-path: inset(0 0 0 0) } }
+.fl .cs-0 .wipe, .fl .cs-0.wipe { animation: w0 8.1s infinite; }
 @keyframes f0 { 0%,5.549% { opacity: 0; animation-timing-function: var(--easing-reveal) } 11.097%,100% { opacity: 1 } }
 .fl .cs-0 .late, .fl .cs-0 .pop, .fl .cs-0.pop { animation: f0 8.1s infinite; }
 @keyframes a1 { 0%,39.456% { opacity: 0 } 39.457%,62.761% { opacity: 1 } 62.762%,71.639% { opacity: 1 } 71.64%,99.999% { opacity: 1 } }
@@ -580,6 +636,8 @@
 .fl .cs-1 .grow, .fl .cs-1.grow { animation: g1 8.1s infinite; }
 @keyframes d1 { 0%,39.457% { stroke-dashoffset: 1; animation-timing-function: var(--easing-reveal) } 50.555%,100% { stroke-dashoffset: 0 } }
 .fl .cs-1 .draw, .fl .cs-1.draw { animation: d1 8.1s infinite; }
+@keyframes w1 { 0%,39.457% { clip-path: inset(0 100% 0 0); animation-timing-function: var(--easing-reveal) } 50.555%,100% { clip-path: inset(0 0 0 0) } }
+.fl .cs-1 .wipe, .fl .cs-1.wipe { animation: w1 8.1s infinite; }
 @keyframes f1 { 0%,45.006% { opacity: 0; animation-timing-function: var(--easing-reveal) } 50.555%,100% { opacity: 1 } }
 .fl .cs-1 .late, .fl .cs-1 .pop, .fl .cs-1.pop { animation: f1 8.1s infinite; }
 @keyframes a2 { 0%,39.456% { opacity: 1 } 39.457%,62.761% { opacity: 1 } 62.762%,71.639% { opacity: 1 } 71.64%,99.999% { opacity: 0.3 } }
@@ -612,10 +670,10 @@
 <text x="28" y="63" class="chart-sub">예시 데이터. 에이전트마다 작업 61개 평균</text>
 <g class="cs-0"><rect x="28" y="77" width="12" height="12" rx="4" fill="var(--color-series-1)"/><text x="46" y="85" class="chart-legend">기억 없음</text></g>
 <g class="cs-1"><rect x="108.49609375" y="77" width="12" height="12" rx="4" fill="var(--color-series-2)"/><text x="126.49609375" y="85" class="chart-legend">기억 붙임</text></g>
-<text x="28" y="133.7" class="chart-label cr-0">코딩 에이전트 A</text><g class="cr-0"><g class="cs-0"><circle cx="428.6" cy="129" r="5" class="chart-before pop"/><text x="439.6" y="133" class="chart-value first late start">120k</text></g><g class="cs-1"><line x1="428.6" y1="129" x2="354.9" y2="129" pathLength="1" class="chart-arrow draw" marker-end="url(#fl-arrow-second)"/><text x="343.9" y="133" class="chart-value second late end">31k</text><text x="612" y="133.3" class="chart-ratio late">−74%</text></g></g>
-<text x="28" y="173.7" class="chart-label cr-1">코딩 에이전트 B</text><g class="cr-1"><g class="cs-0"><circle cx="415.9" cy="169" r="5" class="chart-before pop"/><text x="426.9" y="173" class="chart-value first late start">95k</text></g><g class="cs-1"><line x1="415.9" y1="169" x2="349.4" y2="169" pathLength="1" class="chart-arrow draw" marker-end="url(#fl-arrow-second)"/><text x="338.4" y="173" class="chart-value second late end">28k</text><text x="612" y="173.3" class="chart-ratio late">−71%</text></g></g>
-<text x="28" y="213.7" class="chart-label cr-2">편집기 도우미</text><g class="cr-2"><g class="cs-0"><circle cx="390.9" cy="209" r="5" class="chart-before pop"/><text x="401.9" y="213" class="chart-value first late start">60k</text></g><g class="cs-1"><line x1="390.9" y1="209" x2="333.7" y2="209" pathLength="1" class="chart-arrow draw" marker-end="url(#fl-arrow-second)"/><text x="322.7" y="213" class="chart-value second late end">21k</text><text x="612" y="213.3" class="chart-ratio late">−65%</text></g></g>
-<text x="28" y="253.7" class="chart-label cr-3">사내 에이전트</text><g class="cr-3"><g class="cs-0"><circle cx="281.2" cy="249" r="5" class="chart-before pop"/><text x="270.2" y="253" class="chart-value first late end">8k</text></g><g class="cs-1"><line x1="281.2" y1="249" x2="288.8" y2="249" pathLength="1" class="chart-arrow draw" marker-end="url(#fl-arrow-second)"/><text x="299.8" y="253" class="chart-value second late start">9.2k</text><text x="612" y="253.3" class="chart-ratio late">+15%</text></g></g>
+<text x="28" y="133.7" class="chart-label cr-0">코딩 에이전트 A</text><g class="cr-0"><g class="cs-0"><line x1="420.8" x2="436.6" y1="129" y2="129" stroke="var(--color-series-1)" stroke-width="6" class="chart-range pop"/><circle cx="428.6" cy="129" r="5" class="chart-before pop"/><text x="442.6" y="133" class="chart-value first late start">120k</text></g><g class="cs-1"><line x1="347.4" x2="363.1" y1="129" y2="129" stroke="var(--color-series-2)" stroke-width="6" class="chart-range pop"/><line x1="421.6" y1="129" x2="354.9" y2="129" pathLength="1" class="chart-arrow draw" marker-end="url(#fl-arrow-second)"/><text x="341.4" y="133" class="chart-value second late end">31k</text><text x="612" y="133.3" class="chart-ratio late">−74%</text></g></g>
+<text x="28" y="173.7" class="chart-label cr-1">코딩 에이전트 B</text><g class="cr-1"><g class="cs-0"><line x1="408.5" x2="422.9" y1="169" y2="169" stroke="var(--color-series-1)" stroke-width="6" class="chart-range pop"/><circle cx="415.9" cy="169" r="5" class="chart-before pop"/><text x="428.9" y="173" class="chart-value first late start">95k</text></g><g class="cs-1"><line x1="341" x2="358.3" y1="169" y2="169" stroke="var(--color-series-2)" stroke-width="6" class="chart-range pop"/><line x1="408.9" y1="169" x2="349.4" y2="169" pathLength="1" class="chart-arrow draw" marker-end="url(#fl-arrow-second)"/><text x="335" y="173" class="chart-value second late end">28k</text><text x="612" y="173.3" class="chart-ratio late">−71%</text></g></g>
+<text x="28" y="213.7" class="chart-label cr-2">편집기 도우미</text><g class="cr-2"><g class="cs-0"><line x1="383.1" x2="398.5" y1="209" y2="209" stroke="var(--color-series-1)" stroke-width="6" class="chart-range pop"/><circle cx="390.9" cy="209" r="5" class="chart-before pop"/><text x="404.5" y="213" class="chart-value first late start">60k</text></g><g class="cs-1"><line x1="325.3" x2="343.2" y1="209" y2="209" stroke="var(--color-series-2)" stroke-width="6" class="chart-range pop"/><line x1="383.9" y1="209" x2="333.7" y2="209" pathLength="1" class="chart-arrow draw" marker-end="url(#fl-arrow-second)"/><text x="319.3" y="213" class="chart-value second late end">21k</text><text x="612" y="213.3" class="chart-ratio late">−65%</text></g></g>
+<text x="28" y="253.7" class="chart-label cr-3">사내 에이전트</text><g class="cr-3"><g class="cs-0"><line x1="273.1" x2="289.4" y1="249" y2="249" stroke="var(--color-series-1)" stroke-width="6" class="chart-range pop"/><circle cx="281.2" cy="249" r="5" class="chart-before pop"/><text x="267.1" y="253" class="chart-value first late end">8k</text></g><g class="cs-1"><line x1="279.8" x2="298" y1="249" y2="249" stroke="var(--color-series-2)" stroke-width="6" class="chart-range pop"/><circle cx="288.8" cy="249" r="5" fill="var(--color-series-2)" class="chart-after pop"/><text x="304" y="253" class="chart-value second late start">9.2k</text><text x="612" y="253.3" class="chart-ratio late">+15%</text></g></g>
 
 <line x1="168" x2="544" y1="277" y2="277" class="chart-axis"/><text x="168" y="294" class="chart-tick">1k</text><text x="293.3" y="294" class="chart-tick">10k</text><text x="418.7" y="294" class="chart-tick">100k</text><text x="544" y="294" class="chart-tick">1M</text><text x="544" y="311" class="chart-unit">토큰(로그 눈금)</text>
 </g>

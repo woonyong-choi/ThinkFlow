@@ -8,7 +8,7 @@ import { layoutGraph } from './layout/graph.js';
 import { layoutSequence } from './layout/sequence.js';
 import { findMissingGlyph, wrap } from './measure/fonts.js';
 import { STYLE, sizeNode } from './measure/sizes.js';
-import { checkChartLightTargets, checkChartRows } from './source/chart-rules.js';
+import { INTERVAL_TYPES, checkChartLightTargets, checkChartRows } from './source/chart-rules.js';
 import { readFigure } from './source/parse.js';
 import { createProblems, FigureError } from './source/problems.js';
 import { collectCards, buildTimeline } from './timeline.js';
@@ -146,16 +146,17 @@ function toRow(record, { chartType, byKey, line, index }, problems) {
 // cost: time O(r·s), heap O(1), stack O(1)
 // vars: r = 행 수, s = 계열 수
 // basis: estimate
-// 문서 스킬이 실험 차트에 거는 규칙. 값 손 기재 금지(예시 데이터 제외)와 막대 신뢰구간.
+// 문서 스킬이 실험 차트에 거는 규칙. 값 손 기재 금지(예시 데이터 제외)와 신뢰구간.
 function checkSkillRules(figure, { requireData, requireCi }, problems) {
   const { chart } = figure;
   const isIllustrative = figure.subtitle?.startsWith('예시 데이터.') ?? false;
   if (requireData && !chart.data && !isIllustrative) problems.error(chart.rows[0]?.line ?? figure.line, 'values must come from data "results/summary.json" at "/..." (--require-data). Hand-written rows are only for subtitles starting with "예시 데이터."');
-  if (!requireCi || figure.chartType !== 'bar') return;
+  if (!requireCi || !INTERVAL_TYPES.includes(figure.chartType)) return;
   for (const row of chart.rows) {
-    for (const s of chart.series) {
-      const hasCi = row.values[`${s.id}.low`] !== undefined && row.values[`${s.id}.high`] !== undefined;
-      if (row.values[s.id] !== null && !hasCi) problems.error(row.line, `bar "${row.label}" needs ${s.id}.low= and ${s.id}.high= (--require-ci)`);
+    for (const { id } of chart.series) {
+      const hasCi = row.values[`${id}.low`] !== undefined && row.values[`${id}.high`] !== undefined;
+      const name = row.label ?? `x=${row.values.x}`;
+      if (row.values[id] !== null && !hasCi) problems.error(row.line, `${figure.chartType} "${name}" needs ${id}.low= and ${id}.high= (--require-ci)`);
     }
   }
 }

@@ -42,7 +42,7 @@ export async function toSvg(result, { isStatic = false, name = '' } = {}) {
   return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="fl${content.className}" width="${r(width)}" height="${r(height)}" viewBox="0 0 ${r(width)} ${r(height)}" role="img">
 <title>${escapeXml(title)}</title>
 <style>${fonts}
-${STYLES.tokens}${STYLES.figure}${STYLES.animated}${result.chart ? STYLES.chart + chartMotionCss(timeline.growMs) : ''}
+${STYLES.tokens}${STYLES.figure}${STYLES.animated}${result.chart ? STYLES.chart + chartMotionCss(timeline.growMs, result.chart.dotAts) : ''}
 ${animator.css.join('\n')}
 </style>
 <defs>${DEFS}</defs>
@@ -225,15 +225,26 @@ function createAnimator({ segs, total, growMs }) {
       const reveal = segs.find((g) => g.growing.includes(id));
       css.push(`.fl .cs-${s} { animation: ${show} ${duration} infinite step-end; }`);
       if (!reveal) return;
-      // 막대와 선은 자라는 시간 내내, 점과 값 글자는 그 뒤 절반에 나타난다. HTML 재생기(chart/motion.js)와 같다.
+      // 막대와 선과 띠는 자라는 시간 내내, 점과 값 글자는 그 뒤 절반에 나타난다. HTML 재생기(chart/motion.js)와 같다.
       const [a, half, b] = [percent(reveal.t0), percent(reveal.t0 + grow / 2), percent(reveal.t0 + grow)];
       const ease = `animation-timing-function: ${tokens.easing.reveal}`;
       css.push(
         `@keyframes g${s} { 0%,${a} { transform: scaleX(0); ${ease} } ${b},100% { transform: none } }\n.fl .cs-${s} .grow, .fl .cs-${s}.grow { animation: g${s} ${duration} infinite; }\n` +
           `@keyframes d${s} { 0%,${a} { stroke-dashoffset: 1; ${ease} } ${b},100% { stroke-dashoffset: 0 } }\n.fl .cs-${s} .draw, .fl .cs-${s}.draw { animation: d${s} ${duration} infinite; }\n` +
+          `@keyframes w${s} { 0%,${a} { clip-path: inset(0 100% 0 0); ${ease} } ${b},100% { clip-path: inset(0 0 0 0) } }\n.fl .cs-${s} .wipe, .fl .cs-${s}.wipe { animation: w${s} ${duration} infinite; }\n` +
           `@keyframes f${s} { 0%,${half} { opacity: 0; ${ease} } ${b},100% { opacity: 1 } }\n.fl .cs-${s} .late, .fl .cs-${s} .pop, .fl .cs-${s}.pop { animation: f${s} ${duration} infinite; }`,
       );
+      // 선 차트 점은 선이 닿는 시각(data-at × 자라는 시간)에 나타난다. 시각 계산은 chart/draw.js arrivals가 끝냈다.
+      for (const at of drawn.dotAts) {
+        const [from, to] = [percent(reveal.t0 + at * grow), percent(reveal.t0 + at * grow + values.duration.fast)];
+        css.push(`@keyframes p${s}-${Math.round(at * 1000)} { 0%,${from} { opacity: 0; ${ease} } ${to},100% { opacity: 1 } }\n.fl .cs-${s} .dot[data-at="${at}"] { animation: p${s}-${Math.round(at * 1000)} ${duration} infinite; }`);
+      }
     });
+    // 행 이름의 세로 옮김은 시간표가 박자마다 정해 둔 값을 그대로 건다. 모든 박자가 0이면 만들지 않는다.
+    if (segs.some((g) => g.labelShift)) {
+      const frames = segs.map((g) => `${percent(g.t0)},${percent(Math.max(g.t0, g.t1 - EPSILON_MS))} { transform: translateY(${g.labelShift}px) }`).join(' ');
+      css.push(`@keyframes ls { ${frames} }\n.fl .chart-label.shift { animation: ls ${duration} infinite step-end; }`);
+    }
     drawn.rowKeys.forEach((key, k) => {
       const dim = windows(segs.map((g) => g.lights.length > 0 && !g.lights.includes(key)), `opacity: ${values.opacity.dim}`, 'opacity: 1', `r${k}`);
       css.push(`.fl .cr-${k} { animation: ${dim} ${duration} infinite step-end; }`);

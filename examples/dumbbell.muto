@@ -7,10 +7,10 @@ scale log
 series base "기억 없음"
 series ours "기억 붙임"
 
-row "코딩 에이전트 A" base=120000 ours=31000
-row "코딩 에이전트 B" base=95000 ours=28000
-row "편집기 도우미" base=60000 ours=21000
-row "사내 에이전트" base=8000 ours=9200
+row "코딩 에이전트 A" base=120000 base.low=104000 base.high=139000 ours=31000 ours.low=27000 ours.high=36000
+row "코딩 에이전트 B" base=95000 base.low=83000 base.high=108000 ours=28000 ours.low=24000 ours.high=33000
+row "편집기 도우미" base=60000 base.low=52000 base.high=69000 ours=21000 ours.low=18000 ours.high=25000
+row "사내 에이전트" base=8000 base.low=6900 base.high=9300 ours=9200 ours.low=7800 ours.high=10900
 
 step "기억 없음" "기억 없이 쓴 토큰이다"
   reveal base

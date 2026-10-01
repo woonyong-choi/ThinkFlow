@@ -154,6 +154,7 @@ function figurePlay(root, data) {
         }
       }
     });
+    svg.style.setProperty('--label-shift', `${seg.labelShift}px`);
     rowEls.forEach((els, k) => els.forEach((el) => el.classList.toggle('dim', seg.lights.length > 0 && !seg.lights.includes(k))));
   }
 
