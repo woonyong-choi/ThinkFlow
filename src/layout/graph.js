@@ -194,7 +194,11 @@ function toElk(model, figure) {
       byContainer.get(p.container).push({ id: `${index}::${k}`, sources: [p.from], targets: [p.to], labels });
     });
   }
-  const hasAspect = figure.aspect !== undefined && !figure.groups.length;
+  const hasAspect = figure.aspect !== undefined;
+  // 줄 바꿈한 그림에서 그룹이 있으면, 그룹이 든 열만 넓어져 같은 열의 상자가 가운데나 왼쪽에 놓이고 칸 간격이 줄마다 달라진다.
+  // 바깥 층 도형을 모두 열의 오른쪽 끝에 붙이면 상자 사이 간격이 줄마다 같다. 이 선택 사항은 도형마다 줘야 한다(층 전체에 주면 무시된다).
+  const alignRight = hasAspect && figure.groups.length > 0;
+  const alignOf = (parent) => (alignRight && parent === 'root' ? { 'elk.alignment': 'RIGHT' } : {});
   // cost: time O(p), heap O(p), stack O(1)
   // vars: p = 도형의 연결점 수
   // basis: estimate
@@ -211,7 +215,7 @@ function toElk(model, figure) {
       width: outer.w,
       height: outer.h,
       ports,
-      layoutOptions: { 'elk.portConstraints': ports.length ? (isFirstPass ? 'FIXED_SIDE' : 'FIXED_POS') : 'FREE' },
+      layoutOptions: { 'elk.portConstraints': ports.length ? (isFirstPass ? 'FIXED_SIDE' : 'FIXED_POS') : 'FREE', ...alignOf(n.parent) },
     };
   };
   const toContainer = (c) => ({
@@ -243,11 +247,27 @@ function toElk(model, figure) {
             'elk.padding': `[top=${SIZE['group-title'] + SPACE['6']},left=${SPACE['12']},bottom=${SPACE['12']},right=${SPACE['12']}]`,
             'elk.nodeSize.constraints': 'MINIMUM_SIZE',
             'elk.nodeSize.minimum': `(${groupTitleWidth(c.label)}, ${SIZE['group-title']})`,
+            ...alignOf(c.parent),
           }),
-      ...(c.id === 'root' && hasAspect ? { 'elk.layered.wrapping.strategy': 'MULTI_EDGE', 'elk.aspectRatio': String(figure.aspect) } : {}),
+      ...(c.id === 'root' && hasAspect ? wrapOptions(figure.aspect) : {}),
     },
   });
   return toContainer(containers.get('root'));
+}
+
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+// 바깥 층(root)을 줄 바꿈하는 elkjs 선택 사항. 그룹은 SEPARATE_CHILDREN이라 한 덩어리 도형으로 줄 바꿈된다.
+// 고른 근거는 docs/design/layout.md 줄 바꿈 절이다.
+function wrapOptions(aspect) {
+  return {
+    'elk.layered.wrapping.strategy': 'MULTI_EDGE',
+    'elk.aspectRatio': String(aspect),
+    // 기본값(true)은 되돌아오는 선과 라벨이 함께 있으면 선이 엉뚱한 도형으로 가는 elkjs 오류를 낸다.
+    'elk.layered.wrapping.multiEdge.improveWrappedEdges': 'false',
+    // 줄 사이 되돌아오는 선의 추가 간격을 없애 그림이 덜 길어지게 한다.
+    'elk.layered.wrapping.additionalEdgeSpacing': '0',
+  };
 }
 
 function sizeOf({ w, h }) {

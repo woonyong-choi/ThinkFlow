@@ -326,7 +326,7 @@ function inside(box, scene) {
 // cost: time O(g log g), heap O(g), stack O(1)
 // vars: g = 그룹 수
 // basis: estimate
-// 9번: 가로세로 비율. 문서 폭 안에 드는 그림은 보지 않는다. 그룹 그림은 비율을 줄이는 쪽의 그룹 방향을, 아니면 aspect를 권한다.
+// 9번: 가로세로 비율. 문서 폭 안에 드는 그림은 보지 않는다. 비율을 줄이는 쪽의 그룹 방향이 있으면 그것을, 없으면 aspect를 권한다.
 function checkAspect(figure, scene, problems) {
   const ratio = scene.width / scene.height;
   if (ratio <= ASPECT_MAX && ratio >= 1 / ASPECT_MAX) return;
@@ -342,8 +342,6 @@ function checkAspect(figure, scene, problems) {
   const group = [...scene.groups].filter((g) => own.get(g.id) !== turn && members(g.id) > 1).sort((a, b) => size(b) - size(a))[0];
   let fix;
   if (group) fix = `Set direction=${turn} on group "${group.id}"`;
-  else if (scene.groups.length && figure.direction !== turn) fix = `Change the figure direction to ${turn}`;
-  else if (scene.groups.length) fix = 'Split the figure into smaller figures';
   else if (figure.aspect !== undefined) fix = `Use a ${isWide ? 'smaller' : 'larger'} aspect than ${figure.aspect}`;
   else fix = 'Add "aspect 1.6"';
   problems.warn(figure.line, `[check 9] figure aspect ${ratio.toFixed(1)} is outside 1/3 to 3. ${fix}`);
@@ -354,6 +352,6 @@ function checkReadable(figure, scene, problems) {
   const scale = Math.min(1, values.size['figure-max'] / scene.width);
   const smallest = values.size.text['9'] * scale;
   if (smallest >= MIN_READABLE - 0.01) return;
-  const fix = figure.kind === 'sequence' ? 'Use fewer participants or shorter messages' : scene.groups.length ? 'Make the figure narrower with group directions' : 'Make the figure narrower with aspect';
+  const fix = figure.kind === 'sequence' ? 'Use fewer participants or shorter messages' : scene.groups.length ? 'Make the figure narrower with aspect or group directions' : 'Make the figure narrower with aspect';
   problems.warn(figure.line, `[check 10] at document width the smallest text is ${smallest.toFixed(1)}px. ${fix}`);
 }

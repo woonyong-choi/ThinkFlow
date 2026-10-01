@@ -22,10 +22,10 @@
 
 ### 비율 경고
 
-1. 그룹 없는 가로 그림이 20:1로 길다.
+1. 가로 그림이 20:1로 길다.
 2. `check`가 `api.muto:1: warning: figure aspect 20.0 is outside 1/3 to 3. Add "aspect 1.6"`을 경고로 낸다. 이미 `aspect`가 있으면 더 작은 값을 권한다.
-3. 그룹이 있는 그림이면 `aspect` 대신 `Set direction=down on group "{가장 넓은 그룹}"`을 권한다. 방향을 바꿀 그룹은 안에 도형이나 하위 그룹이 둘 이상 있는 그룹뿐이다.
-4. 그런 그룹이 없고 그림 방향이 이미 그쪽이면 `Split the figure into smaller figures`를 권한다.
+3. 그룹이 있는 그림에서 비율을 줄이는 쪽으로 방향을 바꿀 그룹이 있으면 `aspect` 대신 `Set direction=down on group "{가장 넓은 그룹}"`을 먼저 권한다. 방향을 바꿀 그룹은 안에 도형이나 하위 그룹이 둘 이상 있는 그룹뿐이다.
+4. 그런 그룹이 없거나 이미 그 방향이면 그룹 그림에도 `Add "aspect 1.6"`을 권한다.
 
 ## 상세 설계
 

@@ -124,3 +124,39 @@ test('buildFigure_state_without_start_draws_no_start_dot_or_line', async () => {
   assert.equal(without.scene.edges.length, 2);
   assert.equal(without.scene.edges.filter((e) => e.isMark).length, 1);
 });
+
+const WRAP_CHAIN = `flow right\naspect 1.6\n${Array.from({ length: 16 }, (_, i) => `box n${i} "단계 ${i}"`).join('\n')}\ngroup g "묶음" {\n  box a "가"\n  box b "나"\n  a -> b\n}\n${Array.from({ length: 15 }, (_, i) => `n${i} -> n${i + 1}`).join('\n')}\nn15 -> a`;
+
+test('layoutGraph_group_chain_with_aspect_wraps_and_passes_strict', async () => {
+  const { scene } = await buildFigure(WRAP_CHAIN, { strict: true });
+  const ratio = scene.width / scene.height;
+
+  assert.ok(ratio < 3 && ratio > 1 / 3, String(ratio));
+  assert.equal(scene.groups.length, 1);
+  assert.ok(new Set(scene.items.map((it) => Math.round(it.y))).size > 2, 'chain did not wrap into rows');
+});
+
+test('layoutGraph_group_chain_wrap_keeps_same_column_boxes_aligned_with_equal_gaps', async () => {
+  const { scene } = await buildFigure(WRAP_CHAIN);
+  const chain = scene.items.filter((it) => /^n\d+$/.test(it.id));
+  const rows = new Map();
+  for (const it of chain) rows.set(Math.round(it.y), [...(rows.get(Math.round(it.y)) ?? []), it.x].sort((a, b) => a - b));
+  const gaps = [...rows.values()].map((xs) => xs.slice(1).map((x, i) => x - xs[i]).join());
+
+  assert.equal(new Set([...rows.values()].map((xs) => xs[0])).size, 1, JSON.stringify([...rows.values()]));
+  assert.equal(new Set(gaps).size, 1, JSON.stringify(gaps));
+});
+
+test('toSvg_group_with_aspect_same_source_gives_same_bytes', async () => {
+  const first = await toSvg(await buildFigure(WRAP_CHAIN), { isStatic: true, name: 'w' });
+  const second = await toSvg(await buildFigure(WRAP_CHAIN), { isStatic: true, name: 'w' });
+
+  assert.equal(first, second);
+});
+
+test('layoutGraph_wrap_with_group_back_edges_and_labels_keeps_edge_ends', async () => {
+  const source = `flow right\naspect 1.6\nbox u "사용자"\nbox a "접수"\nbox b "검증"\nbox d "통과"\nbox c "저장"\nbox e "알림"\nbox f "재시도"\nbox h "보고"\nbox s "기록"\ngroup g "처리" {\n  box g1 "가"\n  box g2 "나"\n}\nu -> a\na -> b\nb -> d\nd -> c "예"\nd -> f "아니오"\nf -> b\nc -> e\nc -> s\ne -> h\nh -> g1\ng2 -> u`;
+
+  const result = await buildFigure(source);
+
+  assert.equal(result.scene.edges.length, 11);});

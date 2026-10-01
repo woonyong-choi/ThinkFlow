@@ -137,7 +137,7 @@ step "결제" "결제 행은 주문 행을 외래 키로 가리킨다"
 | `reveal` | 오류 | 오류 | 오류 | 오류 | 계열 |
 | `step`, `say`, `wait` | 쓴다 | 쓴다 | 쓴다 | 쓴다 | 쓴다 |
 | `series`, `rule`, `missing`, `data`, `row`, `point`, `cell`, `link`, `x`, `y`, `scale` | 오류 | 오류 | 오류 | 오류 | 쓴다 |
-| `aspect` | 그룹 없을 때 | 오류 | 그룹 없을 때 | 쓴다 | 오류 |
+| `aspect` | 쓴다 | 오류 | 쓴다 | 쓴다 | 오류 |
 
 - 표의 `오류`는 그 종류에서 그 줄을 쓰면 `{파일}:{줄}: "{줄 종류}" is not allowed in a {종류} figure. Remove the line or change the kind statement` 오류라는 뜻이다.
 - 차트의 줄은 [차트](charts.md)에 있다.

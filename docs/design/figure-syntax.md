@@ -124,7 +124,7 @@ step "대화" "입력은 화면을 거쳐 엔진이 에이전트로 보낸다"
 | `title "글"` | 그림 제목. SVG `<title>`과 목록 쪽 이름 | 파일 이름 |
 | `subtitle "글"` | 그림 아래 한 줄 설명 | 없음 |
 | `speed 1500ms` | 점이 선 하나를 지나는 기본 시간. 차트에서는 계열이 자라는 시간([차트](charts.md)) | 토큰 `duration.hop`, 차트는 `duration.reveal` |
-| `aspect 1.6` | 목표 가로세로 비율. 그룹 없는 `flow`, `state`, `data`에서만. [배치](layout.md) | 없음 |
+| `aspect 1.6` | 목표 가로세로 비율. `flow`, `state`, `data`에서만, 그룹이 있어도 된다. [배치](layout.md) | 없음 |
 
 ### 구조 그림 선언
 

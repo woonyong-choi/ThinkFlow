@@ -13,7 +13,6 @@ export function validateFigure(figure, problems) {
   if (figure.kind === 'data') buildForeignKeys(figure, problems);
   else checkEdges(figure, names, problems);
   if (figure.kind === 'state') checkStateMarks(figure, names, problems);
-  if (figure.aspect !== undefined && figure.groups.length) problems.error(figure.line, 'aspect cannot be used with groups. Set direction on groups instead');
   checkNotEmpty(figure, problems);
   if (figure.kind === 'chart') checkChart(figure, problems);
   else checkTimeline(figure, names, problems);

@@ -166,3 +166,11 @@ test('checkFigure_parallel_segments_of_edges_between_different_shapes_stay_check
 
   assert.ok(problems.errors.some((p) => p.message.startsWith('[check 5]')), JSON.stringify(problems.errors));
 });
+
+test('checkFigure_wide_group_figure_without_turnable_group_suggests_aspect', async () => {
+  const chain = Array.from({ length: 16 }, (_, i) => `box n${i} "N${i}"`).join('\n');
+  const edges = Array.from({ length: 15 }, (_, i) => `n${i} -> n${i + 1}`).join('\n');
+
+  const { warnings } = await buildFigure(`flow right\n${chain}\ngroup g "G" {\n  box a "A"\n}\n${edges}\nn15 -> a`);
+
+  assert.ok(warnings.some((w) => w.message.includes('Add "aspect 1.6"')), JSON.stringify(warnings));});
