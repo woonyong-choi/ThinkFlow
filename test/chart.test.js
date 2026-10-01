@@ -143,7 +143,7 @@ test('checkChart_negative_rule_in_bar_is_error', async () => {
 });
 
 test('loadChartData_pointer_without_slash_is_error', async () => {
-  const errors = await buildErrors('chart bar\nseries a "A"\ndata "../test/fixtures/summary.json" at "rows"');
+  const error = await buildFigure('chart bar\nseries a "A" key="new_judge"\ndata "summary.json" at "rows"', { baseDir: FIXTURES }).catch((e) => e);
 
-  assert.ok(errors.some((e) => e.includes('starts with "/"')), errors.join('\n'));
+  assert.ok(error.problems.some((p) => p.message.includes('starts with "/"')), JSON.stringify(error.problems));
 });
