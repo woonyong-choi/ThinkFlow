@@ -1,0 +1,17 @@
+chart heatmap
+title "판단 교차표"
+subtitle "예시 데이터. 행은 정답, 열은 판단"
+
+cell "Codex" "Codex" 182
+cell "Codex" "Claude" 14
+cell "Codex" "둘 다" 4
+cell "Claude" "Codex" 9
+cell "Claude" "Claude" 171
+cell "Claude" "둘 다" 6
+cell "둘 다" "Codex" 3
+cell "둘 다" "Claude" 5
+cell "둘 다" "둘 다" 106
+
+step "읽기" "대각선이 맞힌 수다"
+  light "Codex" "Claude"
+  say "Codex를 Claude로 고른 14건이 가장 많은 실수다"

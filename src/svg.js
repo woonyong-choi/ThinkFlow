@@ -1,174 +1,238 @@
-// 스크립트 없이 움직이는 SVG 한 장. GitHub README, PR, 블로그에 이미지로 넣는다.
-// 모든 단계를 한 줄로 이어 반복한다. 버튼, 일시정지, 마우스 반응은 없다.
-// 켜짐/꺼짐 순서가 같은 요소끼리 CSS keyframes 하나를 나눠 쓴다.
-import { renderScene } from './render.js';
+// 스크립트 없이 움직이는 SVG와 멈춘 SVG. 시간표의 박자 상태를 CSS keyframes와 SMIL로 옮긴다(docs/design/playback.md).
+import { chartText } from './chart/draw.js';
+import { drawScene } from './draw/figure.js';
+import { createGlyphSet, embedFonts, measure } from './measure/fonts.js';
+import { STYLE } from './measure/sizes.js';
 import { DEFS, STYLES } from './styles.js';
-import { escapeXml, measureText, roundCoord, wrapText } from './text.js';
+import { escapeXml, roundCoord as r } from './text.js';
+import { litIds } from './timeline.js';
 import { tokens, values } from './tokens.js';
 
 const SPACE = values.space;
 const LINE = values.size.line;
-const MIN_WIDTH = values.size['figure-min'];
-const CAPTION_SIZE = values.size.text['13-5'];
-const CHIP_SIZE = values.size.text['11-5'];
-// 설명 줄바꿈 너비는 그림 너비에서 양쪽 여백을 뺀 값이다.
-const CAPTION_INSET = SPACE['30'];
+const CAPTION = { size: values.size.text['13-5'], face: 'regular' };
+const STEP_LABEL = { size: values.size.text['13'], face: 'mono' };
 // 켜짐 구간 끝을 다음 구간 시작보다 이만큼(ms) 앞당긴다. 같은 퍼센트에 두 값이 겹치지 않게 하기 위해서다.
 const EPSILON_MS = 0.1;
 
-// cost: time O(g·b + b·h), heap O(out), stack O(1)
-// vars: g = 켜고 끄는 요소 수, b = 박자 수, h = 박자마다 이동 수, out = 만든 SVG 글자 수
+// cost: time O(g·b + b·h + out), heap O(out), stack O(1), io 1
+// vars: g = 켜고 끄는 요소 수, b = 박자 수, h = 박자의 이동 수, out = 만든 SVG 글자 수
 // basis: estimate
-// alt: 요소마다 keyframes. time 같음, heap O(g·b). 잃는 것: 같은 순서를 나눠 쓰는 절약
-/** 장면과 시간표로 움직이는 SVG 문서를 만든다. */
-export function toAnimatedSvg(scene, tl) {
-  const animator = createAnimator(tl);
-  const body = renderScene(scene, (kind, i, extra) => animator.decorate(kind, i, extra));
-  const packets = tl.segs.flatMap((seg, si) => seg.hops.map((hop, hi) => drawPacket(animator, seg, hop, `p${si}-${hi}`)));
-  const W = Math.max(scene.width, MIN_WIDTH);
-  const captions = [...new Set(tl.segs.map((s) => s.caption))].filter(Boolean);
-  const captionLines = Math.max(1, ...captions.map((c) => wrapText(c, W - CAPTION_INSET, CAPTION_SIZE).length));
-  // 설명이 하나도 없으면 단계 이름 한 줄 자리만 둔다.
-  const captionH = !tl.segs.length ? 0 : captions.length ? SPACE['17'] + captionLines * LINE['20'] : SPACE['15'];
-  const H = scene.height + captionH;
-  const stepLabels = tl.steps.map((label, si) => {
-    const cls = animator.animationClass(animator.mapSegs((s) => s.si === si), 'opacity: 1', 'opacity: 0', 's');
-    return `<text x="${roundCoord(W / 2)}" y="${roundCoord(scene.height + SPACE['9'])}" opacity="0" class="steplabel ${cls}">${escapeXml(label)}</text>`;
-  });
-  const said = captions.map((text) => {
-    const cls = animator.animationClass(animator.mapSegs((s) => s.caption === text), 'opacity: 1', 'opacity: 0', 'y');
-    const lines = wrapText(text, W - CAPTION_INSET, CAPTION_SIZE).map(
-      (line, li) => `<text x="${roundCoord(W / 2)}" y="${roundCoord(scene.height + SPACE['22'] + li * LINE['20'])}" class="caption">${escapeXml(line)}</text>`,
-    );
-    return `<g opacity="0" class="${cls}">${lines.join('')}</g>`;
-  });
-
-  return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="fl" width="${roundCoord(W)}" height="${roundCoord(H)}" viewBox="0 0 ${roundCoord(W)} ${roundCoord(H)}">
-<style>${STYLES.tokens}${STYLES.figure}${STYLES.animated}
+/**
+ * SVG 문서를 만든다.
+ * @param result buildFigure 결과
+ * @param isStatic 멈춘 SVG면 true. 모든 선과 계열을 보이고 카드는 비운다
+ */
+export async function toSvg(result, { isStatic = false } = {}) {
+  const { figure, timeline } = result;
+  const glyphs = createGlyphSet();
+  const animator = isStatic || !timeline.segs.length ? staticAnimator() : createAnimator(timeline);
+  const content = result.chart ? drawChartBody(result, animator, glyphs, isStatic) : drawFigureBody(result, animator, glyphs);
+  const width = Math.max(content.width, values.size['figure-min']);
+  const captions = isStatic ? { svg: '', height: 0 } : drawCaptions(timeline, animator, width, content.height, glyphs);
+  const height = content.height + captions.height;
+  const fonts = await embedFonts(glyphs.used);
+  const title = figure.title ?? '';
+  return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="fl${content.className}" width="${r(width)}" height="${r(height)}" viewBox="0 0 ${r(width)} ${r(height)}" role="img">
+<title>${escapeXml(title)}</title>
+<style>${fonts}
+${STYLES.tokens}${STYLES.figure}${STYLES.animated}${result.chart ? STYLES.chart : ''}
 ${animator.css.join('\n')}
 </style>
 <defs>${DEFS}</defs>
-<rect width="100%" height="100%" fill="${tokens.color.bg}"/><rect width="100%" height="100%" fill="url(#fl-dots)"/>
-<g transform="translate(${roundCoord((W - scene.width) / 2)} 0)">
-${body}
-${packets.join('\n')}
+<rect width="100%" height="100%" fill="${tokens.color.bg}"/>${result.chart ? '' : '<rect width="100%" height="100%" fill="url(#fl-dots)"/>'}
+<g transform="translate(${r((width - content.width) / 2)} 0)">
+${content.svg}
 </g>
-${stepLabels.join('\n')}
-${said.join('\n')}
+${captions.svg}
 </svg>
 `;
 }
 
+// cost: time O(scene + b·h), heap O(out), stack O(1)
+// vars: scene = 장면 그리기 비용, b = 박자 수, h = 박자의 이동 수, out = 만든 SVG 글자 수
+// basis: estimate
+// 구조, 상태, 데이터, 순서 그림 본문과 점
+function drawFigureBody(result, animator, glyphs) {
+  const { scene, timeline } = result;
+  const body = drawScene(scene, (kind, i, extra) => animator.decorate(kind, i, extra, scene), glyphs);
+  const packets = timeline.segs.flatMap((seg, si) => seg.hops.map((hop, hi) => animator.packet(seg, hop, `p${si}-${hi}`, glyphs)));
+  return { svg: `${body}\n${packets.join('\n')}`, width: scene.width, height: scene.height, className: '' };
+}
+
+// 차트 본문. 시간 흐름이 없으면 되풀이 class를 단다.
+function drawChartBody(result, animator, glyphs, isStatic) {
+  const { figure, chart, timeline } = result;
+  glyphs.add(chartText(figure), 'regular');
+  glyphs.add(chartText(figure), 'mono');
+  glyphs.add(chartText(figure), 'semibold');
+  const isLoop = !isStatic && !timeline.segs.length;
+  if (!isStatic && timeline.segs.length) animator.chart(figure, chart);
+  return { svg: chart.body, width: chart.width, height: chart.height, className: isLoop ? ' chart-loop' : '' };
+}
+
+// cost: time O(c·n), heap O(out), stack O(1)
+// vars: c = 서로 다른 설명 수, n = 설명 글자 수, out = 만든 SVG 글자 수
+// basis: estimate
+// 그림 아래에 단계 이름과 설명을 박자에 맞춰 바꿔 보인다.
+function drawCaptions(timeline, animator, width, top, glyphs) {
+  if (!timeline.segs.length) return { svg: '', height: 0 };
+  const captions = [...new Set(timeline.segs.map((s) => s.caption))].filter(Boolean);
+  const wrapWidth = width - SPACE['30'];
+  const wrapped = new Map(captions.map((c) => [c, wrapLines(c, wrapWidth)]));
+  const lines = Math.max(1, ...[...wrapped.values()].map((l) => l.length));
+  const height = captions.length ? SPACE['17'] + lines * LINE['20'] : SPACE['15'];
+  const labels = timeline.steps.map((label, si) => {
+    glyphs.add(label, STEP_LABEL.face);
+    const cls = animator.windows(timeline.segs.map((s) => s.si === si), 'opacity: 1', 'opacity: 0', 's');
+    return `<text x="${r(width / 2)}" y="${r(top + SPACE['9'])}" opacity="0" class="steplabel ${cls}">${escapeXml(label)}</text>`;
+  });
+  const said = captions.map((text) => {
+    glyphs.add(text, CAPTION.face);
+    const cls = animator.windows(timeline.segs.map((s) => s.caption === text), 'opacity: 1', 'opacity: 0', 'y');
+    const rows = wrapped.get(text).map((line, li) => `<text x="${r(width / 2)}" y="${r(top + SPACE['22'] + li * LINE['20'])}" class="caption">${escapeXml(line)}</text>`);
+    return `<g opacity="0" class="${cls}">${rows.join('')}</g>`;
+  });
+  return { svg: [...labels, ...said].join('\n'), height };
+}
+
+// cost: time O(w·n), heap O(n), stack O(1)
+// vars: w = 낱말 수, n = 글자 수
+// basis: estimate
+function wrapLines(text, width) {
+  const words = text.split(' ');
+  const lines = [''];
+  for (const w of words) {
+    const next = lines.at(-1) ? `${lines.at(-1)} ${w}` : w;
+    if (measure(next, CAPTION.size, CAPTION.face) <= width || !lines.at(-1)) lines[lines.length - 1] = next;
+    else lines.push(w);
+  }
+  return lines;
+}
+
+// 멈춘 SVG: 모든 선과 도형을 보이고 카드는 비운다. 움직임 class는 없다.
+function staticAnimator() {
+  return { css: [], decorate: () => '', packet: () => '', windows: () => '', chart: () => {} };
+}
+
 // cost: time O(1), heap O(1), stack O(1)
 // basis: estimate
-// 박자별 켜짐/꺼짐을 CSS keyframes class로 바꾼다. 같은 켜짐 순서는 class 하나를 나눠 쓴다.
+// 박자별 상태를 CSS keyframes class로 바꾼다. 같은 켜짐 순서는 class 하나를 나눠 쓴다.
 function createAnimator({ segs, total }) {
-  const duration = `${roundCoord(total / 1000)}s`;
+  const duration = `${r(total / 1000)}s`;
   const css = [];
   const names = new Map();
-  const toPercent = (ms) => `${Math.round((ms / total) * 100000) / 1000}%`;
-  const mapSegs = (predicate) => segs.map(predicate);
-  const edgeStates = (j) => mapSegs((s) => s.edgesOn.includes(j));
+  const percent = (ms) => `${Math.round((ms / total) * 100000) / 1000}%`;
 
   // cost: time O(b), heap O(b), stack O(1)
   // vars: b = 박자 수
   // basis: estimate
-  // states[i]는 박자 i의 켜짐이다. [앞, 뒤] 쌍이면 박자 안 cardsAt에서 앞 상태가 뒤 상태로 바뀐다.
-  function animationClass(states, onCss, offCss, prefix) {
-    if (!segs.length) return '';
-    const windows = segs.flatMap((s, i) => {
-      const [before, after] = Array.isArray(states[i]) ? states[i] : [states[i], states[i]];
-      const at = s.t0 + s.cardsAt;
-      return at > s.t0 && before !== after ? [[s.t0, at, before], [at, s.t1, after]] : [[s.t0, s.t1, after]];
+  // states[i]는 박자 i의 켜짐이다. { before, after, at }이면 박자 안 at(ms)에서 before가 after로 바뀐다.
+  function windows(states, onCss, offCss, prefix) {
+    const spans = segs.flatMap((s, i) => {
+      const st = typeof states[i] === 'object' ? states[i] : { before: states[i], after: states[i], at: 0 };
+      const at = s.t0 + st.at;
+      return st.at > 0 && st.before !== st.after ? [[s.t0, at, st.before], [at, s.t1, st.after]] : [[s.t0, s.t1, st.after]];
     });
-    const key = prefix + windows.map(([start, , isOn]) => `${Math.round(start)}${isOn ? 1 : 0}`).join('');
+    const key = prefix + spans.map(([start, , on]) => `${Math.round(start)}${on ? 1 : 0}`).join('');
     if (!names.has(key)) {
       const name = `a${names.size}`;
       names.set(key, name);
-      const frames = windows.map(([start, end, isOn]) => `${toPercent(start)},${toPercent(Math.max(start, end - EPSILON_MS))} { ${isOn ? onCss : offCss} }`).join(' ');
+      const frames = spans.map(([start, end, on]) => `${percent(start)},${percent(Math.max(start, end - EPSILON_MS))} { ${on ? onCss : offCss} }`).join(' ');
       css.push(`@keyframes ${name} { ${frames} }\n.fl .${name} { animation: ${name} ${duration} infinite step-end; }`);
     }
     return names.get(key);
   }
 
-  // cost: time O(b·m), heap O(b), stack O(1)
-  // vars: b = 박자 수, m = 박자의 밝은 선·도형 수
+  const lit = (j) => segs.map((s) => s.edgesOn.includes(j));
+  const cardState = (n, test) => segs.map((s) => ({ before: test(s.cardsBefore[n]), after: test(s.cards[n]), at: s.cardsAt[n] ?? 0 }));
+
+  // cost: time O(b), heap O(b), stack O(1)
+  // vars: b = 박자 수
   // basis: estimate
-  // renderScene이 요소마다 부르는 decorate. kind마다 켜질 때와 꺼질 때의 모양이 다르다.
-  function decorate(kind, i, extra) {
+  function decorate(kind, i, extra, scene) {
+    const id = kind === 'group' ? scene?.groups[i]?.id : scene?.items[i]?.id;
     switch (kind) {
       case 'node':
-        return animationClass(mapSegs((s) => s.nodesOn.includes(i)), `stroke: ${tokens.color.accent}`, `stroke: ${tokens.color.border}`, 'n');
-      case 'edge': {
-        const markers = (id) => `${extra.hasEndArrow ? `; marker-end: url(#${id})` : ''}${extra.hasStartArrow ? `; marker-start: url(#${id})` : ''}`;
-        const prefix = `e${Number(extra.hasEndArrow)}${Number(extra.hasStartArrow)}`;
-        const on = `stroke: ${tokens.color.accent}; stroke-width: ${tokens.border.strong}${markers('fl-arrow-on')}`;
-        const off = `stroke: ${tokens.color.muted}; stroke-width: ${tokens.border.edge}${markers('fl-arrow')}`;
-        return animationClass(edgeStates(i), on, off, prefix);
-      }
-      case 'quiet':
-        return animationClass(edgeStates(i), 'opacity: 1', 'opacity: 0', 'q');
+      case 'group':
+        return windows(segs.map((s) => litIds(s, scene.edges).has(id)), `stroke: ${tokens.color.accent}`, `stroke: ${tokens.color.border}`, 'n');
+      case 'column':
+        return windows(segs.map((s) => s.columnsOn.includes(extra)), `fill: ${tokens.color['card-on']}`, 'fill: transparent', 'k');
+      case 'edge':
+        return windows(lit(i), `stroke: ${tokens.color.accent}; stroke-width: ${tokens.border.strong}; marker-end: url(#fl-arrow-on)`, `stroke: ${tokens.color.muted}; stroke-width: ${tokens.border.edge}; marker-end: url(#fl-arrow)`, 'e');
       case 'pill':
-        return animationClass(edgeStates(i), `fill: ${tokens.color.accent}; stroke: ${tokens.color.accent}`, `fill: ${tokens.color.bg}; stroke: ${tokens.color.border}`, 'l');
+        return windows(lit(i), `fill: ${tokens.color.accent}; stroke: ${tokens.color.accent}`, `fill: ${tokens.color.bg}; stroke: ${tokens.color.border}`, 'l');
       case 'pilltext':
-        return animationClass(edgeStates(i), `fill: ${tokens.color['on-accent']}`, `fill: ${tokens.color.muted}`, 'x');
+        return windows(lit(i), `fill: ${tokens.color['on-accent']}`, `fill: ${tokens.color.muted}`, 'x');
+      case 'quiet':
+        return windows(lit(i), 'opacity: 1', 'opacity: 0', 'q');
       case 'card':
-        return animationClass(
-          mapSegs((s) => [s.cardsBefore[i] !== undefined, s.cards[i] !== undefined]),
-          `stroke: ${tokens.color.accent}; fill: ${tokens.color['card-on']}`,
-          `stroke: ${tokens.color.border}; fill: ${tokens.color.surface}`,
-          'c',
-        );
+        return windows(cardState(id, (v) => v !== undefined), `stroke: ${tokens.color.accent}; fill: ${tokens.color['card-on']}`, `stroke: ${tokens.color.border}; fill: ${tokens.color.surface}`, 'c');
       case 'layer':
-        return animationClass(mapSegs((s) => [s.cardsBefore[i] === extra, s.cards[i] === extra]), 'opacity: 1', 'opacity: 0', 'v');
+        return windows(cardState(id, (v) => v === extra), 'opacity: 1', 'opacity: 0', 'v');
       case 'empty':
-        return animationClass(mapSegs((s) => [s.cardsBefore[i] === undefined, s.cards[i] === undefined]), 'opacity: 1', 'opacity: 0', 'v');
+        return windows(cardState(id, (v) => v === undefined), 'opacity: 1', 'opacity: 0', 'v');
       default:
         return '';
     }
   }
 
-  return { css, toPercent, mapSegs, animationClass, decorate, total, duration };
+  // 점 하나가 한 박자 동안 선을 건너고, 실어 보내는 글은 점 위의 상자로 따라간다.
+  function packet(seg, hop, name, glyphs) {
+    const end = seg.t0 + hop.ms;
+    css.push(
+      `@keyframes ${name} { 0%,${percent(seg.t0)} { opacity: 0 } ${percent(seg.t0 + EPSILON_MS)},${percent(end - EPSILON_MS)} { opacity: 1 } ${percent(end)},100% { opacity: 0 } }\n` +
+        `.fl .${name} { animation: ${name} ${duration} infinite step-end; }`,
+    );
+    const keyTimes = `0;${round4(seg.t0 / total)};${round4(end / total)};1`;
+    const chip = hop.data ? drawChip(hop.data, glyphs) : '';
+    return (
+      `<g class="${name}" opacity="0"><circle r="${values.size.halo}" fill="${tokens.color.accent}" opacity="${values.opacity.halo}"/><circle r="${values.size.packet}" fill="${tokens.color.accent}"/>${chip}` +
+      `<animateMotion dur="${duration}" repeatCount="indefinite" calcMode="linear" keyTimes="${keyTimes}" keyPoints="${hop.isBack ? '1;1;0;0' : '0;0;1;1'}">` +
+      `<mpath href="#p-${hop.edge}" xlink:href="#p-${hop.edge}"/></animateMotion></g>`
+    );
+  }
+
+  // cost: time O(s·b + r·b), heap O(b), stack O(1)
+  // vars: s = 계열 수, r = 행 수, b = 박자 수
+  // basis: estimate
+  // 차트: 계열마다 보임 keyframes와, 드러내는 박자에서 자라는 keyframes. 밝히지 않은 행은 흐린다.
+  function chart(figure, drawn) {
+    const grow = values.duration.reveal;
+    figure.chart.series.forEach((series, s) => {
+      const show = windows(segs.map((g) => g.series.includes(series.id)), 'opacity: 1', 'opacity: 0', `cs${s}`);
+      const reveal = segs.find((g) => g.growing.includes(series.id));
+      css.push(`.fl .cs-${s} { animation: ${show} ${duration} infinite step-end; }`);
+      if (!reveal) return;
+      const [a, b] = [percent(reveal.t0), percent(reveal.t0 + grow)];
+      css.push(
+        `@keyframes g${s} { 0%,${a} { transform: scaleX(0) } ${b},100% { transform: none } }\n.fl .cs-${s} .grow, .fl .cs-${s}.grow { animation: g${s} ${duration} infinite; }\n` +
+          `@keyframes d${s} { 0%,${a} { stroke-dashoffset: 1 } ${b},100% { stroke-dashoffset: 0 } }\n.fl .cs-${s} .draw, .fl .cs-${s}.draw { animation: d${s} ${duration} infinite; }\n` +
+          `@keyframes f${s} { 0%,${a} { opacity: 0 } ${b},100% { opacity: 1 } }\n.fl .cs-${s} .late, .fl .cs-${s} .pop, .fl .cs-${s}.pop { animation: f${s} ${duration} infinite; }`,
+      );
+    });
+    drawn.rowKeys.forEach((key, k) => {
+      const dim = windows(segs.map((g) => g.lights.length > 0 && !g.lights.includes(key)), `opacity: ${values.opacity.dim}`, 'opacity: 1', `r${k}`);
+      css.push(`.fl .cr-${k} { animation: ${dim} ${duration} infinite step-end; }`);
+    });
+  }
+
+  return { css, decorate, packet, windows, chart };
 }
 
-// 점 하나가 한 박자 동안 선을 건너고, 실어 보내는 글은 점 위의 작은 상자로 따라간다.
-function drawPacket(animator, seg, hop, name) {
-  const { toPercent, total, duration } = animator;
-  const end = seg.t0 + seg.move;
-  animator.css.push(
-    `@keyframes ${name} { 0%,${toPercent(seg.t0)} { opacity: 0 } ${toPercent(seg.t0 + EPSILON_MS)},${toPercent(end - EPSILON_MS)} { opacity: 1 } ${toPercent(end)},100% { opacity: 0 } }\n` +
-      `.fl .${name} { animation: ${name} ${duration} infinite step-end; }`,
-  );
-  const keyTimes = `0;${round4(seg.t0 / total)};${round4(end / total)};1`;
-  return (
-    `<g class="${name}" opacity="0"><circle r="${values.size.halo}" fill="${tokens.color.accent}" opacity="${values.opacity.halo}"/><circle r="${values.size.packet}" fill="${tokens.color.accent}"/>${hop.data ? drawChip(hop.data) : ''}` +
-    `<animateMotion dur="${duration}" repeatCount="indefinite" calcMode="linear" keyTimes="${keyTimes}" keyPoints="${hop.isBack ? '1;1;0;0' : '0;0;1;1'}">` +
-    `<mpath href="#p-${hop.edge}" xlink:href="#p-${hop.edge}"/></animateMotion></g>`
-  );
-}
-
-// cost: time O(n²), heap O(n), stack O(1)
-// vars: n = 글자 수
+// cost: time O(l·n), heap O(out), stack O(1)
+// vars: l = 줄 수, n = 글자 수, out = 만든 SVG 글자 수
 // basis: estimate
-// 점 위에 뜨는 글 상자. size.chip-max보다 길면 줄을 나눈다.
-function drawChip(data) {
-  const size = CHIP_SIZE;
-  const lines = wrapChip(data);
-  const w = Math.max(...lines.map((line) => measureText(line, size))) + SPACE['9'];
-  const h = lines.length * LINE['15'] + SPACE['4'];
+// 점 위에 뜨는 글 상자. 줄은 시간표가 이미 나눴다.
+function drawChip(lines, glyphs) {
+  for (const line of lines) glyphs.add(line, STYLE.chip.face);
+  const w = Math.max(...lines.map((line) => measure(line, STYLE.chip.size, STYLE.chip.face))) + SPACE['9'];
+  const h = lines.length * STYLE.chip.line + SPACE['4'];
   const top = -h - SPACE['6'];
   return (
-    `<rect x="${roundCoord(-w / 2)}" y="${roundCoord(top)}" width="${roundCoord(w)}" height="${roundCoord(h)}" rx="${values.radius.lg}" fill="${tokens.color.accent}"/>` +
-    lines.map((line, li) => `<text x="0" y="${roundCoord(top + LINE['15'] * (li + 1))}" class="chip">${escapeXml(line)}</text>`).join('')
+    `<rect x="${r(-w / 2)}" y="${r(top)}" width="${r(w)}" height="${r(h)}" rx="${values.radius.lg}" fill="${tokens.color.accent}"/>` +
+    lines.map((line, li) => `<text x="0" y="${r(top + STYLE.chip.line * (li + 1))}" class="chip">${escapeXml(line)}</text>`).join('')
   );
-}
-
-// cost: time O(n²), heap O(n), stack O(1)
-// vars: n = 글자 수
-// basis: estimate
-/** 글 상자 글을 size.chip-max 너비로 나눈 줄. HTML 재생기도 같은 줄을 쓴다. */
-export function wrapChip(data) {
-  return wrapText(String(data), values.size['chip-max'], CHIP_SIZE);
 }
 
 function round4(value) {

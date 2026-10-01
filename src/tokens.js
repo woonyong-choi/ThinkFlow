@@ -31,7 +31,8 @@ export const tokens = freeze({
       "50": "var(--color-blue-50)",
       "400": "var(--color-blue-400)",
       "600": "var(--color-blue-600)",
-      "900": "var(--color-blue-900)"
+      "900": "var(--color-blue-900)",
+      "800": "var(--color-blue-800)"
     },
     "tone": {
       "blue": "var(--color-tone-blue)",
@@ -58,7 +59,19 @@ export const tokens = freeze({
       "green": "var(--color-tag-green)",
       "orange": "var(--color-tag-orange)",
       "gray": "var(--color-tag-gray)"
-    }
+    },
+    "orange": {
+      "100": "var(--color-orange-100)",
+      "600": "var(--color-orange-600)"
+    },
+    "ink": {
+      "900": "var(--color-ink-900)",
+      "600": "var(--color-ink-600)",
+      "200": "var(--color-ink-200)"
+    },
+    "series-1": "var(--color-series-1)",
+    "series-2": "var(--color-series-2)",
+    "grid": "var(--color-grid)"
   },
   "font": {
     "sans": "var(--font-sans)",
@@ -112,7 +125,18 @@ export const tokens = freeze({
     "chart-label": "var(--size-chart-label)",
     "chart-bar": "var(--size-chart-bar)",
     "chart-row": "var(--size-chart-row)",
-    "chart-dot": "var(--size-chart-dot)"
+    "chart-dot": "var(--size-chart-dot)",
+    "person-w": "var(--size-person-w)",
+    "person-head": "var(--size-person-head)",
+    "person-shoulder": "var(--size-person-shoulder)",
+    "person-body": "var(--size-person-body)",
+    "state-dot": "var(--size-state-dot)",
+    "table-row": "var(--size-table-row)",
+    "seq-row": "var(--size-seq-row)",
+    "group-title": "var(--size-group-title)",
+    "chart-plot-h": "var(--size-chart-plot-h)",
+    "chart-axis": "var(--size-chart-axis)",
+    "chart-cell": "var(--size-chart-cell)"
   },
   "weight": {
     "medium": "var(--weight-medium)",
@@ -180,7 +204,8 @@ export const tokens = freeze({
   "opacity": {
     "tag": "var(--opacity-tag)",
     "halo": "var(--opacity-halo)",
-    "tab-on": "var(--opacity-tab-on)"
+    "tab-on": "var(--opacity-tab-on)",
+    "dim": "var(--opacity-dim)"
   },
   "z": {
     "raised": "var(--z-raised)",
@@ -194,7 +219,8 @@ export const tokens = freeze({
     "dwell-max": "var(--duration-dwell-max)",
     "step-end": "var(--duration-step-end)",
     "stagger": "var(--duration-stagger)",
-    "chart-cycle": "var(--duration-chart-cycle)"
+    "chart-cycle": "var(--duration-chart-cycle)",
+    "reveal": "var(--duration-reveal)"
   },
   "scale": {
     "zoom-max": "var(--scale-zoom-max)",
@@ -226,10 +252,11 @@ export const values = freeze({
       "950": "#111214"
     },
     "blue": {
-      "50": "#eef5fd",
+      "50": "#edf3fb",
       "400": "#3396e8",
-      "600": "#0074d9",
-      "900": "#1d2733"
+      "600": "#2a78d6",
+      "900": "#1d2733",
+      "800": "#1d4f91"
     },
     "tone": {
       "blue": "#3b82f6",
@@ -238,14 +265,14 @@ export const values = freeze({
       "orange": "#f59e0b",
       "gray": "#8b949e"
     },
-    "accent": "#0074d9",
+    "accent": "#2a78d6",
     "on-accent": "#ffffff",
-    "fg": "#111418",
-    "muted": "#4b5563",
+    "fg": "#0b0b0b",
+    "muted": "#52514e",
     "bg": "#ffffff",
     "surface": "#f5f7fa",
     "border": "#b6c0cc",
-    "card-on": "#eef5fd",
+    "card-on": "#edf3fb",
     "dot": "#d5dbe3",
     "frame": "#e3e7ec",
     "page": "#ffffff",
@@ -256,11 +283,23 @@ export const values = freeze({
       "green": "#10b981",
       "orange": "#f59e0b",
       "gray": "#8b949e"
-    }
+    },
+    "orange": {
+      "100": "#fbe1d5",
+      "600": "#eb6834"
+    },
+    "ink": {
+      "900": "#0b0b0b",
+      "600": "#52514e",
+      "200": "#e6e5e1"
+    },
+    "series-1": "#2a78d6",
+    "series-2": "#eb6834",
+    "grid": "#e6e5e1"
   },
   "font": {
-    "sans": "-apple-system, BlinkMacSystemFont, Pretendard, 'Apple SD Gothic Neo', 'Noto Sans KR', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
-    "mono": "ui-monospace, SFMono-Regular, D2Coding, Menlo, monospace"
+    "sans": "FigSans, Pretendard, -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif",
+    "mono": "FigMono, D2Coding, ui-monospace, SFMono-Regular, Menlo, monospace"
   },
   "size": {
     "text": {
@@ -310,7 +349,18 @@ export const values = freeze({
     "chart-label": 140,
     "chart-bar": 12,
     "chart-row": 40,
-    "chart-dot": 5
+    "chart-dot": 5,
+    "person-w": 56,
+    "person-head": 20,
+    "person-shoulder": 14,
+    "person-body": 22,
+    "state-dot": 14,
+    "table-row": 26,
+    "seq-row": 44,
+    "group-title": 28,
+    "chart-plot-h": 260,
+    "chart-axis": 48,
+    "chart-cell": 40
   },
   "weight": {
     "medium": 500,
@@ -378,7 +428,8 @@ export const values = freeze({
   "opacity": {
     "tag": 0.15,
     "halo": 0.2,
-    "tab-on": 0.06
+    "tab-on": 0.06,
+    "dim": 0.3
   },
   "z": {
     "raised": 2,
@@ -392,7 +443,8 @@ export const values = freeze({
     "dwell-max": 3200,
     "step-end": 1600,
     "stagger": 120,
-    "chart-cycle": 7000
+    "chart-cycle": 7000,
+    "reveal": 900
   },
   "scale": {
     "zoom-max": 6,

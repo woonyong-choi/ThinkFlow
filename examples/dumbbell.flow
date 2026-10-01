@@ -1,0 +1,20 @@
+chart dumbbell
+title "작업당 토큰"
+subtitle "예시 데이터. 에이전트마다 작업 61개 평균"
+x "토큰(로그 눈금)"
+scale log
+
+series base "기억 없음"
+series ours "기억 붙임"
+
+row "코딩 에이전트 A" base=120000 ours=31000
+row "코딩 에이전트 B" base=95000 ours=28000
+row "편집기 도우미" base=60000 ours=21000
+row "사내 에이전트" base=8000 ours=9200
+
+step "기억 없음" "기억 없이 쓴 토큰이다"
+  reveal base
+step "기억 붙임" "같은 작업에서 기억을 붙이면 토큰이 준다"
+  reveal ours
+  say "사내 에이전트만 15% 늘었다"
+  light "사내 에이전트"

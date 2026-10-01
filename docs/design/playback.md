@@ -87,7 +87,7 @@
 |---|---|
 | `render 원본` | 움직이는 SVG `{이름}.svg` |
 | `render 원본 --static` | 멈춘 SVG `{이름}.svg` |
-| `render 원본 --html` | `{이름}.svg`와 HTML 재생기 `{이름}.html` |
+| `render 원본 --html` | `{이름}.svg`와 HTML 재생기 `{이름}.html`. `--static`과 함께 주면 SVG가 멈춘 SVG다 |
 | `gallery 폴더` | 폴더 안 원본마다 `{이름}.html`과 목록 쪽 `index.html` |
 
 - 한 번의 실행은 `{이름}.svg`를 하나만 쓴다. 움직이는 SVG와 멈춘 SVG가 같은 이름을 다투지 않게 하기 위해서다.

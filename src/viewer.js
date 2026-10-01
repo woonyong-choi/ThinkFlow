@@ -8,7 +8,7 @@
  * @param root `.fl-figure` 요소. 안에 `.fl-full`, `.fl-zoom` 단추와 `svg.fl`이 있다
  * @param metrics { iconStroke, zoomMax, zoomStep }
  */
-function d2flowView(root, metrics) {
+function figureView(root, metrics) {
   const svg = root.querySelector('svg.fl');
   const fullButton = root.querySelector('.fl-full');
   const base = svg.viewBox.baseVal;

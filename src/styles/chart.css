@@ -59,16 +59,61 @@
   fill: var(--color-accent);
 }
 
-.fl .chart-axis {
-  stroke: var(--color-border);
+.fl .chart-sub,
+.fl .chart-name,
+.fl .chart-rule-label {
+  font-size: var(--size-text-12);
+  fill: var(--color-muted);
+}
+
+.fl .chart-name,
+.fl .chart-rule-label {
+  font-size: var(--size-text-11);
+}
+
+.fl .chart-tick.end,
+.fl .chart-rule-label.end {
+  text-anchor: end;
+}
+
+.fl .chart-unit.start {
+  text-anchor: start;
+}
+
+.fl .chart-cell {
+  font-family: var(--font-mono);
+  font-size: var(--size-text-11);
+  text-anchor: middle;
+  fill: var(--color-fg);
+}
+
+.fl .chart-cell.on {
+  fill: var(--color-on-accent);
+}
+
+.fl .chart-axis,
+.fl .chart-grid {
+  stroke: var(--color-grid);
   stroke-width: var(--border-thin);
 }
 
-.fl .chart-draw {
-  stroke: var(--color-accent);
-  stroke-width: var(--border-strong);
-  stroke-dasharray: 1;
-  animation: chart-draw var(--duration-chart-cycle) ease-out infinite both;
+.fl .chart-rule {
+  stroke: var(--color-muted);
+  stroke-width: var(--border-thin);
+  stroke-dasharray: var(--dash-line) var(--dash-gap);
+}
+
+.fl .chart-ci,
+.fl .chart-whisker,
+.fl .chart-median {
+  stroke: var(--color-fg);
+  stroke-width: var(--border-tag);
+}
+
+.fl .chart-box {
+  fill: var(--color-card-on);
+  stroke: var(--color-series-1);
+  stroke-width: var(--border-tag);
 }
 
 .fl .chart-before {
@@ -77,19 +122,89 @@
   stroke-width: var(--border-tag);
 }
 
-.fl .chart-grow {
+.fl .chart-arrow,
+.fl .chart-link {
+  stroke: var(--color-accent);
+  stroke-width: var(--border-strong);
+  stroke-dasharray: 1;
+}
+
+.fl .chart-link {
+  stroke: var(--color-muted);
+  stroke-width: var(--border-thin);
+}
+
+.fl .grow {
   transform-box: fill-box;
   transform-origin: left center;
-  animation: chart-grow var(--duration-chart-cycle) ease-out infinite both;
 }
 
-.fl .chart-value,
-.fl .chart-late {
-  animation: chart-fade var(--duration-chart-cycle) ease-out infinite both;
+.fl .hidden {
+  opacity: 0;
 }
 
-/* 한 바퀴(duration.chart-cycle)의 앞 13%에 자라고, 나머지는 다 자란 채로 머문다. */
+.fl .dim {
+  opacity: var(--opacity-dim);
+}
+
+.fl .cs-0,
+.fl .cs-1,
+.fl [class*="cr-"] {
+  transition: opacity var(--duration-fast);
+}
+
+/* 재생기: 드러내는 박자에 play가 붙으면 한 번 자란다. */
+.fl .play .grow,
+.fl .play.grow {
+  animation: chart-grow var(--duration-reveal) ease-out both;
+}
+
+.fl .play .draw,
+.fl .play.draw {
+  animation: chart-draw var(--duration-reveal) ease-out both;
+}
+
+.fl .play .pop,
+.fl .play.pop,
+.fl .play .late,
+.fl .play.late {
+  animation: chart-fade var(--duration-reveal) ease-out both;
+}
+
+/* 시간 흐름이 없는 차트 SVG: 한 바퀴의 앞 13%에 자라고 나머지는 머문다. README 이미지에서도 보이게 되풀이한다. */
+.fl.chart-loop .grow {
+  animation: chart-grow-loop var(--duration-chart-cycle) ease-out infinite both;
+}
+
+.fl.chart-loop .draw {
+  animation: chart-draw-loop var(--duration-chart-cycle) ease-out infinite both;
+}
+
+.fl.chart-loop .pop,
+.fl.chart-loop .late {
+  animation: chart-fade-loop var(--duration-chart-cycle) ease-out infinite both;
+}
+
 @keyframes chart-grow {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+@keyframes chart-draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+}
+
+@keyframes chart-fade {
+  0%,
+  50% {
+    opacity: 0;
+  }
+}
+
+@keyframes chart-grow-loop {
   0% {
     transform: scaleX(0);
   }
@@ -100,7 +215,7 @@
   }
 }
 
-@keyframes chart-draw {
+@keyframes chart-draw-loop {
   0% {
     stroke-dashoffset: 1;
   }
@@ -111,7 +226,7 @@
   }
 }
 
-@keyframes chart-fade {
+@keyframes chart-fade-loop {
   0%,
   9% {
     opacity: 0;
@@ -124,10 +239,18 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .fl .chart-grow,
-  .fl .chart-draw,
-  .fl .chart-value,
-  .fl .chart-late {
+  .fl .play .grow,
+  .fl .play.grow,
+  .fl .play .draw,
+  .fl .play.draw,
+  .fl .play .pop,
+  .fl .play.pop,
+  .fl .play .late,
+  .fl .play.late,
+  .fl.chart-loop .grow,
+  .fl.chart-loop .draw,
+  .fl.chart-loop .pop,
+  .fl.chart-loop .late {
     animation: none;
   }
 }

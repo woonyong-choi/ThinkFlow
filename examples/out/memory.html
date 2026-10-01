@@ -3,12 +3,16 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>memory</title>
+<title>대화에서 기억 그래프 키우기</title>
 <script>if (window.self !== window.top) {
   document.documentElement.classList.add('embedded');
-  addEventListener('load', () => new ResizeObserver(() => parent.postMessage({ d2flowHeight: Math.ceil(document.body.getBoundingClientRect().height) }, '*')).observe(document.body));
+  addEventListener('load', () => new ResizeObserver(() => parent.postMessage({ figureHeight: Math.ceil(document.body.getBoundingClientRect().height) }, '*')).observe(document.body));
 }</script>
-<style>/* tokens.json: 생성물, 손으로 고치지 않음 */
+<style>@font-face{font-family:FigSans;font-weight:500;src:url(data:font/woff2;base64,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) format("woff2")}
+@font-face{font-family:FigMono;font-weight:400;src:url(data:font/woff2;base64,d09GMgABAAAAAAZwAA4AAAAAC9gAAAYdAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAABmAATAgSCYJzERAKjBiLSwsMAAE2AiQDDgQgBYMIByAMThuJCsgehekWuzVNUk685a3BA/+dfufOnYlL7PYWjp6clEzazhORLr8Apm81SzME1W1vTviBX38CawK58QjiwBOK5CDzYhKe//ZL7dz/Nv8kbuesMGGjoyPVvlmcvACCQlZpK1yUqwR0UQUhATULWaEjlOoynXVfqFigat8egRS/xlkYOH6tvyJx4aMZ7W8Hmtvm1IQw6gFEykfq24eaCL28HpF9iZUuzWNC4EAAaMnaHYAiAA2QQCaJ4L3OxH/hwoGGdiv3rKeefD2SSCB7aGc0PD1+SnV8uh8jU6eh/0JOTTgVYMF7WDh7hkaEOMO0ROKIRcO4Cydy3lyfhfAq1biiIS7m+yw0r4WoKfZZSK9qisvypr6hUlPFVKx1cUw1qeULFsf1ckFrH7EkZgZUnP5aYe2PVHE8ZBakR5aY5mSfhT6G6NWYPNWkVvaWlSrd5j+fheFtV3FZ0TPUOxTf31AgVhvEA8XFqjH+YM9QONpQUOyq1GNbpf6m9qzIXS/2PlsNdDpGqPYr1ZC0iHnHCrOlxfH9ynJBrNS0b7J4UG5XUBMasBhtuyxvtMT+nvrqfr6jQMwnefVlZkGx2eCzcHrb+4caGwp5+XvxARIHGqlEIkECYADgApKBa8BrAIAOegqgoSMxUj267rApXXxpcaZj0EjCpbmH35jAlZ/3Hl1rXNKluexuzS3dm4SHSKZoQy7hEWl4liRLNymrHn3V5RLu4eHBS1+det1zzz1V3vP069OtjmNj+97gq4uMNZeZLJLYXcoYSfOSgwsjCfN6NULbWDO30RV6v+MTleL118WBW194wz382nMjkQMX3/24K/aodSH7n7sew6buuWTBQv6/W5ZHQm1fPVgcjWU/1bw17Gl1dhnla78b+GXPu5H1kbY9kYFE6r2/njw52NJc3/z+JvPhC9uWtm0Q65elDjyWducTF40sZdLZdkP97mbRFFywamzOwjUX7Ji5vOWGUzrGdlZ3FOWdqMvYPXVpW1tk/HkDzw+ssPq+/Kr/q7bpn38V/e8ds6a5ojm+p3VUa1fTtKGBQee8Ru2oY1nz7xud223b5Lhz287Jn//iwpkOc2B6yV07+3ImTghfsfOugeL0j5yBsrIZzo/SiZvhAre5M/3sh/vP7j9ydmITwJI9efLRySLtgJ56FwLtV540SSVLMsmWHPIpOMQiAxYpPBmkjdNY454quItsxnSzlOS3zU+yslnkS8OSAImYYyFT70IT3a+kYNMWr6SF1ThrrMOGOJYlGEathiyXGbqTrSDzw0KdNdcWGYrljqJ4mi/55J8o6OAoCxHYhbiKq/A6mohAcEkKGZa+9ToakIz7ROYMSxZikux+2IZp0ZRWe5mxO8jYc0Hu6C6nHkkmOZOUK5FJJmlhySiq8EfVZMVLw2/lhCpqO10xAbyxxuouvadEJaqwRtFr9EIZpSCTCkcnitK1krYIUCZlmw1m8OoOO7QNxwQ44Q322ZkNeUq8VCrmb1GjYjJDm6npqt4WYUIUxqIQRyy0cCt99hoZbo44wj4psjGEkMwgfK1u70Ah2WTY9GMrHDUoJD1sZH0wAKFl76MrpM+nkx+w/sh8SGFxvXGiGFbthDcYWX+IDFqn3KUyyHCeygdTps12FL9gSKhTMjq/bVgifm1nPuvT/fwYBsNPmZZ9jekK6TgWBQqmW/1ZfwMIQHBo6yx6ZV7K1N+qnPJLgJeu/uwmgDe8adf/Hfj/I12XZwMONAAEyL5EPj35JVKbOHkDAm9VE7+C/4xsFdYgTACG5qFWjAcBgAs0jCeRCMDOTBKhO4E7bM9aBKmWz2gk4y0SZXJbvcVgMszW9O4DlthokxXWWUsZxW8Mv9GmUOpsUf1qi8dGCyL1EwWNuwOM1WC0eusstsJayyh9llhmi9UW2Fi4krFgveZ6O2y0wjLLbaZUWaTaLFPj+KzN4yldWkJTfeJGlXVTC2xe89/6KWGrraZGs02FuOTHkrhVscVM1sTOZluMBFZby28oC+1A7+JuXSL6tBqitFprET8JAIntJuNGX4aFWncTCLRaARmNB17WYooqhdKAo5ayiGa/EllPu5tEYq+14F8HAA==) format("woff2")}
+@font-face{font-family:FigSans;font-weight:400;src:url(data:font/woff2;base64,d09GMk9UVE8AACJkAAwAAAAANtAAACIVAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAADcY7GjQbhFQck0YGYACFAAE2AiQDgxwEBgWCeAcgG/w1sxG124GSgmYVI/svE2wDZvZovwCXkFm1NVFSdNzFRImOJhXR5dHP8z7Elj3r33QeJlgAGMBExdL1CElmj2jTZvcEInqQGp8cKRXnoUqM/9I8DaJJiOoTYlIxI1XqEb5PzVM1hYdiv/Z2/z/phzamkxgyns2Se8RDJGqLovFKoASAqh/+2p7dF5achSILE7KifBYOi8Um5XEa7k7YbO+PUFOlCF1uF3K9Xs/XG7sySojnUEauF0Kv+IIpIZTSK6WUepQx8jnkmYdc6rrUQy7zLOcppS55RCllFLmWYzHP8xBizLIsl1lWSj4vch65n+c5T7/02/HZ8M/7Wlo/JKoWsPmH3WoWTpVDSpokt5Mmhawdp0zJnBxSu7eP3OujSXJKD+AFARtj8yeI47+g/37tU23Nqx6hlt5dUkRJhF0pU1GRkUDCROiwA1aEElVUT9X5/v/bTNt3NYZx+AfZhEW1cRmn5y5No/kzC1/vzPFKMuhrTCTJJCkkhbQ2yxviajuXScpUZqCmT9NgUaVM2TGqpTOSHwIln8MwTD2GM5E+/9tenIpds1tCUkYoUCNEZjpKhCwBBWKuynI8pGtGWXaPn1sk100gaQVNXkFTXryDV9AEYE6UOclncmz8+PQmvqyLyT8Gg+/Kxus/APjTPpN7XoKXxMu8Q4aOslHv0LdGi+OuE+4e6UBF74joxHyHJoEOtOxjZ8vR6zqE9jem6xegKrCyytpKW16PwgIbu11Dsv81o10P8iscyr5fvrCfhvB2Nnbwf3poz/UP36GsvKicTkD0b5M9TJf7g/1zKy6slZwVG1X0JVv9s94fJgDA5ljIEUXYyu8KdGcVVFfd1b52Llfc5UP2ocUjc0cejoLP/OjBsYfjvMmpAfbAZKaGGcqMZe7xKvj9+T/bZtuxglWCm4KHwW9DrCGWkKEhm0LOsiK2JytnLwrDhXKhQqgWWoQVwlmh/qGC9i3tj3a0d2zuuKmzpXNy15Zujh7Qq+x13atAbA7YfslJaR9plFSDgXQyWSZdI90vPSmNOO00nW52i1v90C+gd7gzPetD/58D8ACvAQG7ngAEAPKgQMIVNHWk45oDlLdvT5ki494cgXV28IgWpiqX1xaWf7m9nd7uu597JBeNeMZkry/70JdLryyJ/p357vYn/wFqgCMB8cInEKqrQTRMkuWyqVRrpLGmmK2ew1r/22Kvo8664q5n3vkagGrISjHlDGMCU5nJPOpxsIpGXGxiG3s5wCkucoP7vOQzv0VhLxwokXqqt8KlkEpGJSpD2fpXIzVPy9WkDdqhgzqpC+5HiLyX9/OBrvFYt3ia74yAEEdi1Mb4qI+G2BL74kRcjjvxLN7Ft4KpuJJQFpertVe11f/rofq1sU3TatuKdqg9a+4e3Pb9r57US/qwPr+v7bv7xf6i/8yAFGW/VGVaFmVpjsqJWZ+NuT2P5ZV8nJ++BECVddbbzfYx22afsY+3z7GvtBcFIwzG7lG7JlQhwVKZjT6kMVD31lKObgzV9zxS7jpp3oP0oR6l0+RQwFW/Tk68Gq0dujksIpcWzcieeuJ/p9tXYVyxnWhXp0YzSzmyypky7o61gDvRksZj3MkW2KCTqr+mgUn1OaVFknaGm5W8C8BTdXau09JrpYchOApMoMOk89BKJ0m72oSwgNkJLw7wjXED8FAcRyzgB1kuVDNCS7EwSA5b1H2h7kZdR81114sDlAT7p9rbJlJ97Z/gTsyU7+jDysLonLMcRk3vZSWjkfwtym+Uei7m3q0oUAIfimkJBC3IqEcoImiUyPbHgQHpjZJeVs5im6fXSWXII+v8hKiYcRr3RGQ92K5a55+EkbEsmNu5xLnOosDd9rA/bIQR3fRynnUSBWNTUPqcjeROEY0aejOG7RJgc1xh2NLwYDzCmcUFrBVMHnHKSELG/e4n33v1m0d97/T0MU/Ytu1HT/jdMgmhrOFZUZqN6bwZKdc0FsGTzNUJBQGiPkFkZhlElDk+NzkkcsbdbBQR6l63jQ8wF+GeZfvPqFleJFi/gs1suAbf3G3oePhELOj3oe3Wk9Tau326MdQiAaXG64cZ51XKhykZF6olweWqk6wvybrRexRBATM5EMtJUa6RMaEque9axGJ/K1jI77Rl5QdRSkArGc5R6x8lEPtTbfkFSt3PA9p93obEM3rXIcSJa92Vn/3sL396xM9WVx/2iNW+tl569og/zV2tiLbkM3uA3egz8CibIecTomqM/z8gchAVbxIB5EQF8/865d6yjSoV7XU4r71SSCDRvW27kH6g3jDc+f76H+6USAp6Z92GBfmBKLuuFnOj//q9P/Obf/O4B27Z8oT15WrAPxlhG485fcuWR0W4/5bvfbymoExd2avYV6550yS78JuF71n9C9h76k3Dne/+4Ve7WyFA/8SAHuRwiGu6ms3Hf/jOz81fPOkh21afduTiIRH8ipbgb2lnbzv7CUcevfrg1RKVqZMiDpZ14VrtCYN0Z3Y8Ka8sAubHWeLmWwrsVCtp62qDoV7yYxksNZvD/JtzvJE5wN+AzGJaMn2qhdjexhG3aQSKfdMTGZevEgV9Rh6+cOPa+VCdj7FX4q600euHZj4tzWajjzeF5ZsmUxVbhAbTKoWuM9XH8Kd+rALdYMNADjp7DGr9swQK/rG2HPwEWZc7GM+mGHY9DH9weSlU86bMOGlGTahBLM5LHluEuToWVcgnG4WUq3IP486LQAUxOYEekna6T98FNBP7a23SA9/mMuspQEzzgwFdsQbZtZebflC0Lj3eexvZd0Hbzado58y3TcQ28XKoVz0Z3OiJ9EWks9+YysyVkUt6Rb4Pkoq39hKI0X0E6SSRWJauDbAGXoLzl2l42/AGGb/1Ucja1L7O/iahqFZdMNJ+ABH37oBEtO30U59QSE8+9dQu6em/s/Hh1nk4w+B7DCBXaq5p+WRWVAO4ZeHsO+odQ5THjlpEAdAk5LIhg9lUoxA00ei9dRnqrjD1URwNN8cIuSHFReUqhVDPeZJfRUklZNNAhPtFN8Fglkj0DVnFmzvF2Mm35BGLasb0PWTqu2saF8CSwrxMlnd4Nb90yO/AQuawE+uipvrJPo29ReoDsdEXqrjgEhU32CUudpmGDtOkuTjn8wJQ1KPLusw8l09aN+k4SQEX5x/zM5CZPviOET1yH3/g3vpBRfil0k96I2TGwg+Sl7N3aHq6IMeiRfpBvG0kfFlfs4UqJrBEZBnsAopd+tJ2Xz8uBjySGX6lt+9tjn3rvPjsqfkLr17M1Xk0JkTYiERRYiYbpTZrA8FAfuTA46R5RRbRxs38GL3/RjiLpzUhOhr6yTV1ViJjFRgwGZMQy668SunYaxc9D5FU5lB+gih3815e3w0yi9c1qXD0xkjb8Ip/YyFP7misKPpC0e3J2pubKt/9kkWKuXvXRmd21oE+6FD1m7wQb15lEe4/K35clNzwaWXe80qzy9eJk39o3rsg71w378h61IfBJf1w8x1DbC83a2mM0FDyrmGNuEAYbOjBVgLZG6qC8DKhjqHbNJ5cdB5mq1Q0KI0ydjYuFr0Hia+/hCNKEA45g5d1WY2Ydwj8QcDckYYJxv5kS4M0c54WR+LMuVBlTRmJGj+IyRWxaUQbcjBE2L8vkLbscMd1sm+adxJYCECsXcfSRyKwF9uNA24a7Q/zuCAPvZ/lSVfVhhrwa1EhrDjBovL+kxPOp3WeHteBvFi9QY218XFcSB43GazITtLIHnWTqjnKfF4YnXHBZM6ROHKxC0SHrhcj5nrtW1lzj7YpnAUSR0HKN27+eVyYhFPBhxhG42fKNGFSSLYfQAglAxnOsGRBFHK+lCIOnROhumhGyKkPQWS7son3hiRwSCveLhIAXVDk1VpPRidUvj6KmGkUbtOoPg1wKnVyJ+AKVq0nTjqzXTD2s6eMqnvjtZjGqwc1XZPO1boarf3HqFxeIuik7kvqLtJbaZ+7shQ/yKO6j4f05LluRvzfmBVQb9tswIAUJ92nLjYciA8TIhuRv+wiXVzSk5m7phAZ6DCZN40Y5CUgeibx0uUo0aDRTic8j25Us4rDfFEraVQou046zzN8hG/z59E3xsamuF2ERVEySmO5Wj1oc22un1t4W9oD+9q+tx/rr7JTTsrHIHuB+y/3XPftvdxez93rF3v/z972vd+x9+3NGU2qYfkwnjJ+eCLYf7R/vf/BAF6ALuBcoD7wE9PE9GEimEGMklExeiaByWQKGRtTzQxhxjBTmAbGxWxnWpgjzBnmDfOFWecBvDHeHC+E1+l7F8O6VMHkfTCXZQ2JMuR9l6s5H/dyPjorGCnHEJQK5zX42YfYpylVzo5dD7SxvsXC6Vy82ry2+tev6KE5AMl6i6bZ/Uv6UDuon0neG0ffzpm2cKKi8iHkgPJvIBhtqyBl3M/JRKd/dHa3Sp/qZNG+lWarJZ7V5syP3vT45+2YB0+QeQmTxDiSLQf9BHwWpXs0qucl0l+n0cnR7AeJfmyiTWuVtEMwiVCFR5NAzBE+4kP+lNuAfkW/6R6SQI3aL1AT0+iiP3dCxE46RQ8noZnOlIn//M3Pf9OyUModoZ4NdcwHtOBD6UkG/86kts4ECzUXzP0u4juNqbuVv0TPpgn1xVDf67VvKbgP6EYwVHOmTMeIH+RZXOQGDgYIxn6UbWSCofy4BJZYcyjv5AR38qsEbzxj1Xpbk+qPrtTT0+YCK+Awo/CsmB0VSWhUHmMrWZ9WsmpcKWym5gepJ5fch9kaq5wJgy+pL6+6QL/khs9o9H0vNLfcroR/PjTvb098x3zDXw71xXcTqt50GbdahgZPJcERfFzOf5lQrw7zvhSjHyp/FapZIzuDj+9QdcCcy+viYsQpPsuLpvmaHcyaFsG0yYfjiB8XAj0RTa26kkeY3eV2ydpNkuCFLM4HImkncDDMzm9UOe4lkRgUv2ViUqQlJQojpVkbDYbwo7r8yANGw7K+5Y5HlxdJ8NKz0F+eEzvm01cxNmmGnlAX/ThXxJIYflmd77pjbLldvPbwZ/Zfmv/ME5hUk8qUxjx07s8xsBgbGdHmXyz6ko4MdC6Easw0oV5JGV9mY+kUu1aK6bx37HqaHXvj3lg0TTCpVJFb0rQb2qPCl0lNDmmhgfY8Eaopc0E2nWbrhpLPxlB9z2PlrrghZ5pDbQNyso1IMJwflwN+KQzfiPffTKPfuyAxe3JSBC/NN/NBkkyT5jG2FETFo2fZ0VKVWuNerQaUvbHHp3n+vzZvYkeoK15L30jmqKSG/1T9b3vk5PIC0drLOV6/PJfnGkrkBE6ToY76kYaICRqNs6NaoFG3vG+549DyIjH++BxevDx7d8zHlnh2ksZTySVwVlHhNkyrEQ5mWA4/9molLgovK8oPxTge0IEPM2TLVC7EYVbGrq6bxHbJJOjRXiMMOVyLfqzTOTjJ6+Y5wURPsvX2ks3c10HxWHeREeRs70XuAxqgoYSqzGby+ZirQn28bU5AkOYnY4RDtSigXBQ1jJdU2ZbsG8In2brpOKZ9ITLvLfjYV33IDt5QX/Xj+bH7KTZ+3xTjuTvHTaiOp8CbA+2l3AKUxoVUkiZqsl90qFFoyllj1lo+cfWOaF7I0cWqrYV9SUYWOs+EasTkWm3UKxo1RCc6LFj7p+HwwPkAl9cftZV+P6BZVFBTK5f4PVGOCJ8+dMJDqMxJLo7lg23V6mMml19q0+0D0kTYwXzE/Olas9EEleco942UqFAF/P3tho7r7OcucbDbQWfy3Mez6t7Qe+u8KQafXAfcLHTGkBA6tKiLbUrHwEPtoNK0SKZNk9hQC+7ACBwRUodugs3k25RWbWv6/Rovahvb9JstuwXPiO/Boj5F2vR/ftlDZ+0zGDOizT8YsQT0vtk9oxkcobZ6kTCQk/oc35Bm/mGLv0Dog19rXC9ogxIr2sB7+hsvKP2QtyJmnP8Z9/hhldrUGzi+E6NNcn6k1+s6VNKkY5Uu23WTwLdDzNRxD79L3Tfog/8npl0clPeQm4XMSAgioKXe69O0GAOXs49dV0tt3jrWB0KgQwhzCWZbqGaElaKcQ68Zb4ZqWV+f5vEJHIRJJ1yztKZWPb6hAysbOKVjqzrOXLdGMHnjNBBo8B/eTfyRrJa8glAEJx1uJAzQs/8m4pn0G9qkbb9W20/YpZ/RqqdP1lM3aIM0P9OTv8AgMc0ybtkt8Yy+W8HV0+ufKghNcILpaI5iQbzgWSHHyC+2HRZL+pE0sRzqu55UF5AGRJfBDFaprinVxzRWg60GEqNFSi1eDRoYCCBMGCEFielLms5pinE+oOo7yxDcQrVhsb5NyY6sJ/+9QF4I8Eft4XLN1S7pzd8CoJJo/VGnnrzlMREhPP1Hm7s2fiLhsnnTRvdD7Fgco/52lAe/jNtRH/w8mtfbUA2jfx/N+60i2i2/7qUWUVb2vsaObJabl/UFRh1gsL9OEwwbjH1fW6+RpuxRjgp6jf67nWYdpPMzqEu/Uqe+eW8pOP7IK81aNNR+/w6aAQj1ks9wxzAc2Zak3sCk/71mkaFT+bcYNNHqBw3LpPdbZRkWl+F+AV7xOfkg8bAfHwS5rsj18YnQ/lYe+UQqt2iGbPz0BTaJ0ld+7BZh+HsJ7ZdIz7XyEhaQySyjDwAvNu1BpG8vWECMfrBgnJNxOp31KnSatgK3wJdYwZ1gGf6iqT6EqA4x5j+7Otsn0qVbWrYr/PLG/IS2q6Lbkc07boeYqdxNujdM4t9cJjRj2/a0XhLdFU2liUKfUKPtva90RnCLZaRvkBXPSQKIri90XaaZ3BwbpEAtSQHp4Wibp5saeiiDTHmR5E3zWDsu09isxtYPw7DUGpto91t8+t0aP3rxP5GxZ8y4a/JV30I9k20+YAcYRlGUdMZDtSywLEkzZExBQj3iSWPcHwadjAcrraRMt5e9rpguprvryTnCSmaBDzn8SMBtmLEA/mZPXzd3gr+SZe7cOMgY7QMySk3fEeyXEez6DLVrqlWRsCkyuACr+Ineoyg53NLJURRMMEmnFOrse+dhdUqpya6luUDgSK9bqGTSbQNLnvwCwUR8xvschyDQEhBGHvGI6qQIBRSgmUhGuw5a8RPiTkSmVi6L78Hd+CKrV1iTW2saSnrEahOQiPeLyNvKTUiCzC6AKhVl3AoIcgVC+hLY+cLo5ml6FGyDDtQ9zp74FbY5YRdGLUuNcxyEo/h0HDjiEdegYPl0lEEhGV9u0+2nQ4DT/Z1QnnXrWi8+5YlO64Zy81hZDz+HUH1fTV6DSR6H82TxDivBS9krs3JrRWimRXb5JQCw40AqIHTkdPkc80Egx4sJgytm/Ici+Sb1I7I0u7oszZtC5rr5iZ2eVBd715HsKUopKUe/j5XCcU2y71UQA4GZzKun+dASw0YvqSM3gWc6eL0e12Nr8q7BaRvN2rN14zS9+/wbozq/Qjx8nh25S2m22uygUSfUaHSINtsrkp5RdLStDPp0OwPjbSNlqKX+T1F+qq00rw7EcBD+FCq/u5T63dZdQr7DB22+ywyYZkqLWswaGqqEF6ubwsd5cN2FndSvo+A6EVoWtwPJLJGadPC3OrHyS14TglO79rtZ4IyTkiPVnObbpuoaZr1CkRVe+sAjQ2jSMU+AFWLAe0Bm2nMn/5Re29S7uzgpC/vUccTu2DcxgC7NabZNCzF/lIUTH2WcCMRn7XSG5d3nPbo8gZT/wKQWXjrBo2Z7geO1+Ukdv/jbbP3hL9KLul6elf/jGbXyiHznkt0uvYFDXoXaZpcd92YJeJQUVrRZu0dWk1eTmzUKxWhWXQNzuCgRB178E1jeW6VTx7oiK+u8IZZ2eY/6505acEF4lFOxbaq6UC34r03NwrJcfmj8uRlsGnjG1s0URxfxExdroDr0N+2Qek2upMldoiG157y/fXLFd2HRXnW1qVJBPXSOsl4ntN64Ldo0+jf9l6J5zmWauDLM+N1aFs7nSqIkySq4Vo+fnKCInDKDyPYgnmm3BGLk/o2Cv+WoMDjtPvyfgmYMCqdZBU22QygWepfGODaTRaLsuKqWjgDg+Np0qMZ7jYlumWkLrVYNWNQin9TLeJkhiXixG1j7btGT2reh6MoNhGXkRe07ZnfdT04AHcppum2et2H4NFH0FUD78r9hijDUKv+dSSU0KxWCJpTVoFH9pIEodrpJnbjYANHhv4qRel2/XdngWT2BXAfPWRc6I7ULhzoUbptaZ6jH30LsUPGhDBpNS8K0aUJ9O5l9mVV6OC6sHFdsGBceMBdZTGVw7HqcHYMRjFOmGeKhXvbj7fFTKUyFlP8N94wvLxDj7afHd/ns/n5F4UQIHQkFknUST6vfQ5WCKLO9Ignle5StBHxa4fuWrzcsT4fBkKw6KtRuH4bL4BofhYyBhbpFGGNJqHFT4FHokzC6R2ELS4eh7A/FmtFyM4p8dskPhT+7wJ7AoZ7TGMHx9oWn0wim03PFZBAmT1/ydjEIJzYHqXidRKeC9tUFRXQ6uj5sF9FGLzrl0U7RLrHzQV8yvgxHBHWjn8ZW3Zm2pERF+3m2eEaFhxrxoVLFoXCMM8fZ6gzeCfpQD+sFDzyE06m1n8UAjIMcVn9knmB5WI79bV0vmNNz4Eq6XtGWPsAUsEN0/4PsNYH9shOQaF1s15pQZ4Oxn2xrYk2IYMKEYTDn/cciqflyZN7wJhLLyxSz7dVpvTi6K+blmGjfR31Ym3qZpvIYT5HUIfTgeMQX0ib9gk068Oop7slVmNi5M1vmw8qw4LNHR6E5mr1gQ8nkMXq8tBKeDAKC8HS0fcF0EW4IaYVIuClm0VTPDe7tXjn5ZVJ/Vw8Aq6H3be5Hrdy84X+ekKys+keRIvG/SDN5ZqXc16RzDVu302Sej8fIw1HvOePqu8x0MWp3kK58zuTAKeXHlM59Fv1a+5Pt45K+8i9HHYH0jQ9VQlTA15tbPMtu+LsIOS+2PBKqqE9Lrw0T3S1Bu8943a/ZKHgtejBJjIo+qDlMWm6K4CXPZkFO+7T7BGrvJxYvTp6uQPD/Y+YFbT4WEABv9x5GP2lEFWIkPcNbmMWKeJZEshQYv0o9dfQ3PHKqNoPv3kOFDXyRAMDtBgwAwauP5SUQtJtTBjPksa8ta5yIz3Q1Lo9eODB4cmsSlq3iI+8yFI3jXvz+gfvJnWT0iCeMQFJRG3VHolSZ1palgkYKmlqQ9IJgYAqnUHQT7aApmSJI2cDMfdEIAYGpmFLARC6DrE5IldqcMPkqxFsjgcaIC8P/WAlLlWzJ0g3ym9f2cP9mu5/bwaNpnCy1kwawZ9VMaq4xjQ7JMd+gmTKcaSM0liHM5UBM4g3CwIxgaeZVAOjpnij+WFi0oUE43WJo1FRWJMug4QMzKzKoKjGtEF/uaYfP9D158ebDlx9/AQKDMG8gtv8ii1nOsFbA59UXeplRngOPV60FecOJVokHwPk1W3ERnPzfPEcABzeqC7Jhz17xUSZsO6gsKoMNR3UUnEdQaM1p7pE7TgtsubDwtFzcB2ZW7+wP4/+sTRNGUkmo7gzLFTqxDzP8RQBa4Z6rIyC3CAWAMzN4hp/hZXDBMDZL3rB3bnDytbq5vS+wg2PvvlvXspu6SbSvItZHKZvlVjA32YCd8VibGiOd8YWfjrMrpCdxoMLiEbSOl7rJEwbUhe5tEZelRSZCICeP5uHo6GKZWcRLkawp604yUkiRg+SgF+tflAdDXfTM4qX+KubBhzMyiZOAdnVZMDkCXEcF9LYoRr//Gpha4nW0O3rFUkOdAyJQayTB0Cg0ZZXOw6dKk36pPCFUUvNjsHDFycxlELxbpizcNdlyrolHS2urOIMAPA3QCpIjVz4wHRAIBeGKw6gI5SFqqOmtWaWifYbMapwn+EpQurMyAHsAQXxktInKxJHpGIiorZxtyGSeiWB+VRiqqrZ5+A34bqZqkB4HeinESkfalke0qwbszGJzdFfYhhQrR1uXJ4uwng7OwYN1XJ0AQcnKG33mNgdxsZCJVJBKNN1pDYbnztpkqfGs4e4jHpMAnIQHk3hpFb2rk6xD3DfaJDe94ZURBEcOG0U/q/nUob+DEaeRDHoZh74LxeYaUSRi6KPXkeFGm8MqusI3wJFMoyhZRe/s88GI0kj6WdF9iaFQRGwEK+qzZ19/cFvDede1IkIDRUe8gpCBHbxEUrJXFiykLyL4zosF9zqyB8Yr8/11nyYobwtNZKqqk6/2dgDEcCq1JRQc3Y7KFdzCkDawDZkTmfWCOUdtoIRZuGe4SFRiwY5vRxl9QICfIMSyxLuPC4DAOEoDsxmJlTgiEeFv3913lNN8w2VT6houQXSn5XDRIBUYxmxqAZZhVNEgkcibTIPREeVS0EeAPz0f1j5G4MPYdV8f0va7+4g4Hb8PsKWZFjfD2Htlu1yiH+iaV0kfhEdSfHLppaVDJFnNMzOcxPeqwQBKrTc4iFgxwkL1bunUJ+VrUqVfkwa5KHozEWHaJyOgrSER5KarLjrrpKO22GCdJmussJTdXOONNFSNEvnSYZzkkEnNEjHUqCjJ3IimfSUrB2rATFLJmhO6q5JGuv91RwokXiRJTOTIYplxwsHhYbFRBHrJYVQmAZJJnc6VEb1MaYpUTHBVdnSxmR4FWzRGVpcwc/JMoHritAEskrXhT5uSUzuhChiNhbw2IAKAdT/BgdOxJmjBNs2cJf9RAVQpvN7gomVwnOwrDYaDN2HbloKHkFKQaf2xm28kWhCWVIQoGlu7eMLZTnB2OgVOl3PXf1/Hp+u218ldcdfiDXM3PNwIG+c3ljY93MzbOnWrfVvy9uD20PaB7fd2VOxkdv6cce5j96/af3P/w4NvD8UcshwaemjTobOHRYd7HpYfvngk/Ij8iOKI+ojlSMWRWUf9jwqOtRw7etJ+svnkptOW08lnW845LsCl8tL1pYLLZrcbQKcvDTX5oXLf01pbAcC98K789nEz1/TT9NqUZNIb+Uba8MNwVlerq9KM0Ig1fPUezqTqraKU75YxT7VErzavMC8yRw36z/Rc0SmqJoqKeI5QRSjCBsjuyi7IXLJaWarMS6YBBHc+8dRzYu5h7mRuOmXzlJ+e8slzh52yPOnCM685+vjRW4+uO9hz7L+OvmL3ozurWw/avPmwzUPvVRmQ+6+M6QjjYCcY/diSHU16SvML/8cluKzLvX3bHTmSUsv3rmtrvJk7FFdxYEIhznNAl/LvD8xG61cDxMy8erY9MQA5Yo4ns3r++tpIyWuz79XnBjBDixjkItVQOjMkYzaWIhrzMXlIFwa7MBcjDWUhK4TcxRxr0NON4Yh0zdQtfEJ2vnwdIHH/ZmUYjO5kGPrKEmS66lXIXCvD/CGVertqOiJJbSSn462NLcIhaQe/wXIEBkTT5MmFsUOpy1mHglrD4J6EO1ElnKbWM1HmWgtU8z1vrHxsVeVzm27WpSFr+9sqpK8sDehBnis5MaFVHsM14e5XR3hOV8d8tVQnyIyvThLJrE6JJFJ0kEXHyuSosGSbbBnKou7BOE3kqWS91HFyGCtXoPjCxFh/6klKbIAw/wSujRaqfBNSJWlU5wjJe/fRRXlT2LLKeGA3TJlkoPUqu9B/dPJAxUrUvlTBJZV/oFmNJiTEStop1aayvpTygqhki/VQqEDChPtH+/1nCgA=) format("woff2")}
+@font-face{font-family:FigSans;font-weight:600;src:url(data:font/woff2;base64,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) format("woff2")}
+/* tokens.json: 생성물, 손으로 고치지 않음 */
 :root {
   --color-gray-0: #ffffff;
   --color-gray-25: #f7f8fa;
@@ -26,10 +30,11 @@
   --color-neutral-850: #242526;
   --color-neutral-900: #1b1b1d;
   --color-neutral-950: #111214;
-  --color-blue-50: #eef5fd;
+  --color-blue-50: #edf3fb;
   --color-blue-400: #3396e8;
-  --color-blue-600: #0074d9;
+  --color-blue-600: #2a78d6;
   --color-blue-900: #1d2733;
+  --color-blue-800: #1d4f91;
   --color-tone-blue: #3b82f6;
   --color-tone-purple: #8b5cf6;
   --color-tone-green: #10b981;
@@ -37,8 +42,8 @@
   --color-tone-gray: #8b949e;
   --color-accent: var(--color-blue-600);
   --color-on-accent: var(--color-gray-0);
-  --color-fg: var(--color-gray-900);
-  --color-muted: var(--color-gray-600);
+  --color-fg: var(--color-ink-900);
+  --color-muted: var(--color-ink-600);
   --color-bg: var(--color-gray-0);
   --color-surface: var(--color-gray-50);
   --color-border: var(--color-gray-300);
@@ -52,8 +57,16 @@
   --color-tag-green: var(--color-tone-green);
   --color-tag-orange: var(--color-tone-orange);
   --color-tag-gray: var(--color-tone-gray);
-  --font-sans: -apple-system, BlinkMacSystemFont, Pretendard, 'Apple SD Gothic Neo', 'Noto Sans KR', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, D2Coding, Menlo, monospace;
+  --color-orange-100: #fbe1d5;
+  --color-orange-600: #eb6834;
+  --color-ink-900: #0b0b0b;
+  --color-ink-600: #52514e;
+  --color-ink-200: #e6e5e1;
+  --color-series-1: var(--color-accent);
+  --color-series-2: var(--color-orange-600);
+  --color-grid: var(--color-ink-200);
+  --font-sans: FigSans, Pretendard, -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+  --font-mono: FigMono, D2Coding, ui-monospace, SFMono-Regular, Menlo, monospace;
   --size-text-9: 9px;
   --size-text-10-5: 10.5px;
   --size-text-11: 11px;
@@ -98,6 +111,17 @@
   --size-chart-bar: 12px;
   --size-chart-row: 40px;
   --size-chart-dot: 5px;
+  --size-person-w: 56px;
+  --size-person-head: 20px;
+  --size-person-shoulder: 14px;
+  --size-person-body: 22px;
+  --size-state-dot: 14px;
+  --size-table-row: 26px;
+  --size-seq-row: 44px;
+  --size-group-title: 28px;
+  --size-chart-plot-h: 260px;
+  --size-chart-axis: 48px;
+  --size-chart-cell: 40px;
   --weight-medium: 500;
   --weight-semibold: 600;
   --leading-normal: 1.5;
@@ -150,6 +174,7 @@
   --opacity-tag: 0.15;
   --opacity-halo: 0.2;
   --opacity-tab-on: 0.06;
+  --opacity-dim: 0.3;
   --z-raised: 2;
   --z-overlay: 10;
   --duration-fast: 200ms;
@@ -160,6 +185,7 @@
   --duration-step-end: 1600ms;
   --duration-stagger: 120ms;
   --duration-chart-cycle: 7000ms;
+  --duration-reveal: 900ms;
   --scale-zoom-max: 6;
   --scale-zoom-step: 1.25;
 }
@@ -176,6 +202,8 @@
     --color-frame: var(--color-neutral-800);
     --color-page: var(--color-neutral-950);
     --color-gallery: var(--color-neutral-950);
+    --color-series-2: #f08a5d;
+    --color-grid: var(--color-neutral-750);
   }
 }
 [data-theme='dark'] {
@@ -190,6 +218,8 @@
   --color-frame: var(--color-neutral-800);
   --color-page: var(--color-neutral-950);
   --color-gallery: var(--color-neutral-950);
+  --color-series-2: #f08a5d;
+  --color-grid: var(--color-neutral-750);
 }
 /* 재생기 틀과 조작 막대. iframe 안(html.embedded)에서는 테두리와 바깥 여백을 뺀다. */
 body {
@@ -449,6 +479,19 @@ html.embedded .fl-canvas svg {
   width: fit-content;
   margin-inline: auto;
 }
+
+.fl .fl-group.on .fl-stroke {
+  stroke: var(--color-accent);
+}
+
+.fl .fl-col.on .col-bg {
+  fill: var(--color-card-on);
+}
+
+/* hidden 속성이 display: grid 같은 규칙에 지지 않게 한다. 시간 흐름 없는 그림의 빈 조작 막대를 숨기기 위해서다. */
+[hidden] {
+  display: none !important;
+}
 /* 그림 안 글자와 모양. HTML 재생기와 움직이는 SVG가 같이 쓴다. */
 .fl text {
   font-family: var(--font-sans);
@@ -561,29 +604,319 @@ html.embedded .fl-canvas svg {
   stroke: var(--color-muted);
   stroke-width: var(--border-edge);
 }
+
+.fl .cell .key {
+  font-size: var(--size-text-9);
+  font-weight: var(--weight-semibold);
+  fill: var(--color-accent);
+}
+
+.fl .frame-box {
+  fill: var(--color-surface);
+  stroke: var(--color-frame);
+}
+
+.fl .lifeline {
+  stroke: var(--color-border);
+  stroke-width: var(--border-lifeline);
+  stroke-dasharray: var(--dash-gap) var(--dash-gap);
+}
+
+.fl .note-box {
+  fill: var(--color-surface);
+  stroke: var(--color-border);
+  stroke-dasharray: var(--dash-card) var(--dash-card);
+}
+
+.fl .pill {
+  fill: var(--color-bg);
+  stroke: var(--color-border);
+}
+
+.fl .col-bg {
+  fill: transparent;
+}
+
+.fl .col-line {
+  stroke: var(--color-border);
+  stroke-width: var(--border-hair);
+}
+
+.fl .fl-edge.mark .fl-path {
+  stroke: var(--color-fg);
+}
+/* 차트 글자와 자라는 움직임. 차트 SVG 안에 들어가고, README 이미지에서도 보이게 되풀이한다. */
+.fl .chart-title {
+  font-size: var(--size-text-15);
+  font-weight: var(--weight-semibold);
+  fill: var(--color-fg);
+}
+
+.fl .chart-legend,
+.fl .chart-label {
+  font-size: var(--size-text-13);
+  fill: var(--color-fg);
+}
+
+.fl .chart-legend {
+  font-size: var(--size-text-12);
+  fill: var(--color-muted);
+}
+
+.fl .chart-value,
+.fl .chart-tick,
+.fl .chart-unit {
+  font-family: var(--font-mono);
+  font-size: var(--size-text-11);
+  fill: var(--color-muted);
+}
+
+.fl .chart-tick {
+  text-anchor: middle;
+}
+
+.fl .chart-unit {
+  text-anchor: end;
+}
+
+.fl .chart-value.start {
+  text-anchor: start;
+}
+
+.fl .chart-value.end {
+  text-anchor: end;
+}
+
+.fl .chart-value.ours {
+  font-weight: var(--weight-semibold);
+  fill: var(--color-accent);
+}
+
+.fl .chart-missing {
+  font-size: var(--size-text-11);
+  font-style: italic;
+  fill: var(--color-muted);
+}
+
+.fl .chart-ratio {
+  font-family: var(--font-mono);
+  font-size: var(--size-text-12);
+  font-weight: var(--weight-semibold);
+  text-anchor: end;
+  fill: var(--color-accent);
+}
+
+.fl .chart-sub,
+.fl .chart-name,
+.fl .chart-rule-label {
+  font-size: var(--size-text-12);
+  fill: var(--color-muted);
+}
+
+.fl .chart-name,
+.fl .chart-rule-label {
+  font-size: var(--size-text-11);
+}
+
+.fl .chart-tick.end,
+.fl .chart-rule-label.end {
+  text-anchor: end;
+}
+
+.fl .chart-unit.start {
+  text-anchor: start;
+}
+
+.fl .chart-cell {
+  font-family: var(--font-mono);
+  font-size: var(--size-text-11);
+  text-anchor: middle;
+  fill: var(--color-fg);
+}
+
+.fl .chart-cell.on {
+  fill: var(--color-on-accent);
+}
+
+.fl .chart-axis,
+.fl .chart-grid {
+  stroke: var(--color-grid);
+  stroke-width: var(--border-thin);
+}
+
+.fl .chart-rule {
+  stroke: var(--color-muted);
+  stroke-width: var(--border-thin);
+  stroke-dasharray: var(--dash-line) var(--dash-gap);
+}
+
+.fl .chart-ci,
+.fl .chart-whisker,
+.fl .chart-median {
+  stroke: var(--color-fg);
+  stroke-width: var(--border-tag);
+}
+
+.fl .chart-box {
+  fill: var(--color-card-on);
+  stroke: var(--color-series-1);
+  stroke-width: var(--border-tag);
+}
+
+.fl .chart-before {
+  fill: var(--color-bg);
+  stroke: var(--color-muted);
+  stroke-width: var(--border-tag);
+}
+
+.fl .chart-arrow,
+.fl .chart-link {
+  stroke: var(--color-accent);
+  stroke-width: var(--border-strong);
+  stroke-dasharray: 1;
+}
+
+.fl .chart-link {
+  stroke: var(--color-muted);
+  stroke-width: var(--border-thin);
+}
+
+.fl .grow {
+  transform-box: fill-box;
+  transform-origin: left center;
+}
+
+.fl .hidden {
+  opacity: 0;
+}
+
+.fl .dim {
+  opacity: var(--opacity-dim);
+}
+
+.fl .cs-0,
+.fl .cs-1,
+.fl [class*="cr-"] {
+  transition: opacity var(--duration-fast);
+}
+
+/* 재생기: 드러내는 박자에 play가 붙으면 한 번 자란다. */
+.fl .play .grow,
+.fl .play.grow {
+  animation: chart-grow var(--duration-reveal) ease-out both;
+}
+
+.fl .play .draw,
+.fl .play.draw {
+  animation: chart-draw var(--duration-reveal) ease-out both;
+}
+
+.fl .play .pop,
+.fl .play.pop,
+.fl .play .late,
+.fl .play.late {
+  animation: chart-fade var(--duration-reveal) ease-out both;
+}
+
+/* 시간 흐름이 없는 차트 SVG: 한 바퀴의 앞 13%에 자라고 나머지는 머문다. README 이미지에서도 보이게 되풀이한다. */
+.fl.chart-loop .grow {
+  animation: chart-grow-loop var(--duration-chart-cycle) ease-out infinite both;
+}
+
+.fl.chart-loop .draw {
+  animation: chart-draw-loop var(--duration-chart-cycle) ease-out infinite both;
+}
+
+.fl.chart-loop .pop,
+.fl.chart-loop .late {
+  animation: chart-fade-loop var(--duration-chart-cycle) ease-out infinite both;
+}
+
+@keyframes chart-grow {
+  from {
+    transform: scaleX(0);
+  }
+}
+
+@keyframes chart-draw {
+  from {
+    stroke-dashoffset: 1;
+  }
+}
+
+@keyframes chart-fade {
+  0%,
+  50% {
+    opacity: 0;
+  }
+}
+
+@keyframes chart-grow-loop {
+  0% {
+    transform: scaleX(0);
+  }
+
+  13%,
+  100% {
+    transform: none;
+  }
+}
+
+@keyframes chart-draw-loop {
+  0% {
+    stroke-dashoffset: 1;
+  }
+
+  13%,
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes chart-fade-loop {
+  0%,
+  9% {
+    opacity: 0;
+  }
+
+  16%,
+  100% {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fl .play .grow,
+  .fl .play.grow,
+  .fl .play .draw,
+  .fl .play.draw,
+  .fl .play .pop,
+  .fl .play.pop,
+  .fl .play .late,
+  .fl .play.late,
+  .fl.chart-loop .grow,
+  .fl.chart-loop .draw,
+  .fl.chart-loop .pop,
+  .fl.chart-loop .late {
+    animation: none;
+  }
+}
 </style>
 </head>
 <body>
 <figure class="fl-figure" tabindex="0">
 <button type="button" class="fl-round fl-full"></button><div class="fl-zoom"><button type="button" class="fl-round" data-zoom="in" aria-label="확대"></button><button type="button" class="fl-round" data-zoom="out" aria-label="축소"></button><button type="button" class="fl-round" data-zoom="fit" aria-label="전체 보기"></button></div>
-<div class="fl-canvas"><svg xmlns="http://www.w3.org/2000/svg" class="fl" width="1587" height="519" style="aspect-ratio: 1587 / 519" viewBox="0 0 1587 519"><defs><pattern id="fl-dots" width="16" height="16" patternUnits="userSpaceOnUse"><circle cx="1.5" cy="1.5" r="1" fill="var(--color-dot)"/></pattern><marker id="fl-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-muted)"/></marker><marker id="fl-arrow-on" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-accent)"/></marker></defs><g id="n-0" class="fl-node fl-frame" data-id="app"><rect x="28" y="116" width="211" height="146" rx="14" fill="var(--color-surface)" class="fl-stroke"/><text x="46" y="138" class="frame">앱</text></g>
-<g id="n-1" class="fl-node fl-frame" data-id="server"><rect x="537" y="28" width="847" height="463" rx="14" fill="var(--color-surface)" class="fl-stroke"/><text x="555" y="50" class="frame">메모리 서버</text></g>
-<g id="n-6" class="fl-node fl-frame" data-id="server.search"><rect x="947" y="162" width="200" height="278" rx="14" fill="var(--color-surface)" class="fl-stroke"/><text x="965" y="184" class="frame">검색</text></g>
-<g id="n-2" class="fl-node" data-id="llm"><rect x="1459" y="55" width="100" height="46" rx="10" fill="var(--color-bg)" class="fl-stroke" stroke-dasharray="5 4"/><text x="1509" y="83.5" class="label">LLM</text></g>
-<g id="n-3" class="fl-node" data-id="app.agent"><rect x="78" y="166" width="111" height="46" rx="10" fill="var(--color-bg)" class="fl-stroke"/><text x="133.5" y="194.5" class="label">AI 에이전트</text></g>
-<g id="n-4" class="fl-node" data-id="server.api"><rect x="587" y="166" width="100" height="46" rx="10" fill="var(--color-bg)" class="fl-stroke"/><text x="637" y="194.5" class="label">API</text></g>
-<g id="n-5" class="fl-node" data-id="server.extract"><rect x="767" y="79" width="100" height="46" rx="10" fill="var(--color-bg)" class="fl-stroke"/><text x="817" y="107.5" class="label">사실 추출</text></g>
-<g id="n-7" class="fl-node" data-id="server.bank"><path d="M1227 195 a 53.5 12 0 0 1 107 0 v 46 a 53.5 12 0 0 1 -107 0 z" fill="var(--color-bg)" class="fl-stroke"/><path d="M1227 195 a 53.5 12 0 0 0 107 0" fill="none" class="fl-stroke"/><text x="1280.5" y="229.5" class="label">메모리 뱅크</text></g>
-<g id="n-8" class="fl-node" data-id="server.search.semantic"><rect x="997" y="212" width="100" height="46" rx="10" fill="var(--color-bg)" class="fl-stroke"/><text x="1047" y="240.5" class="label">의미</text></g>
-<g id="n-9" class="fl-node" data-id="server.search.keyword"><rect x="997" y="278" width="100" height="46" rx="10" fill="var(--color-bg)" class="fl-stroke"/><text x="1047" y="306.5" class="label">키워드</text></g>
-<g id="n-10" class="fl-node" data-id="server.search.graph"><rect x="997" y="344" width="100" height="46" rx="10" fill="var(--color-bg)" class="fl-stroke"/><text x="1047" y="372.5" class="label">그래프</text></g>
-<g id="e-0" class="fl-edge"><path id="p-0" d="M 687 182.16600036621094 L 707 182.16600036621094 Q 727 182.16600036621094, 727 162.16600036621094 L 727 122.25 Q 727 102.25, 747 102.25 L 767 102.25" class="fl-path" marker-end="url(#fl-arrow)"/></g>
-<g id="e-1" class="fl-edge"><path id="p-1" d="M 867 109.91600036621094 L 1165 109.91600036621094 Q 1187 109.91600036621094, 1187 131.91600036621094 L 1187 186.49843756103039 Q 1187 206.5, 1207 206.75 L 1227 207" class="fl-path" marker-end="url(#fl-arrow)"/><g class="fl-pill"><rect x="1077.3" y="100.9" width="36" height="18" rx="9" fill="var(--color-bg)" stroke="var(--color-border)"/><text x="1095.3" y="114.2" class="edgelabel">저장</text></g></g>
-<g id="e-2" class="fl-edge"><path id="p-2" d="M 687 197.5 L 947 197.5" class="fl-path" marker-end="url(#fl-arrow)"/></g>
-<g id="e-3" class="fl-edge"><path id="p-3" d="M 1147 229.83299255371094 L 1167 229.83299255371094 Q 1187 229.83299255371094, 1206.9998256804845 229.91649554903904 L 1227 230" class="fl-path" marker-end="url(#fl-arrow)"/></g>
-<g id="e-4" class="fl-edge"><path id="p-4" d="M 189 182.16600036621094 L 587 182.16600036621094" class="fl-path" marker-end="url(#fl-arrow)"/><g class="fl-pill"><rect x="360.9" y="173.2" width="54.3" height="18" rx="9" fill="var(--color-bg)" stroke="var(--color-border)"/><text x="388" y="186.5" class="edgelabel">retain</text></g></g>
-<g id="e-5" class="fl-edge"><path id="p-5" d="M 189 197.5 L 587 197.5" class="fl-path" marker-end="url(#fl-arrow)"/><g class="fl-pill"><rect x="281.3" y="188.5" width="54.3" height="18" rx="9" fill="var(--color-bg)" stroke="var(--color-border)"/><text x="308.4" y="201.8" class="edgelabel">recall</text></g></g>
-<g id="e-6" class="fl-edge"><path id="p-6" d="M 867 94.58300018310547 L 898.7084999084473 94.58300018310547 Q 907 94.58300018310547, 907 86.29150009155273 L 907 86.29150009155273 Q 907 78, 915.2915000915527 78 L 1459 78" class="fl-path" marker-end="url(#fl-arrow)" marker-start="url(#fl-arrow)"/></g><g class="fl-packets"></g></svg></div>
+<div class="fl-canvas"><svg xmlns="http://www.w3.org/2000/svg" class="fl" width="728" height="769.7" style="aspect-ratio: 728 / 769.7" viewBox="0 0 728 769.7" role="img"><title>대화에서 기억 그래프 키우기</title><defs><pattern id="fl-dots" width="16" height="16" patternUnits="userSpaceOnUse"><circle cx="1.5" cy="1.5" r="1" fill="var(--color-dot)"/></pattern><marker id="fl-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-muted)"/></marker><marker id="fl-arrow-on" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-accent)"/></marker></defs><g id="g-0" class="fl-group" data-id="memory"><rect x="240" y="28" width="224" height="665" rx="14" class="frame-box fl-stroke "/><text x="258" y="46" class="frame">기억 엔진</text></g>
+<g id="n-0" class="fl-node" data-id="extract"><rect x="264" y="128" width="176" height="128" rx="10" fill="var(--color-bg)" class="fl-stroke "/><text x="352" y="154" class="label">추출기</text><text x="352" y="169.8" class="sub">LLM</text><rect x="274" y="185" width="156" height="61" rx="6" fill="var(--color-surface)" stroke="var(--color-border)" stroke-dasharray="3 3" class="fl-card "/><text x="282" y="202" class="row muted fl-empty ">—</text><g id="n-0-c0" opacity="0" class="fl-layer "><rect x="282" y="192" width="43.1" height="14" rx="4" fill="var(--color-tag-blue)" fill-opacity="0.15"/><text x="303.6" y="202.2" class="tag" fill="var(--color-tag-blue)">PERSON</text><text x="282" y="217" class="row">민지</text><rect x="282" y="226" width="26.8" height="14" rx="4" fill="var(--color-tag-purple)" fill-opacity="0.15"/><text x="295.4" y="236.2" class="tag" fill="var(--color-tag-purple)">ORG</text><text x="313.8" y="236" class="row">토스<tspan class="muted"> · 3월</tspan></text></g><g id="n-0-c1" opacity="0" class="fl-layer "><rect x="282" y="192" width="43.1" height="14" rx="4" fill="var(--color-tag-blue)" fill-opacity="0.15"/><text x="303.6" y="202.2" class="tag" fill="var(--color-tag-blue)">PERSON</text><text x="282" y="217" class="row">김민지 = 민지</text></g></g>
+<g id="n-1" class="fl-node" data-id="resolve"><rect x="264" y="316" width="176" height="109" rx="10" fill="var(--color-bg)" class="fl-stroke "/><text x="352" y="342" class="label">개체 정리</text><text x="352" y="357.8" class="sub">같은 사람 합치기</text><rect x="274" y="373" width="156" height="42" rx="6" fill="var(--color-surface)" stroke="var(--color-border)" stroke-dasharray="3 3" class="fl-card "/><text x="282" y="390" class="row muted fl-empty ">—</text><g id="n-1-c0" opacity="0" class="fl-layer "><rect x="282" y="380" width="38.5" height="14" rx="4" fill="var(--color-tag-orange)" fill-opacity="0.15"/><text x="301.2" y="390.2" class="tag" fill="var(--color-tag-orange)">MERGE</text><text x="282" y="405" class="row">김민지 → 민지</text></g></g>
+<g id="n-2" class="fl-node" data-id="graph"><path d="M264 497 a 88 12 0 0 1 176 0 v 100 a 88 12 0 0 1 -176 0 z" fill="var(--color-bg)" class="fl-stroke "/><path d="M264 497 a 88 12 0 0 0 176 0" fill="none" class="fl-stroke "/><text x="352" y="523" class="label">기억 그래프</text><rect x="274" y="539" width="156" height="48" rx="6" fill="var(--color-surface)" stroke="var(--color-border)" stroke-dasharray="3 3" class="fl-card "/><text x="282" y="556" class="row muted fl-empty ">—</text><g id="n-2-c0" opacity="0" class="fl-layer "><line x1="337.1" y1="554" x2="366.9" y2="554" stroke="var(--color-border)" stroke-width="1"/><rect x="296.9" y="545" width="40.1" height="18" rx="9" fill="var(--color-accent)" stroke="var(--color-accent)" stroke-width="1"/><text x="317" y="557.8" class="mini on">민지</text><rect x="366.9" y="545" width="40.1" height="18" rx="9" fill="var(--color-bg)" stroke="var(--color-border)" stroke-width="1"/><text x="387" y="557.8" class="mini">토스</text></g><g id="n-2-c1" opacity="0" class="fl-layer "><line x1="325.4" y1="572" x2="331.9" y2="572" stroke="var(--color-border)" stroke-width="1"/><line x1="372.1" y1="572" x2="377.3" y2="572" stroke="var(--color-border)" stroke-width="1"/><path d="M 305.3 563 Q 352 527 398.7 563" fill="none" stroke="var(--color-accent)" stroke-width="1"/><rect x="285.3" y="563" width="40.1" height="18" rx="9" fill="var(--color-accent)" stroke="var(--color-accent)" stroke-width="1"/><text x="305.3" y="575.8" class="mini on">민지</text><rect x="331.9" y="563" width="40.1" height="18" rx="9" fill="var(--color-bg)" stroke="var(--color-border)" stroke-width="1"/><text x="352" y="575.8" class="mini">토스</text><rect x="377.3" y="563" width="42.7" height="18" rx="9" fill="var(--color-accent)" stroke="var(--color-accent)" stroke-width="1"/><text x="398.7" y="575.8" class="mini on">결제팀</text></g></g>
+<g id="n-3" class="fl-node" data-id="user"><circle cx="56" cy="34.7" r="10" fill="var(--color-bg)" class="fl-stroke "/><path d="M28 82.7 V 60.7 A 28 14 0 0 1 84 60.7 V 82.7 Z" fill="var(--color-bg)" class="fl-stroke "/><text x="56" y="102.7" class="label">사용자</text></g>
+<g id="n-4" class="fl-node" data-id="answer"><rect x="524" y="632.7" width="176" height="109" rx="10" fill="var(--color-bg)" class="fl-stroke "/><text x="612" y="658.7" class="label">답변</text><text x="612" y="674.5" class="sub">질의 시점</text><rect x="534" y="689.7" width="156" height="42" rx="6" fill="var(--color-surface)" stroke="var(--color-border)" stroke-dasharray="3 3" class="fl-card "/><text x="542" y="706.7" class="row muted fl-empty ">—</text><g id="n-4-c0" opacity="0" class="fl-layer "><rect x="542" y="696.7" width="45.8" height="14" rx="4" fill="var(--color-tag-green)" fill-opacity="0.15"/><text x="564.9" y="706.9" class="tag" fill="var(--color-tag-green)">ANSWER</text><text x="682" y="706.7" class="mark">✓</text><text x="542" y="721.7" class="row">토스 결제팀</text></g></g>
+<g id="e-0" class="fl-edge"><path id="p-0" d="M 84 68 L 330 68 Q 352 68, 352 90 L 352 128" class="fl-path " marker-end="url(#fl-arrow)"/><g class="fl-pill"><rect x="144" y="58.5" width="36" height="18" rx="9" class="pill "/><text x="162" y="71.5" class="edgelabel ">대화</text></g></g>
+<g id="e-1" class="fl-edge"><path id="p-1" d="M 352 256 L 352 316" class="fl-path " marker-end="url(#fl-arrow)"/></g>
+<g id="e-2" class="fl-edge"><path id="p-2" d="M 352 425 L 352 485" class="fl-path " marker-end="url(#fl-arrow)"/></g>
+<g id="e-3" class="fl-edge"><path id="p-3" d="M 352 609 L 352 647 Q 352 669, 374 669 L 524 669" class="fl-path " marker-end="url(#fl-arrow)"/></g>
+<g id="e-4" class="fl-edge quiet "><path id="p-4" d="M 84 75.33333333333333 L 92 75.3 Q 100 75.3, 100 83.3 L 100 687 Q 100 709, 122 709 L 524 709" class="fl-path " marker-end="url(#fl-arrow)"/><g class="fl-pill"><rect x="144" y="699.5" width="36" height="18" rx="9" class="pill "/><text x="162" y="712.5" class="edgelabel ">질문</text></g></g><g class="fl-packets"></g></svg></div>
 <figcaption class="fl-foot">
 <div class="fl-bar"><button type="button" class="fl-round fl-pause"></button><div class="fl-tabs" role="tablist"></div><button type="button" class="fl-round fl-rate" aria-label="배속">1×</button></div>
 <p class="fl-caption" aria-live="polite"></p>
@@ -600,7 +933,7 @@ html.embedded .fl-canvas svg {
  * @param root `.fl-figure` 요소. 안에 `.fl-full`, `.fl-zoom` 단추와 `svg.fl`이 있다
  * @param metrics { iconStroke, zoomMax, zoomStep }
  */
-function d2flowView(root, metrics) {
+function figureView(root, metrics) {
   const svg = root.querySelector('svg.fl');
   const fullButton = root.querySelector('.fl-full');
   const base = svg.viewBox.baseVal;
@@ -709,17 +1042,17 @@ function d2flowView(root, metrics) {
 }
 
 // 브라우저에서 돈다. html.js가 HTML 안에 그대로 넣는다.
-// 박자(seg)마다 선과 도형을 밝히고, 카드 내용을 바꾸고, 점을 선 위로 옮긴다.
+// 시간표의 박자 상태를 그대로 그린다. 상태를 다시 계산하지 않는다(docs/architecture.md 불변 조건).
 
-// cost: time O(s + c) 시작, 프레임마다 O(h), heap O(s + c), stack O(1)
-// vars: s = 도형 수, c = 선 수, h = 한 박자의 이동 수
+// cost: time O(s + c) 시작, 프레임마다 O(h + k), heap O(s + c), stack O(1)
+// vars: s = 도형 수, c = 선 수, h = 한 박자의 이동 수, k = 카드 있는 도형 수
 // basis: estimate
 /**
  * 재생기를 붙인다.
  * @param root `.fl-figure` 요소
- * @param data { segs, total, steps, edges: [시작 도형 번호, 끝 도형 번호][], cards: 도형마다 카드 내용 수, metrics: 점, 글 상자, 아이콘 선 크기(토큰 값) }
+ * @param data { segs, steps, cardCounts, edgeEnds, seriesCount, rowCount, metrics }
  */
-function d2flowPlay(root, data) {
+function figurePlay(root, data) {
   const NS = 'http://www.w3.org/2000/svg';
   const RATES = [1, 2, 0.5];
   const svg = root.querySelector('svg.fl');
@@ -728,15 +1061,16 @@ function d2flowPlay(root, data) {
   const caption = root.querySelector('.fl-caption');
   const pauseButton = root.querySelector('.fl-pause');
   const rateButton = root.querySelector('.fl-rate');
-  const nodes = data.cards.map((_, i) => svg.querySelector(`#n-${i}`));
-  // 생명선은 `#e-`, `#p-` 요소가 없어 null이다.
-  const edges = data.edges.map((_, j) => svg.querySelector(`#e-${j}`));
-  const paths = data.edges.map((_, j) => svg.querySelector(`#p-${j}`));
-  const segs = data.segs;
-  const metrics = data.metrics;
+  const nodes = data.cardCounts.map((_, i) => svg.querySelector(`#n-${i}`));
+  const groups = [...svg.querySelectorAll('.fl-group')];
+  const edges = data.edgeEnds.map((_, j) => svg.querySelector(`#e-${j}`));
+  const paths = data.edgeEnds.map((_, j) => svg.querySelector(`#p-${j}`));
+  const columns = [...svg.querySelectorAll('.fl-col')];
+  const seriesEls = Array.from({ length: data.seriesCount }, (_, i) => [...svg.querySelectorAll(`.cs-${i}`)]);
+  const rowEls = Array.from({ length: data.rowCount }, (_, k) => [...svg.querySelectorAll(`.cr-${k}`)]);
+  const { segs, metrics } = data;
   const stepSegs = data.steps.map((_, si) => segs.filter((s) => s.si === si));
   const buttons = data.steps.map(createTab);
-  // 설명이 하나도 없는 그림은 설명 줄 자리를 두지 않는다.
   const hasCaption = segs.some((s) => s.caption);
 
   let index = 0;
@@ -745,7 +1079,7 @@ function d2flowPlay(root, data) {
   let isPlaying = !matchMedia('(prefers-reduced-motion: reduce)').matches;
   let rate = RATES[0];
   let packets = [];
-  let hasNewCards = false;
+  let pendingCards = [];
 
   pauseButton.addEventListener('click', () => setPlaying(!isPlaying));
   rateButton.addEventListener('click', () => {
@@ -760,18 +1094,20 @@ function d2flowPlay(root, data) {
     }
   });
   highlightOnHover();
-  d2flowView(root, metrics);
+  figureView(root, metrics);
 
   setPlaying(isPlaying);
   if (segs.length) {
     enterSegment(0);
     requestAnimationFrame(drawFrame);
   } else {
+    // 시간 흐름이 없는 그림은 조작 막대를 숨긴다. 차트는 SVG 이미지처럼 되풀이해 자란다.
     root.querySelector('.fl-foot').hidden = true;
+    svg.classList.add('chart-loop');
   }
 
   // cost: time O(s), heap O(1), stack O(1)
-  // vars: s = 박자 수(누를 때 첫 박자를 찾음)
+  // vars: s = 박자 수
   // basis: estimate
   function createTab(label, si) {
     const button = document.createElement('button');
@@ -786,7 +1122,7 @@ function d2flowPlay(root, data) {
   function setPlaying(value) {
     isPlaying = value;
     pauseButton.innerHTML = isPlaying
-      ? '<svg width="12" height="12" viewBox="0 0 16 16"><rect x="3" y="2" width="3.5" height="12" rx="1" fill="currentColor"/><rect x="9.5" y="2" width="3.5" height="12" rx="1" fill="currentColor"/></svg>'
+      ? `<svg width="12" height="12" viewBox="0 0 16 16"><path d="M5 2.5v11M11 2.5v11" stroke="currentColor" stroke-width="${metrics.pauseStroke}" stroke-linecap="round"/></svg>`
       : '<svg width="12" height="12" viewBox="0 0 16 16"><path d="M4 2.5v11l9.5-5.5z" fill="currentColor"/></svg>';
     pauseButton.setAttribute('aria-label', isPlaying ? '일시정지' : '재생');
   }
@@ -794,34 +1130,37 @@ function d2flowPlay(root, data) {
   // cost: time O(n·c), heap O(n·c), stack O(1)
   // vars: n = 도형 수, c = 선 수
   // basis: estimate
-  // 도형에 마우스를 올리면 닿은 선을 밝힌다.
+  // 도형에 마우스를 올리면 닿은 선을 밝힌다. 조용한 선도 그때 보인다.
   function highlightOnHover() {
     nodes.forEach((g, i) => {
-      const touching = data.edges.map((e, j) => (e[0] === i || e[1] === i ? edges[j] : null)).filter(Boolean);
-      g.addEventListener('mouseenter', () => touching.forEach((e) => e.classList.add('hover')));
-      g.addEventListener('mouseleave', () => touching.forEach((e) => e.classList.remove('hover')));
+      const touching = data.edgeEnds.map((e, j) => (e[0] === i || e[1] === i ? edges[j] : null)).filter(Boolean);
+      g?.addEventListener('mouseenter', () => touching.forEach((e) => e.classList.add('hover')));
+      g?.addEventListener('mouseleave', () => touching.forEach((e) => e.classList.remove('hover')));
     });
   }
 
-  // cost: time O(s + c + k), heap O(h), stack O(1)
-  // vars: s = 도형 수, c = 선 수, k = 카드 내용 수 합, h = 이동 수
+  // cost: time O(s + c + k + r), heap O(h), stack O(1)
+  // vars: s = 도형 수, c = 선 수, k = 카드 내용 수 합, r = 차트 행 수, h = 이동 수
   // basis: estimate
-  // 박자 i의 상태를 그린다. 점은 만들자마자 선 시작점에 둔다. 첫 프레임에 그림 구석에 보이는 일을 막기 위해서다.
+  // 박자 i의 상태를 그린다. 점이 도착하는 도형의 카드는 cardsAt 시각에 바뀐다.
   function enterSegment(i) {
     index = i;
     elapsed = 0;
     const seg = segs[i];
-    nodes.forEach((g, n) => g.classList.toggle('on', seg.nodesOn.includes(n)));
+    nodes.forEach((g, n) => g?.classList.toggle('on', seg.nodesOn.includes(n)));
+    groups.forEach((g, n) => g.classList.toggle('on', seg.groupsOn.includes(n)));
     edges.forEach((e, j) => e?.classList.toggle('on', seg.edgesOn.includes(j)));
+    columns.forEach((c) => c.classList.toggle('on', seg.columnsOn.includes(c.dataset.col)));
     showCards(seg.cardsBefore);
-    hasNewCards = false;
+    pendingCards = Object.entries(seg.cardsAt).map(([n, at]) => ({ n: Number(n), at }));
+    drawChartState(seg);
     caption.textContent = seg.caption;
     caption.hidden = !hasCaption;
-    // 탭을 눌러 옮겨도 앞 탭의 진행 막대가 남지 않게, 지금 탭이 아닌 막대는 모두 비운다.
     buttons.forEach((b, si) => {
       const isCurrent = si === seg.si;
       b.classList.toggle('on', isCurrent);
       b.setAttribute('aria-selected', isCurrent);
+      // 탭을 옮겨도 앞 탭의 진행 막대가 남지 않게 지금 탭이 아닌 막대는 비운다.
       if (!isCurrent) b.querySelector('i').style.width = '0';
     });
     packets.forEach((p) => p.remove());
@@ -830,12 +1169,11 @@ function d2flowPlay(root, data) {
   }
 
   // cost: time O(k), heap O(1), stack O(1)
-  // vars: k = 카드 내용 수 합
+  // vars: k = 카드 있는 도형 수
   // basis: estimate
-  // 도형마다 cards가 가리키는 카드 내용 하나만 보이고, 없으면 빈 표시를 보인다.
-  function showCards(cards) {
-    data.cards.forEach((count, n) => {
-      if (!count) return;
+  function showCards(cards, only) {
+    data.cardCounts.forEach((count, n) => {
+      if (!count || (only !== undefined && only !== n)) return;
       const shown = cards[n];
       for (let k = 0; k < count; k++) svg.querySelector(`#n-${n}-c${k}`).setAttribute('opacity', shown === k ? 1 : 0);
       nodes[n].querySelector('.fl-empty').setAttribute('opacity', shown === undefined ? 1 : 0);
@@ -843,7 +1181,29 @@ function d2flowPlay(root, data) {
     });
   }
 
-  // 점과 글 상자. 글 상자 폭은 브라우저가 잰 글자 폭으로 맞춘다.
+  // cost: time O(r + s), heap O(1), stack O(1)
+  // vars: r = 차트 행 수, s = 계열 수
+  // basis: estimate
+  // 차트: 드러낸 계열을 보이고, 이 박자에 드러내는 계열은 자라는 움직임을 다시 건다. light가 있으면 나머지 행을 흐린다.
+  function drawChartState(seg) {
+    seriesEls.forEach((els, s) => {
+      const isGrowing = seg.growing.includes(s);
+      for (const el of els) {
+        el.classList.toggle('hidden', !seg.series.includes(s));
+        el.classList.remove('play');
+        if (isGrowing) {
+          el.getBoundingClientRect();
+          el.classList.add('play');
+        }
+      }
+    });
+    rowEls.forEach((els, k) => els.forEach((el) => el.classList.toggle('dim', seg.lights.length > 0 && !seg.lights.includes(k))));
+  }
+
+  // cost: time O(l), heap O(l), stack O(1)
+  // vars: l = 글 상자 줄 수
+  // basis: estimate
+  // 점과 글 상자. 글 상자 줄은 html.js가 움직이는 SVG와 같은 너비로 나눠 넘긴다.
   function createPacket(hop) {
     const path = paths[hop.edge];
     const g = document.createElementNS(NS, 'g');
@@ -855,8 +1215,10 @@ function d2flowPlay(root, data) {
     const length = path.getTotalLength();
     return {
       remove: () => g.remove(),
-      move(p) {
-        const point = path.getPointAtLength(length * (hop.isBack ? 1 - p : p));
+      move(t) {
+        const p = Math.min(1, t / hop.ms);
+        const eased = p < 0.5 ? 2 * p * p : 1 - (-2 * p + 2) ** 2 / 2;
+        const point = path.getPointAtLength(length * (hop.isBack ? 1 - eased : eased));
         g.setAttribute('transform', `translate(${point.x} ${point.y})`);
         if (chip) placeChip(chip, point);
         g.style.opacity = p >= 1 ? 0 : 1;
@@ -867,7 +1229,6 @@ function d2flowPlay(root, data) {
   // cost: time O(l), heap O(l), stack O(1)
   // vars: l = 글 상자 줄 수
   // basis: estimate
-  // lines는 html.js가 움직이는 SVG와 같은 너비로 미리 나눈 줄이다.
   function createChip(lines) {
     const chip = document.createElementNS(NS, 'g');
     const rect = document.createElementNS(NS, 'rect');
@@ -881,7 +1242,6 @@ function d2flowPlay(root, data) {
       chip.appendChild(t);
       return t;
     });
-    // 글자 폭은 문서에 붙은 뒤에만 잴 수 있다.
     packetLayer.appendChild(chip);
     const w = Math.max(...texts.map((t) => t.getComputedTextLength())) + metrics.chipPadX;
     const h = texts.length * metrics.chipLine + metrics.chipPadY;
@@ -894,42 +1254,39 @@ function d2flowPlay(root, data) {
     return { g: chip, w, h };
   }
 
-  // 글 상자가 그림 밖으로 나가면 잘린다. 옆으로는 그림 안까지 밀고, 위가 모자라면 점 아래로 내린다.
+  // 글 상자가 그림 밖으로 나가면 옆으로 밀어 넣고, 위가 모자라면 점 아래로 내린다.
   function placeChip(chip, point) {
     const box = svg.viewBox.baseVal;
     const half = chip.w / 2 + metrics.chipGap;
     const x = Math.min(box.x + box.width - half, Math.max(box.x + half, point.x)) - point.x;
     const isTooHigh = point.y - chip.h - metrics.chipGap < box.y;
-    const y = isTooHigh ? chip.h + metrics.chipGap * 2 : 0;
-    chip.g.setAttribute('transform', `translate(${x} ${y})`);
+    chip.g.setAttribute('transform', `translate(${x} ${isTooHigh ? chip.h + metrics.chipGap * 2 : 0})`);
   }
 
-  // cost: time O(h), heap O(1), stack O(1)
-  // vars: h = 한 박자의 이동 수
+  // cost: time O(h + k), heap O(1), stack O(1)
+  // vars: h = 박자의 이동 수, k = 카드가 바뀌는 도형 수
   // basis: estimate
-  // 프레임마다 점을 옮기고, 탭 진행 막대를 채우고, 박자가 끝나면 다음 박자로 넘어간다.
+  // 프레임마다 점을 옮기고, 도착한 도형의 카드를 바꾸고, 탭 진행 막대를 채운다.
   function drawFrame(now) {
     if (isPlaying) elapsed += (now - before) * rate;
     before = now;
     const seg = segs[index];
-    const p = seg.move > 0 ? Math.min(1, elapsed / seg.move) : 1;
-    const eased = p < 0.5 ? 2 * p * p : 1 - (-2 * p + 2) ** 2 / 2;
-    packets.forEach((packet) => packet.move(eased));
-    if (!hasNewCards && elapsed >= seg.cardsAt) {
-      showCards(seg.cards);
-      hasNewCards = true;
-    }
+    packets.forEach((packet) => packet.move(elapsed));
+    pendingCards = pendingCards.filter(({ n, at }) => {
+      if (elapsed < at) return true;
+      showCards(seg.cards, n);
+      return false;
+    });
     const steps = stepSegs[seg.si];
     const start = steps[0].t0;
     const end = steps.at(-1).t1;
-    const bar = buttons[seg.si].querySelector('i');
-    bar.style.width = `${((seg.t0 - start + Math.min(elapsed, seg.t1 - seg.t0)) / (end - start)) * 100}%`;
+    buttons[seg.si].querySelector('i').style.width = `${((seg.t0 - start + Math.min(elapsed, seg.t1 - seg.t0)) / (end - start)) * 100}%`;
     if (elapsed >= seg.t1 - seg.t0) enterSegment((index + 1) % segs.length);
     requestAnimationFrame(drawFrame);
   }
 }
 
-d2flowPlay(document.querySelector('.fl-figure'), {"segs":[{"si":0,"bi":0,"t0":0,"t1":2720,"move":2000,"hops":[{"edge":4,"isBack":false,"data":["대화 3턴"]}],"edgesOn":[4],"nodesOn":[3,4],"cards":{},"cardsBefore":{},"cardsAt":2000,"caption":"대화에서 사실을 뽑아 저장한다"},{"si":0,"bi":1,"t0":2720,"t1":5420,"move":2000,"hops":[{"edge":0,"isBack":false}],"edgesOn":[4,0],"nodesOn":[3,4,5],"cards":{},"cardsBefore":{},"cardsAt":2000,"caption":"대화에서 사실을 뽑아 저장한다"},{"si":0,"bi":2,"t0":5420,"t1":8120,"move":2000,"hops":[{"edge":6,"isBack":false,"data":["추출 요청"]}],"edgesOn":[4,0,6],"nodesOn":[3,4,5,2],"cards":{},"cardsBefore":{},"cardsAt":2000,"caption":"LLM이 사실을 뽑는다"},{"si":0,"bi":3,"t0":8120,"t1":10820,"move":2000,"hops":[{"edge":6,"isBack":true,"data":["사실 4개"]}],"edgesOn":[4,0,6],"nodesOn":[3,4,5,2],"cards":{},"cardsBefore":{},"cardsAt":2000,"caption":"LLM이 사실을 뽑는다"},{"si":0,"bi":4,"t0":10820,"t1":15120,"move":2000,"hops":[{"edge":1,"isBack":false,"data":["사실 4개"]}],"edgesOn":[4,0,6,1],"nodesOn":[3,4,5,2,7],"cards":{},"cardsBefore":{},"cardsAt":2000,"caption":"LLM이 사실을 뽑는다"},{"si":1,"bi":0,"t0":15120,"t1":17820,"move":2000,"hops":[{"edge":5,"isBack":false,"data":["지난주 약속?"]}],"edgesOn":[5],"nodesOn":[3,4],"cards":{},"cardsBefore":{},"cardsAt":2000,"caption":"세 방식으로 동시에 찾는다"},{"si":1,"bi":1,"t0":17820,"t1":20520,"move":2000,"hops":[{"edge":2,"isBack":false}],"edgesOn":[5,2],"nodesOn":[3,4,6],"cards":{},"cardsBefore":{},"cardsAt":2000,"caption":"세 방식으로 동시에 찾는다"},{"si":1,"bi":2,"t0":20520,"t1":23555,"move":2000,"hops":[],"edgesOn":[5,2],"nodesOn":[8,9,10,3,4,6],"cards":{},"cardsBefore":{},"cardsAt":0,"caption":"의미, 키워드, 그래프 검색을 함께 돌린다"},{"si":1,"bi":3,"t0":23555,"t1":26255,"move":2000,"hops":[{"edge":3,"isBack":false},{"edge":3,"isBack":true,"data":["후보 12개"]}],"edgesOn":[5,2,3],"nodesOn":[3,4,6,7],"cards":{},"cardsBefore":{},"cardsAt":2000,"caption":"의미, 키워드, 그래프 검색을 함께 돌린다"},{"si":1,"bi":4,"t0":26255,"t1":30555,"move":2000,"hops":[{"edge":5,"isBack":true,"data":["사실 3개"]}],"edgesOn":[5,2,3],"nodesOn":[3,4,6,7],"cards":{},"cardsBefore":{},"cardsAt":2000,"caption":"의미, 키워드, 그래프 검색을 함께 돌린다"}],"total":30555,"steps":["retain()","recall()"],"edges":[[4,5],[5,7],[4,6],[6,7],[3,4],[3,4],[5,2]],"cards":[0,0,0,0,0,0,0,0,0,0,0],"metrics":{"accent":"var(--color-accent)","halo":10,"haloOpacity":0.2,"packet":4.5,"chipRadius":8,"chipLine":15,"chipPadX":18,"chipPadY":8,"chipGap":12,"iconStroke":1.75,"zoomMax":6,"zoomStep":1.25}});
+figurePlay(document.querySelector('.fl-figure'), {"segs":[{"si":0,"t0":0,"t1":4605,"hops":[{"edge":0,"isBack":false,"ms":3750,"to":"extract","data":["민지는 3월에 토스로 옮겼어"]}],"edgesOn":[0],"nodesOn":[3,0],"groupsOn":[],"columnsOn":[],"cards":{"0":0},"cardsBefore":{},"cardsAt":{"0":3750},"caption":"처음 들은 사실로 그래프를 시작한다","series":[],"growing":[],"lights":[]},{"si":0,"t0":4605,"t1":9055,"hops":[{"edge":1,"isBack":false,"ms":3750,"to":"resolve"}],"edgesOn":[0,1],"nodesOn":[3,0,1],"groupsOn":[],"columnsOn":[],"cards":{"0":0},"cardsBefore":{"0":0},"cardsAt":{},"caption":"처음 들은 사실로 그래프를 시작한다","series":[],"growing":[],"lights":[]},{"si":0,"t0":9055,"t1":15105,"hops":[{"edge":2,"isBack":false,"ms":3750,"to":"graph"}],"edgesOn":[0,1,2],"nodesOn":[3,0,1,2],"groupsOn":[],"columnsOn":[],"cards":{"0":0,"2":0},"cardsBefore":{"0":0},"cardsAt":{"2":3750},"caption":"처음 들은 사실로 그래프를 시작한다","series":[],"growing":[],"lights":[]},{"si":1,"t0":15105,"t1":20115,"hops":[{"edge":0,"isBack":false,"ms":3750,"to":"extract","data":["김민지가 결제팀을 맡았대"]}],"edgesOn":[0],"nodesOn":[3,0],"groupsOn":[],"columnsOn":[],"cards":{"0":1},"cardsBefore":{},"cardsAt":{"0":3750},"caption":"같은 사람이 다른 이름으로 나와도 한 개체로 합친다","series":[],"growing":[],"lights":[]},{"si":1,"t0":20115,"t1":24565,"hops":[{"edge":1,"isBack":false,"ms":3750,"to":"resolve"}],"edgesOn":[0,1],"nodesOn":[3,0,1],"groupsOn":[],"columnsOn":[],"cards":{"0":1,"1":0},"cardsBefore":{"0":1},"cardsAt":{"1":3750},"caption":"같은 사람이 다른 이름으로 나와도 한 개체로 합친다","series":[],"growing":[],"lights":[]},{"si":1,"t0":24565,"t1":30615,"hops":[{"edge":2,"isBack":false,"ms":3750,"to":"graph"}],"edgesOn":[0,1,2],"nodesOn":[3,0,1,2],"groupsOn":[],"columnsOn":[],"cards":{"0":1,"1":0,"2":1},"cardsBefore":{"0":1,"1":0},"cardsAt":{"2":3750},"caption":"같은 사람이 다른 이름으로 나와도 한 개체로 합친다","series":[],"growing":[],"lights":[]},{"si":2,"t0":30615,"t1":31515,"hops":[],"edgesOn":[],"nodesOn":[2],"groupsOn":[],"columnsOn":[],"cards":{"2":1},"cardsBefore":{},"cardsAt":{"2":0},"caption":"질문이 오면 쓰지 않던 선이 나타난다","series":[],"growing":[],"lights":[]},{"si":2,"t0":31515,"t1":35965,"hops":[{"edge":4,"isBack":false,"ms":3750,"to":"answer","data":["민지 지금 어디 팀이야?"]}],"edgesOn":[4],"nodesOn":[3,4,2],"groupsOn":[],"columnsOn":[],"cards":{"2":1},"cardsBefore":{"2":1},"cardsAt":{},"caption":"질문이 오면 쓰지 않던 선이 나타난다","series":[],"growing":[],"lights":[]},{"si":2,"t0":35965,"t1":42015,"hops":[{"edge":3,"isBack":false,"ms":3750,"to":"answer","data":["민지 → 결제팀"]}],"edgesOn":[4,3],"nodesOn":[3,4,2],"groupsOn":[],"columnsOn":[],"cards":{"2":1,"4":0},"cardsBefore":{"2":1},"cardsAt":{"4":3750},"caption":"질문이 오면 쓰지 않던 선이 나타난다","series":[],"growing":[],"lights":[]}],"steps":["첫 대화","다음 대화","질문"],"cardCounts":[2,1,2,0,1],"edgeEnds":[[3,0],[0,1],[1,2],[2,4],[3,4]],"seriesCount":0,"rowCount":0,"metrics":{"accent":"var(--color-accent)","halo":10,"haloOpacity":0.2,"packet":4.5,"chipRadius":8,"chipLine":15,"chipPadX":18,"chipPadY":8,"chipGap":12,"iconStroke":1.75,"pauseStroke":2.5,"zoomMax":6,"zoomStep":1.25}});
 </script>
 </body>
 </html>

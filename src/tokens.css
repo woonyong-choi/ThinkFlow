@@ -16,10 +16,11 @@
   --color-neutral-850: #242526;
   --color-neutral-900: #1b1b1d;
   --color-neutral-950: #111214;
-  --color-blue-50: #eef5fd;
+  --color-blue-50: #edf3fb;
   --color-blue-400: #3396e8;
-  --color-blue-600: #0074d9;
+  --color-blue-600: #2a78d6;
   --color-blue-900: #1d2733;
+  --color-blue-800: #1d4f91;
   --color-tone-blue: #3b82f6;
   --color-tone-purple: #8b5cf6;
   --color-tone-green: #10b981;
@@ -27,8 +28,8 @@
   --color-tone-gray: #8b949e;
   --color-accent: var(--color-blue-600);
   --color-on-accent: var(--color-gray-0);
-  --color-fg: var(--color-gray-900);
-  --color-muted: var(--color-gray-600);
+  --color-fg: var(--color-ink-900);
+  --color-muted: var(--color-ink-600);
   --color-bg: var(--color-gray-0);
   --color-surface: var(--color-gray-50);
   --color-border: var(--color-gray-300);
@@ -42,8 +43,16 @@
   --color-tag-green: var(--color-tone-green);
   --color-tag-orange: var(--color-tone-orange);
   --color-tag-gray: var(--color-tone-gray);
-  --font-sans: -apple-system, BlinkMacSystemFont, Pretendard, 'Apple SD Gothic Neo', 'Noto Sans KR', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, D2Coding, Menlo, monospace;
+  --color-orange-100: #fbe1d5;
+  --color-orange-600: #eb6834;
+  --color-ink-900: #0b0b0b;
+  --color-ink-600: #52514e;
+  --color-ink-200: #e6e5e1;
+  --color-series-1: var(--color-accent);
+  --color-series-2: var(--color-orange-600);
+  --color-grid: var(--color-ink-200);
+  --font-sans: FigSans, Pretendard, -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+  --font-mono: FigMono, D2Coding, ui-monospace, SFMono-Regular, Menlo, monospace;
   --size-text-9: 9px;
   --size-text-10-5: 10.5px;
   --size-text-11: 11px;
@@ -88,6 +97,17 @@
   --size-chart-bar: 12px;
   --size-chart-row: 40px;
   --size-chart-dot: 5px;
+  --size-person-w: 56px;
+  --size-person-head: 20px;
+  --size-person-shoulder: 14px;
+  --size-person-body: 22px;
+  --size-state-dot: 14px;
+  --size-table-row: 26px;
+  --size-seq-row: 44px;
+  --size-group-title: 28px;
+  --size-chart-plot-h: 260px;
+  --size-chart-axis: 48px;
+  --size-chart-cell: 40px;
   --weight-medium: 500;
   --weight-semibold: 600;
   --leading-normal: 1.5;
@@ -140,6 +160,7 @@
   --opacity-tag: 0.15;
   --opacity-halo: 0.2;
   --opacity-tab-on: 0.06;
+  --opacity-dim: 0.3;
   --z-raised: 2;
   --z-overlay: 10;
   --duration-fast: 200ms;
@@ -150,6 +171,7 @@
   --duration-step-end: 1600ms;
   --duration-stagger: 120ms;
   --duration-chart-cycle: 7000ms;
+  --duration-reveal: 900ms;
   --scale-zoom-max: 6;
   --scale-zoom-step: 1.25;
 }
@@ -166,6 +188,8 @@
     --color-frame: var(--color-neutral-800);
     --color-page: var(--color-neutral-950);
     --color-gallery: var(--color-neutral-950);
+    --color-series-2: #f08a5d;
+    --color-grid: var(--color-neutral-750);
   }
 }
 [data-theme='dark'] {
@@ -180,4 +204,6 @@
   --color-frame: var(--color-neutral-800);
   --color-page: var(--color-neutral-950);
   --color-gallery: var(--color-neutral-950);
+  --color-series-2: #f08a5d;
+  --color-grid: var(--color-neutral-750);
 }

@@ -1,0 +1,15 @@
+chart line
+title "주차별 재시도 비율"
+subtitle "예시 데이터. 점선은 목표 5%"
+x "주차"
+y "재시도 비율(%)"
+
+series ours "새 판단기"
+series base "기존 판단기"
+rule 5 "목표"
+
+point x=1 ours=12.4 base=12.1
+point x=2 ours=9.8 base=11.7
+point x=3 ours=7.1 base=11.9
+point x=4 ours=5.2 base=12.3
+point x=5 ours=4.6 base=11.8

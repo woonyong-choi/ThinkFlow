@@ -1,0 +1,20 @@
+chart bar
+title "장기 기억 정확도"
+subtitle "예시 데이터. n=500, 점선은 채택 기준 80%"
+x "정확도(%)"
+
+series ours "기억 붙임"
+series base "기억 없음"
+missing "비교 없음"
+rule 80 "채택 기준"
+
+row "단일 세션 사실" ours=91.4 ours.low=88.9 ours.high=93.5 base=60.2 base.low=55.8 base.high=64.4
+row "여러 세션 종합" ours=79.7 ours.low=76.0 ours.high=83.0 base=44.1 base.low=39.7 base.high=48.6
+row "시간 추론" ours=85.0 ours.low=81.6 ours.high=88.0 base=-
+row "지식 갱신" ours=88.5 ours.low=85.4 ours.high=91.1 base=70.3 base.low=66.1 base.high=74.2
+
+step "기억 없음" "기억 없이 답하면 여러 세션 질문에서 크게 틀린다"
+  reveal base
+step "기억 붙임" "같은 질문에 기억을 붙이면 모두 채택 기준을 넘는다"
+  reveal ours
+  light "여러 세션 종합"

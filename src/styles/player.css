@@ -256,3 +256,16 @@ html.embedded .fl-canvas svg {
   width: fit-content;
   margin-inline: auto;
 }
+
+.fl .fl-group.on .fl-stroke {
+  stroke: var(--color-accent);
+}
+
+.fl .fl-col.on .col-bg {
+  fill: var(--color-card-on);
+}
+
+/* hidden 속성이 display: grid 같은 규칙에 지지 않게 한다. 시간 흐름 없는 그림의 빈 조작 막대를 숨기기 위해서다. */
+[hidden] {
+  display: none !important;
+}

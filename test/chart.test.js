@@ -1,83 +1,45 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { parseChart, toChartSvg } from '../src/chart.js';
-import { FlowError } from '../src/flow.js';
-import { layoutMiniGraph, parseMiniGraph } from '../src/minigraph.js';
+import { buildFigure } from '../src/build.js';
+import { formatChange, formatNumber, makeScale } from '../src/chart/scale.js';
+import { errorsOf } from './helpers.js';
 
-test('parseChart_without_chart_line_returns_undefined', () => {
-  assert.equal(parseChart('a -> b\n#@ step s'), undefined);
+const FIXTURES = new URL('./fixtures/', import.meta.url).pathname;
+
+test('formatNumber_uses_k_M_and_shortest_decimal', () => {
+  assert.deepEqual([120000, 1250, 999950, 0.012, 91.4].map(formatNumber), ['120k', '1.3k', '1M', '0.012', '91.4']);
 });
 
-test('parseChart_bars_reads_rows_and_missing_values', () => {
-  const chart = parseChart('#@ chart bars\n#@ series 우리, 비교\n#@ bar 단일 세션: 91.4 -');
-
-  assert.deepEqual(chart.series, ['우리', '비교']);
-  assert.deepEqual(chart.rows.map(({ label, values }) => ({ label, values })), [{ label: '단일 세션', values: [91.4, undefined] }]);
+test('formatChange_rounds_half_away_and_skips_zero_base', () => {
+  assert.deepEqual([formatChange(120000, 31000), formatChange(100, 114), formatChange(200, 59), formatChange(0, 5)], ['−74%', '+14%', '−71%', '']);
 });
 
-test('parseChart_unknown_kind_throws_with_line', () => {
-  assert.throws(() => parseChart('\n#@ chart pie'), (e) => e instanceof FlowError && e.line === 2);
+test('makeScale_log_ticks_are_powers_of_ten', () => {
+  assert.deepEqual(makeScale('log', 28000, 120000, 0, 100).ticks, [10000, 100000, 1000000]);
 });
 
-test('parseChart_arrow_needs_two_values', () => {
-  assert.throws(() => parseChart('#@ chart arrows\n#@ arrow a: 10'), FlowError);
+test('parseChart_rules_reject_values_that_cannot_be_drawn', () => {
+  const cases = [
+    ['chart bar\nscale log\nseries a "A"\nrow "r" a=1', /scale log is not allowed/],
+    ['chart bar\nseries a "A"\nrow "r" a=-1', /negative/],
+    ['chart bar\nseries a "A"\nrow "r" a=0', /all values are 0/],
+    ['chart dumbbell\nseries a "A"\nrow "r" a=1', /takes 2 series/],
+    ['chart box\nrow "r" min=- q1=1 median=2 q3=3 max=4', /only for bar series/],
+    ['chart dumbbell\nseries a "A"\nseries b "B"\nrow "r" a=1 b=2\nstep "s"\n  reveal b\n  reveal a', /reveal "a" before "b"/],
+  ];
+  for (const [source, pattern] of cases) assert.match(errorsOf(source).join('\n'), pattern, source);
 });
 
-test('toChartSvg_bars_missing_value_shows_no_comparison', () => {
-  const svg = toChartSvg(parseChart('#@ chart bars\n#@ bar a: 10 -'));
+test('buildFigure_bar_rows_from_data_match_inline_rows', async () => {
+  const inline = await buildFigure('chart bar\nseries ours "O" key="new_judge"\nrow "A" ours=3.1 ours.low=2.2 ours.high=4.3');
+  const fromData = await buildFigure('chart bar\ndata "summary.json" at "/rows"\nseries ours "O" key="new_judge"', { baseDir: FIXTURES });
 
-  assert.match(svg, /공개 비교 없음/);
+  assert.equal(fromData.chart.body, inline.chart.body);
 });
 
-test('toChartSvg_arrows_shows_change_ratio_and_log_ticks', () => {
-  const svg = toChartSvg(parseChart('#@ chart arrows\n#@ scale log\n#@ arrow a: 1000 -> 250'));
+test('buildFigure_require_data_and_ci_reject_hand_rows', async () => {
+  const source = 'chart bar\nseries a "A"\nrow "r" a=1';
 
-  assert.match(svg, /−75%/);
-  assert.match(svg, />100</);
-  assert.match(svg, />1k</);
-});
-
-test('layoutMiniGraph_places_columns_by_depth', () => {
-  const laid = layoutMiniGraph({ nodes: ['a', 'b', 'c'], edges: [[0, 1], [1, 2]], lit: ['b'] }, 300);
-
-  const xs = laid.nodes.map((n) => n.x + n.w / 2);
-
-  assert.ok(xs[0] < xs[1] && xs[1] < xs[2]);
-  assert.deepEqual(laid.nodes.map((n) => n.isLit), [false, true, false]);
-});
-
-test('toChartSvg_arrows_increase_shows_plus_percent', () => {
-  const svg = toChartSvg(parseChart('#@ chart arrows\n#@ arrow a: 100 -> 114'));
-
-  assert.match(svg, />\+14%</);
-});
-
-test('parseChart_missing_line_sets_missing_text', () => {
-  const svg = toChartSvg(parseChart('#@ chart bars\n#@ missing 측정 안 함\n#@ bar a: 10 -'));
-
-  assert.match(svg, /측정 안 함/);
-});
-
-test('layoutMiniGraph_skip_edge_reserves_arc_space', () => {
-  const laid = layoutMiniGraph({ nodes: ['a', 'b', 'c'], edges: [[0, 1], [1, 2], [0, 2]], lit: [] }, 300);
-
-  assert.deepEqual(laid.edges.map((e) => e.isSkip), [false, false, true]);
-  assert.ok(laid.nodes.every((n) => n.y > 0));
-});
-
-test('parseChart_values_that_cannot_be_drawn_throw_with_line', () => {
-  const cases = ['#@ chart arrows\n#@ scale log\n#@ arrow a: 0 -> 5', '#@ chart bars\n#@ bar a: -1 2', '#@ chart bars\n#@ bar a: 0 0', '#@ chart arrows\n#@ arrow a: - -> 5'];
-
-  for (const source of cases) assert.throws(() => parseChart(source), FlowError, source);
-});
-
-test('toChartSvg_arrow_from_zero_has_no_ratio', () => {
-  const svg = toChartSvg(parseChart('#@ chart arrows\n#@ arrow a: 0 -> 5'));
-
-  assert.doesNotMatch(svg, /NaN|Infinity/);
-});
-
-test('parseMiniGraph_empty_or_cycle_throws', () => {
-  assert.throws(() => parseMiniGraph(' ; x'), /이름이 없다/);
-  assert.throws(() => parseMiniGraph('a -> a'), /제자리/);
+  await assert.rejects(buildFigure(source, { requireData: true }), /require-data/);
+  await assert.rejects(buildFigure(source, { requireCi: true }), /require-ci/);
 });

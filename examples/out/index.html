@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>d2-flow 예제</title>
+<title>예제</title>
 <style>/* tokens.json: 생성물, 손으로 고치지 않음 */
 :root {
   --color-gray-0: #ffffff;
@@ -22,10 +22,11 @@
   --color-neutral-850: #242526;
   --color-neutral-900: #1b1b1d;
   --color-neutral-950: #111214;
-  --color-blue-50: #eef5fd;
+  --color-blue-50: #edf3fb;
   --color-blue-400: #3396e8;
-  --color-blue-600: #0074d9;
+  --color-blue-600: #2a78d6;
   --color-blue-900: #1d2733;
+  --color-blue-800: #1d4f91;
   --color-tone-blue: #3b82f6;
   --color-tone-purple: #8b5cf6;
   --color-tone-green: #10b981;
@@ -33,8 +34,8 @@
   --color-tone-gray: #8b949e;
   --color-accent: var(--color-blue-600);
   --color-on-accent: var(--color-gray-0);
-  --color-fg: var(--color-gray-900);
-  --color-muted: var(--color-gray-600);
+  --color-fg: var(--color-ink-900);
+  --color-muted: var(--color-ink-600);
   --color-bg: var(--color-gray-0);
   --color-surface: var(--color-gray-50);
   --color-border: var(--color-gray-300);
@@ -48,8 +49,16 @@
   --color-tag-green: var(--color-tone-green);
   --color-tag-orange: var(--color-tone-orange);
   --color-tag-gray: var(--color-tone-gray);
-  --font-sans: -apple-system, BlinkMacSystemFont, Pretendard, 'Apple SD Gothic Neo', 'Noto Sans KR', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, D2Coding, Menlo, monospace;
+  --color-orange-100: #fbe1d5;
+  --color-orange-600: #eb6834;
+  --color-ink-900: #0b0b0b;
+  --color-ink-600: #52514e;
+  --color-ink-200: #e6e5e1;
+  --color-series-1: var(--color-accent);
+  --color-series-2: var(--color-orange-600);
+  --color-grid: var(--color-ink-200);
+  --font-sans: FigSans, Pretendard, -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
+  --font-mono: FigMono, D2Coding, ui-monospace, SFMono-Regular, Menlo, monospace;
   --size-text-9: 9px;
   --size-text-10-5: 10.5px;
   --size-text-11: 11px;
@@ -94,6 +103,17 @@
   --size-chart-bar: 12px;
   --size-chart-row: 40px;
   --size-chart-dot: 5px;
+  --size-person-w: 56px;
+  --size-person-head: 20px;
+  --size-person-shoulder: 14px;
+  --size-person-body: 22px;
+  --size-state-dot: 14px;
+  --size-table-row: 26px;
+  --size-seq-row: 44px;
+  --size-group-title: 28px;
+  --size-chart-plot-h: 260px;
+  --size-chart-axis: 48px;
+  --size-chart-cell: 40px;
   --weight-medium: 500;
   --weight-semibold: 600;
   --leading-normal: 1.5;
@@ -146,6 +166,7 @@
   --opacity-tag: 0.15;
   --opacity-halo: 0.2;
   --opacity-tab-on: 0.06;
+  --opacity-dim: 0.3;
   --z-raised: 2;
   --z-overlay: 10;
   --duration-fast: 200ms;
@@ -156,6 +177,7 @@
   --duration-step-end: 1600ms;
   --duration-stagger: 120ms;
   --duration-chart-cycle: 7000ms;
+  --duration-reveal: 900ms;
   --scale-zoom-max: 6;
   --scale-zoom-step: 1.25;
 }
@@ -172,6 +194,8 @@
     --color-frame: var(--color-neutral-800);
     --color-page: var(--color-neutral-950);
     --color-gallery: var(--color-neutral-950);
+    --color-series-2: #f08a5d;
+    --color-grid: var(--color-neutral-750);
   }
 }
 [data-theme='dark'] {
@@ -186,6 +210,8 @@
   --color-frame: var(--color-neutral-800);
   --color-page: var(--color-neutral-950);
   --color-gallery: var(--color-neutral-950);
+  --color-series-2: #f08a5d;
+  --color-grid: var(--color-neutral-750);
 }
 /* 여러 그림을 모은 목록 쪽 */
 body {
@@ -269,35 +295,26 @@ iframe {
 </style>
 </head>
 <body>
-<h1>d2-flow 예제</h1>
-<p>D2 문법으로 적고, Hindsight 모양으로 그리고, 흐름을 입힌 그림 20개</p>
+<h1>예제</h1>
+<p>그림 11개</p>
 <main>
-<section><header><h2>browser</h2><p>브라우저 렌더링: 위에서 아래로, 두 입력이 합쳐지는 흐름</p><nav><a href="browser.html">열기</a><a href="browser.svg">SVG</a></nav></header><iframe src="browser.html" loading="lazy" allowfullscreen title="browser"></iframe></section>
-<section><header><h2>ci-pipeline</h2><p>CI/CD: 분기(마름모), 되돌아가는 선, 사람, 외부 서비스</p><nav><a href="ci-pipeline.html">열기</a><a href="ci-pipeline.svg">SVG</a></nav></header><iframe src="ci-pipeline.html" loading="lazy" allowfullscreen title="ci-pipeline"></iframe></section>
-<section><header><h2>classes</h2><p>class 도형: 호출 흐름을 클래스 사이로 보여 준다</p><nav><a href="classes.html">열기</a><a href="classes.svg">SVG</a></nav></header><iframe src="classes.html" loading="lazy" allowfullscreen title="classes"></iframe></section>
-<section><header><h2>dashboard</h2><p>격자(grid) 대시보드: 격자 안 칸끼리는 선 없이 light와 show로만 보여 준다</p><nav><a href="dashboard.html">열기</a><a href="dashboard.svg">SVG</a></nav></header><iframe src="dashboard.html" loading="lazy" allowfullscreen title="dashboard"></iframe></section>
-<section><header><h2>hindsight-pipeline</h2><p>Hindsight retain · recall · reflect 내부 처리 순서. 출처: arXiv 2512.12818 (TEMPR, CARA)</p><nav><a href="hindsight-pipeline.html">열기</a><a href="hindsight-pipeline.svg">SVG</a></nav></header><iframe src="hindsight-pipeline.html" loading="lazy" allowfullscreen title="hindsight-pipeline"></iframe></section>
-<section><header><h2>hindsight</h2><p>Hindsight &quot;What Hindsight Does&quot; 그림을 D2 문법으로 옮겨 본 것. 원본: vectorize-io/hindsight hindsight-interfig</p><nav><a href="hindsight.html">열기</a><a href="hindsight.svg">SVG</a></nav></header><iframe src="hindsight.html" loading="lazy" allowfullscreen title="hindsight"></iframe></section>
-<section><header><h2>k8s</h2><p>쿠버네티스 요청 경로: 깊은 container, 점선 외부, 캐시 적중과 실패</p><nav><a href="k8s.html">열기</a><a href="k8s.svg">SVG</a></nav></header><iframe src="k8s.html" loading="lazy" allowfullscreen title="k8s"></iframe></section>
-<section><header><h2>kafka</h2><p>이벤트 스트림: 큐 도형, 동시에 여러 점, 소비자 그룹, 실패 격리</p><nav><a href="kafka.html">열기</a><a href="kafka.svg">SVG</a></nav></header><iframe src="kafka.html" loading="lazy" allowfullscreen title="kafka"></iframe></section>
-<section><header><h2>memory-accuracy</h2><p>장기 기억 정확도 비교 막대 차트 (예시 데이터)</p><nav><a href="memory-accuracy.html">열기</a><a href="memory-accuracy.svg">SVG</a></nav></header><iframe src="memory-accuracy.html" loading="lazy" allowfullscreen title="memory-accuracy"></iframe></section>
-<section><header><h2>memory</h2><p>메모리 서버 예시. container, 원통, 양방향 선, 같은 두 도형 사이의 두 선을 쓴다.</p><nav><a href="memory.html">열기</a><a href="memory.svg">SVG</a></nav></header><iframe src="memory.html" loading="lazy" allowfullscreen title="memory"></iframe></section>
-<section><header><h2>multi-agent</h2><p>Saturn: 두 에이전트를 하나의 대화로. 카드와 판단 과정</p><nav><a href="multi-agent.html">열기</a><a href="multi-agent.svg">SVG</a></nav></header><iframe src="multi-agent.html" loading="lazy" allowfullscreen title="multi-agent"></iframe></section>
-<section><header><h2>oauth</h2><p>순서 그림: OAuth 2.0 인가 코드 + PKCE</p><nav><a href="oauth.html">열기</a><a href="oauth.svg">SVG</a></nav></header><iframe src="oauth.html" loading="lazy" allowfullscreen title="oauth"></iframe></section>
-<section><header><h2>order-state</h2><p>상태 그림: 원형 상태, 자기 자신으로 가는 선, 여러 갈래</p><nav><a href="order-state.html">열기</a><a href="order-state.svg">SVG</a></nav></header><iframe src="order-state.html" loading="lazy" allowfullscreen title="order-state"></iframe></section>
-<section><header><h2>rag</h2><p>RAG: 두 갈래(색인, 질의), 병렬 이동, 카드</p><nav><a href="rag.html">열기</a><a href="rag.svg">SVG</a></nav></header><iframe src="rag.html" loading="lazy" allowfullscreen title="rag"></iframe></section>
-<section><header><h2>saga</h2><p>사가: 보상 트랜잭션, 거꾸로 가는 점</p><nav><a href="saga.html">열기</a><a href="saga.svg">SVG</a></nav></header><iframe src="saga.html" loading="lazy" allowfullscreen title="saga"></iframe></section>
-<section><header><h2>saturn</h2><p>Saturn 구성 요소 그림. D2 원본은 docs/assets/architecture.d2와 같다.</p><nav><a href="saturn.html">열기</a><a href="saturn.svg">SVG</a></nav></header><iframe src="saturn.html" loading="lazy" allowfullscreen title="saturn"></iframe></section>
-<section><header><h2>sequence</h2><p>순서 그림도 선이면 흐름을 입힐 수 있다.</p><nav><a href="sequence.html">열기</a><a href="sequence.svg">SVG</a></nav></header><iframe src="sequence.html" loading="lazy" allowfullscreen title="sequence"></iframe></section>
-<section><header><h2>syscall</h2><p>운영체제: 사용자 공간과 커널 공간, 위아래 배치</p><nav><a href="syscall.html">열기</a><a href="syscall.svg">SVG</a></nav></header><iframe src="syscall.html" loading="lazy" allowfullscreen title="syscall"></iframe></section>
-<section><header><h2>table</h2><p>표, 격자 같은 D2 기능도 D2가 그대로 그린다.</p><nav><a href="table.html">열기</a><a href="table.svg">SVG</a></nav></header><iframe src="table.html" loading="lazy" allowfullscreen title="table"></iframe></section>
-<section><header><h2>token-cost</h2><p>기억을 붙이기 전과 후의 작업당 토큰 화살표 차트 (예시 데이터)</p><nav><a href="token-cost.html">열기</a><a href="token-cost.svg">SVG</a></nav></header><iframe src="token-cost.html" loading="lazy" allowfullscreen title="token-cost"></iframe></section>
+<section><header><h2>bar</h2><p>장기 기억 정확도</p><nav><a href="bar.html">열기</a><a href="bar.svg">SVG</a></nav></header><iframe src="bar.html" loading="lazy" allowfullscreen title="bar"></iframe></section>
+<section><header><h2>box</h2><p>응답 지연 분포</p><nav><a href="box.html">열기</a><a href="box.svg">SVG</a></nav></header><iframe src="box.html" loading="lazy" allowfullscreen title="box"></iframe></section>
+<section><header><h2>dumbbell</h2><p>작업당 토큰</p><nav><a href="dumbbell.html">열기</a><a href="dumbbell.svg">SVG</a></nav></header><iframe src="dumbbell.html" loading="lazy" allowfullscreen title="dumbbell"></iframe></section>
+<section><header><h2>heatmap</h2><p>판단 교차표</p><nav><a href="heatmap.html">열기</a><a href="heatmap.svg">SVG</a></nav></header><iframe src="heatmap.html" loading="lazy" allowfullscreen title="heatmap"></iframe></section>
+<section><header><h2>line</h2><p>주차별 재시도 비율</p><nav><a href="line.html">열기</a><a href="line.svg">SVG</a></nav></header><iframe src="line.html" loading="lazy" allowfullscreen title="line"></iframe></section>
+<section><header><h2>memory</h2><p>대화에서 기억 그래프 키우기</p><nav><a href="memory.html">열기</a><a href="memory.svg">SVG</a></nav></header><iframe src="memory.html" loading="lazy" allowfullscreen title="memory"></iframe></section>
+<section><header><h2>oauth</h2><p>OAuth 인가 코드와 PKCE</p><nav><a href="oauth.html">열기</a><a href="oauth.svg">SVG</a></nav></header><iframe src="oauth.html" loading="lazy" allowfullscreen title="oauth"></iframe></section>
+<section><header><h2>order-state</h2><p>주문 상태</p><nav><a href="order-state.html">열기</a><a href="order-state.svg">SVG</a></nav></header><iframe src="order-state.html" loading="lazy" allowfullscreen title="order-state"></iframe></section>
+<section><header><h2>orders</h2><p></p><nav><a href="orders.html">열기</a><a href="orders.svg">SVG</a></nav></header><iframe src="orders.html" loading="lazy" allowfullscreen title="orders"></iframe></section>
+<section><header><h2>saturn</h2><p>Saturn 구성</p><nav><a href="saturn.html">열기</a><a href="saturn.svg">SVG</a></nav></header><iframe src="saturn.html" loading="lazy" allowfullscreen title="saturn"></iframe></section>
+<section><header><h2>scatter</h2><p>수정 횟수와 비용</p><nav><a href="scatter.html">열기</a><a href="scatter.svg">SVG</a></nav></header><iframe src="scatter.html" loading="lazy" allowfullscreen title="scatter"></iframe></section>
 </main>
 <script>
-// 그림 쪽이 알려 준 문서 높이로 iframe 높이를 맞춘다. 그림 아래 빈 공간을 없애기 위해서다.
+// 그림 쪽이 알려 준 본문 높이로 iframe 높이를 맞춘다. 그림 아래 빈 공간을 없애기 위해서다.
 addEventListener('message', (e) => {
   const frame = [...document.querySelectorAll('iframe')].find((f) => f.contentWindow === e.source);
-  if (frame && e.data?.d2flowHeight) frame.style.height = e.data.d2flowHeight + 'px';
+  if (frame && e.data?.figureHeight) frame.style.height = e.data.figureHeight + 'px';
 });
 </script>
 </body>

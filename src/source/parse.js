@@ -1,0 +1,182 @@
+// 원본 전체를 읽어 그림 모형(figure)으로 만든다. 줄을 머리, 선언, 시간 흐름 세 부분으로 나누고 문장마다 맡을 함수를 고른다.
+import { readChartDeclaration } from './chart.js';
+import { closeGroup, readColumn, readDeclaration, readEdge } from './declare.js';
+import { tokenizeLine } from './lexer.js';
+import { createProblems } from './problems.js';
+import { readTimeline } from './steps.js';
+import { validateFigure } from './validate.js';
+import { parseTime } from './values.js';
+import { ALLOWED, CHART_TYPES, DIRECTIONS, HEADER_WORDS, KINDS, NUMBER_PATTERN, TIMELINE_WORDS } from './words.js';
+
+const SECTIONS = ['header', 'declare', 'timeline'];
+
+// cost: time O(n + s·k), heap O(n), stack O(1)
+// vars: n = 원본 글자 수, s = 문장 수, k = 이름 수
+// basis: estimate
+/**
+ * 원본을 그림 모형으로 읽는다.
+ * @returns { figure, warnings }. figure 형식은 emptyFigure 주석
+ * @throws FigureError 오류가 하나라도 있을 때. 오류를 모두 담는다
+ */
+export function parseFigure(source) {
+  const problems = createProblems();
+  const statements = splitStatements(source, problems);
+  const figure = emptyFigure();
+  const ctx = { figure, problems, section: 'header', groups: [], table: undefined, step: undefined, headers: new Map(), previous: undefined };
+  if (!statements.length) {
+    problems.error(1, 'the file is empty. Start with a kind such as "flow right"');
+    problems.throwIfAny();
+  }
+  readKind(statements[0], ctx);
+  // 종류를 모르면 다음 줄의 규칙을 정할 수 없어 여기서 멈춘다. 그 밖의 오류는 끝까지 모아 한 번에 알린다.
+  if (!figure.kind) problems.throwIfAny();
+  for (const statement of statements.slice(1)) readStatement(statement, ctx);
+  if (ctx.table) problems.error(ctx.table.line, `close table "${ctx.table.id}" with "}"`);
+  for (const group of ctx.groups) problems.error(group.line, `close group "${group.id}" with "}"`);
+  validateFigure(figure, problems);
+  problems.throwIfAny();
+  return { figure, warnings: problems.warnings };
+}
+
+/**
+ * 비어 있는 그림 모형.
+ * nodes: { id, shape, label, sub, parent, line, columns? }, groups: { id, label, direction, parent, line },
+ * edges: { from, to, label, quiet, dashed, line, fromColumn?, toColumn? }, steps: { label, caption, line, beats }
+ */
+function emptyFigure() {
+  return {
+    kind: undefined,
+    chartType: undefined,
+    direction: 'right',
+    title: undefined,
+    subtitle: undefined,
+    speedMs: undefined,
+    aspect: undefined,
+    nodes: [],
+    groups: [],
+    edges: [],
+    start: undefined,
+    finals: [],
+    chart: { series: [], rules: [], missing: undefined, data: undefined, x: undefined, y: undefined, scale: 'linear', rows: [], links: [] },
+    steps: [],
+  };
+}
+
+// cost: time O(n), heap O(n), stack O(1)
+// vars: n = 원본 글자 수
+// basis: estimate
+// 줄마다 낱말로 나누고 빈 줄과 주석 줄을 뺀다.
+function splitStatements(source, problems) {
+  return source
+    .split('\n')
+    .map((text, i) => ({ line: i + 1, tokens: tokenizeLine(text, i + 1, problems) }))
+    .filter((s) => s.tokens.length);
+}
+
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+// 그림 종류 문장. `flow right`, `sequence`, `chart bar` 꼴이다.
+function readKind({ line, tokens }, { figure, problems }) {
+  const [kind, second, ...rest] = tokens;
+  if (kind.type !== 'word' || !KINDS.includes(kind.value)) {
+    problems.error(line, `start the file with a kind: ${KINDS.join(', ')}. Found "${kind.value}"`);
+    return;
+  }
+  figure.kind = kind.value;
+  figure.line = line;
+  if (rest.length) problems.error(line, 'the kind statement takes at most one more word');
+  if (kind.value === 'sequence') {
+    if (second) problems.error(line, '"sequence" takes no direction');
+  } else if (kind.value === 'chart') {
+    if (!second || !CHART_TYPES.includes(second.value)) problems.error(line, `write "chart" with a type: ${CHART_TYPES.join(', ')}`);
+    else figure.chartType = second.value;
+  } else if (second) {
+    if (!DIRECTIONS.includes(second.value)) problems.error(line, `direction is "right" or "down". Found "${second.value}"`);
+    else figure.direction = second.value;
+  }
+}
+
+// cost: time O(t), heap O(t), stack O(1)
+// vars: t = 문장 낱말 수
+// basis: estimate
+// 문장 하나의 부분(머리, 선언, 시간 흐름)을 정하고, 순서를 어기면 오류를 낸다.
+function readStatement(statement, ctx) {
+  const { tokens, line } = statement;
+  const { figure, problems } = ctx;
+  if (ctx.table) {
+    readColumn(statement, ctx);
+    return;
+  }
+  const [head, second] = tokens;
+  if (head.type === 'close') {
+    closeGroup(statement, ctx);
+    return;
+  }
+  const isArrowLine = second?.type === 'arrow';
+  const word = isArrowLine ? (ctx.section === 'timeline' || figure.kind === 'sequence' ? 'hop' : 'edge') : head.value;
+  if (head.type !== 'word') {
+    problems.error(line, 'start a statement with a word, not with quoted text or an option');
+    return;
+  }
+  if (ALLOWED[word] && !ALLOWED[word].includes(figure.kind)) {
+    problems.error(line, `"${word === 'hop' || word === 'edge' ? 'a -> b' : word}" is not allowed in a ${figure.kind} figure. Remove the line or change the kind statement`);
+    return;
+  }
+  const section = sectionOf(word, figure);
+  if (SECTIONS.indexOf(section) < SECTIONS.indexOf(ctx.section)) {
+    problems.error(line, `"${word}" belongs to the ${section} part, which must come before the ${ctx.section} part`);
+    return;
+  }
+  if (section === 'timeline' && word !== 'step' && !ctx.step) {
+    problems.error(line, 'start the timeline with a "step" line');
+    return;
+  }
+  ctx.section = section;
+  if (section === 'header') {
+    if (ctx.headers.has(word)) problems.error(line, `"${word}" is written twice (line ${ctx.headers.get(word)})`);
+    ctx.headers.set(word, line);
+    readHeader(statement, ctx);
+  }
+  else if (section === 'timeline') {
+    readTimeline(word, statement, ctx);
+    ctx.previous = word;
+  }
+  else if (word === 'edge') readEdge(statement, ctx);
+  else if (figure.kind === 'chart') readChartDeclaration(statement, ctx);
+  else readDeclaration(statement, ctx);
+}
+
+// cost: time O(k), heap O(1), stack O(1)
+// vars: k = 고정 낱말 수
+// basis: estimate
+// 문장 첫 낱말이 속한 부분. 차트의 `x`, `y`, `scale`은 머리다.
+function sectionOf(word, figure) {
+  if (word === 'hop' || TIMELINE_WORDS.includes(word)) return 'timeline';
+  const isHeader = HEADER_WORDS.includes(word) && (figure.kind === 'chart' || !['x', 'y', 'scale'].includes(word));
+  return isHeader ? 'header' : 'declare';
+}
+
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+// 머리 줄 하나. 값은 글, 시간, 숫자, 낱말 중 하나다.
+function readHeader({ tokens, line }, { figure, problems }) {
+  const [head, value, extra] = tokens;
+  if (extra) problems.error(line, `"${head.value}" takes one value`);
+  const key = head.value;
+  if (['title', 'subtitle', 'x', 'y'].includes(key)) {
+    if (value?.type !== 'text') problems.error(line, `write ${key} as quoted text: ${key} "..."`);
+    else if (key === 'x' || key === 'y') figure.chart[key] = value.value;
+    else figure[key] = value.value;
+  } else if (key === 'speed') {
+    const ms = parseTime(value?.value);
+    if (value?.type !== 'word' || ms === undefined) problems.error(line, 'write speed as a time such as 900ms or 2s');
+    else figure.speedMs = ms;
+  } else if (key === 'aspect') {
+    const ratio = Number(value?.value);
+    if (value?.type !== 'word' || !NUMBER_PATTERN.test(value.value) || !(ratio > 0)) problems.error(line, 'write aspect as a positive number such as 1.6');
+    else figure.aspect = ratio;
+  } else if (key === 'scale') {
+    if (!['linear', 'log'].includes(value?.value)) problems.error(line, 'scale is "linear" or "log"');
+    else figure.chart.scale = value.value;
+  }
+}
