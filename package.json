@@ -18,8 +18,8 @@
   },
   "scripts": {
     "test": "node --test test/",
-    "tokens": "python3 ${SKILLS_DIR:-$HOME/.claude/skills}/design-tokens/scripts/build_tokens.py src/tokens.json --out src",
-    "check": "python3 ${SKILLS_DIR:-$HOME/.claude/skills}/design-tokens/scripts/check_tokens.py src && python3 ${SKILLS_DIR:-$HOME/.claude/skills}/code-style/scripts/check_cost_comments.py src test",
+    "tokens": "node scripts/build-tokens.mjs src/tokens.json --out src",
+    "check": "node scripts/check-tokens.mjs src && node scripts/check-cost-comments.mjs src test",
     "examples": "node src/cli.js gallery examples --out examples/out --title \"예제\"",
     "screens": "node scripts/screens.mjs"
   },

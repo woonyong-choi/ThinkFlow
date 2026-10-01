@@ -17,7 +17,7 @@
 | `src/svg.js`, `src/html.js`, `src/cli.js` | 움직이는 SVG, HTML 재생기 문서, 명령 |
 | `src/player.js`, `src/viewer.js` | 브라우저에서 도는 재생기와 전체 화면·확대 |
 | `examples/` | 예제 원본, `out/` 결과, `screens/` UI 화면 |
-| `scripts/` | 화면 확인 도구(`shoot.mjs`, `screens.mjs`) |
+| `scripts/` | 화면 확인 도구(`shoot.mjs`, `screens.mjs`), 토큰 생성(`build-tokens.mjs`), 하드코딩과 비용 주석 검사(`check-tokens.mjs`, `check-cost-comments.mjs`) |
 | `docs/` | 설계 문서 |
 
 ## 명령
