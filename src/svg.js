@@ -1,5 +1,6 @@
 // 스크립트 없이 움직이는 SVG와 멈춘 SVG. 시간표의 박자 상태를 CSS keyframes와 SMIL로 옮긴다(docs/design/playback.md).
 import { chartText } from './chart/draw.js';
+import { CHIP_GAP, placeChip, sampleRoute, sizeChip } from './chip.js';
 import { drawScene } from './draw/figure.js';
 import { createGlyphSet, embedFonts, measure } from './measure/fonts.js';
 import { STYLE } from './measure/sizes.js';
@@ -56,7 +57,7 @@ ${captions.svg}
 function drawFigureBody(result, animator, glyphs) {
   const { scene, timeline } = result;
   const body = drawScene(scene, (kind, i, extra) => animator.decorate(kind, i, extra, scene), glyphs);
-  const packets = timeline.segs.flatMap((seg, si) => seg.hops.map((hop, hi) => animator.packet(seg, hop, `p${si}-${hi}`, glyphs)));
+  const packets = timeline.segs.flatMap((seg, si) => seg.hops.map((hop, hi) => animator.packet(seg, hop, `p${si}-${hi}`, { glyphs, scene })));
   return { svg: `${body}\n${packets.join('\n')}`, width: scene.width, height: scene.height, className: '' };
 }
 
@@ -178,19 +179,34 @@ function createAnimator({ segs, total }) {
   }
 
   // 점 하나가 한 박자 동안 선을 건너고, 실어 보내는 글은 점 위의 상자로 따라간다.
-  function packet(seg, hop, name, glyphs) {
+  function packet(seg, hop, name, { glyphs, scene }) {
     const end = seg.t0 + hop.ms;
     css.push(
       `@keyframes ${name} { 0%,${percent(seg.t0)} { opacity: 0 } ${percent(seg.t0 + EPSILON_MS)},${percent(end - EPSILON_MS)} { opacity: 1 } ${percent(end)},100% { opacity: 0 } }\n` +
         `.fl .${name} { animation: ${name} ${duration} infinite step-end; }`,
     );
     const keyTimes = `0;${round4(seg.t0 / total)};${round4(end / total)};1`;
-    const chip = hop.data ? drawChip(hop.data, glyphs) : '';
+    const chip = hop.data ? drawChip(hop.data, glyphs) + pushChip(seg, hop, scene) : '';
     return (
-      `<g class="${name}" opacity="0"><circle r="${values.size.halo}" fill="${tokens.color.accent}" opacity="${values.opacity.halo}"/><circle r="${values.size.packet}" fill="${tokens.color.accent}"/>${chip}` +
+      `<g class="${name}" opacity="0"><circle r="${values.size.halo}" fill="${tokens.color.accent}" opacity="${values.opacity.halo}"/><circle r="${values.size.packet}" fill="${tokens.color.accent}"/>${chip ? `<g>${chip}</g>` : ''}` +
       `<animateMotion dur="${duration}" repeatCount="indefinite" calcMode="linear" keyTimes="${keyTimes}" keyPoints="${hop.isBack ? '1;1;0;0' : '0;0;1;1'}">` +
       `<mpath href="#p-${hop.edge}" xlink:href="#p-${hop.edge}"/></animateMotion></g>`
     );
+  }
+
+  // cost: time O(k·p), heap O(k), stack O(1)
+  // vars: k = 재는 지점 수(11), p = 경로 점 수
+  // basis: estimate
+  // 글 상자가 그림 밖으로 나가는 선이면, 경로 10% 지점마다 밀어 넣은 양을 옮김 움직임으로 건다. 점의 움직임이 일정한 속도라 경로 비율이 곧 시간 비율이다.
+  function pushChip(seg, hop, scene) {
+    const size = sizeChip(hop.data);
+    const samples = sampleRoute(scene.edges[hop.edge].points).map(({ fraction, point }) => ({ fraction: hop.isBack ? 1 - fraction : fraction, ...placeChip(point, size, scene.width) }));
+    if (hop.isBack) samples.reverse();
+    if (samples.every((p) => p.dx === 0 && p.dy === 0)) return '';
+    const at = (fraction) => round4((seg.t0 + fraction * hop.ms) / total);
+    const times = [0, ...samples.map((p) => at(p.fraction)), 1];
+    const moves = [samples[0], ...samples, samples.at(-1)].map((p) => `${r(p.dx)} ${r(p.dy)}`);
+    return `<animateTransform attributeName="transform" type="translate" dur="${duration}" repeatCount="indefinite" calcMode="linear" keyTimes="${times.join(';')}" values="${moves.join(';')}"/>`;
   }
 
   // cost: time O(s·b + r·b), heap O(b), stack O(1)
@@ -226,9 +242,8 @@ function createAnimator({ segs, total }) {
 // 점 위에 뜨는 글 상자. 줄은 시간표가 이미 나눴다.
 function drawChip(lines, glyphs) {
   for (const line of lines) glyphs.add(line, STYLE.chip.face);
-  const w = Math.max(...lines.map((line) => measure(line, STYLE.chip.size, STYLE.chip.face))) + SPACE['9'];
-  const h = lines.length * STYLE.chip.line + SPACE['4'];
-  const top = -h - SPACE['6'];
+  const { w, h } = sizeChip(lines);
+  const top = -h - CHIP_GAP;
   return (
     `<rect x="${r(-w / 2)}" y="${r(top)}" width="${r(w)}" height="${r(h)}" rx="${values.radius.lg}" fill="${tokens.color.accent}"/>` +
     lines.map((line, li) => `<text x="0" y="${r(top + STYLE.chip.line * (li + 1))}" class="chip">${escapeXml(line)}</text>`).join('')

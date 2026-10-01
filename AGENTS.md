@@ -13,7 +13,7 @@
 | `src/layout/` | elkjs 배치(구조, 상태, 데이터 관계)와 순서 그림 격자 배치 |
 | `src/chart/` | 차트 눈금, 숫자 표기, 여섯 종류 그리기 |
 | `src/draw/` | 도형, 선, 카드 그리기 |
-| `src/timeline.js`, `src/check.js`, `src/build.js` | 시간표, 그림 검사, 단계 잇기 |
+| `src/timeline.js`, `src/check.js`, `src/chip.js`, `src/build.js` | 시간표, 그림 검사, 글 상자 크기와 밀어 넣기, 단계 잇기 |
 | `src/svg.js`, `src/html.js`, `src/cli.js` | 움직이는 SVG, HTML 재생기 문서, 명령 |
 | `src/player.js`, `src/viewer.js` | 브라우저에서 도는 재생기와 전체 화면·확대 |
 | `examples/` | 예제 원본, `out/` 결과, `screens/` UI 화면 |

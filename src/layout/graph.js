@@ -35,7 +35,7 @@ export async function layoutGraph(figure, sizes) {
 // 그룹 나무와 선 조각을 만든다. 선 하나는 넘는 경계마다 조각 하나가 더해진다.
 function buildModel(figure, sizes) {
   const containers = new Map([['root', { id: 'root', direction: figure.direction, parent: undefined, children: [], edges: [], ports: [] }]]);
-  for (const g of figure.groups) containers.set(g.id, { id: g.id, label: g.label, direction: undefined, own: g.direction, parent: g.parent ?? 'root', children: [], edges: [], ports: [] });
+  for (const g of figure.groups) containers.set(g.id, { id: g.id, label: g.label, line: g.line, direction: undefined, own: g.direction, parent: g.parent ?? 'root', children: [], edges: [], ports: [] });
   for (const g of figure.groups) containers.get(g.parent ?? 'root').children.push(g.id);
   for (const c of containers.values()) c.direction = c.own ?? directionOf(c.parent, containers, figure);
   for (const c of containers.values()) c.parentDirection = c.parent ? containers.get(c.parent).direction : undefined;
@@ -257,7 +257,7 @@ function readElk(laid, model, figure) {
       const y = oy + node.y + child.y;
       if (model.containers.has(child.id)) {
         const c = model.containers.get(child.id);
-        groups.push({ id: child.id, label: c.label, x, y, w: child.width, h: child.height });
+        groups.push({ id: child.id, label: c.label, line: c.line, x, y, w: child.width, h: child.height });
         offsets.set(child.id, { x, y });
       } else {
         const n = model.nodes.get(child.id);

@@ -64,7 +64,7 @@ export function buildTimeline(figure, cards, chips) {
     step.beats.forEach((beat, bi) => {
       const hops = beat.hops.map((hop) => {
         const edge = figure.kind === 'sequence' ? messageIndex++ : hop.edge;
-        return { edge, isBack: Boolean(hop.isBack), ms: hop.timeMs ?? speed, to: hop.to.split('.')[0], data: hop.data !== undefined && figure.kind !== 'sequence' ? chips(hop.data) : undefined };
+        return { edge, isBack: Boolean(hop.isBack), ms: hop.timeMs ?? speed, to: hop.to.split('.')[0], data: hop.data !== undefined && figure.kind !== 'sequence' ? chips(hop.data) : undefined, line: hop.line };
       });
       for (const h of hops) edgesOn.add(h.edge);
       for (const target of beat.light) lit.add(target);
