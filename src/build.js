@@ -145,7 +145,8 @@ function checkSkillRules(figure, { requireData, requireCi }, problems) {
 // basis: estimate
 // JSON Pointer(RFC 6901)로 값을 찾는다.
 function pointer(document, path) {
-  if (path === '' || path === '/') return document;
+  if (path === '') return document;
+  if (!path.startsWith('/')) throw new Error('a JSON Pointer is "" or starts with "/"');
   return path
     .split('/')
     .slice(1)

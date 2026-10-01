@@ -99,7 +99,7 @@ test('loadChartData_non_number_value_and_missing_name_are_errors', async () => {
   writeFileSync(join(folder, 'bad.json'), '﻿[{"label":"x","a":"12"},{"a":1}]');
 
   try {
-    await buildFigure('chart bar\nseries a "A"\ndata "bad.json" at ""', { baseDir: folder });
+    await buildFigure('chart bar\nseries a "A"\ndata "bad.json"', { baseDir: folder });
     assert.fail('expected an error');
   } catch (error) {
     const messages = error.problems.map((p) => p.message);
@@ -127,4 +127,23 @@ test('checkChartRows_interval_and_quartile_order_are_errors', async () => {
   const bar = await buildErrors('chart bar\nseries a "A"\nrow "p" a=50 a.low=60 a.high=40\nrow "q" a=50 a.low=40');
 
   assert.deepEqual([box.length, bar.length], [1, 2], [...box, ...bar].join('\n'));
+});
+
+test('checkChartRows_all_zero_line_is_allowed_but_bar_is_error', async () => {
+  const line = await buildErrors('chart line\nseries a "A"\npoint x=1 a=0\npoint x=2 a=0');
+  const bar = await buildErrors('chart bar\nseries a "A"\nrow "p" a=0');
+
+  assert.deepEqual([line.length, bar.length], [0, 1]);
+});
+
+test('checkChart_negative_rule_in_bar_is_error', async () => {
+  const errors = await buildErrors('chart bar\nseries a "A"\nrule -10 "neg"\nrow "p" a=5');
+
+  assert.ok(errors.some((e) => e.includes('a rule cannot be negative')), errors.join('\n'));
+});
+
+test('loadChartData_pointer_without_slash_is_error', async () => {
+  const errors = await buildErrors('chart bar\nseries a "A"\ndata "../test/fixtures/summary.json" at "rows"');
+
+  assert.ok(errors.some((e) => e.includes('starts with "/"')), errors.join('\n'));
 });

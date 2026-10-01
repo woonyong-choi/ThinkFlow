@@ -23,6 +23,8 @@ export function tokenizeLine(text, line, problems) {
       break;
     } else if (c === '"') {
       const quoted = readQuoted(text, i, line, problems);
+      // 빈 글은 이름 없는 도형이나 빈 항목이 된다. 글이 필요 없으면 따옴표째 뺀다.
+      if (quoted.value.trim() === '') problems.error(line, 'quoted text cannot be empty. Write the text or remove the quotes');
       tokens.push({ type: 'text', value: quoted.value });
       i = quoted.end;
       if (i < text.length && !/\s/.test(text[i]) && text[i] !== '#') problems.error(line, `put a space after the closing quote. Found "${text[i]}"`);
@@ -33,6 +35,7 @@ export function tokenizeLine(text, line, problems) {
       const word = text.slice(start, i);
       if (text[i] === '"' && word.endsWith('=')) {
         const quoted = readQuoted(text, i, line, problems);
+        if (quoted.value.trim() === '') problems.error(line, `${word.slice(0, -1)}= cannot be empty. Write the text or remove the option`);
         tokens.push({ type: 'option', key: word.slice(0, -1), value: quoted.value, valueType: 'text' });
         i = quoted.end;
       } else if (text[i] === '"') {

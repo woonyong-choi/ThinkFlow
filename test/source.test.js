@@ -145,3 +145,9 @@ test('validateFigure_self_transition_only_in_state_figures', () => {
 
   assert.deepEqual([state, flow.length], [[], 1]);
 });
+
+test('tokenizeLine_empty_text_is_error', () => {
+  const errors = errorsOf('flow right\nbox a ""\nbox b "B" \nb -> a "  "');
+
+  assert.equal(errors.length, 2, errors.join('\n'));
+});

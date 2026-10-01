@@ -67,14 +67,16 @@ function readMissing({ tokens, line }, { figure, problems }) {
 
 // `data "경로" at "/포인터"`
 function readData({ tokens, line }, { figure, problems }) {
+  // `at "/포인터"`를 빼면 문서 전체(빈 포인터)가 배열이다. 빈 글 `""`을 쓰지 않게 하기 위해서다.
   const [, path, at, pointer, extra] = tokens;
-  const isShape = path?.type === 'text' && at?.type === 'word' && at.value === 'at' && pointer?.type === 'text' && !extra;
+  const isWhole = path?.type === 'text' && at === undefined;
+  const isShape = isWhole || (path?.type === 'text' && at?.type === 'word' && at.value === 'at' && pointer?.type === 'text' && !extra);
   if (!isShape) {
-    problems.error(line, 'write data as: data "path.json" at "/pointer"');
+    problems.error(line, 'write data as: data "path.json" [at "/pointer"]');
     return;
   }
   if (figure.chart.data) problems.error(line, `data is already set (line ${figure.chart.data.line})`);
-  figure.chart.data = { path: path.value, pointer: pointer.value, line };
+  figure.chart.data = { path: path.value, pointer: isWhole ? '' : pointer.value, line };
 }
 
 // cost: time O(t), heap O(t), stack O(1)

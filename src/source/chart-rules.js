@@ -23,6 +23,7 @@ export function checkChart(figure, problems) {
   if (chartType === 'bar' && chart.scale === 'log') problems.error(figure.line, 'a bar chart starts at 0, so scale log is not allowed');
   if (chartType === 'heatmap' && (chart.scaleLine !== undefined || chart.rules.length)) problems.error(chart.scaleLine ?? chart.rules[0].line, 'a heatmap has no value axis. Remove scale and rule');
   for (const rule of chart.rules) if (chart.scale === 'log' && rule.value <= 0) problems.error(rule.line, 'log scale needs values above 0');
+  for (const rule of chart.rules) if (chartType === 'bar' && rule.value < 0) problems.error(rule.line, 'a bar chart starts at 0, so a rule cannot be negative');
   for (const s of chart.series) if (FIXED_KEYS.includes(s.key)) problems.error(s.line, `series key "${s.key}" is a fixed data key. Set key="..." to another name`);
   if (chart.data && chart.rows.length) problems.error(chart.data.line, 'use either data or row lines, not both');
   if (!chart.data) {
@@ -58,7 +59,9 @@ export function checkChartRows(figure, problems) {
   if (huge) problems.error(huge.line, 'values must be under 1e15 in absolute value');
   if (valueAxis.some((v) => v < 0)) problems.error(chart.rows.find((r) => Object.values(r.values).some((v) => v < 0)).line, 'values cannot be negative');
   if (chart.scale === 'log' && numbers.some((v) => v <= 0)) problems.error(chart.rows.find((r) => Object.entries(r.values).some(([k, v]) => isValue(k) && v !== null && v <= 0)).line, 'log scale needs values above 0');
-  if (numbers.length && numbers.every((v) => v === 0)) problems.error(chart.rows[0].line, 'all values are 0, so lengths cannot be set');
+  // 막대, 덤벨, 상자는 길이로 값을 보여서 모두 0이면 그릴 것이 없다. 선과 산점도는 위치로 보여서 0도 그린다.
+  const hasLength = ['bar', 'dumbbell', 'box'].includes(chartType);
+  if (hasLength && numbers.length && numbers.every((v) => v === 0)) problems.error(chart.rows[0].line, 'all values are 0, so lengths cannot be set');
   for (const link of chart.links) {
     for (const name of [link.from, link.to]) if (!labels.has(name)) problems.error(link.line, unknownName('point', name, [...labels.keys()]));
   }
