@@ -315,10 +315,13 @@ function inside(box, scene) {
 // cost: time O(g log g), heap O(g), stack O(1)
 // vars: g = 그룹 수
 // basis: estimate
-// 9번: 가로세로 비율. 그룹 그림은 비율을 줄이는 쪽의 그룹 방향을, 아니면 aspect를 권한다.
+// 9번: 가로세로 비율. 문서 폭 안에 드는 그림은 보지 않는다. 그룹 그림은 비율을 줄이는 쪽의 그룹 방향을, 아니면 aspect를 권한다.
 function checkAspect(figure, scene, problems) {
   const ratio = scene.width / scene.height;
   if (ratio <= ASPECT_MAX && ratio >= 1 / ASPECT_MAX) return;
+  // 가로세로가 모두 문서 본문 폭 이하인 그림은 줄어들지 않고 그대로 보여 비율이 읽힘을 해치지 않는다.
+  const fitsDocument = scene.width <= values.size['figure-max'] && scene.height <= values.size['figure-max'];
+  if (fitsDocument) return;
   const isWide = ratio > ASPECT_MAX;
   const turn = isWide ? 'down' : 'right';
   const size = (g) => (isWide ? g.w : g.h);

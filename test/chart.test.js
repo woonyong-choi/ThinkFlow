@@ -121,3 +121,10 @@ test('drawChart_scatter_name_near_right_edge_moves_left', async () => {
 
   assert.match(chart.body, /class="chart-name late end">오른쪽 끝의 긴 점 이름/);
 });
+
+test('checkChartRows_interval_and_quartile_order_are_errors', async () => {
+  const box = await buildErrors('chart box\nrow "a" min=10 q1=5 median=3 q3=2 max=1');
+  const bar = await buildErrors('chart bar\nseries a "A"\nrow "p" a=50 a.low=60 a.high=40\nrow "q" a=50 a.low=40');
+
+  assert.deepEqual([box.length, bar.length], [1, 2], [...box, ...bar].join('\n'));
+});

@@ -88,6 +88,25 @@ function checkRowKeys(row, figure, problems) {
     if (value === null && !isBarSeries) problems.error(row.line, `"-" (missing) is only for bar series values. Found ${key}=-`);
   }
   if (row.values.series !== undefined && !ids.includes(row.values.series)) problems.error(row.line, unknownName('series', row.values.series, ids));
+  if (chartType === 'bar') for (const id of ids) checkInterval(row, id, problems);
+  if (chartType === 'box' && BOX_KEYS.every((k) => typeof row.values[k] === 'number')) checkQuartiles(row, problems);
+}
+
+// 막대 신뢰구간: low와 high는 함께 적고, low ≤ 값 ≤ high다. 같은 값은 반올림한 실험 값에서 생기므로 허용한다.
+function checkInterval(row, id, problems) {
+  const [value, low, high] = [row.values[id], row.values[`${id}.low`], row.values[`${id}.high`]];
+  if (low === undefined && high === undefined) return;
+  if (low === undefined || high === undefined) problems.error(row.line, `write both ${id}.low and ${id}.high, or neither`);
+  else if (value === null) problems.error(row.line, `a missing ${id} value cannot have an interval`);
+  else if (!(low <= value && value <= high)) problems.error(row.line, `${id} needs ${id}.low ≤ ${id} ≤ ${id}.high. Found ${low}, ${value}, ${high}`);
+}
+
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+// 상자 그림 값은 min ≤ q1 ≤ median ≤ q3 ≤ max 순서다.
+function checkQuartiles(row, problems) {
+  const ordered = BOX_KEYS.map((k) => row.values[k]);
+  if (ordered.some((v, i) => i > 0 && ordered[i - 1] > v)) problems.error(row.line, `box values need min ≤ q1 ≤ median ≤ q3 ≤ max. Found ${ordered.join(', ')}`);
 }
 
 // cost: time O(b·(s + l)), heap O(s), stack O(1)

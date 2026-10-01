@@ -125,10 +125,16 @@ test('buildFigure_sequence_without_participants_is_error_not_crash', async () =>
 });
 
 test('checkFigure_tall_group_suggests_direction_right', async () => {
-  const chain = Array.from({ length: 8 }, (_, i) => `  box n${i} "N${i}"`).join('\n');
-  const edges = Array.from({ length: 7 }, (_, i) => `  n${i} -> n${i + 1}`).join('\n');
+  const chain = Array.from({ length: 16 }, (_, i) => `  box n${i} "N${i}"`).join('\n');
+  const edges = Array.from({ length: 15 }, (_, i) => `  n${i} -> n${i + 1}`).join('\n');
 
   const { warnings } = await buildFigure(`flow down\ngroup g "G" {\n${chain}\n${edges}\n}`);
 
   assert.ok(warnings.some((w) => w.message.includes('Set direction=right on group "g"')), JSON.stringify(warnings));
+});
+
+test('checkFigure_small_wide_figure_has_no_aspect_warning', async () => {
+  const { warnings } = await buildFigure('flow right\nbox a "요청"\nbox b "응답"\na -> b "보냄"', { strict: true });
+
+  assert.deepEqual(warnings, []);
 });
