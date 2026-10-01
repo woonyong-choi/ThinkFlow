@@ -1,0 +1,62 @@
+# Stripe 결제: 멱등 키, 위험 평가, 카드 네트워크 승인, 원장, 웹훅 재시도 (공개 문서 기반 단순화)
+direction: right
+
+shop: "가맹점 서버"
+
+stripe: "Stripe" {
+  api: "API\n멱등 키 확인"
+  keys: "멱등 키 저장" {shape: cylinder}
+  intent: "PaymentIntent\n상태 머신"
+  radar: "Radar\n사기 위험 점수"
+  router: "카드 라우팅"
+  ledger: "원장\n복식 부기" {shape: cylinder}
+  webhooks: "웹훅 전송\n재시도 큐" {shape: queue}
+  api -> keys
+  api -> intent
+  intent -> radar
+  intent -> router
+  intent -> ledger
+  intent -> webhooks
+}
+
+networks: "카드 네트워크" {
+  visa: "Visa\nMastercard"
+  issuer: "카드 발급사"
+  visa -> issuer: 승인 요청
+}
+
+shop -> stripe.api: POST /payment_intents
+stripe.router -> networks.visa: 승인 요청
+stripe.webhooks -> shop: payment_intent.succeeded
+
+#@ speed 3000ms
+#@ step "결제 승인": 위험 평가를 통과하면 카드 발급사가 승인하고 원장에 남는다
+#@   shop -> api "39,000원 · key 7f2a" : 요청마다 멱등 키를 함께 보낸다
+#@   api -> keys "7f2a?"
+#@   show keys 7f2a · 처음 봄 · 저장
+#@   api -> intent "생성"
+#@   show intent [state/purple] requires_confirmation → processing
+#@   intent -> radar "카드, 기기, 금액"
+#@   show radar [score/green] 위험 12 · 통과
+#@   intent -> router
+#@   router -> visa "승인 요청"
+#@   visa -> issuer "승인 요청" : 카드 네트워크가 발급사에 한도와 잔액을 묻는다
+#@   issuer -> visa "승인 00"
+#@   visa -> router "승인"
+#@   router -> intent "승인"
+#@   show intent [state/purple] processing → succeeded
+#@   intent -> ledger "차변·대변" : 금액은 두 계정에 같은 크기로 기록된다
+#@   show ledger [debit/blue] 고객 카드 · 39,000
+#@   show ledger [credit/green] 가맹점 잔액 · 37,869 · 수수료 1,131
+#@ step "네트워크 오류 재시도": 응답을 못 받은 가맹점이 같은 키로 다시 보내도 두 번 청구되지 않는다
+#@   shop -> api "39,000원 · key 7f2a" : 타임아웃 뒤 같은 멱등 키로 다시 보낸다
+#@   api -> keys "7f2a?"
+#@   show keys [hit/orange] 7f2a · 이미 처리 · 결과 재사용
+#@   api -> shop "succeeded (저장된 응답)" : 새 결제를 만들지 않고 처음 응답을 그대로 돌려준다
+#@ step "웹훅": 결과는 가맹점이 받을 때까지 재시도한다
+#@   intent -> webhooks "succeeded"
+#@   webhooks -> shop "1차 전송"
+#@   show webhooks [retry/orange] 1차 · 503 · 1분 뒤
+#@   wait 900 : 가맹점 서버가 실패하면 간격을 늘려 다시 보낸다
+#@   webhooks -> shop "2차 전송"
+#@   show webhooks [ok/green] 2차 · 200 (✓)

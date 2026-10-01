@@ -1,0 +1,450 @@
+<svg xmlns="http://www.w3.org/2000/svg" class="fl fl-chart" width="640" height="297" style="aspect-ratio: 640 / 297" viewBox="0 0 640 297">
+<style>/* tokens.json: 생성물, 손으로 고치지 않음 */
+:root {
+  --color-gray-0: #ffffff;
+  --color-gray-25: #f7f8fa;
+  --color-gray-50: #f5f7fa;
+  --color-gray-100: #e3e7ec;
+  --color-gray-200: #d5dbe3;
+  --color-gray-300: #b6c0cc;
+  --color-gray-600: #4b5563;
+  --color-gray-900: #111418;
+  --color-neutral-100: #e3e3e3;
+  --color-neutral-400: #9aa0a6;
+  --color-neutral-700: #3a3b3c;
+  --color-neutral-750: #34363a;
+  --color-neutral-800: #2c2d30;
+  --color-neutral-850: #242526;
+  --color-neutral-900: #1b1b1d;
+  --color-neutral-950: #111214;
+  --color-blue-50: #eef5fd;
+  --color-blue-400: #3396e8;
+  --color-blue-600: #0074d9;
+  --color-blue-900: #1d2733;
+  --color-tone-blue: #3b82f6;
+  --color-tone-purple: #8b5cf6;
+  --color-tone-green: #10b981;
+  --color-tone-orange: #f59e0b;
+  --color-tone-gray: #8b949e;
+  --color-accent: var(--color-blue-600);
+  --color-on-accent: var(--color-gray-0);
+  --color-fg: var(--color-gray-900);
+  --color-muted: var(--color-gray-600);
+  --color-bg: var(--color-gray-0);
+  --color-surface: var(--color-gray-50);
+  --color-border: var(--color-gray-300);
+  --color-card-on: var(--color-blue-50);
+  --color-dot: var(--color-gray-200);
+  --color-frame: var(--color-gray-100);
+  --color-page: var(--color-gray-0);
+  --color-gallery: var(--color-gray-25);
+  --color-tag-blue: var(--color-tone-blue);
+  --color-tag-purple: var(--color-tone-purple);
+  --color-tag-green: var(--color-tone-green);
+  --color-tag-orange: var(--color-tone-orange);
+  --color-tag-gray: var(--color-tone-gray);
+  --font-sans: -apple-system, BlinkMacSystemFont, Pretendard, 'Apple SD Gothic Neo', 'Noto Sans KR', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, D2Coding, Menlo, monospace;
+  --size-text-9: 9px;
+  --size-text-10-5: 10.5px;
+  --size-text-11: 11px;
+  --size-text-11-5: 11.5px;
+  --size-text-12: 12px;
+  --size-text-13: 13px;
+  --size-text-13-5: 13.5px;
+  --size-text-14: 14px;
+  --size-text-14-5: 14.5px;
+  --size-text-15: 15px;
+  --size-text-22: 22px;
+  --size-line-15: 15px;
+  --size-line-18: 18px;
+  --size-line-20: 20px;
+  --size-line-22: 22px;
+  --size-control: 30px;
+  --size-pill: 18px;
+  --size-tag: 14px;
+  --size-icon: 20px;
+  --size-packet: 4.5px;
+  --size-halo: 10px;
+  --size-marker: 5px;
+  --size-marker-on: 4px;
+  --size-grid: 16px;
+  --size-grid-dot: 1px;
+  --size-card: 176px;
+  --size-node-min: 100px;
+  --size-node-max: 210px;
+  --size-node-min-h: 46px;
+  --size-store-min-h: 70px;
+  --size-store-cap: 12px;
+  --size-figure-min: 560px;
+  --size-chip-max: 210px;
+  --size-caption-max: 720px;
+  --size-figure-max: 1400px;
+  --size-gallery-column: 760px;
+  --size-gallery-frame: 820px;
+  --size-player-chrome: 190px;
+  --size-embedded-chrome: 150px;
+  --size-chart-width: 640px;
+  --size-chart-label: 140px;
+  --size-chart-bar: 12px;
+  --size-chart-row: 40px;
+  --size-chart-dot: 5px;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --leading-normal: 1.5;
+  --tracking-tag: 0.03em;
+  --tracking-frame: 0.04em;
+  --space-0-5: 1px;
+  --space-1: 2px;
+  --space-1-5: 3px;
+  --space-2: 4px;
+  --space-2-5: 5px;
+  --space-3: 6px;
+  --space-3-5: 7px;
+  --space-4: 8px;
+  --space-5: 10px;
+  --space-6: 12px;
+  --space-6-5: 13px;
+  --space-7: 14px;
+  --space-8: 16px;
+  --space-8-5: 17px;
+  --space-9: 18px;
+  --space-11: 22px;
+  --space-12: 24px;
+  --space-13: 26px;
+  --space-14: 28px;
+  --space-15: 30px;
+  --space-16: 32px;
+  --space-17: 34px;
+  --space-18: 36px;
+  --space-20: 40px;
+  --space-22: 44px;
+  --space-30: 60px;
+  --space-32: 64px;
+  --radius-xs: 2px;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 10px;
+  --radius-2xl: 14px;
+  --radius-route: 22px;
+  --radius-full: 999px;
+  --border-hair: 0.75px;
+  --border-thin: 1px;
+  --border-lifeline: 1.25px;
+  --border-tag: 1.5px;
+  --border-edge: 1.75px;
+  --border-strong: 2.5px;
+  --dash-line: 5;
+  --dash-gap: 4;
+  --dash-card: 3;
+  --opacity-tag: 0.15;
+  --opacity-halo: 0.2;
+  --opacity-tab-on: 0.06;
+  --z-raised: 2;
+  --z-overlay: 10;
+  --duration-fast: 200ms;
+  --duration-hop: 3750ms;
+  --duration-dwell: 700ms;
+  --duration-dwell-per-char: 45ms;
+  --duration-dwell-max: 3200ms;
+  --duration-step-end: 1600ms;
+  --duration-stagger: 120ms;
+  --duration-chart-cycle: 7000ms;
+  --scale-zoom-max: 6;
+  --scale-zoom-step: 1.25;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --color-accent: var(--color-blue-400);
+    --color-fg: var(--color-neutral-100);
+    --color-muted: var(--color-neutral-400);
+    --color-bg: var(--color-neutral-900);
+    --color-surface: var(--color-neutral-850);
+    --color-border: var(--color-neutral-700);
+    --color-card-on: var(--color-blue-900);
+    --color-dot: var(--color-neutral-750);
+    --color-frame: var(--color-neutral-800);
+    --color-page: var(--color-neutral-950);
+    --color-gallery: var(--color-neutral-950);
+  }
+}
+[data-theme='dark'] {
+  --color-accent: var(--color-blue-400);
+  --color-fg: var(--color-neutral-100);
+  --color-muted: var(--color-neutral-400);
+  --color-bg: var(--color-neutral-900);
+  --color-surface: var(--color-neutral-850);
+  --color-border: var(--color-neutral-700);
+  --color-card-on: var(--color-blue-900);
+  --color-dot: var(--color-neutral-750);
+  --color-frame: var(--color-neutral-800);
+  --color-page: var(--color-neutral-950);
+  --color-gallery: var(--color-neutral-950);
+}
+/* 그림 안 글자와 모양. HTML 재생기와 움직이는 SVG가 같이 쓴다. */
+.fl text {
+  font-family: var(--font-sans);
+}
+
+.fl .label {
+  font-size: var(--size-text-14);
+  font-weight: var(--weight-medium);
+  text-anchor: middle;
+  fill: var(--color-fg);
+}
+
+.fl .sub {
+  font-size: var(--size-text-12);
+  text-anchor: middle;
+  fill: var(--color-muted);
+}
+
+.fl .frame {
+  font-size: var(--size-text-11);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-frame);
+  fill: var(--color-muted);
+}
+
+.fl .edgelabel {
+  font-family: var(--font-mono);
+  font-size: var(--size-text-11);
+  text-anchor: middle;
+  fill: var(--color-muted);
+}
+
+.fl .row {
+  font-size: var(--size-text-11);
+  fill: var(--color-fg);
+}
+
+.fl .row.mono {
+  font-family: var(--font-mono);
+  font-size: var(--size-text-10-5);
+}
+
+.fl .muted {
+  fill: var(--color-muted);
+}
+
+.fl .tag {
+  font-size: var(--size-text-9);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-tag);
+  text-anchor: middle;
+}
+
+.fl .mark {
+  font-size: var(--size-text-11);
+  font-weight: var(--weight-semibold);
+  text-anchor: end;
+  fill: var(--color-accent);
+}
+
+.fl .mark.key {
+  font-size: var(--size-text-9);
+  text-anchor: start;
+}
+
+.fl .mini {
+  font-size: var(--size-text-10-5);
+  text-anchor: middle;
+  fill: var(--color-fg);
+}
+
+.fl .mini.on {
+  fill: var(--color-on-accent);
+}
+
+.fl .chip {
+  font-size: var(--size-text-11-5);
+  text-anchor: middle;
+  fill: var(--color-on-accent);
+}
+
+.fl .md {
+  font-size: var(--size-text-13);
+  fill: var(--color-fg);
+}
+
+.fl .md.h {
+  font-size: var(--size-text-15);
+  font-weight: var(--weight-semibold);
+}
+
+.fl .cell {
+  font-size: var(--size-text-11-5);
+  fill: var(--color-fg);
+}
+
+.fl .cell.type {
+  font-family: var(--font-mono);
+  font-size: var(--size-text-10-5);
+  text-anchor: end;
+  fill: var(--color-muted);
+}
+
+.fl .fl-stroke {
+  stroke: var(--color-border);
+}
+
+.fl .fl-path {
+  fill: none;
+  stroke: var(--color-muted);
+  stroke-width: var(--border-edge);
+}
+/* 차트 글자와 자라는 움직임. 차트 SVG 안에 들어가고, README 이미지에서도 보이게 되풀이한다. */
+.fl .chart-title {
+  font-size: var(--size-text-15);
+  font-weight: var(--weight-semibold);
+  fill: var(--color-fg);
+}
+
+.fl .chart-legend,
+.fl .chart-label {
+  font-size: var(--size-text-13);
+  fill: var(--color-fg);
+}
+
+.fl .chart-legend {
+  font-size: var(--size-text-12);
+  fill: var(--color-muted);
+}
+
+.fl .chart-value,
+.fl .chart-tick,
+.fl .chart-unit {
+  font-family: var(--font-mono);
+  font-size: var(--size-text-11);
+  fill: var(--color-muted);
+}
+
+.fl .chart-tick {
+  text-anchor: middle;
+}
+
+.fl .chart-unit {
+  text-anchor: end;
+}
+
+.fl .chart-value.start {
+  text-anchor: start;
+}
+
+.fl .chart-value.end {
+  text-anchor: end;
+}
+
+.fl .chart-value.ours {
+  font-weight: var(--weight-semibold);
+  fill: var(--color-accent);
+}
+
+.fl .chart-missing {
+  font-size: var(--size-text-11);
+  font-style: italic;
+  fill: var(--color-muted);
+}
+
+.fl .chart-ratio {
+  font-family: var(--font-mono);
+  font-size: var(--size-text-12);
+  font-weight: var(--weight-semibold);
+  text-anchor: end;
+  fill: var(--color-accent);
+}
+
+.fl .chart-axis {
+  stroke: var(--color-border);
+  stroke-width: var(--border-thin);
+}
+
+.fl .chart-draw {
+  stroke: var(--color-accent);
+  stroke-width: var(--border-strong);
+  stroke-dasharray: 1;
+  animation: chart-draw var(--duration-chart-cycle) ease-out infinite both;
+}
+
+.fl .chart-before {
+  fill: var(--color-bg);
+  stroke: var(--color-muted);
+  stroke-width: var(--border-tag);
+}
+
+.fl .chart-grow {
+  transform-box: fill-box;
+  transform-origin: left center;
+  animation: chart-grow var(--duration-chart-cycle) ease-out infinite both;
+}
+
+.fl .chart-value,
+.fl .chart-late {
+  animation: chart-fade var(--duration-chart-cycle) ease-out infinite both;
+}
+
+/* 한 바퀴(duration.chart-cycle)의 앞 13%에 자라고, 나머지는 다 자란 채로 머문다. */
+@keyframes chart-grow {
+  0% {
+    transform: scaleX(0);
+  }
+
+  13%,
+  100% {
+    transform: none;
+  }
+}
+
+@keyframes chart-draw {
+  0% {
+    stroke-dashoffset: 1;
+  }
+
+  13%,
+  100% {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes chart-fade {
+  0%,
+  9% {
+    opacity: 0;
+  }
+
+  16%,
+  100% {
+    opacity: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fl .chart-grow,
+  .fl .chart-draw,
+  .fl .chart-value,
+  .fl .chart-late {
+    animation: none;
+  }
+}
+</style>
+<defs><pattern id="fl-dots" width="16" height="16" patternUnits="userSpaceOnUse"><circle cx="1.5" cy="1.5" r="1" fill="var(--color-dot)"/></pattern><marker id="fl-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-muted)"/></marker><marker id="fl-arrow-on" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-accent)"/></marker></defs>
+<rect width="100%" height="100%" fill="var(--color-bg)"/>
+<text x="28" y="43" class="chart-title">장기 기억 정확도 (예시 데이터)</text>
+<rect x="28" y="59" width="12" height="12" rx="4" fill="var(--color-accent)"/>
+<text x="46" y="67" class="chart-legend">기억 붙임</text>
+<rect x="113.44" y="59" width="12" height="12" rx="4" fill="var(--color-tag-gray)"/>
+<text x="131.44" y="67" class="chart-legend">기억 없음</text>
+<text x="28" y="110.1" class="chart-label">단일 세션 사실</text>
+<rect x="168" y="91" width="376" height="12" rx="4" fill="var(--color-accent)" class="chart-grow" style="animation-delay: 0ms"/><text x="550" y="101" class="chart-value ours" style="animation-delay: 0ms">91.4%</text>
+<rect x="168" y="107" width="247.6" height="12" rx="4" fill="var(--color-tag-gray)" class="chart-grow" style="animation-delay: 0ms"/><text x="421.6" y="117" class="chart-value" style="animation-delay: 0ms">60.2%</text>
+<text x="28" y="160.1" class="chart-label">여러 세션 종합</text>
+<rect x="168" y="141" width="327.9" height="12" rx="4" fill="var(--color-accent)" class="chart-grow" style="animation-delay: 120ms"/><text x="501.9" y="151" class="chart-value ours" style="animation-delay: 120ms">79.7%</text>
+<rect x="168" y="157" width="181.4" height="12" rx="4" fill="var(--color-tag-gray)" class="chart-grow" style="animation-delay: 120ms"/><text x="355.4" y="167" class="chart-value" style="animation-delay: 120ms">44.1%</text>
+<text x="28" y="210.1" class="chart-label">시간 추론</text>
+<rect x="168" y="191" width="349.7" height="12" rx="4" fill="var(--color-accent)" class="chart-grow" style="animation-delay: 240ms"/><text x="523.7" y="201" class="chart-value ours" style="animation-delay: 240ms">85%</text>
+<text x="168" y="217" class="chart-missing">공개 비교 없음</text>
+<text x="28" y="260.1" class="chart-label">지식 갱신</text>
+<rect x="168" y="241" width="364.1" height="12" rx="4" fill="var(--color-accent)" class="chart-grow" style="animation-delay: 360ms"/><text x="538.1" y="251" class="chart-value ours" style="animation-delay: 360ms">88.5%</text>
+<rect x="168" y="257" width="289.2" height="12" rx="4" fill="var(--color-tag-gray)" class="chart-grow" style="animation-delay: 360ms"/><text x="463.2" y="267" class="chart-value" style="animation-delay: 360ms">70.3%</text>
+</svg>

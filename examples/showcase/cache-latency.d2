@@ -1,0 +1,11 @@
+# 캐시를 붙인 엔드포인트와 붙이지 않은 엔드포인트의 p95 지연 비교 (예시 데이터)
+#@ chart bars
+#@ title 엔드포인트별 p95 지연 (예시 데이터)
+#@ unit ms
+#@ series 캐시 사용, 캐시 없음
+#@ missing 캐시 대상 아님
+#@ bar GET /products: 42 310
+#@ bar GET /cart: 65 280
+#@ bar GET /recommend: 120 940
+#@ bar POST /orders: 210 -
+#@ bar GET /search: 88 520

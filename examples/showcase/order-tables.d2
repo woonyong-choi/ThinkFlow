@@ -1,0 +1,56 @@
+# 주문 한 건이 테이블 세 개에 남는 순서: 주문, 결제, 복식 부기 원장 (예시 데이터)
+direction: down
+
+api: "주문 API\nPOST /orders"
+pay: "결제 서비스\n카드 승인"
+ledger_svc: "원장 서비스\n차변 = 대변"
+
+db: "주문 DB" {
+  orders: {
+    shape: sql_table
+    id: bigint {constraint: primary_key}
+    user_id: bigint
+    total: int
+    status: varchar
+  }
+  payments: {
+    shape: sql_table
+    id: bigint {constraint: primary_key}
+    order_id: bigint {constraint: foreign_key}
+    amount: int
+    approved_at: timestamp
+  }
+  ledger: {
+    shape: sql_table
+    id: bigint {constraint: primary_key}
+    payment_id: bigint {constraint: foreign_key}
+    account: varchar
+    debit: int
+    credit: int
+  }
+  orders.id <- payments.order_id
+  payments.id <- ledger.payment_id
+}
+
+api -> db.orders: INSERT
+api -> pay: 승인 요청
+pay -> db.payments: INSERT
+pay -> ledger_svc: 결제 완료 이벤트
+ledger_svc -> db.ledger: INSERT 2줄
+
+#@ speed 3000ms
+#@ quiet orders <- payments & payments <- ledger
+#@ step "주문": 주문은 먼저 대기 상태로 저장된다
+#@   api -> orders "total 39,000" : 결제 전이라 status는 pending이다
+#@   show api [new/blue] 주문 #1042 · 39,000원
+#@ step "결제": 결제 행은 주문 행을 외래 키로 가리킨다
+#@   api -> pay "order 1042"
+#@   show pay [approved/green] 39,000원 · 승인 번호 7781
+#@   pay -> payments "order_id 1042" : 결제 행이 생기면 주문 행과의 관계 선이 보인다
+#@   payments -> orders "FK order_id" : 외래 키는 주문 1042를 가리킨다
+#@ step "원장": 돈의 이동은 차변과 대변 두 줄로 남는다
+#@   pay -> ledger_svc "payment 88"
+#@   show ledger_svc [debit/orange] 고객 예치금 · 39,000
+#@   show ledger_svc [credit/green] 매출 · 39,000
+#@   ledger_svc -> ledger "2 rows" : 두 줄의 합이 0이어야 기록된다
+#@   ledger -> payments "FK payment_id"

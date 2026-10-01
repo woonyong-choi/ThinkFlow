@@ -1,0 +1,77 @@
+# Netflix 재생 경로: Open Connect 캐시 선택, 적응형 화질, 캐시 장애 우회 (공개 발표·블로그 기반 단순화)
+direction: right
+
+device: "TV 앱\nNetflix 클라이언트"
+
+aws: "AWS 제어 평면" {
+  edge: "Zuul\nAPI 게이트웨이"
+  discovery: "Eureka\n서비스 탐색"
+  services: "재생 서비스" {
+    playback: "Playback API\n재생 결정"
+    license: "License\nDRM 키 발급"
+    steering: "Steering\n캐시 선택"
+    playback -> license
+    playback -> steering
+  }
+  data: "데이터" {
+    evcache: "EVCache\n세션 캐시" {shape: cylinder}
+    cassandra: "Cassandra\n시청 기록" {shape: cylinder}
+  }
+  events: "Keystone\nKafka 이벤트" {shape: queue}
+  edge -> discovery: 위치 조회
+  edge -> services.playback: 재생 요청
+  services.playback -> data.evcache
+  services.playback -> data.cassandra
+  services.playback -> events
+}
+
+isp: "ISP 망 안" {
+  oca1: "OCA 1\nOpen Connect 캐시" {shape: cylinder}
+  oca2: "OCA 2\n예비 캐시" {shape: cylinder}
+}
+ixp: "IXP OCA\n교환 지점 캐시" {shape: cylinder; style.stroke-dash: 4}
+
+device -> aws.edge: HTTPS
+device -> isp.oca1: 영상 조각
+device -> isp.oca2: 영상 조각
+device -> ixp: 영상 조각
+aws.services.steering -> isp.oca1
+aws.services.steering -> isp.oca2
+aws.services.steering -> ixp
+
+#@ speed 3250ms
+# 캐시로 가는 영상 선과 Steering의 캐시 선은 쓰는 단계에서만 보인다. 그림이 덜 복잡해진다.
+#@ quiet device -> oca1 & device -> oca2 & device -> ixp
+#@ quiet steering -> oca1 & steering -> oca2 & steering -> ixp
+#@ step "재생 시작": 버튼을 누르면 제어 평면이 화질 목록과 캐시 주소를 준다
+#@   device -> edge "play(title 80117401)" : 요청은 AWS의 API 게이트웨이로 간다
+#@   edge -> discovery : 게이트웨이가 살아 있는 재생 서비스를 찾는다
+#@   show discovery [up/green] playback · 3 instances
+#@   edge -> playback "재생 요청"
+#@   playback -> evcache "세션" & playback -> cassandra "이어보기" : 세션과 이어보기 지점을 동시에 읽는다
+#@   show cassandra 이어보기 · 41분 12초
+#@   playback -> license "DRM" & playback -> steering "캐시 후보"
+#@   show license [widevine/purple] 키 발급 (✓)
+#@   steering -> oca1 & steering -> oca2 & steering -> ixp : Steering이 사용자와 가까운 캐시를 고른다
+#@   show steering [1/green] OCA 1 · ISP 안 · 2 ms
+#@   show steering [2/green] OCA 2 · ISP 안 · 3 ms
+#@   show steering [3/gray] IXP · 9 ms
+#@   playback -> edge "manifest" : 화질 목록과 캐시 주소 목록을 함께 돌려준다
+#@   edge -> device "manifest"
+#@   show device 1080p · 5800 kbps · OCA 1
+#@ step "스트리밍": 영상은 AWS가 아니라 ISP 안 캐시에서 온다
+#@   device -> oca1 "segment 1 · 1080p"
+#@   oca1 -> device "4 s 분량" : 대역폭을 재며 다음 조각 화질을 고른다
+#@   device -> oca1 "segment 2 · 720p" : 대역폭이 줄면 화질을 낮춰 끊김을 막는다
+#@   show device 720p · 3000 kbps · 버퍼 18 s
+#@   playback -> events "재생 이벤트" : 시청 이벤트는 Kafka를 거쳐 분석과 추천으로 간다
+#@   show events [play/blue] 80117401 · 720p · 41:16
+#@ step "캐시 장애": 캐시가 응답하지 않으면 다음 후보로 넘어간다
+#@   device -> oca1 "segment 9"
+#@   show oca1 [down/orange] 응답 없음 · 2 s
+#@   device -> oca2 "segment 9" : 클라이언트가 manifest의 다음 후보로 바로 넘어간다
+#@   oca2 -> device "segment 9"
+#@   show oca2 [hit/green] segment 9 (✓)
+#@   steering -> oca1 : Steering은 상태 보고를 받아 다음 사용자에게 OCA 1을 주지 않는다
+#@   show steering [1/green] OCA 2 · ISP 안 · 3 ms
+#@   show steering [2/gray] IXP · 9 ms

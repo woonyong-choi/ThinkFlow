@@ -1,0 +1,38 @@
+# 사가: 보상 트랜잭션, 거꾸로 가는 점
+direction: right
+orch: "주문 오케스트레이터\nsaga"
+inventory: 재고 서비스 {
+  svc: 재고
+  db: 재고 DB {shape: cylinder}
+  svc -> db
+}
+payment: 결제 서비스 {
+  svc: 결제
+  pg: PG사 {style.stroke-dash: 4}
+  svc -> pg
+}
+shipping: 배송 서비스 {
+  svc: 배송
+}
+orch -> inventory.svc: 예약
+orch -> payment.svc: 청구
+orch -> shipping.svc: 접수
+
+#@ speed 3250ms
+#@ step "성공": 세 단계를 차례로 확정한다
+#@   orch -> inventory.svc "예약 A-12 ×2"
+#@   inventory.svc -> inventory.db
+#@   show inventory.db [hold/blue] A-12 · 2개 보류
+#@   orch -> payment.svc "청구 39,000원"
+#@   payment.svc -> pg & pg -> payment.svc "승인"
+#@   orch -> shipping.svc "접수"
+#@   show orch [done/green] 3/3 확정 (✓)
+#@ step "보상": 배송 접수가 실패하면 앞 단계를 거꾸로 취소한다
+#@   orch -> inventory.svc "예약"
+#@   orch -> payment.svc "청구"
+#@   orch -> shipping.svc "접수" : 배송 서비스가 주소 오류로 거절했다
+#@   show orch [fail/orange] 배송 거절 · 보상 시작
+#@   payment.svc -> orch "환불 39,000원" : 이미 끝난 단계는 반대 동작으로 되돌린다
+#@   inventory.svc -> orch "예약 해제"
+#@   show inventory.db [free/gray] A-12 · 보류 해제
+#@   show orch [compensated/orange] 2개 되돌림 (✓)

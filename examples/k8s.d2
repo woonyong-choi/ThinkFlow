@@ -1,0 +1,45 @@
+# 쿠버네티스 요청 경로: 깊은 container, 점선 외부, 캐시 적중과 실패
+direction: right
+client: 브라우저 {shape: person}
+cluster: 클러스터 {
+  ingress: "Ingress\nnginx"
+  svc: "Service\nClusterIP"
+  deploy: "Deployment: api" {
+    direction: down
+    pod1: "Pod api-7f9c\nready"
+    pod2: "Pod api-2b1d\nready"
+  }
+  redis: Redis {shape: cylinder}
+  ingress -> svc
+  svc -> deploy.pod1
+  svc -> deploy.pod2
+  deploy.pod1 -> redis
+  deploy.pod2 -> redis
+}
+pg: "Postgres\n관리형" {shape: cylinder; style.stroke-dash: 4}
+client -> cluster.ingress: HTTPS
+cluster.deploy.pod1 -> pg
+cluster.deploy.pod2 -> pg
+
+#@ step "캐시 적중": Redis에 있으면 DB까지 가지 않는다
+#@   client -> ingress "GET /users/42"
+#@   ingress -> svc : TLS를 끝내고 서비스로 넘긴다
+#@   svc -> pod1 : 서비스가 준비된 Pod 하나를 고른다
+#@   pod1 -> redis "user:42"
+#@   show redis [hit/green] user:42 · ttl 280s (✓)
+#@   redis -> pod1 "{name: 최우녕}"
+#@   pod1 -> svc & svc -> ingress
+#@   ingress -> client "200 · 3ms"
+#@ step "캐시 실패": 없으면 DB에서 읽고 캐시에 넣는다
+#@   client -> ingress "GET /users/77"
+#@   ingress -> svc
+#@   svc -> pod2 : 이번에는 다른 Pod가 받는다
+#@   pod2 -> redis "user:77"
+#@   show redis [miss/orange] user:77
+#@   pod2 -> pg "SELECT … id=77" : 캐시에 없어 DB를 읽는다
+#@   show pg 1 row · 11ms
+#@   pg -> pod2
+#@   pod2 -> redis "SET ttl 300"
+#@   show redis [set/blue] user:77 · ttl 300s
+#@   pod2 -> svc & svc -> ingress
+#@   ingress -> client "200 · 18ms"

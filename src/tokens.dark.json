@@ -1,0 +1,16 @@
+{
+  "color": {
+    "$type": "color",
+    "accent": { "$value": "{color.blue.400}" },
+    "fg": { "$value": "{color.neutral.100}" },
+    "muted": { "$value": "{color.neutral.400}" },
+    "bg": { "$value": "{color.neutral.900}" },
+    "surface": { "$value": "{color.neutral.850}" },
+    "border": { "$value": "{color.neutral.700}" },
+    "card-on": { "$value": "{color.blue.900}" },
+    "dot": { "$value": "{color.neutral.750}" },
+    "frame": { "$value": "{color.neutral.800}" },
+    "page": { "$value": "{color.neutral.950}" },
+    "gallery": { "$value": "{color.neutral.950}" }
+  }
+}

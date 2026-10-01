@@ -1,0 +1,29 @@
+# class 도형: 호출 흐름을 클래스 사이로 보여 준다
+direction: right
+Cli: {
+  shape: class
+  +main(): Result
+}
+Engine: {
+  shape: class
+  -queue: Queue
+  "+submit(turn: Turn)": Id
+  +run(): void
+}
+Judge: {
+  shape: class
+  "+decide(ctx: Context)": Agent
+}
+Store: {
+  shape: class
+  "+append(event: Event)": void
+}
+Cli -> Engine: submit
+Engine -> Judge: decide
+Engine -> Store: append
+
+#@ step "turn 하나": 명령에서 기록까지 호출 순서
+#@   Cli -> Engine "submit(turn)"
+#@   Engine -> Judge "decide(ctx)" : 엔진만 판단기를 부른다
+#@   Judge -> Engine "Agent::Claude"
+#@   Engine -> Store "append(TurnStarted)" : 기록은 엔진 하나만 쓴다

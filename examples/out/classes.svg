@@ -1,0 +1,372 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="fl" width="1393" height="406" viewBox="0 0 1393 406">
+<style>/* tokens.json: 생성물, 손으로 고치지 않음 */
+:root {
+  --color-gray-0: #ffffff;
+  --color-gray-25: #f7f8fa;
+  --color-gray-50: #f5f7fa;
+  --color-gray-100: #e3e7ec;
+  --color-gray-200: #d5dbe3;
+  --color-gray-300: #b6c0cc;
+  --color-gray-600: #4b5563;
+  --color-gray-900: #111418;
+  --color-neutral-100: #e3e3e3;
+  --color-neutral-400: #9aa0a6;
+  --color-neutral-700: #3a3b3c;
+  --color-neutral-750: #34363a;
+  --color-neutral-800: #2c2d30;
+  --color-neutral-850: #242526;
+  --color-neutral-900: #1b1b1d;
+  --color-neutral-950: #111214;
+  --color-blue-50: #eef5fd;
+  --color-blue-400: #3396e8;
+  --color-blue-600: #0074d9;
+  --color-blue-900: #1d2733;
+  --color-tone-blue: #3b82f6;
+  --color-tone-purple: #8b5cf6;
+  --color-tone-green: #10b981;
+  --color-tone-orange: #f59e0b;
+  --color-tone-gray: #8b949e;
+  --color-accent: var(--color-blue-600);
+  --color-on-accent: var(--color-gray-0);
+  --color-fg: var(--color-gray-900);
+  --color-muted: var(--color-gray-600);
+  --color-bg: var(--color-gray-0);
+  --color-surface: var(--color-gray-50);
+  --color-border: var(--color-gray-300);
+  --color-card-on: var(--color-blue-50);
+  --color-dot: var(--color-gray-200);
+  --color-frame: var(--color-gray-100);
+  --color-page: var(--color-gray-0);
+  --color-gallery: var(--color-gray-25);
+  --color-tag-blue: var(--color-tone-blue);
+  --color-tag-purple: var(--color-tone-purple);
+  --color-tag-green: var(--color-tone-green);
+  --color-tag-orange: var(--color-tone-orange);
+  --color-tag-gray: var(--color-tone-gray);
+  --font-sans: -apple-system, BlinkMacSystemFont, Pretendard, 'Apple SD Gothic Neo', 'Noto Sans KR', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, D2Coding, Menlo, monospace;
+  --size-text-9: 9px;
+  --size-text-10-5: 10.5px;
+  --size-text-11: 11px;
+  --size-text-11-5: 11.5px;
+  --size-text-12: 12px;
+  --size-text-13: 13px;
+  --size-text-13-5: 13.5px;
+  --size-text-14: 14px;
+  --size-text-14-5: 14.5px;
+  --size-text-15: 15px;
+  --size-text-22: 22px;
+  --size-line-15: 15px;
+  --size-line-18: 18px;
+  --size-line-20: 20px;
+  --size-line-22: 22px;
+  --size-control: 30px;
+  --size-pill: 18px;
+  --size-tag: 14px;
+  --size-icon: 20px;
+  --size-packet: 4.5px;
+  --size-halo: 10px;
+  --size-marker: 5px;
+  --size-marker-on: 4px;
+  --size-grid: 16px;
+  --size-grid-dot: 1px;
+  --size-card: 176px;
+  --size-node-min: 100px;
+  --size-node-max: 210px;
+  --size-node-min-h: 46px;
+  --size-store-min-h: 70px;
+  --size-store-cap: 12px;
+  --size-figure-min: 560px;
+  --size-chip-max: 210px;
+  --size-caption-max: 720px;
+  --size-figure-max: 1400px;
+  --size-gallery-column: 760px;
+  --size-gallery-frame: 820px;
+  --size-player-chrome: 190px;
+  --size-embedded-chrome: 150px;
+  --size-chart-width: 640px;
+  --size-chart-label: 140px;
+  --size-chart-bar: 12px;
+  --size-chart-row: 40px;
+  --size-chart-dot: 5px;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --leading-normal: 1.5;
+  --tracking-tag: 0.03em;
+  --tracking-frame: 0.04em;
+  --space-0-5: 1px;
+  --space-1: 2px;
+  --space-1-5: 3px;
+  --space-2: 4px;
+  --space-2-5: 5px;
+  --space-3: 6px;
+  --space-3-5: 7px;
+  --space-4: 8px;
+  --space-5: 10px;
+  --space-6: 12px;
+  --space-6-5: 13px;
+  --space-7: 14px;
+  --space-8: 16px;
+  --space-8-5: 17px;
+  --space-9: 18px;
+  --space-11: 22px;
+  --space-12: 24px;
+  --space-13: 26px;
+  --space-14: 28px;
+  --space-15: 30px;
+  --space-16: 32px;
+  --space-17: 34px;
+  --space-18: 36px;
+  --space-20: 40px;
+  --space-22: 44px;
+  --space-30: 60px;
+  --space-32: 64px;
+  --radius-xs: 2px;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 10px;
+  --radius-2xl: 14px;
+  --radius-route: 22px;
+  --radius-full: 999px;
+  --border-hair: 0.75px;
+  --border-thin: 1px;
+  --border-lifeline: 1.25px;
+  --border-tag: 1.5px;
+  --border-edge: 1.75px;
+  --border-strong: 2.5px;
+  --dash-line: 5;
+  --dash-gap: 4;
+  --dash-card: 3;
+  --opacity-tag: 0.15;
+  --opacity-halo: 0.2;
+  --opacity-tab-on: 0.06;
+  --z-raised: 2;
+  --z-overlay: 10;
+  --duration-fast: 200ms;
+  --duration-hop: 3750ms;
+  --duration-dwell: 700ms;
+  --duration-dwell-per-char: 45ms;
+  --duration-dwell-max: 3200ms;
+  --duration-step-end: 1600ms;
+  --duration-stagger: 120ms;
+  --duration-chart-cycle: 7000ms;
+  --scale-zoom-max: 6;
+  --scale-zoom-step: 1.25;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --color-accent: var(--color-blue-400);
+    --color-fg: var(--color-neutral-100);
+    --color-muted: var(--color-neutral-400);
+    --color-bg: var(--color-neutral-900);
+    --color-surface: var(--color-neutral-850);
+    --color-border: var(--color-neutral-700);
+    --color-card-on: var(--color-blue-900);
+    --color-dot: var(--color-neutral-750);
+    --color-frame: var(--color-neutral-800);
+    --color-page: var(--color-neutral-950);
+    --color-gallery: var(--color-neutral-950);
+  }
+}
+[data-theme='dark'] {
+  --color-accent: var(--color-blue-400);
+  --color-fg: var(--color-neutral-100);
+  --color-muted: var(--color-neutral-400);
+  --color-bg: var(--color-neutral-900);
+  --color-surface: var(--color-neutral-850);
+  --color-border: var(--color-neutral-700);
+  --color-card-on: var(--color-blue-900);
+  --color-dot: var(--color-neutral-750);
+  --color-frame: var(--color-neutral-800);
+  --color-page: var(--color-neutral-950);
+  --color-gallery: var(--color-neutral-950);
+}
+/* 그림 안 글자와 모양. HTML 재생기와 움직이는 SVG가 같이 쓴다. */
+.fl text {
+  font-family: var(--font-sans);
+}
+
+.fl .label {
+  font-size: var(--size-text-14);
+  font-weight: var(--weight-medium);
+  text-anchor: middle;
+  fill: var(--color-fg);
+}
+
+.fl .sub {
+  font-size: var(--size-text-12);
+  text-anchor: middle;
+  fill: var(--color-muted);
+}
+
+.fl .frame {
+  font-size: var(--size-text-11);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-frame);
+  fill: var(--color-muted);
+}
+
+.fl .edgelabel {
+  font-family: var(--font-mono);
+  font-size: var(--size-text-11);
+  text-anchor: middle;
+  fill: var(--color-muted);
+}
+
+.fl .row {
+  font-size: var(--size-text-11);
+  fill: var(--color-fg);
+}
+
+.fl .row.mono {
+  font-family: var(--font-mono);
+  font-size: var(--size-text-10-5);
+}
+
+.fl .muted {
+  fill: var(--color-muted);
+}
+
+.fl .tag {
+  font-size: var(--size-text-9);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-tag);
+  text-anchor: middle;
+}
+
+.fl .mark {
+  font-size: var(--size-text-11);
+  font-weight: var(--weight-semibold);
+  text-anchor: end;
+  fill: var(--color-accent);
+}
+
+.fl .mark.key {
+  font-size: var(--size-text-9);
+  text-anchor: start;
+}
+
+.fl .mini {
+  font-size: var(--size-text-10-5);
+  text-anchor: middle;
+  fill: var(--color-fg);
+}
+
+.fl .mini.on {
+  fill: var(--color-on-accent);
+}
+
+.fl .chip {
+  font-size: var(--size-text-11-5);
+  text-anchor: middle;
+  fill: var(--color-on-accent);
+}
+
+.fl .md {
+  font-size: var(--size-text-13);
+  fill: var(--color-fg);
+}
+
+.fl .md.h {
+  font-size: var(--size-text-15);
+  font-weight: var(--weight-semibold);
+}
+
+.fl .cell {
+  font-size: var(--size-text-11-5);
+  fill: var(--color-fg);
+}
+
+.fl .cell.type {
+  font-family: var(--font-mono);
+  font-size: var(--size-text-10-5);
+  text-anchor: end;
+  fill: var(--color-muted);
+}
+
+.fl .fl-stroke {
+  stroke: var(--color-border);
+}
+
+.fl .fl-path {
+  fill: none;
+  stroke: var(--color-muted);
+  stroke-width: var(--border-edge);
+}
+/* 움직이는 SVG에만 있는 단계 이름과 설명 줄 */
+.fl .steplabel {
+  font-family: var(--font-mono);
+  font-size: var(--size-text-13);
+  font-weight: var(--weight-semibold);
+  text-anchor: middle;
+  fill: var(--color-fg);
+}
+
+.fl .caption {
+  font-size: var(--size-text-13-5);
+  text-anchor: middle;
+  fill: var(--color-muted);
+}
+
+@keyframes a0 { 0%,22.938% { stroke: var(--color-accent) } 22.938%,45.876% { stroke: var(--color-accent) } 45.876%,68.814% { stroke: var(--color-accent) } 68.814%,99.999% { stroke: var(--color-accent) } }
+.fl .a0 { animation: a0 19.4s infinite step-end; }
+@keyframes a1 { 0%,22.938% { stroke: var(--color-border) } 22.938%,45.876% { stroke: var(--color-accent) } 45.876%,68.814% { stroke: var(--color-accent) } 68.814%,99.999% { stroke: var(--color-accent) } }
+.fl .a1 { animation: a1 19.4s infinite step-end; }
+@keyframes a2 { 0%,22.938% { stroke: var(--color-border) } 22.938%,45.876% { stroke: var(--color-border) } 45.876%,68.814% { stroke: var(--color-border) } 68.814%,99.999% { stroke: var(--color-accent) } }
+.fl .a2 { animation: a2 19.4s infinite step-end; }
+@keyframes a3 { 0%,22.938% { stroke: var(--color-accent); stroke-width: var(--border-strong); marker-end: url(#fl-arrow-on) } 22.938%,45.876% { stroke: var(--color-accent); stroke-width: var(--border-strong); marker-end: url(#fl-arrow-on) } 45.876%,68.814% { stroke: var(--color-accent); stroke-width: var(--border-strong); marker-end: url(#fl-arrow-on) } 68.814%,99.999% { stroke: var(--color-accent); stroke-width: var(--border-strong); marker-end: url(#fl-arrow-on) } }
+.fl .a3 { animation: a3 19.4s infinite step-end; }
+@keyframes a4 { 0%,22.938% { fill: var(--color-accent); stroke: var(--color-accent) } 22.938%,45.876% { fill: var(--color-accent); stroke: var(--color-accent) } 45.876%,68.814% { fill: var(--color-accent); stroke: var(--color-accent) } 68.814%,99.999% { fill: var(--color-accent); stroke: var(--color-accent) } }
+.fl .a4 { animation: a4 19.4s infinite step-end; }
+@keyframes a5 { 0%,22.938% { fill: var(--color-on-accent) } 22.938%,45.876% { fill: var(--color-on-accent) } 45.876%,68.814% { fill: var(--color-on-accent) } 68.814%,99.999% { fill: var(--color-on-accent) } }
+.fl .a5 { animation: a5 19.4s infinite step-end; }
+@keyframes a6 { 0%,22.938% { stroke: var(--color-muted); stroke-width: var(--border-edge); marker-end: url(#fl-arrow) } 22.938%,45.876% { stroke: var(--color-accent); stroke-width: var(--border-strong); marker-end: url(#fl-arrow-on) } 45.876%,68.814% { stroke: var(--color-accent); stroke-width: var(--border-strong); marker-end: url(#fl-arrow-on) } 68.814%,99.999% { stroke: var(--color-accent); stroke-width: var(--border-strong); marker-end: url(#fl-arrow-on) } }
+.fl .a6 { animation: a6 19.4s infinite step-end; }
+@keyframes a7 { 0%,22.938% { fill: var(--color-bg); stroke: var(--color-border) } 22.938%,45.876% { fill: var(--color-accent); stroke: var(--color-accent) } 45.876%,68.814% { fill: var(--color-accent); stroke: var(--color-accent) } 68.814%,99.999% { fill: var(--color-accent); stroke: var(--color-accent) } }
+.fl .a7 { animation: a7 19.4s infinite step-end; }
+@keyframes a8 { 0%,22.938% { fill: var(--color-muted) } 22.938%,45.876% { fill: var(--color-on-accent) } 45.876%,68.814% { fill: var(--color-on-accent) } 68.814%,99.999% { fill: var(--color-on-accent) } }
+.fl .a8 { animation: a8 19.4s infinite step-end; }
+@keyframes a9 { 0%,22.938% { stroke: var(--color-muted); stroke-width: var(--border-edge); marker-end: url(#fl-arrow) } 22.938%,45.876% { stroke: var(--color-muted); stroke-width: var(--border-edge); marker-end: url(#fl-arrow) } 45.876%,68.814% { stroke: var(--color-muted); stroke-width: var(--border-edge); marker-end: url(#fl-arrow) } 68.814%,99.999% { stroke: var(--color-accent); stroke-width: var(--border-strong); marker-end: url(#fl-arrow-on) } }
+.fl .a9 { animation: a9 19.4s infinite step-end; }
+@keyframes a10 { 0%,22.938% { fill: var(--color-bg); stroke: var(--color-border) } 22.938%,45.876% { fill: var(--color-bg); stroke: var(--color-border) } 45.876%,68.814% { fill: var(--color-bg); stroke: var(--color-border) } 68.814%,99.999% { fill: var(--color-accent); stroke: var(--color-accent) } }
+.fl .a10 { animation: a10 19.4s infinite step-end; }
+@keyframes a11 { 0%,22.938% { fill: var(--color-muted) } 22.938%,45.876% { fill: var(--color-muted) } 45.876%,68.814% { fill: var(--color-muted) } 68.814%,99.999% { fill: var(--color-on-accent) } }
+.fl .a11 { animation: a11 19.4s infinite step-end; }
+@keyframes p0-0 { 0%,0% { opacity: 0 } 0.001%,19.329% { opacity: 1 } 19.33%,100% { opacity: 0 } }
+.fl .p0-0 { animation: p0-0 19.4s infinite step-end; }
+@keyframes p1-0 { 0%,22.938% { opacity: 0 } 22.939%,42.268% { opacity: 1 } 42.268%,100% { opacity: 0 } }
+.fl .p1-0 { animation: p1-0 19.4s infinite step-end; }
+@keyframes p2-0 { 0%,45.876% { opacity: 0 } 45.877%,65.206% { opacity: 1 } 65.206%,100% { opacity: 0 } }
+.fl .p2-0 { animation: p2-0 19.4s infinite step-end; }
+@keyframes p3-0 { 0%,68.814% { opacity: 0 } 68.815%,88.144% { opacity: 1 } 88.144%,100% { opacity: 0 } }
+.fl .p3-0 { animation: p3-0 19.4s infinite step-end; }
+@keyframes a12 { 0%,22.938% { opacity: 1 } 22.938%,45.876% { opacity: 1 } 45.876%,68.814% { opacity: 1 } 68.814%,99.999% { opacity: 1 } }
+.fl .a12 { animation: a12 19.4s infinite step-end; }
+@keyframes a13 { 0%,22.938% { opacity: 1 } 22.938%,45.876% { opacity: 0 } 45.876%,68.814% { opacity: 0 } 68.814%,99.999% { opacity: 0 } }
+.fl .a13 { animation: a13 19.4s infinite step-end; }
+@keyframes a14 { 0%,22.938% { opacity: 0 } 22.938%,45.876% { opacity: 1 } 45.876%,68.814% { opacity: 1 } 68.814%,99.999% { opacity: 0 } }
+.fl .a14 { animation: a14 19.4s infinite step-end; }
+@keyframes a15 { 0%,22.938% { opacity: 0 } 22.938%,45.876% { opacity: 0 } 45.876%,68.814% { opacity: 0 } 68.814%,99.999% { opacity: 1 } }
+.fl .a15 { animation: a15 19.4s infinite step-end; }
+</style>
+<defs><pattern id="fl-dots" width="16" height="16" patternUnits="userSpaceOnUse"><circle cx="1.5" cy="1.5" r="1" fill="var(--color-dot)"/></pattern><marker id="fl-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-muted)"/></marker><marker id="fl-arrow-on" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-accent)"/></marker></defs>
+<rect width="100%" height="100%" fill="var(--color-bg)"/><rect width="100%" height="100%" fill="url(#fl-dots)"/>
+<g transform="translate(0 0)">
+<g id="n-0" class="fl-node" data-id="Cli"><rect x="28" y="106" width="242" height="138" rx="10" fill="var(--color-bg)" class="fl-stroke a0"/><path d="M28 175 v -59 a 10 10 0 0 1 10 -10 h 222 a 10 10 0 0 1 10 10 v 59 z" fill="var(--color-surface)"/><text x="149" y="146" class="label">Cli</text><line x1="28" x2="270" y1="175" y2="175" stroke="var(--color-border)" stroke-width="0.75"/><text x="38" y="214" class="cell">+main()</text><text x="260" y="214" class="cell type">Result</text></g>
+<g id="n-1" class="fl-node" data-id="Engine"><rect x="443" y="60" width="338" height="230" rx="10" fill="var(--color-bg)" class="fl-stroke a0"/><path d="M443 117.5 v -47.5 a 10 10 0 0 1 10 -10 h 318 a 10 10 0 0 1 10 10 v 47.5 z" fill="var(--color-surface)"/><text x="612" y="94.2" class="label">Engine</text><line x1="443" x2="781" y1="117.5" y2="117.5" stroke="var(--color-border)" stroke-width="0.75"/><text x="453" y="150.7" class="cell">-queue</text><text x="771" y="150.7" class="cell type">Queue</text><line x1="443" x2="781" y1="175" y2="175" stroke="var(--color-border)" stroke-width="0.75"/><text x="453" y="208.2" class="cell">+submit(turn: Turn)</text><text x="771" y="208.2" class="cell type">Id</text><line x1="443" x2="781" y1="232.5" y2="232.5" stroke="var(--color-border)" stroke-width="0.75"/><text x="453" y="265.7" class="cell">+run()</text><text x="771" y="265.7" class="cell type">void</text></g>
+<g id="n-2" class="fl-node" data-id="Judge"><rect x="967" y="28" width="398" height="138" rx="10" fill="var(--color-bg)" class="fl-stroke a1"/><path d="M967 97 v -59 a 10 10 0 0 1 10 -10 h 378 a 10 10 0 0 1 10 10 v 59 z" fill="var(--color-surface)"/><text x="1166" y="68" class="label">Judge</text><line x1="967" x2="1365" y1="97" y2="97" stroke="var(--color-border)" stroke-width="0.75"/><text x="977" y="136" class="cell">+decide(ctx: Context)</text><text x="1355" y="136" class="cell type">Agent</text></g>
+<g id="n-3" class="fl-node" data-id="Store"><rect x="967" y="186" width="386" height="138" rx="10" fill="var(--color-bg)" class="fl-stroke a2"/><path d="M967 255 v -59 a 10 10 0 0 1 10 -10 h 366 a 10 10 0 0 1 10 10 v 59 z" fill="var(--color-surface)"/><text x="1160" y="226" class="label">Store</text><line x1="967" x2="1353" y1="255" y2="255" stroke="var(--color-border)" stroke-width="0.75"/><text x="977" y="294" class="cell">+append(event: Event)</text><text x="1343" y="294" class="cell type">void</text></g>
+<g id="e-0" class="fl-edge"><path id="p-0" d="M 270 175 L 443 175" class="fl-path a3" marker-end="url(#fl-arrow)"/><g class="fl-pill"><rect x="329.4" y="166" width="54.3" height="18" rx="9" fill="var(--color-bg)" stroke="var(--color-border)" class="a4"/><text x="356.5" y="179.3" class="edgelabel a5">submit</text></g></g>
+<g id="e-1" class="fl-edge"><path id="p-1" d="M 781 97 L 967 97" class="fl-path a6" marker-end="url(#fl-arrow)"/><g class="fl-pill"><rect x="846.9" y="88" width="54.3" height="18" rx="9" fill="var(--color-bg)" stroke="var(--color-border)" class="a7"/><text x="874" y="101.3" class="edgelabel a8">decide</text></g></g>
+<g id="e-2" class="fl-edge"><path id="p-2" d="M 781 255 L 967 255" class="fl-path a9" marker-end="url(#fl-arrow)"/><g class="fl-pill"><rect x="846.9" y="246" width="54.3" height="18" rx="9" fill="var(--color-bg)" stroke="var(--color-border)" class="a10"/><text x="874" y="259.3" class="edgelabel a11">append</text></g></g>
+<g class="p0-0" opacity="0"><circle r="10" fill="var(--color-accent)" opacity="0.2"/><circle r="4.5" fill="var(--color-accent)"/><rect x="-39" y="-35" width="77.9" height="23" rx="8" fill="var(--color-accent)"/><text x="0" y="-20" class="chip">submit(turn)</text><animateMotion dur="19.4s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0;0.1933;1" keyPoints="0;0;1;1"><mpath href="#p-0" xlink:href="#p-0"/></animateMotion></g>
+<g class="p1-0" opacity="0"><circle r="10" fill="var(--color-accent)" opacity="0.2"/><circle r="4.5" fill="var(--color-accent)"/><rect x="-37.2" y="-35" width="74.5" height="23" rx="8" fill="var(--color-accent)"/><text x="0" y="-20" class="chip">decide(ctx)</text><animateMotion dur="19.4s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.2294;0.4227;1" keyPoints="0;0;1;1"><mpath href="#p-1" xlink:href="#p-1"/></animateMotion></g>
+<g class="p2-0" opacity="0"><circle r="10" fill="var(--color-accent)" opacity="0.2"/><circle r="4.5" fill="var(--color-accent)"/><rect x="-44.4" y="-35" width="88.7" height="23" rx="8" fill="var(--color-accent)"/><text x="0" y="-20" class="chip">Agent::Claude</text><animateMotion dur="19.4s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.4588;0.6521;1" keyPoints="1;1;0;0"><mpath href="#p-1" xlink:href="#p-1"/></animateMotion></g>
+<g class="p3-0" opacity="0"><circle r="10" fill="var(--color-accent)" opacity="0.2"/><circle r="4.5" fill="var(--color-accent)"/><rect x="-62.6" y="-35" width="125.3" height="23" rx="8" fill="var(--color-accent)"/><text x="0" y="-20" class="chip">append(TurnStarted)</text><animateMotion dur="19.4s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.6881;0.8814;1" keyPoints="0;0;1;1"><mpath href="#p-2" xlink:href="#p-2"/></animateMotion></g>
+</g>
+<text x="696.5" y="370" opacity="0" class="steplabel a12">turn 하나</text>
+<g opacity="0" class="a13"><text x="696.5" y="396" class="caption">명령에서 기록까지 호출 순서</text></g>
+<g opacity="0" class="a14"><text x="696.5" y="396" class="caption">엔진만 판단기를 부른다</text></g>
+<g opacity="0" class="a15"><text x="696.5" y="396" class="caption">기록은 엔진 하나만 쓴다</text></g>
+</svg>

@@ -1,0 +1,258 @@
+/* 재생기 틀과 조작 막대. iframe 안(html.embedded)에서는 테두리와 바깥 여백을 뺀다. */
+body {
+  margin: 0;
+  padding: var(--space-12);
+  font-family: var(--font-sans);
+  background: var(--color-page);
+}
+
+html.embedded body {
+  padding: 0;
+}
+
+.fl-figure {
+  position: relative;
+  max-width: var(--size-figure-max);
+  margin: 0 auto;
+  overflow: hidden;
+  color: var(--color-fg);
+  background: var(--color-bg) radial-gradient(var(--color-dot) var(--size-grid-dot), transparent calc(var(--size-grid-dot) * 1.2)) 0 0 / var(--size-grid) var(--size-grid);
+  border: var(--border-thin) solid var(--color-frame);
+  border-radius: var(--radius-2xl);
+}
+
+html.embedded .fl-figure {
+  border: 0;
+  border-radius: 0;
+}
+
+.fl-canvas {
+  padding: var(--space-6);
+  overflow: auto;
+}
+
+.fl-canvas svg {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: calc(100vh - var(--size-player-chrome));
+  margin: 0 auto;
+}
+
+/* iframe 높이는 목록 쪽이 문서 높이에 맞춘다. 화면 높이로 줄이면 서로 맞추다 계속 작아진다. */
+html.embedded .fl-canvas svg {
+  max-height: none;
+}
+
+.fl-foot {
+  display: grid;
+  gap: var(--space-6);
+  justify-items: center;
+  padding: var(--space-7) var(--space-8) var(--space-8);
+  background: var(--color-bg);
+  border-top: var(--border-thin) solid var(--color-frame);
+}
+
+.fl-bar {
+  display: flex;
+  gap: var(--space-5);
+  align-items: center;
+}
+
+.fl-round {
+  display: grid;
+  place-items: center;
+  min-width: var(--size-control);
+  height: var(--size-control);
+  padding: 0 var(--space-3-5);
+  font: var(--size-text-11) var(--font-mono);
+  white-space: nowrap;
+  color: var(--color-muted);
+  background: var(--color-bg);
+  border: var(--border-thin) solid var(--color-border);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+}
+
+.fl-round:focus-visible,
+.fl-tabs button:focus-visible {
+  outline: var(--border-tag) solid var(--color-accent);
+  outline-offset: var(--space-1);
+}
+
+.fl-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  justify-content: center;
+  padding: var(--space-1-5);
+  background: var(--color-bg);
+  border: var(--border-thin) solid var(--color-border);
+  border-radius: var(--radius-xl);
+}
+
+.fl-tabs button {
+  position: relative;
+  padding: var(--space-3) var(--space-7);
+  font: var(--size-text-13) var(--font-mono);
+  color: var(--color-muted);
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+}
+
+.fl-tabs button.on {
+  color: var(--color-fg);
+  background: color-mix(in srgb, var(--color-fg) calc(var(--opacity-tab-on) * 100%), transparent);
+}
+
+.fl-tabs button i {
+  position: absolute;
+  bottom: var(--space-1);
+  left: var(--space-7);
+  width: 0;
+  max-width: calc(100% - var(--space-14));
+  height: var(--space-1);
+  background: var(--color-accent);
+  border-radius: var(--radius-xs);
+}
+
+.fl-caption {
+  max-width: var(--size-caption-max);
+  min-height: calc(var(--size-text-14-5) * var(--leading-normal));
+  margin: 0;
+  font-size: var(--size-text-14-5);
+  line-height: var(--leading-normal);
+  text-align: center;
+  color: var(--color-muted);
+}
+
+.fl-full {
+  position: absolute;
+  top: var(--space-5);
+  right: var(--space-5);
+  z-index: var(--z-raised);
+}
+
+.fl-figure.full {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-overlay);
+  display: flex;
+  flex-direction: column;
+  max-width: none;
+  border-radius: 0;
+}
+
+.fl-figure.full .fl-canvas {
+  display: grid;
+  flex: 1;
+  place-items: center;
+}
+
+.fl-figure.full .fl-canvas svg {
+  width: 100%;
+  height: calc(100vh - var(--size-embedded-chrome));
+  max-height: none;
+  touch-action: none;
+  user-select: none;
+}
+
+.fl-figure.full.zoomed .fl-canvas svg {
+  cursor: grab;
+}
+
+.fl-figure.full.zoomed .fl-canvas svg:active {
+  cursor: grabbing;
+}
+
+/* 확대·축소는 전체 화면에서만 보인다. 문서 안에서는 그림을 그대로 보이는 편이 읽기 쉽다. */
+.fl-zoom {
+  position: absolute;
+  top: calc(var(--space-5) + var(--size-control) + var(--space-3));
+  right: var(--space-5);
+  z-index: var(--z-raised);
+  display: none;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.fl-figure.full .fl-zoom {
+  display: flex;
+}
+
+.fl .fl-node.on .fl-stroke {
+  stroke: var(--color-accent);
+}
+
+.fl .fl-card.on {
+  fill: var(--color-card-on);
+  stroke: var(--color-accent);
+}
+
+.fl .fl-edge.on .fl-path,
+.fl .fl-edge.hover .fl-path {
+  stroke: var(--color-accent);
+  stroke-width: var(--border-strong);
+}
+
+.fl .fl-edge.on .fl-path[marker-end],
+.fl .fl-edge.hover .fl-path[marker-end] {
+  marker-end: url("#fl-arrow-on");
+}
+
+.fl .fl-edge.on .fl-path[marker-start],
+.fl .fl-edge.hover .fl-path[marker-start] {
+  marker-start: url("#fl-arrow-on");
+}
+
+.fl .fl-edge.on .fl-pill rect {
+  fill: var(--color-accent);
+  stroke: var(--color-accent);
+}
+
+.fl .fl-edge.on .fl-pill text {
+  fill: var(--color-on-accent);
+}
+
+.fl .fl-path,
+.fl .fl-stroke,
+.fl .fl-pill rect {
+  transition: stroke var(--duration-fast), fill var(--duration-fast);
+}
+
+.fl .fl-layer,
+.fl .fl-edge.quiet {
+  transition: opacity var(--duration-fast);
+}
+
+/* 조용한 선은 지금 단계에서 쓰거나 마우스를 올린 도형에 닿을 때만 보인다. */
+.fl .fl-edge.quiet:not(.on, .hover) {
+  opacity: 0;
+}
+
+.fl .fl-node {
+  cursor: default;
+}
+
+.fl-packet {
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fl .fl-path,
+  .fl .fl-stroke,
+  .fl .fl-pill rect,
+  .fl .fl-layer,
+  .fl .fl-edge.quiet {
+    transition: none;
+  }
+}
+
+/* 차트 쪽은 틀을 차트 너비에 맞춘다. */
+.fl-figure.fl-chart-page {
+  width: fit-content;
+  margin-inline: auto;
+}

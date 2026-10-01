@@ -1,0 +1,38 @@
+# 대화에서 사람과 관계를 뽑아 기억 그래프를 키우는 흐름 (예시 데이터)
+direction: right
+
+chat: "대화\n에이전트와 사용자"
+extract: "추출기\nLLM"
+resolve: "개체 정리\n같은 사람 합치기"
+graph: "기억 그래프"
+answer: "답변\n질의 시점"
+
+chat -> extract
+extract -> resolve
+resolve -> graph
+graph -> answer
+chat -> answer: 질문
+
+#@ speed 3000ms
+#@ quiet chat -> answer
+#@ step "첫 대화": 처음 들은 사실로 그래프를 시작한다
+#@   chat -> extract "민지는 3월에 토스로 옮겼어"
+#@   show extract [person/blue] 민지
+#@   show extract [org/purple] 토스 · 3월
+#@   extract -> resolve
+#@   resolve -> graph
+#@   show graph graph 민지 -> 토스 ; 민지
+#@ step "다음 대화": 같은 사람이 다른 이름으로 나와도 한 개체로 합친다
+#@   chat -> extract "김민지가 결제팀을 맡았대"
+#@   show extract [person/blue] 김민지 = 민지
+#@   show extract [team/green] 결제팀
+#@   extract -> resolve "김민지"
+#@   show resolve [merge/orange] 김민지 → 민지
+#@   resolve -> graph
+#@   show graph graph 민지 -> 토스, 민지 -> 결제팀, 토스 -> 결제팀 ; 민지, 결제팀
+#@ step "질문": 질문의 이름에서 그래프를 따라가 답을 찾는다
+#@   show graph graph 민지 -> 토스, 민지 -> 결제팀, 토스 -> 결제팀 ; 민지, 결제팀
+#@   chat -> answer "민지 지금 어디 팀이야?" : 질문이 오면 쓰지 않던 선이 나타난다
+#@   graph -> answer "민지 → 결제팀"
+#@   show graph graph 민지 -> 토스, 민지 -> 결제팀, 토스 -> 결제팀 ; 민지, 결제팀, 토스
+#@   show answer [answer/green] 토스 결제팀

@@ -1,0 +1,20 @@
+# 순서 그림도 선이면 흐름을 입힐 수 있다.
+shape: sequence_diagram
+user: 사용자
+tui: 화면
+engine: 엔진
+codex: Codex
+user -> tui: 입력
+tui -> engine: 요청
+engine -> codex: turn
+codex -> engine: 응답
+engine -> tui: 결과
+tui -> user: 표시
+
+#@ step "한 턴"
+#@   user -> tui "질문"
+#@   tui -> engine
+#@   engine -> codex "turn"
+#@   codex -> engine "응답"
+#@   engine -> tui
+#@   tui -> user : 화면에 보여 준다

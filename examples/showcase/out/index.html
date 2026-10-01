@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>d2-flow 예제</title>
+<style>/* tokens.json: 생성물, 손으로 고치지 않음 */
+:root {
+  --color-gray-0: #ffffff;
+  --color-gray-25: #f7f8fa;
+  --color-gray-50: #f5f7fa;
+  --color-gray-100: #e3e7ec;
+  --color-gray-200: #d5dbe3;
+  --color-gray-300: #b6c0cc;
+  --color-gray-600: #4b5563;
+  --color-gray-900: #111418;
+  --color-neutral-100: #e3e3e3;
+  --color-neutral-400: #9aa0a6;
+  --color-neutral-700: #3a3b3c;
+  --color-neutral-750: #34363a;
+  --color-neutral-800: #2c2d30;
+  --color-neutral-850: #242526;
+  --color-neutral-900: #1b1b1d;
+  --color-neutral-950: #111214;
+  --color-blue-50: #eef5fd;
+  --color-blue-400: #3396e8;
+  --color-blue-600: #0074d9;
+  --color-blue-900: #1d2733;
+  --color-tone-blue: #3b82f6;
+  --color-tone-purple: #8b5cf6;
+  --color-tone-green: #10b981;
+  --color-tone-orange: #f59e0b;
+  --color-tone-gray: #8b949e;
+  --color-accent: var(--color-blue-600);
+  --color-on-accent: var(--color-gray-0);
+  --color-fg: var(--color-gray-900);
+  --color-muted: var(--color-gray-600);
+  --color-bg: var(--color-gray-0);
+  --color-surface: var(--color-gray-50);
+  --color-border: var(--color-gray-300);
+  --color-card-on: var(--color-blue-50);
+  --color-dot: var(--color-gray-200);
+  --color-frame: var(--color-gray-100);
+  --color-page: var(--color-gray-0);
+  --color-gallery: var(--color-gray-25);
+  --color-tag-blue: var(--color-tone-blue);
+  --color-tag-purple: var(--color-tone-purple);
+  --color-tag-green: var(--color-tone-green);
+  --color-tag-orange: var(--color-tone-orange);
+  --color-tag-gray: var(--color-tone-gray);
+  --font-sans: -apple-system, BlinkMacSystemFont, Pretendard, 'Apple SD Gothic Neo', 'Noto Sans KR', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, D2Coding, Menlo, monospace;
+  --size-text-9: 9px;
+  --size-text-10-5: 10.5px;
+  --size-text-11: 11px;
+  --size-text-11-5: 11.5px;
+  --size-text-12: 12px;
+  --size-text-13: 13px;
+  --size-text-13-5: 13.5px;
+  --size-text-14: 14px;
+  --size-text-14-5: 14.5px;
+  --size-text-15: 15px;
+  --size-text-22: 22px;
+  --size-line-15: 15px;
+  --size-line-18: 18px;
+  --size-line-20: 20px;
+  --size-line-22: 22px;
+  --size-control: 30px;
+  --size-pill: 18px;
+  --size-tag: 14px;
+  --size-icon: 20px;
+  --size-packet: 4.5px;
+  --size-halo: 10px;
+  --size-marker: 5px;
+  --size-marker-on: 4px;
+  --size-grid: 16px;
+  --size-grid-dot: 1px;
+  --size-card: 176px;
+  --size-node-min: 100px;
+  --size-node-max: 210px;
+  --size-node-min-h: 46px;
+  --size-store-min-h: 70px;
+  --size-store-cap: 12px;
+  --size-figure-min: 560px;
+  --size-chip-max: 210px;
+  --size-caption-max: 720px;
+  --size-figure-max: 1400px;
+  --size-gallery-column: 760px;
+  --size-gallery-frame: 820px;
+  --size-player-chrome: 190px;
+  --size-embedded-chrome: 150px;
+  --size-chart-width: 640px;
+  --size-chart-label: 140px;
+  --size-chart-bar: 12px;
+  --size-chart-row: 40px;
+  --size-chart-dot: 5px;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --leading-normal: 1.5;
+  --tracking-tag: 0.03em;
+  --tracking-frame: 0.04em;
+  --space-0-5: 1px;
+  --space-1: 2px;
+  --space-1-5: 3px;
+  --space-2: 4px;
+  --space-2-5: 5px;
+  --space-3: 6px;
+  --space-3-5: 7px;
+  --space-4: 8px;
+  --space-5: 10px;
+  --space-6: 12px;
+  --space-6-5: 13px;
+  --space-7: 14px;
+  --space-8: 16px;
+  --space-8-5: 17px;
+  --space-9: 18px;
+  --space-11: 22px;
+  --space-12: 24px;
+  --space-13: 26px;
+  --space-14: 28px;
+  --space-15: 30px;
+  --space-16: 32px;
+  --space-17: 34px;
+  --space-18: 36px;
+  --space-20: 40px;
+  --space-22: 44px;
+  --space-30: 60px;
+  --space-32: 64px;
+  --radius-xs: 2px;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 10px;
+  --radius-2xl: 14px;
+  --radius-route: 22px;
+  --radius-full: 999px;
+  --border-hair: 0.75px;
+  --border-thin: 1px;
+  --border-lifeline: 1.25px;
+  --border-tag: 1.5px;
+  --border-edge: 1.75px;
+  --border-strong: 2.5px;
+  --dash-line: 5;
+  --dash-gap: 4;
+  --dash-card: 3;
+  --opacity-tag: 0.15;
+  --opacity-halo: 0.2;
+  --opacity-tab-on: 0.06;
+  --z-raised: 2;
+  --z-overlay: 10;
+  --duration-fast: 200ms;
+  --duration-hop: 3750ms;
+  --duration-dwell: 700ms;
+  --duration-dwell-per-char: 45ms;
+  --duration-dwell-max: 3200ms;
+  --duration-step-end: 1600ms;
+  --duration-stagger: 120ms;
+  --duration-chart-cycle: 7000ms;
+  --scale-zoom-max: 6;
+  --scale-zoom-step: 1.25;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --color-accent: var(--color-blue-400);
+    --color-fg: var(--color-neutral-100);
+    --color-muted: var(--color-neutral-400);
+    --color-bg: var(--color-neutral-900);
+    --color-surface: var(--color-neutral-850);
+    --color-border: var(--color-neutral-700);
+    --color-card-on: var(--color-blue-900);
+    --color-dot: var(--color-neutral-750);
+    --color-frame: var(--color-neutral-800);
+    --color-page: var(--color-neutral-950);
+    --color-gallery: var(--color-neutral-950);
+  }
+}
+[data-theme='dark'] {
+  --color-accent: var(--color-blue-400);
+  --color-fg: var(--color-neutral-100);
+  --color-muted: var(--color-neutral-400);
+  --color-bg: var(--color-neutral-900);
+  --color-surface: var(--color-neutral-850);
+  --color-border: var(--color-neutral-700);
+  --color-card-on: var(--color-blue-900);
+  --color-dot: var(--color-neutral-750);
+  --color-frame: var(--color-neutral-800);
+  --color-page: var(--color-neutral-950);
+  --color-gallery: var(--color-neutral-950);
+}
+/* 여러 그림을 모은 목록 쪽 */
+body {
+  margin: 0;
+  padding: var(--space-20) var(--space-16);
+  font-family: var(--font-sans);
+  color: var(--color-fg);
+  background: var(--color-gallery);
+}
+
+h1 {
+  margin: 0 0 var(--space-3);
+  font-size: var(--size-text-22);
+}
+
+body > p {
+  margin: 0 0 var(--space-14);
+  color: var(--color-muted);
+}
+
+main {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, var(--size-gallery-column)), 1fr));
+  gap: var(--space-14);
+  /* 카드를 줄에서 가장 긴 카드 높이로 늘이지 않는다. 짧은 그림 아래 빈 공간을 막기 위해서다. */
+  align-items: start;
+}
+
+section {
+  overflow: hidden;
+  background: var(--color-bg);
+  border: var(--border-thin) solid var(--color-frame);
+  border-radius: var(--radius-2xl);
+}
+
+header {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: var(--space-1) var(--space-8);
+  padding: var(--space-7) var(--space-9);
+  border-bottom: var(--border-thin) solid var(--color-frame);
+}
+
+h2 {
+  margin: 0;
+  font: var(--weight-semibold) var(--size-text-14) var(--font-mono);
+}
+
+header p {
+  grid-column: 1;
+  margin: 0;
+  font-size: var(--size-text-13);
+  color: var(--color-muted);
+}
+
+nav {
+  display: flex;
+  grid-row: 1 / 3;
+  grid-column: 2;
+  gap: var(--space-5);
+  align-self: center;
+}
+
+nav a {
+  font-size: var(--size-text-13);
+  color: var(--color-accent);
+  text-decoration: none;
+}
+
+nav a:focus-visible {
+  outline: var(--border-tag) solid var(--color-accent);
+  outline-offset: var(--space-1);
+}
+
+iframe {
+  display: block;
+  width: 100%;
+  height: var(--size-gallery-frame);
+  border: 0;
+}
+</style>
+</head>
+<body>
+<h1>d2-flow 예제</h1>
+<p>D2 문법으로 적고, Hindsight 모양으로 그리고, 흐름을 입힌 그림 4개</p>
+<main>
+<section><header><h2>cache-latency</h2><p>캐시를 붙인 엔드포인트와 붙이지 않은 엔드포인트의 p95 지연 비교 (예시 데이터)</p><nav><a href="cache-latency.html">열기</a><a href="cache-latency.svg">SVG</a></nav></header><iframe src="cache-latency.html" loading="lazy" allowfullscreen title="cache-latency"></iframe></section>
+<section><header><h2>entity-memory</h2><p>대화에서 사람과 관계를 뽑아 기억 그래프를 키우는 흐름 (예시 데이터)</p><nav><a href="entity-memory.html">열기</a><a href="entity-memory.svg">SVG</a></nav></header><iframe src="entity-memory.html" loading="lazy" allowfullscreen title="entity-memory"></iframe></section>
+<section><header><h2>infra-cost</h2><p>서비스별 월 인프라 비용, 최적화 전과 후 (예시 데이터)</p><nav><a href="infra-cost.html">열기</a><a href="infra-cost.svg">SVG</a></nav></header><iframe src="infra-cost.html" loading="lazy" allowfullscreen title="infra-cost"></iframe></section>
+<section><header><h2>order-tables</h2><p>주문 한 건이 테이블 세 개에 남는 순서: 주문, 결제, 복식 부기 원장 (예시 데이터)</p><nav><a href="order-tables.html">열기</a><a href="order-tables.svg">SVG</a></nav></header><iframe src="order-tables.html" loading="lazy" allowfullscreen title="order-tables"></iframe></section>
+</main>
+<script>
+// 그림 쪽이 알려 준 문서 높이로 iframe 높이를 맞춘다. 그림 아래 빈 공간을 없애기 위해서다.
+addEventListener('message', (e) => {
+  const frame = [...document.querySelectorAll('iframe')].find((f) => f.contentWindow === e.source);
+  if (frame && e.data?.d2flowHeight) frame.style.height = e.data.d2flowHeight + 'px';
+});
+</script>
+</body>
+</html>

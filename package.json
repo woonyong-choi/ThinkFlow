@@ -1,0 +1,28 @@
+{
+  "name": "d2-flow",
+  "version": "0.0.0",
+  "private": true,
+  "description": "D2 그림 위에 흐름 애니메이션을 입힌다",
+  "type": "module",
+  "bin": {
+    "d2-flow": "src/cli.js"
+  },
+  "scripts": {
+    "test": "node --test test/",
+    "tokens": "python3 ${SKILLS_DIR:-$HOME/.claude/skills}/design-tokens/scripts/build_tokens.py src/tokens.json --out src",
+    "check": "python3 ${SKILLS_DIR:-$HOME/.claude/skills}/design-tokens/scripts/check_tokens.py src && python3 ${SKILLS_DIR:-$HOME/.claude/skills}/code-style/scripts/check_cost_comments.py src test",
+    "examples": "node src/cli.js examples/*.d2 --out examples/out --gallery",
+    "examples:bigtech": "node src/cli.js examples/bigtech/*.d2 --out examples/bigtech/out --gallery",
+    "examples:showcase": "node src/cli.js examples/showcase/*.d2 --out examples/showcase/out --gallery"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "dependencies": {
+    "@terrastruct/d2": "0.1.33"
+  },
+  "devDependencies": {
+    "elkjs": "^0.9.3",
+    "playwright-core": "^1.63.0"
+  }
+}

@@ -1,0 +1,446 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="fl" width="1178" height="499" viewBox="0 0 1178 499">
+<style>/* tokens.json: 생성물, 손으로 고치지 않음 */
+:root {
+  --color-gray-0: #ffffff;
+  --color-gray-25: #f7f8fa;
+  --color-gray-50: #f5f7fa;
+  --color-gray-100: #e3e7ec;
+  --color-gray-200: #d5dbe3;
+  --color-gray-300: #b6c0cc;
+  --color-gray-600: #4b5563;
+  --color-gray-900: #111418;
+  --color-neutral-100: #e3e3e3;
+  --color-neutral-400: #9aa0a6;
+  --color-neutral-700: #3a3b3c;
+  --color-neutral-750: #34363a;
+  --color-neutral-800: #2c2d30;
+  --color-neutral-850: #242526;
+  --color-neutral-900: #1b1b1d;
+  --color-neutral-950: #111214;
+  --color-blue-50: #eef5fd;
+  --color-blue-400: #3396e8;
+  --color-blue-600: #0074d9;
+  --color-blue-900: #1d2733;
+  --color-tone-blue: #3b82f6;
+  --color-tone-purple: #8b5cf6;
+  --color-tone-green: #10b981;
+  --color-tone-orange: #f59e0b;
+  --color-tone-gray: #8b949e;
+  --color-accent: var(--color-blue-600);
+  --color-on-accent: var(--color-gray-0);
+  --color-fg: var(--color-gray-900);
+  --color-muted: var(--color-gray-600);
+  --color-bg: var(--color-gray-0);
+  --color-surface: var(--color-gray-50);
+  --color-border: var(--color-gray-300);
+  --color-card-on: var(--color-blue-50);
+  --color-dot: var(--color-gray-200);
+  --color-frame: var(--color-gray-100);
+  --color-page: var(--color-gray-0);
+  --color-gallery: var(--color-gray-25);
+  --color-tag-blue: var(--color-tone-blue);
+  --color-tag-purple: var(--color-tone-purple);
+  --color-tag-green: var(--color-tone-green);
+  --color-tag-orange: var(--color-tone-orange);
+  --color-tag-gray: var(--color-tone-gray);
+  --font-sans: -apple-system, BlinkMacSystemFont, Pretendard, 'Apple SD Gothic Neo', 'Noto Sans KR', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, D2Coding, Menlo, monospace;
+  --size-text-9: 9px;
+  --size-text-10-5: 10.5px;
+  --size-text-11: 11px;
+  --size-text-11-5: 11.5px;
+  --size-text-12: 12px;
+  --size-text-13: 13px;
+  --size-text-13-5: 13.5px;
+  --size-text-14: 14px;
+  --size-text-14-5: 14.5px;
+  --size-text-15: 15px;
+  --size-text-22: 22px;
+  --size-line-15: 15px;
+  --size-line-18: 18px;
+  --size-line-20: 20px;
+  --size-line-22: 22px;
+  --size-control: 30px;
+  --size-pill: 18px;
+  --size-tag: 14px;
+  --size-icon: 20px;
+  --size-packet: 4.5px;
+  --size-halo: 10px;
+  --size-marker: 5px;
+  --size-marker-on: 4px;
+  --size-grid: 16px;
+  --size-grid-dot: 1px;
+  --size-card: 176px;
+  --size-node-min: 100px;
+  --size-node-max: 210px;
+  --size-node-min-h: 46px;
+  --size-store-min-h: 70px;
+  --size-store-cap: 12px;
+  --size-figure-min: 560px;
+  --size-chip-max: 210px;
+  --size-caption-max: 720px;
+  --size-figure-max: 1400px;
+  --size-gallery-column: 760px;
+  --size-gallery-frame: 820px;
+  --size-player-chrome: 190px;
+  --size-embedded-chrome: 150px;
+  --size-chart-width: 640px;
+  --size-chart-label: 140px;
+  --size-chart-bar: 12px;
+  --size-chart-row: 40px;
+  --size-chart-dot: 5px;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --leading-normal: 1.5;
+  --tracking-tag: 0.03em;
+  --tracking-frame: 0.04em;
+  --space-0-5: 1px;
+  --space-1: 2px;
+  --space-1-5: 3px;
+  --space-2: 4px;
+  --space-2-5: 5px;
+  --space-3: 6px;
+  --space-3-5: 7px;
+  --space-4: 8px;
+  --space-5: 10px;
+  --space-6: 12px;
+  --space-6-5: 13px;
+  --space-7: 14px;
+  --space-8: 16px;
+  --space-8-5: 17px;
+  --space-9: 18px;
+  --space-11: 22px;
+  --space-12: 24px;
+  --space-13: 26px;
+  --space-14: 28px;
+  --space-15: 30px;
+  --space-16: 32px;
+  --space-17: 34px;
+  --space-18: 36px;
+  --space-20: 40px;
+  --space-22: 44px;
+  --space-30: 60px;
+  --space-32: 64px;
+  --radius-xs: 2px;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 10px;
+  --radius-2xl: 14px;
+  --radius-route: 22px;
+  --radius-full: 999px;
+  --border-hair: 0.75px;
+  --border-thin: 1px;
+  --border-lifeline: 1.25px;
+  --border-tag: 1.5px;
+  --border-edge: 1.75px;
+  --border-strong: 2.5px;
+  --dash-line: 5;
+  --dash-gap: 4;
+  --dash-card: 3;
+  --opacity-tag: 0.15;
+  --opacity-halo: 0.2;
+  --opacity-tab-on: 0.06;
+  --z-raised: 2;
+  --z-overlay: 10;
+  --duration-fast: 200ms;
+  --duration-hop: 3750ms;
+  --duration-dwell: 700ms;
+  --duration-dwell-per-char: 45ms;
+  --duration-dwell-max: 3200ms;
+  --duration-step-end: 1600ms;
+  --duration-stagger: 120ms;
+  --duration-chart-cycle: 7000ms;
+  --scale-zoom-max: 6;
+  --scale-zoom-step: 1.25;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --color-accent: var(--color-blue-400);
+    --color-fg: var(--color-neutral-100);
+    --color-muted: var(--color-neutral-400);
+    --color-bg: var(--color-neutral-900);
+    --color-surface: var(--color-neutral-850);
+    --color-border: var(--color-neutral-700);
+    --color-card-on: var(--color-blue-900);
+    --color-dot: var(--color-neutral-750);
+    --color-frame: var(--color-neutral-800);
+    --color-page: var(--color-neutral-950);
+    --color-gallery: var(--color-neutral-950);
+  }
+}
+[data-theme='dark'] {
+  --color-accent: var(--color-blue-400);
+  --color-fg: var(--color-neutral-100);
+  --color-muted: var(--color-neutral-400);
+  --color-bg: var(--color-neutral-900);
+  --color-surface: var(--color-neutral-850);
+  --color-border: var(--color-neutral-700);
+  --color-card-on: var(--color-blue-900);
+  --color-dot: var(--color-neutral-750);
+  --color-frame: var(--color-neutral-800);
+  --color-page: var(--color-neutral-950);
+  --color-gallery: var(--color-neutral-950);
+}
+/* 그림 안 글자와 모양. HTML 재생기와 움직이는 SVG가 같이 쓴다. */
+.fl text {
+  font-family: var(--font-sans);
+}
+
+.fl .label {
+  font-size: var(--size-text-14);
+  font-weight: var(--weight-medium);
+  text-anchor: middle;
+  fill: var(--color-fg);
+}
+
+.fl .sub {
+  font-size: var(--size-text-12);
+  text-anchor: middle;
+  fill: var(--color-muted);
+}
+
+.fl .frame {
+  font-size: var(--size-text-11);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-frame);
+  fill: var(--color-muted);
+}
+
+.fl .edgelabel {
+  font-family: var(--font-mono);
+  font-size: var(--size-text-11);
+  text-anchor: middle;
+  fill: var(--color-muted);
+}
+
+.fl .row {
+  font-size: var(--size-text-11);
+  fill: var(--color-fg);
+}
+
+.fl .row.mono {
+  font-family: var(--font-mono);
+  font-size: var(--size-text-10-5);
+}
+
+.fl .muted {
+  fill: var(--color-muted);
+}
+
+.fl .tag {
+  font-size: var(--size-text-9);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-tag);
+  text-anchor: middle;
+}
+
+.fl .mark {
+  font-size: var(--size-text-11);
+  font-weight: var(--weight-semibold);
+  text-anchor: end;
+  fill: var(--color-accent);
+}
+
+.fl .mark.key {
+  font-size: var(--size-text-9);
+  text-anchor: start;
+}
+
+.fl .mini {
+  font-size: var(--size-text-10-5);
+  text-anchor: middle;
+  fill: var(--color-fg);
+}
+
+.fl .mini.on {
+  fill: var(--color-on-accent);
+}
+
+.fl .chip {
+  font-size: var(--size-text-11-5);
+  text-anchor: middle;
+  fill: var(--color-on-accent);
+}
+
+.fl .md {
+  font-size: var(--size-text-13);
+  fill: var(--color-fg);
+}
+
+.fl .md.h {
+  font-size: var(--size-text-15);
+  font-weight: var(--weight-semibold);
+}
+
+.fl .cell {
+  font-size: var(--size-text-11-5);
+  fill: var(--color-fg);
+}
+
+.fl .cell.type {
+  font-family: var(--font-mono);
+  font-size: var(--size-text-10-5);
+  text-anchor: end;
+  fill: var(--color-muted);
+}
+
+.fl .fl-stroke {
+  stroke: var(--color-border);
+}
+
+.fl .fl-path {
+  fill: none;
+  stroke: var(--color-muted);
+  stroke-width: var(--border-edge);
+}
+/* 움직이는 SVG에만 있는 단계 이름과 설명 줄 */
+.fl .steplabel {
+  font-family: var(--font-mono);
+  font-size: var(--size-text-13);
+  font-weight: var(--weight-semibold);
+  text-anchor: middle;
+  fill: var(--color-fg);
+}
+
+.fl .caption {
+  font-size: var(--size-text-13-5);
+  text-anchor: middle;
+  fill: var(--color-muted);
+}
+
+@keyframes a0 { 0%,6.417% { stroke: var(--color-accent) } 6.418%,12.835% { stroke: var(--color-accent) } 12.835%,19.253% { stroke: var(--color-accent) } 19.253%,25.67% { stroke: var(--color-accent) } 25.67%,32.088% { stroke: var(--color-accent) } 32.088%,40.797% { stroke: var(--color-accent) } 40.798%,49.965% { stroke: var(--color-accent) } 49.966%,56.757% { stroke: var(--color-accent) } 56.758%,63.175% { stroke: var(--color-accent) } 63.175%,69.593% { stroke: var(--color-accent) } 69.593%,76.01% { stroke: var(--color-accent) } 76.01%,82.428% { stroke: var(--color-accent) } 82.428%,91.137% { stroke: var(--color-accent) } 91.138%,100% { stroke: var(--color-accent) } }
+.fl .a0 { animation: a0 65.4s infinite step-end; }
+@keyframes a1 { 0%,6.417% { stroke: var(--color-border) } 6.418%,12.835% { stroke: var(--color-border) } 12.835%,19.253% { stroke: var(--color-border) } 19.253%,25.67% { stroke: var(--color-border) } 25.67%,32.088% { stroke: var(--color-border) } 32.088%,40.797% { stroke: var(--color-border) } 40.798%,49.965% { stroke: var(--color-border) } 49.966%,56.757% { stroke: var(--color-border) } 56.758%,63.175% { stroke: var(--color-border) } 63.175%,69.593% { stroke: var(--color-border) } 69.593%,76.01% { stroke: var(--color-border) } 76.01%,82.428% { stroke: var(--color-border) } 82.428%,91.137% { stroke: var(--color-border) } 91.138%,100% { stroke: var(--color-border) } }
+.fl .a1 { animation: a1 65.4s infinite step-end; }
+@keyframes a2 { 0%,6.417% { stroke: var(--color-border) } 6.418%,12.835% { stroke: var(--color-border) } 12.835%,19.253% { stroke: var(--color-border) } 19.253%,25.67% { stroke: var(--color-border) } 25.67%,32.088% { stroke: var(--color-accent) } 32.088%,40.797% { stroke: var(--color-accent) } 40.798%,49.965% { stroke: var(--color-accent) } 49.966%,56.757% { stroke: var(--color-border) } 56.758%,63.175% { stroke: var(--color-border) } 63.175%,69.593% { stroke: var(--color-border) } 69.593%,76.01% { stroke: var(--color-border) } 76.01%,82.428% { stroke: var(--color-border) } 82.428%,91.137% { stroke: var(--color-border) } 91.138%,100% { stroke: var(--color-border) } }
+.fl .a2 { animation: a2 65.4s infinite step-end; }
+@keyframes a3 { 0%,6.417% { stroke: var(--color-border) } 6.418%,12.835% { stroke: var(--color-border) } 12.835%,19.253% { stroke: var(--color-border) } 19.253%,25.67% { stroke: var(--color-border) } 25.67%,32.088% { stroke: var(--color-border) } 32.088%,40.797% { stroke: var(--color-border) } 40.798%,49.965% { stroke: var(--color-border) } 49.966%,56.757% { stroke: var(--color-border) } 56.758%,63.175% { stroke: var(--color-border) } 63.175%,69.593% { stroke: var(--color-border) } 69.593%,76.01% { stroke: var(--color-border) } 76.01%,82.428% { stroke: var(--color-accent) } 82.428%,91.137% { stroke: var(--color-accent) } 91.138%,100% { stroke: var(--color-accent) } }
+.fl .a3 { animation: a3 65.4s infinite step-end; }
+@keyframes a4 { 0%,5.348% { opacity: 0 } 5.348%,6.417% { opacity: 1 } 6.418%,12.835% { opacity: 1 } 12.835%,19.253% { opacity: 1 } 19.253%,25.67% { opacity: 1 } 25.67%,32.088% { opacity: 1 } 32.088%,40.797% { opacity: 0 } 40.798%,49.965% { opacity: 0 } 49.966%,56.757% { opacity: 0 } 56.758%,63.175% { opacity: 0 } 63.175%,69.593% { opacity: 0 } 69.593%,76.01% { opacity: 0 } 76.01%,82.428% { opacity: 0 } 82.428%,91.137% { opacity: 0 } 91.138%,100% { opacity: 0 } }
+.fl .a4 { animation: a4 65.4s infinite step-end; }
+@keyframes a5 { 0%,6.417% { opacity: 0 } 6.418%,12.835% { opacity: 0 } 12.835%,19.253% { opacity: 0 } 19.253%,25.67% { opacity: 0 } 25.67%,32.088% { opacity: 0 } 32.088%,40.797% { opacity: 1 } 40.798%,49.965% { opacity: 1 } 49.966%,56.757% { opacity: 0 } 56.758%,63.175% { opacity: 0 } 63.175%,69.593% { opacity: 0 } 69.593%,76.01% { opacity: 0 } 76.01%,82.428% { opacity: 0 } 82.428%,91.137% { opacity: 0 } 91.138%,100% { opacity: 0 } }
+.fl .a5 { animation: a5 65.4s infinite step-end; }
+@keyframes a6 { 0%,6.417% { opacity: 0 } 6.418%,12.835% { opacity: 0 } 12.835%,19.253% { opacity: 0 } 19.253%,25.67% { opacity: 0 } 25.67%,32.088% { opacity: 0 } 32.088%,40.797% { opacity: 0 } 40.798%,49.965% { opacity: 0 } 49.966%,56.757% { opacity: 0 } 56.758%,63.175% { opacity: 0 } 63.175%,69.593% { opacity: 0 } 69.593%,76.01% { opacity: 0 } 76.01%,82.428% { opacity: 0 } 82.428%,91.137% { opacity: 1 } 91.138%,100% { opacity: 1 } }
+.fl .a6 { animation: a6 65.4s infinite step-end; }
+@keyframes a7 { 0%,5.348% { stroke: var(--color-border); fill: var(--color-surface) } 5.348%,6.417% { stroke: var(--color-accent); fill: var(--color-card-on) } 6.418%,12.835% { stroke: var(--color-accent); fill: var(--color-card-on) } 12.835%,19.253% { stroke: var(--color-accent); fill: var(--color-card-on) } 19.253%,25.67% { stroke: var(--color-accent); fill: var(--color-card-on) } 25.67%,32.088% { stroke: var(--color-accent); fill: var(--color-card-on) } 32.088%,40.797% { stroke: var(--color-accent); fill: var(--color-card-on) } 40.798%,49.965% { stroke: var(--color-accent); fill: var(--color-card-on) } 49.966%,56.757% { stroke: var(--color-border); fill: var(--color-surface) } 56.758%,63.175% { stroke: var(--color-border); fill: var(--color-surface) } 63.175%,69.593% { stroke: var(--color-border); fill: var(--color-surface) } 69.593%,76.01% { stroke: var(--color-border); fill: var(--color-surface) } 76.01%,82.428% { stroke: var(--color-border); fill: var(--color-surface) } 82.428%,91.137% { stroke: var(--color-accent); fill: var(--color-card-on) } 91.138%,100% { stroke: var(--color-accent); fill: var(--color-card-on) } }
+.fl .a7 { animation: a7 65.4s infinite step-end; }
+@keyframes a8 { 0%,5.348% { opacity: 1 } 5.348%,6.417% { opacity: 0 } 6.418%,12.835% { opacity: 0 } 12.835%,19.253% { opacity: 0 } 19.253%,25.67% { opacity: 0 } 25.67%,32.088% { opacity: 0 } 32.088%,40.797% { opacity: 0 } 40.798%,49.965% { opacity: 0 } 49.966%,56.757% { opacity: 1 } 56.758%,63.175% { opacity: 1 } 63.175%,69.593% { opacity: 1 } 69.593%,76.01% { opacity: 1 } 76.01%,82.428% { opacity: 1 } 82.428%,91.137% { opacity: 0 } 91.138%,100% { opacity: 0 } }
+.fl .a8 { animation: a8 65.4s infinite step-end; }
+@keyframes a9 { 0%,6.417% { stroke: var(--color-border) } 6.418%,12.835% { stroke: var(--color-accent) } 12.835%,19.253% { stroke: var(--color-accent) } 19.253%,25.67% { stroke: var(--color-accent) } 25.67%,32.088% { stroke: var(--color-accent) } 32.088%,40.797% { stroke: var(--color-accent) } 40.798%,49.965% { stroke: var(--color-accent) } 49.966%,56.757% { stroke: var(--color-border) } 56.758%,63.175% { stroke: var(--color-accent) } 63.175%,69.593% { stroke: var(--color-accent) } 69.593%,76.01% { stroke: var(--color-accent) } 76.01%,82.428% { stroke: var(--color-accent) } 82.428%,91.137% { stroke: var(--color-accent) } 91.138%,100% { stroke: var(--color-accent) } }
+.fl .a9 { animation: a9 65.4s infinite step-end; }
+@keyframes a10 { 0%,6.417% { stroke: var(--color-border) } 6.418%,12.835% { stroke: var(--color-border) } 12.835%,19.253% { stroke: var(--color-accent) } 19.253%,25.67% { stroke: var(--color-accent) } 25.67%,32.088% { stroke: var(--color-accent) } 32.088%,40.797% { stroke: var(--color-accent) } 40.798%,49.965% { stroke: var(--color-accent) } 49.966%,56.757% { stroke: var(--color-border) } 56.758%,63.175% { stroke: var(--color-border) } 63.175%,69.593% { stroke: var(--color-accent) } 69.593%,76.01% { stroke: var(--color-accent) } 76.01%,82.428% { stroke: var(--color-accent) } 82.428%,91.137% { stroke: var(--color-accent) } 91.138%,100% { stroke: var(--color-accent) } }
+.fl .a10 { animation: a10 65.4s infinite step-end; }
+@keyframes a11 { 0%,6.417% { opacity: 0 } 6.418%,12.835% { opacity: 0 } 12.835%,18.183% { opacity: 0 } 18.183%,19.253% { opacity: 1 } 19.253%,25.67% { opacity: 1 } 25.67%,32.088% { opacity: 1 } 32.088%,40.797% { opacity: 1 } 40.798%,49.965% { opacity: 1 } 49.966%,56.757% { opacity: 0 } 56.758%,63.175% { opacity: 0 } 63.175%,69.593% { opacity: 0 } 69.593%,76.01% { opacity: 0 } 76.01%,82.428% { opacity: 0 } 82.428%,91.137% { opacity: 0 } 91.138%,100% { opacity: 0 } }
+.fl .a11 { animation: a11 65.4s infinite step-end; }
+@keyframes a12 { 0%,6.417% { opacity: 0 } 6.418%,12.835% { opacity: 0 } 12.835%,19.253% { opacity: 0 } 19.253%,25.67% { opacity: 0 } 25.67%,32.088% { opacity: 0 } 32.088%,40.797% { opacity: 0 } 40.798%,49.965% { opacity: 0 } 49.966%,56.757% { opacity: 0 } 56.758%,63.175% { opacity: 0 } 63.175%,68.523% { opacity: 0 } 68.523%,69.593% { opacity: 1 } 69.593%,76.01% { opacity: 1 } 76.01%,82.428% { opacity: 1 } 82.428%,91.137% { opacity: 1 } 91.138%,100% { opacity: 1 } }
+.fl .a12 { animation: a12 65.4s infinite step-end; }
+@keyframes a13 { 0%,6.417% { stroke: var(--color-border); fill: var(--color-surface) } 6.418%,12.835% { stroke: var(--color-border); fill: var(--color-surface) } 12.835%,18.183% { stroke: var(--color-border); fill: var(--color-surface) } 18.183%,19.253% { stroke: var(--color-accent); fill: var(--color-card-on) } 19.253%,25.67% { stroke: var(--color-accent); fill: var(--color-card-on) } 25.67%,32.088% { stroke: var(--color-accent); fill: var(--color-card-on) } 32.088%,40.797% { stroke: var(--color-accent); fill: var(--color-card-on) } 40.798%,49.965% { stroke: var(--color-accent); fill: var(--color-card-on) } 49.966%,56.757% { stroke: var(--color-border); fill: var(--color-surface) } 56.758%,63.175% { stroke: var(--color-border); fill: var(--color-surface) } 63.175%,68.523% { stroke: var(--color-border); fill: var(--color-surface) } 68.523%,69.593% { stroke: var(--color-accent); fill: var(--color-card-on) } 69.593%,76.01% { stroke: var(--color-accent); fill: var(--color-card-on) } 76.01%,82.428% { stroke: var(--color-accent); fill: var(--color-card-on) } 82.428%,91.137% { stroke: var(--color-accent); fill: var(--color-card-on) } 91.138%,100% { stroke: var(--color-accent); fill: var(--color-card-on) } }
+.fl .a13 { animation: a13 65.4s infinite step-end; }
+@keyframes a14 { 0%,6.417% { opacity: 1 } 6.418%,12.835% { opacity: 1 } 12.835%,18.183% { opacity: 1 } 18.183%,19.253% { opacity: 0 } 19.253%,25.67% { opacity: 0 } 25.67%,32.088% { opacity: 0 } 32.088%,40.797% { opacity: 0 } 40.798%,49.965% { opacity: 0 } 49.966%,56.757% { opacity: 1 } 56.758%,63.175% { opacity: 1 } 63.175%,68.523% { opacity: 1 } 68.523%,69.593% { opacity: 0 } 69.593%,76.01% { opacity: 0 } 76.01%,82.428% { opacity: 0 } 82.428%,91.137% { opacity: 0 } 91.138%,100% { opacity: 0 } }
+.fl .a14 { animation: a14 65.4s infinite step-end; }
+@keyframes a15 { 0%,6.417% { stroke: var(--color-border) } 6.418%,12.835% { stroke: var(--color-border) } 12.835%,19.253% { stroke: var(--color-border) } 19.253%,25.67% { stroke: var(--color-border) } 25.67%,32.088% { stroke: var(--color-border) } 32.088%,40.797% { stroke: var(--color-border) } 40.798%,49.965% { stroke: var(--color-accent) } 49.966%,56.757% { stroke: var(--color-border) } 56.758%,63.175% { stroke: var(--color-border) } 63.175%,69.593% { stroke: var(--color-border) } 69.593%,76.01% { stroke: var(--color-border) } 76.01%,82.428% { stroke: var(--color-border) } 82.428%,91.137% { stroke: var(--color-border) } 91.138%,100% { stroke: var(--color-accent) } }
+.fl .a15 { animation: a15 65.4s infinite step-end; }
+@keyframes a16 { 0%,6.417% { opacity: 0 } 6.418%,12.835% { opacity: 0 } 12.835%,19.253% { opacity: 0 } 19.253%,25.67% { opacity: 0 } 25.67%,32.088% { opacity: 0 } 32.088%,40.797% { opacity: 0 } 40.798%,46.145% { opacity: 0 } 46.146%,49.965% { opacity: 1 } 49.966%,56.757% { opacity: 0 } 56.758%,63.175% { opacity: 0 } 63.175%,69.593% { opacity: 0 } 69.593%,76.01% { opacity: 0 } 76.01%,82.428% { opacity: 0 } 82.428%,91.137% { opacity: 0 } 91.138%,100% { opacity: 0 } }
+.fl .a16 { animation: a16 65.4s infinite step-end; }
+@keyframes a17 { 0%,6.417% { opacity: 0 } 6.418%,12.835% { opacity: 0 } 12.835%,19.253% { opacity: 0 } 19.253%,25.67% { opacity: 0 } 25.67%,32.088% { opacity: 0 } 32.088%,40.797% { opacity: 0 } 40.798%,49.965% { opacity: 0 } 49.966%,56.757% { opacity: 0 } 56.758%,63.175% { opacity: 0 } 63.175%,69.593% { opacity: 0 } 69.593%,76.01% { opacity: 0 } 76.01%,82.428% { opacity: 0 } 82.428%,91.137% { opacity: 0 } 91.138%,96.485% { opacity: 0 } 96.486%,100% { opacity: 1 } }
+.fl .a17 { animation: a17 65.4s infinite step-end; }
+@keyframes a18 { 0%,6.417% { stroke: var(--color-border); fill: var(--color-surface) } 6.418%,12.835% { stroke: var(--color-border); fill: var(--color-surface) } 12.835%,19.253% { stroke: var(--color-border); fill: var(--color-surface) } 19.253%,25.67% { stroke: var(--color-border); fill: var(--color-surface) } 25.67%,32.088% { stroke: var(--color-border); fill: var(--color-surface) } 32.088%,40.797% { stroke: var(--color-border); fill: var(--color-surface) } 40.798%,46.145% { stroke: var(--color-border); fill: var(--color-surface) } 46.146%,49.965% { stroke: var(--color-accent); fill: var(--color-card-on) } 49.966%,56.757% { stroke: var(--color-border); fill: var(--color-surface) } 56.758%,63.175% { stroke: var(--color-border); fill: var(--color-surface) } 63.175%,69.593% { stroke: var(--color-border); fill: var(--color-surface) } 69.593%,76.01% { stroke: var(--color-border); fill: var(--color-surface) } 76.01%,82.428% { stroke: var(--color-border); fill: var(--color-surface) } 82.428%,91.137% { stroke: var(--color-border); fill: var(--color-surface) } 91.138%,96.485% { stroke: var(--color-border); fill: var(--color-surface) } 96.486%,100% { stroke: var(--color-accent); fill: var(--color-card-on) } }
+.fl .a18 { animation: a18 65.4s infinite step-end; }
+@keyframes a19 { 0%,6.417% { opacity: 1 } 6.418%,12.835% { opacity: 1 } 12.835%,19.253% { opacity: 1 } 19.253%,25.67% { opacity: 1 } 25.67%,32.088% { opacity: 1 } 32.088%,40.797% { opacity: 1 } 40.798%,46.145% { opacity: 1 } 46.146%,49.965% { opacity: 0 } 49.966%,56.757% { opacity: 1 } 56.758%,63.175% { opacity: 1 } 63.175%,69.593% { opacity: 1 } 69.593%,76.01% { opacity: 1 } 76.01%,82.428% { opacity: 1 } 82.428%,91.137% { opacity: 1 } 91.138%,96.485% { opacity: 1 } 96.486%,100% { opacity: 0 } }
+.fl .a19 { animation: a19 65.4s infinite step-end; }
+@keyframes a20 { 0%,6.417% { stroke: var(--color-muted); stroke-width: var(--border-edge); marker-end: url(#fl-arrow) } 6.418%,12.835% { stroke: var(--color-accent); stroke-width: var(--border-strong); marker-end: url(#fl-arrow-on) } 12.835%,19.253% { stroke: var(--color-accent); stroke-width: var(--border-strong); marker-end: url(#fl-arrow-on) } 19.253%,25.67% { stroke: var(--color-accent); stroke-width: var(--border-strong); marker-end: url(#fl-arrow-on) } 25.67%,32.088% { stroke: var(--color-accent); stroke-width: var(--border-strong); marker-end: url(#fl-arrow-on) } 32.088%,40.797% { stroke: var(--color-accent); stroke-width: var(--border-strong); marker-end: url(#fl-arrow-on) } 40.798%,49.965% { stroke: var(--color-accent); stroke-width: var(--border-strong); marker-end: url(#fl-arrow-on) } 49.966%,56.757% { stroke: var(--color-muted); stroke-width: var(--border-edge); marker-end: url(#fl-arrow) } 56.758%,63.175% { stroke: var(--color-accent); stroke-width: var(--border-strong); marker-end: url(#fl-arrow-on) } 63.175%,69.593% { stroke: var(--color-accent); stroke-width: var(--border-strong); marker-end: url(#fl-arrow-on) } 69.593%,76.01% { stroke: var(--color-accent); stroke-width: var(--border-strong); marker-end: url(#fl-arrow-on) } 76.01%,82.428% { stroke: var(--color-accent); stroke-width: var(--border-strong); marker-end: url(#fl-arrow-on) } 82.428%,91.137% { stroke: var(--color-accent); stroke-width: var(--border-strong); marker-end: url(#fl-arrow-on) } 91.138%,100% { stroke: var(--color-accent); stroke-width: var(--border-strong); marker-end: url(#fl-arrow-on) } }
+.fl .a20 { animation: a20 65.4s infinite step-end; }
+@keyframes a21 { 0%,6.417% { stroke: var(--color-muted); stroke-width: var(--border-edge); marker-end: url(#fl-arrow) } 6.418%,12.835% { stroke: var(--color-muted); stroke-width: var(--border-edge); marker-end: url(#fl-arrow) } 12.835%,19.253% { stroke: var(--color-accent); stroke-width: var(--border-strong); marker-end: url(#fl-arrow-on) } 19.253%,25.67% { stroke: var(--color-accent); stroke-width: var(--border-strong); marker-end: url(#fl-arrow-on) } 25.67%,32.088% { stroke: var(--color-accent); stroke-width: var(--border-strong); marker-end: url(#fl-arrow-on) } 32.088%,40.797% { stroke: var(--color-accent); stroke-width: var(--border-strong); marker-end: url(#fl-arrow-on) } 40.798%,49.965% { stroke: var(--color-accent); stroke-width: var(--border-strong); marker-end: url(#fl-arrow-on) } 49.966%,56.757% { stroke: var(--color-muted); stroke-width: var(--border-edge); marker-end: url(#fl-arrow) } 56.758%,63.175% { stroke: var(--color-muted); stroke-width: var(--border-edge); marker-end: url(#fl-arrow) } 63.175%,69.593% { stroke: var(--color-accent); stroke-width: var(--border-strong); marker-end: url(#fl-arrow-on) } 69.593%,76.01% { stroke: var(--color-accent); stroke-width: var(--border-strong); marker-end: url(#fl-arrow-on) } 76.01%,82.428% { stroke: var(--color-accent); stroke-width: var(--border-strong); marker-end: url(#fl-arrow-on) } 82.428%,91.137% { stroke: var(--color-accent); stroke-width: var(--border-strong); marker-end: url(#fl-arrow-on) } 91.138%,100% { stroke: var(--color-accent); stroke-width: var(--border-strong); marker-end: url(#fl-arrow-on) } }
+.fl .a21 { animation: a21 65.4s infinite step-end; }
+@keyframes a22 { 0%,6.417% { stroke: var(--color-muted); stroke-width: var(--border-edge); marker-end: url(#fl-arrow) } 6.418%,12.835% { stroke: var(--color-muted); stroke-width: var(--border-edge); marker-end: url(#fl-arrow) } 12.835%,19.253% { stroke: var(--color-muted); stroke-width: var(--border-edge); marker-end: url(#fl-arrow) } 19.253%,25.67% { stroke: var(--color-muted); stroke-width: var(--border-edge); marker-end: url(#fl-arrow) } 25.67%,32.088% { stroke: var(--color-muted); stroke-width: var(--border-edge); marker-end: url(#fl-arrow) } 32.088%,40.797% { stroke: var(--color-muted); stroke-width: var(--border-edge); marker-end: url(#fl-arrow) } 40.798%,49.965% { stroke: var(--color-accent); stroke-width: var(--border-strong); marker-end: url(#fl-arrow-on) } 49.966%,56.757% { stroke: var(--color-muted); stroke-width: var(--border-edge); marker-end: url(#fl-arrow) } 56.758%,63.175% { stroke: var(--color-muted); stroke-width: var(--border-edge); marker-end: url(#fl-arrow) } 63.175%,69.593% { stroke: var(--color-muted); stroke-width: var(--border-edge); marker-end: url(#fl-arrow) } 69.593%,76.01% { stroke: var(--color-muted); stroke-width: var(--border-edge); marker-end: url(#fl-arrow) } 76.01%,82.428% { stroke: var(--color-muted); stroke-width: var(--border-edge); marker-end: url(#fl-arrow) } 82.428%,91.137% { stroke: var(--color-muted); stroke-width: var(--border-edge); marker-end: url(#fl-arrow) } 91.138%,100% { stroke: var(--color-accent); stroke-width: var(--border-strong); marker-end: url(#fl-arrow-on) } }
+.fl .a22 { animation: a22 65.4s infinite step-end; }
+@keyframes a23 { 0%,6.417% { stroke: var(--color-accent); stroke-width: var(--border-strong); marker-end: url(#fl-arrow-on) } 6.418%,12.835% { stroke: var(--color-accent); stroke-width: var(--border-strong); marker-end: url(#fl-arrow-on) } 12.835%,19.253% { stroke: var(--color-accent); stroke-width: var(--border-strong); marker-end: url(#fl-arrow-on) } 19.253%,25.67% { stroke: var(--color-accent); stroke-width: var(--border-strong); marker-end: url(#fl-arrow-on) } 25.67%,32.088% { stroke: var(--color-accent); stroke-width: var(--border-strong); marker-end: url(#fl-arrow-on) } 32.088%,40.797% { stroke: var(--color-accent); stroke-width: var(--border-strong); marker-end: url(#fl-arrow-on) } 40.798%,49.965% { stroke: var(--color-accent); stroke-width: var(--border-strong); marker-end: url(#fl-arrow-on) } 49.966%,56.757% { stroke: var(--color-accent); stroke-width: var(--border-strong); marker-end: url(#fl-arrow-on) } 56.758%,63.175% { stroke: var(--color-accent); stroke-width: var(--border-strong); marker-end: url(#fl-arrow-on) } 63.175%,69.593% { stroke: var(--color-accent); stroke-width: var(--border-strong); marker-end: url(#fl-arrow-on) } 69.593%,76.01% { stroke: var(--color-accent); stroke-width: var(--border-strong); marker-end: url(#fl-arrow-on) } 76.01%,82.428% { stroke: var(--color-accent); stroke-width: var(--border-strong); marker-end: url(#fl-arrow-on) } 82.428%,91.137% { stroke: var(--color-accent); stroke-width: var(--border-strong); marker-end: url(#fl-arrow-on) } 91.138%,100% { stroke: var(--color-accent); stroke-width: var(--border-strong); marker-end: url(#fl-arrow-on) } }
+.fl .a23 { animation: a23 65.4s infinite step-end; }
+@keyframes a24 { 0%,6.417% { stroke: var(--color-muted); stroke-width: var(--border-edge); marker-end: url(#fl-arrow) } 6.418%,12.835% { stroke: var(--color-muted); stroke-width: var(--border-edge); marker-end: url(#fl-arrow) } 12.835%,19.253% { stroke: var(--color-muted); stroke-width: var(--border-edge); marker-end: url(#fl-arrow) } 19.253%,25.67% { stroke: var(--color-muted); stroke-width: var(--border-edge); marker-end: url(#fl-arrow) } 25.67%,32.088% { stroke: var(--color-accent); stroke-width: var(--border-strong); marker-end: url(#fl-arrow-on) } 32.088%,40.797% { stroke: var(--color-accent); stroke-width: var(--border-strong); marker-end: url(#fl-arrow-on) } 40.798%,49.965% { stroke: var(--color-accent); stroke-width: var(--border-strong); marker-end: url(#fl-arrow-on) } 49.966%,56.757% { stroke: var(--color-muted); stroke-width: var(--border-edge); marker-end: url(#fl-arrow) } 56.758%,63.175% { stroke: var(--color-muted); stroke-width: var(--border-edge); marker-end: url(#fl-arrow) } 63.175%,69.593% { stroke: var(--color-muted); stroke-width: var(--border-edge); marker-end: url(#fl-arrow) } 69.593%,76.01% { stroke: var(--color-muted); stroke-width: var(--border-edge); marker-end: url(#fl-arrow) } 76.01%,82.428% { stroke: var(--color-muted); stroke-width: var(--border-edge); marker-end: url(#fl-arrow) } 82.428%,91.137% { stroke: var(--color-muted); stroke-width: var(--border-edge); marker-end: url(#fl-arrow) } 91.138%,100% { stroke: var(--color-muted); stroke-width: var(--border-edge); marker-end: url(#fl-arrow) } }
+.fl .a24 { animation: a24 65.4s infinite step-end; }
+@keyframes a25 { 0%,6.417% { stroke: var(--color-muted); stroke-width: var(--border-edge); marker-end: url(#fl-arrow) } 6.418%,12.835% { stroke: var(--color-muted); stroke-width: var(--border-edge); marker-end: url(#fl-arrow) } 12.835%,19.253% { stroke: var(--color-muted); stroke-width: var(--border-edge); marker-end: url(#fl-arrow) } 19.253%,25.67% { stroke: var(--color-muted); stroke-width: var(--border-edge); marker-end: url(#fl-arrow) } 25.67%,32.088% { stroke: var(--color-muted); stroke-width: var(--border-edge); marker-end: url(#fl-arrow) } 32.088%,40.797% { stroke: var(--color-muted); stroke-width: var(--border-edge); marker-end: url(#fl-arrow) } 40.798%,49.965% { stroke: var(--color-muted); stroke-width: var(--border-edge); marker-end: url(#fl-arrow) } 49.966%,56.757% { stroke: var(--color-muted); stroke-width: var(--border-edge); marker-end: url(#fl-arrow) } 56.758%,63.175% { stroke: var(--color-muted); stroke-width: var(--border-edge); marker-end: url(#fl-arrow) } 63.175%,69.593% { stroke: var(--color-muted); stroke-width: var(--border-edge); marker-end: url(#fl-arrow) } 69.593%,76.01% { stroke: var(--color-muted); stroke-width: var(--border-edge); marker-end: url(#fl-arrow) } 76.01%,82.428% { stroke: var(--color-accent); stroke-width: var(--border-strong); marker-end: url(#fl-arrow-on) } 82.428%,91.137% { stroke: var(--color-accent); stroke-width: var(--border-strong); marker-end: url(#fl-arrow-on) } 91.138%,100% { stroke: var(--color-accent); stroke-width: var(--border-strong); marker-end: url(#fl-arrow-on) } }
+.fl .a25 { animation: a25 65.4s infinite step-end; }
+@keyframes p0-0 { 0%,0% { opacity: 0 } 0%,5.348% { opacity: 1 } 5.348%,100% { opacity: 0 } }
+.fl .p0-0 { animation: p0-0 65.4s infinite step-end; }
+@keyframes p1-0 { 0%,6.418% { opacity: 0 } 6.418%,11.765% { opacity: 1 } 11.766%,100% { opacity: 0 } }
+.fl .p1-0 { animation: p1-0 65.4s infinite step-end; }
+@keyframes p2-0 { 0%,12.835% { opacity: 0 } 12.835%,18.183% { opacity: 1 } 18.183%,100% { opacity: 0 } }
+.fl .p2-0 { animation: p2-0 65.4s infinite step-end; }
+@keyframes p3-0 { 0%,19.253% { opacity: 0 } 19.253%,24.601% { opacity: 1 } 24.601%,100% { opacity: 0 } }
+.fl .p3-0 { animation: p3-0 65.4s infinite step-end; }
+@keyframes p4-0 { 0%,25.67% { opacity: 0 } 25.671%,31.018% { opacity: 1 } 31.018%,100% { opacity: 0 } }
+.fl .p4-0 { animation: p4-0 65.4s infinite step-end; }
+@keyframes p5-0 { 0%,32.088% { opacity: 0 } 32.088%,39.728% { opacity: 1 } 39.728%,100% { opacity: 0 } }
+.fl .p5-0 { animation: p5-0 65.4s infinite step-end; }
+@keyframes p6-0 { 0%,40.798% { opacity: 0 } 40.798%,46.145% { opacity: 1 } 46.146%,100% { opacity: 0 } }
+.fl .p6-0 { animation: p6-0 65.4s infinite step-end; }
+@keyframes p7-0 { 0%,49.966% { opacity: 0 } 49.966%,55.313% { opacity: 1 } 55.314%,100% { opacity: 0 } }
+.fl .p7-0 { animation: p7-0 65.4s infinite step-end; }
+@keyframes p8-0 { 0%,56.758% { opacity: 0 } 56.758%,62.105% { opacity: 1 } 62.106%,100% { opacity: 0 } }
+.fl .p8-0 { animation: p8-0 65.4s infinite step-end; }
+@keyframes p9-0 { 0%,63.175% { opacity: 0 } 63.175%,68.523% { opacity: 1 } 68.523%,100% { opacity: 0 } }
+.fl .p9-0 { animation: p9-0 65.4s infinite step-end; }
+@keyframes p10-0 { 0%,69.593% { opacity: 0 } 69.593%,74.941% { opacity: 1 } 74.941%,100% { opacity: 0 } }
+.fl .p10-0 { animation: p10-0 65.4s infinite step-end; }
+@keyframes p11-0 { 0%,76.01% { opacity: 0 } 76.011%,81.358% { opacity: 1 } 81.358%,100% { opacity: 0 } }
+.fl .p11-0 { animation: p11-0 65.4s infinite step-end; }
+@keyframes p12-0 { 0%,82.428% { opacity: 0 } 82.428%,90.068% { opacity: 1 } 90.068%,100% { opacity: 0 } }
+.fl .p12-0 { animation: p12-0 65.4s infinite step-end; }
+@keyframes p13-0 { 0%,91.138% { opacity: 0 } 91.138%,96.485% { opacity: 1 } 96.486%,100% { opacity: 0 } }
+.fl .p13-0 { animation: p13-0 65.4s infinite step-end; }
+@keyframes a26 { 0%,6.417% { opacity: 1 } 6.418%,12.835% { opacity: 1 } 12.835%,19.253% { opacity: 1 } 19.253%,25.67% { opacity: 1 } 25.67%,32.088% { opacity: 1 } 32.088%,40.797% { opacity: 1 } 40.798%,49.965% { opacity: 1 } 49.966%,56.757% { opacity: 0 } 56.758%,63.175% { opacity: 0 } 63.175%,69.593% { opacity: 0 } 69.593%,76.01% { opacity: 0 } 76.01%,82.428% { opacity: 0 } 82.428%,91.137% { opacity: 0 } 91.138%,100% { opacity: 0 } }
+.fl .a26 { animation: a26 65.4s infinite step-end; }
+@keyframes a27 { 0%,6.417% { opacity: 0 } 6.418%,12.835% { opacity: 0 } 12.835%,19.253% { opacity: 0 } 19.253%,25.67% { opacity: 0 } 25.67%,32.088% { opacity: 0 } 32.088%,40.797% { opacity: 0 } 40.798%,49.965% { opacity: 0 } 49.966%,56.757% { opacity: 1 } 56.758%,63.175% { opacity: 1 } 63.175%,69.593% { opacity: 1 } 69.593%,76.01% { opacity: 1 } 76.01%,82.428% { opacity: 1 } 82.428%,91.137% { opacity: 1 } 91.138%,100% { opacity: 1 } }
+.fl .a27 { animation: a27 65.4s infinite step-end; }
+@keyframes a28 { 0%,6.417% { opacity: 1 } 6.418%,12.835% { opacity: 1 } 12.835%,19.253% { opacity: 0 } 19.253%,25.67% { opacity: 0 } 25.67%,32.088% { opacity: 0 } 32.088%,40.797% { opacity: 0 } 40.798%,49.965% { opacity: 0 } 49.966%,56.757% { opacity: 0 } 56.758%,63.175% { opacity: 0 } 63.175%,69.593% { opacity: 0 } 69.593%,76.01% { opacity: 0 } 76.01%,82.428% { opacity: 0 } 82.428%,91.137% { opacity: 0 } 91.138%,100% { opacity: 0 } }
+.fl .a28 { animation: a28 65.4s infinite step-end; }
+@keyframes a29 { 0%,6.417% { opacity: 0 } 6.418%,12.835% { opacity: 0 } 12.835%,19.253% { opacity: 1 } 19.253%,25.67% { opacity: 1 } 25.67%,32.088% { opacity: 1 } 32.088%,40.797% { opacity: 1 } 40.798%,49.965% { opacity: 0 } 49.966%,56.757% { opacity: 0 } 56.758%,63.175% { opacity: 0 } 63.175%,69.593% { opacity: 0 } 69.593%,76.01% { opacity: 0 } 76.01%,82.428% { opacity: 0 } 82.428%,91.137% { opacity: 0 } 91.138%,100% { opacity: 0 } }
+.fl .a29 { animation: a29 65.4s infinite step-end; }
+@keyframes a30 { 0%,6.417% { opacity: 0 } 6.418%,12.835% { opacity: 0 } 12.835%,19.253% { opacity: 0 } 19.253%,25.67% { opacity: 0 } 25.67%,32.088% { opacity: 0 } 32.088%,40.797% { opacity: 0 } 40.798%,49.965% { opacity: 1 } 49.966%,56.757% { opacity: 0 } 56.758%,63.175% { opacity: 0 } 63.175%,69.593% { opacity: 0 } 69.593%,76.01% { opacity: 0 } 76.01%,82.428% { opacity: 0 } 82.428%,91.137% { opacity: 0 } 91.138%,100% { opacity: 0 } }
+.fl .a30 { animation: a30 65.4s infinite step-end; }
+@keyframes a31 { 0%,6.417% { opacity: 0 } 6.418%,12.835% { opacity: 0 } 12.835%,19.253% { opacity: 0 } 19.253%,25.67% { opacity: 0 } 25.67%,32.088% { opacity: 0 } 32.088%,40.797% { opacity: 0 } 40.798%,49.965% { opacity: 0 } 49.966%,56.757% { opacity: 1 } 56.758%,63.175% { opacity: 1 } 63.175%,69.593% { opacity: 1 } 69.593%,76.01% { opacity: 1 } 76.01%,82.428% { opacity: 0 } 82.428%,91.137% { opacity: 0 } 91.138%,100% { opacity: 0 } }
+.fl .a31 { animation: a31 65.4s infinite step-end; }
+@keyframes a32 { 0%,6.417% { opacity: 0 } 6.418%,12.835% { opacity: 0 } 12.835%,19.253% { opacity: 0 } 19.253%,25.67% { opacity: 0 } 25.67%,32.088% { opacity: 0 } 32.088%,40.797% { opacity: 0 } 40.798%,49.965% { opacity: 0 } 49.966%,56.757% { opacity: 0 } 56.758%,63.175% { opacity: 0 } 63.175%,69.593% { opacity: 0 } 69.593%,76.01% { opacity: 0 } 76.01%,82.428% { opacity: 1 } 82.428%,91.137% { opacity: 1 } 91.138%,100% { opacity: 1 } }
+.fl .a32 { animation: a32 65.4s infinite step-end; }
+</style>
+<defs><pattern id="fl-dots" width="16" height="16" patternUnits="userSpaceOnUse"><circle cx="1.5" cy="1.5" r="1" fill="var(--color-dot)"/></pattern><marker id="fl-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-muted)"/></marker><marker id="fl-arrow-on" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-accent)"/></marker></defs>
+<rect width="100%" height="100%" fill="var(--color-bg)"/><rect width="100%" height="100%" fill="url(#fl-dots)"/>
+<g transform="translate(0 0)">
+<g id="n-1" class="fl-node fl-frame" data-id="saturn"><rect x="177" y="28" width="775" height="389" rx="14" fill="var(--color-surface)" class="fl-stroke a1"/><text x="195" y="50" class="frame">SATURN</text></g>
+<g id="n-0" class="fl-node" data-id="you"><circle cx="65" cy="116.5" r="14.5" fill="var(--color-bg)" class="fl-stroke a0"/><path d="M30 166 v -11.9 a 35 22.4 0 0 1 70 0 v 11.9 z" fill="var(--color-bg)" class="fl-stroke a0"/><text x="65" y="183" class="label">개발자</text></g>
+<g id="n-2" class="fl-node" data-id="codex"><rect x="1037" y="36" width="100" height="46" rx="10" fill="var(--color-bg)" class="fl-stroke a2" stroke-dasharray="5 4"/><text x="1087" y="64.5" class="label">Codex</text></g>
+<g id="n-3" class="fl-node" data-id="claude"><rect x="1037" y="102" width="113" height="46" rx="10" fill="var(--color-bg)" class="fl-stroke a3" stroke-dasharray="5 4"/><text x="1093.5" y="130.5" class="label">Claude Code</text></g>
+<g id="n-4" class="fl-node" data-id="saturn.tui"><rect x="227" y="78" width="176" height="137" rx="10" fill="var(--color-bg)" class="fl-stroke a0"/><text x="315" y="101" class="label">화면</text><text x="315" y="116" class="sub">하나의 대화</text><rect x="237" y="129" width="156" height="76" rx="6" fill="var(--color-surface)" stroke="var(--color-border)" stroke-dasharray="3 3" class="fl-card a7"/><text x="245" y="146" class="row muted fl-empty a8">—</text><g id="n-4-c0" opacity="0" class="fl-layer a4"><rect x="245" y="136" width="24.7" height="14" rx="4" fill="var(--color-tag-gray)" fill-opacity="0.15"/><text x="257.4" y="146.5" class="tag" fill="var(--color-tag-gray)">YOU</text><text x="245" y="161" class="row">이 테스트 왜 깨져?</text></g><g id="n-4-c1" opacity="0" class="fl-layer a5"><rect x="245" y="136" width="24.7" height="14" rx="4" fill="var(--color-tag-gray)" fill-opacity="0.15"/><text x="257.4" y="146.5" class="tag" fill="var(--color-tag-gray)">YOU</text><text x="245" y="161" class="row">이 테스트 왜 깨져?</text><rect x="245" y="170" width="35.9" height="14" rx="4" fill="var(--color-tag-purple)" fill-opacity="0.15"/><text x="263" y="180.5" class="tag" fill="var(--color-tag-purple)">CODEX</text><text x="245" y="195" class="row">원인: 잠금 순서가 반대</text></g><g id="n-4-c2" opacity="0" class="fl-layer a6"><rect x="245" y="136" width="41.5" height="14" rx="4" fill="var(--color-tag-orange)" fill-opacity="0.15"/><text x="265.7" y="146.5" class="tag" fill="var(--color-tag-orange)">CLAUDE</text><text x="245" y="161" class="row">리뷰 3건: 잠금 범위를 줄이자</text></g></g>
+<g id="n-5" class="fl-node" data-id="saturn.engine"><rect x="473" y="99" width="104" height="53" rx="10" fill="var(--color-bg)" class="fl-stroke a9"/><text x="525" y="123.5" class="label">엔진</text><text x="525" y="138.5" class="sub">사용자당 하나</text></g>
+<g id="n-6" class="fl-node" data-id="saturn.judge"><rect x="726" y="141" width="176" height="103" rx="10" fill="var(--color-bg)" class="fl-stroke a10"/><text x="814" y="164" class="label">판단기</text><text x="814" y="179" class="sub">다음 차례</text><rect x="736" y="192" width="156" height="42" rx="6" fill="var(--color-surface)" stroke="var(--color-border)" stroke-dasharray="3 3" class="fl-card a13"/><text x="744" y="209" class="row muted fl-empty a14">—</text><g id="n-6-c0" opacity="0" class="fl-layer a11"><rect x="744" y="199" width="30.3" height="14" rx="4" fill="var(--color-tag-blue)" fill-opacity="0.15"/><text x="759.2" y="209.5" class="tag" fill="var(--color-tag-blue)">PICK</text><text x="744" y="224" class="row">Codex<tspan class="muted"> · 코드 실행이 필요함</tspan></text></g><g id="n-6-c1" opacity="0" class="fl-layer a12"><rect x="744" y="199" width="30.3" height="14" rx="4" fill="var(--color-tag-blue)" fill-opacity="0.15"/><text x="759.2" y="209.5" class="tag" fill="var(--color-tag-blue)">PICK</text><text x="744" y="224" class="row">Claude<tspan class="muted"> · 사용자가 지정</tspan></text></g></g>
+<g id="n-7" class="fl-node" data-id="saturn.log"><path d="M726 276 a 88 12 0 0 1 176 0 v 78 a 88 12 0 0 1 -176 0 z" fill="var(--color-bg)" class="fl-stroke a15"/><path d="M726 276 a 88 12 0 0 0 176 0" fill="none" class="fl-stroke a15"/><text x="814" y="301" class="label">기록</text><text x="814" y="316" class="sub">sqlite</text><rect x="736" y="329" width="156" height="27" rx="6" fill="var(--color-surface)" stroke="var(--color-border)" stroke-dasharray="3 3" class="fl-card a18"/><text x="744" y="346" class="row muted fl-empty a19">—</text><g id="n-7-c0" opacity="0" class="fl-layer a16"><text x="744" y="346" class="row">turn 17<tspan class="muted"> · codex</tspan></text></g><g id="n-7-c1" opacity="0" class="fl-layer a17"><text x="744" y="346" class="row">turn 18<tspan class="muted"> · claude</tspan></text></g></g>
+<g id="e-0" class="fl-edge"><path id="p-0" d="M 403 125.5 L 473 125.5" class="fl-path a20" marker-end="url(#fl-arrow)"/></g>
+<g id="e-1" class="fl-edge"><path id="p-1" d="M 577 130.8 L 638.9 130.8 Q 651.5 130.8, 651.5 143.4 L 651.5 143.4 Q 651.5 156, 664.1 156 L 726 156" class="fl-path a21" marker-end="url(#fl-arrow)"/></g>
+<g id="e-2" class="fl-edge"><path id="p-2" d="M 577 141.4 L 614 141.4 Q 636 141.4, 636 163.4 L 636 293.25 Q 636 315.25, 657.999915123948 315.1888891246557 L 726 315" class="fl-path a22" marker-end="url(#fl-arrow)"/></g>
+<g id="e-3" class="fl-edge"><path id="p-3" d="M 102 156.1 L 159.7 156.1 Q 164.5 156.1, 164.5 151.3 L 164.5 151.3 Q 164.5 146.5, 169.3 146.5 L 227 146.5" class="fl-path a23" marker-end="url(#fl-arrow)"/></g>
+<g id="e-4" class="fl-edge"><path id="p-4" d="M 577 109.6 L 614 109.6 Q 636 109.6, 636 87.6 L 636 81.75 Q 636 59.75, 658 59.75 L 1037 59.75" class="fl-path a24" marker-end="url(#fl-arrow)"/></g>
+<g id="e-5" class="fl-edge"><path id="p-5" d="M 577 120.2 L 1037 120.2" class="fl-path a25" marker-end="url(#fl-arrow)"/></g>
+<g class="p0-0" opacity="0"><circle r="10" fill="var(--color-accent)" opacity="0.2"/><circle r="4.5" fill="var(--color-accent)"/><rect x="-55.5" y="-35" width="111" height="23" rx="8" fill="var(--color-accent)"/><text x="0" y="-20" class="chip">이 테스트 왜 깨져?</text><animateMotion dur="65.4s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0;0.0535;1" keyPoints="0;0;1;1"><mpath href="#p-3" xlink:href="#p-3"/></animateMotion></g>
+<g class="p1-0" opacity="0"><circle r="10" fill="var(--color-accent)" opacity="0.2"/><circle r="4.5" fill="var(--color-accent)"/><animateMotion dur="65.4s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.0642;0.1177;1" keyPoints="0;0;1;1"><mpath href="#p-0" xlink:href="#p-0"/></animateMotion></g>
+<g class="p2-0" opacity="0"><circle r="10" fill="var(--color-accent)" opacity="0.2"/><circle r="4.5" fill="var(--color-accent)"/><rect x="-43.4" y="-35" width="86.8" height="23" rx="8" fill="var(--color-accent)"/><text x="0" y="-20" class="chip">최근 3턴 요약</text><animateMotion dur="65.4s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.1284;0.1818;1" keyPoints="0;0;1;1"><mpath href="#p-1" xlink:href="#p-1"/></animateMotion></g>
+<g class="p3-0" opacity="0"><circle r="10" fill="var(--color-accent)" opacity="0.2"/><circle r="4.5" fill="var(--color-accent)"/><rect x="-24.8" y="-35" width="49.5" height="23" rx="8" fill="var(--color-accent)"/><text x="0" y="-20" class="chip">Codex</text><animateMotion dur="65.4s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.1925;0.246;1" keyPoints="1;1;0;0"><mpath href="#p-1" xlink:href="#p-1"/></animateMotion></g>
+<g class="p4-0" opacity="0"><circle r="10" fill="var(--color-accent)" opacity="0.2"/><circle r="4.5" fill="var(--color-accent)"/><rect x="-50" y="-35" width="100" height="23" rx="8" fill="var(--color-accent)"/><text x="0" y="-20" class="chip">질문 + 대화 맥락</text><animateMotion dur="65.4s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.2567;0.3102;1" keyPoints="0;0;1;1"><mpath href="#p-4" xlink:href="#p-4"/></animateMotion></g>
+<g class="p5-0" opacity="0"><circle r="10" fill="var(--color-accent)" opacity="0.2"/><circle r="4.5" fill="var(--color-accent)"/><rect x="-47.1" y="-35" width="94.1" height="23" rx="8" fill="var(--color-accent)"/><text x="0" y="-20" class="chip">원인: 잠금 순서</text><animateMotion dur="65.4s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.3209;0.3973;1" keyPoints="1;1;0;0"><mpath href="#p-4" xlink:href="#p-4"/></animateMotion></g>
+<g class="p6-0" opacity="0"><circle r="10" fill="var(--color-accent)" opacity="0.2"/><circle r="4.5" fill="var(--color-accent)"/><animateMotion dur="65.4s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.408;0.4615;1" keyPoints="0;0;1;1"><mpath href="#p-2" xlink:href="#p-2"/></animateMotion></g>
+<g class="p7-0" opacity="0"><circle r="10" fill="var(--color-accent)" opacity="0.2"/><circle r="4.5" fill="var(--color-accent)"/><rect x="-57.3" y="-35" width="114.6" height="23" rx="8" fill="var(--color-accent)"/><text x="0" y="-20" class="chip">Claude가 리뷰해 줘</text><animateMotion dur="65.4s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.4997;0.5531;1" keyPoints="0;0;1;1"><mpath href="#p-3" xlink:href="#p-3"/></animateMotion></g>
+<g class="p8-0" opacity="0"><circle r="10" fill="var(--color-accent)" opacity="0.2"/><circle r="4.5" fill="var(--color-accent)"/><animateMotion dur="65.4s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.5676;0.6211;1" keyPoints="0;0;1;1"><mpath href="#p-0" xlink:href="#p-0"/></animateMotion></g>
+<g class="p9-0" opacity="0"><circle r="10" fill="var(--color-accent)" opacity="0.2"/><circle r="4.5" fill="var(--color-accent)"/><animateMotion dur="65.4s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.6318;0.6852;1" keyPoints="0;0;1;1"><mpath href="#p-1" xlink:href="#p-1"/></animateMotion></g>
+<g class="p10-0" opacity="0"><circle r="10" fill="var(--color-accent)" opacity="0.2"/><circle r="4.5" fill="var(--color-accent)"/><rect x="-26.5" y="-35" width="53" height="23" rx="8" fill="var(--color-accent)"/><text x="0" y="-20" class="chip">Claude</text><animateMotion dur="65.4s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.6959;0.7494;1" keyPoints="1;1;0;0"><mpath href="#p-1" xlink:href="#p-1"/></animateMotion></g>
+<g class="p11-0" opacity="0"><circle r="10" fill="var(--color-accent)" opacity="0.2"/><circle r="4.5" fill="var(--color-accent)"/><rect x="-51.6" y="-35" width="103.2" height="23" rx="8" fill="var(--color-accent)"/><text x="0" y="-20" class="chip">지난 17턴 + 요청</text><animateMotion dur="65.4s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.7601;0.8136;1" keyPoints="0;0;1;1"><mpath href="#p-5" xlink:href="#p-5"/></animateMotion></g>
+<g class="p12-0" opacity="0"><circle r="10" fill="var(--color-accent)" opacity="0.2"/><circle r="4.5" fill="var(--color-accent)"/><rect x="-30.7" y="-35" width="61.5" height="23" rx="8" fill="var(--color-accent)"/><text x="0" y="-20" class="chip">리뷰 3건</text><animateMotion dur="65.4s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.8243;0.9007;1" keyPoints="1;1;0;0"><mpath href="#p-5" xlink:href="#p-5"/></animateMotion></g>
+<g class="p13-0" opacity="0"><circle r="10" fill="var(--color-accent)" opacity="0.2"/><circle r="4.5" fill="var(--color-accent)"/><animateMotion dur="65.4s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.9114;0.9649;1" keyPoints="0;0;1;1"><mpath href="#p-2" xlink:href="#p-2"/></animateMotion></g>
+</g>
+<text x="589" y="463" opacity="0" class="steplabel a26">질문</text>
+<text x="589" y="463" opacity="0" class="steplabel a27">넘기기</text>
+<g opacity="0" class="a28"><text x="589" y="489" class="caption">누가 답할지 판단기가 고른다</text></g>
+<g opacity="0" class="a29"><text x="589" y="489" class="caption">엔진만 판단기를 부른다</text></g>
+<g opacity="0" class="a30"><text x="589" y="489" class="caption">대화는 파일 하나에 엔진 하나만 쓴다</text></g>
+<g opacity="0" class="a31"><text x="589" y="489" class="caption">같은 대화를 다른 에이전트가 이어받는다</text></g>
+<g opacity="0" class="a32"><text x="589" y="489" class="caption">앞선 대화를 그대로 넘긴다</text></g>
+</svg>

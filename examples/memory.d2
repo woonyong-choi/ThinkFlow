@@ -1,0 +1,37 @@
+# 메모리 서버 예시. container, 원통, 양방향 선, 같은 두 도형 사이의 두 선을 쓴다.
+direction: right
+app: 앱 {
+  agent: AI 에이전트
+}
+server: 메모리 서버 {
+  api: API
+  extract: 사실 추출
+  search: 검색 {
+    semantic: 의미
+    keyword: 키워드
+    graph: 그래프
+  }
+  bank: 메모리 뱅크 {shape: cylinder}
+  api -> extract
+  extract -> bank: 저장
+  api -> search
+  search -> bank
+}
+llm: LLM {style.stroke-dash: 4}
+app.agent -> server.api: retain
+app.agent -> server.api: recall
+server.extract <-> llm
+
+#@ speed 2000ms
+#@ step "retain()": 대화에서 사실을 뽑아 저장한다
+#@   agent -> api "대화 3턴"
+#@   api -> extract
+#@   extract -> llm "추출 요청" : LLM이 사실을 뽑는다
+#@   llm -> extract "사실 4개"
+#@   extract -> bank "사실 4개"
+#@ step "recall()": 세 방식으로 동시에 찾는다
+#@   agent -> api[1] "지난주 약속?"
+#@   api -> search
+#@   light semantic keyword graph : 의미, 키워드, 그래프 검색을 함께 돌린다
+#@   search -> bank & bank -> search "후보 12개"
+#@   api -> agent[1] "사실 3개"

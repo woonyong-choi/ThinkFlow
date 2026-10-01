@@ -1,0 +1,955 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>google-search</title>
+<script>if (window.self !== window.top) {
+  document.documentElement.classList.add('embedded');
+  addEventListener('load', () => new ResizeObserver(() => parent.postMessage({ d2flowHeight: Math.ceil(document.body.getBoundingClientRect().height) }, '*')).observe(document.body));
+}</script>
+<style>/* tokens.json: 생성물, 손으로 고치지 않음 */
+:root {
+  --color-gray-0: #ffffff;
+  --color-gray-25: #f7f8fa;
+  --color-gray-50: #f5f7fa;
+  --color-gray-100: #e3e7ec;
+  --color-gray-200: #d5dbe3;
+  --color-gray-300: #b6c0cc;
+  --color-gray-600: #4b5563;
+  --color-gray-900: #111418;
+  --color-neutral-100: #e3e3e3;
+  --color-neutral-400: #9aa0a6;
+  --color-neutral-700: #3a3b3c;
+  --color-neutral-750: #34363a;
+  --color-neutral-800: #2c2d30;
+  --color-neutral-850: #242526;
+  --color-neutral-900: #1b1b1d;
+  --color-neutral-950: #111214;
+  --color-blue-50: #eef5fd;
+  --color-blue-400: #3396e8;
+  --color-blue-600: #0074d9;
+  --color-blue-900: #1d2733;
+  --color-tone-blue: #3b82f6;
+  --color-tone-purple: #8b5cf6;
+  --color-tone-green: #10b981;
+  --color-tone-orange: #f59e0b;
+  --color-tone-gray: #8b949e;
+  --color-accent: var(--color-blue-600);
+  --color-on-accent: var(--color-gray-0);
+  --color-fg: var(--color-gray-900);
+  --color-muted: var(--color-gray-600);
+  --color-bg: var(--color-gray-0);
+  --color-surface: var(--color-gray-50);
+  --color-border: var(--color-gray-300);
+  --color-card-on: var(--color-blue-50);
+  --color-dot: var(--color-gray-200);
+  --color-frame: var(--color-gray-100);
+  --color-page: var(--color-gray-0);
+  --color-gallery: var(--color-gray-25);
+  --color-tag-blue: var(--color-tone-blue);
+  --color-tag-purple: var(--color-tone-purple);
+  --color-tag-green: var(--color-tone-green);
+  --color-tag-orange: var(--color-tone-orange);
+  --color-tag-gray: var(--color-tone-gray);
+  --font-sans: -apple-system, BlinkMacSystemFont, Pretendard, 'Apple SD Gothic Neo', 'Noto Sans KR', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, D2Coding, Menlo, monospace;
+  --size-text-9: 9px;
+  --size-text-10-5: 10.5px;
+  --size-text-11: 11px;
+  --size-text-11-5: 11.5px;
+  --size-text-12: 12px;
+  --size-text-13: 13px;
+  --size-text-13-5: 13.5px;
+  --size-text-14: 14px;
+  --size-text-14-5: 14.5px;
+  --size-text-15: 15px;
+  --size-text-22: 22px;
+  --size-line-15: 15px;
+  --size-line-18: 18px;
+  --size-line-20: 20px;
+  --size-line-22: 22px;
+  --size-control: 30px;
+  --size-pill: 18px;
+  --size-tag: 14px;
+  --size-icon: 20px;
+  --size-packet: 4.5px;
+  --size-halo: 10px;
+  --size-marker: 5px;
+  --size-marker-on: 4px;
+  --size-grid: 16px;
+  --size-grid-dot: 1px;
+  --size-card: 176px;
+  --size-node-min: 100px;
+  --size-node-max: 210px;
+  --size-node-min-h: 46px;
+  --size-store-min-h: 70px;
+  --size-store-cap: 12px;
+  --size-figure-min: 560px;
+  --size-chip-max: 210px;
+  --size-caption-max: 720px;
+  --size-figure-max: 1400px;
+  --size-gallery-column: 760px;
+  --size-gallery-frame: 820px;
+  --size-player-chrome: 190px;
+  --size-embedded-chrome: 150px;
+  --size-chart-width: 640px;
+  --size-chart-label: 140px;
+  --size-chart-bar: 12px;
+  --size-chart-row: 40px;
+  --size-chart-dot: 5px;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --leading-normal: 1.5;
+  --tracking-tag: 0.03em;
+  --tracking-frame: 0.04em;
+  --space-0-5: 1px;
+  --space-1: 2px;
+  --space-1-5: 3px;
+  --space-2: 4px;
+  --space-2-5: 5px;
+  --space-3: 6px;
+  --space-3-5: 7px;
+  --space-4: 8px;
+  --space-5: 10px;
+  --space-6: 12px;
+  --space-6-5: 13px;
+  --space-7: 14px;
+  --space-8: 16px;
+  --space-8-5: 17px;
+  --space-9: 18px;
+  --space-11: 22px;
+  --space-12: 24px;
+  --space-13: 26px;
+  --space-14: 28px;
+  --space-15: 30px;
+  --space-16: 32px;
+  --space-17: 34px;
+  --space-18: 36px;
+  --space-20: 40px;
+  --space-22: 44px;
+  --space-30: 60px;
+  --space-32: 64px;
+  --radius-xs: 2px;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 10px;
+  --radius-2xl: 14px;
+  --radius-route: 22px;
+  --radius-full: 999px;
+  --border-hair: 0.75px;
+  --border-thin: 1px;
+  --border-lifeline: 1.25px;
+  --border-tag: 1.5px;
+  --border-edge: 1.75px;
+  --border-strong: 2.5px;
+  --dash-line: 5;
+  --dash-gap: 4;
+  --dash-card: 3;
+  --opacity-tag: 0.15;
+  --opacity-halo: 0.2;
+  --opacity-tab-on: 0.06;
+  --z-raised: 2;
+  --z-overlay: 10;
+  --duration-fast: 200ms;
+  --duration-hop: 3750ms;
+  --duration-dwell: 700ms;
+  --duration-dwell-per-char: 45ms;
+  --duration-dwell-max: 3200ms;
+  --duration-step-end: 1600ms;
+  --duration-stagger: 120ms;
+  --duration-chart-cycle: 7000ms;
+  --scale-zoom-max: 6;
+  --scale-zoom-step: 1.25;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --color-accent: var(--color-blue-400);
+    --color-fg: var(--color-neutral-100);
+    --color-muted: var(--color-neutral-400);
+    --color-bg: var(--color-neutral-900);
+    --color-surface: var(--color-neutral-850);
+    --color-border: var(--color-neutral-700);
+    --color-card-on: var(--color-blue-900);
+    --color-dot: var(--color-neutral-750);
+    --color-frame: var(--color-neutral-800);
+    --color-page: var(--color-neutral-950);
+    --color-gallery: var(--color-neutral-950);
+  }
+}
+[data-theme='dark'] {
+  --color-accent: var(--color-blue-400);
+  --color-fg: var(--color-neutral-100);
+  --color-muted: var(--color-neutral-400);
+  --color-bg: var(--color-neutral-900);
+  --color-surface: var(--color-neutral-850);
+  --color-border: var(--color-neutral-700);
+  --color-card-on: var(--color-blue-900);
+  --color-dot: var(--color-neutral-750);
+  --color-frame: var(--color-neutral-800);
+  --color-page: var(--color-neutral-950);
+  --color-gallery: var(--color-neutral-950);
+}
+/* 재생기 틀과 조작 막대. iframe 안(html.embedded)에서는 테두리와 바깥 여백을 뺀다. */
+body {
+  margin: 0;
+  padding: var(--space-12);
+  font-family: var(--font-sans);
+  background: var(--color-page);
+}
+
+html.embedded body {
+  padding: 0;
+}
+
+.fl-figure {
+  position: relative;
+  max-width: var(--size-figure-max);
+  margin: 0 auto;
+  overflow: hidden;
+  color: var(--color-fg);
+  background: var(--color-bg) radial-gradient(var(--color-dot) var(--size-grid-dot), transparent calc(var(--size-grid-dot) * 1.2)) 0 0 / var(--size-grid) var(--size-grid);
+  border: var(--border-thin) solid var(--color-frame);
+  border-radius: var(--radius-2xl);
+}
+
+html.embedded .fl-figure {
+  border: 0;
+  border-radius: 0;
+}
+
+.fl-canvas {
+  padding: var(--space-6);
+  overflow: auto;
+}
+
+.fl-canvas svg {
+  display: block;
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: calc(100vh - var(--size-player-chrome));
+  margin: 0 auto;
+}
+
+/* iframe 높이는 목록 쪽이 문서 높이에 맞춘다. 화면 높이로 줄이면 서로 맞추다 계속 작아진다. */
+html.embedded .fl-canvas svg {
+  max-height: none;
+}
+
+.fl-foot {
+  display: grid;
+  gap: var(--space-6);
+  justify-items: center;
+  padding: var(--space-7) var(--space-8) var(--space-8);
+  background: var(--color-bg);
+  border-top: var(--border-thin) solid var(--color-frame);
+}
+
+.fl-bar {
+  display: flex;
+  gap: var(--space-5);
+  align-items: center;
+}
+
+.fl-round {
+  display: grid;
+  place-items: center;
+  min-width: var(--size-control);
+  height: var(--size-control);
+  padding: 0 var(--space-3-5);
+  font: var(--size-text-11) var(--font-mono);
+  white-space: nowrap;
+  color: var(--color-muted);
+  background: var(--color-bg);
+  border: var(--border-thin) solid var(--color-border);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+}
+
+.fl-round:focus-visible,
+.fl-tabs button:focus-visible {
+  outline: var(--border-tag) solid var(--color-accent);
+  outline-offset: var(--space-1);
+}
+
+.fl-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  justify-content: center;
+  padding: var(--space-1-5);
+  background: var(--color-bg);
+  border: var(--border-thin) solid var(--color-border);
+  border-radius: var(--radius-xl);
+}
+
+.fl-tabs button {
+  position: relative;
+  padding: var(--space-3) var(--space-7);
+  font: var(--size-text-13) var(--font-mono);
+  color: var(--color-muted);
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+}
+
+.fl-tabs button.on {
+  color: var(--color-fg);
+  background: color-mix(in srgb, var(--color-fg) calc(var(--opacity-tab-on) * 100%), transparent);
+}
+
+.fl-tabs button i {
+  position: absolute;
+  bottom: var(--space-1);
+  left: var(--space-7);
+  width: 0;
+  max-width: calc(100% - var(--space-14));
+  height: var(--space-1);
+  background: var(--color-accent);
+  border-radius: var(--radius-xs);
+}
+
+.fl-caption {
+  max-width: var(--size-caption-max);
+  min-height: calc(var(--size-text-14-5) * var(--leading-normal));
+  margin: 0;
+  font-size: var(--size-text-14-5);
+  line-height: var(--leading-normal);
+  text-align: center;
+  color: var(--color-muted);
+}
+
+.fl-full {
+  position: absolute;
+  top: var(--space-5);
+  right: var(--space-5);
+  z-index: var(--z-raised);
+}
+
+.fl-figure.full {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-overlay);
+  display: flex;
+  flex-direction: column;
+  max-width: none;
+  border-radius: 0;
+}
+
+.fl-figure.full .fl-canvas {
+  display: grid;
+  flex: 1;
+  place-items: center;
+}
+
+.fl-figure.full .fl-canvas svg {
+  width: 100%;
+  height: calc(100vh - var(--size-embedded-chrome));
+  max-height: none;
+  touch-action: none;
+  user-select: none;
+}
+
+.fl-figure.full.zoomed .fl-canvas svg {
+  cursor: grab;
+}
+
+.fl-figure.full.zoomed .fl-canvas svg:active {
+  cursor: grabbing;
+}
+
+/* 확대·축소는 전체 화면에서만 보인다. 문서 안에서는 그림을 그대로 보이는 편이 읽기 쉽다. */
+.fl-zoom {
+  position: absolute;
+  top: calc(var(--space-5) + var(--size-control) + var(--space-3));
+  right: var(--space-5);
+  z-index: var(--z-raised);
+  display: none;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.fl-figure.full .fl-zoom {
+  display: flex;
+}
+
+.fl .fl-node.on .fl-stroke {
+  stroke: var(--color-accent);
+}
+
+.fl .fl-card.on {
+  fill: var(--color-card-on);
+  stroke: var(--color-accent);
+}
+
+.fl .fl-edge.on .fl-path,
+.fl .fl-edge.hover .fl-path {
+  stroke: var(--color-accent);
+  stroke-width: var(--border-strong);
+}
+
+.fl .fl-edge.on .fl-path[marker-end],
+.fl .fl-edge.hover .fl-path[marker-end] {
+  marker-end: url("#fl-arrow-on");
+}
+
+.fl .fl-edge.on .fl-path[marker-start],
+.fl .fl-edge.hover .fl-path[marker-start] {
+  marker-start: url("#fl-arrow-on");
+}
+
+.fl .fl-edge.on .fl-pill rect {
+  fill: var(--color-accent);
+  stroke: var(--color-accent);
+}
+
+.fl .fl-edge.on .fl-pill text {
+  fill: var(--color-on-accent);
+}
+
+.fl .fl-path,
+.fl .fl-stroke,
+.fl .fl-pill rect {
+  transition: stroke var(--duration-fast), fill var(--duration-fast);
+}
+
+.fl .fl-layer,
+.fl .fl-edge.quiet {
+  transition: opacity var(--duration-fast);
+}
+
+/* 조용한 선은 지금 단계에서 쓰거나 마우스를 올린 도형에 닿을 때만 보인다. */
+.fl .fl-edge.quiet:not(.on, .hover) {
+  opacity: 0;
+}
+
+.fl .fl-node {
+  cursor: default;
+}
+
+.fl-packet {
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fl .fl-path,
+  .fl .fl-stroke,
+  .fl .fl-pill rect,
+  .fl .fl-layer,
+  .fl .fl-edge.quiet {
+    transition: none;
+  }
+}
+
+/* 차트 쪽은 틀을 차트 너비에 맞춘다. */
+.fl-figure.fl-chart-page {
+  width: fit-content;
+  margin-inline: auto;
+}
+/* 그림 안 글자와 모양. HTML 재생기와 움직이는 SVG가 같이 쓴다. */
+.fl text {
+  font-family: var(--font-sans);
+}
+
+.fl .label {
+  font-size: var(--size-text-14);
+  font-weight: var(--weight-medium);
+  text-anchor: middle;
+  fill: var(--color-fg);
+}
+
+.fl .sub {
+  font-size: var(--size-text-12);
+  text-anchor: middle;
+  fill: var(--color-muted);
+}
+
+.fl .frame {
+  font-size: var(--size-text-11);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-frame);
+  fill: var(--color-muted);
+}
+
+.fl .edgelabel {
+  font-family: var(--font-mono);
+  font-size: var(--size-text-11);
+  text-anchor: middle;
+  fill: var(--color-muted);
+}
+
+.fl .row {
+  font-size: var(--size-text-11);
+  fill: var(--color-fg);
+}
+
+.fl .row.mono {
+  font-family: var(--font-mono);
+  font-size: var(--size-text-10-5);
+}
+
+.fl .muted {
+  fill: var(--color-muted);
+}
+
+.fl .tag {
+  font-size: var(--size-text-9);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-tag);
+  text-anchor: middle;
+}
+
+.fl .mark {
+  font-size: var(--size-text-11);
+  font-weight: var(--weight-semibold);
+  text-anchor: end;
+  fill: var(--color-accent);
+}
+
+.fl .mark.key {
+  font-size: var(--size-text-9);
+  text-anchor: start;
+}
+
+.fl .mini {
+  font-size: var(--size-text-10-5);
+  text-anchor: middle;
+  fill: var(--color-fg);
+}
+
+.fl .mini.on {
+  fill: var(--color-on-accent);
+}
+
+.fl .chip {
+  font-size: var(--size-text-11-5);
+  text-anchor: middle;
+  fill: var(--color-on-accent);
+}
+
+.fl .md {
+  font-size: var(--size-text-13);
+  fill: var(--color-fg);
+}
+
+.fl .md.h {
+  font-size: var(--size-text-15);
+  font-weight: var(--weight-semibold);
+}
+
+.fl .cell {
+  font-size: var(--size-text-11-5);
+  fill: var(--color-fg);
+}
+
+.fl .cell.type {
+  font-family: var(--font-mono);
+  font-size: var(--size-text-10-5);
+  text-anchor: end;
+  fill: var(--color-muted);
+}
+
+.fl .fl-stroke {
+  stroke: var(--color-border);
+}
+
+.fl .fl-path {
+  fill: none;
+  stroke: var(--color-muted);
+  stroke-width: var(--border-edge);
+}
+</style>
+</head>
+<body>
+<figure class="fl-figure" tabindex="0">
+<button type="button" class="fl-round fl-full"></button><div class="fl-zoom"><button type="button" class="fl-round" data-zoom="in" aria-label="확대"></button><button type="button" class="fl-round" data-zoom="out" aria-label="축소"></button><button type="button" class="fl-round" data-zoom="fit" aria-label="전체 보기"></button></div>
+<div class="fl-canvas"><svg xmlns="http://www.w3.org/2000/svg" class="fl" width="1765" height="1112" style="aspect-ratio: 1765 / 1112" viewBox="0 0 1765 1112"><defs><pattern id="fl-dots" width="16" height="16" patternUnits="userSpaceOnUse"><circle cx="1.5" cy="1.5" r="1" fill="var(--color-dot)"/></pattern><marker id="fl-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-muted)"/></marker><marker id="fl-arrow-on" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-accent)"/></marker></defs><g id="n-1" class="fl-node fl-frame" data-id="front"><rect x="177" y="652" width="480" height="195" rx="14" fill="var(--color-surface)" class="fl-stroke"/><text x="195" y="674" class="frame">프런트</text></g>
+<g id="n-2" class="fl-node fl-frame" data-id="query"><rect x="797" y="571" width="522" height="188" rx="14" fill="var(--color-surface)" class="fl-stroke"/><text x="815" y="593" class="frame">질의 이해</text></g>
+<g id="n-3" class="fl-node fl-frame" data-id="index"><rect x="797" y="28" width="689" height="523" rx="14" fill="var(--color-surface)" class="fl-stroke"/><text x="815" y="50" class="frame">색인 서빙 트리</text></g>
+<g id="n-6" class="fl-node fl-frame" data-id="ads"><rect x="797" y="911" width="446" height="173" rx="14" fill="var(--color-surface)" class="fl-stroke"/><text x="815" y="933" class="frame">광고 경매</text></g>
+<g id="n-7" class="fl-node fl-frame" data-id="crawl"><rect x="287" y="163" width="370" height="146" rx="14" fill="var(--color-surface)" class="fl-stroke"/><text x="305" y="185" class="frame">색인 갱신</text></g>
+<g id="n-0" class="fl-node" data-id="user"><circle cx="65" cy="720.5" r="14.5" fill="var(--color-bg)" class="fl-stroke"/><path d="M30 770 v -11.9 a 35 22.4 0 0 1 70 0 v 11.9 z" fill="var(--color-bg)" class="fl-stroke"/><text x="65" y="787" class="label">사용자</text></g>
+<g id="n-4" class="fl-node" data-id="docs"><path d="M797 791 a 50 12 0 0 1 100 0 v 46 a 50 12 0 0 1 -100 0 z" fill="var(--color-bg)" class="fl-stroke"/><path d="M797 791 a 50 12 0 0 0 100 0" fill="none" class="fl-stroke"/><text x="847" y="818" class="label">문서 서버</text><text x="847" y="833" class="sub">제목과 요약</text></g>
+<g id="n-5" class="fl-node" data-id="rank"><rect x="1561" y="408" width="176" height="122" rx="10" fill="var(--color-bg)" class="fl-stroke"/><text x="1649" y="431" class="label">순위</text><text x="1649" y="446" class="sub">수백 개 신호</text><rect x="1571" y="459" width="156" height="61" rx="6" fill="var(--color-surface)" stroke="var(--color-border)" stroke-dasharray="3 3" class="fl-card"/><text x="1579" y="476" class="row muted fl-empty">—</text><g id="n-5-c0" opacity="0" class="fl-layer"><rect x="1579" y="466" width="13.6" height="14" rx="4" fill="var(--color-tag-green)" fill-opacity="0.15"/><text x="1585.8" y="476.5" class="tag" fill="var(--color-tag-green)">1</text><text x="1597.6" y="476" class="row">d2lang.com<tspan class="muted"> · 0.97</tspan></text><rect x="1579" y="485" width="13.6" height="14" rx="4" fill="var(--color-tag-green)" fill-opacity="0.15"/><text x="1585.8" y="495.5" class="tag" fill="var(--color-tag-green)">2</text><text x="1597.6" y="495" class="row">github.com/terrastruct/</text><text x="1579" y="510" class="row">d2<tspan class="muted"> · 0.94</tspan></text></g></g>
+<g id="n-8" class="fl-node" data-id="front.gfe"><rect x="227" y="702" width="128" height="53" rx="10" fill="var(--color-bg)" class="fl-stroke"/><text x="291" y="726.5" class="label">GFE</text><text x="291" y="741.5" class="sub">가까운 데이터센터</text></g>
+<g id="n-9" class="fl-node" data-id="front.web"><rect x="461" y="702" width="119" height="53" rx="10" fill="var(--color-bg)" class="fl-stroke"/><text x="520.5" y="726.5" class="label">웹 서버</text><text x="520.5" y="741.5" class="sub">결과 페이지 조립</text></g>
+<g id="n-10" class="fl-node" data-id="query.spell"><rect x="847" y="621" width="176" height="88" rx="10" fill="var(--color-bg)" class="fl-stroke"/><text x="935" y="644" class="label">철자 교정</text><rect x="857" y="657" width="156" height="42" rx="6" fill="var(--color-surface)" stroke="var(--color-border)" stroke-dasharray="3 3" class="fl-card"/><text x="865" y="674" class="row muted fl-empty">—</text><g id="n-10-c0" opacity="0" class="fl-layer"><rect x="865" y="664" width="24.7" height="14" rx="4" fill="var(--color-tag-orange)" fill-opacity="0.15"/><text x="877.4" y="674.5" class="tag" fill="var(--color-tag-orange)">FIX</text><text x="865" y="689" class="row">diagarm → diagram</text></g></g>
+<g id="n-11" class="fl-node" data-id="query.intent"><rect x="1093" y="621" width="176" height="88" rx="10" fill="var(--color-bg)" class="fl-stroke"/><text x="1181" y="644" class="label">의도 분류</text><rect x="1103" y="657" width="156" height="42" rx="6" fill="var(--color-surface)" stroke="var(--color-border)" stroke-dasharray="3 3" class="fl-card"/><text x="1111" y="674" class="row muted fl-empty">—</text><g id="n-11-c0" opacity="0" class="fl-layer"><rect x="1111" y="664" width="30.3" height="14" rx="4" fill="var(--color-tag-blue)" fill-opacity="0.15"/><text x="1126.2" y="674.5" class="tag" fill="var(--color-tag-blue)">TYPE</text><text x="1111" y="689" class="row">도구 찾기<tspan class="muted"> · 문서</tspan></text></g></g>
+<g id="n-12" class="fl-node" data-id="index.root"><rect x="847" y="406" width="100" height="53" rx="10" fill="var(--color-bg)" class="fl-stroke"/><text x="897" y="430.5" class="label">루트</text><text x="897" y="445.5" class="sub">결과 합치기</text></g>
+<g id="n-13" class="fl-node" data-id="index.mid"><rect x="1030" y="245" width="100" height="46" rx="10" fill="var(--color-bg)" class="fl-stroke"/><text x="1080" y="273.5" class="label">중간 집계</text></g>
+<g id="n-14" class="fl-node" data-id="index.leaf1"><path d="M1260 90 a 88 12 0 0 1 176 0 v 63 a 88 12 0 0 1 -176 0 z" fill="var(--color-bg)" class="fl-stroke"/><path d="M1260 90 a 88 12 0 0 0 176 0" fill="none" class="fl-stroke"/><text x="1348" y="115" class="label">리프 샤드 1</text><rect x="1270" y="128" width="156" height="27" rx="6" fill="var(--color-surface)" stroke="var(--color-border)" stroke-dasharray="3 3" class="fl-card"/><text x="1278" y="145" class="row muted fl-empty">—</text><g id="n-14-c0" opacity="0" class="fl-layer"><text x="1278" y="145" class="row">후보 340개</text></g></g>
+<g id="n-15" class="fl-node" data-id="index.leaf2"><path d="M1260 197 a 88 12 0 0 1 176 0 v 78 a 88 12 0 0 1 -176 0 z" fill="var(--color-bg)" class="fl-stroke"/><path d="M1260 197 a 88 12 0 0 0 176 0" fill="none" class="fl-stroke"/><text x="1348" y="222" class="label">리프 샤드 2</text><rect x="1270" y="235" width="156" height="42" rx="6" fill="var(--color-surface)" stroke="var(--color-border)" stroke-dasharray="3 3" class="fl-card"/><text x="1278" y="252" class="row muted fl-empty">—</text><g id="n-15-c0" opacity="0" class="fl-layer"><text x="1278" y="252" class="row">후보 512개</text></g><g id="n-15-c1" opacity="0" class="fl-layer"><rect x="1278" y="242" width="24.7" height="14" rx="4" fill="var(--color-tag-blue)" fill-opacity="0.15"/><text x="1290.4" y="252.5" class="tag" fill="var(--color-tag-blue)">NEW</text><text x="1278" y="267" class="row">d2lang.com/tour<tspan class="muted"> · 갱신</tspan></text></g></g>
+<g id="n-16" class="fl-node" data-id="index.leaf3"><path d="M1260 319 a 88 12 0 0 1 176 0 v 63 a 88 12 0 0 1 -176 0 z" fill="var(--color-bg)" class="fl-stroke"/><path d="M1260 319 a 88 12 0 0 0 176 0" fill="none" class="fl-stroke"/><text x="1348" y="344" class="label">리프 샤드 3</text><rect x="1270" y="357" width="156" height="27" rx="6" fill="var(--color-surface)" stroke="var(--color-border)" stroke-dasharray="3 3" class="fl-card"/><text x="1278" y="374" class="row muted fl-empty">—</text><g id="n-16-c0" opacity="0" class="fl-layer"><text x="1278" y="374" class="row">후보 128개</text></g></g>
+<g id="n-17" class="fl-node" data-id="ads.auction"><rect x="847" y="961" width="176" height="73" rx="10" fill="var(--color-bg)" class="fl-stroke"/><text x="935" y="984" class="label">경매</text><rect x="857" y="997" width="156" height="27" rx="6" fill="var(--color-surface)" stroke="var(--color-border)" stroke-dasharray="3 3" class="fl-card"/><text x="865" y="1014" class="row muted fl-empty">—</text><g id="n-17-c0" opacity="0" class="fl-layer"><rect x="865" y="1004" width="19.2" height="14" rx="4" fill="var(--color-tag-purple)" fill-opacity="0.15"/><text x="874.6" y="1014.5" class="tag" fill="var(--color-tag-purple)">AD</text><text x="889.2" y="1014" class="row">광고 2개<tspan class="muted"> · 낙찰</tspan></text></g></g>
+<g id="n-18" class="fl-node" data-id="ads.budget"><path d="M1093 974 a 50 12 0 0 1 100 0 v 46 a 50 12 0 0 1 -100 0 z" fill="var(--color-bg)" class="fl-stroke"/><path d="M1093 974 a 50 12 0 0 0 100 0" fill="none" class="fl-stroke"/><text x="1143" y="1008.5" class="label">예산</text></g>
+<g id="n-19" class="fl-node" data-id="crawl.crawler"><rect x="337" y="213" width="100" height="46" rx="10" fill="var(--color-bg)" class="fl-stroke"/><text x="387" y="241.5" class="label">크롤러</text></g>
+<g id="n-20" class="fl-node" data-id="crawl.indexer"><rect x="507" y="213" width="100" height="46" rx="10" fill="var(--color-bg)" class="fl-stroke"/><text x="557" y="241.5" class="label">색인기</text></g>
+<g id="e-0" class="fl-edge"><path id="p-0" d="M 355 728.5 L 461 728.5" class="fl-path" marker-end="url(#fl-arrow)"/></g>
+<g id="e-1" class="fl-edge"><path id="p-1" d="M 947 423.6666666666667 L 968.5 423.6666666666667 Q 990 423.6666666666667, 990 402.1666666666667 L 990 288 Q 990 268, 1010 268 L 1030 268" class="fl-path" marker-end="url(#fl-arrow)"/></g>
+<g id="e-2" class="fl-edge"><path id="p-2" d="M 1130 256.5 L 1150 256.5 Q 1170 256.5, 1170 236.5 L 1170 158 Q 1170 136, 1192 136 L 1260 136" class="fl-path" marker-end="url(#fl-arrow)"/></g>
+<g id="e-3" class="fl-edge"><path id="p-3" d="M 1130 268 L 1260 268" class="fl-path" marker-end="url(#fl-arrow)"/></g>
+<g id="e-4" class="fl-edge"><path id="p-4" d="M 1130 279.5 L 1150 279.5 Q 1170 279.5, 1170 299.5 L 1170 314 Q 1170 336, 1192 336 L 1260 336" class="fl-path" marker-end="url(#fl-arrow)"/></g>
+<g id="e-5" class="fl-edge"><path id="p-5" d="M 1023 997 L 1093 997" class="fl-path" marker-end="url(#fl-arrow)"/></g>
+<g id="e-6" class="fl-edge"><path id="p-6" d="M 437 236 L 507 236" class="fl-path" marker-end="url(#fl-arrow)"/></g>
+<g id="e-7" class="fl-edge"><path id="p-7" d="M 102 760.1 L 148.7 760.1 Q 164.5 760.1, 164.5 744.3 L 164.5 744.3 Q 164.5 728.5, 180.3 728.5 L 227 728.5" class="fl-path" marker-end="url(#fl-arrow)"/></g>
+<g id="e-8" class="fl-edge"><path id="p-8" d="M 580 723.2 L 730 723.2 Q 752 723.2, 752 701.2 L 752 687 Q 752 665, 774 665 L 847 665" class="fl-path" marker-end="url(#fl-arrow)"/></g>
+<g id="e-9" class="fl-edge"><path id="p-9" d="M 1023 665 L 1093 665" class="fl-path" marker-end="url(#fl-arrow)"/></g>
+<g id="e-10" class="fl-edge"><path id="p-10" d="M 580 712.6 L 680 712.6 Q 702 712.6, 702 690.6 L 702 475.5 Q 702 453.5, 724 453.5 L 847 453.5" class="fl-path" marker-end="url(#fl-arrow)"/></g>
+<g id="e-11" class="fl-edge"><path id="p-11" d="M 947 441.3333333333333 L 1561 441.3333333333333" class="fl-path" marker-end="url(#fl-arrow)"/></g>
+<g id="e-12" class="fl-edge"><path id="p-12" d="M 580 733.8 L 730 733.8 Q 752 733.8, 752 755.8 L 752 813 Q 752 835, 774 835 L 797 835" class="fl-path" marker-end="url(#fl-arrow)"/></g>
+<g id="e-13" class="fl-edge"><path id="p-13" d="M 580 744.4 L 680 744.4 Q 702 744.4, 702 766.4 L 702 975.5 Q 702 997.5, 724 997.5 L 847 997.5" class="fl-path" marker-end="url(#fl-arrow)"/></g>
+<g id="e-14" class="fl-edge"><path id="p-14" d="M 607 224.5 L 680 224.5 Q 702 224.5, 702 202.5 L 702 129 Q 702 107, 724 107 L 1260 107" class="fl-path" marker-end="url(#fl-arrow)"/></g>
+<g id="e-15" class="fl-edge"><path id="p-15" d="M 607 236 L 1260 236" class="fl-path" marker-end="url(#fl-arrow)"/></g>
+<g id="e-16" class="fl-edge"><path id="p-16" d="M 607 247.5 L 680 247.5 Q 702 247.5, 702 269.5 L 702 343 Q 702 365, 724 365 L 1260 365" class="fl-path" marker-end="url(#fl-arrow)"/></g><g class="fl-packets"></g></svg></div>
+<figcaption class="fl-foot">
+<div class="fl-bar"><button type="button" class="fl-round fl-pause"></button><div class="fl-tabs" role="tablist"></div><button type="button" class="fl-round fl-rate" aria-label="배속">1×</button></div>
+<p class="fl-caption" aria-live="polite"></p>
+</figcaption>
+</figure>
+<script>
+// 브라우저에서 돈다. html.js가 HTML 안에 그대로 넣는다.
+// 전체 화면과, 전체 화면에서만 켜지는 확대·축소·끌어 옮기기를 맡는다. 문서 안에서는 그림을 그대로 보인다.
+
+// cost: time O(1) 시작, 휠·끌기마다 O(1), heap O(1), stack O(1)
+// basis: estimate
+/**
+ * 그림 틀에 전체 화면 단추와 확대·축소를 붙인다.
+ * @param root `.fl-figure` 요소. 안에 `.fl-full`, `.fl-zoom` 단추와 `svg.fl`이 있다
+ * @param metrics { iconStroke, zoomMax, zoomStep }
+ */
+function d2flowView(root, metrics) {
+  const svg = root.querySelector('svg.fl');
+  const fullButton = root.querySelector('.fl-full');
+  const base = svg.viewBox.baseVal;
+  const home = { x: base.x, y: base.y, w: base.width, h: base.height };
+  const icons = {
+    open: 'M2 6V2h4M14 6V2h-4M2 10v4h4M14 10v4h-4',
+    close: 'M6 2v4H2M10 2v4h4M6 14v-4H2M10 14v-4h4',
+    in: 'M8 3v10M3 8h10',
+    out: 'M3 8h10',
+    fit: 'M3 3h10v10H3z',
+  };
+  let view = { ...home };
+  let drag;
+
+  fullButton.addEventListener('click', () => setFull(!root.classList.contains('full')));
+  document.addEventListener('fullscreenchange', () => showFull(document.fullscreenElement === root));
+  root.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !document.fullscreenElement) setFull(false);
+  });
+  root.querySelectorAll('.fl-zoom button').forEach((b) => {
+    b.innerHTML = drawIcon(icons[b.dataset.zoom]);
+    b.addEventListener('click', () => (b.dataset.zoom === 'fit' ? setView(home) : zoomAt(b.dataset.zoom === 'in' ? metrics.zoomStep : 1 / metrics.zoomStep)));
+  });
+  svg.addEventListener('wheel', onWheel, { passive: false });
+  svg.addEventListener('pointerdown', onPointerDown);
+  svg.addEventListener('pointermove', onPointerMove);
+  for (const type of ['pointerup', 'pointercancel', 'lostpointercapture']) svg.addEventListener(type, () => (drag = undefined));
+  showFull(false);
+
+  // 브라우저 전체 화면을 먼저 쓰고, 막혀 있으면(iframe에 allowfullscreen이 없을 때 등) 창을 덮는 모양으로 대신한다.
+  function setFull(isFull) {
+    const canUseApi = Boolean(root.requestFullscreen) && document.fullscreenEnabled;
+    if (!canUseApi) return showFull(isFull);
+    if (isFull) root.requestFullscreen().catch(() => showFull(true));
+    else if (document.fullscreenElement) document.exitFullscreen();
+    else showFull(false);
+  }
+
+  function showFull(isFull) {
+    root.classList.toggle('full', isFull);
+    fullButton.innerHTML = drawIcon(isFull ? icons.close : icons.open);
+    const label = isFull ? '전체 화면 끝내기' : '전체 화면';
+    fullButton.setAttribute('aria-label', label);
+    fullButton.title = label;
+    // 문서 안에서는 늘 전체 그림을 보인다.
+    if (!isFull) setView(home);
+  }
+
+  // cost: time O(1), heap O(1), stack O(1)
+  // basis: estimate
+  // 휠을 굴린 자리를 중심으로 확대한다. 전체 화면이 아닐 때는 문서 스크롤에 맡긴다.
+  function onWheel(e) {
+    if (!root.classList.contains('full')) return;
+    e.preventDefault();
+    // 가로로만 미는 손짓은 확대·축소가 아니다.
+    if (e.deltaY === 0) return;
+    zoomAt(e.deltaY < 0 ? metrics.zoomStep : 1 / metrics.zoomStep, toSvgPoint(e));
+  }
+
+  // cost: time O(1), heap O(1), stack O(1)
+  // basis: estimate
+  function onPointerDown(e) {
+    const isMainButton = e.button === 0;
+    if (!root.classList.contains('full') || view.w >= home.w || !isMainButton) return;
+    // 끄는 동안 viewBox가 바뀌므로, 잡은 순간의 화면→그림 변환으로 거리를 잰다.
+    drag = { start: toSvgPoint(e), matrix: svg.getScreenCTM().inverse(), view: { ...view } };
+    svg.setPointerCapture(e.pointerId);
+  }
+
+  // cost: time O(1), heap O(1), stack O(1)
+  // basis: estimate
+  // 끈 거리만큼 그림을 반대로 옮긴다. 잡은 자리가 손가락 아래에 머문다.
+  function onPointerMove(e) {
+    if (!drag) return;
+    const now = new DOMPoint(e.clientX, e.clientY).matrixTransform(drag.matrix);
+    setView({ ...drag.view, x: drag.view.x - (now.x - drag.start.x), y: drag.view.y - (now.y - drag.start.y) });
+  }
+
+  // factor만큼 확대한다. 배율은 1배(전체)에서 metrics.zoomMax배 사이다.
+  function zoomAt(factor, center = { x: view.x + view.w / 2, y: view.y + view.h / 2 }) {
+    const w = Math.min(home.w, Math.max(home.w / metrics.zoomMax, view.w / factor));
+    const k = w / view.w;
+    setView({ x: center.x - (center.x - view.x) * k, y: center.y - (center.y - view.y) * k, w, h: view.h * k });
+  }
+
+  // cost: time O(1), heap O(1), stack O(1)
+  // basis: estimate
+  // 그림 밖으로 벗어나지 않게 자리를 막고 viewBox에 쓴다.
+  function setView(next) {
+    const x = Math.min(home.x + home.w - next.w, Math.max(home.x, next.x));
+    const y = Math.min(home.y + home.h - next.h, Math.max(home.y, next.y));
+    view = { ...next, x, y };
+    svg.setAttribute('viewBox', `${view.x} ${view.y} ${view.w} ${view.h}`);
+    root.classList.toggle('zoomed', view.w < home.w);
+  }
+
+  // 화면 좌표를 그림 좌표로 바꾼다. 그림 비율과 svg 상자 비율이 달라 생기는 여백까지 브라우저 변환 행렬이 반영한다.
+  function toSvgPoint(e) {
+    const point = new DOMPoint(e.clientX, e.clientY).matrixTransform(svg.getScreenCTM().inverse());
+    return { x: point.x, y: point.y };
+  }
+
+  function drawIcon(d) {
+    return `<svg width="12" height="12" viewBox="0 0 16 16"><path d="${d}" fill="none" stroke="currentColor" stroke-width="${metrics.iconStroke}" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  }
+}
+
+// 브라우저에서 돈다. html.js가 HTML 안에 그대로 넣는다.
+// 박자(seg)마다 선과 도형을 밝히고, 카드 내용을 바꾸고, 점을 선 위로 옮긴다.
+
+// cost: time O(s + c) 시작, 프레임마다 O(h), heap O(s + c), stack O(1)
+// vars: s = 도형 수, c = 선 수, h = 한 박자의 이동 수
+// basis: estimate
+/**
+ * 재생기를 붙인다.
+ * @param root `.fl-figure` 요소
+ * @param data { segs, total, steps, edges: [시작 도형 번호, 끝 도형 번호][], cards: 도형마다 카드 내용 수, metrics: 점, 글 상자, 아이콘 선 크기(토큰 값) }
+ */
+function d2flowPlay(root, data) {
+  const NS = 'http://www.w3.org/2000/svg';
+  const RATES = [1, 2, 0.5];
+  const svg = root.querySelector('svg.fl');
+  const packetLayer = svg.querySelector('.fl-packets');
+  const tabs = root.querySelector('.fl-tabs');
+  const caption = root.querySelector('.fl-caption');
+  const pauseButton = root.querySelector('.fl-pause');
+  const rateButton = root.querySelector('.fl-rate');
+  const nodes = data.cards.map((_, i) => svg.querySelector(`#n-${i}`));
+  // 생명선은 `#e-`, `#p-` 요소가 없어 null이다.
+  const edges = data.edges.map((_, j) => svg.querySelector(`#e-${j}`));
+  const paths = data.edges.map((_, j) => svg.querySelector(`#p-${j}`));
+  const segs = data.segs;
+  const metrics = data.metrics;
+  const stepSegs = data.steps.map((_, si) => segs.filter((s) => s.si === si));
+  const buttons = data.steps.map(createTab);
+  // 설명이 하나도 없는 그림은 설명 줄 자리를 두지 않는다.
+  const hasCaption = segs.some((s) => s.caption);
+
+  let index = 0;
+  let elapsed = 0;
+  let before = performance.now();
+  let isPlaying = !matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let rate = RATES[0];
+  let packets = [];
+  let hasNewCards = false;
+
+  pauseButton.addEventListener('click', () => setPlaying(!isPlaying));
+  rateButton.addEventListener('click', () => {
+    rate = RATES[(RATES.indexOf(rate) + 1) % RATES.length];
+    rateButton.textContent = `${rate}×`;
+  });
+  root.addEventListener('keydown', (e) => {
+    // 단추 위의 스페이스는 그 단추를 누르는 키다.
+    if (e.key === ' ' && !e.target.closest('button')) {
+      setPlaying(!isPlaying);
+      e.preventDefault();
+    }
+  });
+  highlightOnHover();
+  d2flowView(root, metrics);
+
+  setPlaying(isPlaying);
+  if (segs.length) {
+    enterSegment(0);
+    requestAnimationFrame(drawFrame);
+  } else {
+    root.querySelector('.fl-foot').hidden = true;
+  }
+
+  // cost: time O(s), heap O(1), stack O(1)
+  // vars: s = 박자 수(누를 때 첫 박자를 찾음)
+  // basis: estimate
+  function createTab(label, si) {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.setAttribute('role', 'tab');
+    button.append(label, document.createElement('i'));
+    button.addEventListener('click', () => enterSegment(segs.indexOf(stepSegs[si][0])));
+    tabs.appendChild(button);
+    return button;
+  }
+
+  function setPlaying(value) {
+    isPlaying = value;
+    pauseButton.innerHTML = isPlaying
+      ? '<svg width="12" height="12" viewBox="0 0 16 16"><rect x="3" y="2" width="3.5" height="12" rx="1" fill="currentColor"/><rect x="9.5" y="2" width="3.5" height="12" rx="1" fill="currentColor"/></svg>'
+      : '<svg width="12" height="12" viewBox="0 0 16 16"><path d="M4 2.5v11l9.5-5.5z" fill="currentColor"/></svg>';
+    pauseButton.setAttribute('aria-label', isPlaying ? '일시정지' : '재생');
+  }
+
+  // cost: time O(n·c), heap O(n·c), stack O(1)
+  // vars: n = 도형 수, c = 선 수
+  // basis: estimate
+  // 도형에 마우스를 올리면 닿은 선을 밝힌다.
+  function highlightOnHover() {
+    nodes.forEach((g, i) => {
+      const touching = data.edges.map((e, j) => (e[0] === i || e[1] === i ? edges[j] : null)).filter(Boolean);
+      g.addEventListener('mouseenter', () => touching.forEach((e) => e.classList.add('hover')));
+      g.addEventListener('mouseleave', () => touching.forEach((e) => e.classList.remove('hover')));
+    });
+  }
+
+  // cost: time O(s + c + k), heap O(h), stack O(1)
+  // vars: s = 도형 수, c = 선 수, k = 카드 내용 수 합, h = 이동 수
+  // basis: estimate
+  // 박자 i의 상태를 그린다. 점은 만들자마자 선 시작점에 둔다. 첫 프레임에 그림 구석에 보이는 일을 막기 위해서다.
+  function enterSegment(i) {
+    index = i;
+    elapsed = 0;
+    const seg = segs[i];
+    nodes.forEach((g, n) => g.classList.toggle('on', seg.nodesOn.includes(n)));
+    edges.forEach((e, j) => e?.classList.toggle('on', seg.edgesOn.includes(j)));
+    showCards(seg.cardsBefore);
+    hasNewCards = false;
+    caption.textContent = seg.caption;
+    caption.hidden = !hasCaption;
+    // 탭을 눌러 옮겨도 앞 탭의 진행 막대가 남지 않게, 지금 탭이 아닌 막대는 모두 비운다.
+    buttons.forEach((b, si) => {
+      const isCurrent = si === seg.si;
+      b.classList.toggle('on', isCurrent);
+      b.setAttribute('aria-selected', isCurrent);
+      if (!isCurrent) b.querySelector('i').style.width = '0';
+    });
+    packets.forEach((p) => p.remove());
+    packets = seg.hops.map(createPacket);
+    packets.forEach((packet) => packet.move(0));
+  }
+
+  // cost: time O(k), heap O(1), stack O(1)
+  // vars: k = 카드 내용 수 합
+  // basis: estimate
+  // 도형마다 cards가 가리키는 카드 내용 하나만 보이고, 없으면 빈 표시를 보인다.
+  function showCards(cards) {
+    data.cards.forEach((count, n) => {
+      if (!count) return;
+      const shown = cards[n];
+      for (let k = 0; k < count; k++) svg.querySelector(`#n-${n}-c${k}`).setAttribute('opacity', shown === k ? 1 : 0);
+      nodes[n].querySelector('.fl-empty').setAttribute('opacity', shown === undefined ? 1 : 0);
+      nodes[n].querySelector('.fl-card').classList.toggle('on', shown !== undefined);
+    });
+  }
+
+  // 점과 글 상자. 글 상자 폭은 브라우저가 잰 글자 폭으로 맞춘다.
+  function createPacket(hop) {
+    const path = paths[hop.edge];
+    const g = document.createElementNS(NS, 'g');
+    g.setAttribute('class', 'fl-packet');
+    g.innerHTML = `<circle r="${metrics.halo}" fill="${metrics.accent}" opacity="${metrics.haloOpacity}"/><circle r="${metrics.packet}" fill="${metrics.accent}"/>`;
+    packetLayer.appendChild(g);
+    const chip = hop.data ? createChip(hop.data) : undefined;
+    if (chip) g.appendChild(chip.g);
+    const length = path.getTotalLength();
+    return {
+      remove: () => g.remove(),
+      move(p) {
+        const point = path.getPointAtLength(length * (hop.isBack ? 1 - p : p));
+        g.setAttribute('transform', `translate(${point.x} ${point.y})`);
+        if (chip) placeChip(chip, point);
+        g.style.opacity = p >= 1 ? 0 : 1;
+      },
+    };
+  }
+
+  // cost: time O(l), heap O(l), stack O(1)
+  // vars: l = 글 상자 줄 수
+  // basis: estimate
+  // lines는 html.js가 움직이는 SVG와 같은 너비로 미리 나눈 줄이다.
+  function createChip(lines) {
+    const chip = document.createElementNS(NS, 'g');
+    const rect = document.createElementNS(NS, 'rect');
+    rect.setAttribute('rx', metrics.chipRadius);
+    rect.setAttribute('fill', metrics.accent);
+    chip.appendChild(rect);
+    const texts = lines.map((line) => {
+      const t = document.createElementNS(NS, 'text');
+      t.setAttribute('class', 'chip');
+      t.textContent = line;
+      chip.appendChild(t);
+      return t;
+    });
+    // 글자 폭은 문서에 붙은 뒤에만 잴 수 있다.
+    packetLayer.appendChild(chip);
+    const w = Math.max(...texts.map((t) => t.getComputedTextLength())) + metrics.chipPadX;
+    const h = texts.length * metrics.chipLine + metrics.chipPadY;
+    const top = -h - metrics.chipGap;
+    rect.setAttribute('x', -w / 2);
+    rect.setAttribute('y', top);
+    rect.setAttribute('width', w);
+    rect.setAttribute('height', h);
+    texts.forEach((t, li) => t.setAttribute('y', top + metrics.chipLine * (li + 1)));
+    return { g: chip, w, h };
+  }
+
+  // 글 상자가 그림 밖으로 나가면 잘린다. 옆으로는 그림 안까지 밀고, 위가 모자라면 점 아래로 내린다.
+  function placeChip(chip, point) {
+    const box = svg.viewBox.baseVal;
+    const half = chip.w / 2 + metrics.chipGap;
+    const x = Math.min(box.x + box.width - half, Math.max(box.x + half, point.x)) - point.x;
+    const isTooHigh = point.y - chip.h - metrics.chipGap < box.y;
+    const y = isTooHigh ? chip.h + metrics.chipGap * 2 : 0;
+    chip.g.setAttribute('transform', `translate(${x} ${y})`);
+  }
+
+  // cost: time O(h), heap O(1), stack O(1)
+  // vars: h = 한 박자의 이동 수
+  // basis: estimate
+  // 프레임마다 점을 옮기고, 탭 진행 막대를 채우고, 박자가 끝나면 다음 박자로 넘어간다.
+  function drawFrame(now) {
+    if (isPlaying) elapsed += (now - before) * rate;
+    before = now;
+    const seg = segs[index];
+    const p = seg.move > 0 ? Math.min(1, elapsed / seg.move) : 1;
+    const eased = p < 0.5 ? 2 * p * p : 1 - (-2 * p + 2) ** 2 / 2;
+    packets.forEach((packet) => packet.move(eased));
+    if (!hasNewCards && elapsed >= seg.cardsAt) {
+      showCards(seg.cards);
+      hasNewCards = true;
+    }
+    const steps = stepSegs[seg.si];
+    const start = steps[0].t0;
+    const end = steps.at(-1).t1;
+    const bar = buttons[seg.si].querySelector('i');
+    bar.style.width = `${((seg.t0 - start + Math.min(elapsed, seg.t1 - seg.t0)) / (end - start)) * 100}%`;
+    if (elapsed >= seg.t1 - seg.t0) enterSegment((index + 1) % segs.length);
+    requestAnimationFrame(drawFrame);
+  }
+}
+
+d2flowPlay(document.querySelector('.fl-figure'), {"segs":[{"si":0,"bi":0,"t0":0,"t1":3875,"move":2750,"hops":[{"edge":7,"isBack":false,"data":["d2 diagarm"]}],"edgesOn":[7],"nodesOn":[0,8],"cards":{},"cardsBefore":{},"cardsAt":2750,"caption":"요청은 가장 가까운 데이터센터의 프런트로 간다"},{"si":0,"bi":1,"t0":3875,"t1":7325,"move":2750,"hops":[{"edge":0,"isBack":false}],"edgesOn":[7,0],"nodesOn":[0,8,9],"cards":{},"cardsBefore":{},"cardsAt":2750,"caption":"요청은 가장 가까운 데이터센터의 프런트로 간다"},{"si":0,"bi":2,"t0":7325,"t1":10775,"move":2750,"hops":[{"edge":8,"isBack":false,"data":["d2 diagarm"]}],"edgesOn":[7,0,8],"nodesOn":[10,0,8,9],"cards":{"10":0},"cardsBefore":{},"cardsAt":2750,"caption":"요청은 가장 가까운 데이터센터의 프런트로 간다"},{"si":0,"bi":3,"t0":10775,"t1":14225,"move":2750,"hops":[{"edge":9,"isBack":false}],"edgesOn":[7,0,8,9],"nodesOn":[10,11,0,8,9],"cards":{"10":0,"11":0},"cardsBefore":{"10":0},"cardsAt":2750,"caption":"요청은 가장 가까운 데이터센터의 프런트로 간다"},{"si":0,"bi":4,"t0":14225,"t1":17875,"move":2750,"hops":[{"edge":10,"isBack":false,"data":["d2 diagram"]},{"edge":13,"isBack":false,"data":["d2 diagram"]}],"edgesOn":[7,0,8,9,10,13],"nodesOn":[10,11,0,8,9,12,17],"cards":{"10":0,"11":0},"cardsBefore":{"10":0,"11":0},"cardsAt":2750,"caption":"색인 검색과 광고 경매가 동시에 돈다"},{"si":0,"bi":5,"t0":17875,"t1":21325,"move":2750,"hops":[{"edge":1,"isBack":false}],"edgesOn":[7,0,8,9,10,13,1],"nodesOn":[10,11,0,8,9,12,17,13],"cards":{"10":0,"11":0},"cardsBefore":{"10":0,"11":0},"cardsAt":2750,"caption":"색인 검색과 광고 경매가 동시에 돈다"},{"si":0,"bi":6,"t0":21325,"t1":25380,"move":2750,"hops":[{"edge":2,"isBack":false},{"edge":3,"isBack":false},{"edge":4,"isBack":false}],"edgesOn":[7,0,8,9,10,13,1,2,3,4],"nodesOn":[10,11,14,15,16,0,8,9,12,17,13],"cards":{"10":0,"11":0,"14":0,"15":0,"16":0},"cardsBefore":{"10":0,"11":0},"cardsAt":2750,"caption":"문서는 샤드로 나뉘어 있어 모든 샤드가 동시에 찾는다"},{"si":0,"bi":7,"t0":25380,"t1":28830,"move":2750,"hops":[{"edge":2,"isBack":true},{"edge":3,"isBack":true},{"edge":4,"isBack":true}],"edgesOn":[7,0,8,9,10,13,1,2,3,4],"nodesOn":[10,11,14,15,16,0,8,9,12,17,13],"cards":{"10":0,"11":0,"14":0,"15":0,"16":0},"cardsBefore":{"10":0,"11":0,"14":0,"15":0,"16":0},"cardsAt":2750,"caption":"문서는 샤드로 나뉘어 있어 모든 샤드가 동시에 찾는다"},{"si":0,"bi":8,"t0":28830,"t1":32280,"move":2750,"hops":[{"edge":1,"isBack":true,"data":["상위 1000"]}],"edgesOn":[7,0,8,9,10,13,1,2,3,4],"nodesOn":[10,11,14,15,16,0,8,9,12,17,13],"cards":{"10":0,"11":0,"14":0,"15":0,"16":0},"cardsBefore":{"10":0,"11":0,"14":0,"15":0,"16":0},"cardsAt":2750,"caption":"문서는 샤드로 나뉘어 있어 모든 샤드가 동시에 찾는다"},{"si":0,"bi":9,"t0":32280,"t1":35730,"move":2750,"hops":[{"edge":11,"isBack":false,"data":["상위 1000"]}],"edgesOn":[7,0,8,9,10,13,1,2,3,4,11],"nodesOn":[5,10,11,14,15,16,0,8,9,12,17,13],"cards":{"5":0,"10":0,"11":0,"14":0,"15":0,"16":0},"cardsBefore":{"10":0,"11":0,"14":0,"15":0,"16":0},"cardsAt":2750,"caption":"문서는 샤드로 나뉘어 있어 모든 샤드가 동시에 찾는다"},{"si":0,"bi":10,"t0":35730,"t1":39180,"move":2750,"hops":[{"edge":5,"isBack":false}],"edgesOn":[7,0,8,9,10,13,1,2,3,4,11,5],"nodesOn":[5,10,11,14,15,16,17,0,8,9,12,13,18],"cards":{"5":0,"10":0,"11":0,"14":0,"15":0,"16":0,"17":0},"cardsBefore":{"5":0,"10":0,"11":0,"14":0,"15":0,"16":0,"17":0},"cardsAt":2750,"caption":"문서는 샤드로 나뉘어 있어 모든 샤드가 동시에 찾는다"},{"si":0,"bi":11,"t0":39180,"t1":43010,"move":2750,"hops":[{"edge":12,"isBack":false,"data":["상위 10개 요약"]}],"edgesOn":[7,0,8,9,10,13,1,2,3,4,11,5,12],"nodesOn":[5,10,11,14,15,16,17,0,8,9,12,13,18,4],"cards":{"5":0,"10":0,"11":0,"14":0,"15":0,"16":0,"17":0},"cardsBefore":{"5":0,"10":0,"11":0,"14":0,"15":0,"16":0,"17":0},"cardsAt":2750,"caption":"순위가 정해진 문서만 제목과 요약을 가져온다"},{"si":0,"bi":12,"t0":43010,"t1":48060,"move":2750,"hops":[{"edge":0,"isBack":true},{"edge":7,"isBack":true,"data":["결과 10개 · 0.31초"]}],"edgesOn":[7,0,8,9,10,13,1,2,3,4,11,5,12],"nodesOn":[5,10,11,14,15,16,17,0,8,9,12,13,18,4],"cards":{"5":0,"10":0,"11":0,"14":0,"15":0,"16":0,"17":0},"cardsBefore":{"5":0,"10":0,"11":0,"14":0,"15":0,"16":0,"17":0},"cardsAt":2750,"caption":"순위가 정해진 문서만 제목과 요약을 가져온다"},{"si":1,"bi":0,"t0":48060,"t1":52025,"move":2750,"hops":[{"edge":6,"isBack":false,"data":["d2lang.com/tour 변경"]}],"edgesOn":[6],"nodesOn":[19,20],"cards":{},"cardsBefore":{},"cardsAt":2750,"caption":"크롤러가 바뀐 페이지를 가져와 샤드 색인을 고친다"},{"si":1,"bi":1,"t0":52025,"t1":57075,"move":2750,"hops":[{"edge":15,"isBack":false,"data":["용어 312개 갱신"]}],"edgesOn":[6,15],"nodesOn":[15,19,20],"cards":{"15":1},"cardsBefore":{},"cardsAt":2750,"caption":"크롤러가 바뀐 페이지를 가져와 샤드 색인을 고친다"}],"total":57075,"steps":["검색","색인 갱신"],"edges":[[8,9],[12,13],[13,14],[13,15],[13,16],[17,18],[19,20],[0,8],[9,10],[10,11],[9,12],[12,5],[9,4],[9,17],[20,14],[20,15],[20,16]],"cards":[0,0,0,0,0,1,0,0,0,0,1,1,0,0,1,2,1,1,0,0,0],"metrics":{"accent":"var(--color-accent)","halo":10,"haloOpacity":0.2,"packet":4.5,"chipRadius":8,"chipLine":15,"chipPadX":18,"chipPadY":8,"chipGap":12,"iconStroke":1.75,"zoomMax":6,"zoomStep":1.25}});
+</script>
+</body>
+</html>

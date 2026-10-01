@@ -1,0 +1,43 @@
+# Saturn: 두 에이전트를 하나의 대화로. 카드와 판단 과정
+direction: right
+you: 개발자 {shape: person}
+saturn: Saturn {
+  tui: "화면\n하나의 대화"
+  engine: "엔진\n사용자당 하나"
+  judge: "판단기\n다음 차례"
+  log: "기록\nsqlite" {shape: cylinder}
+  tui -> engine
+  engine -> judge
+  engine -> log
+}
+codex: Codex {style.stroke-dash: 4}
+claude: Claude Code {style.stroke-dash: 4}
+you -> saturn.tui
+saturn.engine -> codex
+saturn.engine -> claude
+
+#@ speed 3500ms
+#@ step "질문": 누가 답할지 판단기가 고른다
+#@   you -> tui "이 테스트 왜 깨져?"
+#@   show tui [you/gray] 이 테스트 왜 깨져?
+#@   tui -> engine
+#@   engine -> judge "최근 3턴 요약" : 엔진만 판단기를 부른다
+#@   show judge [pick/blue] Codex · 코드 실행이 필요함
+#@   judge -> engine "Codex"
+#@   engine -> codex "질문 + 대화 맥락"
+#@   codex -> engine "원인: 잠금 순서" +5000ms
+#@   show tui [you/gray] 이 테스트 왜 깨져?
+#@   show tui [codex/purple] 원인: 잠금 순서가 반대
+#@   engine -> log : 대화는 파일 하나에 엔진 하나만 쓴다
+#@   show log turn 17 · codex
+#@ step "넘기기": 같은 대화를 다른 에이전트가 이어받는다
+#@   you -> tui "Claude가 리뷰해 줘"
+#@   tui -> engine
+#@   engine -> judge
+#@   show judge [pick/blue] Claude · 사용자가 지정
+#@   judge -> engine "Claude"
+#@   engine -> claude "지난 17턴 + 요청" : 앞선 대화를 그대로 넘긴다
+#@   claude -> engine "리뷰 3건" +5000ms
+#@   show tui [claude/orange] 리뷰 3건: 잠금 범위를 줄이자
+#@   engine -> log
+#@   show log turn 18 · claude

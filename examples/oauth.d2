@@ -1,0 +1,29 @@
+# 순서 그림: OAuth 2.0 인가 코드 + PKCE
+shape: sequence_diagram
+user: 사용자
+app: 앱
+auth: 인가 서버
+api: 리소스 API
+
+user -> app: 로그인 누름
+app -> auth: "authorize?code_challenge"
+auth -> user: 로그인 화면
+user -> auth: 아이디 · 비밀번호
+auth -> app: "redirect ?code"
+app -> auth: "token (code + verifier)"
+auth -> app: "access_token"
+app -> api: "GET /me (Bearer)"
+api -> app: 프로필
+
+#@ speed 3250ms
+#@ step "인가": 사용자가 인가 서버에서 직접 로그인한다
+#@   user -> app
+#@   app -> auth "challenge = S256(verifier)" : 앱은 비밀값의 해시만 보낸다
+#@   auth -> user
+#@   user -> auth "••••••"
+#@   auth -> app "code=Qx8…" : 짧게 사는 코드를 앱으로 돌려준다
+#@ step "토큰": 코드와 원래 비밀값을 함께 내야 토큰을 준다
+#@   app -> auth "code + verifier" : 가로챈 코드만으로는 토큰을 받을 수 없다
+#@   auth -> app "access_token (1h)"
+#@   app -> api "Bearer eyJ…"
+#@   api -> app "{id: 42}"

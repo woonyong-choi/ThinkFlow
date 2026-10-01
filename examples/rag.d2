@@ -1,0 +1,48 @@
+# RAG: 두 갈래(색인, 질의), 병렬 이동, 카드
+direction: right
+ingest: 색인 {
+  direction: right
+  docs: "문서\nPDF · Markdown" {shape: page}
+  chunker: "청크 분할\n512 tokens"
+  embed: "임베딩\ntext-embedding"
+  docs -> chunker -> embed
+}
+store: 저장소 {
+  vector: 벡터 DB {shape: cylinder}
+  bm25: 키워드 색인 {shape: cylinder}
+}
+query: 질의 {
+  user: 사용자 {shape: person}
+  retriever: "검색기\nhybrid"
+  rerank: "재정렬\ncross-encoder"
+  llm: "LLM\n답변 생성"
+  user -> retriever: 질문
+  retriever -> rerank: 후보 20
+  rerank -> llm: 상위 4
+  llm -> user: 답변
+}
+ingest.embed -> store.vector
+ingest.chunker -> store.bm25
+query.retriever -> store.vector: 의미
+query.retriever -> store.bm25: 키워드
+
+#@ step "색인": 문서를 잘라 두 가지 색인에 넣는다
+#@   docs -> chunker "설계 문서 12개"
+#@   show chunker 1,284 청크 · 평균 380 tokens
+#@   chunker -> embed & chunker -> bm25 "청크"
+#@   show bm25 `engine · 잠금 · 판단기` · 9,812 terms
+#@   embed -> vector "1,284 × 1536" : 청크마다 벡터 하나를 저장한다
+#@   show vector 1,284 vectors · cosine
+#@ step "질의": 두 색인을 함께 찾아 다시 줄 세운다
+#@   user -> retriever "엔진은 왜 하나지?" : 질문이 들어오면
+#@   show retriever [query/gray] 엔진은 왜 하나지?
+#@   retriever -> vector "의미" & retriever -> bm25 "키워드" : 의미 검색과 키워드 검색을 동시에 한다
+#@   vector -> retriever "12" & bm25 -> retriever "8"
+#@   show retriever [query/gray] 엔진은 왜 하나지?
+#@   show retriever 후보 20개 · 합침
+#@   retriever -> rerank "후보 20"
+#@   show rerank [1/green] 설계 · 엔진은 사용자당 하나 · 0.91
+#@   show rerank [2/green] 결정 · 잠금 파일 · 0.84
+#@   show rerank [3/gray] 용어 · 세션 · 0.41
+#@   rerank -> llm "상위 4" : 가장 맞는 조각만 LLM에 넘긴다
+#@   llm -> user "근거 2개와 답변" : 답은 근거 문서와 함께 돌아간다
