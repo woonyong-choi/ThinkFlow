@@ -12,7 +12,7 @@ const CLI = fileURLToPath(new URL('../src/cli.js', import.meta.url));
 // vars: f = 폴더 안 파일 수(지울 때)
 // basis: estimate
 function withFolder(run) {
-  const folder = mkdtempSync(join(tmpdir(), 'd2-flow-cli-'));
+  const folder = mkdtempSync(join(tmpdir(), 'mutoscope-cli-'));
   try {
     return run(folder);
   } finally {
@@ -24,7 +24,7 @@ const run = (args, cwd) => spawnSync(process.execPath, [CLI, ...args], { cwd, en
 
 test('main_run_through_symlink_prints_usage', () => {
   withFolder((folder) => {
-    const link = join(folder, 'd2-flow');
+    const link = join(folder, 'mutoscope');
     symlinkSync(CLI, link);
 
     const result = spawnSync(process.execPath, [link], { encoding: 'utf8' });
@@ -36,9 +36,9 @@ test('main_run_through_symlink_prints_usage', () => {
 
 test('main_render_writes_svg_and_html', () => {
   withFolder((folder) => {
-    writeFileSync(join(folder, 'a.flow'), 'flow right\nbox a "A"\nbox b "B"\na -> b\nstep "s"\n  a -> b "x"\n');
+    writeFileSync(join(folder, 'a.muto'), 'flow right\nbox a "A"\nbox b "B"\na -> b\nstep "s"\n  a -> b "x"\n');
 
-    const result = run(['render', 'a.flow', '--html'], folder);
+    const result = run(['render', 'a.muto', '--html'], folder);
 
     assert.equal(result.status, 0, result.stderr);
     assert.ok(existsSync(join(folder, 'a.svg')) && existsSync(join(folder, 'a.html')));
@@ -47,21 +47,21 @@ test('main_render_writes_svg_and_html', () => {
 
 test('main_check_error_writes_no_file_and_reports_line', () => {
   withFolder((folder) => {
-    writeFileSync(join(folder, 'bad.flow'), 'flow right\nbox a "A"\na -> zz\n');
+    writeFileSync(join(folder, 'bad.muto'), 'flow right\nbox a "A"\na -> zz\n');
 
-    const result = run(['render', 'bad.flow'], folder);
+    const result = run(['render', 'bad.muto'], folder);
 
     assert.equal(result.status, 1);
-    assert.match(result.stderr, /^bad\.flow:3: unknown node "zz"/m);
+    assert.match(result.stderr, /^bad\.muto:3: unknown node "zz"/m);
     assert.ok(!existsSync(join(folder, 'bad.svg')));
   });
 });
 
 test('main_json_prints_one_message_per_line', () => {
   withFolder((folder) => {
-    writeFileSync(join(folder, 'bad.flow'), 'flow right\nbox step "S"\nbox a "A"\na -> zz\n');
+    writeFileSync(join(folder, 'bad.muto'), 'flow right\nbox step "S"\nbox a "A"\na -> zz\n');
 
-    const lines = run(['check', 'bad.flow', '--json'], folder).stdout.trim().split('\n');
+    const lines = run(['check', 'bad.muto', '--json'], folder).stdout.trim().split('\n');
 
     assert.equal(lines.length, 2);
     for (const line of lines) assert.equal(JSON.parse(line).check, 'syntax');
@@ -70,8 +70,8 @@ test('main_json_prints_one_message_per_line', () => {
 
 test('main_gallery_writes_index_with_each_figure', () => {
   withFolder((folder) => {
-    writeFileSync(join(folder, 'a.flow'), 'flow right\nbox a "A"\n');
-    writeFileSync(join(folder, 'b.flow'), 'chart bar\nseries s "S"\nrow "r" s=1\n');
+    writeFileSync(join(folder, 'a.muto'), 'flow right\nbox a "A"\n');
+    writeFileSync(join(folder, 'b.muto'), 'chart bar\nseries s "S"\nrow "r" s=1\n');
 
     const result = run(['gallery', '.', '--out', 'out'], folder);
 
@@ -84,9 +84,9 @@ test('main_gallery_writes_index_with_each_figure', () => {
 
 test('main_json_lists_related_lines_and_check_number', () => {
   withFolder((folder) => {
-    writeFileSync(join(folder, 'warn.flow'), 'flow right\nbox a "A"\nbox b "B"\na -> b "보냄" quiet\nb -> a\nstep "s"\n  b -> a\n');
+    writeFileSync(join(folder, 'warn.muto'), 'flow right\nbox a "A"\nbox b "B"\na -> b "보냄" quiet\nb -> a\nstep "s"\n  b -> a\n');
 
-    const [message] = run(['check', 'warn.flow', '--json'], folder).stdout.trim().split('\n').map((l) => JSON.parse(l));
+    const [message] = run(['check', 'warn.muto', '--json'], folder).stdout.trim().split('\n').map((l) => JSON.parse(l));
 
     assert.deepEqual([message.check, message.level, message.lines], [11, 'warning', [4]]);
   });
@@ -94,11 +94,11 @@ test('main_json_lists_related_lines_and_check_number', () => {
 
 test('main_check_reports_syntax_and_glyph_errors_together', () => {
   withFolder((folder) => {
-    writeFileSync(join(folder, 'bad.flow'), 'flow right\nbox a "A 😀"\nbox b "B"\na -> cdex\n');
+    writeFileSync(join(folder, 'bad.muto'), 'flow right\nbox a "A 😀"\nbox b "B"\na -> cdex\n');
 
-    const { stderr } = run(['check', 'bad.flow'], folder);
+    const { stderr } = run(['check', 'bad.muto'], folder);
 
-    assert.match(stderr, /bad\.flow:2: the font has no glyph/);
-    assert.match(stderr, /bad\.flow:4: unknown node "cdex"/);
+    assert.match(stderr, /bad\.muto:2: the font has no glyph/);
+    assert.match(stderr, /bad\.muto:4: unknown node "cdex"/);
   });
 });

@@ -30,7 +30,7 @@ const SHOTS = [
 // vars: s = 화면 수, w = 화면마다 기다리는 시간
 // basis: estimate
 async function main() {
-  execFileSync(process.execPath, ['src/cli.js', 'render', 'examples/saturn.flow', '--static', '--out', 'examples/screens-static'], { stdio: 'ignore' });
+  execFileSync(process.execPath, ['src/cli.js', 'render', 'examples/saturn.muto', '--static', '--out', 'examples/screens-static'], { stdio: 'ignore' });
   execFileSync('mv', ['examples/screens-static/saturn.svg', `${OUT}/saturn-static.svg`]);
   rmSync('examples/screens-static', { recursive: true });
   const browser = await chromium.launch({ executablePath: CHROME });

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// 사용: d2-flow render|check|gallery … 명령과 결과 파일은 docs/design/playback.md 결과 파일 절이다.
+// 사용: mutoscope render|check|gallery … 명령과 결과 파일은 docs/design/playback.md 결과 파일 절이다.
 // stdout에는 만든 파일 경로(또는 --json 메시지)만, stderr에는 오류와 경고만 쓴다.
 import { mkdirSync, readdirSync, readFileSync, realpathSync, writeFileSync } from 'node:fs';
 import { basename, dirname, join, relative } from 'node:path';
@@ -11,9 +11,9 @@ import { toSvg } from './svg.js';
 
 const USAGE = [
   'usage:',
-  '  d2-flow render <file.flow ...> [--out dir] [--html] [--static] [--strict] [--require-data] [--require-ci] [--json]',
-  '  d2-flow check <file.flow ...> [--strict] [--require-data] [--require-ci] [--json]',
-  '  d2-flow gallery <dir> [--out dir] [--title "text"]',
+  '  mutoscope render <file.muto ...> [--out dir] [--html] [--static] [--strict] [--require-data] [--require-ci] [--json]',
+  '  mutoscope check <file.muto ...> [--strict] [--require-data] [--require-ci] [--json]',
+  '  mutoscope gallery <dir> [--out dir] [--title "text"]',
 ].join('\n');
 const FLAGS = ['--html', '--static', '--strict', '--require-data', '--require-ci', '--json'];
 
@@ -71,7 +71,7 @@ async function processFile(input, args) {
   }
   report(input, result.warnings, json);
   if (args.command === 'check') return true;
-  const name = basename(input).replace(/\.flow$/, '');
+  const name = basename(input).replace(/\.muto$/, '');
   const folder = args.out ?? dirname(input);
   mkdirSync(folder, { recursive: true });
   writeOutput(join(folder, `${name}.svg`), await toSvg(result, { isStatic: args.flags.has('static') }), json);
@@ -86,14 +86,14 @@ async function processFile(input, args) {
 async function writeGallery(args) {
   const folder = args.inputs[0];
   const out = args.out ?? join(folder, 'out');
-  const files = readdirSync(folder).filter((f) => f.endsWith('.flow')).sort();
+  const files = readdirSync(folder).filter((f) => f.endsWith('.muto')).sort();
   const figures = [];
   let failed = false;
   for (const file of files) {
     const input = join(folder, file);
     const ok = await processFile(input, { ...args, command: 'render', out, flags: new Set(['html']) });
     failed = !ok || failed;
-    if (ok) figures.push({ name: file.replace(/\.flow$/, ''), title: describe(readFileSync(input, 'utf8')), href: relative(out, join(out, file.replace(/\.flow$/, ''))) });
+    if (ok) figures.push({ name: file.replace(/\.muto$/, ''), title: describe(readFileSync(input, 'utf8')), href: relative(out, join(out, file.replace(/\.muto$/, ''))) });
   }
   writeOutput(join(out, 'index.html'), toGallery(figures, args.title ?? basename(folder)), false);
   return failed ? 1 : 0;

@@ -1,13 +1,13 @@
-# d2-flow
+# mutoscope
 
 English | [한국어](README.ko.md)
 
-A command that turns one `.flow` source into one animated documentation figure: a structure, sequence, state, or data relation diagram, or a chart.
+A command that turns one `.muto` source into one animated documentation figure: a structure, sequence, state, or data relation diagram, or a chart.
 
-Design documents need figures that show which path a request takes, and charts that show a baseline before the improved value. Drawing diagrams in D2 and charts in Vega-Lite gives two looks in one document, and the D2 layout does not match a custom drawing style. d2-flow measures every shape with the same font files it embeds, lays out with elkjs, checks the result for overlaps, and plays steps in an HTML player or an animated SVG.
+Design documents need figures that show which path a request takes, and charts that show a baseline before the improved value. Drawing diagrams in D2 and charts in Vega-Lite gives two looks in one document, and the D2 layout does not match a custom drawing style. mutoscope measures every shape with the same font files it embeds, lays out with elkjs, checks the result for overlaps, and plays steps in an HTML player or an animated SVG.
 
 > [!NOTE]
-> In development. The name d2-flow is temporary, and there are no releases; build from source.
+> In development. There are no releases; build from source.
 
 ## How it works
 
@@ -34,17 +34,17 @@ step "Chat" "Input goes through the screen to the engine"
 ```
 
 1. You write the first line as the figure kind, then shapes and edges, then steps from `step` on.
-2. d2-flow lays out the shapes inside `system` from top to bottom and the rest from left to right.
+2. mutoscope lays out the shapes inside `system` from top to bottom and the rest from left to right.
 3. In the first beat a dot moves from `user` to `tui`, and the card inside `tui` fills in when the dot arrives.
-4. A typo such as `engine -> cdex` stops the build with `saturn.flow:19: unknown node "cdex". Did you mean "codex"? Declared: codex, engine, system, tui, user`.
+4. A typo such as `engine -> cdex` stops the build with `saturn.muto:19: unknown node "cdex". Did you mean "codex"? Declared: codex, engine, system, tui, user`.
 
 ## Installation
 
 Requirements: Node.js 20 or later.
 
 ```sh
-git clone <repository>
-cd d2-flow
+git clone https://github.com/woonyong-choi/mutoscope.git
+cd mutoscope
 npm install
 ```
 
@@ -53,7 +53,7 @@ npm install
 ### Render one figure
 
 ```sh
-node src/cli.js render examples/memory.flow --html
+node src/cli.js render examples/memory.muto --html
 ```
 
 ```text
@@ -66,7 +66,7 @@ The SVG animates without scripts. The HTML adds step tabs, pause, speed, fullscr
 ### Check a figure
 
 ```sh
-node src/cli.js check examples/memory.flow --strict --json
+node src/cli.js check examples/memory.muto --strict --json
 ```
 
 The command prints nothing and exits with 0 when the figure has no errors or warnings.

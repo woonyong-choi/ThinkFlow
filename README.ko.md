@@ -1,13 +1,13 @@
-# d2-flow
+# mutoscope
 
 [English](README.md) | 한국어
 
-`.flow` 원본 하나를 움직이는 문서 그림 하나로 바꾸는 명령입니다. 구조, 순서, 상태, 데이터 관계 그림과 차트를 그립니다.
+`.muto` 원본 하나를 움직이는 문서 그림 하나로 바꾸는 명령입니다. 구조, 순서, 상태, 데이터 관계 그림과 차트를 그립니다.
 
-설계 문서에는 요청이 어떤 길로 가는지 보이는 그림과, 기준값 뒤에 개선 값을 보이는 차트가 필요합니다. 그림은 D2로, 차트는 Vega-Lite로 그리면 한 문서 안의 그림이 두 모양이 되고, D2 배치는 다른 그리기 모양과 맞지 않습니다. d2-flow는 그림에 넣는 글꼴 파일로 모든 도형을 재고, elkjs로 배치하고, 겹침을 검사한 뒤, HTML 재생기나 움직이는 SVG로 단계를 재생합니다.
+설계 문서에는 요청이 어떤 길로 가는지 보이는 그림과, 기준값 뒤에 개선 값을 보이는 차트가 필요합니다. 그림은 D2로, 차트는 Vega-Lite로 그리면 한 문서 안의 그림이 두 모양이 되고, D2 배치는 다른 그리기 모양과 맞지 않습니다. mutoscope는 그림에 넣는 글꼴 파일로 모든 도형을 재고, elkjs로 배치하고, 겹침을 검사한 뒤, HTML 재생기나 움직이는 SVG로 단계를 재생합니다.
 
 > [!NOTE]
-> 개발 중입니다. d2-flow는 임시 이름이고 배포판은 없으니 소스로 빌드하세요.
+> 개발 중입니다. 배포판은 없으니 소스로 빌드하세요.
 
 ## 작동 방식
 
@@ -34,17 +34,17 @@ step "Chat" "Input goes through the screen to the engine"
 ```
 
 1. 첫 줄에 그림 종류를 적고, 도형과 선을 적은 뒤, `step`부터 단계를 적습니다.
-2. d2-flow가 `system` 안 도형은 위에서 아래로, 나머지는 왼쪽에서 오른쪽으로 놓습니다.
+2. mutoscope가 `system` 안 도형은 위에서 아래로, 나머지는 왼쪽에서 오른쪽으로 놓습니다.
 3. 첫 박자에 점이 `user`에서 `tui`로 가고, 점이 닿을 때 `tui` 안 카드가 채워집니다.
-4. `engine -> cdex` 같은 오타는 `saturn.flow:19: unknown node "cdex". Did you mean "codex"? Declared: codex, engine, system, tui, user`를 내고 멈춥니다.
+4. `engine -> cdex` 같은 오타는 `saturn.muto:19: unknown node "cdex". Did you mean "codex"? Declared: codex, engine, system, tui, user`를 내고 멈춥니다.
 
 ## 설치
 
 요구 사항: Node.js 20 이상.
 
 ```sh
-git clone <repository>
-cd d2-flow
+git clone https://github.com/woonyong-choi/mutoscope.git
+cd mutoscope
 npm install
 ```
 
@@ -53,7 +53,7 @@ npm install
 ### 그림 하나 만들기
 
 ```sh
-node src/cli.js render examples/memory.flow --html
+node src/cli.js render examples/memory.muto --html
 ```
 
 ```text
@@ -66,7 +66,7 @@ SVG는 스크립트 없이 움직입니다. HTML에는 단계 탭, 일시정지,
 ### 그림 검사하기
 
 ```sh
-node src/cli.js check examples/memory.flow --strict --json
+node src/cli.js check examples/memory.muto --strict --json
 ```
 
 오류와 경고가 없으면 아무것도 출력하지 않고 0으로 끝납니다.
