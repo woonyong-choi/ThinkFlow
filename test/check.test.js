@@ -144,3 +144,25 @@ test('checkFigure_small_wide_figure_has_no_aspect_warning', async () => {
 
   assert.deepEqual(warnings, []);
 });
+
+test('checkFigure_fan_out_from_one_shape_passes_check_5', async () => {
+  const source = 'flow right\nperson user "사용자"\nbox a1 "A1"\nbox a2 "A2"\nbox a3 "A3"\nbox a4 "A4"\nuser -> a1\nuser -> a2\nuser -> a3\nuser -> a4';
+
+  assert.deepEqual(await problemsOf(source), []);
+});
+
+test('checkFigure_fan_in_to_one_shape_passes_check_5', async () => {
+  const source = 'flow right\nbox a1 "A1"\nbox a2 "A2"\nbox a3 "A3"\nbox a4 "A4"\nbox sink "합류"\na1 -> sink\na2 -> sink\na3 -> sink\na4 -> sink';
+
+  assert.deepEqual(await problemsOf(source), []);
+});
+
+test('checkFigure_parallel_segments_of_edges_between_different_shapes_stay_check_5_errors', () => {
+  const edge = (from, to, points) => ({ from, to, line: 1, points });
+  const scene = { edges: [edge('a', 'b', [{ x: 0, y: 0 }, { x: 100, y: 0 }]), edge('c', 'd', [{ x: 0, y: 4 }, { x: 100, y: 4 }])], items: [], groups: [], width: 100, height: 100 };
+  const problems = createProblems();
+
+  checkFigure({ kind: 'flow', direction: 'right' }, scene, { segs: [] }, problems);
+
+  assert.ok(problems.errors.some((p) => p.message.startsWith('[check 5]')), JSON.stringify(problems.errors));
+});

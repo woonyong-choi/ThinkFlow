@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { buildFigure } from '../src/build.js';
+import { parseFigure } from '../src/source/parse.js';
 import { formatChange, formatNumber, makeScale } from '../src/chart/scale.js';
 import { errorsOf } from './helpers.js';
 
@@ -152,4 +153,16 @@ test('drawChart_heatmap_column_fits_long_name', async () => {
   const errors = await buildErrors('chart heatmap\ncell "정답" "통과" 10\ncell "정답" "판단 보류" 1\ncell "오답" "통과" 3\ncell "오답" "판단 보류" 4');
 
   assert.deepEqual(errors, []);
+});
+
+test('checkChart_value_axis_without_unit_in_parentheses_is_warning', () => {
+  const warningsOf = (source) => parseFigure(source).warnings.map((w) => `${w.line}: ${w.message}`);
+  const missing = /the value axis title needs a unit in parentheses, such as (x|y) "latency\(ms\)"/;
+
+  assert.match(warningsOf('chart bar\nseries a "A"\nrow "r" a=1')[0], missing);
+  assert.match(warningsOf('chart bar\nx "지연"\nseries a "A"\nrow "r" a=1')[0], /^2: /);
+  assert.deepEqual(warningsOf('chart bar\nx "지연(ms)"\nseries a "A"\nrow "r" a=1'), []);
+  assert.equal(warningsOf('chart scatter\nx "비용(달러)"\npoint "p" x=1 y=2').length, 1);
+  assert.equal(warningsOf('chart line\nx "주차"\nseries a "A"\npoint x=1 a=2').length, 1);
+  assert.deepEqual(warningsOf('chart heatmap\ncell "r" "c" 1'), []);
 });

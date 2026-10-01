@@ -96,9 +96,10 @@ function directionOf(parent, containers, figure) {
 // basis: estimate
 // 상태 그림의 처음 점과 끝 겹원을 도형과 선으로 더한다. 이 선은 이동 대상이 아니다.
 function addStateMarks(figure, nodes, containers) {
-  if (figure.kind !== 'state' || !figure.start) return;
+  if (figure.kind !== 'state') return;
   figure.markEdges = [];
-  const marks = [{ id: '__start', shape: 'start', from: '__start', to: figure.start.id }, ...figure.finals.map((f, i) => ({ id: `__final${i}`, shape: 'final', from: f.id, to: `__final${i}` }))];
+  // start가 없으면 처음 점과 그 선을 그리지 않는다.
+  const marks = [...(figure.start ? [{ id: '__start', shape: 'start', from: '__start', to: figure.start.id }] : []), ...figure.finals.map((f, i) => ({ id: `__final${i}`, shape: 'final', from: f.id, to: `__final${i}` }))];
   marks.forEach((m, i) => {
     const size = { w: SIZE['state-dot'], h: SIZE['state-dot'], marginTop: 0, marginBottom: 0, labelLines: [], subLines: [] };
     nodes.set(m.id, { id: m.id, shape: m.shape, label: '', size, ports: [], parent: 'root', direction: figure.direction });

@@ -59,7 +59,7 @@ test('main_check_error_writes_no_file_and_reports_line', () => {
 
 test('main_json_prints_one_message_per_line', () => {
   withFolder((folder) => {
-    writeFileSync(join(folder, 'bad.muto'), 'flow right\nbox step "S"\nbox a "A"\na -> zz\n');
+    writeFileSync(join(folder, 'bad.muto'), 'flow right\nbox Step "S"\nbox a "A"\na -> zz\n');
 
     const lines = run(['check', 'bad.muto', '--json'], folder).stdout.trim().split('\n');
 

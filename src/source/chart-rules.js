@@ -31,6 +31,22 @@ export function checkChart(figure, problems) {
     checkChartLightTargets(figure, problems);
   }
   checkChartTimeline(figure, problems);
+  checkAxisUnits(figure, problems);
+}
+
+// 값 축 종류. 히트맵은 값 축이 없다.
+const VALUE_AXES = { bar: ['x'], dumbbell: ['x'], box: ['x'], line: ['y'], scatter: ['x', 'y'] };
+
+// cost: time O(a), heap O(1), stack O(1)
+// vars: a = 값 축 수(최대 2)
+// basis: estimate
+// 값 축 제목에 괄호 단위가 있는지 본다. 단위 없는 숫자는 읽는 사람이 값을 해석할 수 없어 경고한다.
+function checkAxisUnits(figure, problems) {
+  const { chart, chartType } = figure;
+  for (const axis of VALUE_AXES[chartType] ?? []) {
+    if (/\([^)]+\)/.test(chart[axis] ?? '')) continue;
+    problems.warn(chart[`${axis}Line`] ?? figure.line, `the value axis title needs a unit in parentheses, such as ${axis} "latency(ms)"`);
+  }
 }
 
 // cost: time O(r·k), heap O(r), stack O(1)

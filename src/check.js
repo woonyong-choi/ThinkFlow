@@ -248,14 +248,25 @@ function onBorder(p, r) {
 // cost: time O(e²·p²), heap O(1), stack O(1)
 // vars: e = 선 수, p = 경로 점 수
 // basis: estimate
-// 5번: 다른 두 선의 나란한 구간이 CROWD보다 가깝게 겹치지 않는다.
+// 5번: 다른 두 선의 나란한 구간이 CROWD보다 가깝게 겹치지 않는다. 같은 도형에서 함께 나가거나 함께 들어오는 두 선은 그 도형 쪽 끝 선분(경계에서 첫 꺾임까지)을 보지 않는다.
 function checkCrowding(edges, hint, problems) {
   edges.forEach((a, i) => {
     for (const b of edges.slice(i + 1)) {
-      const isClose = segments(a).some(([p, q]) => segments(b).some(([s, t]) => crowded(p, q, s, t)));
+      const skip = sharedEndSegments(a, b);
+      const isClose = segments(a).some(([p, q], ia) => segments(b).some(([s, t], ib) => !skip(ia, ib, a, b) && crowded(p, q, s, t)));
       if (isClose) problems.error(a.line, `[check 5] edges ${a.from} -> ${a.to} and ${b.from} -> ${b.to} (line ${b.line}) run too close. ${capitalize(hint)}`);
     }
   });
+}
+
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+// 두 선이 같은 시작 도형이면 첫 선분끼리, 같은 끝 도형이면 마지막 선분끼리 짝을 건너뛰는 판정 함수를 돌려준다. 서로 다른 도형 사이 선과 안쪽 선분은 그대로 본다.
+function sharedEndSegments(a, b) {
+  const base = (end) => end.split('.')[0];
+  const sameFrom = base(a.from) === base(b.from);
+  const sameTo = base(a.to) === base(b.to);
+  return (ia, ib) => (sameFrom && ia === 0 && ib === 0) || (sameTo && ia === a.points.length - 2 && ib === b.points.length - 2);
 }
 
 // cost: time O(p), heap O(p), stack O(1)

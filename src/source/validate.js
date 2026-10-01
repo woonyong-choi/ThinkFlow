@@ -96,9 +96,8 @@ function checkNotEmpty(figure, problems) {
 // cost: time O(f·k), heap O(k), stack O(1)
 // vars: f = 처음·끝 상태 표시 수, k = 이름 수
 // basis: estimate
-// 상태 그림의 start는 하나, start와 final은 선언된 상태를 가리킨다.
+// start와 final은 선언된 상태를 가리킨다. start는 없어도 된다(둘 이상은 읽을 때 오류).
 function checkStateMarks(figure, names, problems) {
-  if (!figure.start) problems.error(figure.line, 'a state figure needs one "start state-id" line');
   for (const mark of [figure.start, ...figure.finals].filter(Boolean)) {
     if (names.get(mark.id)?.shape !== 'state') problems.error(mark.line, unknownName('state', mark.id, figure.nodes.map((n) => n.id)));
   }

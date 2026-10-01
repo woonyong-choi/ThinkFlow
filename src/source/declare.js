@@ -1,5 +1,5 @@
 // 구조, 순서, 상태, 데이터 관계 그림의 선언 문장을 읽는다. 이름 확인과 겹침 확인은 validate.js가 파일을 다 읽은 뒤 한다.
-import { DIRECTIONS, FLAGS, ID_PATTERN, RESERVED, TABLE_PATTERN } from './words.js';
+import { COLUMN_PATTERN, DIRECTIONS, FK_PATTERN, ID_PATTERN, TABLE_PATTERN } from './words.js';
 
 // cost: time O(t), heap O(t), stack O(1)
 // vars: t = 문장 낱말 수
@@ -106,7 +106,7 @@ function readTable({ tokens, line }, ctx) {
 // cost: time O(t), heap O(1), stack O(1)
 // vars: t = 문장 낱말 수
 // basis: estimate
-/** 테이블 안 줄. `}`면 테이블을 닫고, 아니면 `열 타입 [pk] [unique] [fk=테이블.열]`이다. 열 이름에는 예약어 제한이 없다. */
+/** 테이블 안 줄. `}`면 테이블을 닫고, 아니면 `열 타입 [pk] [unique] [fk=테이블.열]`이다. 열 이름은 대소문자를 가린다. */
 export function readColumn({ tokens, line }, ctx) {
   const [name, type, ...rest] = tokens;
   if (name.type === 'close') {
@@ -114,8 +114,8 @@ export function readColumn({ tokens, line }, ctx) {
     ctx.table = undefined;
     return;
   }
-  if (name.type !== 'word' || !TABLE_PATTERN.test(name.value)) {
-    ctx.problems.error(line, 'a column name uses lowercase letters, digits, and "_", starting with a letter');
+  if (name.type !== 'word' || !COLUMN_PATTERN.test(name.value)) {
+    ctx.problems.error(line, 'a column name uses letters, digits, and "_", starting with a letter');
     return;
   }
   if (!type || (type.type !== 'word' && type.type !== 'text') || ['pk', 'unique'].includes(type.value)) {
@@ -130,7 +130,7 @@ export function readColumn({ tokens, line }, ctx) {
   const column = { name: name.value, type: type.value, pk: false, unique: false, fk: undefined, line };
   for (const t of rest) {
     if (t.type === 'word' && (t.value === 'pk' || t.value === 'unique')) column[t.value] = true;
-    else if (t.type === 'option' && t.key === 'fk' && /^[a-z][a-z0-9_]*\.[a-z][a-z0-9_]*$/.test(t.value)) {
+    else if (t.type === 'option' && t.key === 'fk' && FK_PATTERN.test(t.value)) {
       const [table, col] = t.value.split('.');
       column.fk = { table, column: col };
     } else ctx.problems.error(line, `unknown column option "${t.key ?? t.value}". Use pk, unique, or fk=table.column`);
@@ -170,7 +170,7 @@ function rejectName(token, ctx) {
 
 // cost: time O(1), heap O(1), stack O(1)
 // basis: estimate
-// 이름 낱말 형식과 예약어를 확인한다.
+// 이름 낱말 형식을 확인한다. 문장 종류는 첫 낱말 자리로 정해서 예약어도 이름이 된다.
 function checkId(token, line, ctx, pattern) {
   if (token?.type !== 'word') {
     ctx.problems.error(line, 'write a name (id) after the statement word');
@@ -179,10 +179,6 @@ function checkId(token, line, ctx, pattern) {
   if (!pattern.test(token.value)) {
     const joiner = pattern === TABLE_PATTERN ? '_' : '-';
     ctx.problems.error(line, `"${token.value}" is not a valid name. Use lowercase letters and digits, joined by single "${joiner}", starting with a letter`);
-    return false;
-  }
-  if (RESERVED.has(token.value) || FLAGS.includes(token.value)) {
-    ctx.problems.error(line, `"${token.value}" is a reserved word. Choose another name`);
     return false;
   }
   return true;

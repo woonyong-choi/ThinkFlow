@@ -1,6 +1,6 @@
 // 차트 선언 문장을 읽는다. 값의 규칙(계열 수, 음수, log)은 validate.js가 모든 행을 읽은 뒤 확인한다.
 import { parseNumber } from './values.js';
-import { FLAGS, ID_PATTERN, RESERVED } from './words.js';
+import { ID_PATTERN } from './words.js';
 
 // 종류마다 행 줄의 문장 낱말
 const ROW_WORD = { bar: 'row', dumbbell: 'row', box: 'row', scatter: 'point', line: 'point', heatmap: 'cell' };
@@ -30,7 +30,7 @@ export function readChartDeclaration(statement, ctx) {
 }
 
 // cost: time O(w), heap O(1), stack O(1)
-// vars: w = 예약어 수
+// vars: w = 낱말 수
 // basis: estimate
 // `series id "이름" [key="JSON 키"]`
 function readSeries({ tokens, line }, { figure, problems }) {
@@ -40,8 +40,13 @@ function readSeries({ tokens, line }, { figure, problems }) {
     problems.error(line, 'write a series as: series id "name" [key="json key"]');
     return;
   }
-  if (!ID_PATTERN.test(id.value) || RESERVED.has(id.value) || FLAGS.includes(id.value)) {
-    problems.error(line, `"${id.value}" is not a valid series name. Use lowercase letters, digits, and "-" and avoid reserved words`);
+  if (!ID_PATTERN.test(id.value)) {
+    problems.error(line, `"${id.value}" is not a valid series name. Use lowercase letters, digits, and "-"`);
+    return;
+  }
+  // 선 차트 행의 `x=`는 가로 값이라 같은 이름의 계열 값과 가를 수 없다.
+  if (figure.chartType === 'line' && id.value === 'x') {
+    problems.error(line, 'a line chart row uses "x=" for the horizontal value, so a series cannot be named "x"');
     return;
   }
   figure.chart.series.push({ id: id.value, label: label.value, key: key?.value ?? id.value, line });

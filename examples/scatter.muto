@@ -2,7 +2,7 @@ chart scatter
 title "수정 횟수와 비용"
 subtitle "예시 데이터. 작업당 평균, 화살표는 기억 없음에서 기억 붙임"
 x "작업당 비용(달러)"
-y "작업당 수정 횟수"
+y "작업당 수정 횟수(회)"
 
 series base "기억 없음"
 series ours "기억 붙임"

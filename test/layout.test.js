@@ -115,3 +115,12 @@ test('toSvg_title_falls_back_to_file_name', async () => {
 
   assert.match(svg, /<title>context<\/title>/);
 });
+
+test('buildFigure_state_without_start_draws_no_start_dot_or_line', async () => {
+  const withStart = await buildFigure('state right\nstate a "A"\nstate b "B"\nstart a\nfinal b\na -> b "go"');
+  const without = await buildFigure('state right\nstate a "A"\nstate b "B"\nfinal b\na -> b "go"');
+
+  assert.equal(withStart.scene.edges.length, 3);
+  assert.equal(without.scene.edges.length, 2);
+  assert.equal(without.scene.edges.filter((e) => e.isMark).length, 1);
+});

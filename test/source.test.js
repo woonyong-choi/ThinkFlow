@@ -26,8 +26,27 @@ test('parseFigure_option_with_spaces_around_equals_is_error', () => {
   assert.match(errorsOf('flow right\ngroup g "G" direction= down {\nbox a "A"\n}')[0], /without spaces around "="/);
 });
 
-test('parseFigure_reserved_word_as_name_is_error', () => {
-  assert.match(errorsOf('flow right\nbox step "S"')[0], /"step" is a reserved word/);
+test('parseFigure_reserved_word_as_name_is_allowed_in_every_name_place', () => {
+  const sources = [
+    'flow right\nbox data "데이터"\nbox store "저장"\nbox q1 "1분기"\nbox step "단계"\nbox title "제목"\ndata -> store\nstep -> q1\nstep "s"\n  show title "x"\n  data -> store',
+    'data right\ntable row "행" {\n  id bigint pk\n}\ntable key "키" {\n  id bigint pk\n  row_id bigint fk=row.id\n}\nstep "s"\n  light row.id key',
+    'state right\nstate start "시작"\nstate final "끝"\nstart start\nfinal final\nstart -> final "go"\nstep "s"\n  light start',
+    'sequence\nbox x "X"\nbox note "N"\nstep "s"\n  x -> note "m"\n  note note "n"',
+    'flow right\nbox quiet "q"\nbox dashed "d"\nquiet -> dashed "x" quiet dashed\nstep "s"\n  quiet -> dashed',
+    'data right\ntable pk "t" {\n  pk bigint pk\n  unique varchar unique\n}',
+    'chart bar\nseries mono "A"\nrow "r" mono=1\nstep "s"\n  reveal mono',
+  ];
+  for (const source of sources) assert.deepEqual(errorsOf(source), [], source);
+});
+
+test('parseFigure_arrow_line_with_statement_word_first_is_edge_and_move', () => {
+  const { figure } = parseFigure('flow right\nbox step "S"\nbox c "C"\nstep -> c\nstep "s"\n  step -> c');
+
+  assert.deepEqual([figure.edges.length, figure.steps[0].beats[0].hops[0].edge], [1, 0]);
+});
+
+test('parseFigure_line_chart_series_named_x_is_error', () => {
+  assert.match(errorsOf('chart line\nseries x "X"\npoint x=1 x=2').join(), /cannot be named "x"/);
 });
 
 test('parseFigure_header_after_declaration_is_error', () => {
@@ -64,14 +83,24 @@ test('parseFigure_sequence_note_follows_message_participant', () => {
   assert.match(errorsOf(source)[0], /participants of the message above/);
 });
 
-test('parseFigure_state_needs_one_start', () => {
-  assert.match(errorsOf('state down\nstate a "A"\nstate b "B"\na -> b "go"').join(), /needs one "start/);
+test('parseFigure_state_start_is_optional_but_not_repeated', () => {
+  assert.deepEqual(errorsOf('state down\nstate a "A"\nstate b "B"\na -> b "go"'), []);
+  assert.match(errorsOf('state down\nstate a "A"\nstate b "B"\nstart a\nstart b\na -> b "go"').join(), /already a start state/);
 });
 
 test('parseFigure_data_foreign_key_must_point_to_pk', () => {
   const source = 'data right\ntable a "a" {\n  id bigint pk\n  name varchar\n}\ntable b "b" {\n  a_name varchar fk=a.name\n}';
 
   assert.match(errorsOf(source)[0], /pk or unique/);
+});
+
+test('parseFigure_table_column_allows_uppercase_and_fk_column_too', () => {
+  const { figure } = parseFigure('data right\ntable users "users" {\n  userId bigint pk\n  createdAt timestamp\n}\ntable posts "posts" {\n  authorId bigint fk=users.userId\n}');
+
+  assert.deepEqual(figure.nodes[0].columns.map((c) => c.name), ['userId', 'createdAt']);
+  assert.equal(figure.edges[0].toColumn, 'userId');
+  assert.match(errorsOf('data right\ntable Users "u" {\n  id bigint\n}').join(), /not a valid name/);
+  assert.match(errorsOf('data right\ntable u "u" {\n  1id bigint\n}').join(), /a column name uses letters/);
 });
 
 test('parseFigure_table_column_may_use_reserved_word', () => {
@@ -90,7 +119,7 @@ test('parseFigure_zero_time_is_error', () => {
 });
 
 test('parseFigure_all_errors_are_reported_together', () => {
-  const errors = errorsOf('flow right\nbox step "S"\nbox a "A"\na -> zz\na->b');
+  const errors = errorsOf('flow right\nbox Step "S"\nbox a "A"\na -> zz\na->b');
 
   assert.equal(errors.length, 3);
 });
@@ -101,10 +130,10 @@ test('tokenizeLine_hash_outside_quotes_starts_comment', () => {
   assert.deepEqual(errors, []);
 });
 
-test('readSeries_flag_word_as_series_id_is_error', () => {
-  const errors = errorsOf('chart bar\nseries quiet "A"\nrow "x" quiet=1');
+test('readSeries_uppercase_id_is_error', () => {
+  const errors = errorsOf('chart bar\nseries Quiet "A"\nrow "x" Quiet=1');
 
-  assert.ok(errors.some((e) => e.startsWith('2: "quiet" is not a valid series name')), errors.join('\n'));
+  assert.ok(errors.some((e) => e.startsWith('2: "Quiet" is not a valid series name')), errors.join('\n'));
 });
 
 test('parseFigure_crlf_bom_and_unicode_space_read_as_spaces', () => {
@@ -159,7 +188,7 @@ test('readColumn_type_with_symbols_needs_quotes', () => {
 });
 
 test('validateFigure_rejected_name_adds_no_unknown_name_errors', () => {
-  const errors = errorsOf('flow right\ngroup a "A" {\n  box step "나"\n}\nbox c "C"\nstep -> c');
+  const errors = errorsOf('flow right\ngroup a "A" {\n  box Step "나"\n}\nbox c "C"\nStep -> c');
 
-  assert.deepEqual(errors, ['3: "step" is a reserved word. Choose another name']);
+  assert.deepEqual(errors, ['3: "Step" is not a valid name. Use lowercase letters and digits, joined by single "-", starting with a letter']);
 });

@@ -194,7 +194,7 @@ function readHeader({ tokens, line }, { figure, problems }) {
   const key = head.value;
   if (['title', 'subtitle', 'x', 'y'].includes(key)) {
     if (value?.type !== 'text') problems.error(line, `write ${key} as quoted text: ${key} "..."`);
-    else if (key === 'x' || key === 'y') figure.chart[key] = value.value;
+    else if (key === 'x' || key === 'y') Object.assign(figure.chart, { [key]: value.value, [`${key}Line`]: line });
     else figure[key] = value.value;
   } else if (key === 'speed') {
     const ms = parseTime(value?.value);
