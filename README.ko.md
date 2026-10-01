@@ -35,7 +35,7 @@ api.retain -> facts
 4. 점이 `the conversation`을 싣고 `agent`에서 `retain`으로 가고, `agent` 안 카드가 채워집니다.
 5. 마지막 점은 같은 선을 거꾸로 따라 `agent`로 돌아갑니다.
 
-전체 문법은 [흐름 문법](docs/design/flow-syntax.md)에 있습니다.
+이 버전의 전체 문법은 `d2-compat` 태그의 `docs/design/flow-syntax.md`에 있습니다.
 
 ## 설치
 
@@ -102,7 +102,7 @@ examples/out/multi-agent.html
 
 ## 상태
 
-명령과 예제가 소스에서 동작하고 테스트가 통과합니다. 배포판과 npm 패키지는 없습니다. 흐름 문법과 결과 파일은 1.0 전까지 예고 없이 바뀔 수 있습니다.
+명령과 예제가 소스에서 동작하고 테스트가 통과합니다. 배포판과 npm 패키지는 없습니다. `design-own-layout` 브랜치에 D2 호환을 대신하는 자체 그림 문법과 배치 설계를 제안했습니다. 그 브랜치의 코드는 아직 D2 호환 구현이고, 같은 구현이 `d2-compat` 태그에도 있습니다.
 
 ## 비교
 
@@ -113,11 +113,14 @@ examples/out/multi-agent.html
 
 설계 문서는 한국어로 씁니다.
 
-- [아키텍처](docs/architecture.md): 구성 요소, 실행 흐름, 불변 조건
-- [흐름 문법](docs/design/flow-syntax.md): 줄 종류, 이름 찾기, 카드 줄, 오류
-- [그리기](docs/design/rendering.md): 두 번 배치, 도형 크기, 모양, 선 경로
-- [재생](docs/design/playback.md): 박자 시간과 상태, HTML 재생기, 움직이는 SVG
-- [차트](docs/design/charts.md): 막대 차트와 화살표 차트의 문법과 그리기
+- [아키텍처](docs/architecture.md): 제안된 설계의 구성 요소, 실행 흐름, 불변 조건
+- [그림 문법](docs/design/figure-syntax.md): 줄 규칙, 파일 구조, 구조 그림, 시간 흐름, 오류
+- [그림 종류](docs/design/figure-kinds.md): 순서 그림, 상태 그림, 데이터 관계 그림
+- [차트](docs/design/charts.md): 여섯 차트 종류, 값 출처, 계열 드러내기
+- [배치](docs/design/layout.md): 글 재기, 도형 크기와 연결점, 묶음 배치, 그림 비율
+- [그림 검사](docs/design/figure-check.md): 화면 오류 검사 항목과 메시지
+- [재생](docs/design/playback.md): 시간표, 박자 상태, HTML 재생기, 움직이는 SVG
+- [문서 스킬 연동](docs/design/docs-integration.md): 문서 스킬의 D2와 Vega-Lite를 대신하는 계약
 
 전체 문서는 [docs/README.md](docs/README.md)에 있습니다.
 

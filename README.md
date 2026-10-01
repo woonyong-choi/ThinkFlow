@@ -35,7 +35,7 @@ api.retain -> facts
 4. A dot carries `the conversation` from `agent` to `retain`, and a card inside `agent` fills in.
 5. The last dot runs back along the same edge to `agent`.
 
-The full syntax is in [Flow syntax](docs/design/flow-syntax.md).
+The full syntax of this version is in `docs/design/flow-syntax.md` at the `d2-compat` tag.
 
 ## Installation
 
@@ -102,7 +102,7 @@ Open `examples/out/index.html` to see every example on one page. `npm run exampl
 
 ## Status
 
-The command and the examples work from source, and the tests pass. There is no release and no npm package. The flow syntax and output files may change without notice before 1.0.
+The command and the examples work from source, and the tests pass. There is no release and no npm package. A redesign is proposed on the `design-own-layout` branch: an own figure syntax and layout that replace D2 compatibility. The code on that branch is still the D2-compatible version, which is also kept at the `d2-compat` tag.
 
 ## Comparison
 
@@ -113,11 +113,14 @@ The command and the examples work from source, and the tests pass. There is no r
 
 The design documents are written in Korean.
 
-- [Architecture](docs/architecture.md): components, flows, and invariants
-- [Flow syntax](docs/design/flow-syntax.md): line types, name lookup, card rows, and errors
-- [Rendering](docs/design/rendering.md): two-pass layout, shape sizes, shapes, and edge paths
-- [Playback](docs/design/playback.md): step timing and state, the HTML player, and the animated SVG
-- [Charts](docs/design/charts.md): syntax and drawing of bar charts and arrow charts
+- [Architecture](docs/architecture.md): components, flows, and invariants of the proposed design
+- [Figure syntax](docs/design/figure-syntax.md): line rules, file structure, flow figures, timeline, and errors
+- [Figure kinds](docs/design/figure-kinds.md): sequence, state, and data relation figures
+- [Charts](docs/design/charts.md): six chart kinds, value sources, and revealing series
+- [Layout](docs/design/layout.md): text measurement, shape sizes and ports, group layout, and aspect ratio
+- [Figure check](docs/design/figure-check.md): screen error checks and messages
+- [Playback](docs/design/playback.md): timeline, beat state, the HTML player, and the animated SVG
+- [Docs skill integration](docs/design/docs-integration.md): replacing D2 and Vega-Lite in the docs skill
 
 All documents are listed in [docs/README.md](docs/README.md).
 
