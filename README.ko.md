@@ -121,6 +121,8 @@ npm test
 npm run check
 ```
 
+브랜치, 커밋, PR 규칙은 [CONTRIBUTING](.github/CONTRIBUTING.md)에 있습니다.
+
 ## 라이선스
 
 [MIT](LICENSE)

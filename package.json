@@ -17,7 +17,7 @@
     "mutoscope": "src/cli.js"
   },
   "scripts": {
-    "test": "node --test test/",
+    "test": "node --test test/*.test.js",
     "tokens": "node scripts/build-tokens.mjs src/tokens.json --out src",
     "check": "node scripts/check-tokens.mjs src && node scripts/check-cost-comments.mjs src test",
     "examples": "node src/cli.js gallery examples --out examples/out --title \"예제\"",

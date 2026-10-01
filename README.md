@@ -121,6 +121,8 @@ npm test
 npm run check
 ```
 
+See [CONTRIBUTING](.github/CONTRIBUTING.md) for branches, commits, and pull requests.
+
 ## License
 
 [MIT](LICENSE)

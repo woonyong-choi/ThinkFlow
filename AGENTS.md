@@ -25,7 +25,6 @@
 ```sh
 npm test
 npm run check
-npm run examples
 ```
 
 ## 규칙
