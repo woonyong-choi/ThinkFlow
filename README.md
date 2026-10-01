@@ -92,7 +92,7 @@ Open `examples/out/index.html` to see every example on one page.
 
 ## Status
 
-The code on `main` implements the redesign and the tests pass. The design documents are still proposals. The previous D2-compatible version is kept at the `d2-compat` tag.
+The code on `main` implements the redesign and the tests pass. The design documents for syntax, figure kinds, charts, layout, figure check, and playback are implemented; the docs skill integration is still a proposal. The previous D2-compatible version is kept at the `d2-compat` tag.
 
 ## Comparison
 
