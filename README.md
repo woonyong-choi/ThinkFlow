@@ -33,6 +33,8 @@ step "Chat" "Input goes through the screen to the engine"
   engine -> codex "turn" time=3s
 ```
 
+![Figure rendered from the source above: the developer's question moves from Screen to Engine, then to Codex CLI](docs/assets/how-it-works.svg)
+
 1. You write the first line as the figure kind, then shapes and edges, then steps from `step` on.
 2. mutoscope lays out the shapes inside `system` from top to bottom and the rest from left to right.
 3. In the first beat a dot moves from `user` to `tui`, and the card inside `tui` fills in when the dot arrives.
@@ -90,7 +92,7 @@ Open `examples/out/index.html` to see every example on one page.
 
 ## Status
 
-The code on this branch implements the redesign and the tests pass. The design documents are still proposals. The previous D2-compatible version is kept at the `d2-compat` tag.
+The code on `main` implements the redesign and the tests pass. The design documents are still proposals. The previous D2-compatible version is kept at the `d2-compat` tag.
 
 ## Comparison
 

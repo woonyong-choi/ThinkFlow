@@ -33,6 +33,8 @@ step "Chat" "Input goes through the screen to the engine"
   engine -> codex "turn" time=3s
 ```
 
+![위 원본으로 그린 그림: 개발자의 질문이 Screen에서 Engine을 거쳐 Codex CLI로 갑니다](docs/assets/how-it-works.svg)
+
 1. 첫 줄에 그림 종류를 적고, 도형과 선을 적은 뒤, `step`부터 단계를 적습니다.
 2. mutoscope가 `system` 안 도형은 위에서 아래로, 나머지는 왼쪽에서 오른쪽으로 놓습니다.
 3. 첫 박자에 점이 `user`에서 `tui`로 가고, 점이 닿을 때 `tui` 안 카드가 채워집니다.
@@ -90,7 +92,7 @@ npm run examples
 
 ## 상태
 
-이 브랜치의 코드는 새 설계를 구현했고 테스트가 통과합니다. 설계 문서는 아직 제안 상태입니다. 이전 D2 호환 버전은 `d2-compat` 태그에 있습니다.
+`main`의 코드는 새 설계를 구현했고 테스트가 통과합니다. 설계 문서는 아직 제안 상태입니다. 이전 D2 호환 버전은 `d2-compat` 태그에 있습니다.
 
 ## 비교
 

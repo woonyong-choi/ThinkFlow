@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
 import { fileURLToPath } from 'node:url';
 import { buildFigure } from '../src/build.js';
@@ -76,4 +77,11 @@ test('toSvg_static_has_no_motion_and_shows_quiet_edges', async () => {
 
   assert.doesNotMatch(svg, /@keyframes|animateMotion/);
   assert.match(svg, /class="fl-edge quiet/);
+});
+
+test('readme_example_equals_rendered_asset_source', () => {
+  const read = (path) => readFileSync(new URL(path, import.meta.url), 'utf8');
+  const block = /```text\n(flow right[\s\S]*?)```/.exec(read('../README.md'))[1];
+
+  assert.equal(block, read('../docs/assets/how-it-works.muto'));
 });
