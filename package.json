@@ -3,6 +3,15 @@
   "version": "0.0.0",
   "private": true,
   "description": "문서 그림 문법으로 움직이는 구조 그림과 차트를 만든다",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/woonyong-choi/mutoscope.git"
+  },
+  "homepage": "https://github.com/woonyong-choi/mutoscope#readme",
+  "bugs": {
+    "url": "https://github.com/woonyong-choi/mutoscope/issues"
+  },
   "type": "module",
   "bin": {
     "mutoscope": "src/cli.js"

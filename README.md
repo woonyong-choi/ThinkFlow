@@ -120,3 +120,7 @@ All documents are listed in [docs/README.md](docs/README.md).
 npm test
 npm run check
 ```
+
+## License
+
+[MIT](LICENSE)

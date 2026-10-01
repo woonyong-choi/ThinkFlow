@@ -120,3 +120,7 @@ npm run examples
 npm test
 npm run check
 ```
+
+## 라이선스
+
+[MIT](LICENSE)

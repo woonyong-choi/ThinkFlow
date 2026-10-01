@@ -16,11 +16,8 @@ export function tokenizeLine(text, line, problems) {
   let i = 0;
   while (i < text.length) {
     const c = text[i];
-    if (c === ' ' || c === '\t') {
-      i++;
-    } else if (/\s|\uFEFF/.test(c)) {
-      // 줄 끝 CR, BOM, 유니코드 공백은 공백 낱말 규칙 밖이라 알리고 건너뛴다. 낱말 읽기가 이 글자에서 멈춰 제자리를 돌지 않게 하기 위해서다.
-      problems.error(line, `unexpected character U+${c.codePointAt(0).toString(16).toUpperCase().padStart(4, '0')}. Use spaces, tabs, and LF line ends`);
+    // 줄 끝 CR(Windows 줄바꿈), BOM, 유니코드 공백도 따옴표 밖에서는 공백으로 읽는다.
+    if (/\s|\uFEFF/.test(c)) {
       i++;
     } else if (c === '#') {
       break;

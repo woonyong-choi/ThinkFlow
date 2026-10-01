@@ -46,7 +46,9 @@ function buildModel(figure, sizes) {
     containers.get(n.parent ?? 'root').children.push(n.id);
   }
   addStateMarks(figure, nodes, containers);
-  const edges = [...figure.edges.map((e, i) => ({ ...e, index: i })), ...(figure.markEdges ?? [])];
+  // 처음 점과 그 선은 모델 순서의 맨 앞에 둔다. 선언 순서를 따르는 배치에서 처음 점이 맨 앞(왼쪽, 위)에 오게 하기 위해서다.
+  const marks = figure.markEdges ?? [];
+  const edges = [...marks.filter((e) => e.isStart), ...figure.edges.map((e, i) => ({ ...e, index: i })), ...marks.filter((e) => !e.isStart)];
   const pieces = new Map();
   for (const edge of edges) pieces.set(edge.index, splitEdge(edge, nodes, containers));
   return { containers, nodes, edges, pieces };
@@ -72,8 +74,9 @@ function addStateMarks(figure, nodes, containers) {
   marks.forEach((m, i) => {
     const size = { w: SIZE['state-dot'], h: SIZE['state-dot'], marginTop: 0, marginBottom: 0, labelLines: [], subLines: [] };
     nodes.set(m.id, { id: m.id, shape: m.shape, label: '', size, ports: [], parent: 'root', direction: figure.direction });
-    containers.get('root').children.push(m.id);
-    figure.markEdges.push({ from: m.from, to: m.to, label: undefined, quiet: false, dashed: false, index: `mark${i}`, isMark: true });
+    if (m.shape === 'start') containers.get('root').children.unshift(m.id);
+    else containers.get('root').children.push(m.id);
+    figure.markEdges.push({ from: m.from, to: m.to, label: undefined, quiet: false, dashed: false, index: `mark${i}`, isMark: true, isStart: m.shape === 'start' });
   });
 }
 
@@ -196,6 +199,8 @@ function toElk(model, figure) {
       'elk.edgeRouting': 'ORTHOGONAL',
       'elk.randomSeed': '1',
       'elk.layered.considerModelOrder.strategy': 'NODES_AND_EDGES',
+      // 되도는 선이 있으면 선언 순서를 거스르는 선을 거꾸로 놓는다. 먼저 적은 도형이 앞(왼쪽, 위)에 오게 하기 위해서다.
+      'elk.layered.cycleBreaking.strategy': 'MODEL_ORDER',
       'elk.spacing.nodeNode': String(SPACE['16']),
       'elk.layered.spacing.nodeNodeBetweenLayers': String(SPACE['30']),
       'elk.spacing.edgeEdge': String(SPACE['5']),

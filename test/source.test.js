@@ -107,12 +107,12 @@ test('readSeries_flag_word_as_series_id_is_error', () => {
   assert.ok(errors.some((e) => e.startsWith('2: "quiet" is not a valid series name')), errors.join('\n'));
 });
 
-test('tokenizeLine_cr_bom_and_unicode_space_are_errors_not_hangs', () => {
-  const sources = ['flow right\r\nbox a "A"\r\n', '﻿flow right\nbox a "A"', 'flow right\nbox a "A" '];
+test('parseFigure_crlf_bom_and_unicode_space_read_as_spaces', () => {
+  const sources = ['flow right\r\nbox a "A"\r\n', '\ufeffflow right\nbox a "A"', 'flow right\nbox a "A"\u00a0\nbox\u3000b "B"'];
 
   const results = sources.map((source) => errorsOf(source));
 
-  for (const errors of results) assert.ok(errors.some((e) => /unexpected character U\+/.test(e)), errors.join('\n'));
+  assert.deepEqual(results, [[], [], []]);
 });
 
 test('parseFigure_glued_arrow_gives_one_error', () => {
@@ -137,4 +137,11 @@ test('parseFigure_column_name_outside_data_figure_is_error', () => {
   const errors = errorsOf('flow right\nbox a "A"\nbox b "B"\na -> b\nstep "s"\n  a.x -> b.y');
 
   assert.ok(errors.some((e) => e.includes('names a column, which only data figures have')), errors.join('\n'));
+});
+
+test('validateFigure_self_transition_only_in_state_figures', () => {
+  const state = errorsOf('state right\nstate a "A"\nstart a\na -> a "retry"');
+  const flow = errorsOf('flow right\nbox a "A"\na -> a');
+
+  assert.deepEqual([state, flow.length], [[], 1]);
 });

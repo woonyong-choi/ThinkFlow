@@ -49,7 +49,8 @@ function checkEdges(figure, names, problems) {
   const seen = new Map();
   figure.edges.forEach((edge) => {
     for (const end of [edge.from, edge.to]) if (!names.has(end)) problems.error(edge.line, unknownName('node', end, names.keys()));
-    if (edge.from === edge.to) problems.error(edge.line, `an edge cannot go from "${edge.from}" to itself`);
+    // 자기 전이(재시도, 대기)는 상태 그림에서만 뜻이 있다. 다른 그림의 자기 선은 그릴 내용이 없다.
+    if (edge.from === edge.to && figure.kind !== 'state') problems.error(edge.line, `an edge cannot go from "${edge.from}" to itself. Only state figures have self transitions`);
     if (isInside(edge.from, edge.to) || isInside(edge.to, edge.from)) problems.error(edge.line, 'an edge cannot join a group and a node inside it');
     if (figure.kind === 'state' && [edge.from, edge.to].some((id) => names.get(id)?.shape === 'group')) problems.error(edge.line, 'a transition joins two states');
     const key = `${edge.from}\u0000${edge.to}`;
