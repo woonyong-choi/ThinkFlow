@@ -102,3 +102,14 @@ test('main_check_reports_syntax_and_glyph_errors_together', () => {
     assert.match(stderr, /bad\.muto:4: unknown node "cdex"/);
   });
 });
+
+test('main_missing_file_reports_one_line_and_checks_the_rest', () => {
+  withFolder((folder) => {
+    writeFileSync(join(folder, 'ok.muto'), 'flow right\naspect 1.6\nbox a "A"\nbox b "B"\na -> b\n');
+
+    const { stderr, status } = run(['check', 'nope.muto', 'ok.muto'], folder);
+
+    assert.equal(status, 1);
+    assert.equal(stderr.trim(), 'nope.muto: cannot read the file: ENOENT');
+  });
+});

@@ -40,14 +40,15 @@ function readGroup({ tokens, line }, ctx) {
   const [, id, label, ...rest] = tokens;
   if (!checkId(id, line, ctx, ID_PATTERN)) return;
   if (label?.type !== 'text') ctx.problems.error(line, `write group as: group ${id.value} "name" {`);
-  const open = rest.at(-1);
-  if (open?.type !== 'open') ctx.problems.error(line, 'end the group line with "{"');
+  const openAt = rest.findIndex((t) => t.type === 'open');
+  if (openAt === -1) ctx.problems.error(line, 'end the group line with "{"');
+  else if (openAt < rest.length - 1) ctx.problems.error(line, 'end the group line with "{" and put the group contents on the next lines');
   let direction;
-  for (const t of rest.slice(0, -1)) {
+  for (const t of openAt === -1 ? rest : rest.slice(0, openAt)) {
     if (t.type === 'option' && t.key === 'direction' && DIRECTIONS.includes(t.value) && t.valueType === 'word') direction = t.value;
     else ctx.problems.error(line, 'a group takes only direction=right or direction=down');
   }
-  const group = { id: id.value, label: label?.value ?? '', direction, parent: currentGroup(ctx), line };
+  const group = { id: id.value, label: label?.value ?? '', direction, parent: currentGroup(ctx), line, hasError: openAt !== rest.length - 1 };
   ctx.figure.groups.push(group);
   ctx.groups.push(group);
 }
@@ -59,6 +60,9 @@ export function closeGroup({ tokens, line }, ctx) {
   else ctx.groups.pop();
 }
 
+// cost: time O(f), heap O(1), stack O(1)
+// vars: f = 끝 상태 수
+// basis: estimate
 // `start id`, `final id`
 function readStateMark({ tokens, line }, ctx) {
   const [head, id, extra] = tokens;
@@ -70,7 +74,9 @@ function readStateMark({ tokens, line }, ctx) {
     if (ctx.figure.start) ctx.problems.error(line, `there is already a start state "${ctx.figure.start.id}" (line ${ctx.figure.start.line})`);
     else ctx.figure.start = { id: id.value, line };
   } else {
-    ctx.figure.finals.push({ id: id.value, line });
+    const known = ctx.figure.finals.find((f) => f.id === id.value);
+    if (known) ctx.problems.error(line, `"${id.value}" is already a final state (line ${known.line})`);
+    else ctx.figure.finals.push({ id: id.value, line });
   }
 }
 

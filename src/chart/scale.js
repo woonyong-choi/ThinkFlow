@@ -4,9 +4,15 @@
 // basis: estimate
 /** 십진 반올림. 절반은 0에서 먼 쪽이다. 12자리로 먼저 줄여 이진 부동소수점 오차(0.1 + 0.2 꼴)를 지운다. */
 export function roundHalfAway(value, digits = 0) {
-  const clean = Number(Math.abs(value).toPrecision(12));
-  const rounded = Number(`${Math.round(Number(`${clean}e${digits}`))}e-${digits}`);
-  return Math.sign(value) * rounded;
+  // 12자리로 줄인 뒤 십진 자리를 글자로 옮긴다. 1e+21, 5e-7 같은 지수 표기도 그대로 옮겨진다.
+  const shifted = Math.round(shiftDecimal(Number(Math.abs(value).toPrecision(12)), digits));
+  return Math.sign(value) * shiftDecimal(shifted, -digits);
+}
+
+// 십진 자리 옮기기. x × 10^n을 이진 곱셈 오차 없이 구한다.
+function shiftDecimal(x, n) {
+  const [mantissa, exponent = '0'] = String(x).split('e');
+  return Number(`${mantissa}e${Number(exponent) + n}`);
 }
 
 // cost: time O(1), heap O(1), stack O(1)

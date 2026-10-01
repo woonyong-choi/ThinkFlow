@@ -85,10 +85,12 @@ function readRow({ tokens, line }, { figure, problems }) {
   const [, label, ...rest] = tokens;
   if (label?.type !== 'text') {
     problems.error(line, 'write a row as: row "item" key=value');
+    figure.chart.hasRejectedRow = true;
     return;
   }
   const values = readValues(rest, line, problems);
   if (values) figure.chart.rows.push({ label: label.value, values, line });
+  else figure.chart.hasRejectedRow = true;
 }
 
 // cost: time O(t), heap O(t), stack O(1)
@@ -100,10 +102,12 @@ function readPoint({ tokens, line }, { figure, problems }) {
   const [, name, ...rest] = tokens;
   if (isScatter && name?.type !== 'text') {
     problems.error(line, 'write a scatter point as: point "name" x=1 y=2 [series=id]');
+    figure.chart.hasRejectedRow = true;
     return;
   }
   const values = readValues(isScatter ? rest : tokens.slice(1), line, problems, isScatter ? ['series'] : []);
   if (values) figure.chart.rows.push({ label: isScatter ? name.value : undefined, values, line });
+  else figure.chart.hasRejectedRow = true;
 }
 
 // `cell "행" "열" 값`
@@ -112,11 +116,15 @@ function readCell({ tokens, line }, { figure, problems }) {
   const number = parseNumber(value?.value);
   if (row?.type !== 'text' || col?.type !== 'text' || value?.type !== 'word' || number === undefined || extra) {
     problems.error(line, 'write a cell as: cell "row" "column" 12');
+    figure.chart.hasRejectedRow = true;
     return;
   }
   figure.chart.rows.push({ label: `${row.value}\u0000${col.value}`, row: row.value, col: col.value, values: { value: number }, line });
 }
 
+// cost: time O(l), heap O(1), stack O(1)
+// vars: l = 이미 적은 link 수
+// basis: estimate
 // `link "이름" -> "이름"`
 function readLink({ tokens, line }, { figure, problems }) {
   const [, from, arrow, to, extra] = tokens;
@@ -124,7 +132,10 @@ function readLink({ tokens, line }, { figure, problems }) {
     problems.error(line, 'write a link as: link "a" -> "b"');
     return;
   }
-  figure.chart.links.push({ from: from.value, to: to.value, line });
+  const same = figure.chart.links.find((l) => l.from === from.value && l.to === to.value);
+  if (from.value === to.value) problems.error(line, `a link joins two different points. Found "${from.value}" twice`);
+  else if (same) problems.error(line, `there is already a link "${from.value}" -> "${to.value}" (line ${same.line})`);
+  else figure.chart.links.push({ from: from.value, to: to.value, line });
 }
 
 // cost: time O(t), heap O(t), stack O(1)

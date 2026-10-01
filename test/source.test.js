@@ -106,3 +106,35 @@ test('readSeries_flag_word_as_series_id_is_error', () => {
 
   assert.ok(errors.some((e) => e.startsWith('2: "quiet" is not a valid series name')), errors.join('\n'));
 });
+
+test('tokenizeLine_cr_bom_and_unicode_space_are_errors_not_hangs', () => {
+  const sources = ['flow right\r\nbox a "A"\r\n', '﻿flow right\nbox a "A"', 'flow right\nbox a "A" '];
+
+  const results = sources.map((source) => errorsOf(source));
+
+  for (const errors of results) assert.ok(errors.some((e) => /unexpected character U\+/.test(e)), errors.join('\n'));
+});
+
+test('parseFigure_glued_arrow_gives_one_error', () => {
+  const errors = errorsOf('flow right\nbox a "A"\nbox b "B"\na ->b');
+
+  assert.deepEqual(errors, ['4: put spaces around "->" in "->b"']);
+});
+
+test('parseFigure_unknown_kind_reports_only_first_line', () => {
+  const errors = errorsOf('# 설명\nflo right\nbox a "A\n');
+
+  assert.deepEqual(errors.length, 1);
+});
+
+test('parseFigure_id_with_trailing_or_double_dash_is_error', () => {
+  const errors = errorsOf('flow right\nbox a- "A"\nbox b--c "B"');
+
+  assert.equal(errors.length, 2, errors.join('\n'));
+});
+
+test('parseFigure_column_name_outside_data_figure_is_error', () => {
+  const errors = errorsOf('flow right\nbox a "A"\nbox b "B"\na -> b\nstep "s"\n  a.x -> b.y');
+
+  assert.ok(errors.some((e) => e.includes('names a column, which only data figures have')), errors.join('\n'));
+});

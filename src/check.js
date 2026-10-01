@@ -1,5 +1,4 @@
 // 그림 검사. 배치가 끝난 장면에서 화면 오류를 찾아 원본 줄 번호와 함께 알린다(docs/design/figure-check.md).
-import { LABEL_ROOM, measureLabel } from './chart/draw.js';
 import { CHIP_GAP, placeChip, sampleRoute, sizeChip } from './chip.js';
 import { measure } from './measure/fonts.js';
 import { CARD, STYLE, groupTitleWidth, sizePill } from './measure/sizes.js';
@@ -27,7 +26,7 @@ export function checkFigure(figure, scene, timeline, problems) {
   checkLabels({ pills, titles, boxes }, family, problems);
   checkThrough(edges, boxes, scene.groups, family, problems);
   checkEnds(edges, scene, figure, problems);
-  checkCrowding(edges, problems);
+  checkCrowding(edges, family.hint, problems);
   checkNodes(boxes, scene.groups, family, problems);
   checkChips(scene, timeline, problems);
   if (['flow', 'state', 'data'].includes(figure.kind)) checkAspect(figure, scene, problems);
@@ -37,15 +36,13 @@ export function checkFigure(figure, scene, timeline, problems) {
 // cost: time O(r·n), heap O(r), stack O(1)
 // vars: r = 항목 수, n = 이름 글자 수
 // basis: estimate
-/** 차트 검사. 차트에는 선과 도형이 없어 1번(항목 이름이 이름 칸에 들어간다)만 해당한다. */
-export function checkChartFigure(figure, problems) {
-  if (!['bar', 'dumbbell', 'box', 'heatmap'].includes(figure.chartType)) return;
+/** 차트 검사. 차트에는 선과 도형이 없어 1번(항목 이름, 열 이름, 점 이름이 자기 칸에 들어간다)만 해당한다. */
+export function checkChartFigure(chart, problems) {
   const reported = new Set();
-  for (const row of figure.chart.rows) {
-    const name = figure.chartType === 'heatmap' ? row.row : row.label;
-    if (reported.has(name) || measureLabel(name) <= LABEL_ROOM + FIT_SLACK) continue;
-    reported.add(name);
-    problems.error(row.line ?? figure.line, `[check 1] item name "${name}" is wider than the label column (${LABEL_ROOM}px). Shorten the name`);
+  for (const fit of chart.fits) {
+    if (reported.has(fit.text) || fit.width <= fit.room + FIT_SLACK) continue;
+    reported.add(fit.text);
+    problems.error(fit.line, `[check 1] ${fit.what} "${fit.text}" is wider than its space (${Math.floor(fit.room)}px). Shorten the name`);
   }
 }
 
@@ -73,12 +70,18 @@ function createFamily(scene) {
     for (let p = parents.get(b); p !== undefined && p !== 'root'; p = parents.get(p)) if (p === a) return true;
     return false;
   };
-  return { contains, isRelated: (a, b) => a === b || contains(a, b) || contains(b, a) };
+  // 배치를 바꾸라는 안내. 그룹이 없으면 그룹 방향을 바꿀 수 없어 선언 순서를 권한다.
+  const hint = scene.groups.length ? 'change a group direction' : 'change the declaration order';
+  return { contains, isRelated: (a, b) => a === b || contains(a, b) || contains(b, a), hint };
 }
 
 function pillBox(e) {
   const { w, h } = sizePill(e.label);
   return { x: e.labelAt.x - w / 2, y: e.labelAt.y - h / 2, w, h };
+}
+
+function capitalize(text) {
+  return text[0].toUpperCase() + text.slice(1);
 }
 
 function overlaps(a, b) {
@@ -156,7 +159,7 @@ function fits(size, room) {
 function checkLabels({ pills, titles, boxes }, family, problems) {
   pills.forEach((a, i) => {
     for (const b of pills.slice(i + 1)) {
-      if (overlaps(a, b)) problems.error(a.edge.line, `[check 2] edge label "${a.edge.label}" overlaps edge label "${b.edge.label}" (line ${b.edge.line}). Shorten a label or change a group direction`);
+      if (overlaps(a, b)) problems.error(a.edge.line, `[check 2] edge label "${a.edge.label}" overlaps edge label "${b.edge.label}" (line ${b.edge.line}). Shorten a label or ${family.hint}`);
     }
     for (const box of boxes) {
       if (overlaps(a, box)) problems.error(a.edge.line, `[check 2] edge label "${a.edge.label}" overlaps node "${box.id}" (line ${box.line}). Shorten the label`);
@@ -184,11 +187,11 @@ function checkThrough(edges, boxes, groups, family, problems) {
     const ends = [e.from.split('.')[0], e.to.split('.')[0]];
     const hits = (r) => e.points.slice(1).some((q, i) => segmentHits(e.points[i], q, { x: r.x + 1, y: r.y + 1, w: r.w - 2, h: r.h - 2 }));
     for (const box of boxes) {
-      if (!ends.includes(box.id) && hits(box)) problems.error(e.line, `[check 3] edge ${e.from} -> ${e.to} passes through node "${box.id}" (line ${box.line}). Change a group direction or the declaration order`);
+      if (!ends.includes(box.id) && hits(box)) problems.error(e.line, `[check 3] edge ${e.from} -> ${e.to} passes through node "${box.id}" (line ${box.line}). ${capitalize(family.hint)}`);
     }
     for (const g of groups) {
       const isCrossed = ends.some((end) => end === g.id || family.contains(g.id, end));
-      if (!isCrossed && hits(g)) problems.error(e.line, `[check 3] edge ${e.from} -> ${e.to} passes through group "${g.id}" (line ${g.line}). Change a group direction or the declaration order`);
+      if (!isCrossed && hits(g)) problems.error(e.line, `[check 3] edge ${e.from} -> ${e.to} passes through group "${g.id}" (line ${g.line}). ${capitalize(family.hint)}`);
     }
   }
 }
@@ -246,11 +249,11 @@ function onBorder(p, r) {
 // vars: e = 선 수, p = 경로 점 수
 // basis: estimate
 // 5번: 다른 두 선의 나란한 구간이 CROWD보다 가깝게 겹치지 않는다.
-function checkCrowding(edges, problems) {
+function checkCrowding(edges, hint, problems) {
   edges.forEach((a, i) => {
     for (const b of edges.slice(i + 1)) {
       const isClose = segments(a).some(([p, q]) => segments(b).some(([s, t]) => crowded(p, q, s, t)));
-      if (isClose) problems.error(a.line, `[check 5] edges ${a.from} -> ${a.to} and ${b.from} -> ${b.to} (line ${b.line}) run too close. Change a group direction`);
+      if (isClose) problems.error(a.line, `[check 5] edges ${a.from} -> ${a.to} and ${b.from} -> ${b.to} (line ${b.line}) run too close. ${capitalize(hint)}`);
     }
   });
 }
@@ -312,12 +315,20 @@ function inside(box, scene) {
 // cost: time O(g log g), heap O(g), stack O(1)
 // vars: g = 그룹 수
 // basis: estimate
-// 9번: 가로세로 비율. 그룹 그림은 그룹 방향을, 아니면 aspect를 권한다.
+// 9번: 가로세로 비율. 그룹 그림은 비율을 줄이는 쪽의 그룹 방향을, 아니면 aspect를 권한다.
 function checkAspect(figure, scene, problems) {
   const ratio = scene.width / scene.height;
   if (ratio <= ASPECT_MAX && ratio >= 1 / ASPECT_MAX) return;
-  const widest = [...scene.groups].sort((a, b) => b.w - a.w)[0];
-  const fix = widest ? `Set direction=down on group "${widest.id}"` : figure.aspect !== undefined ? `Use a smaller aspect than ${figure.aspect}` : 'Add "aspect 1.6"';
+  const isWide = ratio > ASPECT_MAX;
+  const turn = isWide ? 'down' : 'right';
+  const size = (g) => (isWide ? g.w : g.h);
+  const own = new Map(figure.groups.map((g) => [g.id, g.direction]));
+  const group = [...scene.groups].filter((g) => own.get(g.id) !== turn).sort((a, b) => size(b) - size(a))[0];
+  let fix;
+  if (group) fix = `Set direction=${turn} on group "${group.id}"`;
+  else if (scene.groups.length) fix = `Change the figure direction to ${turn}`;
+  else if (figure.aspect !== undefined) fix = `Use a ${isWide ? 'smaller' : 'larger'} aspect than ${figure.aspect}`;
+  else fix = 'Add "aspect 1.6"';
   problems.warn(figure.line, `[check 9] figure aspect ${ratio.toFixed(1)} is outside 1/3 to 3. ${fix}`);
 }
 
@@ -325,5 +336,7 @@ function checkAspect(figure, scene, problems) {
 function checkReadable(figure, scene, problems) {
   const scale = Math.min(1, values.size['figure-max'] / scene.width);
   const smallest = values.size.text['9'] * scale;
-  if (smallest < MIN_READABLE - 0.01) problems.warn(figure.line, `[check 10] at document width the smallest text is ${smallest.toFixed(1)}px. Make the figure narrower with group directions or aspect`);
+  if (smallest >= MIN_READABLE - 0.01) return;
+  const fix = figure.kind === 'sequence' ? 'Use fewer participants or shorter messages' : scene.groups.length ? 'Make the figure narrower with group directions' : 'Make the figure narrower with aspect';
+  problems.warn(figure.line, `[check 10] at document width the smallest text is ${smallest.toFixed(1)}px. ${fix}`);
 }

@@ -117,3 +117,18 @@ test('checkFigure_decision_edge_off_vertex_is_check_4_internal_error', async () 
 
   assert.ok(messages.some((m) => m.includes('[check 4] internal')), messages.join('\n'));
 });
+
+test('buildFigure_sequence_without_participants_is_error_not_crash', async () => {
+  const messages = await problemsOf('sequence\nstep "s"\n  wait 1s');
+
+  assert.deepEqual(messages, ['1: a sequence figure needs at least one participant']);
+});
+
+test('checkFigure_tall_group_suggests_direction_right', async () => {
+  const chain = Array.from({ length: 8 }, (_, i) => `  box n${i} "N${i}"`).join('\n');
+  const edges = Array.from({ length: 7 }, (_, i) => `  n${i} -> n${i + 1}`).join('\n');
+
+  const { warnings } = await buildFigure(`flow down\ngroup g "G" {\n${chain}\n${edges}\n}`);
+
+  assert.ok(warnings.some((w) => w.message.includes('Set direction=right on group "g"')), JSON.stringify(warnings));
+});

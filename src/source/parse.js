@@ -42,10 +42,14 @@ export function readFigure(source, problems) {
   }
   readKind(statements[0], ctx);
   // 종류를 모르면 다음 줄의 규칙을 정할 수 없어 여기서 멈춘다. 그 밖의 오류는 끝까지 모아 한 번에 알린다.
-  if (!figure.kind) problems.throwIfAny();
+  if (!figure.kind) {
+    // 낱말 나누기는 모든 줄을 먼저 보지만, 종류를 모르면 그 뒤 줄의 오류는 뜻이 없어 첫 문장 오류만 남긴다.
+    problems.errors.splice(0, problems.errors.length, ...problems.errors.filter((e) => e.line <= statements[0].line));
+    problems.throwIfAny();
+  }
   for (const statement of statements.slice(1)) readStatement(statement, ctx);
   if (ctx.table) problems.error(ctx.table.line, `close table "${ctx.table.id}" with "}"`);
-  for (const group of ctx.groups) problems.error(group.line, `close group "${group.id}" with "}"`);
+  for (const group of ctx.groups) if (!group.isRejected) problems.error(group.line, `close group "${group.id}" with "}"`);
   validateFigure(figure, problems);
   return figure;
 }
@@ -81,7 +85,12 @@ function emptyFigure() {
 function splitStatements(source, problems) {
   return source
     .split('\n')
-    .map((text, i) => ({ line: i + 1, tokens: tokenizeLine(text, i + 1, problems) }))
+    .map((text, i) => {
+      const before = problems.errors.length;
+      const tokens = tokenizeLine(text, i + 1, problems);
+      // 낱말을 바로 나누지 못한 줄은 뜻을 읽지 않는다. 빠진 낱말 때문에 덧붙는 오류를 막기 위해서다.
+      return { line: i + 1, tokens, hasLexError: problems.errors.length > before };
+    })
     .filter((s) => s.tokens.length);
 }
 
@@ -120,6 +129,11 @@ function readStatement(statement, ctx) {
     return;
   }
   const [head, second] = tokens;
+  if (statement.hasLexError) {
+    // 그룹 여는 줄이면 닫는 `}`가 짝을 찾도록 자리만 연다.
+    if (tokens.at(-1).type === 'open') ctx.groups.push({ isRejected: true, line });
+    return;
+  }
   if (head.type === 'close') {
     closeGroup(statement, ctx);
     return;
@@ -132,6 +146,7 @@ function readStatement(statement, ctx) {
   }
   if (ALLOWED[word] && !ALLOWED[word].includes(figure.kind)) {
     problems.error(line, `"${word === 'hop' || word === 'edge' ? 'a -> b' : word}" is not allowed in a ${figure.kind} figure. Remove the line or change the kind statement`);
+    if (tokens.at(-1).type === 'open') ctx.groups.push({ isRejected: true, line });
     return;
   }
   const section = sectionOf(word, figure);

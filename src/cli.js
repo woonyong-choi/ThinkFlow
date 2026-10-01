@@ -60,13 +60,20 @@ async function main(argv) {
 // 원본 하나를 검사하고, render면 결과 파일을 쓴다. 오류가 있으면 아무 파일도 쓰지 않는다.
 async function processFile(input, args) {
   const json = args.flags.has('json');
+  let source;
+  try {
+    source = readFileSync(input, 'utf8');
+  } catch (error) {
+    report(input, [{ line: 0, level: 'error', check: 'io', message: `cannot read the file: ${error.code ?? error.message}` }], json);
+    return false;
+  }
   let result;
   try {
-    const source = readFileSync(input, 'utf8');
     result = await buildFigure(source, { baseDir: dirname(input), strict: args.flags.has('strict'), requireData: args.flags.has('require-data'), requireCi: args.flags.has('require-ci') });
   } catch (error) {
-    if (!(error instanceof FigureError)) throw error;
-    report(input, error.problems, json);
+    // 원본 오류가 아닌 실패는 이 도구의 버그다. 스택 대신 한 줄로 알리고 다음 파일로 넘어간다.
+    const problems = error instanceof FigureError ? error.problems : [{ line: 0, level: 'error', check: 'internal', message: `internal error: ${error.message}. Please report this` }];
+    report(input, problems, json);
     return false;
   }
   report(input, result.warnings, json);
@@ -86,7 +93,14 @@ async function processFile(input, args) {
 async function writeGallery(args) {
   const folder = args.inputs[0];
   const out = args.out ?? join(folder, 'out');
-  const files = readdirSync(folder).filter((f) => f.endsWith('.muto')).sort();
+  let names;
+  try {
+    names = readdirSync(folder);
+  } catch (error) {
+    process.stderr.write(`${folder}: cannot read the folder: ${error.code ?? error.message}\n`);
+    return 1;
+  }
+  const files = names.filter((f) => f.endsWith('.muto')).sort();
   const figures = [];
   let failed = false;
   for (const file of files) {
@@ -114,8 +128,10 @@ function report(file, problems, json) {
     const message = check ? p.message.slice(check[0].length) : p.message;
     // 함께 문제를 일으킨 줄은 메시지 안 "(line N)"에 있다(docs/design/figure-check.md 메시지).
     const lines = [p.line, ...[...message.matchAll(/\(line (\d+)\)/g)].map((m) => Number(m[1]))];
-    if (json) process.stdout.write(`${JSON.stringify({ file, line: p.line, lines, check: check ? Number(check[1]) : 'syntax', level: p.level, message })}\n`);
-    else process.stderr.write(`${file}:${p.line}: ${p.level === 'warning' ? 'warning: ' : ''}${message}\n`);
+    // 줄 번호가 없는 문제(파일 읽기, 도구 버그)는 줄 0이고, 글로는 `파일: 메시지`로 쓴다.
+    const kind = p.check ?? (check ? Number(check[1]) : 'syntax');
+    if (json) process.stdout.write(`${JSON.stringify({ file, line: p.line, lines: p.line ? lines : [], check: kind, level: p.level, message })}\n`);
+    else process.stderr.write(`${file}${p.line ? `:${p.line}` : ''}: ${p.level === 'warning' ? 'warning: ' : ''}${message}\n`);
   }
 }
 

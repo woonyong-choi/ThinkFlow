@@ -38,7 +38,7 @@ step "Chat" "Input goes through the screen to the engine"
 1. You write the first line as the figure kind, then shapes and edges, then steps from `step` on.
 2. mutoscope lays out the shapes inside `system` from top to bottom and the rest from left to right.
 3. In the first beat a dot moves from `user` to `tui`, and the card inside `tui` fills in when the dot arrives.
-4. A typo such as `engine -> cdex` stops the build with `saturn.muto:19: unknown node "cdex". Did you mean "codex"? Declared: codex, engine, system, tui, user`.
+4. A typo such as `engine -> cdex` stops the build with `how-it-works.muto:19: unknown node "cdex". Did you mean "codex"? Declared: codex, engine, system, tui, user`.
 
 ## Installation
 
@@ -103,7 +103,7 @@ The code on `main` implements the redesign and the tests pass. The design docume
 
 The design documents are written in Korean.
 
-- [Architecture](docs/architecture.md): components of the proposed design, flows, and invariants
+- [Architecture](docs/architecture.md): components, flows, and invariants
 - [Figure syntax](docs/design/figure-syntax.md): line rules, file structure, flow figures, timeline, and errors
 - [Figure kinds](docs/design/figure-kinds.md): sequence, state, and data relation figures
 - [Charts](docs/design/charts.md): six chart kinds, value sources, and revealing series

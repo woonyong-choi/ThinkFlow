@@ -12,8 +12,8 @@ const WIDTH = SIZE['chart-width'];
 const LABEL_W = SIZE['chart-label'];
 const LABEL_MAX = SIZE['chart-label-max'];
 const LABEL_GAP = SPACE['6'];
-/** 차트 항목 이름이 칸에 들어가는 최대 폭 */
-export const LABEL_ROOM = LABEL_MAX - LABEL_GAP;
+// 차트 항목 이름이 칸에 들어가는 최대 폭
+const LABEL_ROOM = LABEL_MAX - LABEL_GAP;
 const BAR = SIZE['chart-bar'];
 const ROW = SIZE['chart-row'];
 const DOT = SIZE['chart-dot'];
@@ -28,7 +28,7 @@ const SERIES_COLOR = [tokens.color['series-1'], tokens.color['series-2']];
 // basis: estimate
 /**
  * 차트 하나를 그린다.
- * @returns { body, width, height, rowKeys }. rowKeys[k]는 행 k의 light 이름이다
+ * @returns { body, width, height, rowKeys, fits }. rowKeys[k]는 행 k의 light 이름이다. fits는 칸에 들어가야 하는 글({ text, width, room, line, what })이다
  */
 export function drawChart(figure) {
   const header = drawHeader(figure);
@@ -36,7 +36,7 @@ export function drawChart(figure) {
   const plot = draw(figure, header.bottom);
   // 계열이 없는 차트는 그림 전체를 계열 0으로 묶는다. 시간표가 차트 전체를 계열 하나로 보기 때문이다(timeline.js chartSeriesIds).
   const marks = figure.chart.series.length ? plot.svg : `<g class="cs-0">${plot.svg}</g>`;
-  return { body: `${header.svg}\n${marks}`, width: WIDTH, height: plot.bottom + PAD, rowKeys: plot.rowKeys };
+  return { body: `${header.svg}\n${marks}`, width: WIDTH, height: plot.bottom + PAD, rowKeys: plot.rowKeys, fits: plot.fits ?? [] };
 }
 
 // cost: time O(r·n), heap O(1), stack O(1)
@@ -44,12 +44,11 @@ export function drawChart(figure) {
 // basis: estimate
 /** 항목 이름 칸 너비. 가장 긴 이름에 맞추되 LABEL_W와 LABEL_MAX 사이다. 넘는 이름은 그림 검사 1번이 알린다. */
 export function labelColumn(names) {
-  return Math.min(LABEL_MAX, Math.max(LABEL_W, ...names.map((name) => measureLabel(name) + LABEL_GAP)));
+  return Math.min(LABEL_MAX, Math.max(LABEL_W, ...names.map((name) => measure(name, TEXT['13']) + LABEL_GAP)));
 }
 
-/** 차트 항목 이름의 잰 폭 */
-export function measureLabel(name) {
-  return measure(name, TEXT['13']);
+function labelFit(name, line) {
+  return { text: name, width: measure(name, TEXT['13']), room: LABEL_ROOM, line, what: 'item name' };
 }
 
 // cost: time O(s·n), heap O(out), stack O(1)
@@ -113,7 +112,7 @@ function drawBars(figure, top) {
   const bottom = y - SPACE['11'];
   parts.push(drawRules(chart.rules, scale, top, bottom, 'x'));
   parts.push(drawValueAxis(scale, plotX, plotW, bottom + SPACE['4'], chart.x));
-  return { svg: parts.join('\n'), bottom: bottom + SPACE['4'] + TEXT['11'] * 2 + SPACE['9'], rowKeys: chart.rows.map((row) => row.label) };
+  return { svg: parts.join('\n'), bottom: bottom + SPACE['4'] + TEXT['11'] * 2 + SPACE['9'], rowKeys: chart.rows.map((row) => row.label), fits: chart.rows.map((row) => labelFit(row.label, row.line)) };
 }
 
 // cost: time O(r + t), heap O(out), stack O(1)
@@ -146,7 +145,7 @@ function drawDumbbells(figure, top) {
   const bottom = top + chart.rows.length * ROW;
   parts.push(drawRules(chart.rules, scale, top, bottom, 'x'));
   parts.push(drawValueAxis(scale, plotX, plotW, bottom + SPACE['4'], chart.x));
-  return { svg: parts.join('\n'), bottom: bottom + SPACE['4'] + TEXT['11'] * 2 + SPACE['9'], rowKeys: chart.rows.map((row) => row.label) };
+  return { svg: parts.join('\n'), bottom: bottom + SPACE['4'] + TEXT['11'] * 2 + SPACE['9'], rowKeys: chart.rows.map((row) => row.label), fits: chart.rows.map((row) => labelFit(row.label, row.line)) };
 }
 
 // cost: time O(r + t), heap O(out), stack O(1)
@@ -175,7 +174,7 @@ function drawBoxes(figure, top) {
   const bottom = top + chart.rows.length * ROW;
   parts.push(drawRules(chart.rules, scale, top, bottom, 'x'));
   parts.push(drawValueAxis(scale, plotX, plotW, bottom + SPACE['4'], chart.x));
-  return { svg: parts.join('\n'), bottom: bottom + SPACE['4'] + TEXT['11'] * 2 + SPACE['9'], rowKeys: chart.rows.map((row) => row.label) };
+  return { svg: parts.join('\n'), bottom: bottom + SPACE['4'] + TEXT['11'] * 2 + SPACE['9'], rowKeys: chart.rows.map((row) => row.label), fits: chart.rows.map((row) => labelFit(row.label, row.line)) };
 }
 
 // cost: time O(p + l + t), heap O(out), stack O(1)
@@ -198,13 +197,20 @@ function drawScatter(figure, top) {
     const [x1, y1, x2, y2] = [a.x + ux * gap, a.y + uy * gap, b.x - ux * gap, b.y - uy * gap];
     parts.push(`<g class="cr-${ka}"><g class="cs-${seriesIndex(b.p)}"><line x1="${r(x1)}" y1="${r(y1)}" x2="${r(x2)}" y2="${r(y2)}" pathLength="1" class="chart-link draw" marker-end="url(#fl-arrow)"/></g></g>`);
   }
+  const fits = [];
   chart.rows.forEach((p, k) => {
     const { x, y } = at.get(p.label);
     const i = seriesIndex(p);
-    parts.push(`<g class="cr-${k}"><g class="cs-${i}"><circle cx="${r(x)}" cy="${r(y)}" r="${DOT}" fill="${chart.series.length ? SERIES_COLOR[i] : SERIES_COLOR[0]}" class="pop"/><text x="${r(x + DOT + SPACE['3'])}" y="${r(centerBaseline(y, TEXT['11']))}" class="chart-name late">${escapeXml(p.label)}</text></g></g>`);
+    // 점 이름은 점 오른쪽에 두고, 그림 오른쪽 끝을 넘으면 점 왼쪽으로 옮긴다.
+    const nameW = measure(p.label, TEXT['12']);
+    const offset = DOT + SPACE['3'];
+    const toLeft = x + offset + nameW > WIDTH - PAD;
+    fits.push({ text: p.label, width: nameW, room: Math.max(WIDTH - PAD - x, x - PAD) - offset, line: p.line, what: 'point name' });
+    const name = `<text x="${r(toLeft ? x - offset : x + offset)}" y="${r(centerBaseline(y, TEXT['11']))}" class="chart-name late${toLeft ? ' end' : ''}">${escapeXml(p.label)}</text>`;
+    parts.push(`<g class="cr-${k}"><g class="cs-${i}"><circle cx="${r(x)}" cy="${r(y)}" r="${DOT}" fill="${chart.series.length ? SERIES_COLOR[i] : SERIES_COLOR[0]}" class="pop"/>${name}</g></g>`);
   });
   parts.push(drawRules(chart.rules, sy, sx.at(sx.ticks[0]), sx.at(sx.ticks.at(-1)), 'y'));
-  return { svg: parts.join('\n'), bottom: plotTop + SIZE['chart-plot-h'] + TEXT['11'] * 2 + SPACE['12'], rowKeys: chart.rows.map((p) => p.label) };
+  return { svg: parts.join('\n'), bottom: plotTop + SIZE['chart-plot-h'] + TEXT['11'] * 2 + SPACE['12'], rowKeys: chart.rows.map((p) => p.label), fits };
 }
 
 // cost: time O(p·s + t), heap O(out), stack O(1)
@@ -250,7 +256,10 @@ function drawHeatmap(figure, top) {
         `<text x="${r(x + cell / 2)}" y="${r(centerBaseline(y + cell / 2, TEXT['11']))}" class="chart-cell${HEAT_MIN + strength * (1 - HEAT_MIN) > values.opacity['heat-text'] ? ' on' : ''}">${formatNumber(c.values.value)}</text></g>`,
     );
   });
-  return { svg: parts.join('\n'), bottom: gridTop + rows.length * cell, rowKeys: chart.rows.map((c) => `${c.row}\u0000${c.col}`) };
+  // 열 이름은 칸 너비 안에 들어가야 한다. 넘으면 옆 열 이름과 겹친다.
+  const fits = cols.map((c) => ({ text: c, width: measure(c, TEXT['11'], 'mono'), room: cell - SPACE['1'], line: chart.rows.find((row) => row.col === c).line, what: 'column name' }));
+  fits.push(...rows.map((row) => labelFit(row, chart.rows.find((c) => c.row === row).line)));
+  return { svg: parts.join('\n'), bottom: gridTop + rows.length * cell, rowKeys: chart.rows.map((c) => `${c.row}\u0000${c.col}`), fits };
 }
 
 // cost: time O(t), heap O(out), stack O(1)

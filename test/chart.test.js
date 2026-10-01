@@ -90,3 +90,34 @@ test('drawChart_rule_outside_values_stays_inside_plot', async () => {
 
   assert.ok(ruleX < chart.width, `${ruleX} >= ${chart.width}`);
 });
+
+test('loadChartData_non_number_value_and_missing_name_are_errors', async () => {
+  const { mkdtempSync, writeFileSync, rmSync } = await import('node:fs');
+  const { tmpdir } = await import('node:os');
+  const { join } = await import('node:path');
+  const folder = mkdtempSync(join(tmpdir(), 'mutoscope-data-'));
+  writeFileSync(join(folder, 'bad.json'), '﻿[{"label":"x","a":"12"},{"a":1}]');
+
+  try {
+    await buildFigure('chart bar\nseries a "A"\ndata "bad.json" at ""', { baseDir: folder });
+    assert.fail('expected an error');
+  } catch (error) {
+    const messages = error.problems.map((p) => p.message);
+    assert.deepEqual(messages, ['data element 0 value "a" must be a number or null. Found "12"', 'data element 1 needs a text "label"']);
+  } finally {
+    rmSync(folder, { recursive: true, force: true });
+  }
+});
+
+test('roundHalfAway_handles_exponent_notation', async () => {
+  const { roundHalfAway, makeScale } = await import('../src/chart/scale.js');
+
+  assert.deepEqual([roundHalfAway(1e21), roundHalfAway(5e-7, 7)], [1e21, 5e-7]);
+  assert.ok(makeScale('linear', 0.000001, 0.000002, 0, 100).ticks.every(Number.isFinite));
+});
+
+test('drawChart_scatter_name_near_right_edge_moves_left', async () => {
+  const { chart } = await buildFigure('chart scatter\npoint "왼쪽" x=0 y=1\npoint "오른쪽 끝의 긴 점 이름" x=100 y=2');
+
+  assert.match(chart.body, /class="chart-name late end">오른쪽 끝의 긴 점 이름/);
+});

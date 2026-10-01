@@ -18,6 +18,10 @@ export function tokenizeLine(text, line, problems) {
     const c = text[i];
     if (c === ' ' || c === '\t') {
       i++;
+    } else if (/\s|\uFEFF/.test(c)) {
+      // 줄 끝 CR, BOM, 유니코드 공백은 공백 낱말 규칙 밖이라 알리고 건너뛴다. 낱말 읽기가 이 글자에서 멈춰 제자리를 돌지 않게 하기 위해서다.
+      problems.error(line, `unexpected character U+${c.codePointAt(0).toString(16).toUpperCase().padStart(4, '0')}. Use spaces, tabs, and LF line ends`);
+      i++;
     } else if (c === '#') {
       break;
     } else if (c === '"') {
@@ -28,7 +32,7 @@ export function tokenizeLine(text, line, problems) {
     } else {
       const start = i;
       // 따옴표 밖의 `#`는 낱말 중간이어도 주석의 시작이다.
-      while (i < text.length && !/\s/.test(text[i]) && text[i] !== '"' && text[i] !== '#') i++;
+      while (i < text.length && !/\s|\uFEFF/.test(text[i]) && text[i] !== '"' && text[i] !== '#') i++;
       const word = text.slice(start, i);
       if (text[i] === '"' && word.endsWith('=')) {
         const quoted = readQuoted(text, i, line, problems);

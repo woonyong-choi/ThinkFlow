@@ -38,7 +38,7 @@ step "Chat" "Input goes through the screen to the engine"
 1. 첫 줄에 그림 종류를 적고, 도형과 선을 적은 뒤, `step`부터 단계를 적습니다.
 2. mutoscope가 `system` 안 도형은 위에서 아래로, 나머지는 왼쪽에서 오른쪽으로 놓습니다.
 3. 첫 박자에 점이 `user`에서 `tui`로 가고, 점이 닿을 때 `tui` 안 카드가 채워집니다.
-4. `engine -> cdex` 같은 오타는 `saturn.muto:19: unknown node "cdex". Did you mean "codex"? Declared: codex, engine, system, tui, user`를 내고 멈춥니다.
+4. `engine -> cdex` 같은 오타는 `how-it-works.muto:19: unknown node "cdex". Did you mean "codex"? Declared: codex, engine, system, tui, user`를 내고 멈춥니다.
 
 ## 설치
 
@@ -103,7 +103,7 @@ npm run examples
 
 설계 문서는 한국어로 씁니다.
 
-- [아키텍처](docs/architecture.md): 제안된 설계의 구성 요소, 실행 흐름, 불변 조건
+- [아키텍처](docs/architecture.md): 구성 요소, 실행 흐름, 불변 조건
 - [그림 문법](docs/design/figure-syntax.md): 줄 규칙, 파일 구조, 구조 그림, 시간 흐름, 오류
 - [그림 종류](docs/design/figure-kinds.md): 순서 그림, 상태 그림, 데이터 관계 그림
 - [차트](docs/design/charts.md): 여섯 차트 종류, 값 출처, 계열 드러내기

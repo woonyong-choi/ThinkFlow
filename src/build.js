@@ -36,7 +36,7 @@ export async function buildFigure(source, { baseDir = '.', strict = false, requi
   const timeline = buildTimeline(figure, cards, wrapChip);
   if (figure.kind === 'chart') {
     const chart = drawChart(figure);
-    checkChartFigure(figure, problems);
+    checkChartFigure(chart, problems);
     return finish({ figure, chart, timeline }, problems, strict);
   }
   const sizes = new Map(figure.nodes.map((n) => [n.id, sizeNode(n, cards.contents.get(n.id))]));
@@ -70,7 +70,7 @@ function loadChartData(figure, baseDir, problems) {
   const { line } = chart.data;
   let records;
   try {
-    records = pointer(JSON.parse(readFileSync(resolve(baseDir, chart.data.path), 'utf8')), chart.data.pointer);
+    records = pointer(JSON.parse(readFileSync(resolve(baseDir, chart.data.path), 'utf8').replace(/^\uFEFF/, '')), chart.data.pointer);
   } catch (error) {
     problems.error(line, `cannot read data "${chart.data.path}" at "${chart.data.pointer}": ${error.message}`);
     return;
@@ -80,7 +80,9 @@ function loadChartData(figure, baseDir, problems) {
     return;
   }
   const byKey = new Map(chart.series.map((s) => [s.key, s.id]));
-  chart.rows = records.map((record) => toRow(record, chartType, byKey, line, problems)).filter(Boolean);
+  chart.rows = records.map((record, index) => toRow(record, { chartType, byKey, line, index }, problems)).filter(Boolean);
+  // 원소를 하나라도 버렸으면 그 오류가 원인이라, 행 수와 행 값 규칙은 보지 않는다. 덧붙는 오류를 막기 위해서다.
+  if (chart.rows.length < records.length) return;
   checkChartRows(figure, problems);
   checkChartLightTargets(figure, problems);
 }
@@ -89,9 +91,15 @@ function loadChartData(figure, baseDir, problems) {
 // vars: k = 원소의 키 수
 // basis: estimate
 // 원소 하나를 행으로. 계열 키는 계열 이름으로 바꾸고, 빠진 키와 null은 빠진 값이다.
-function toRow(record, chartType, byKey, line, problems) {
+function toRow(record, { chartType, byKey, line, index }, problems) {
   if (!record || typeof record !== 'object' || Array.isArray(record)) {
-    problems.error(line, 'each data element must be an object');
+    problems.error(line, `data element ${index} must be an object`);
+    return undefined;
+  }
+  const names = chartType === 'heatmap' ? ['row', 'col'] : LABEL_KEY[chartType] ? [LABEL_KEY[chartType]] : [];
+  const badName = names.find((key) => typeof record[key] !== 'string');
+  if (badName) {
+    problems.error(line, `data element ${index} needs a text "${badName}"`);
     return undefined;
   }
   const values = {};
@@ -99,15 +107,16 @@ function toRow(record, chartType, byKey, line, problems) {
   for (const [key, value] of Object.entries(record)) {
     const [base, part] = key.split(/\.(?=low$|high$)/);
     const series = byKey.get(base);
-    if (key === LABEL_KEY[chartType]) label = String(value);
-    else if (chartType === 'heatmap' && (key === 'row' || key === 'col')) values[key] = String(value);
+    if (key === LABEL_KEY[chartType]) label = value;
+    else if (chartType === 'heatmap' && (key === 'row' || key === 'col')) values[key] = value;
     else if (chartType === 'scatter' && key === 'series') values.series = byKey.get(String(value)) ?? String(value);
     else if (series) values[part ? `${series}.${part}` : series] = value;
     else if (['x', 'y', 'min', 'q1', 'median', 'q3', 'max', 'value'].includes(key)) values[key] = value;
     else problems.warn(line, `data key "${key}" is not used by a ${chartType} chart`);
   }
   for (const [key, value] of Object.entries(values)) {
-    if (value !== null && typeof value === 'object') problems.error(line, `data value "${key}" must be a number, not an object or array`);
+    const isNumber = typeof value === 'number' && Number.isFinite(value);
+    if (key !== 'series' && key !== 'row' && key !== 'col' && value !== null && !isNumber) problems.error(line, `data element ${index} value "${key}" must be a number or null. Found ${JSON.stringify(value)}`);
   }
   for (const s of byKey.values()) if (chartType === 'bar' && !(s in values)) values[s] = null;
   if (chartType === 'heatmap') return { label: `${values.row}\u0000${values.col}`, row: values.row, col: values.col, values: { value: values.value }, line };

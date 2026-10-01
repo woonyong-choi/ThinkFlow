@@ -62,7 +62,14 @@ function readHopOption(t, hop, isSequence, line, ctx) {
     hop.timeMs = parseTime(t.value);
     if (hop.timeMs === undefined) ctx.problems.error(line, `time is a positive time such as 900ms or 2s. Found "${t.value}"`);
   } else if (isSequence && t.type === 'word' && t.value === 'dashed' && !hop.dashed) hop.dashed = true;
+  else if (isRepeated(t, hop)) ctx.problems.error(line, `${t.type === 'text' ? 'the move text' : t.type === 'option' ? 'time' : 'dashed'} is written twice in one move`);
   else ctx.problems.error(line, `a move takes a quoted text and time=. Found "${t.value}"`);
+}
+
+function isRepeated(t, hop) {
+  if (t.type === 'text') return hop.data !== undefined;
+  if (t.type === 'option') return t.key === 'time' && hop.timeMs !== undefined;
+  return t.value === 'dashed' && hop.dashed;
 }
 
 // cost: time O(t + g), heap O(g), stack O(1)
@@ -122,6 +129,7 @@ function readClear({ tokens, line }, ctx) {
   }
   if (!ctx.step.beats.length) {
     ctx.problems.error(line, 'a step cannot start with clear. There is no card to clear yet');
+    ctx.step.hasError = true;
     return;
   }
   attachBeat(ctx, line).ops.push({ type: 'clear', node: id.value, line });

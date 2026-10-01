@@ -27,7 +27,7 @@ function collectNames(figure, problems) {
   const names = new Map();
   for (const item of [...figure.nodes, ...figure.groups.map((g) => ({ ...g, shape: 'group' })), ...figure.chart.series.map((s) => ({ ...s, shape: 'series' }))]) {
     const known = names.get(item.id);
-    if (known) problems.error(item.line, `the name "${item.id}" is already used on line ${known.line}`);
+    if (known) problems.error(item.line, `the name "${item.id}" is already used (line ${known.line})`);
     else names.set(item.id, item);
   }
   return names;
@@ -53,7 +53,7 @@ function checkEdges(figure, names, problems) {
     if (isInside(edge.from, edge.to) || isInside(edge.to, edge.from)) problems.error(edge.line, 'an edge cannot join a group and a node inside it');
     if (figure.kind === 'state' && [edge.from, edge.to].some((id) => names.get(id)?.shape === 'group')) problems.error(edge.line, 'a transition joins two states');
     const key = `${edge.from}\u0000${edge.to}`;
-    if (seen.has(key)) problems.error(edge.line, `there is already an edge ${edge.from} -> ${edge.to} on line ${seen.get(key)}. Merge the labels into one`);
+    if (seen.has(key)) problems.error(edge.line, `there is already an edge ${edge.from} -> ${edge.to} (line ${seen.get(key)}). Merge the labels into one`);
     else seen.set(key, edge.line);
   });
 }
@@ -80,10 +80,15 @@ function buildForeignKeys(figure, problems) {
 // cost: time O(s + g), heap O(s), stack O(1)
 // vars: s = 도형 수, g = 그룹 수
 // basis: estimate
-// 안에 아무것도 없는 그룹과 테이블은 오류다.
+// 도형이 없는 그림, 안에 아무것도 없는 그룹과 테이블은 오류다.
 function checkNotEmpty(figure, problems) {
+  // 선언 줄 오류로 도형이 빠졌으면 그 오류가 원인이라 덧붙이지 않는다.
+  if (figure.kind !== 'chart' && !figure.nodes.length && !problems.errors.length) {
+    const what = figure.kind === 'sequence' ? 'participant' : figure.kind === 'state' ? 'state' : figure.kind === 'data' ? 'table' : 'node';
+    problems.error(figure.line ?? 1, `a ${figure.kind} figure needs at least one ${what}`);
+  }
   const parents = new Set([...figure.nodes, ...figure.groups].map((n) => n.parent));
-  for (const group of figure.groups) if (!parents.has(group.id)) problems.error(group.line, `group "${group.id}" is empty. Put nodes inside or remove it`);
+  for (const group of figure.groups) if (!parents.has(group.id) && !group.hasError) problems.error(group.line, `group "${group.id}" is empty. Put nodes inside or remove it`);
   for (const table of figure.nodes.filter((n) => n.shape === 'table')) if (!table.columns.length) problems.error(table.line, `table "${table.id}" has no columns`);
 }
 
@@ -105,7 +110,7 @@ function checkStateMarks(figure, names, problems) {
 function checkTimeline(figure, names, problems) {
   const usedEdges = new Set();
   for (const step of figure.steps) {
-    if (!step.beats.length) problems.error(step.line, `step "${step.label}" has no lines. Add a move, show, light, say, or wait`);
+    if (!step.beats.length && !step.hasError) problems.error(step.line, `step "${step.label}" has no lines. Add a move, show, light, say, or wait`);
     for (const beat of step.beats) {
       for (const hop of beat.hops) resolveHop(hop, figure, names, problems, usedEdges);
       for (const op of beat.ops) checkCardTarget(op, figure, names, problems);
@@ -126,6 +131,7 @@ function checkTimeline(figure, names, problems) {
 function resolveHop(hop, figure, names, problems, usedEdges) {
   const [fromId, fromColumn] = hop.from.split('.');
   const [toId, toColumn] = hop.to.split('.');
+  if (!checkColumnRefs([hop.from, hop.to], figure, hop.line, problems)) return;
   for (const id of [fromId, toId]) if (!names.has(id)) problems.error(hop.line, unknownName('node', id, names.keys()));
   if (figure.kind === 'sequence' || !names.has(fromId) || !names.has(toId)) return;
   const matches = (e, a, b, ca, cb) => e.from === a && e.to === b && (ca === undefined || e.fromColumn === ca) && (cb === undefined || e.toColumn === cb);
@@ -164,8 +170,22 @@ function checkCardTarget(op, figure, names, problems) {
 function checkLightTarget(target, line, figure, names, problems) {
   const [id, column] = target.split('.');
   const item = names.get(id);
+  if (!checkColumnRefs([target], figure, line, problems)) return;
   if (!item) problems.error(line, unknownName('node', id, names.keys()));
-  else if (column !== undefined && !item.columns?.some((c) => c.name === column)) problems.error(line, `table "${id}" has no column "${column}"`);
+  else if (column !== undefined && item.shape !== 'table') problems.error(line, `"${id}" is not a table, so "${target}" has no column`);
+  else if (column !== undefined && !item.columns.some((c) => c.name === column)) problems.error(line, `table "${id}" has no column "${column}"`);
+}
+
+// cost: time O(r), heap O(1), stack O(1)
+// vars: r = 이름 수
+// basis: estimate
+// `테이블.열` 꼴 이름은 데이터 관계 그림에서만, 점 하나로만 쓴다. 맞으면 true다.
+function checkColumnRefs(refs, figure, line, problems) {
+  const bad = refs.find((ref) => ref.split('.').length > 2);
+  if (bad) problems.error(line, `write a column as table.column. Found "${bad}"`);
+  const column = refs.find((ref) => ref.includes('.'));
+  if (!bad && column && figure.kind !== 'data') problems.error(line, `"${column}" names a column, which only data figures have`);
+  return !bad && !(column && figure.kind !== 'data');
 }
 
 // cost: time O(b), heap O(p), stack O(1)

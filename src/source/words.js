@@ -56,7 +56,8 @@ export const ALLOWED = {
 };
 
 // 이름 규칙. 테이블과 열은 `_`를 더 쓴다.
-export const ID_PATTERN = /^[a-z][a-z0-9-]*$/;
-export const TABLE_PATTERN = /^[a-z][a-z0-9_]*$/;
+// kebab-case. `-`는 낱말 사이에 하나씩만 온다(`a-`, `a--b`는 틀림).
+export const ID_PATTERN = /^[a-z][a-z0-9]*(-[a-z0-9]+)*$/;
+export const TABLE_PATTERN = /^[a-z][a-z0-9]*(_[a-z0-9]+)*$/;
 export const TIME_PATTERN = /^(\d+(?:\.\d+)?)(ms|s)$/;
 export const NUMBER_PATTERN = /^-?\d+(?:\.\d+)?$/;

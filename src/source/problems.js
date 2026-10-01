@@ -23,8 +23,13 @@ export function createProblems() {
   return {
     errors,
     warnings,
-    error: (line, message) => errors.push({ line, message, level: 'error' }),
-    warn: (line, message) => warnings.push({ line, message, level: 'warning' }),
+    // 같은 줄의 같은 메시지는 한 번만 남긴다. 한 줄의 낱말마다 같은 오류가 되풀이되는 일을 막기 위해서다.
+    error: (line, message) => {
+      if (!errors.some((e) => e.line === line && e.message === message)) errors.push({ line, message, level: 'error' });
+    },
+    warn: (line, message) => {
+      if (!warnings.some((w) => w.line === line && w.message === message)) warnings.push({ line, message, level: 'warning' });
+    },
     // cost: time O(e log e), heap O(e), stack O(1)
     // vars: e = 오류 수
     // basis: estimate

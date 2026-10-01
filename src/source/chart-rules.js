@@ -4,6 +4,8 @@ import { unknownName } from './problems.js';
 // 종류마다 계열 수의 [최소, 최대]
 const SERIES_RANGE = { bar: [1, 2], dumbbell: [2, 2], box: [0, 0], scatter: [0, 2], line: [1, 2], heatmap: [0, 0] };
 const BOX_KEYS = ['min', 'q1', 'median', 'q3', 'max'];
+// 값의 절댓값 상한. 이보다 크면 십진 반올림이 12자리 정밀도를 넘어 눈금과 글자를 정확히 쓸 수 없다.
+const MAX_VALUE = 1e15;
 // 종류마다 고정 원소 키. 계열 키와 겹치면 JSON에서 둘을 가를 수 없다.
 const FIXED_KEYS = ['label', 'name', 'x', 'y', 'series', 'row', 'col', 'value'];
 
@@ -37,7 +39,8 @@ export function checkChart(figure, problems) {
 export function checkChartRows(figure, problems) {
   const { chart, chartType } = figure;
   if (!chart.rows.length) {
-    problems.error(chart.data?.line ?? figure.line, 'a chart needs at least one row');
+    // 틀린 행 줄 때문에 행이 없으면 그 오류가 원인이라 덧붙이지 않는다.
+    if (!chart.hasRejectedRow) problems.error(chart.data?.line ?? figure.line, 'a chart needs at least one row');
     return;
   }
   const labels = new Map();
@@ -51,6 +54,8 @@ export function checkChartRows(figure, problems) {
   const isValue = (k) => k !== 'series' && !(chartType === 'line' && k === 'x');
   const numbers = chart.rows.flatMap((r) => Object.entries(r.values).filter(([k, v]) => isValue(k) && v !== null).map(([, v]) => v));
   const valueAxis = chartType === 'scatter' || chartType === 'line' ? [] : numbers;
+  const huge = chart.rows.find((r) => Object.values(r.values).some((v) => typeof v === 'number' && Math.abs(v) >= MAX_VALUE));
+  if (huge) problems.error(huge.line, 'values must be under 1e15 in absolute value');
   if (valueAxis.some((v) => v < 0)) problems.error(chart.rows.find((r) => Object.values(r.values).some((v) => v < 0)).line, 'values cannot be negative');
   if (chart.scale === 'log' && numbers.some((v) => v <= 0)) problems.error(chart.rows.find((r) => Object.entries(r.values).some(([k, v]) => isValue(k) && v !== null && v <= 0)).line, 'log scale needs values above 0');
   if (numbers.length && numbers.every((v) => v === 0)) problems.error(chart.rows[0].line, 'all values are 0, so lengths cannot be set');
@@ -94,7 +99,7 @@ function checkChartTimeline(figure, problems) {
   const ids = chart.series.map((s) => s.id);
   const revealed = [];
   for (const step of figure.steps) {
-    if (!step.beats.length) problems.error(step.line, `step "${step.label}" has no lines. Add reveal, light, say, or wait`);
+    if (!step.beats.length && !step.hasError) problems.error(step.line, `step "${step.label}" has no lines. Add reveal, light, say, or wait`);
     for (const beat of step.beats) {
       for (const id of beat.reveal) {
         if (!ids.length) problems.error(beat.line, `a ${chartType} chart without series has nothing to reveal`);
