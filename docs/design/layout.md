@@ -96,7 +96,8 @@
 | `person` | 몸통(곧은 옆면 구간, 너비는 늘 토큰 `size.person.width`, 높이는 `size.person.body`이고 선이 많으면 늘어남)에 머리, 이름표, 좌우 여백을 더한 사각형 | 위 어깨 곡선과 머리, 아래 이름표와 카드, 좌우는 몸통보다 넓은 이름표나 카드의 남는 폭 | 옆면만. 방향과 상관없이 나가는 선이 오른쪽 면, 들어오는 선이 왼쪽 면이고, 몸통 높이 안에 둔다. 연결점은 한 면에 고르게 둔다. 좌우 여백이 있으면 몸통 변(음수 `elk.port.borderOffset`)에 둔다 |
 | `decision` | 마름모를 감싼 사각형 | 없음 | 나가는 선은 오른쪽 꼭짓점, 들어오는 선은 왼쪽 꼭짓점 |
 | `group` | 안쪽 배치 결과와 제목 줄 | 없음 | 경계 연결점(그룹 배치 절) |
-| `grid` | 제목 줄, 칸 묶음, 빈 자리를 담는 사각형. 크기는 [칸 격자](grid.md) | 없음 | 네 면 어디나 |
+| `grid` | 제목 줄, 칸 묶음, 빈 자리를 담는 사각형. 크기는 [칸 격자](grid.md) | 없음 | 격자 전체를 이은 선은 네 면 어디나. 칸을 이은 선은 그 칸에서 나가는 연결점(칸 연결점과 통로 절) |
+| `box shape=circle` | 지름이 이름 폭에 맞는 정사각형 | 없음 | 면의 가운데 네 점. 나가는 선은 오른쪽, 아래, 위, 들어오는 선은 왼쪽, 위, 아래 순으로 쓰고 선이 늘면 다음 면의 가운데를 쓴다 |
 | `table` | 머리 칸, 열 칸, 카드 칸 | 없음 | 열을 이은 선은 그 열 줄 가운데 높이에서, 나가는 선은 오른쪽 면, 들어오는 선은 왼쪽 면. 묶음 배치(아래 그림 크기)에서는 들어오는 선도 오른쪽 면이다. 열 없이 이은 선은 네 면 어디나 |
 | 상태 그림 처음 점, 끝 겹원 | 원을 감싼 사각형 | 없음 | 네 면 어디나 |
 
@@ -114,6 +115,16 @@
 - 첫 배치는 면만 고정하고(`FIXED_SIDE`) 면마다 연결점 순서를 elkjs에 맡긴다.
 - 둘째 배치는 그 순서를 지켜 연결점을 몸통 범위에 고정한다(`FIXED_POS`). 위아래 면은 가운데 1/3, 옆면은 몸통 높이다.
 - 사람과 원통이 없으면 한 번만 돈다.
+
+### 칸 연결점과 통로
+
+- 칸을 이은 선은 elkjs에 격자 테두리의 연결점 하나만 넘긴다. 칸 안쪽 구간(lead)은 격자 크기와 함께 측정 단계에서 정하고(`measure/grid-links.js`), 선 경로의 앞이나 뒤에 이어 붙인다. 두 구간의 경계는 같은 점이다. elkjs 경로를 옮겨 칸에 맞추지 않는다.
+- 면 고르기는 그림 방향이 정한다. 가로 흐름은 나가는 선이 칸의 동쪽 면, 들어오는 선이 서쪽 면이고, 세로 흐름은 나가는 선이 남쪽 면, 들어오는 선이 북쪽 면이다. 칸이 그 면에 걸쳐(격자 테두리 쪽에 있어) 있으면 칸 면에서 격자 테두리까지 바로 나간다. 같은 칸의 같은 방향 선 끝은 면을 고르게 나눈다. 북쪽 면은 제목 글을 비켜 제목 양옆 빈 구간(제목 폭 절반에 `space.6`)에만 둔다.
+- 걸치지 않은 안쪽 칸은 칸 아래 통로를 거친다. 칸 아래 면에서 내려와 행 사이 빈 줄(통로)을 따라 가서 격자 옆면(동쪽, 들어오는 선은 서쪽)으로 나간다. 통로는 칸 사이가 아니라 행 사이 빈 줄이라 이웃 칸 글을 가리지 않고, 칸 폭 비율은 그대로다. 합친 칸은 걸친 마지막 행 아래 통로를 쓴다.
+- 통로가 필요한 격자는 모든 행 사이를 같은 높이로 벌린다. 한 줄을 지나는 선이 n개이면 높이는 `(n + 1) × space.5`이고(선 하나당 한 줄, 줄 간격은 `elk.spacing.edgeEdge`와 같은 값), 맨 아래 여백은 `max(grid.pad, (n + 1) × space.5)`다. 통로가 없는 격자의 크기는 그대로다. 통로는 두 그림 방향 가운데 하나라도 직접 연결이 없는 선 끝마다 잡으므로, 방향을 돌려 다시 배치해도 크기가 같다.
+- 한 통로 안 선의 줄은 옆면까지 가는 거리가 긴 선이 아래 줄을 쓴다. 짧은 선의 세로 조각이 긴 선의 가로 조각을 가로지르지 않게 하기 위해서다. 서쪽으로 나가는 선이 위 줄, 동쪽이 아래 줄이다. 칸 아래 면을 쓰는 선 끝(바로 나가는 선과 통로 선)은 칸 폭을 고르게 나눠 세로 조각이 붙지 않게 한다.
+- 한 격자의 두 칸을 잇는 선은 elkjs를 거치지 않는다. 두 칸의 통로를 격자 오른쪽 여백의 세로 줄로 이은 경로가 전부이고, 이런 선이 있으면 오른쪽 여백이 `(n + 1) × space.5`로 넓어진다. 이 선은 라벨을 받지 않는다.
+- 테이블 열 연결점과 칸 연결점은 같은 장치다. 도형이 선 끝마다 `{ side, position, lead }`를 정하고(`layout/ports.js`의 `portSpec`), 연결점 `position`이 elkjs에, `lead`가 선 경로에 간다. 테이블 열은 lead가 없다.
 
 ### 되돌아가는 선
 
@@ -194,7 +205,9 @@
 | 그룹 경계를 넘는 선이 끊김 없는 경로 하나가 된다. | 경로 조각의 끝과 다음 조각의 시작이 같은 점인지 확인. 테스트 없음: 처음부터 대응 테스트를 두지 않았고 눈으로 확인한다 |
 | 같은 원본을 두 번 그리면 결과가 같다. | `test/layout.test.js`의 `toSvg_same_source_gives_the_same_bytes`. 두 결과의 바이트 비교 |
 | 순환에서 되돌아가는 선만 위로 가고, 한 줄이 넓으면 방향을 돌려 폭 안에 든다. | `test/layout.test.js`의 `buildFigure_cycle_through_groups_sends_back_only_the_edge_declared_last_in_the_cycle`, `buildFigure_flow_right_wider_than_the_canvas_turns_down_instead_of_shrinking_the_text`, `buildFigure_state_cycle_that_does_not_fit_turns_down_and_keeps_the_return_edge_short` |
-| 올바른 무작위 구조 그림이 배치 오류나 그림 검사 오류가 되지 않는다. | `node scripts/fuzz-layout.mjs`(씨앗, 그림 종류 flow, state, data, `--no-aspect`)로 그림 수천 개를 만들어 실패 수 0 확인. 그림 하나가 5초를 넘으면 멈춘 것으로 세고 원본을 `--hang-dir`에 남긴다. 2026-10-02 종류 셋, aspect 유무, 씨앗 셋으로 27000개 0건 |
+| 올바른 무작위 구조 그림이 배치 오류나 그림 검사 오류가 되지 않는다. | `node scripts/fuzz-layout.mjs`(씨앗, 그림 종류 flow, state, data, `--no-aspect`. 구조 그림에는 칸 선 끝, 한 격자의 두 칸을 잇는 선, `head`, 원 도형이 섞인다)로 그림 수천 개를 만들어 실패 수 0 확인. 그림 하나가 5초를 넘으면 멈춘 것으로 세고 원본을 `--hang-dir`에 남긴다. 2026-10-02 종류 셋, aspect 유무, 씨앗 셋으로 27000개 0건 |
+| 칸에서 칸으로 가는 선이 칸 테두리에서 나가고 들어오며, 안쪽 칸으로 가는 선과 한 격자의 두 칸을 잇는 선이 이웃 칸을 지나지 않는다. | `test/layout.test.js`의 `buildFigure_grid_cell_edges_start_and_end_on_their_cell_and_never_cross_another_cell_flow_right`, `..._flow_down`, `buildFigure_grid_edge_between_two_cells_of_one_grid_stays_inside_the_grid_frame`. 안쪽 칸, 합친 칸, 비트 띠, 같은 칸의 두 선을 담은 원본의 strict 빌드와 선분 검사 |
+| 양끝 표식(`head`)이 선택한 끝에 그려지고, 원 도형이 정사각형이다. | `test/layout.test.js`의 `toSvg_edge_head_draws_arrowheads_at_the_chosen_ends_and_a_circle_stays_square` |
 | 같은 도형의 같은 면에 닿는 선 끝이 `space.2-5`보다 붙지 않고, 곧은 구간 가운데 점이 없다. | `test/layout.test.js`의 `buildFigure_fuzz_ends_of_in_and_out_edges_on_one_side_of_a_shape_keep_the_crowd_gap`, `buildFigure_paths_have_no_middle_point_on_a_straight_run` |
 | 이름 `root`가 배치 내부 이름과 부딪히지 않는다. | `test/layout.test.js`의 `buildFigure_nodes_and_groups_named_root_are_laid_out_like_any_other_name` |
 | 배치 실패가 줄 번호 있는 오류가 되고 안전 배치로 다시 그린다. | `test/layout.test.js`의 `buildFigure_layout_that_always_throws_becomes_an_error_diagnostic_with_a_line_number`, `buildFigure_layout_that_fails_once_is_retried_with_the_safe_layout_and_draws`, `buildFigure_edge_without_a_route_is_reported_at_the_edge_line`, `buildFigure_fuzz_wrapped_layout_that_crosses_a_shape_falls_back_and_warns_about_aspect` |

@@ -95,6 +95,7 @@
   --size-node-store-cap: 12px;
   --size-node-state-dot: 14px;
   --size-node-table-row: 26px;
+  --size-node-circle: 40px;
   --size-grid-cell: 32px;
   --size-figure-canvas: 960px;
   --size-chip-max-width: 210px;
@@ -436,13 +437,13 @@
 
 @keyframes a0 { 0%,64.332% { stroke: var(--color-border) } 64.333%,76.661% { stroke: var(--color-border) } 76.662%,99.999% { stroke: var(--color-border) } }
 .fl .a0 { animation: a0 9.855s infinite linear; }
-@keyframes a1 { 0%,64.332% { fill: var(--color-card-on); stroke: var(--color-state-active) } 64.333% { fill: var(--color-card-on); stroke: var(--color-state-active) } 66.362%,76.661% { fill: var(--color-node); stroke: var(--color-border) } 76.662%,99.999% { fill: var(--color-node); stroke: var(--color-border) } }
+@keyframes a1 { 0%,64.332% { fill: var(--color-card-on); stroke: var(--color-state-active); stroke-width: var(--border-edge) } 64.333% { fill: var(--color-card-on); stroke: var(--color-state-active); stroke-width: var(--border-edge) } 66.362%,76.661% { fill: var(--color-node); stroke: var(--color-border); stroke-width: var(--border-thin) } 76.662%,99.999% { fill: var(--color-node); stroke: var(--color-border); stroke-width: var(--border-thin) } }
 .fl .a1 { animation: a1 9.855s infinite linear; }
-@keyframes a2 { 0%,64.332% { fill: var(--color-node); stroke: var(--color-border) } 64.333% { fill: var(--color-node); stroke: var(--color-border) } 66.362%,76.661% { fill: var(--color-card-on); stroke: var(--color-state-active) } 76.662%,99.999% { fill: var(--color-card-on); stroke: var(--color-state-active) } }
+@keyframes a2 { 0%,64.332% { fill: var(--color-node); stroke: var(--color-border); stroke-width: var(--border-thin) } 64.333% { fill: var(--color-node); stroke: var(--color-border); stroke-width: var(--border-thin) } 66.362%,76.661% { fill: var(--color-card-on); stroke: var(--color-state-active); stroke-width: var(--border-edge) } 76.662%,99.999% { fill: var(--color-card-on); stroke: var(--color-state-active); stroke-width: var(--border-edge) } }
 .fl .a2 { animation: a2 9.855s infinite linear; }
-@keyframes a3 { 0%,64.332% { fill: var(--color-node); stroke: var(--color-border) } 64.333%,76.661% { fill: var(--color-node); stroke: var(--color-border) } 76.662%,99.999% { fill: var(--color-node); stroke: var(--color-border) } }
+@keyframes a3 { 0%,64.332% { fill: var(--color-node); stroke: var(--color-border); stroke-width: var(--border-thin) } 64.333%,76.661% { fill: var(--color-node); stroke: var(--color-border); stroke-width: var(--border-thin) } 76.662%,99.999% { fill: var(--color-node); stroke: var(--color-border); stroke-width: var(--border-thin) } }
 .fl .a3 { animation: a3 9.855s infinite linear; }
-@keyframes a4 { 0%,64.332% { fill: var(--color-node); stroke: var(--color-border) } 64.333%,76.661% { fill: var(--color-node); stroke: var(--color-border) } 76.662% { fill: var(--color-node); stroke: var(--color-border) } 78.691%,99.999% { fill: var(--color-card-on); stroke: var(--color-state-active) } }
+@keyframes a4 { 0%,64.332% { fill: var(--color-node); stroke: var(--color-border); stroke-width: var(--border-thin) } 64.333%,76.661% { fill: var(--color-node); stroke: var(--color-border); stroke-width: var(--border-thin) } 76.662% { fill: var(--color-node); stroke: var(--color-border); stroke-width: var(--border-thin) } 78.691%,99.999% { fill: var(--color-card-on); stroke: var(--color-state-active); stroke-width: var(--border-edge) } }
 .fl .a4 { animation: a4 9.855s infinite linear; }
 @keyframes a5 { 0%,64.332% { stroke: var(--color-muted); stroke-width: var(--border-edge); marker-end: url(#fl-arrow) } 64.333%,76.661% { stroke: var(--color-muted); stroke-width: var(--border-edge); marker-end: url(#fl-arrow) } 76.662%,99.999% { stroke: var(--color-muted); stroke-width: var(--border-edge); marker-end: url(#fl-arrow) } }
 .fl .a5 { animation: a5 9.855s infinite linear; }

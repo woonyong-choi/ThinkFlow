@@ -1,0 +1,47 @@
+flow right
+title "다단계 페이지 표는 주소의 필드로 표를 차례로 따라간다"
+subtitle "1단계 표의 빈 항목에는 2단계 표를 만들지 않아 표 메모리를 아낀다"
+
+grid addr "가상 주소 (16비트)" cols=8 {
+  item l1 "1단계 4비트" col=0 cols=2
+  item l2 "2단계 4비트" col=2 cols=2
+  item off "오프셋 8비트" col=4 cols=4
+}
+grid top "1단계 페이지 표" rows=4 cols=2 {
+  item i0 "0" row=0 col=0
+  item e0 "없음" row=0 col=1
+  item i1 "1" row=1 col=0
+  item n1 "2단계 표 A" row=1 col=1
+  item i2 "2" row=2 col=0
+  item e2 "없음" row=2 col=1
+  gap more "나머지 항목" count=13 row=3 col=0 cols=2
+}
+grid second "2단계 표 A" rows=3 cols=2 {
+  item j0 "0" row=0 col=0
+  item f0 "프레임 6" row=0 col=1
+  item j1 "1" row=1 col=0
+  item f1 "프레임 12" row=1 col=1
+  gap rest "나머지 항목" count=14 row=2 col=0 cols=2
+}
+grid phys "물리 메모리" rows=3 {
+  item fr6 "프레임 6" row=0
+  item fr12 "프레임 12" row=1
+  gap other "나머지 프레임" count=60 row=2
+}
+addr.l1 -> top.i1
+top.n1 -> second.j0
+addr.l2 -> second.j1
+second.f1 -> phys.fr12
+
+step "1단계" "주소의 윗 4비트가 1단계 표의 행을 고른다. 이 행은 2단계 표 A를 가리킨다"
+  light addr.l1
+  addr.l1 -> top.i1
+  light top.i1 top.n1
+step "2단계" "다음 4비트가 2단계 표의 행을 고른다"
+  top.n1 -> second.j0
+  light addr.l2
+  addr.l2 -> second.j1
+  light second.j1 second.f1
+step "물리 주소" "그 행의 프레임 번호에 오프셋을 붙여 물리 주소가 된다"
+  second.f1 -> phys.fr12
+  light phys.fr12

@@ -1,0 +1,26 @@
+mutoscope 1
+flow right
+title "칸 연결점, 양끝 표식, 원 도형의 모든 낱말"
+subtitle "grid.item 선 끝, head, shape"
+
+grid left "왼쪽" rows=2 {
+  item a "A" row=0
+  item b "B" row=1
+}
+grid right "오른쪽" rows=2 cols=2 {
+  item c "C" row=0 col=0
+  item d "D" row=0 col=1
+  item e "E" row=1 col=0 cols=2
+}
+box sum "⊕" shape=circle
+box plain "합계" shape=rect
+left.a -> right.d "조회" head=end
+left.b -> right.e head=both
+right.c -> right.d
+right.d -> sum head=none
+right.e -> plain head=end
+
+step "연결" "칸에서 칸으로 점이 간다"
+  left.a -> right.d "값"
+  light right.d
+  right.c -> right.d

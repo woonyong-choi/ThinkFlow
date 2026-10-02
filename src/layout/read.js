@@ -2,6 +2,7 @@
 import { sizePill } from '../measure/sizes.js';
 import { values } from '../tokens.js';
 import { LayoutError } from './error.js';
+import { withLeads } from './cell-ports.js';
 import { placeTitles } from './titles.js';
 import { ROOT } from './model.js';
 
@@ -25,7 +26,7 @@ export function readElk(laid, model) {
   const rects = new Map(items.map((it) => [it.id, it]));
   // 선 번호는 원본에 적은 선의 번호다. 시간표와 그리기가 같은 번호로 선을 찾으므로, 처음 점과 끝 겹원의 선(모델 순서에서는 앞뒤에 놓인다)은 맨 뒤에 둔다.
   const declared = [...model.edges.filter((edge) => !edge.isMark), ...model.edges.filter((edge) => edge.isMark)];
-  const joined = declared.map((edge) => model.pieces.get(edge.index).map((_, k) => routeOf(sections, edge, k)).flatMap((p, k) => (k === 0 ? p : p.slice(1))));
+  const joined = declared.map((edge) => withLeads(model.pieces.get(edge.index).map((_, k) => routeOf(sections, edge, k)).flatMap((p, k) => (k === 0 ? p : p.slice(1))), edge, { model, rects }));
   const crowd = endsByNode(declared, joined);
   const edges = declared.map((edge, i) => {
     const near = (end) => (other) => other.at !== `${edge.index}:${end}`;

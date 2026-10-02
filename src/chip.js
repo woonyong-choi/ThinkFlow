@@ -143,11 +143,17 @@ function insetsOf(ctx, [kind, i, end]) {
   return fitInset(ctx, center, 'gap') === fitInset(ctx, center, 'clear') ? ['gap'] : ['gap', 'clear'];
 }
 
+// desc 한 부분의 이름. 부분은 길이 1~3의 목록이고 `:`로 이은 글과 같다(배열을 만들지 않고 잇는다).
+function partName([kind, index, end]) {
+  if (index === undefined) return kind;
+  return end === undefined ? `${kind}:${index}` : `${kind}:${index}:${end}`;
+}
+
 // cost: time O(1), heap O(1), stack O(1)
 // basis: estimate
 /** 세로 줄, 가로 기준, 여백 종류로 만든 desc. key는 같은 종류의 자리를 점이 움직여도 알아보는 이름이다. */
 export function descOf(row, side, inset) {
-  return { row, side, inset, key: `${row.join(':')}/${side.join(':')}/${inset}` };
+  return { row, side, inset, key: `${partName(row)}/${partName(side)}/${inset}` };
 }
 
 // cost: time O(a), heap O(1), stack O(1)

@@ -35,7 +35,11 @@ const SPAN_CHANCE = 0.3;
 const SPAN_GROW_CHANCE = 0.5;
 const GAP_COUNT_MAX = 9;
 const CELL_LABELS = ['A', '0x1F', '읽기', '긴 한글 글이 한 칸 안에서 줄을 바꿔 들어간다', 'a very long cell label that has to wrap inside its cell'];
-const SHAPES = ['box', 'box', 'person', 'store', 'external'];
+const SHAPES = ['box', 'box', 'person', 'store', 'external', 'circle'];
+// 칸 연결: 격자 끝은 이 확률로 칸을 가리키고, 선은 이 확률로 head를 쓴다.
+const CELL_END_CHANCE = 0.7;
+const HEAD_CHANCE = 0.25;
+const HEADS = ['both', 'none', 'end'];
 const ASPECTS = ['0.6', '1', '1.4', '1.6', '2.4'];
 const DIRECTIONS = ['right', 'down'];
 
@@ -89,13 +93,18 @@ function cellLine(id, { row, col, rows, cols }, rnd) {
   return `item ${id} "${rnd.pick(CELL_LABELS)}" ${place}`;
 }
 
+// 도형 선언 한 줄. circle은 box의 shape 선택 사항이다.
+function nodeLine(shape, id) {
+  return shape === 'circle' ? `box ${id} "${id}" shape=circle` : `${shape} ${id} "${id}"`;
+}
+
 // cost: time O(n), heap O(n), stack O(1)
 // vars: n = 도형 수
 // basis: estimate
 // 도형 선언 줄들. 구조 그림은 가끔 칸 격자를 도형 하나로 섞는다. 도형 둘 이상을 묶은 그룹을 섞고, 가끔 첫 그룹을 바깥 그룹으로 한 번 더 감싼다.
 function declareNodes(ids, rnd, kind) {
   const shape = () => (kind === 'state' ? 'state' : rnd.pick(SHAPES));
-  const declare = (id) => (kind === 'flow' && rnd.next() < GRID_CHANCE ? declareGrid(id, rnd) : [`${shape()} ${id} "${id}"`]);
+  const declare = (id) => (kind === 'flow' && rnd.next() < GRID_CHANCE ? declareGrid(id, rnd) : [nodeLine(shape(), id)]);
   const parts = [];
   let groups = 0;
   for (let i = 0; i < ids.length; ) {
@@ -119,19 +128,42 @@ function wrapFirstGroup(parts, rnd) {
   return [...parts.slice(0, at), `group outer "바깥" direction=${rnd.pick(DIRECTIONS)} {`, ...parts.slice(at, end + 1), '}', ...parts.slice(end + 1)];
 }
 
+// 선언 줄에서 격자마다 칸(item) 이름 목록. 칸 줄은 바로 앞 격자 줄에 속한다.
+function cellsOf(parts) {
+  const cells = new Map();
+  let grid;
+  for (const line of parts) {
+    const open = line.match(/^\s*grid (\w+) /);
+    if (open) cells.set((grid = open[1]), []);
+    const item = line.match(/^\s*item (\w+) /);
+    if (item) cells.get(grid).push(item[1]);
+  }
+  return cells;
+}
+
+// 선 끝 하나: 격자면 가끔 칸을 가리킨다.
+function endOf(id, rnd, cells) {
+  const items = cells.get(id);
+  return items?.length && rnd.next() < CELL_END_CHANCE ? `${id}.${rnd.pick(items)}` : id;
+}
+
 // cost: time O(m), heap O(m), stack O(1)
 // vars: m = 선 수
 // basis: estimate
-function declareEdges(ids, rnd, kind) {
+// 선 줄들. 격자 끝은 가끔 칸을 가리키고, 같은 격자의 두 칸을 잇는 선(양끝이 같은 격자에서 우연히 나온다)과 head 선택 사항도 섞는다. 칸 사이 선은 라벨이 없다.
+function declareEdges(ids, rnd, { kind, cells }) {
   const seen = new Set();
   const lines = [];
   const count = ids.length + rnd.int(ids.length);
   for (let e = 0; e < count; e++) {
     const [a, b] = [rnd.pick(ids), rnd.pick(ids)];
-    if ((a === b && kind !== 'state') || seen.has(`${a}>${b}`)) continue;
-    seen.add(`${a}>${b}`);
-    const isLabeled = kind === 'state' || rnd.next() < LABEL_CHANCE;
-    lines.push(`${a} -> ${b}${isLabeled ? ` "l${e}"` : ''}`);
+    const [from, to] = [endOf(a, rnd, cells), endOf(b, rnd, cells)];
+    const isInner = a === b && from.includes('.') && to.includes('.') && from !== to;
+    if ((a === b && kind !== 'state' && !isInner) || seen.has(`${from}>${to}`)) continue;
+    seen.add(`${from}>${to}`);
+    const isLabeled = !isInner && (kind === 'state' || rnd.next() < LABEL_CHANCE);
+    const head = rnd.next() < HEAD_CHANCE ? ` head=${rnd.pick(HEADS)}` : '';
+    lines.push(`${from} -> ${to}${isLabeled ? ` "l${e}"` : ''}${head}`);
   }
   return lines;
 }
@@ -157,7 +189,7 @@ function randomSource(rnd, { kind, isAspectOff }) {
   if (kind === 'data') return [...lines, ...declareTables(ids.length, rnd)].join('\n');
   let parts = declareNodes(ids, rnd, kind);
   if (rnd.next() < OUTER_CHANCE && parts.length > NODE_MIN + 1) parts = wrapFirstGroup(parts, rnd);
-  lines.push(...parts, ...declareEdges(ids, rnd, kind));
+  lines.push(...parts, ...declareEdges(ids, rnd, { kind, cells: cellsOf(parts) }));
   if (kind === 'state') lines.push(`start ${ids[0]}`, `final ${rnd.pick(ids)}`);
   return lines.join('\n');
 }

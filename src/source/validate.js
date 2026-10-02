@@ -47,24 +47,48 @@ function checkEdges(figure, names, problems) {
   };
   const seen = new Map();
   figure.edges.forEach((edge) => {
-    for (const end of [edge.from, edge.to]) if (!names.has(end) && !figure.rejectedNames.has(end)) problems.error(edge.line, unknownEnd(end, names));
-    // 자기 전이(재시도, 대기)는 상태 그림에서만 뜻이 있다. 다른 그림의 자기 선은 그릴 내용이 없다.
-    if (edge.from === edge.to && figure.kind !== 'state') problems.error(edge.line, `an edge cannot go from "${edge.from}" to itself. Only state figures have self transitions`);
+    splitCellEnds(edge, names, problems);
+    for (const end of [edge.from, edge.to]) if (!names.has(end) && !figure.rejectedNames.has(end)) problems.error(edge.line, unknownName('node', end, names.keys()));
+    // 자기 전이(재시도, 대기)는 상태 그림에서만 뜻이 있다. 다른 그림의 자기 선은 그릴 내용이 없다. 한 격자의 서로 다른 두 칸을 잇는 선만 예외다.
+    if (edge.from === edge.to && figure.kind !== 'state') checkSelfEdge(edge, problems);
     if (isInside(edge.from, edge.to) || isInside(edge.to, edge.from)) problems.error(edge.line, 'an edge cannot join a group and a node inside it');
     if (figure.kind === 'state' && [edge.from, edge.to].some((id) => names.get(id)?.shape === 'group')) problems.error(edge.line, 'a transition joins two states');
-    const key = `${edge.from}\u0000${edge.to}`;
-    if (seen.has(key)) problems.error(edge.line, `there is already an edge ${edge.from} -> ${edge.to} (line ${seen.get(key)}). Merge the labels into one`);
+    const key = `${edge.from}.${edge.fromCell ?? ''}\u0000${edge.to}.${edge.toCell ?? ''}`;
+    if (seen.has(key)) problems.error(edge.line, `there is already an edge ${endName(edge, 'from')} -> ${endName(edge, 'to')} (line ${seen.get(key)}). Merge the labels into one`);
     else seen.set(key, edge.line);
   });
 }
 
-// cost: time O(k), heap O(k), stack O(1)
-// vars: k = 이름 수(없는 이름 메시지)
+// cost: time O(c), heap O(1), stack O(1)
+// vars: c = 격자의 칸 수
 // basis: estimate
-// 선 끝 이름이 없을 때의 메시지. `격자.칸`은 칸이 선 끝이 될 수 없다는 안내다.
-function unknownEnd(end, names) {
-  const [id] = end.split('.');
-  return end.includes('.') && names.get(id)?.shape === 'grid' ? `"${end}" names a grid cell. Edges join a whole grid, so write "${id}"` : unknownName('node', end, names.keys());
+// 선 끝의 `격자.칸`을 격자 이름(from, to)과 칸 이름(fromCell, toCell)으로 가른다. 격자 칸이 아닌 점 이름은 그대로 두어 모르는 이름 오류가 되게 한다.
+// gap은 생략된 항목들이라 선 끝이 될 수 없다.
+function splitCellEnds(edge, names, problems) {
+  for (const way of ['from', 'to']) {
+    const written = edge[way];
+    const [id, cell, ...more] = written.split('.');
+    const grid = names.get(id)?.shape === 'grid' ? names.get(id) : undefined;
+    if (!grid || cell === undefined) continue;
+    const found = more.length ? undefined : grid.cells.find((c) => c.id === cell);
+    // 칸이 틀려도 격자 이름은 남겨, 같은 선에 모르는 이름 오류가 덧붙지 않게 한다.
+    edge[way] = id;
+    if (more.length) problems.error(edge.line, `write a cell as grid.item. Found "${written}"`);
+    else if (!found) problems.error(edge.line, unknownName('cell', cell, grid.cells.map((c) => c.id)));
+    else if (found.kind === 'gap') problems.error(edge.line, `"${written}" is a gap, which stands for omitted entries. Connect an item instead`);
+    else edge[`${way}Cell`] = cell;
+  }
+}
+
+// 선 끝의 알림 이름: `격자.칸` 또는 이름
+function endName(edge, way) {
+  return edge[`${way}Cell`] ? `${edge[way]}.${edge[`${way}Cell`]}` : edge[way];
+}
+
+// 같은 도형 안의 선. 한 격자의 서로 다른 두 칸을 잇는 선만 허용한다. 라벨은 둘 자리가 없어 받지 않는다.
+function checkSelfEdge(edge, problems) {
+  if (!edge.fromCell || !edge.toCell || edge.fromCell === edge.toCell) problems.error(edge.line, `an edge cannot go from "${endName(edge, 'from')}" to itself. Only state figures have self transitions, and a grid can join two different cells`);
+  else if (edge.label !== undefined) problems.error(edge.line, 'an edge between two cells of one grid takes no label');
 }
 
 // cost: time O(c·t), heap O(c), stack O(1)
@@ -142,7 +166,8 @@ function resolveHop(hop, { figure, names, problems }, usedEdges) {
   if (!checkPartRefs([hop.from, hop.to], { figure, names, line: hop.line }, problems)) return;
   for (const id of [fromId, toId]) if (!names.has(id) && !figure.rejectedNames.has(id)) problems.error(hop.line, unknownName('node', id, names.keys()));
   if (figure.kind === 'sequence' || !names.has(fromId) || !names.has(toId)) return;
-  const matches = (e, [a, ca], [b, cb]) => e.from === a && e.to === b && (ca === undefined || e.fromColumn === ca) && (cb === undefined || e.toColumn === cb);
+  const partOf = (e, way) => e[`${way}Column`] ?? e[`${way}Cell`];
+  const matches = (e, [a, ca], [b, cb]) => e.from === a && e.to === b && (ca === undefined || partOf(e, 'from') === ca) && (cb === undefined || partOf(e, 'to') === cb);
   const forward = figure.edges.map((e, i) => (matches(e, [fromId, fromColumn], [toId, toColumn]) ? i : -1)).filter((i) => i >= 0);
   const backward = figure.edges.map((e, i) => (matches(e, [toId, toColumn], [fromId, fromColumn]) ? i : -1)).filter((i) => i >= 0);
   const candidates = forward.length ? forward : backward;
@@ -151,7 +176,7 @@ function resolveHop(hop, { figure, names, problems }, usedEdges) {
     return;
   }
   if (candidates.length > 1) {
-    problems.error(hop.line, `there are ${candidates.length} foreign keys between "${fromId}" and "${toId}". Write the columns: ${fromId}.column -> ${toId}.column`);
+    problems.error(hop.line, `there are ${candidates.length} edges between "${fromId}" and "${toId}". Write the columns or cells: ${fromId}.part -> ${toId}.part`);
     return;
   }
   hop.edge = candidates[0];
@@ -178,7 +203,7 @@ function checkCardTarget(op, { figure, names }, problems) {
 function checkLightTarget(target, { line, figure, names }, problems) {
   const [id, part] = target.split('.');
   const item = names.get(id);
-  if (!checkPartRefs([target], { figure, names, line, isLight: true }, problems)) return;
+  if (!checkPartRefs([target], { figure, names, line }, problems)) return;
   if (!item && !figure.rejectedNames.has(id)) problems.error(line, unknownName('node', id, names.keys()));
   else if (item && part !== undefined) checkPart({ item, part, target, line }, problems);
 }
@@ -199,14 +224,14 @@ function checkPart({ item, part, target, line }, problems) {
 // vars: r = 이름 수
 // basis: estimate
 // `이름.부분` 꼴 이름은 점 하나로만 쓴다. 데이터 관계 그림은 테이블.열을, 구조 그림은 light의 격자.칸을 쓸 수 있다. 맞으면 true다.
-function checkPartRefs(refs, { figure, names, line, isLight = false }, problems) {
+function checkPartRefs(refs, { figure, names, line }, problems) {
   const bad = refs.find((ref) => ref.split('.').length > 2);
   if (bad) problems.error(line, `write a column as table.column. Found "${bad}"`);
   const part = refs.find((ref) => ref.includes('.'));
   if (bad || !part || figure.kind === 'data') return !bad;
   const [id] = part.split('.');
-  if (names.get(id)?.shape === 'grid' && isLight) return true;
-  problems.error(line, names.get(id)?.shape === 'grid' ? `"${part}" names a grid cell, which only light can target. Edges and moves join a whole grid, so write "${id}"` : `"${part}" names a column, which only data figures have`);
+  if (names.get(id)?.shape === 'grid') return true;
+  problems.error(line, `"${part}" names a column, which only data figures have`);
   return false;
 }
 

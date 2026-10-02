@@ -281,6 +281,7 @@ html.embedded .fl-figure {
 .fl .fl-part.on .grid-cell {
   fill: var(--color-card-on);
   stroke: var(--color-state-active);
+  stroke-width: var(--border-edge);
 }
 
 /* hidden 속성이 display: grid 같은 규칙에 지지 않게 한다. 시간 흐름 없는 그림의 빈 조작 막대를 숨기기 위해서다. */

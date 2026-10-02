@@ -77,7 +77,7 @@ step "대화" "입력은 화면을 거쳐 엔진이 에이전트로 보낸다"
 - 이름 오류로 버린 선언의 이름을 가리키는 줄에는 `unknown node` 오류를 덧붙이지 않는다. 그 선언이 있던 그룹에도 `group is empty` 오류를 덧붙이지 않는다. 원인이 이름 오류 하나이기 때문이다.
 - 파일 안에서 도형, 그룹, 상태, 테이블, 계열 이름은 서로 겹치지 않는다.
 - 차트가 아닌 그림에 도형(순서 그림은 참여자)이 하나도 없으면 오류다.
-- `테이블.열` 꼴 이름은 데이터 관계 그림에서만 쓴다. `격자.칸` 꼴 이름은 구조 그림의 `light`에서만 쓴다([칸 격자](grid.md)).
+- `테이블.열` 꼴 이름은 데이터 관계 그림에서만 쓴다. `격자.칸` 꼴 이름은 구조 그림의 `light`, 선 끝, 이동 끝에서 쓴다([칸 격자](grid.md)).
 - 이름 자리에서는 예약어 검사를 하지 않는다. `box data "데이터"`, `box step "단계"`, `box q1 "1분기"`, `table row "행" {`처럼 문장 낱말, 선택 사항 키, 값 없는 선택 사항 낱말(`quiet`, `dashed`, `mono`, `pk`, `unique`)을 모두 이름으로 쓸 수 있다. 이름 자리는 도형, 그룹, 상태, 테이블, 계열 선언의 이름, 선과 이동 줄의 양 끝, `show`, `clear`, `note`, `light`, `start`, `final`, `reveal`의 대상이다.
 - 문장 종류는 첫 낱말로 정하고, 둘째 낱말이 `->`인 줄은 첫 낱말이 문장 낱말이어도 선 줄(시간 흐름 안에서는 이동 줄)로 읽는다. 그래서 `step -> c`는 `step`이라는 이름에서 `c`로 가는 선이다. 이름이 낱말마다 정해진 자리에만 오고, 값 없는 선택 사항은 그 자리 뒤에 오므로 해석이 갈리는 자리가 없다. 막은 자리는 하나다. 선 차트의 행은 `x=`를 가로 값에 쓰므로 계열 이름을 `x`로 지을 수 없다.
 - 테이블 `{`, `}` 안의 줄은 첫 낱말을 늘 열 이름으로 읽는다(`state varchar`도 열이다). 위치로 뜻이 정해지는 낱말(`graph`, `at`, `right`, `down`, `linear`, `log`, `bar` 같은 종류 이름)도 이름으로 쓸 수 있다.
@@ -128,19 +128,21 @@ step "대화" "입력은 화면을 거쳐 엔진이 에이전트로 보낸다"
 | 줄 | 뜻 |
 |---|---|
 | `person id "이름"` | 사람 |
-| `box id "이름" ["부제"]` | 구성 요소, 모듈 |
+| `box id "이름" ["부제"] [shape=rect\|circle]` | 구성 요소, 모듈. `shape=circle`은 합류 연산(⊕)처럼 짧은 이름을 담는 작은 원이고 부제가 없다 |
 | `external id "이름" ["부제"]` | 외부 프로그램, 외부 서비스. 점선 테두리 |
 | `store id "이름" ["부제"]` | 파일, 데이터베이스. 원통 |
 | `decision id "질문"` | 갈림길. 마름모 |
 | `group id "이름" [direction=right\|down] {`, `}` | 그룹. 두 줄 사이에 도형과 그룹을 둔다 |
 | `grid id "제목" [rows=N] [cols=N] {`, `}` | 칸 격자. 두 줄 사이에 `item`과 `gap` 칸을 둔다. 도형 하나로 배치된다([칸 격자](grid.md)) |
-| `a -> b ["라벨"] [quiet] [dashed]` | 선 |
+| `a -> b ["라벨"] [quiet] [dashed] [head=end\|both\|none]` | 선. 끝은 격자 칸 `격자.칸`도 된다 |
 
 - 도형 크기, 색, 굵기, 아이콘은 적지 않는다. 크기는 글과 카드 내용으로, 모양과 색은 토큰으로 정한다.
 - 선의 양 끝은 선언된 도형이나 그룹이다. 선은 도형 선언보다 앞에 와도 된다. 파일을 다 읽은 뒤 이름을 확인한다.
 - 같은 방향의 두 끝 사이 선은 하나다. `a -> b`가 둘이면 오류다. `a -> b`와 `b -> a`는 함께 둘 수 있다.
 - 거꾸로 적는 `<-`는 없다. 요청이 가는 쪽으로 적는다.
-- 자기 자신으로 가는 선과, 그룹과 그 안 모든 하위 도형과 그룹 사이의 선은 오류다. 예외로 상태 그림의 자기 전이는 쓸 수 있다([그림 종류](figure-kinds.md)).
+- 자기 자신으로 가는 선과, 그룹과 그 안 모든 하위 도형과 그룹 사이의 선은 오류다. 예외는 상태 그림의 자기 전이([그림 종류](figure-kinds.md))와, 한 격자의 서로 다른 두 칸을 잇는 선(`g.a -> g.b`, 라벨 없음)이다.
+- `head`는 화살촉 자리다. `end`(기본값, 생략하면 이 값)는 도착 끝, `both`는 양 끝, `none`은 없는 무방향 선이다. 이동 점은 `head`와 상관없이 적은 방향(`a -> b`)으로 가고 거꾸로 이동도 선을 따라간다.
+- 선 끝 `격자.칸`은 `item`만 된다. `gap`과 없는 칸은 오류다. 같은 두 도형 사이에 칸이 다른 선이 여럿이면 같은 방향 선 중복이 아니고, 이동은 `격자.칸 -> 격자.칸`으로 선을 고른다. 도형 이름만 적은 이동(`a -> b`)은 가능한 선이 하나일 때만 쓴다.
 - 그룹 안의 도형을 바깥에서 부를 때도 이름만 쓴다. 이름이 파일 전체에서 하나이기 때문이다.
 - `dashed` 선은 비동기 흐름이나 선택적 흐름이다. 점선 테두리 도형(`external`)과 뜻이 다르다.
 - `quiet` 선은 그 선을 처음 지나는 박자부터 그 단계 끝까지만 보인다. 시간 흐름이 없거나, 시간 흐름에서 한 번도 지나지 않는 `quiet` 선은 [그림 검사](figure-check.md) 11번 경고가 난다.
@@ -249,6 +251,8 @@ step "대화" "입력은 화면을 거쳐 엔진이 에이전트로 보낸다"
 | `hop.dashed` | 값 없음(낱말만) | 판 1 |  |
 | `edge.quiet` | 값 없음(낱말만) | 판 1 |  |
 | `edge.dashed` | 값 없음(낱말만) | 판 1 |  |
+| `edge.head` | `end`, `both`, `none` | 판 1 |  |
+| `box.shape` | `rect`, `circle` | 판 1 |  |
 | `show.tag` | 글 | 판 1 |  |
 | `show.tone` | `purple`, `green`, `teal`, `gray` | 판 1 |  |
 | `show.meta` | 글 | 판 1 |  |
@@ -277,6 +281,8 @@ step "대화" "입력은 화면을 거쳐 엔진이 에이전트로 보낸다"
 | `chartType` | `chart 뒤` | `bar`, `dumbbell`, `box`, `scatter`, `line`, `heatmap` | 없음 | 없음 |
 | `tone` | `show.tone` | `purple`, `green`, `teal`, `gray` | 없음 | `blue` → `teal`, `orange` → `purple` |
 | `role` | `series.role` | `main`, `compare` | 선언 순서대로 main, compare(`dumbbell`은 compare, main) | 없음 |
+| `head` | `edge.head` | `end`, `both`, `none` | `end` | 없음 |
+| `shape` | `box.shape` | `rect`, `circle` | `rect` | 없음 |
 <!-- grammar-table:end -->
 
 ### 요구사항
@@ -287,6 +293,7 @@ step "대화" "입력은 화면을 거쳐 엔진이 에이전트로 보낸다"
 | 세 부분 순서, 낱말 공백, 이름 형식, 값 형식을 어긴 줄을 줄 번호와 함께 알린다. | `test/grammar.test.js`의 `parseFigure_malformed_source_reports_the_line_and_the_rule`. 규칙마다 원본 하나로 줄 번호와 오류 확인 |
 | 선언하지 않은 이름과 비슷한 이름을 함께 알린다. | `test/grammar.test.js`의 `parseFigure_unknown_name_suggests_the_nearest_declared_name`. `cdex`를 쓴 원본이 `codex`를 제안하는지 확인 |
 | 같은 방향 선 두 개, 자기 자신으로 가는 선, 그룹과 안 도형 사이 선을 막는다. | `test/grammar.test.js`의 `parseFigure_malformed_source_reports_the_line_and_the_rule`(선 행). 원본마다 오류 확인 |
+| 칸 선 끝, `head`, `shape`의 틀린 값(gap, 없는 칸, 같은 칸, 라벨 있는 두 칸 선, 값 목록 밖)을 줄 번호와 함께 알린다. | `test/grammar.test.js`의 `parseFigure_malformed_source_reports_the_line_and_the_rule`(격자, 선, 도형 행)과 `parseFigure_valid_forms_read_without_errors`(칸 선, 양끝 표식 행) |
 | 이동은 같은 방향 선을 먼저, 없으면 반대 방향 선을 거꾸로 따라간다. | `test/grammar.test.js`의 `parseFigure_hop_follows_the_same_direction_edge_first_then_the_reverse_one`. 두 경우의 이동 방향 확인 |
 | 카드는 도착 규칙대로 바뀐다. | `test/motion.test.js`의 `buildTimeline_card_changes_at_the_latest_arrival_and_the_source_card_at_beat_start`. `&`로 다른 시간에 도착하는 두 이동의 카드 바뀌는 시점 확인 |
 | 오류를 모두 모아 알리고 파일을 쓰지 않는다. | `test/grammar.test.js`의 `parseFigure_all_errors_are_reported_together`(오류 세 개 원본에서 메시지 세 줄), `test/cli.test.js`의 `main_render_with_an_error_writes_no_file_and_reports_the_line`(결과 파일 없음) |

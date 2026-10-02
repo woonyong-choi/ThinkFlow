@@ -114,14 +114,15 @@ function usefulDescs(ctx, times) {
 function slotsAt(ctx, t, { descs, known }) {
   const point = dotAt(ctx, t);
   const slots = new Map();
-  for (const [key, desc] of descs) {
+  // 지점마다 자리 종류 수만큼 돌므로 Map 항목 쌍을 만들지 않게 forEach로 돈다(할당이 줄어 GC가 준다).
+  descs.forEach((desc, key) => {
     const c = known.get(key) ?? chipCandidateAt(point, ctx.chip, { scene: ctx.scene, avoid: ctx.field, desc, index: ctx.index });
     // c는 이 이동 계획만 쓰는 후보라 그대로 고쳐 쓴다.
     c.point = point;
     c.cost = unaryCost(c, point);
     c.isClean = !c.isOutside && c.hits.length === 0;
     slots.set(key, c);
-  }
+  });
   return slots;
 }
 
@@ -138,10 +139,12 @@ function unaryCost({ rank: [, area, near, tight, crowded, order], box, isOutside
 // vars: n = 계획 지점 수, k = 후보 수
 // basis: estimate
 // 바꾸지 않고 한 자리로 처음부터 끝까지 가는 길 가운데 가장 싼 것(같으면 앞선 후보)과 총비용.
+// 지점 비용은 0 이상이라 합이 지금까지의 가장 싼 값에 이르면 그 자리는 더 보지 않는다(같은 값은 앞선 후보가 이기므로 결과가 같다).
 function stayCheapest(nodes) {
   let chosen = { cost: Infinity };
   for (const key of nodes[0].slots.keys()) {
-    const cost = nodes.reduce((sum, node) => sum + node.slots.get(key).cost, 0);
+    let cost = 0;
+    for (let j = 0; j < nodes.length && cost < chosen.cost; j++) cost += nodes[j].slots.get(key).cost;
     if (cost < chosen.cost) chosen = { cost, key };
   }
   return { cost: chosen.cost, rest: nodes.map((node) => ({ t: node.t, slot: node.slots.get(chosen.key) })) };
@@ -155,11 +158,11 @@ function chooseSlots(ctx, nodes) {
   const best = nodes.map(() => new Map());
   const starts = new Map();
   nodes.forEach((node, j) => {
-    for (const [key, slot] of node.slots) {
+    node.slots.forEach((slot, key) => {
       const stay = best[j - 1]?.get(key);
       if (j === 0) best[j].set(key, { cost: slot.cost });
       else if (stay) best[j].set(key, { cost: stay.cost + slot.cost, prevJ: j - 1, prevKey: key });
-    }
+    });
     if (j > 0) addSlides(ctx, { nodes, best, starts }, j);
   });
   return backtrack(nodes, best);

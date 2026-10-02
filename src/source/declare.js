@@ -19,9 +19,9 @@ export function readDeclaration(statement, ctx) {
 // cost: time O(t), heap O(1), stack O(1)
 // vars: t = 문장 낱말 수
 // basis: estimate
-// `box id "이름" ["부제"]`. 사람, 갈림길, 상태는 부제가 없다.
+// `box id "이름" ["부제"] [shape=circle]`. 사람, 갈림길, 상태는 부제가 없다. 모양(shape)은 box만 받고 원은 부제가 없다.
 function readNode({ tokens, line }, ctx) {
-  const [head, id, label, sub, ...rest] = tokens;
+  const [head, id, label, ...tail] = tokens;
   const shape = head.value;
   const takesSub = STATEMENTS[shape].node.hasSub;
   if (!checkId(id, { line, ctx }, ID_PATTERN)) return rejectName(id, ctx);
@@ -29,9 +29,27 @@ function readNode({ tokens, line }, ctx) {
     ctx.problems.error(line, `write ${shape} as: ${shape} ${id.value} "${shape === 'decision' ? 'question' : 'name'}"`);
     return;
   }
+  const options = shape === 'box' ? tail.filter((t) => t.type === 'option' && t.key === 'shape') : [];
+  const [sub, ...rest] = tail.filter((t) => !options.includes(t));
   if (sub && (sub.type !== 'text' || !takesSub)) ctx.problems.error(line, takesSub ? 'the subtitle must be quoted text' : `${shape} takes no subtitle`);
   if (rest.length) ctx.problems.error(line, `${shape} takes no more words or options`);
-  ctx.figure.nodes.push({ id: id.value, shape, label: label.value, sub: sub?.type === 'text' ? sub.value : undefined, parent: currentGroup(ctx), line });
+  const form = readShape(options, line, ctx);
+  if (form === 'circle' && sub) ctx.problems.error(line, 'a circle takes a name only. Remove the subtitle or shape=circle');
+  ctx.figure.nodes.push({ id: id.value, shape: form ?? shape, label: label.value, sub: sub?.type === 'text' ? sub.value : undefined, parent: currentGroup(ctx), line });
+}
+
+// cost: time O(t), heap O(1), stack O(1)
+// vars: t = 선택 사항 수
+// basis: estimate
+// `shape=` 선택 사항. 한 번만 쓰고 값은 값 목록 안이어야 한다. 모양 이름을 돌려준다(없으면 undefined).
+function readShape(options, line, ctx) {
+  let form;
+  for (const t of options) {
+    if (form !== undefined) ctx.problems.error(line, '"shape" is written twice');
+    else if (t.valueType !== 'word' || !valueNames('shape').includes(t.value)) ctx.problems.error(line, `shape is one of ${valueNames('shape').join(', ')}`);
+    else form = t.value;
+  }
+  return form === 'rect' ? undefined : form;
 }
 
 // cost: time O(t), heap O(1), stack O(1)
@@ -151,16 +169,25 @@ export function readEdge({ tokens, line }, ctx) {
     ctx.problems.error(line, 'write an edge as: a -> b "label"');
     return;
   }
-  const edge = { from: from.value, to: to.value, label: undefined, quiet: false, dashed: false, line };
-  for (const t of rest) {
-    if (t.type === 'text' && edge.label === undefined) edge.label = t.value;
-    else if (t.type === 'word' && flagNames('edge').includes(t.value)) {
-      if (edge[t.value]) ctx.problems.error(line, `"${t.value}" is written twice`);
-      edge[t.value] = true;
-    } else ctx.problems.error(line, `an edge takes a quoted label, quiet, and dashed. Found "${t.value}"`);
-  }
+  const edge = { from: from.value, to: to.value, label: undefined, quiet: false, dashed: false, head: undefined, line };
+  for (const t of rest) readEdgeWord(t, edge, { line, ctx });
   if (ctx.figure.kind === 'state' && edge.label === undefined) ctx.problems.error(line, 'a transition needs an event label: a -> b "event"');
   ctx.figure.edges.push(edge);
+}
+
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+// 선 줄의 낱말 하나: 글(라벨), quiet, dashed, head=. 같은 것을 두 번 쓰면 오류다.
+function readEdgeWord(t, edge, { line, ctx }) {
+  if (t.type === 'text' && edge.label === undefined) edge.label = t.value;
+  else if (t.type === 'word' && flagNames('edge').includes(t.value)) {
+    if (edge[t.value]) ctx.problems.error(line, `"${t.value}" is written twice`);
+    edge[t.value] = true;
+  } else if (t.type === 'option' && t.key === 'head') {
+    if (edge.head !== undefined) ctx.problems.error(line, '"head" is written twice');
+    else if (t.valueType !== 'word' || !valueNames('head').includes(t.value)) ctx.problems.error(line, `head is one of ${valueNames('head').join(', ')}`);
+    else edge.head = t.value;
+  } else ctx.problems.error(line, `an edge takes a quoted label, quiet, dashed, and head=. Found "${t.value}"`);
 }
 
 // 버린 선언의 이름과, 그 선언이 있던 그룹을 적는다. 그 그룹은 비어 보여도 원인이 이름 오류라 빈 그룹 오류를 덧붙이지 않는다.

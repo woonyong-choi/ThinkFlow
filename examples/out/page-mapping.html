@@ -1,0 +1,1691 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>가상 페이지가 페이지 표를 거쳐 물리 프레임으로 간다</title>
+<script>if (window.self !== window.top) {
+  document.documentElement.classList.add('embedded');
+  addEventListener('message', (e) => {
+    if (e.source !== parent || !e.data || !('theme' in e.data)) return;
+    const root = document.documentElement;
+    if (e.data.theme === 'light' || e.data.theme === 'dark') {
+      root.setAttribute('data-theme', e.data.theme);
+      root.style.colorScheme = e.data.theme;
+    } else {
+      root.removeAttribute('data-theme');
+      root.style.colorScheme = '';
+    }
+  });
+  parent.postMessage({ themeRequest: true }, '*');
+  addEventListener('load', () => new ResizeObserver(() => parent.postMessage({ figureHeight: Math.ceil(document.body.getBoundingClientRect().height) }, '*')).observe(document.body));
+}</script>
+<style>@font-face{font-family:FigSansKo;font-weight:500;src:url(data:font/woff2;base64,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) format("woff2")}
+@font-face{font-family:FigSansKo;font-weight:400;src:url(data:font/woff2;base64,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) format("woff2")}
+@font-face{font-family:FigSans;font-weight:500;src:url(data:font/woff2;base64,d09GMgABAAAAAAK0AA8AAAAABYgAAAJdAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGx4cgRgGYD9TVEFUWgA0EQgKAC4LCAABNgIkAwwEIAWEIgcgDAcbqATIPgzwZDT+ynCUlA4aFIvVF01zm75GcaD6Re+4EX0/ZO69/ymtqlIV4xESpVAgDLZpSDcqQseoDD6yFf9xTV/uCqzaAUaNEHV6SD8jpVflJ/TUjBwPb7t3uCldqBeq0HQmmc1GuNbFJMlS9ZO+Gbj/C1Up18NhQXa2BGsrrCZzt+83cTNubNE1QcOEE0u3h1G6scu6kCZQF2b1Y+Ej/D09GL26jf314YZjMCwMkQcR9wpGrRvAxpOrJ5R0+A8IiT03lGrjEBSioaG2WNoqfAK/Qhmgr5a0CaKgfIbmzICSIIbFYBBRTAkWaRlVyqlY73k0DDBQ+uBpCurRqbf/zkALSkcA4HK6fsQPjvf9wPDXDHIDfc7/gm01EcMa5qk4opxx9sXW4GaziTFkJ+GzPSh2dSloSqV9AEGElEBQaV0DFK1OIMzZBj0fbIf6jv8vGIgEU6CBQWnuThJ0F2+1L4utr6VWArxcZ1v/bJovfQZNgfCVcKEKIrv4u1veY2fKCNQAguZWzZWiAIAhwYQPVOnK4NH/YmLZH1MmfWKaE9/trpkB50x60LKbAmMYdwFgETln1vQYYtaVLDJ7qBl9zD4quBQJCKFzRPA5NPOWxMht2fT7go975PhiuGbQOaTAK4PDYiPnQsSQmnbnhfdmHJEQt2TGnDnzNlkcZNrK0C9ZpZnTbm7M9+DRtUeb/cBDv0XyCSmMvH4oEvuU3htxC5as4J4IMBqHr7+TirgMGsLtk4gtkspwY2yExDIbZs0+c4lNapuhiQRmpTKBzCynOR6nSqt/6kh/zP/udwA=) format("woff2")}
+@font-face{font-family:FigSans;font-weight:400;src:url(data:font/woff2;base64,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) format("woff2")}
+/* tokens.json: 생성물, 손으로 고치지 않음 */
+:root {
+  --color-palette-gray-0: #ffffff;
+  --color-palette-gray-25: #f6f7f9;
+  --color-palette-gray-40: #eef0f3;
+  --color-palette-gray-100: #e3e7ec;
+  --color-palette-gray-200: #d5dbe3;
+  --color-palette-gray-500: #818b99;
+  --color-palette-neutral-100: #e3e3e3;
+  --color-palette-neutral-400: #9aa0a6;
+  --color-palette-neutral-500: #72767a;
+  --color-palette-neutral-750: #3c3e42;
+  --color-palette-neutral-800: #2c2d30;
+  --color-palette-neutral-850: #242526;
+  --color-palette-neutral-875: #202123;
+  --color-palette-neutral-900: #1b1b1d;
+  --color-palette-neutral-950: #111214;
+  --color-palette-blue-50: #edf5fb;
+  --color-palette-blue-200: #a9cdea;
+  --color-palette-blue-400: #79c0ff;
+  --color-palette-blue-550: #218fe5;
+  --color-palette-blue-600: #1072c2;
+  --color-palette-blue-800: #1d5d91;
+  --color-palette-blue-850: #2b4254;
+  --color-palette-blue-900: #1d2933;
+  --color-palette-orange-400: #f5a374;
+  --color-palette-orange-550: #d96c1f;
+  --color-palette-ink-200: #c6cacf;
+  --color-palette-ink-600: #52514e;
+  --color-palette-ink-850: #0d1117;
+  --color-palette-ink-900: #0b0b0b;
+  --color-palette-ink-1000: #000000;
+  --color-palette-purple-500: #8b5cf6;
+  --color-palette-green-500: #10b981;
+  --color-palette-slate-500: #8b949e;
+  --color-palette-teal-500: #11a6b0;
+  --color-state-active: var(--color-palette-blue-550);
+  --color-state-active-fill: var(--color-palette-blue-600);
+  --color-state-active-text: var(--color-palette-blue-600);
+  --color-state-on-active: var(--color-palette-gray-0);
+  --color-ui-link: var(--color-palette-blue-600);
+  --color-ui-focus: var(--color-palette-blue-550);
+  --color-ui-progress: var(--color-palette-blue-550);
+  --color-ui-control-on: var(--color-palette-gray-0);
+  --color-data-main: var(--color-palette-blue-550);
+  --color-data-compare: var(--color-palette-orange-550);
+  --color-data-heat-low: var(--color-palette-blue-200);
+  --color-data-heat-high: var(--color-palette-blue-800);
+  --color-data-heat-ink: var(--color-palette-ink-1000);
+  --color-data-heat-ink-on: var(--color-palette-gray-0);
+  --color-data-grid: var(--color-palette-ink-200);
+  --color-fg: var(--color-palette-ink-900);
+  --color-muted: var(--color-palette-ink-600);
+  --color-bg: var(--color-palette-gray-25);
+  --color-node: var(--color-palette-gray-0);
+  --color-surface: var(--color-palette-gray-40);
+  --color-border: var(--color-palette-gray-500);
+  --color-card-on: var(--color-palette-blue-50);
+  --color-group: var(--color-palette-gray-40);
+  --color-plate-border: var(--color-palette-gray-200);
+  --color-page: var(--color-palette-gray-0);
+  --color-tag-purple: var(--color-palette-purple-500);
+  --color-tag-green: var(--color-palette-green-500);
+  --color-tag-teal: var(--color-palette-teal-500);
+  --color-tag-gray: var(--color-palette-slate-500);
+  --font-sans: FigSans, FigSansKo, FigSansSym, FigSansMath, Inter, 'Inter Variable', 'Noto Sans KR', 'Noto Sans KR Variable', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif;
+  --font-mono: FigMono, FigSans, FigSansKo, FigSansSym, FigSansMath, ui-monospace, SFMono-Regular, Menlo, monospace;
+  --size-text-9: 9px;
+  --size-text-11: 11px;
+  --size-text-13: 13px;
+  --size-text-15: 15px;
+  --size-text-22: 22px;
+  --size-control-outer: 30px;
+  --size-control-inner: 22px;
+  --size-control-icon: 12px;
+  --size-pill-height: 18px;
+  --size-tag-height: 14px;
+  --size-packet-radius: 4.5px;
+  --size-packet-halo: 10px;
+  --size-packet-hop-ref: 300px;
+  --size-arrow-head: 5px;
+  --size-arrow-head-lit: 4px;
+  --size-node-card-width: 176px;
+  --size-node-min-width: 100px;
+  --size-node-max-width: 210px;
+  --size-node-min-height: 46px;
+  --size-node-store-cap: 12px;
+  --size-node-state-dot: 14px;
+  --size-node-table-row: 26px;
+  --size-node-circle: 40px;
+  --size-grid-cell: 32px;
+  --size-figure-canvas: 960px;
+  --size-chip-max-width: 210px;
+  --size-player-caption-max: 720px;
+  --size-player-embedded-chrome: 150px;
+  --size-gallery-column: var(--size-figure-canvas);
+  --size-gallery-frame: 820px;
+  --size-document-column: var(--size-figure-canvas);
+  --size-chart-width: var(--size-figure-canvas);
+  --size-chart-label: 140px;
+  --size-chart-label-max: 240px;
+  --size-chart-bar: 12px;
+  --size-chart-row: 40px;
+  --size-chart-dot: 5px;
+  --size-chart-plot-h: 260px;
+  --size-chart-axis: 48px;
+  --size-chart-cell: 40px;
+  --size-chart-cap: 8px;
+  --size-chart-range: 6px;
+  --size-chart-arrow-min: 16px;
+  --size-person-width: 56px;
+  --size-person-head: 20px;
+  --size-person-shoulder: 14px;
+  --size-person-body: 22px;
+  --size-sequence-row: 44px;
+  --size-group-title: 28px;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --leading-normal: 1.5;
+  --leading-snug: 1.35;
+  --tracking-tag: 0.03em;
+  --tracking-frame: 0.04em;
+  --space-1: 2px;
+  --space-2: 4px;
+  --space-3: 6px;
+  --space-4: 8px;
+  --space-5: 10px;
+  --space-6: 12px;
+  --space-7: 14px;
+  --space-8: 16px;
+  --space-9: 18px;
+  --space-11: 22px;
+  --space-12: 24px;
+  --space-14: 28px;
+  --space-15: 30px;
+  --space-16: 32px;
+  --space-20: 40px;
+  --space-22: 44px;
+  --space-30: 60px;
+  --space-0-5: 1px;
+  --space-1-5: 3px;
+  --space-2-5: 5px;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 10px;
+  --radius-2xl: 14px;
+  --radius-route: 22px;
+  --radius-full: 999px;
+  --border-hair: 0.75px;
+  --border-thin: 1px;
+  --border-lifeline: 1.25px;
+  --border-tag: 1.5px;
+  --border-edge: 1.75px;
+  --border-strong: 2.5px;
+  --border-casing: 4.5px;
+  --border-halo: 8px;
+  --dash-line: 5;
+  --dash-gap: 4;
+  --dash-card: 3;
+  --opacity-tag: 0.15;
+  --opacity-halo: 0.2;
+  --opacity-dim: 0.3;
+  --opacity-dim-ink: 0.82;
+  --opacity-band: 0.22;
+  --opacity-range: 0.4;
+  --z-raised: 2;
+  --z-overlay: 10;
+  --duration-fast: 200ms;
+  --duration-hop: 3750ms;
+  --duration-caption-fade: 200ms;
+  --duration-hop-min: 500ms;
+  --duration-chip-slide: 300ms;
+  --duration-chip-fade: 150ms;
+  --duration-dwell: 700ms;
+  --duration-dwell-per-char: 45ms;
+  --duration-dwell-max: 3200ms;
+  --duration-step-end: 1600ms;
+  --duration-chart-cycle: 7000ms;
+  --duration-reveal: 900ms;
+  --easing-move: cubic-bezier(0.455, 0.03, 0.515, 0.955);
+  --easing-reveal: cubic-bezier(0, 0, 0.58, 1);
+  --scale-zoom-max: 6;
+  --scale-aspect-fit-max: 1.6;
+  --scale-fold-aspect: var(--scale-aspect-fit-max);
+  --scale-fold-step: 0.75;
+  --scale-aspect-max: 3;
+  --scale-zoom-step: 1.25;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --color-state-active: var(--color-palette-blue-400);
+    --color-state-active-fill: var(--color-palette-blue-400);
+    --color-state-active-text: var(--color-palette-blue-400);
+    --color-state-on-active: var(--color-palette-ink-850);
+    --color-ui-link: var(--color-palette-blue-400);
+    --color-ui-focus: var(--color-palette-blue-400);
+    --color-ui-progress: var(--color-palette-blue-400);
+    --color-ui-control-on: var(--color-palette-neutral-750);
+    --color-data-main: var(--color-palette-blue-400);
+    --color-data-compare: var(--color-palette-orange-400);
+    --color-data-heat-low: var(--color-palette-blue-850);
+    --color-data-heat-high: var(--color-palette-blue-600);
+    --color-data-heat-ink: var(--color-palette-gray-0);
+    --color-data-heat-ink-on: var(--color-palette-gray-0);
+    --color-data-grid: var(--color-palette-neutral-750);
+    --color-fg: var(--color-palette-neutral-100);
+    --color-muted: var(--color-palette-neutral-400);
+    --color-bg: var(--color-palette-neutral-900);
+    --color-node: var(--color-palette-neutral-850);
+    --color-surface: var(--color-palette-neutral-800);
+    --color-border: var(--color-palette-neutral-500);
+    --color-card-on: var(--color-palette-blue-900);
+    --color-page: var(--color-palette-neutral-950);
+    --color-group: var(--color-palette-neutral-875);
+    --color-plate-border: var(--color-palette-neutral-800);
+  }
+}
+[data-theme='dark'] {
+  --color-state-active: var(--color-palette-blue-400);
+  --color-state-active-fill: var(--color-palette-blue-400);
+  --color-state-active-text: var(--color-palette-blue-400);
+  --color-state-on-active: var(--color-palette-ink-850);
+  --color-ui-link: var(--color-palette-blue-400);
+  --color-ui-focus: var(--color-palette-blue-400);
+  --color-ui-progress: var(--color-palette-blue-400);
+  --color-ui-control-on: var(--color-palette-neutral-750);
+  --color-data-main: var(--color-palette-blue-400);
+  --color-data-compare: var(--color-palette-orange-400);
+  --color-data-heat-low: var(--color-palette-blue-850);
+  --color-data-heat-high: var(--color-palette-blue-600);
+  --color-data-heat-ink: var(--color-palette-gray-0);
+  --color-data-heat-ink-on: var(--color-palette-gray-0);
+  --color-data-grid: var(--color-palette-neutral-750);
+  --color-fg: var(--color-palette-neutral-100);
+  --color-muted: var(--color-palette-neutral-400);
+  --color-bg: var(--color-palette-neutral-900);
+  --color-node: var(--color-palette-neutral-850);
+  --color-surface: var(--color-palette-neutral-800);
+  --color-border: var(--color-palette-neutral-500);
+  --color-card-on: var(--color-palette-blue-900);
+  --color-page: var(--color-palette-neutral-950);
+  --color-group: var(--color-palette-neutral-875);
+  --color-plate-border: var(--color-palette-neutral-800);
+}
+/* 조작 단추의 공통 모양과 상태. 재생기(원 단추, 탭), 목록 쪽과 문서 미리보기(테마 묶음)가 모두 이 파일 하나를 쓴다. */
+.fl-round:hover,
+.fl-tabs button:hover,
+.theme button:hover {
+  color: var(--color-fg);
+}
+
+.fl-round:focus-visible,
+.fl-tabs button:focus-visible,
+.theme button:focus-visible {
+  outline: var(--border-tag) solid var(--color-ui-focus);
+  outline-offset: var(--space-1);
+}
+
+/* 분할 조작(재생기 탭, 테마 묶음)과 둥근 단추는 한 모양이다. 바깥 높이 control, 안쪽 단추 높이 control-inner, 반지름 full. */
+.fl-tabs,
+.theme {
+  display: flex;
+  box-sizing: border-box;
+  min-height: var(--size-control-outer);
+  padding: var(--space-1-5);
+  background: var(--color-bg);
+  border: var(--border-thin) solid var(--color-border);
+  border-radius: var(--radius-full);
+}
+
+.fl-tabs button,
+.theme button {
+  min-height: var(--size-control-inner);
+  font: var(--size-text-13) var(--font-sans);
+  color: var(--color-muted);
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-full);
+}
+
+.theme button {
+  padding: 0 var(--space-6);
+}
+
+/* segmented 방식: 켜진 항목은 꽉 찬 알약(ui.control-on)이다. 켜짐 표시는 묶음 바탕과 대비 3인 border 색 고리다. */
+.fl-tabs button.on,
+.theme button[aria-pressed='true'] {
+  font-weight: var(--weight-semibold);
+  color: var(--color-fg);
+  background: var(--color-ui-control-on);
+  box-shadow: 0 0 0 var(--border-thin) var(--color-border);
+}
+/* 재생기 틀과 조작 막대. iframe 안(html.embedded)에서는 테두리와 바깥 여백을 뺀다. */
+/* 그림 표시 폭 규칙: 문서 미리보기, 목록 카드, 재생기가 같다. 컨테이너 폭은 화면 폭에서 좌우 바깥 여백(space-16)을 뺀 값이고,
+   그림 폭은 min(표준 캔버스 폭, 컨테이너 폭)이다. 컨테이너 안쪽에는 좌우 여백과 레이아웃을 차지하는 테두리를 두지 않아 세 곳의 그림 폭이 같다. */
+body {
+  margin: 0;
+  padding: var(--space-12) var(--space-16);
+  font-family: var(--font-sans);
+  color: var(--color-fg);
+  background: var(--color-page);
+}
+
+/* 목록 쪽 카드 안은 틀이 카드 너비를 다 채워 양옆이 비치지 않게 하고, 바탕은 재생기 쪽과 같은 색으로 둔다. */
+html.embedded body {
+  padding: 0;
+  background: var(--color-bg);
+}
+
+.fl-figure {
+  position: relative;
+  max-width: var(--size-figure-canvas);
+  margin: 0 auto;
+  overflow: clip;
+  color: var(--color-fg);
+  background: var(--color-bg);
+  border-radius: var(--radius-2xl);
+  box-shadow: 0 0 0 var(--border-thin) var(--color-plate-border);
+}
+
+html.embedded .fl-figure {
+  max-width: none;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+/* 카드 전체가 그림 판 한 덩어리다. 제목 줄, 그림 영역, 조작 줄이 모두 color.bg 한 톤이라 숫자 둘레 halo와 선 라벨 알약도 그대로 맞는다. */
+.fl-canvas {
+  padding: var(--space-6) 0;
+  background: var(--color-bg);
+  overflow: auto;
+}
+
+/* 그림은 표준 캔버스 폭 아래로 줄이지 않는다. 화면 높이에 맞춰 줄이지도 않는다. 세로로 긴 그림은 페이지가 길어지고(조작 막대는 화면 아래에 붙어 따라온다),
+   화면 폭이 캔버스 폭보다 좁으면 그림 영역이 가로로 스크롤된다. 줄이면 글자가 가장 작은 글 토큰(size.text.9)보다 작아져 읽히지 않기 때문이다. */
+.fl-canvas svg {
+  display: block;
+  width: auto;
+  height: auto;
+  min-width: var(--size-figure-canvas);
+  margin: 0 auto;
+}
+
+/* 조작 막대와 설명 줄은 한 가운데 축을 쓴다. 위아래 안쪽 여백이 같고, 막대와 설명 사이는 한 칸(space-6)이다. */
+.fl-foot {
+  position: sticky;
+  bottom: 0;
+  z-index: var(--z-raised);
+  display: grid;
+  gap: var(--space-6);
+  justify-items: center;
+  padding: var(--space-8);
+  background: var(--color-bg);
+  border-top: var(--border-thin) solid var(--color-plate-border);
+}
+
+/* 양쪽 칸 너비가 같아(1fr) 배속 글자가 바뀌어도 탭 묶음이 설명과 같은 축에 있다. */
+.fl-bar {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: var(--space-5);
+  align-items: center;
+}
+
+.fl-bar .fl-pause {
+  justify-self: end;
+}
+
+.fl-bar .fl-rate {
+  justify-self: start;
+}
+
+/* 현재 탭의 진행은 일시정지 단추 테두리 위를 12시에서 시계 방향으로 도는 진행(ui.progress) 고리다. 트랙은 단추 테두리 그대로다. */
+.fl-pause {
+  position: relative;
+}
+
+.fl-ring {
+  position: absolute;
+  inset: calc(-1 * var(--border-thin));
+  width: calc(100% + 2 * var(--border-thin));
+  height: calc(100% + 2 * var(--border-thin));
+  pointer-events: none;
+}
+
+.fl-ring-fill {
+  fill: none;
+  stroke: var(--color-ui-progress);
+}
+
+.fl-pause-icon {
+  display: grid;
+  place-items: center;
+}
+
+.fl-round {
+  display: grid;
+  place-items: center;
+  min-width: var(--size-control-outer);
+  height: var(--size-control-outer);
+  padding: 0 var(--space-2);
+  font: var(--size-text-13) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  color: var(--color-muted);
+  background: var(--color-node);
+  border: var(--border-thin) solid var(--color-border);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+}
+
+.fl-tabs {
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  justify-content: center;
+}
+
+.fl-tabs button {
+  position: relative;
+  display: grid;
+  place-items: center;
+  padding: 0 var(--space-7);
+}
+
+/* 백틱으로 감싼 글. 코드 글꼴로 그린다. */
+.fl-code {
+  font-family: var(--font-mono);
+}
+
+.fl-caption {
+  max-width: var(--size-player-caption-max);
+  min-height: calc(var(--size-text-13) * var(--leading-normal));
+  margin: 0;
+  font-size: var(--size-text-13);
+  line-height: var(--leading-normal);
+  text-align: center;
+  color: var(--color-muted);
+}
+
+.fl-full {
+  position: absolute;
+  top: var(--space-5);
+  right: var(--space-5);
+  z-index: var(--z-raised);
+}
+
+.fl-figure.full {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-overlay);
+  display: flex;
+  flex-direction: column;
+  max-width: none;
+  border-radius: 0;
+}
+
+.fl-figure.full .fl-canvas {
+  display: grid;
+  flex: 1;
+  place-items: center;
+}
+
+.fl-figure.full .fl-canvas svg {
+  width: 100%;
+  min-width: 0;
+  height: calc(100vh - var(--size-player-embedded-chrome));
+  max-height: none;
+  touch-action: none;
+  user-select: none;
+}
+
+.fl-figure.full.zoomed .fl-canvas svg {
+  cursor: grab;
+}
+
+.fl-figure.full.zoomed .fl-canvas svg:active {
+  cursor: grabbing;
+}
+
+/* 확대·축소는 전체 화면에서만 보인다. 문서 안에서는 그림을 그대로 보이는 편이 읽기 쉽다. */
+.fl-zoom {
+  position: absolute;
+  top: calc(var(--space-5) + var(--size-control-outer) + var(--space-3));
+  right: var(--space-5);
+  z-index: var(--z-raised);
+  display: none;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.fl-figure.full .fl-zoom {
+  display: flex;
+}
+
+.fl .fl-node.on .fl-stroke {
+  stroke: var(--color-state-active);
+}
+
+.fl .fl-card.on {
+  fill: var(--color-card-on);
+  stroke: var(--color-state-active);
+}
+
+.fl .fl-edge.on .fl-path,
+.fl .fl-edge.hover .fl-path {
+  stroke: var(--color-state-active);
+  stroke-width: var(--border-strong);
+}
+
+.fl .fl-edge.on .fl-path[marker-end],
+.fl .fl-edge.hover .fl-path[marker-end] {
+  marker-end: url("#fl-arrow-on");
+}
+
+.fl .fl-edge.on .fl-path[marker-start],
+.fl .fl-edge.hover .fl-path[marker-start] {
+  marker-start: url("#fl-arrow-on");
+}
+
+.fl .fl-edge.on .fl-pill rect {
+  fill: var(--color-state-active-fill);
+  stroke: var(--color-state-active-fill);
+}
+
+.fl .fl-edge.on .fl-pill text {
+  fill: var(--color-state-on-active);
+}
+
+.fl .fl-path,
+.fl .fl-stroke,
+.fl .grid-cell,
+.fl .fl-pill rect {
+  transition: stroke var(--duration-fast), fill var(--duration-fast);
+}
+
+.fl .fl-layer,
+.fl .fl-edge.quiet {
+  transition: opacity var(--duration-fast);
+}
+
+/* 조용한 선은 지금 단계에서 쓰거나 마우스를 올린 도형에 닿을 때만 보인다. */
+.fl .fl-edge.quiet:not(.on, .hover) {
+  opacity: 0;
+}
+
+.fl .fl-node {
+  cursor: default;
+}
+
+.fl-packet {
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fl .fl-path,
+  .fl .fl-stroke,
+  .fl .grid-cell,
+  .fl .fl-pill rect,
+  .fl .fl-layer,
+  .fl .fl-edge.quiet {
+    transition: none;
+  }
+}
+
+.fl .fl-group.on .fl-stroke {
+  stroke: var(--color-state-active);
+}
+
+.fl .fl-part.on .part-bg {
+  fill: var(--color-card-on);
+}
+
+.fl .fl-part.on .grid-cell {
+  fill: var(--color-card-on);
+  stroke: var(--color-state-active);
+  stroke-width: var(--border-edge);
+}
+
+/* hidden 속성이 display: grid 같은 규칙에 지지 않게 한다. 시간 흐름 없는 그림의 빈 조작 막대를 숨기기 위해서다. */
+[hidden] {
+  display: none !important;
+}
+/* 그림 안 글자와 모양. HTML 재생기와 움직이는 SVG가 같이 쓴다. */
+.fl text {
+  font-family: var(--font-sans);
+}
+
+.fl .label {
+  font-size: var(--size-text-13);
+  font-weight: var(--weight-medium);
+  text-anchor: middle;
+  fill: var(--color-fg);
+}
+
+.fl .sub {
+  font-size: var(--size-text-11);
+  text-anchor: middle;
+  fill: var(--color-muted);
+}
+
+.fl .frame {
+  font-size: var(--size-text-11);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-frame);
+  fill: var(--color-muted);
+}
+
+.fl .edgelabel {
+  font-size: var(--size-text-11);
+  text-anchor: middle;
+  fill: var(--color-muted);
+}
+
+.fl .row {
+  font-size: var(--size-text-11);
+  fill: var(--color-fg);
+}
+
+.fl .row.mono {
+  font-family: var(--font-mono);
+  font-size: var(--size-text-11);
+}
+
+/* 백틱으로 감싼 글. 코드 글꼴로 그린다. */
+.fl .code {
+  font-family: var(--font-mono);
+}
+
+.fl .muted {
+  fill: var(--color-muted);
+}
+
+.fl .tag {
+  font-size: var(--size-text-9);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-tag);
+  text-anchor: middle;
+  fill: var(--color-fg);
+}
+
+.fl .mark {
+  font-size: var(--size-text-11);
+  font-weight: var(--weight-semibold);
+  text-anchor: end;
+  fill: var(--color-state-active-text);
+}
+
+.fl .mini {
+  font-size: var(--size-text-11);
+  text-anchor: middle;
+  fill: var(--color-fg);
+}
+
+.fl .mini.on {
+  fill: var(--color-state-on-active);
+}
+
+.fl .chip {
+  font-size: var(--size-text-11);
+  text-anchor: middle;
+  fill: var(--color-state-on-active);
+}
+
+.fl .cell {
+  font-size: var(--size-text-13);
+  fill: var(--color-fg);
+}
+
+.fl .item {
+  font-size: var(--size-text-13);
+  text-anchor: middle;
+  fill: var(--color-fg);
+}
+
+.fl .item.gap {
+  fill: var(--color-muted);
+}
+
+.fl .cell.type {
+  font-family: var(--font-mono);
+  font-size: var(--size-text-11);
+  text-anchor: end;
+  fill: var(--color-muted);
+}
+
+.fl .fl-stroke {
+  stroke: var(--color-border);
+}
+
+.fl .fl-path {
+  fill: none;
+  stroke: var(--color-muted);
+  stroke-width: var(--border-edge);
+}
+
+.fl .cell .key {
+  font-size: var(--size-text-9);
+  font-weight: var(--weight-semibold);
+  fill: var(--color-muted);
+}
+
+.fl .frame-box {
+  fill: var(--color-group);
+  stroke: var(--color-border);
+}
+
+.fl .lifeline {
+  stroke: var(--color-border);
+  stroke-width: var(--border-lifeline);
+  stroke-dasharray: var(--dash-gap) var(--dash-gap);
+}
+
+.fl .note-box {
+  fill: var(--color-surface);
+  stroke: var(--color-border);
+  stroke-dasharray: var(--dash-card) var(--dash-card);
+}
+
+.fl .pill {
+  fill: var(--color-bg);
+  stroke: var(--color-border);
+}
+
+.fl .part-bg {
+  fill: transparent;
+}
+
+.fl .col-line {
+  stroke: var(--color-border);
+  stroke-width: var(--border-hair);
+}
+
+.fl .grid-cell {
+  fill: var(--color-node);
+  stroke: var(--color-border);
+  stroke-width: var(--border-thin);
+}
+
+.fl .grid-cell.gap {
+  fill: var(--color-surface);
+  stroke-dasharray: var(--dash-card) var(--dash-card);
+}
+
+.fl .grid-cell.empty {
+  fill: none;
+  stroke-dasharray: var(--dash-card) var(--dash-card);
+}
+
+.fl .fl-edge.mark .fl-path {
+  stroke: var(--color-fg);
+}
+/* 차트 글자와 자라는 움직임. 차트 SVG 안에 들어가고, README 이미지에서도 보이게 되풀이한다. */
+.fl .chart-title {
+  font-size: var(--size-text-15);
+  font-weight: var(--weight-semibold);
+  fill: var(--color-fg);
+}
+
+.fl .chart-label {
+  font-size: var(--size-text-13);
+  font-weight: var(--weight-medium);
+  fill: var(--color-fg);
+}
+
+.fl .chart-value,
+.fl .chart-tick,
+.fl .chart-unit {
+  font-variant-numeric: tabular-nums;
+  font-size: var(--size-text-11);
+  fill: var(--color-muted);
+}
+
+.fl .chart-value {
+  fill: var(--color-fg);
+}
+
+/* 값 글자와 점 이름은 뒤의 격자와 기준선이 글자 둘레에서 끊기게 바탕색 테두리를 두른다. */
+.fl .chart-value,
+.fl .chart-name {
+  paint-order: stroke;
+  stroke: var(--color-bg);
+  stroke-width: var(--border-halo);
+  stroke-linejoin: round;
+}
+
+.fl .chart-tick {
+  text-anchor: middle;
+}
+
+.fl .chart-unit {
+  text-anchor: end;
+}
+
+.fl .chart-value.start {
+  text-anchor: start;
+}
+
+.fl .chart-value.end {
+  text-anchor: end;
+}
+
+/* 값 글자는 계열과 상관없이 글자색이다. 계열은 막대, 점, 띠 색으로만 전하고 강조 계열(ours, second)은 굵기로만 구분한다. */
+.fl .chart-value.ours,
+.fl .chart-value.second {
+  font-weight: var(--weight-semibold);
+}
+
+.fl .chart-name.end {
+  text-anchor: end;
+}
+
+.fl .chart-missing {
+  font-size: var(--size-text-11);
+  font-style: italic;
+  fill: var(--color-muted);
+}
+
+.fl .chart-ratio {
+  font-variant-numeric: tabular-nums;
+  font-size: var(--size-text-13);
+  font-weight: var(--weight-semibold);
+  text-anchor: end;
+  fill: var(--color-fg);
+}
+
+.fl .chart-legend,
+.fl .chart-sub,
+.fl .chart-name,
+.fl .chart-rule-label {
+  font-size: var(--size-text-11);
+  fill: var(--color-muted);
+}
+
+.fl .chart-tick.end,
+.fl .chart-rule-label.end {
+  text-anchor: end;
+}
+
+.fl .chart-unit.start {
+  text-anchor: start;
+}
+
+/* 칸 색은 변수로 계산해 다크 모드 heat-low를 따라간다. --s는 칸 강도(0~1)다. */
+.fl .chart-heat {
+  fill: color-mix(in srgb, var(--color-data-heat-high) calc(var(--s) * 100%), var(--color-data-heat-low));
+}
+
+.fl .chart-cell {
+  --ink: var(--color-data-heat-ink);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--size-text-11);
+  text-anchor: middle;
+  fill: var(--ink);
+}
+
+.fl .chart-cell.on {
+  --ink: var(--color-data-heat-ink-on);
+}
+
+/* 흐린 칸은 면이 바탕 쪽으로 옅어져 진한 칸의 밝은 글자가 묻힌다. 흐린 동안은 모든 칸이 어두운 글자(다크는 같은 밝은 글자)다. */
+.fl .chart-cell.dim {
+  fill: var(--color-data-heat-ink);
+}
+
+.fl .chart-axis,
+.fl .chart-grid {
+  stroke: var(--color-data-grid);
+  stroke-width: var(--border-thin);
+}
+
+.fl .chart-rule {
+  stroke: var(--color-muted);
+  stroke-width: var(--border-thin);
+  stroke-dasharray: var(--dash-line) var(--dash-gap);
+}
+
+.fl .chart-whisker,
+.fl .chart-median {
+  stroke: var(--color-fg);
+  stroke-width: var(--border-tag);
+}
+
+.fl .chart-ci {
+  stroke: var(--color-fg);
+  stroke-width: var(--border-tag);
+}
+
+.fl .chart-ci-casing {
+  stroke: var(--color-bg);
+  stroke-width: var(--border-casing);
+}
+
+.fl .chart-interval {
+  fill: none;
+  stroke: var(--color-muted);
+  stroke-width: var(--border-edge);
+}
+
+.fl .chart-band {
+  fill-opacity: var(--opacity-band);
+}
+
+.fl .chart-range {
+  stroke-linecap: round;
+  stroke-opacity: var(--opacity-range);
+}
+
+.fl .chart-after {
+  stroke: var(--color-bg);
+  stroke-width: var(--border-tag);
+}
+
+.fl .chart-box {
+  fill: var(--color-node);
+  stroke: var(--color-data-main);
+  stroke-width: var(--border-tag);
+}
+
+.fl .chart-before {
+  fill: var(--color-bg);
+  stroke: var(--color-data-compare);
+  stroke-width: var(--border-tag);
+}
+
+.fl .chart-arrow,
+.fl .chart-link {
+  stroke: var(--color-data-main);
+  stroke-width: var(--border-strong);
+}
+
+.fl .chart-link {
+  stroke: var(--color-muted);
+  stroke-width: var(--border-strong);
+  stroke-linecap: round;
+}
+
+.fl .chart-label.shift {
+  transform: translateY(var(--label-shift));
+  transition: transform var(--duration-fast);
+}
+
+/* pathLength 1인 선이 stroke-dashoffset으로 그려진다. 선 차트의 선, 덤벨 화살표, 산점도 link가 함께 쓴다. */
+.fl .draw {
+  stroke-dasharray: 1;
+}
+
+.fl .grow {
+  transform-box: fill-box;
+  transform-origin: left center;
+}
+
+.fl .hidden {
+  opacity: 0;
+}
+
+.fl .dim {
+  opacity: var(--opacity-dim);
+}
+
+/* 글자는 면보다 덜 흐려, 흐린 행에서도 글자가 바탕과 대비 4.5 이상이다(opacity.dim-ink). */
+.fl .ink.dim {
+  opacity: var(--opacity-dim-ink);
+}
+
+.fl .cs-0,
+.fl .cs-1,
+.fl [class*="cr-"] {
+  transition: opacity var(--duration-fast);
+}
+
+/* 면이 바탕 쪽으로 옅어지는 중간에는 밝은 글자와 어두운 글자 모두 대비 4.5에 못 미친다. 칸 면과 글자는 서서히 가지 않고 한꺼번에 바뀐다. */
+.fl .chart-heat-cell,
+.fl .chart-cell.ink {
+  transition: none;
+}
+</style>
+</head>
+<body>
+<figure class="fl-figure" tabindex="0">
+<button type="button" class="fl-round fl-full"></button><div class="fl-zoom"><button type="button" class="fl-round" data-zoom="in" aria-label="확대"></button><button type="button" class="fl-round" data-zoom="out" aria-label="축소"></button><button type="button" class="fl-round" data-zoom="fit" aria-label="전체 보기"></button></div>
+<div class="fl-canvas"><svg xmlns="http://www.w3.org/2000/svg" class="fl" width="960" height="304" style="aspect-ratio: 960 / 304" viewBox="-153.5 0 960 304" role="img"><title>가상 페이지가 페이지 표를 거쳐 물리 프레임으로 간다</title><defs><marker id="fl-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-muted)"/></marker><marker id="fl-arrow-on" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-state-active)"/></marker><marker id="fl-arrow-main" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-data-main)"/></marker></defs><g id="n-0" class="fl-node" data-id="virt"><rect x="28" y="66" width="152" height="202" rx="10" fill="var(--color-node)" class="fl-stroke "/><text x="104" y="85.7" class="label">가상 주소 공간</text><g class="fl-part" data-part="virt.p0"><rect x="40" y="96" width="128" height="32" class="grid-cell "/><text x="104" y="116.7" class="item">페이지 0</text></g><g class="fl-part" data-part="virt.p1"><rect x="40" y="128" width="128" height="32" class="grid-cell "/><text x="104" y="148.7" class="item">페이지 1</text></g><g><rect x="40" y="160" width="128" height="32" class="grid-cell gap"/><text x="104" y="180.7" class="item gap">쓰지 않는 페이지 ×2</text></g><g class="fl-part" data-part="virt.p4"><rect x="40" y="192" width="128" height="32" class="grid-cell "/><text x="104" y="212.7" class="item">페이지 4</text></g><g class="fl-part" data-part="virt.p5"><rect x="40" y="224" width="128" height="32" class="grid-cell "/><text x="104" y="244.7" class="item">페이지 5</text></g></g>
+<g id="n-1" class="fl-node" data-id="table"><rect x="240" y="46" width="189" height="230" rx="10" fill="var(--color-node)" class="fl-stroke "/><text x="334.5" y="65.7" class="label">페이지 표</text><g class="fl-part" data-part="table.hp"><rect x="252" y="76" width="55" height="32" class="grid-cell "/><text x="279.5" y="96.7" class="item">Page</text></g><g class="fl-part" data-part="table.hf"><rect x="307" y="76" width="55" height="32" class="grid-cell "/><text x="334.5" y="96.7" class="item">Frame</text></g><g class="fl-part" data-part="table.hv"><rect x="362" y="76" width="55" height="32" class="grid-cell "/><text x="389.5" y="96.7" class="item">Valid</text></g><g class="fl-part" data-part="table.r1"><rect x="252" y="128" width="55" height="32" class="grid-cell "/><text x="279.5" y="148.7" class="item">1</text></g><g class="fl-part" data-part="table.f1"><rect x="307" y="128" width="55" height="32" class="grid-cell "/><text x="334.5" y="148.7" class="item">7</text></g><g class="fl-part" data-part="table.v1"><rect x="362" y="128" width="55" height="32" class="grid-cell "/><text x="389.5" y="148.7" class="item">1</text></g><g class="fl-part" data-part="table.r4"><rect x="252" y="180" width="55" height="32" class="grid-cell "/><text x="279.5" y="200.7" class="item">4</text></g><g class="fl-part" data-part="table.f4"><rect x="307" y="180" width="55" height="32" class="grid-cell "/><text x="334.5" y="200.7" class="item">2</text></g><g class="fl-part" data-part="table.v4"><rect x="362" y="180" width="55" height="32" class="grid-cell "/><text x="389.5" y="200.7" class="item">1</text></g><g class="fl-part" data-part="table.r5"><rect x="252" y="232" width="55" height="32" class="grid-cell "/><text x="279.5" y="252.7" class="item">5</text></g><g class="fl-part" data-part="table.f5"><rect x="307" y="232" width="55" height="32" class="grid-cell "/><text x="334.5" y="252.7" class="item">5</text></g><g class="fl-part" data-part="table.v5"><rect x="362" y="232" width="55" height="32" class="grid-cell "/><text x="389.5" y="252.7" class="item">0</text></g></g>
+<g id="n-2" class="fl-node" data-id="phys"><rect x="489" y="28" width="136" height="202" rx="10" fill="var(--color-node)" class="fl-stroke "/><text x="557" y="47.7" class="label">물리 메모리</text><g class="fl-part" data-part="phys.fr2"><rect x="501" y="58" width="112" height="32" class="grid-cell "/><text x="557" y="78.7" class="item">프레임 2</text></g><g><rect x="501" y="90" width="112" height="32" class="grid-cell gap"/><text x="557" y="110.7" class="item gap">다른 프로세스 ×2</text></g><g class="fl-part" data-part="phys.fr5"><rect x="501" y="122" width="112" height="32" class="grid-cell "/><text x="557" y="142.7" class="item">프레임 5</text></g><g class="fl-part" data-part="phys.fr7"><rect x="501" y="154" width="112" height="32" class="grid-cell "/><text x="557" y="174.7" class="item">프레임 7</text></g><g><rect x="501" y="186" width="112" height="32" class="grid-cell gap"/><text x="557" y="206.7" class="item gap">빈 프레임 ×4</text></g></g>
+<g id="e-0" class="fl-edge"><path id="p-0" d="M 168 144 L 252 144" class="fl-path " marker-end="url(#fl-arrow)"/></g>
+<g id="e-1" class="fl-edge"><path id="p-1" d="M 168 208 L 190 208 Q 196 208, 196 202 L 196 202 Q 196 196, 202 196 L 252 196" class="fl-path " marker-end="url(#fl-arrow)"/></g>
+<g id="e-2" class="fl-edge"><path id="p-2" d="M 334.5 160 L 334.5 165 Q 334.5 170, 339.5 170 L 501 170" class="fl-path " marker-end="url(#fl-arrow)"/></g>
+<g id="e-3" class="fl-edge"><path id="p-3" d="M 334.5 212 L 334.5 217 Q 334.5 222, 339.5 222 L 423 222 Q 445 222, 445 200 L 445 96 Q 445 74, 467 74 L 501 74" class="fl-path " marker-end="url(#fl-arrow)"/></g><g class="fl-packets"></g></svg></div>
+<figcaption class="fl-foot">
+<div class="fl-bar"><button type="button" class="fl-round fl-pause"><svg class="fl-ring" viewBox="0 0 30 30" aria-hidden="true"><circle class="fl-ring-fill" cx="15" cy="15" r="14.125" stroke-width="1.75" transform="rotate(-90 15 15)"/></svg><span class="fl-pause-icon"></span></button><div class="fl-tabs" role="tablist"></div><button type="button" class="fl-round fl-rate" aria-label="배속">1×</button></div>
+<p class="fl-caption" aria-live="polite"></p>
+</figcaption>
+</figure>
+<script>
+// 브라우저에서 돈다(play.js와 한 스크립트로 이어 붙는다).
+// 전체 화면과, 전체 화면에서만 켜지는 확대·축소·끌어 옮기기를 맡는다. 문서 안에서는 그림을 그대로 보인다.
+
+const VIEW_ICONS = {
+  open: 'M2 6V2h4M14 6V2h-4M2 10v4h4M14 10v4h-4',
+  close: 'M6 2v4H2M10 2v4h4M6 14v-4H2M10 14v-4h4',
+  in: 'M8 3v10M3 8h10',
+  out: 'M3 8h10',
+  fit: 'M3 3h10v10H3z',
+};
+
+// cost: time O(1) 시작, 휠·끌기마다 O(1), heap O(1), stack O(1)
+// basis: estimate
+/**
+ * 그림 틀에 전체 화면 단추와 확대·축소를 붙인다.
+ * @param root `.fl-figure` 요소. 안에 `.fl-full`, `.fl-zoom` 단추와 `svg.fl`이 있다
+ * @param metrics { icon, iconStroke, zoomMax, zoomStep }
+ */
+function figureView(root, metrics) {
+  const svg = root.querySelector('svg.fl');
+  const base = svg.viewBox.baseVal;
+  const home = { x: base.x, y: base.y, w: base.width, h: base.height };
+  // 보는 상태 한 덩어리. view는 지금 viewBox, drag는 끄는 중인 손짓이다.
+  const viewer = { root, svg, metrics, home, view: { ...home }, drag: undefined, fullButton: root.querySelector('.fl-full') };
+  bindFull(viewer);
+  bindZoom(viewer);
+  bindPan(viewer);
+  showFull(viewer, false);
+}
+
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+function bindFull(viewer) {
+  const { root, fullButton } = viewer;
+  fullButton.addEventListener('click', () => setFull(viewer, !root.classList.contains('full')));
+  document.addEventListener('fullscreenchange', () => showFull(viewer, document.fullscreenElement === root));
+  root.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !document.fullscreenElement) setFull(viewer, false);
+  });
+}
+
+// cost: time O(b), heap O(1), stack O(1)
+// vars: b = 확대·축소 단추 수
+// basis: estimate
+function bindZoom(viewer) {
+  const { root, metrics, home } = viewer;
+  root.querySelectorAll('.fl-zoom button').forEach((b) => {
+    b.innerHTML = drawViewIcon(metrics, VIEW_ICONS[b.dataset.zoom]);
+    b.addEventListener('click', () => (b.dataset.zoom === 'fit' ? setView(viewer, home) : zoomAt(viewer, b.dataset.zoom === 'in' ? metrics.zoomStep : 1 / metrics.zoomStep)));
+  });
+}
+
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+function bindPan(viewer) {
+  const { svg } = viewer;
+  svg.addEventListener('wheel', (e) => onWheel(viewer, e), { passive: false });
+  svg.addEventListener('pointerdown', (e) => onPointerDown(viewer, e));
+  svg.addEventListener('pointermove', (e) => onPointerMove(viewer, e));
+  for (const type of ['pointerup', 'pointercancel', 'lostpointercapture']) svg.addEventListener(type, () => (viewer.drag = undefined));
+}
+
+// 브라우저 전체 화면을 먼저 쓰고, 막혀 있으면(iframe에 allowfullscreen이 없을 때 등) 창을 덮는 모양으로 대신한다.
+function setFull(viewer, isFull) {
+  const { root } = viewer;
+  const canUseApi = Boolean(root.requestFullscreen) && document.fullscreenEnabled;
+  if (!canUseApi) return showFull(viewer, isFull);
+  if (isFull) root.requestFullscreen().catch(() => showFull(viewer, true));
+  else if (document.fullscreenElement) document.exitFullscreen();
+  else showFull(viewer, false);
+}
+
+function showFull(viewer, isFull) {
+  const { root, fullButton, metrics, home } = viewer;
+  root.classList.toggle('full', isFull);
+  fullButton.innerHTML = drawViewIcon(metrics, isFull ? VIEW_ICONS.close : VIEW_ICONS.open);
+  const label = isFull ? '전체 화면 끝내기' : '전체 화면';
+  fullButton.setAttribute('aria-label', label);
+  fullButton.title = label;
+  // 문서 안에서는 늘 전체 그림을 보인다.
+  if (!isFull) setView(viewer, home);
+}
+
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+// 휠을 굴린 자리를 중심으로 확대한다. 전체 화면이 아닐 때는 문서 스크롤에 맡긴다.
+function onWheel(viewer, e) {
+  if (!viewer.root.classList.contains('full')) return;
+  e.preventDefault();
+  // 가로로만 미는 손짓은 확대·축소가 아니다.
+  if (e.deltaY === 0) return;
+  const { zoomStep } = viewer.metrics;
+  zoomAt(viewer, e.deltaY < 0 ? zoomStep : 1 / zoomStep, toSvgPoint(viewer.svg, e));
+}
+
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+function onPointerDown(viewer, e) {
+  const { root, svg, view, home } = viewer;
+  const isMainButton = e.button === 0;
+  if (!root.classList.contains('full') || view.w >= home.w || !isMainButton) return;
+  // 끄는 동안 viewBox가 바뀌므로, 잡은 순간의 화면→그림 변환으로 거리를 잰다.
+  viewer.drag = { start: toSvgPoint(svg, e), matrix: svg.getScreenCTM().inverse(), view: { ...view } };
+  svg.setPointerCapture(e.pointerId);
+}
+
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+// 끈 거리만큼 그림을 반대로 옮긴다. 잡은 자리가 손가락 아래에 머문다.
+function onPointerMove(viewer, e) {
+  const { drag } = viewer;
+  if (!drag) return;
+  const now = new DOMPoint(e.clientX, e.clientY).matrixTransform(drag.matrix);
+  setView(viewer, { ...drag.view, x: drag.view.x - (now.x - drag.start.x), y: drag.view.y - (now.y - drag.start.y) });
+}
+
+// factor만큼 확대한다. 배율은 1배(전체)에서 metrics.zoomMax배 사이다.
+function zoomAt(viewer, factor, center = { x: viewer.view.x + viewer.view.w / 2, y: viewer.view.y + viewer.view.h / 2 }) {
+  const { view, home, metrics } = viewer;
+  const w = Math.min(home.w, Math.max(home.w / metrics.zoomMax, view.w / factor));
+  const k = w / view.w;
+  setView(viewer, { x: center.x - (center.x - view.x) * k, y: center.y - (center.y - view.y) * k, w, h: view.h * k });
+}
+
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+// 그림 밖으로 벗어나지 않게 자리를 막고 viewBox에 쓴다.
+function setView(viewer, next) {
+  const { home, svg, root } = viewer;
+  const x = Math.min(home.x + home.w - next.w, Math.max(home.x, next.x));
+  const y = Math.min(home.y + home.h - next.h, Math.max(home.y, next.y));
+  viewer.view = { ...next, x, y };
+  svg.setAttribute('viewBox', `${x} ${y} ${next.w} ${next.h}`);
+  root.classList.toggle('zoomed', next.w < home.w);
+}
+
+// 화면 좌표를 그림 좌표로 바꾼다. 그림 비율과 svg 상자 비율이 달라 생기는 여백까지 브라우저 변환 행렬이 반영한다.
+function toSvgPoint(svg, e) {
+  const point = new DOMPoint(e.clientX, e.clientY).matrixTransform(svg.getScreenCTM().inverse());
+  return { x: point.x, y: point.y };
+}
+
+function drawViewIcon(metrics, d) {
+  return `<svg width="${metrics.icon}" height="${metrics.icon}" viewBox="0 0 16 16"><path d="${d}" fill="none" stroke="currentColor" stroke-width="${metrics.iconStroke}" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+}
+
+// 브라우저에서 돈다. html.js가 HTML 안에 그대로 넣는다(src/player/ 파일을 이어 붙인다).
+// 시간표의 박자 상태를 그대로 그린다. 상태를 다시 계산하지 않는다(docs/architecture.md 불변 조건).
+// 이 파일은 재생기 본체다: 시작, 시계, 박자 이동, 설명 글. 역할별로 파일이 나뉜다: 단추와 탭과 진행 고리(controls.js), 그림 그리기(stage.js), 이동 곡선(curve.js), 전체 화면과 확대(view.js).
+
+const PLAYER_RATES = [1, 2, 0.5];
+// 설명 글이 바뀔 때 앞 글이 사라지고 뒤 글이 나타나는 각 시간(ms)을 담은 토큰 변수. 움직이는 SVG와 같은 토큰이다.
+const CAPTION_FADE_VAR = '--duration-caption-fade';
+
+// cost: time O(s + c) 시작, 프레임마다 O(h + k), heap O(s + c), stack O(1)
+// vars: s = 도형 수, c = 선 수, h = 한 박자의 이동 수, k = 카드 있는 도형 수
+// basis: estimate
+/**
+ * 재생기를 붙인다.
+ * @param root `.fl-figure` 요소
+ * @param data { segs, steps, cardCounts, edgeEnds, seriesCount, rowCount, metrics }
+ */
+function figurePlay(root, data) {
+  const player = createPlayer(root, data);
+  bindControls(root, player);
+  highlightOnHover(player.stage);
+  figureView(root, data.metrics);
+  centerCanvas(root);
+  setPlaying(player, player.clock.isPlaying);
+  if (data.segs.length) {
+    enterSegment(player, 0);
+    requestAnimationFrame(player.tick);
+  } else {
+    // 시간 흐름이 없는 그림은 조작 막대를 숨긴다. 차트는 SVG 이미지처럼 되풀이해 자란다.
+    root.querySelector('.fl-foot').hidden = true;
+    player.stage.svg.classList.add('chart-loop');
+  }
+}
+
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+// 화면이 표준 캔버스 폭보다 좁으면 그림 영역이 가로로 스크롤된다. 내용이 캔버스보다 좁은 그림은 내용이 캔버스 가운데에 있으므로 가운데에서 시작하고(viewBox 왼쪽이 음수),
+// 캔버스를 꽉 채우는 차트와 넓은 그림은 왼쪽 끝(이름과 축)에서 시작한다. 화면 크기가 바뀌어도 다시 맞춘다.
+function centerCanvas(root) {
+  const canvas = root.querySelector('.fl-canvas');
+  const isCentered = root.querySelector('svg.fl').viewBox.baseVal.x < 0;
+  const place = () => {
+    canvas.scrollLeft = isCentered ? (canvas.scrollWidth - canvas.clientWidth) / 2 : 0;
+  };
+  place();
+  addEventListener('resize', place);
+}
+
+// cost: time O(s + c), heap O(s + c), stack O(1)
+// vars: s = 도형 수, c = 선 수
+// basis: estimate
+// 재생기 상태 한 덩어리. 시계, 그림, 탭, 고리, 설명 줄이 이 객체 하나로 이어진다.
+function createPlayer(root, data) {
+  const pauseButton = root.querySelector('.fl-pause');
+  const player = {
+    data,
+    stage: createStage(root, data),
+    clock: createClock(),
+    stepSegs: data.steps.map((_, si) => data.segs.filter((s) => s.si === si)),
+    hasCaption: data.segs.some((s) => s.caption),
+    caption: root.querySelector('.fl-caption'),
+    captionText: undefined,
+    captionFade: undefined,
+    pause: { button: pauseButton, icon: pauseButton.querySelector('.fl-pause-icon') },
+    ring: createRing(pauseButton),
+    tabs: [],
+    tick: (now) => drawFrame(player, now),
+  };
+  player.tabs = createTabs(root.querySelector('.fl-tabs'), player);
+  return player;
+}
+
+// ---- 시계 ----
+
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+function createClock() {
+  return {
+    index: 0,
+    elapsed: 0,
+    before: performance.now(),
+    isPlaying: !matchMedia('(prefers-reduced-motion: reduce)').matches,
+    rate: PLAYER_RATES[0],
+  };
+}
+
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+function nextRate(rate) {
+  return PLAYER_RATES[(PLAYER_RATES.indexOf(rate) + 1) % PLAYER_RATES.length];
+}
+
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+// 박자 seg가 속한 탭(step) 전체 시간 중 지금까지 지난 비율(0~1).
+function tabProgress(player, seg) {
+  const steps = player.stepSegs[seg.si];
+  const start = steps[0].t0;
+  const end = steps.at(-1).t1;
+  return (seg.t0 - start + Math.min(player.clock.elapsed, seg.t1 - seg.t0)) / (end - start);
+}
+
+// cost: time O(h + k), heap O(1), stack O(1)
+// vars: h = 박자의 이동 수, k = 카드가 바뀌는 도형 수
+// basis: estimate
+// 프레임마다 시계를 흘리고, 점과 카드를 옮기고, 재생 단추 고리를 채운다.
+function drawFrame(player, now) {
+  const { clock, data } = player;
+  if (clock.isPlaying) clock.elapsed += (now - clock.before) * clock.rate;
+  clock.before = now;
+  const seg = data.segs[clock.index];
+  advanceStage(player.stage, seg, clock.elapsed);
+  player.ring.draw(tabProgress(player, seg));
+  if (clock.elapsed >= seg.t1 - seg.t0) enterSegment(player, (clock.index + 1) % data.segs.length);
+  requestAnimationFrame(player.tick);
+}
+
+// cost: time O(s + c + k + r), heap O(h), stack O(1)
+// vars: s = 도형 수, c = 선 수, k = 카드 내용 수 합, r = 차트 행 수, h = 이동 수
+// basis: estimate
+// 박자 i로 들어간다. 시계를 0으로 돌리고 그림, 설명, 탭, 고리를 그 박자 상태로 맞춘다.
+function enterSegment(player, i) {
+  const { clock, data } = player;
+  const seg = data.segs[i];
+  clock.index = i;
+  clock.elapsed = 0;
+  drawSegmentState(player.stage, seg);
+  showCaption(player, seg.caption);
+  markTabs(player.tabs, seg.si);
+  resetPackets(player.stage, seg);
+  player.ring.draw(tabProgress(player, seg));
+}
+
+// cost: time O(n), heap O(n), stack O(1)
+// vars: n = 설명 글자 수
+// basis: estimate
+// 설명 글을 바꾼다. 앞 글이 다 사라진 뒤 뒤 글이 나타난다(순차 페이드). 같은 글이면 그대로 두고, 첫 글과 움직임 줄이기 설정에서는 바로 바꾼다.
+function showCaption(player, text) {
+  const { caption } = player;
+  caption.hidden = !player.hasCaption;
+  if (text === player.captionText) return;
+  const isFirst = player.captionText === undefined;
+  player.captionText = text;
+  player.captionFade?.cancel();
+  const fadeMs = parseFloat(getComputedStyle(caption).getPropertyValue(CAPTION_FADE_VAR));
+  const fill = () => caption.replaceChildren(...richNodes(text, htmlCode));
+  if (isFirst || !fadeMs || matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    fill();
+    return;
+  }
+  const out = caption.animate([{ opacity: getComputedStyle(caption).opacity }, { opacity: 0 }], { duration: fadeMs, fill: 'forwards' });
+  player.captionFade = out;
+  out.finished.then(() => {
+    fill();
+    player.captionFade = caption.animate([{ opacity: 0 }, { opacity: 1 }], { duration: fadeMs });
+    out.cancel();
+  }, () => {});
+}
+
+// 브라우저에서 돈다(play.js와 한 스크립트로 이어 붙는다). 재생 단추와 배속, 진행 고리, 탭, 설명 글의 백틱 코드.
+
+const ICON_VIEWBOX = '0 0 16 16';
+
+// ---- 재생 단추와 배속 ----
+
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+function bindControls(root, player) {
+  const { clock, pause } = player;
+  const rateButton = root.querySelector('.fl-rate');
+  pause.button.addEventListener('click', () => setPlaying(player, !clock.isPlaying));
+  rateButton.addEventListener('click', () => {
+    clock.rate = nextRate(clock.rate);
+    rateButton.textContent = `${clock.rate}×`;
+  });
+  root.addEventListener('keydown', (e) => {
+    // 단추 위의 스페이스는 그 단추를 누르는 키다.
+    if (e.key !== ' ' || e.target.closest('button')) return;
+    setPlaying(player, !clock.isPlaying);
+    e.preventDefault();
+  });
+}
+
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+function setPlaying(player, value) {
+  const { clock, pause } = player;
+  clock.isPlaying = value;
+  pause.icon.innerHTML = playIconSvg(clock.isPlaying, player.data.metrics);
+  pause.button.setAttribute('aria-label', clock.isPlaying ? '일시정지' : '재생');
+}
+
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+// 재생 단추 아이콘. 재생 중이면 일시정지 모양, 멈췄으면 재생 모양이다. 도형은 16x16 좌표계다.
+function playIconSvg(isPlaying, metrics) {
+  const shape = isPlaying
+    ? `<path d="M5 2.5v11M11 2.5v11" stroke="currentColor" stroke-width="${metrics.pauseStroke}" stroke-linecap="round"/>`
+    : '<path d="M4 2.5v11l9.5-5.5z" fill="currentColor"/>';
+  return `<svg width="${metrics.icon}" height="${metrics.icon}" viewBox="${ICON_VIEWBOX}">${shape}</svg>`;
+}
+
+// ---- 진행 고리 ----
+
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+// 고리 둘레는 마크업의 반지름에서 구한다. draw(0~1)로 12시에서 시계 방향으로 채운다.
+function createRing(button) {
+  const fill = button.querySelector('.fl-ring-fill');
+  const length = 2 * Math.PI * fill.r.baseVal.value;
+  fill.style.strokeDasharray = length;
+  return {
+    draw(progress) {
+      fill.style.strokeDashoffset = length * (1 - progress);
+    },
+  };
+}
+
+// ---- 탭 ----
+
+// cost: time O(s), heap O(s), stack O(1)
+// vars: s = 탭 수
+// basis: estimate
+function createTabs(container, player) {
+  const { data, stepSegs } = player;
+  const buttons = data.steps.map((label, si) => createTab(label, () => enterSegment(player, data.segs.indexOf(stepSegs[si][0]))));
+  container.append(...buttons);
+  return buttons;
+}
+
+// cost: time O(n), heap O(n), stack O(1)
+// vars: n = 글자 수
+// basis: estimate
+function createTab(label, onSelect) {
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.setAttribute('role', 'tab');
+  button.append(...richNodes(label, htmlCode));
+  button.addEventListener('click', onSelect);
+  return button;
+}
+
+// cost: time O(s), heap O(1), stack O(1)
+// vars: s = 탭 수
+// basis: estimate
+function markTabs(buttons, current) {
+  buttons.forEach((button, si) => {
+    button.classList.toggle('on', si === current);
+    button.setAttribute('aria-selected', si === current);
+  });
+}
+
+// cost: time O(n), heap O(n), stack O(1)
+// vars: n = 글자 수
+// basis: estimate
+// 글을 백틱 기준으로 나눠 노드 목록으로 만든다. 홀수 번째 구간(백틱 안)은 makeCode가 만든 요소에 담는다.
+function richNodes(text, makeCode) {
+  return text
+    .split('`')
+    .map((part, i) => {
+      if (!part) return null;
+      if (i % 2 === 0) return document.createTextNode(part);
+      const code = makeCode();
+      code.textContent = part;
+      return code;
+    })
+    .filter(Boolean);
+}
+
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+function htmlCode() {
+  const code = document.createElement('code');
+  code.className = 'fl-code';
+  return code;
+}
+
+// 브라우저에서 돈다(play.js와 한 스크립트로 이어 붙는다). 그림(SVG) 조각을 찾아 박자 상태를 그리고 점과 글 상자를 옮긴다.
+
+const SVG_NS = 'http://www.w3.org/2000/svg';
+
+// ---- 그림 그리기 ----
+
+// cost: time O(s + c + r), heap O(s + c + r), stack O(1)
+// vars: s = 도형 수, c = 선 수, r = 차트 행 수
+// basis: estimate
+// 그림(SVG) 조각을 한 번 찾아 둔 묶음. 점, 카드 대기열 같은 그림 쪽 상태도 여기에 둔다.
+function createStage(root, data) {
+  const svg = root.querySelector('svg.fl');
+  const all = (selector) => [...svg.querySelectorAll(selector)];
+  return {
+    svg,
+    metrics: data.metrics,
+    edgeEnds: data.edgeEnds,
+    cardCounts: data.cardCounts,
+    packetLayer: svg.querySelector('.fl-packets'),
+    nodes: data.cardCounts.map((_, i) => svg.querySelector(`#n-${i}`)),
+    groups: all('.fl-group'),
+    edges: data.edgeEnds.map((_, j) => svg.querySelector(`#e-${j}`)),
+    paths: data.edgeEnds.map((_, j) => svg.querySelector(`#p-${j}`)),
+    parts: all('.fl-part'),
+    seriesEls: Array.from({ length: data.seriesCount }, (_, i) => all(`.cs-${i}`)),
+    labelEls: all('.chart-label.shift'),
+    rowEls: Array.from({ length: data.rowCount }, (_, k) => all(`.cr-${k}`)),
+    packets: [],
+    pendingCards: [],
+  };
+}
+
+// cost: time O(n·c), heap O(n·c), stack O(1)
+// vars: n = 도형 수, c = 선 수
+// basis: estimate
+// 도형에 마우스를 올리면 닿은 선을 밝힌다. 조용한 선도 그때 보인다.
+function highlightOnHover(stage) {
+  stage.nodes.forEach((g, i) => {
+    const touching = stage.edgeEnds.map((e, j) => (e[0] === i || e[1] === i ? stage.edges[j] : null)).filter(Boolean);
+    g?.addEventListener('mouseenter', () => touching.forEach((e) => e.classList.add('hover')));
+    g?.addEventListener('mouseleave', () => touching.forEach((e) => e.classList.remove('hover')));
+  });
+}
+
+// cost: time O(s + c + k + r), heap O(1), stack O(1)
+// vars: s = 도형 수, c = 선 수, k = 카드 내용 수 합, r = 차트 행 수
+// basis: estimate
+// 박자 seg의 상태를 그린다. 점이 도착하는 도형의 카드는 cardsAt 시각에 바뀐다.
+function drawSegmentState(stage, seg) {
+  stage.nodes.forEach((g, n) => g?.classList.toggle('on', seg.nodesOn.includes(n)));
+  stage.groups.forEach((g, n) => g.classList.toggle('on', seg.groupsOn.includes(n)));
+  stage.edges.forEach((e, j) => e?.classList.toggle('on', seg.edgesOn.includes(j)));
+  stage.parts.forEach((p) => p.classList.toggle('on', seg.partsOn.includes(p.dataset.part)));
+  showCards(stage, seg.cardsBefore);
+  stage.pendingCards = Object.entries(seg.cardsAt).map(([n, at]) => ({ n: Number(n), at }));
+  drawChartState(stage, seg);
+}
+
+// cost: time O(k), heap O(1), stack O(1)
+// vars: k = 카드 있는 도형 수
+// basis: estimate
+function showCards(stage, cards, only) {
+  stage.cardCounts.forEach((count, n) => {
+    if (!count || (only !== undefined && only !== n)) return;
+    const shown = cards[n];
+    for (let k = 0; k < count; k++) stage.svg.querySelector(`#n-${n}-c${k}`).setAttribute('opacity', shown === k ? 1 : 0);
+    stage.nodes[n].querySelector('.fl-card').classList.toggle('on', shown !== undefined);
+  });
+}
+
+// cost: time O(r + s), heap O(1), stack O(1)
+// vars: r = 차트 행 수, s = 계열 수
+// basis: estimate
+// 차트: 드러낸 계열을 보이고, 이 박자에 드러내는 계열은 자라는 움직임을 다시 건다. light가 있으면 나머지 행을 흐린다.
+function drawChartState(stage, seg) {
+  stage.seriesEls.forEach((els, s) => {
+    const isGrowing = seg.growing.includes(s);
+    for (const el of els) {
+      el.classList.toggle('hidden', !seg.series.includes(s));
+      el.classList.remove('play');
+      if (isGrowing) {
+        el.getBoundingClientRect();
+        el.classList.add('play');
+      }
+    }
+  });
+  stage.labelEls.forEach((el, k) => el.style.setProperty('--label-shift', `${seg.labelShifts[k] ?? 0}px`));
+  stage.rowEls.forEach((els, k) => els.forEach((el) => el.classList.toggle('dim', seg.lights.length > 0 && !seg.lights.includes(k))));
+}
+
+// cost: time O(h), heap O(h), stack O(1)
+// vars: h = 박자의 이동 수
+// basis: estimate
+function resetPackets(stage, seg) {
+  stage.packets.forEach((p) => p.remove());
+  stage.packets = seg.hops.map((hop) => createPacket(hop, stage));
+  stage.packets.forEach((packet) => packet.move(0));
+}
+
+// cost: time O(h + k), heap O(1), stack O(1)
+// vars: h = 박자의 이동 수, k = 카드가 바뀌는 도형 수
+// basis: estimate
+// 점을 옮기고, 도착한 도형의 카드를 바꾼다.
+function advanceStage(stage, seg, elapsed) {
+  stage.packets.forEach((packet) => packet.move(elapsed));
+  stage.pendingCards = stage.pendingCards.filter(({ n, at }) => {
+    if (elapsed < at) return true;
+    showCards(stage, seg.cards, n);
+    return false;
+  });
+}
+
+// cost: time O(l), heap O(l), stack O(1)
+// vars: l = 글 상자 줄 수
+// basis: estimate
+// 점과 글 상자. 글 상자 줄과 자리는 시간표가 움직이는 SVG와 같게 정해 넘긴다.
+function createPacket(hop, stage) {
+  const { metrics } = stage;
+  const path = stage.paths[hop.edge];
+  const g = document.createElementNS(SVG_NS, 'g');
+  g.setAttribute('class', 'fl-packet');
+  g.innerHTML = `<circle r="${metrics.halo}" fill="${metrics.active}" opacity="${metrics.haloOpacity}"/><circle r="${metrics.packet}" fill="${metrics.active}"/>`;
+  stage.packetLayer.appendChild(g);
+  const chip = hop.data ? createChip(hop.data, stage) : undefined;
+  if (chip) g.appendChild(chip.g);
+  const length = path.getTotalLength();
+  const slide = chipSlide(hop, metrics);
+  return {
+    remove: () => g.remove(),
+    move(t) {
+      const p = Math.min(1, t / hop.ms);
+      const eased = progressAt(metrics.move, p);
+      const point = path.getPointAtLength(length * (hop.isBack ? 1 - eased : eased));
+      g.setAttribute('transform', `translate(${point.x} ${point.y})`);
+      if (chip) {
+        const [dx, dy, opacity] = slide(p);
+        chip.g.setAttribute('transform', `translate(${dx} ${dy})`);
+        chip.g.style.opacity = opacity;
+      }
+      g.style.opacity = p >= 1 ? 0 : 1;
+    },
+  };
+}
+
+// cost: time O(l), heap O(l), stack O(1)
+// vars: l = 글 상자 줄 수
+// basis: estimate
+function createChip(lines, stage) {
+  const { metrics } = stage;
+  const chip = document.createElementNS(SVG_NS, 'g');
+  const rect = document.createElementNS(SVG_NS, 'rect');
+  rect.setAttribute('rx', metrics.chipRadius);
+  rect.setAttribute('fill', metrics.chipFill);
+  chip.appendChild(rect);
+  const texts = lines.map((line) => createChipLine(line, chip));
+  stage.packetLayer.appendChild(chip);
+  const w = Math.max(...texts.map((t) => t.getComputedTextLength())) + metrics.chipPadX;
+  const h = texts.length * metrics.chipLine + metrics.chipPadY;
+  const top = -h - metrics.chipGap;
+  rect.setAttribute('x', -w / 2);
+  rect.setAttribute('y', top);
+  rect.setAttribute('width', w);
+  rect.setAttribute('height', h);
+  texts.forEach((t, li) => t.setAttribute('y', top + metrics.chipLine * (li + 1)));
+  return { g: chip, w, h };
+}
+
+// cost: time O(n), heap O(n), stack O(1)
+// vars: n = 글자 수
+// basis: estimate
+function createChipLine(line, chip) {
+  const text = document.createElementNS(SVG_NS, 'text');
+  text.setAttribute('class', 'chip');
+  text.append(
+    ...richNodes(line, () => {
+      const code = document.createElementNS(SVG_NS, 'tspan');
+      code.setAttribute('class', 'code');
+      return code;
+    }),
+  );
+  chip.appendChild(text);
+  return text;
+}
+
+// 브라우저에서 돈다(play.js와 한 스크립트로 이어 붙는다). 점 이동 곡선(베지어)과 글 상자 미끄러짐.
+
+const BISECT_STEPS = 30;
+
+// ---- 이동 곡선 ----
+
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+// 베지어 곡선의 한 축 값. 매개변수 t의 제어점 a, b로 구한다.
+function bezierAxis(a, b, t) {
+  return 3 * a * t * (1 - t) ** 2 + 3 * b * t * t * (1 - t) + t ** 3;
+}
+
+// cost: time O(STEPS), heap O(1), stack O(1)
+// vars: STEPS = BISECT_STEPS
+// basis: estimate
+// 곡선의 한 축 값이 target이 되는 매개변수 t를 이분 탐색으로 구한다.
+function solveBezier(a, b, target) {
+  let [low, high] = [0, 1];
+  for (let i = 0; i < BISECT_STEPS; i++) {
+    const mid = (low + high) / 2;
+    if (bezierAxis(a, b, mid) < target) low = mid;
+    else high = mid;
+  }
+  return (low + high) / 2;
+}
+
+// cost: time O(STEPS), heap O(1), stack O(1)
+// vars: STEPS = BISECT_STEPS
+// basis: estimate
+// 시간 비율 p에서 이동 곡선의 진행 비율. easing.js의 timeAt과 같은 곡선을 반대 방향으로 푼다.
+function progressAt([x1, y1, x2, y2], p) {
+  return bezierAxis(y1, y2, solveBezier(x1, x2, p));
+}
+
+// cost: time O(STEPS), heap O(1), stack O(1)
+// vars: STEPS = BISECT_STEPS
+// basis: estimate
+// 진행 비율 f에 닿는 시간 비율. easing.js의 timeAt과 같다.
+function timeAtProgress([x1, y1, x2, y2], f) {
+  return bezierAxis(x1, x2, solveBezier(y1, y2, f));
+}
+
+// cost: time O(STEPS·k), 프레임마다 O(k), heap O(k), stack O(1)
+// vars: STEPS = BISECT_STEPS, k = 경로 지점 수
+// basis: estimate
+// 글 상자 옮김과 불투명도. 빌드 때 시간표에 담은 경로 지점별 [진행 비율, dx, dy, opacity]를 움직이는 SVG의 SMIL(지점이 점에 닿는 시각 사이를 선형)과 같게 시간 비율 p에서 보간한다. [dx, dy, opacity]를 돌려준다.
+function chipSlide(hop, metrics) {
+  const path = hop.chipPath ?? [];
+  const times = path.map(([at]) => timeAtProgress(metrics.move, at));
+  return (p) => {
+    if (!path.length) return [0, 0, 1];
+    const k = times.findLastIndex((time) => time <= p);
+    if (k < 0) return path[0].slice(1);
+    if (k === path.length - 1) return path[k].slice(1);
+    const ratio = times[k + 1] > times[k] ? (p - times[k]) / (times[k + 1] - times[k]) : 1;
+    return [1, 2, 3].map((i) => path[k][i] + (path[k + 1][i] - path[k][i]) * ratio);
+  };
+}
+
+figurePlay(document.querySelector('.fl-figure'), {"segs":[{"si":0,"t0":0,"t1":5100,"hops":[{"edge":0,"isBack":false,"ms":1050,"to":"table","line":39}],"edgesOn":[0],"nodesOn":[0,1],"groupsOn":[],"partsOn":[],"cards":{},"cardsBefore":{},"cardsAt":{},"caption":"가상 페이지 1은 표의 첫 행을 거쳐 프레임 7에 있다","series":[],"growing":[],"lights":[]},{"si":0,"t0":5100,"t1":5800,"hops":[],"edgesOn":[0],"nodesOn":[0,1],"groupsOn":[],"partsOn":["table.f1"],"cards":{},"cardsBefore":{},"cardsAt":{},"caption":"가상 페이지 1은 표의 첫 행을 거쳐 프레임 7에 있다","series":[],"growing":[],"lights":[]},{"si":0,"t0":5800,"t1":8683,"hops":[{"edge":2,"isBack":false,"ms":2183,"to":"phys","line":41}],"edgesOn":[0,2],"nodesOn":[0,1,2],"groupsOn":[],"partsOn":["table.f1"],"cards":{},"cardsBefore":{},"cardsAt":{},"caption":"가상 페이지 1은 표의 첫 행을 거쳐 프레임 7에 있다","series":[],"growing":[],"lights":[]},{"si":0,"t0":8683,"t1":10983,"hops":[],"edgesOn":[0,2],"nodesOn":[0,1,2],"groupsOn":[],"partsOn":["table.f1","phys.fr7"],"cards":{},"cardsBefore":{},"cardsAt":{},"caption":"가상 페이지 1은 표의 첫 행을 거쳐 프레임 7에 있다","series":[],"growing":[],"lights":[]},{"si":1,"t0":10983,"t1":13836,"hops":[{"edge":1,"isBack":false,"ms":1143,"to":"table","line":44}],"edgesOn":[1],"nodesOn":[0,1],"groupsOn":[],"partsOn":[],"cards":{},"cardsBefore":{},"cardsAt":{},"caption":"가상 페이지 4는 프레임 2에 있다. 가상 순서와 물리 순서는 다르다","series":[],"growing":[],"lights":[]},{"si":1,"t0":13836,"t1":14536,"hops":[],"edgesOn":[1],"nodesOn":[0,1],"groupsOn":[],"partsOn":["table.f4"],"cards":{},"cardsBefore":{},"cardsAt":{},"caption":"가상 페이지 4는 프레임 2에 있다. 가상 순서와 물리 순서는 다르다","series":[],"growing":[],"lights":[]},{"si":1,"t0":14536,"t1":19061,"hops":[{"edge":3,"isBack":false,"ms":3825,"to":"phys","line":46}],"edgesOn":[1,3],"nodesOn":[0,1,2],"groupsOn":[],"partsOn":["table.f4"],"cards":{},"cardsBefore":{},"cardsAt":{},"caption":"가상 페이지 4는 프레임 2에 있다. 가상 순서와 물리 순서는 다르다","series":[],"growing":[],"lights":[]},{"si":1,"t0":19061,"t1":21361,"hops":[],"edgesOn":[1,3],"nodesOn":[0,1,2],"groupsOn":[],"partsOn":["table.f4","phys.fr2"],"cards":{},"cardsBefore":{},"cardsAt":{},"caption":"가상 페이지 4는 프레임 2에 있다. 가상 순서와 물리 순서는 다르다","series":[],"growing":[],"lights":[]}],"steps":["페이지 1","페이지 4"],"cardCounts":[0,0,0],"edgeEnds":[[0,1],[0,1],[1,2],[1,2]],"seriesCount":0,"rowCount":0,"metrics":{"active":"var(--color-state-active)","chipFill":"var(--color-state-active-fill)","halo":10,"haloOpacity":0.2,"packet":4.5,"chipRadius":8,"chipLine":15,"chipPadX":18,"chipPadY":8,"chipGap":12,"icon":12,"iconStroke":1.75,"pauseStroke":2.5,"zoomMax":6,"zoomStep":1.25,"move":[0.455,0.03,0.515,0.955]}});
+</script>
+</body>
+</html>

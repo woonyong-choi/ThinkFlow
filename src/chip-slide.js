@@ -23,9 +23,9 @@ export function addSlides(ctx, chain, j) {
   const legs = slideLegs(chain, j);
   const to = cleanOf(nodes[j].slots, (slot) => slot.cost);
   const lastUseful = lastUsefulLegs({ legs, to, best }, j);
-  const linked = new Set();
+  const linked = createPairs();
   legs.forEach(({ from, starts }, k) => {
-    for (const a of starts) for (const b of to) if ((lastUseful.get(pairKey(a, b)) ?? -1) >= k && !linked.has(pairKey(a, b)) && tryLink(ctx, { nodes, best }, { from, j, a, b })) linked.add(pairKey(a, b));
+    for (const a of starts) for (const b of to) if ((lastUseful.get(a, b) ?? -1) >= k && !linked.get(a, b) && tryLink(ctx, { nodes, best }, { from, j, a, b })) linked.set(a, b, true);
   });
 }
 
@@ -34,17 +34,26 @@ export function addSlides(ctx, chain, j) {
 // basis: estimate
 // 두 자리(a>b)마다, 이어 보면 지점 j의 b 비용을 낮추는 마지막 배수 번호. 낮추는 배수가 없는 두 자리는 없다.
 function lastUsefulLegs({ legs, to, best }, j) {
-  const lastUseful = new Map();
+  const lastUseful = createPairs();
   const now = new Map(to.map((b) => [b.key, best[j].get(b.key)?.cost ?? Infinity]));
   legs.forEach(({ from, starts }, k) => {
-    for (const a of starts) for (const b of to) if (a.key !== b.key && best[from].get(a.key).cost + SWITCH_COST + b.cost < now.get(b.key)) lastUseful.set(pairKey(a, b), k);
+    for (const a of starts) for (const b of to) if (a.key !== b.key && best[from].get(a.key).cost + SWITCH_COST + b.cost < now.get(b.key)) lastUseful.set(a, b, k);
   });
   return lastUseful;
 }
 
-// 두 자리 a, b를 잇는 이름
-function pairKey(a, b) {
-  return `${a.key}>${b.key}`;
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+// 두 자리 (a, b)에 값을 매기는 표. 자리 이름(key)을 겹쳐 찾아 두 이름을 이은 글을 만들지 않는다.
+function createPairs() {
+  const table = new Map();
+  return {
+    get: (a, b) => table.get(a.key)?.get(b.key),
+    set: (a, b, value) => {
+      if (!table.has(a.key)) table.set(a.key, new Map());
+      table.get(a.key).set(b.key, value);
+    },
+  };
 }
 
 // cost: time O(c log c) 처음, O(1) 이미 골랐을 때, heap O(c), stack O(1)

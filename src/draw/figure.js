@@ -85,6 +85,8 @@ function drawShape(it, stroke, paint) {
     }
     case 'decision':
       return `<polygon points="${r(cx)},${r(y)} ${r(x + w)},${r(y + h / 2)} ${r(cx)},${r(y + h)} ${r(x)},${r(y + h / 2)}" ${fill} ${stroke}/>`;
+    case 'circle':
+      return `<circle cx="${r(cx)}" cy="${r(y + h / 2)}" r="${r(w / 2)}" ${fill} ${stroke}/>`;
     case 'start':
       return `<circle cx="${r(cx)}" cy="${r(y + h / 2)}" r="${r(w / 2)}" fill="${tokens.color.fg}" ${stroke}/>`;
     case 'final':
@@ -168,6 +170,12 @@ function drawTable(it, stroke, { decorate, glyphs }) {
   return frame + header + rows.join('');
 }
 
+// 선 양끝 화살촉 속성. 기본은 끝(`end`)에만, `both`는 시작에도, `none`은 없다.
+function arrowheads({ head }) {
+  const start = head === 'both' ? ' marker-start="url(#fl-arrow)"' : '';
+  return `${start}${head === 'none' ? '' : ' marker-end="url(#fl-arrow)"'}`;
+}
+
 // cost: time O(p + n), heap O(out), stack O(1)
 // vars: p = 경로 점 수, n = 라벨 글자 수, out = 만든 SVG 글자 수
 // basis: estimate
@@ -175,7 +183,7 @@ function drawTable(it, stroke, { decorate, glyphs }) {
 function drawEdge(e, j, { decorate, glyphs }) {
   const { d } = routePolyline(e.points, RADIUS.route);
   const dash = e.dashed ? ` stroke-dasharray="${EDGE_DASH}"` : '';
-  const path = `<path id="p-${j}" d="${d}" class="fl-path ${decorate('edge', j)}"${dash} marker-end="url(#fl-arrow)"/>`;
+  const path = `<path id="p-${j}" d="${d}" class="fl-path ${decorate('edge', j)}"${dash}${arrowheads(e)}/>`;
   const quiet = e.quiet ? ` quiet ${decorate('quiet', j)}` : '';
   const open = `<g id="e-${j}" class="fl-edge${e.isMark ? ' mark' : ''}${quiet}">`;
   if (!e.label || !e.labelAt) return `${open}${path}</g>`;

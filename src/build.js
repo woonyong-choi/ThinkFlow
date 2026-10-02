@@ -11,6 +11,7 @@ import { layoutGraph } from './layout/graph.js';
 import { layoutSequence } from './layout/sequence.js';
 import { findMissingGlyph, wrap } from './measure/fonts.js';
 import { hasUnpairedBacktick } from './text.js';
+import { countLines } from './measure/line-counts.js';
 import { STYLE, sizeNode } from './measure/sizes.js';
 import { INTERVAL_TYPES, checkChartLightTargets, checkChartRows } from './source/chart-rules.js';
 import { readFigure } from './source/parse.js';
@@ -106,14 +107,6 @@ async function layoutOrFail(figure, sizes, problems) {
     problems.error(error.line ?? figure.line, `${error.message}. Change a group direction, remove "aspect", or break the cycle into fewer back edges`, { code: 'layout' });
     return problems.throwIfAny();
   }
-}
-
-// cost: time O(e), heap O(1), stack O(1)
-// vars: e = 선 수
-// basis: estimate
-// 도형 하나에서 나가고 들어오는 선 수. 사람 몸통 높이를 배치 전에 정하는 데 쓴다.
-function countLines(figure, id) {
-  return { out: figure.edges.filter((e) => e.from === id).length, in: figure.edges.filter((e) => e.to === id).length };
 }
 
 // cost: time O(h·l + s + e·p), heap O(1), stack O(1)

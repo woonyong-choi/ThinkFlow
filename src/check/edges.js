@@ -20,6 +20,20 @@ export function checkThrough({ edges, boxes, scene, family }, problems) {
       const isCrossed = ends.some((end) => end === g.id || family.contains(g.id, end));
       if (!isCrossed && hits(g)) problems.error(e.line, `[check 3] edge ${e.from} -> ${e.to} passes through group "${g.id}" (line ${g.line}). ${capitalize(family.hint)}`);
     }
+    checkCells(e, boxes.filter((box) => ends.includes(box.id) && box.it.shape === 'grid'), problems);
+  }
+}
+
+// cost: time O(g·c·p), heap O(1), stack O(1)
+// vars: g = 선 끝 격자 수(2 이하), c = 칸 수, p = 경로 점 수
+// basis: estimate
+// 3번의 칸 판정: 선 끝 격자 안에서 선이 어느 칸(글이 든 칸이든 빈 자리든)의 안쪽도 지나지 않는다. 안쪽 칸으로 가는 선은 행 사이 통로로 돌아야 이웃 칸 글을 가리지 않는다.
+function checkCells(e, grids, problems) {
+  for (const { it } of grids) {
+    for (const cell of it.cells) {
+      const rect = { x: it.x + cell.x + THROUGH_INSET, y: it.y + cell.y + THROUGH_INSET, w: cell.w - THROUGH_INSET * 2, h: cell.h - THROUGH_INSET * 2 };
+      if (segments(e).some(([p, q]) => segmentHits(p, q, rect))) problems.error(e.line, `[check 3] edge ${e.from} -> ${e.to} passes through cell "${it.id}.${cell.id}" (line ${cell.line}). Move the cell or the edge ends so the edge turns through the gaps between rows`);
+    }
   }
 }
 
@@ -31,20 +45,30 @@ export function checkEnds({ edges, scene, figure }, problems) {
   if (figure.kind === 'sequence') return;
   const rects = new Map([...scene.items, ...scene.groups].map((it) => [it.id, it]));
   for (const e of edges) {
-    for (const [end, point, way, column] of [[e.from, e.points[0], 'out', e.fromColumn], [e.to, e.points.at(-1), 'in', e.toColumn]]) {
+    for (const [end, point, way, part] of [[e.from, e.points[0], 'out', { column: e.fromColumn, cell: e.fromCell }], [e.to, e.points.at(-1), 'in', { column: e.toColumn, cell: e.toCell }]]) {
       const id = end.split('.')[0];
       const it = rects.get(id);
-      if (it && !isPortPlace(point, it, { way, column })) problems.error(e.line, `[check 4] internal: edge ${e.from} -> ${e.to} does not touch "${id}" at its connection point. Please report this`);
+      if (it && !isPortPlace(point, it, { way, ...part })) problems.error(e.line, `[check 4] internal: edge ${e.from} -> ${e.to} does not touch "${id}" at its connection point. Please report this`);
     }
   }
 }
 
 // cost: time O(c), heap O(1), stack O(1)
-// vars: c = 테이블 열 수
+// vars: c = 칸 수
 // basis: estimate
-// 도형별 연결점. 나가는 선은 오른쪽(세로 원통은 아래), 들어오는 선은 왼쪽(세로 원통은 위)이다. 묶음 배치한 테이블 열은 들어오는 선도 오른쪽이다. 그 밖의 도형과 그룹은 경계 어디나다.
-function isPortPlace(p, it, { way, column }) {
+// 격자 칸의 그림 좌표 사각형
+function cellRect(it, id) {
+  const cell = it.cells.find((c) => c.id === id);
+  return { x: it.x + cell.x, y: it.y + cell.y, w: cell.w, h: cell.h };
+}
+
+// cost: time O(c), heap O(1), stack O(1)
+// vars: c = 테이블 열 수와 칸 수
+// basis: estimate
+// 도형별 연결점. 나가는 선은 오른쪽(세로 원통은 아래), 들어오는 선은 왼쪽(세로 원통은 위)이다. 격자 칸의 선은 그 칸의 테두리다. 묶음 배치한 테이블 열은 들어오는 선도 오른쪽이다. 그 밖의 도형과 그룹은 경계 어디나다.
+function isPortPlace(p, it, { way, column, cell }) {
   const side = way === 'out' ? it.x + it.w : it.x;
+  if (it.shape === 'grid' && cell) return onBorder(p, cellRect(it, cell));
   if (it.shape === 'table' && column) return near(p.x, it.isBracket ? it.x + it.w : side) && near(p.y, it.y + it.rowH * (it.columns.findIndex((c) => c.name === column) + 1.5));
   if (it.shape === 'decision') return near(p.x, side) && near(p.y, it.y + it.h / 2);
   if (it.shape === 'person' && it.direction === 'down') return near(p.x, side) && onBorder(p, it);

@@ -1,0 +1,47 @@
+flow right
+title "가상 페이지가 페이지 표를 거쳐 물리 프레임으로 간다"
+subtitle "페이지 번호는 순서대로지만 프레임 번호는 흩어져 있다. 쓰지 않는 페이지는 표에 행이 없다"
+
+grid virt "가상 주소 공간" rows=5 {
+  item p0 "페이지 0" row=0
+  item p1 "페이지 1" row=1
+  gap unused "쓰지 않는 페이지" count=2 row=2
+  item p4 "페이지 4" row=3
+  item p5 "페이지 5" row=4
+}
+grid table "페이지 표" rows=4 cols=3 {
+  item hp "Page" row=0 col=0
+  item hf "Frame" row=0 col=1
+  item hv "Valid" row=0 col=2
+  item r1 "1" row=1 col=0
+  item f1 "7" row=1 col=1
+  item v1 "1" row=1 col=2
+  item r4 "4" row=2 col=0
+  item f4 "2" row=2 col=1
+  item v4 "1" row=2 col=2
+  item r5 "5" row=3 col=0
+  item f5 "5" row=3 col=1
+  item v5 "0" row=3 col=2
+}
+grid phys "물리 메모리" rows=5 {
+  item fr2 "프레임 2" row=0
+  gap other "다른 프로세스" count=2 row=1
+  item fr5 "프레임 5" row=2
+  item fr7 "프레임 7" row=3
+  gap rest "빈 프레임" count=4 row=4
+}
+virt.p1 -> table.r1
+virt.p4 -> table.r4
+table.f1 -> phys.fr7
+table.f4 -> phys.fr2
+
+step "페이지 1" "가상 페이지 1은 표의 첫 행을 거쳐 프레임 7에 있다"
+  virt.p1 -> table.r1
+  light table.f1
+  table.f1 -> phys.fr7
+  light phys.fr7
+step "페이지 4" "가상 페이지 4는 프레임 2에 있다. 가상 순서와 물리 순서는 다르다"
+  virt.p4 -> table.r4
+  light table.f4
+  table.f4 -> phys.fr2
+  light phys.fr2

@@ -93,6 +93,7 @@
   --size-node-store-cap: 12px;
   --size-node-state-dot: 14px;
   --size-node-table-row: 26px;
+  --size-node-circle: 40px;
   --size-grid-cell: 32px;
   --size-figure-canvas: 960px;
   --size-chip-max-width: 210px;
@@ -454,21 +455,25 @@ addEventListener('DOMContentLoaded', () => {
 <body>
 <div class="top">
 <h1>예제</h1>
-<p>그림 15개 · <a href="document.html">문서 안 모습 보기</a></p>
+<p>그림 19개 · <a href="document.html">문서 안 모습 보기</a></p>
 <div class="theme" role="group" aria-label="테마"><button type="button" data-mode="system" aria-pressed="false">시스템</button><button type="button" data-mode="light" aria-pressed="false">라이트</button><button type="button" data-mode="dark" aria-pressed="false">다크</button></div>
 </div>
 <main>
 <section><header><h2><span class="title">가상 주소를 VPN과 오프셋으로 나눈다</span><code class="name">address-bits.muto</code><span class="kind">flow</span></h2><nav><a href="address-bits.html">열기</a><a href="address-bits.svg">SVG</a></nav></header><iframe src="address-bits.html" loading="lazy" allowfullscreen title="address-bits"></iframe></section>
+<section><header><h2><span class="title">실행 시간 주소 변환은 가상 주소에 기준 주소를 더한다</span><code class="name">address-translation.muto</code><span class="kind">flow</span></h2><nav><a href="address-translation.html">열기</a><a href="address-translation.svg">SVG</a></nav></header><iframe src="address-translation.html" loading="lazy" allowfullscreen title="address-translation"></iframe></section>
 <section><header><h2><code class="name">bar.muto</code><span class="kind">bar</span></h2><nav><a href="bar.html">열기</a><a href="bar.svg">SVG</a></nav></header><iframe src="bar.html" loading="lazy" allowfullscreen title="bar"></iframe></section>
 <section><header><h2><code class="name">box.muto</code><span class="kind">box</span></h2><nav><a href="box.html">열기</a><a href="box.svg">SVG</a></nav></header><iframe src="box.html" loading="lazy" allowfullscreen title="box"></iframe></section>
 <section><header><h2><code class="name">dumbbell.muto</code><span class="kind">dumbbell</span></h2><nav><a href="dumbbell.html">열기</a><a href="dumbbell.svg">SVG</a></nav></header><iframe src="dumbbell.html" loading="lazy" allowfullscreen title="dumbbell"></iframe></section>
 <section><header><h2><code class="name">heatmap.muto</code><span class="kind">heatmap</span></h2><nav><a href="heatmap.html">열기</a><a href="heatmap.svg">SVG</a></nav></header><iframe src="heatmap.html" loading="lazy" allowfullscreen title="heatmap"></iframe></section>
 <section><header><h2><code class="name">line.muto</code><span class="kind">line</span></h2><nav><a href="line.html">열기</a><a href="line.svg">SVG</a></nav></header><iframe src="line.html" loading="lazy" allowfullscreen title="line"></iframe></section>
 <section><header><h2><span class="title">대화에서 기억 그래프 키우기</span><code class="name">memory.muto</code><span class="kind">flow</span></h2><nav><a href="memory.html">열기</a><a href="memory.svg">SVG</a></nav></header><iframe src="memory.html" loading="lazy" allowfullscreen title="memory"></iframe></section>
+<section><header><h2><span class="title">다단계 페이지 표는 주소의 필드로 표를 차례로 따라간다</span><code class="name">multilevel-page-table.muto</code><span class="kind">flow</span></h2><nav><a href="multilevel-page-table.html">열기</a><a href="multilevel-page-table.svg">SVG</a></nav></header><iframe src="multilevel-page-table.html" loading="lazy" allowfullscreen title="multilevel-page-table"></iframe></section>
 <section><header><h2><span class="title">OAuth 인가 코드와 PKCE</span><code class="name">oauth.muto</code><span class="kind">sequence</span></h2><nav><a href="oauth.html">열기</a><a href="oauth.svg">SVG</a></nav></header><iframe src="oauth.html" loading="lazy" allowfullscreen title="oauth"></iframe></section>
 <section><header><h2><span class="title">주문 상태</span><code class="name">order-state.muto</code><span class="kind">state</span></h2><nav><a href="order-state.html">열기</a><a href="order-state.svg">SVG</a></nav></header><iframe src="order-state.html" loading="lazy" allowfullscreen title="order-state"></iframe></section>
 <section><header><h2><code class="name">orders.muto</code><span class="kind">data</span></h2><nav><a href="orders.html">열기</a><a href="orders.svg">SVG</a></nav></header><iframe src="orders.html" loading="lazy" allowfullscreen title="orders"></iframe></section>
+<section><header><h2><span class="title">가상 페이지가 페이지 표를 거쳐 물리 프레임으로 간다</span><code class="name">page-mapping.muto</code><span class="kind">flow</span></h2><nav><a href="page-mapping.html">열기</a><a href="page-mapping.svg">SVG</a></nav></header><iframe src="page-mapping.html" loading="lazy" allowfullscreen title="page-mapping"></iframe></section>
 <section><header><h2><span class="title">파일 권한 비트를 소유자, 그룹, 기타로 읽기</span><code class="name">permission-matrix.muto</code><span class="kind">flow</span></h2><nav><a href="permission-matrix.html">열기</a><a href="permission-matrix.svg">SVG</a></nav></header><iframe src="permission-matrix.html" loading="lazy" allowfullscreen title="permission-matrix"></iframe></section>
+<section><header><h2><span class="title">프로세스마다 페이지 표가 있어 같은 페이지 번호가 다른 프레임으로 간다</span><code class="name">process-page-tables.muto</code><span class="kind">flow</span></h2><nav><a href="process-page-tables.html">열기</a><a href="process-page-tables.svg">SVG</a></nav></header><iframe src="process-page-tables.html" loading="lazy" allowfullscreen title="process-page-tables"></iframe></section>
 <section><header><h2><span class="title">페이지 표 항목의 필드</span><code class="name">pte-fields.muto</code><span class="kind">flow</span></h2><nav><a href="pte-fields.html">열기</a><a href="pte-fields.svg">SVG</a></nav></header><iframe src="pte-fields.html" loading="lazy" allowfullscreen title="pte-fields"></iframe></section>
 <section><header><h2><span class="title">Saturn 구성</span><code class="name">saturn.muto</code><span class="kind">flow</span></h2><nav><a href="saturn.html">열기</a><a href="saturn.svg">SVG</a></nav></header><iframe src="saturn.html" loading="lazy" allowfullscreen title="saturn"></iframe></section>
 <section><header><h2><code class="name">scatter.muto</code><span class="kind">scatter</span></h2><nav><a href="scatter.html">열기</a><a href="scatter.svg">SVG</a></nav></header><iframe src="scatter.html" loading="lazy" allowfullscreen title="scatter"></iframe></section>

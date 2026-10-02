@@ -93,6 +93,7 @@
   --size-node-store-cap: 12px;
   --size-node-state-dot: 14px;
   --size-node-table-row: 26px;
+  --size-node-circle: 40px;
   --size-grid-cell: 32px;
   --size-figure-canvas: 960px;
   --size-chip-max-width: 210px;
@@ -420,6 +421,8 @@ addEventListener('DOMContentLoaded', () => {
 <p>문서에 넣은 모습 그대로 보는 미리보기다. 그림은 움직이는 SVG 파일을 img로 넣은 것이라 회색 판이 흰 문서 위에서 그림 경계를 만든다.</p>
 <h2><span class="title">가상 주소를 VPN과 오프셋으로 나눈다</span><code class="name">address-bits.muto</code><span class="kind">flow</span></h2>
 <p class="figure"><img src="address-bits.svg" alt="가상 주소를 VPN과 오프셋으로 나눈다"></p>
+<h2><span class="title">실행 시간 주소 변환은 가상 주소에 기준 주소를 더한다</span><code class="name">address-translation.muto</code><span class="kind">flow</span></h2>
+<p class="figure"><img src="address-translation.svg" alt="실행 시간 주소 변환은 가상 주소에 기준 주소를 더한다"></p>
 <h2><code class="name">bar.muto</code><span class="kind">bar</span></h2>
 <p class="figure"><img src="bar.svg" alt="장기 기억 정확도"></p>
 <h2><code class="name">box.muto</code><span class="kind">box</span></h2>
@@ -432,14 +435,20 @@ addEventListener('DOMContentLoaded', () => {
 <p class="figure"><img src="line.svg" alt="주차별 재시도 비율"></p>
 <h2><span class="title">대화에서 기억 그래프 키우기</span><code class="name">memory.muto</code><span class="kind">flow</span></h2>
 <p class="figure"><img src="memory.svg" alt="대화에서 기억 그래프 키우기"></p>
+<h2><span class="title">다단계 페이지 표는 주소의 필드로 표를 차례로 따라간다</span><code class="name">multilevel-page-table.muto</code><span class="kind">flow</span></h2>
+<p class="figure"><img src="multilevel-page-table.svg" alt="다단계 페이지 표는 주소의 필드로 표를 차례로 따라간다"></p>
 <h2><span class="title">OAuth 인가 코드와 PKCE</span><code class="name">oauth.muto</code><span class="kind">sequence</span></h2>
 <p class="figure"><img src="oauth.svg" alt="OAuth 인가 코드와 PKCE"></p>
 <h2><span class="title">주문 상태</span><code class="name">order-state.muto</code><span class="kind">state</span></h2>
 <p class="figure"><img src="order-state.svg" alt="주문 상태"></p>
 <h2><code class="name">orders.muto</code><span class="kind">data</span></h2>
 <p class="figure"><img src="orders.svg" alt="orders"></p>
+<h2><span class="title">가상 페이지가 페이지 표를 거쳐 물리 프레임으로 간다</span><code class="name">page-mapping.muto</code><span class="kind">flow</span></h2>
+<p class="figure"><img src="page-mapping.svg" alt="가상 페이지가 페이지 표를 거쳐 물리 프레임으로 간다"></p>
 <h2><span class="title">파일 권한 비트를 소유자, 그룹, 기타로 읽기</span><code class="name">permission-matrix.muto</code><span class="kind">flow</span></h2>
 <p class="figure"><img src="permission-matrix.svg" alt="파일 권한 비트를 소유자, 그룹, 기타로 읽기"></p>
+<h2><span class="title">프로세스마다 페이지 표가 있어 같은 페이지 번호가 다른 프레임으로 간다</span><code class="name">process-page-tables.muto</code><span class="kind">flow</span></h2>
+<p class="figure"><img src="process-page-tables.svg" alt="프로세스마다 페이지 표가 있어 같은 페이지 번호가 다른 프레임으로 간다"></p>
 <h2><span class="title">페이지 표 항목의 필드</span><code class="name">pte-fields.muto</code><span class="kind">flow</span></h2>
 <p class="figure"><img src="pte-fields.svg" alt="페이지 표 항목의 필드"></p>
 <h2><span class="title">Saturn 구성</span><code class="name">saturn.muto</code><span class="kind">flow</span></h2>

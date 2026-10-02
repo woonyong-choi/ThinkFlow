@@ -1,6 +1,7 @@
 // 그림 원본을 배치 모형으로 바꾼다. 그룹 나무, 도형, 선 조각을 만든다. 선 하나는 넘는 경계마다 조각 하나가 더해진다(docs/design/layout.md).
 import { values } from '../tokens.js';
 import { orderByFlow } from './order.js';
+import { isInnerEdge } from './cell-ports.js';
 import { addPort, endpoint } from './ports.js';
 
 const SIZE = values.size;
@@ -74,6 +75,8 @@ function addStateMarks(figure, nodes, containers) {
 // basis: estimate
 // 선을 두 끝의 가장 가까운 공통 그룹 안 조각과, 경계마다 연결점을 잇는 조각으로 나눈다.
 function splitEdge(edge, nodes, containers) {
+  // 같은 격자의 두 칸을 잇는 선은 격자 안 경로뿐이라 elkjs에 넘기지 않는다.
+  if (isInnerEdge(edge)) return [];
   const up = chain(edge.from, nodes, containers);
   const down = chain(edge.to, nodes, containers);
   const common = up.find((c) => down.includes(c)) ?? ROOT;

@@ -29,6 +29,12 @@ export function createAnimator({ segs, total, growMs }) {
   return { css, decorate, packet, windows, chart };
 }
 
+// 선 양끝 화살촉 스타일. head는 선의 `head=` 값이다(없으면 끝에만).
+function arrowheads(head, marker) {
+  const end = head === 'none' ? '' : `; marker-end: url(#${marker})`;
+  return `${head === 'both' ? `; marker-start: url(#${marker})` : ''}${end}`;
+}
+
 // cost: time O(b), heap O(b), stack O(1)
 // vars: b = 박자 수
 // basis: estimate
@@ -40,11 +46,11 @@ function decorateElement(kind, { id, i, extra, scene }, { segs, toggle, lit, car
     case 'group':
       return toggle(segs.map((s) => litIds(s, scene.edges).has(id)), `stroke: ${c.state.active}`, `stroke: ${c.border}`);
     case 'cell':
-      return toggle(segs.map((s) => s.partsOn.includes(extra)), `fill: ${c['card-on']}; stroke: ${c.state.active}`, `fill: ${c.node}; stroke: ${c.border}`);
+      return toggle(segs.map((s) => s.partsOn.includes(extra)), `fill: ${c['card-on']}; stroke: ${c.state.active}; stroke-width: ${tokens.border.edge}`, `fill: ${c.node}; stroke: ${c.border}; stroke-width: ${tokens.border.thin}`);
     case 'part':
       return toggle(segs.map((s) => s.partsOn.includes(extra)), `fill: ${c['card-on']}`, 'fill: transparent');
     case 'edge':
-      return toggle(lit(i), `stroke: ${c.state.active}; stroke-width: ${tokens.border.strong}; marker-end: url(#fl-arrow-on)`, `stroke: ${c.muted}; stroke-width: ${tokens.border.edge}; marker-end: url(#fl-arrow)`);
+      return toggle(lit(i), `stroke: ${c.state.active}; stroke-width: ${tokens.border.strong}${arrowheads(scene?.edges[i]?.head, 'fl-arrow-on')}`, `stroke: ${c.muted}; stroke-width: ${tokens.border.edge}${arrowheads(scene?.edges[i]?.head, 'fl-arrow')}`);
     case 'pill':
       return toggle(lit(i), `fill: ${c.state['active-fill']}; stroke: ${c.state['active-fill']}`, `fill: ${c.bg}; stroke: ${c.border}`);
     case 'pilltext':

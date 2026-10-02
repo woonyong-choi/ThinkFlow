@@ -61,6 +61,8 @@ export const VALUES = {
     }),
   },
   role: { items: table({ main: V1, compare: V1 }) },
+  head: { default: 'end', items: table({ end: V1, both: V1, none: V1 }) },
+  shape: { default: 'rect', items: table({ rect: V1, circle: V1 }) },
 };
 
 /**
@@ -121,6 +123,8 @@ export const OPTIONS = table({
   'hop.dashed': FLAG,
   'edge.quiet': FLAG,
   'edge.dashed': FLAG,
+  'edge.head': { ...V1, type: 'word', values: 'head' },
+  'box.shape': { ...V1, type: 'word', values: 'shape' },
   'show.tag': TEXT,
   'show.tone': { ...V1, type: 'word', values: 'tone' },
   'show.meta': TEXT,

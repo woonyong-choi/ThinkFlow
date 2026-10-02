@@ -82,6 +82,82 @@ test('buildFigure_grid_between_flow_boxes_is_one_shape_whose_edges_end_on_its_bo
   assert.equal(out.points[0].x, g.x + g.w);
 });
 
+// 칸 연결 시험 입력: 안쪽 칸(표의 가운데 열), 합친 칸, 한 줄 비트 띠, 같은 면에서 나가는 두 선, 한 격자의 두 칸을 잇는 선이 한 그림에 있다.
+const CELL_PORTS = (direction) => `flow ${direction}
+grid virt "가상" rows=3 {
+  item p0 "페이지 0" row=0
+  item p1 "페이지 1" row=1
+  item p2 "페이지 2" row=2
+}
+grid table "페이지 표" rows=3 cols=3 {
+  item a "A" row=0 col=0 rows=2
+  item f0 "7" row=0 col=1
+  item g0 "RW" row=0 col=2
+  item f1 "3" row=1 col=1 cols=2
+  item f2 "9" row=2 col=0 cols=3
+}
+grid bits "비트" cols=8 {
+  item hi "상위" col=0 cols=5
+  item lo "하위" col=5 cols=3
+}
+virt.p1 -> table.a
+virt.p2 -> table.a
+table.f0 -> bits.hi
+table.f1 -> bits.lo
+table.a -> table.f2
+table.f0 -> table.g0`;
+
+// 안쪽 선분이 사각형 안쪽을 지나는지(테두리를 따라가거나 닿는 것은 지나는 것이 아니다)
+const crossesInside = ([p, q], r) => Math.max(Math.min(p.x, q.x), r.x + 1) < Math.min(Math.max(p.x, q.x), r.x + r.w - 1) && Math.max(Math.min(p.y, q.y), r.y + 1) < Math.min(Math.max(p.y, q.y), r.y + r.h - 1);
+// cost: time O(c), heap O(1), stack O(1)
+// vars: c = 격자의 칸 수
+// basis: estimate
+const absCell = (scene, id) => {
+  const [gridId, cellId] = id.split('.');
+  const grid = item(scene, gridId);
+  const cell = grid.cells.find((c) => c.id === cellId);
+  return { x: grid.x + cell.x, y: grid.y + cell.y, w: cell.w, h: cell.h };
+};
+const onBorderOf = (p, r) => (Math.abs(p.x - r.x) < 0.6 || Math.abs(p.x - r.x - r.w) < 0.6 ? p.y >= r.y - 0.6 && p.y <= r.y + r.h + 0.6 : false) || (Math.abs(p.y - r.y) < 0.6 || Math.abs(p.y - r.y - r.h) < 0.6 ? p.x >= r.x - 0.6 && p.x <= r.x + r.w + 0.6 : false);
+
+// 근거: 설계 grid.md 요구사항 "칸에서 칸으로 가는 선은 칸 테두리에서 나가고 들어오며, 안쪽 칸으로 가는 선도 이웃 칸을 가리지 않는다"(두 그림 방향 모두)
+for (const direction of ['right', 'down']) {
+  test(`buildFigure_grid_cell_edges_start_and_end_on_their_cell_and_never_cross_another_cell_flow_${direction}`, async () => {
+    const { scene, figure } = await buildFigure(CELL_PORTS(direction), { strict: true });
+
+    scene.edges.forEach((edge, i) => {
+      const { from, fromCell, to, toCell } = figure.edges[i];
+      const ends = [[edge.points[0], `${from}.${fromCell}`], [edge.points.at(-1), `${to}.${toCell}`]];
+      for (const [point, name] of ends) assert.ok(onBorderOf(point, absCell(scene, name)), `edge ${i} end ${name}`);
+      const segments = edge.points.slice(1).map((q, k) => [edge.points[k], q]);
+      for (const gridId of new Set([from, to])) {
+        for (const cell of item(scene, gridId).cells) assert.ok(!segments.some((segment) => crossesInside(segment, absCell(scene, `${gridId}.${cell.id}`))), `edge ${i} crosses ${gridId}.${cell.id}`);
+      }
+    });
+  });
+}
+
+// 근거: 설계 grid.md 요구사항 "한 격자의 두 칸을 잇는 선은 격자 안 통로로만 돈다"
+test('buildFigure_grid_edge_between_two_cells_of_one_grid_stays_inside_the_grid_frame', async () => {
+  const { scene } = await buildFigure(CELL_PORTS('right'), { strict: true });
+  const table = item(scene, 'table');
+  const inner = scene.edges[4];
+
+  for (const p of inner.points) assert.ok(p.x >= table.x && p.x <= table.x + table.w && p.y >= table.y && p.y <= table.y + table.h);
+});
+
+// 근거: 설계 layout.md 요구사항 "양끝 표식과 원 도형". head를 생략하면 지금 뜻(끝 화살표)이다
+test('toSvg_edge_head_draws_arrowheads_at_the_chosen_ends_and_a_circle_stays_square', async () => {
+  const result = await buildFigure('flow right\nbox a "A"\nbox sum "⊕" shape=circle\nbox b "B"\na -> sum\nsum -> b head=both\na -> b head=none', { strict: true });
+  const svg = await toSvg(result, { isStatic: true, name: 'head' });
+  const paths = [...svg.matchAll(/<path id="p-\d"[^>]*>/g)].map((m) => m[0]);
+  const marks = paths.map((tag) => [tag.includes('marker-start'), tag.includes('marker-end')]);
+
+  assert.deepEqual(marks, [[false, true], [true, true], [false, false]]);
+  const sum = item(result.scene, 'sum');
+  assert.equal(sum.w, sum.h);
+});
+
 // 근거: 설계 layout.md 요구사항 "그룹의 direction이 안쪽 배치에 지켜진다"
 test('layoutGraph_group_direction_down_stacks_the_children', async () => {
   const { scene } = await buildFigure('flow right\nbox src "S"\ngroup g "G" direction=down {\n  box a "A"\n  box b "B"\n  a -> b\n}\nsrc -> a');

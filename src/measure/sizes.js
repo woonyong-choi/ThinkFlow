@@ -1,6 +1,7 @@
 // 도형, 카드, 선 라벨 크기를 정한다. 여기서 정한 크기를 배치에 넘기고 그대로 그린다(docs/design/layout.md 도형 크기와 연결점).
 import { values } from '../tokens.js';
 import { measure, wrap } from './fonts.js';
+import { planGridLinks } from './grid-links.js';
 import { layoutMiniGraph } from './minigraph.js';
 
 const SPACE = values.space;
@@ -44,13 +45,14 @@ export const GRID = Object.freeze({ pad: SPACE['6'], cellPadX: SPACE['4'], cellP
  * 도형 하나의 크기. box는 배치에 넘기는 사각형, margin은 배치 바깥 여백(위, 아래)이다.
  * @param node 그림 모형의 도형. shape: person, box, external, store, decision, state, table, grid, start, final
  * @param contents 시간 흐름에서 이 도형 카드에 보일 내용 목록. 내용은 카드 줄 목록이다
- * @param lineCounts 사람 몸통 높이를 정할 선 수. { out: 나가는 선 수, in: 들어오는 선 수 }
+ * @param lineCounts 사람 몸통 높이를 정할 선 수 { out: 나가는 선 수, in: 들어오는 선 수 }와, 격자 칸에 이은 선 끝 cells(grid-links.js의 links)
  * @returns { w, h, marginTop, marginBottom, marginSide?, labelLines, subLines, card?: { w, h, layouts }, cells?, empties?, titleH? }. 격자의 cells는 { id, kind, x, y, w, h, lines, ... } 칸 목록이고 좌표는 격자 왼쪽 위가 원점이다
  */
 export function sizeNode(node, contents = [], lineCounts = { out: 0, in: 0 }) {
   if (node.shape === 'person') return sizePerson(node, contents, lineCounts);
   if (node.shape === 'table') return sizeTable(node, contents);
-  if (node.shape === 'grid') return sizeGrid(node);
+  if (node.shape === 'grid') return sizeGrid(node, lineCounts.cells);
+  if (node.shape === 'circle') return sizeCircle(node);
   if (node.shape === 'start' || node.shape === 'final') return { w: SIZE.node['state-dot'], h: SIZE.node['state-dot'], marginTop: 0, marginBottom: 0, labelLines: [], subLines: [] };
   const maxInner = SIZE.node['max-width'] - INNER_X * 2;
   const labelLines = wrap(node.label, maxInner, STYLE.label);
@@ -96,6 +98,16 @@ export function bodyHeight(lines) {
   return Math.max(SIZE.person.body, (lines + 1) * (values.border.edge + SPACE['0-5']));
 }
 
+// cost: time O(n²), heap O(n), stack O(1)
+// vars: n = 이름 글자 수
+// basis: estimate
+// 원: 이름 한 줄을 담는 지름. 이름이 길면 줄을 나누지 않고 지름이 커진다(합류 연산 기호처럼 짧은 글을 쓴다).
+function sizeCircle(node) {
+  const textW = measure(node.label, STYLE.label.size, STYLE.label.face);
+  const d = Math.max(SIZE.node.circle, textW + INNER_X, STYLE.label.line + INNER_Y);
+  return { w: d, h: d, marginTop: 0, marginBottom: 0, labelLines: [node.label], subLines: [] };
+}
+
 // cost: time O(c + r·n²), heap O(r·n), stack O(1)
 // vars: c = 열 수, r = 카드 줄 수, n = 글자 수
 // basis: estimate
@@ -112,11 +124,12 @@ function sizeTable(node, contents) {
   return { w, h, marginTop: 0, marginBottom: 0, labelLines: [node.label], subLines: [], card, rowH };
 }
 
-// cost: time O(c·n² + rows·cols), heap O(c + rows·cols), stack O(1)
-// vars: c = 칸 수, n = 칸 글자 수, rows·cols = 격자 크기
+// cost: time O(c·n² + rows·cols + k·c), heap O(c + rows·cols + k), stack O(1)
+// vars: c = 칸 수, n = 칸 글자 수, rows·cols = 격자 크기, k = 칸에 이은 선 끝 수
 // basis: estimate
 // 칸 격자: 제목 줄과 칸 묶음이 모두 배치 사각형 안이다. 칸 단위(가로, 세로)는 모든 칸이 글을 넣을 수 있는 가장 작은 크기이고, 칸은 차지한 단위 수만큼 커진다.
-function sizeGrid(node) {
+// 칸에 이은 선이 안쪽 칸으로 돌아 나갈 통로가 있으면 행 사이가 벌어진다(grid-links.js).
+function sizeGrid(node, links = []) {
   const titleLines = wrap(node.label, GRID.textMax, STYLE.label);
   const titleW = Math.max(...titleLines.map((l) => measure(l, STYLE.label.size, STYLE.label.face)));
   const titleH = titleLines.length * STYLE.label.line + GRID.titlePad * 2;
@@ -124,9 +137,10 @@ function sizeGrid(node) {
   const unitW = gridUnitWidth(shown, { cols: node.cols, titleRoom: titleW + INNER_X * 2 - GRID.pad * 2 });
   const lined = shown.map((c) => ({ ...c, lines: wrap(c.text, c.cols * unitW - GRID.cellPadX * 2, STYLE.item) }));
   const unitH = Math.max(SIZE.grid.cell, ...lined.map((c) => Math.ceil((c.lines.length * STYLE.item.line + GRID.cellPadY * 2) / c.rows)));
-  const slot = (row, col) => ({ x: GRID.pad + col * unitW, y: titleH + row * unitH, w: unitW, h: unitH });
-  const cells = lined.map(({ text, label, ...c }) => ({ ...c, ...slot(c.row, c.col), w: c.cols * unitW, h: c.rows * unitH }));
-  return { w: GRID.pad * 2 + node.cols * unitW, h: titleH + node.rows * unitH + GRID.pad, marginTop: 0, marginBottom: 0, labelLines: titleLines, subLines: [], cells, empties: emptySlots(node, slot), titleH };
+  const plan = planGridLinks({ rows: node.rows, cols: node.cols, cells: node.cells, links }, { pad: GRID.pad, unitW, unitH, titleH, titleHalf: titleW / 2 });
+  const slot = (row, col) => ({ x: GRID.pad + col * unitW, y: plan.rowTop[row], w: unitW, h: unitH });
+  const cells = lined.map(({ text, label, ...c }) => ({ ...c, ...slot(c.row, c.col), w: c.cols * unitW, h: c.rows * unitH + (c.rows - 1) * plan.gutter }));
+  return { w: plan.w, h: plan.h, marginTop: 0, marginBottom: 0, labelLines: titleLines, subLines: [], cells, empties: emptySlots(node, slot), titleH, cellEnds: plan.ends, cellRoutes: plan.inner };
 }
 
 // cost: time O(c), heap O(c), stack O(1)

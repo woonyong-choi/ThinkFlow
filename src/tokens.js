@@ -138,7 +138,8 @@ export const tokens = freeze({
       "min-height": "var(--size-node-min-height)",
       "store-cap": "var(--size-node-store-cap)",
       "state-dot": "var(--size-node-state-dot)",
-      "table-row": "var(--size-node-table-row)"
+      "table-row": "var(--size-node-table-row)",
+      "circle": "var(--size-node-circle)"
     },
     "grid": {
       "cell": "var(--size-grid-cell)"
@@ -417,7 +418,8 @@ export const values = freeze({
       "min-height": 46,
       "store-cap": 12,
       "state-dot": 14,
-      "table-row": 26
+      "table-row": 26,
+      "circle": 40
     },
     "grid": {
       "cell": 32

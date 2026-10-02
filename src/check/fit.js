@@ -42,10 +42,11 @@ function checkGridFits(it, fail) {
   for (const { cell, text } of lines) if (!fits(measure(text, STYLE.item.size, STYLE.item.face), cell.w - GRID.cellPadX * 2)) fail(it.line, `cell "${cell.id}" text "${text}"`, `grid "${it.id}"`);
 }
 
-// 이름과 부제가 쓸 수 있는 폭. 사람은 몸통 아래 바깥 여백까지, 마름모는 내접 사각형 비율로 넓힌 만큼이다.
+// 이름과 부제가 쓸 수 있는 폭. 사람은 몸통 아래 바깥 여백까지, 마름모는 내접 사각형 비율로 넓힌 만큼, 원은 지름에서 안쪽 간격 하나를 뺀 폭이다.
 function labelRoom(it) {
   if (it.shape === 'person') return it.w + (it.marginSide ?? 0) * 2;
   if (it.shape === 'decision') return it.w / 2 - INNER_X;
+  if (it.shape === 'circle') return it.w - INNER_X;
   return it.w - INNER_X * 2;
 }
 
