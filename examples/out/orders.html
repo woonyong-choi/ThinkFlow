@@ -114,6 +114,7 @@
   --size-node-store-cap: 12px;
   --size-node-state-dot: 14px;
   --size-node-table-row: 26px;
+  --size-grid-cell: 32px;
   --size-figure-canvas: 960px;
   --size-chip-max-width: 210px;
   --size-player-caption-max: 720px;
@@ -555,6 +556,7 @@ html.embedded .fl-figure {
 
 .fl .fl-path,
 .fl .fl-stroke,
+.fl .grid-cell,
 .fl .fl-pill rect {
   transition: stroke var(--duration-fast), fill var(--duration-fast);
 }
@@ -580,6 +582,7 @@ html.embedded .fl-figure {
 @media (prefers-reduced-motion: reduce) {
   .fl .fl-path,
   .fl .fl-stroke,
+  .fl .grid-cell,
   .fl .fl-pill rect,
   .fl .fl-layer,
   .fl .fl-edge.quiet {
@@ -591,8 +594,13 @@ html.embedded .fl-figure {
   stroke: var(--color-state-active);
 }
 
-.fl .fl-col.on .col-bg {
+.fl .fl-part.on .part-bg {
   fill: var(--color-card-on);
+}
+
+.fl .fl-part.on .grid-cell {
+  fill: var(--color-card-on);
+  stroke: var(--color-state-active);
 }
 
 /* hidden 속성이 display: grid 같은 규칙에 지지 않게 한다. 시간 흐름 없는 그림의 빈 조작 막대를 숨기기 위해서다. */
@@ -685,6 +693,16 @@ html.embedded .fl-figure {
   fill: var(--color-fg);
 }
 
+.fl .item {
+  font-size: var(--size-text-13);
+  text-anchor: middle;
+  fill: var(--color-fg);
+}
+
+.fl .item.gap {
+  fill: var(--color-muted);
+}
+
 .fl .cell.type {
   font-family: var(--font-mono);
   font-size: var(--size-text-11);
@@ -730,13 +748,29 @@ html.embedded .fl-figure {
   stroke: var(--color-border);
 }
 
-.fl .col-bg {
+.fl .part-bg {
   fill: transparent;
 }
 
 .fl .col-line {
   stroke: var(--color-border);
   stroke-width: var(--border-hair);
+}
+
+.fl .grid-cell {
+  fill: var(--color-node);
+  stroke: var(--color-border);
+  stroke-width: var(--border-thin);
+}
+
+.fl .grid-cell.gap {
+  fill: var(--color-surface);
+  stroke-dasharray: var(--dash-card) var(--dash-card);
+}
+
+.fl .grid-cell.empty {
+  fill: none;
+  stroke-dasharray: var(--dash-card) var(--dash-card);
 }
 
 .fl .fl-edge.mark .fl-path {
@@ -971,8 +1005,8 @@ html.embedded .fl-figure {
 <body>
 <figure class="fl-figure" tabindex="0">
 <button type="button" class="fl-round fl-full"></button><div class="fl-zoom"><button type="button" class="fl-round" data-zoom="in" aria-label="확대"></button><button type="button" class="fl-round" data-zoom="out" aria-label="축소"></button><button type="button" class="fl-round" data-zoom="fit" aria-label="전체 보기"></button></div>
-<div class="fl-canvas"><svg xmlns="http://www.w3.org/2000/svg" class="fl" width="960" height="186" style="aspect-ratio: 960 / 186" viewBox="-240.1 0 960 186" role="img"><title>orders</title><defs><marker id="fl-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-muted)"/></marker><marker id="fl-arrow-on" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-state-active)"/></marker><marker id="fl-arrow-main" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-data-main)"/></marker></defs><g id="n-0" class="fl-node" data-id="payments"><rect x="28" y="28" width="221.2" height="104" rx="10" fill="var(--color-node)" class="fl-stroke "/><text x="138.6" y="45.7" class="label">payments</text><g class="fl-col" data-col="payments.id"><rect x="29" y="54" width="219.2" height="26" class="col-bg "/><line x1="28" x2="249.2" y1="54" y2="54" class="col-line"/><text x="46" y="71.7" class="cell">id<tspan class="key" dx="6">PK</tspan></text><text x="231.2" y="71.7" class="cell type">bigint</text></g><g class="fl-col" data-col="payments.order_id"><rect x="29" y="80" width="219.2" height="26" class="col-bg "/><line x1="28" x2="249.2" y1="80" y2="80" class="col-line"/><text x="46" y="97.7" class="cell">order_id<tspan class="key" dx="6">FK</tspan></text><text x="231.2" y="97.7" class="cell type">bigint</text></g><g class="fl-col" data-col="payments.amount"><rect x="29" y="106" width="219.2" height="26" class="col-bg "/><line x1="28" x2="249.2" y1="106" y2="106" class="col-line"/><text x="46" y="123.7" class="cell">amount</text><text x="231.2" y="123.7" class="cell type">numeric(10, 2)</text></g></g>
-<g id="n-1" class="fl-node" data-id="orders"><rect x="309.2" y="54" width="142.7" height="104" rx="10" fill="var(--color-node)" class="fl-stroke "/><text x="380.5" y="71.7" class="label">orders</text><g class="fl-col" data-col="orders.id"><rect x="310.2" y="80" width="140.7" height="26" class="col-bg "/><line x1="309.2" x2="451.9" y1="80" y2="80" class="col-line"/><text x="327.2" y="97.7" class="cell">id<tspan class="key" dx="6">PK</tspan></text><text x="433.9" y="97.7" class="cell type">bigint</text></g><g class="fl-col" data-col="orders.user_id"><rect x="310.2" y="106" width="140.7" height="26" class="col-bg "/><line x1="309.2" x2="451.9" y1="106" y2="106" class="col-line"/><text x="327.2" y="123.7" class="cell">user_id</text><text x="433.9" y="123.7" class="cell type">bigint</text></g><g class="fl-col" data-col="orders.status"><rect x="310.2" y="132" width="140.7" height="26" class="col-bg "/><line x1="309.2" x2="451.9" y1="132" y2="132" class="col-line"/><text x="327.2" y="149.7" class="cell">status</text><text x="433.9" y="149.7" class="cell type">varchar</text></g></g>
+<div class="fl-canvas"><svg xmlns="http://www.w3.org/2000/svg" class="fl" width="960" height="186" style="aspect-ratio: 960 / 186" viewBox="-240.1 0 960 186" role="img"><title>orders</title><defs><marker id="fl-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-muted)"/></marker><marker id="fl-arrow-on" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-state-active)"/></marker><marker id="fl-arrow-main" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-data-main)"/></marker></defs><g id="n-0" class="fl-node" data-id="payments"><rect x="28" y="28" width="221.2" height="104" rx="10" fill="var(--color-node)" class="fl-stroke "/><text x="138.6" y="45.7" class="label">payments</text><g class="fl-part" data-part="payments.id"><rect x="29" y="54" width="219.2" height="26" class="part-bg "/><line x1="28" x2="249.2" y1="54" y2="54" class="col-line"/><text x="46" y="71.7" class="cell">id<tspan class="key" dx="6">PK</tspan></text><text x="231.2" y="71.7" class="cell type">bigint</text></g><g class="fl-part" data-part="payments.order_id"><rect x="29" y="80" width="219.2" height="26" class="part-bg "/><line x1="28" x2="249.2" y1="80" y2="80" class="col-line"/><text x="46" y="97.7" class="cell">order_id<tspan class="key" dx="6">FK</tspan></text><text x="231.2" y="97.7" class="cell type">bigint</text></g><g class="fl-part" data-part="payments.amount"><rect x="29" y="106" width="219.2" height="26" class="part-bg "/><line x1="28" x2="249.2" y1="106" y2="106" class="col-line"/><text x="46" y="123.7" class="cell">amount</text><text x="231.2" y="123.7" class="cell type">numeric(10, 2)</text></g></g>
+<g id="n-1" class="fl-node" data-id="orders"><rect x="309.2" y="54" width="142.7" height="104" rx="10" fill="var(--color-node)" class="fl-stroke "/><text x="380.5" y="71.7" class="label">orders</text><g class="fl-part" data-part="orders.id"><rect x="310.2" y="80" width="140.7" height="26" class="part-bg "/><line x1="309.2" x2="451.9" y1="80" y2="80" class="col-line"/><text x="327.2" y="97.7" class="cell">id<tspan class="key" dx="6">PK</tspan></text><text x="433.9" y="97.7" class="cell type">bigint</text></g><g class="fl-part" data-part="orders.user_id"><rect x="310.2" y="106" width="140.7" height="26" class="part-bg "/><line x1="309.2" x2="451.9" y1="106" y2="106" class="col-line"/><text x="327.2" y="123.7" class="cell">user_id</text><text x="433.9" y="123.7" class="cell type">bigint</text></g><g class="fl-part" data-part="orders.status"><rect x="310.2" y="132" width="140.7" height="26" class="part-bg "/><line x1="309.2" x2="451.9" y1="132" y2="132" class="col-line"/><text x="327.2" y="149.7" class="cell">status</text><text x="433.9" y="149.7" class="cell type">varchar</text></g></g>
 <g id="e-0" class="fl-edge"><path id="p-0" d="M 249.1939453125 93 L 309.2 93" class="fl-path " marker-end="url(#fl-arrow)"/></g><g class="fl-packets"></g></svg></div>
 <figcaption class="fl-foot">
 <div class="fl-bar"><button type="button" class="fl-round fl-pause"><svg class="fl-ring" viewBox="0 0 30 30" aria-hidden="true"><circle class="fl-ring-fill" cx="15" cy="15" r="14.125" stroke-width="1.75" transform="rotate(-90 15 15)"/></svg><span class="fl-pause-icon"></span></button><div class="fl-tabs" role="tablist"></div><button type="button" class="fl-round fl-rate" aria-label="배속">1×</button></div>
@@ -1425,7 +1459,7 @@ function createStage(root, data) {
     groups: all('.fl-group'),
     edges: data.edgeEnds.map((_, j) => svg.querySelector(`#e-${j}`)),
     paths: data.edgeEnds.map((_, j) => svg.querySelector(`#p-${j}`)),
-    columns: all('.fl-col'),
+    parts: all('.fl-part'),
     seriesEls: Array.from({ length: data.seriesCount }, (_, i) => all(`.cs-${i}`)),
     labelEls: all('.chart-label.shift'),
     rowEls: Array.from({ length: data.rowCount }, (_, k) => all(`.cr-${k}`)),
@@ -1454,7 +1488,7 @@ function drawSegmentState(stage, seg) {
   stage.nodes.forEach((g, n) => g?.classList.toggle('on', seg.nodesOn.includes(n)));
   stage.groups.forEach((g, n) => g.classList.toggle('on', seg.groupsOn.includes(n)));
   stage.edges.forEach((e, j) => e?.classList.toggle('on', seg.edgesOn.includes(j)));
-  stage.columns.forEach((c) => c.classList.toggle('on', seg.columnsOn.includes(c.dataset.col)));
+  stage.parts.forEach((p) => p.classList.toggle('on', seg.partsOn.includes(p.dataset.part)));
   showCards(stage, seg.cardsBefore);
   stage.pendingCards = Object.entries(seg.cardsAt).map(([n, at]) => ({ n: Number(n), at }));
   drawChartState(stage, seg);
@@ -1646,7 +1680,7 @@ function chipSlide(hop, metrics) {
   };
 }
 
-figurePlay(document.querySelector('.fl-figure'), {"segs":[{"si":0,"t0":0,"t1":4740,"hops":[],"edgesOn":[],"nodesOn":[],"groupsOn":[],"columnsOn":["payments.order_id","orders.id"],"cards":{},"cardsBefore":{},"cardsAt":{},"caption":"결제 행은 주문 행을 외래 키로 가리킨다","series":[],"growing":[],"lights":[]},{"si":0,"t0":4740,"t1":7790,"hops":[{"edge":0,"isBack":false,"ms":750,"to":"orders","data":["order_id 1042"],"line":16,"chipPath":[[0,48.47607421623539,-31,1],[0.005964783915087195,48.11818718384475,-31,1],[0.018437560239978185,47.369820604351276,-31,1],[0.03811187083526059,46.18936196863433,-31,1],[0.06570096117429003,44.534016548292584,-31,1],[0.10187787646557456,42.3634016308155,-31,1],[0.1471694540672311,39.64590697471613,-31,1],[0.20178945770550127,36.3687067564199,-31,1],[0.2654118923904264,32.55136067532442,-31,1],[0.336927964018532,28.260396377638074,-31,1],[0.41429543374262523,23.618348194192492,-31,1],[0.5745912671782765,14.000598188053402,-31,1],[0.6510007925372481,9.416026666515108,-31,1],[0.7213290129396324,5.196333442372065,-31,1],[0.7839458953917328,1.4393204952460223,-31,1],[0.8380716006702216,-1.8082218214632917,-31,1],[0.8835734692388322,-4.538333935579942,-31,1],[0.9207356536169877,-6.768064998269267,-31,1],[0.9500707149255626,-8.528168676783764,-31,1],[0.9721901497987274,-9.855334769173623,-31,1],[0.9877253322178113,-10.787445714318665,-31,1],[0.9972839607967611,-11.360963429055687,-31,1],[1,-11.523925777478155,-31,1]]}],"edgesOn":[0],"nodesOn":[0,1],"groupsOn":[],"columnsOn":["payments.order_id","orders.id"],"cards":{},"cardsBefore":{},"cardsAt":{},"caption":"결제 행은 주문 행을 외래 키로 가리킨다","series":[],"growing":[],"lights":[]}],"steps":["결제"],"cardCounts":[0,0],"edgeEnds":[[0,1]],"seriesCount":0,"rowCount":0,"metrics":{"active":"var(--color-state-active)","chipFill":"var(--color-state-active-fill)","halo":10,"haloOpacity":0.2,"packet":4.5,"chipRadius":8,"chipLine":15,"chipPadX":18,"chipPadY":8,"chipGap":12,"icon":12,"iconStroke":1.75,"pauseStroke":2.5,"zoomMax":6,"zoomStep":1.25,"move":[0.455,0.03,0.515,0.955]}});
+figurePlay(document.querySelector('.fl-figure'), {"segs":[{"si":0,"t0":0,"t1":4740,"hops":[],"edgesOn":[],"nodesOn":[],"groupsOn":[],"partsOn":["payments.order_id","orders.id"],"cards":{},"cardsBefore":{},"cardsAt":{},"caption":"결제 행은 주문 행을 외래 키로 가리킨다","series":[],"growing":[],"lights":[]},{"si":0,"t0":4740,"t1":7790,"hops":[{"edge":0,"isBack":false,"ms":750,"to":"orders","data":["order_id 1042"],"line":16,"chipPath":[[0,48.47607421623539,-31,1],[0.005964783915087195,48.11818718384475,-31,1],[0.018437560239978185,47.369820604351276,-31,1],[0.03811187083526059,46.18936196863433,-31,1],[0.06570096117429003,44.534016548292584,-31,1],[0.10187787646557456,42.3634016308155,-31,1],[0.1471694540672311,39.64590697471613,-31,1],[0.20178945770550127,36.3687067564199,-31,1],[0.2654118923904264,32.55136067532442,-31,1],[0.336927964018532,28.260396377638074,-31,1],[0.41429543374262523,23.618348194192492,-31,1],[0.5745912671782765,14.000598188053402,-31,1],[0.6510007925372481,9.416026666515108,-31,1],[0.7213290129396324,5.196333442372065,-31,1],[0.7839458953917328,1.4393204952460223,-31,1],[0.8380716006702216,-1.8082218214632917,-31,1],[0.8835734692388322,-4.538333935579942,-31,1],[0.9207356536169877,-6.768064998269267,-31,1],[0.9500707149255626,-8.528168676783764,-31,1],[0.9721901497987274,-9.855334769173623,-31,1],[0.9877253322178113,-10.787445714318665,-31,1],[0.9972839607967611,-11.360963429055687,-31,1],[1,-11.523925777478155,-31,1]]}],"edgesOn":[0],"nodesOn":[0,1],"groupsOn":[],"partsOn":["payments.order_id","orders.id"],"cards":{},"cardsBefore":{},"cardsAt":{},"caption":"결제 행은 주문 행을 외래 키로 가리킨다","series":[],"growing":[],"lights":[]}],"steps":["결제"],"cardCounts":[0,0],"edgeEnds":[[0,1]],"seriesCount":0,"rowCount":0,"metrics":{"active":"var(--color-state-active)","chipFill":"var(--color-state-active-fill)","halo":10,"haloOpacity":0.2,"packet":4.5,"chipRadius":8,"chipLine":15,"chipPadX":18,"chipPadY":8,"chipGap":12,"icon":12,"iconStroke":1.75,"pauseStroke":2.5,"zoomMax":6,"zoomStep":1.25,"move":[0.455,0.03,0.515,0.955]}});
 </script>
 </body>
 </html>

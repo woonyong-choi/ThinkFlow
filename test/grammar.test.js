@@ -10,6 +10,8 @@ import { KINDS, OPTIONS, STATEMENTS, VALUES, VERSION } from '../src/source/gramm
 import { parseFigure } from '../src/source/parse.js';
 import { docExamples, errorsOf } from './helpers.js';
 
+// 2행 2열 격자를 여는 줄까지(그 뒤에 칸 줄을 이어 쓴다)
+const GRID_OPEN = 'flow right\ngrid g "G" rows=2 cols=2 {\n';
 const BASE = 'flow right\nbox a "A"\nbox b "B"\na -> b\n';
 
 // cost: time O(1), heap O(1), stack O(1)
@@ -76,6 +78,28 @@ const MALFORMED = [
   { rule: '종류: 외래 키는 pk나 unique만', source: 'data right\ntable a "a" {\n  id bigint pk\n  name varchar\n}\ntable b "b" {\n  a_name varchar fk=a.name\n}', expect: /pk or unique/ },
   { rule: '종류: 순서 그림 note는 바로 앞 메시지의 참여자만', source: 'sequence\nbox a "A"\nbox b "B"\nbox c "C"\nstep "s"\n  a -> b "m"\n  note c "x"', expect: /participants of the message above/ },
   { rule: '종류: 순서 그림은 참여자가 있어야 함(68ec356)', source: 'sequence\nstep "s"\n  wait 1s', expect: ['1: a sequence figure needs at least one participant'] },
+  // 설계 grid.md 요구사항 "칸 자리와 선택 사항을 어긴 원본, 격자 밖 칸, 칸 연결을 줄 번호와 함께 알린다"
+  { rule: '격자: 칸이 겹침', source: `${GRID_OPEN}item a "A" cols=2\n  item b "B" col=1\n}`, expect: /^4: item "b" overlaps item "a" \(line 3\)/ },
+  { rule: '격자: 합친 칸이 아래로 겹침', source: `${GRID_OPEN}item a "A" rows=2\n  gap b "B" count=2 row=1\n}`, expect: /^4: gap "b" overlaps item "a" \(line 3\)/ },
+  { rule: '격자: 행 밖', source: `${GRID_OPEN}item a "A" row=2\n}`, expect: /^3: item "a" ends at row 3 but grid "g" has rows=2/ },
+  { rule: '격자: 열 밖(합친 칸)', source: `${GRID_OPEN}item a "A" col=1 cols=2\n}`, expect: /^3: item "a" ends at column 3 but grid "g" has cols=2/ },
+  { rule: '격자: 크기 0', source: 'flow right\ngrid g "G" rows=0 {\n  item a "A"\n}', expect: /^2: rows is a whole number of 1 or more\. Found "0"/ },
+  { rule: '격자: 소수 인덱스', source: `${GRID_OPEN}item a "A" col=1.5\n}`, expect: /^3: col is a whole number of 0 or more\. Found "1\.5"/ },
+  { rule: '격자: 음수 인덱스', source: `${GRID_OPEN}item a "A" row=-1\n}`, expect: /^3: row is a whole number of 0 or more\. Found "-1"/ },
+  { rule: '격자: 같은 칸 이름', source: `${GRID_OPEN}item a "A"\n  item a "B" col=1\n}`, expect: /^4: the name "a" is already used in grid "g" \(line 3\)/ },
+  { rule: '격자: gap은 count 필수', source: `${GRID_OPEN}gap a "…"\n}`, expect: /^3: a gap needs count=/ },
+  { rule: '격자: item의 모르는 선택 사항', source: `${GRID_OPEN}item a "A" count=3\n}`, expect: /^3: an item takes row=, col=, rows=, cols=\. Found "count"/ },
+  { rule: '격자: 같은 선택 사항 두 번', source: `${GRID_OPEN}item a "A" col=0 col=1\n}`, expect: /^3: "col" is written twice/ },
+  { rule: '격자: 격자 안의 다른 문장', source: `${GRID_OPEN}box a "A"\n  item b "B"\n}`, expect: /^3: a grid holds only item and gap lines/ },
+  { rule: '격자: 격자 밖의 item', source: 'flow right\nitem a "A"', expect: /^2: "item" belongs inside a grid/ },
+  { rule: '격자: 닫지 않음', source: 'flow right\ngrid g "G" {\n  item a "A"', expect: /^2: close grid "g" with "}"/ },
+  { rule: '격자: 칸 없는 격자', source: 'flow right\ngrid g "G" {\n}', expect: /^2: grid "g" has no cells/ },
+  { rule: '격자: 칸은 선 끝이 될 수 없음', source: `${GRID_OPEN}  item a "A"\n}\nbox b "B"\nb -> g.a`, expect: /"g\.a" names a grid cell\. Edges join a whole grid, so write "g"/ },
+  { rule: '격자: 칸은 이동 끝이 될 수 없음', source: `${GRID_OPEN}  item a "A"\n}\nbox b "B"\nb -> g\nstep "s"\n  b -> g.a`, expect: /"g\.a" names a grid cell, which only light can target/ },
+  { rule: '격자: light에 모르는 칸은 가까운 이름을 제안', source: `${GRID_OPEN}item across "A"\n}\nstep "s"\n  light g.acros`, expect: /unknown cell "acros"\. Did you mean "across"\? Declared: across/ },
+  { rule: '격자: gap은 밝히지 못함', source: `${GRID_OPEN}gap a "…" count=2\n}\nstep "s"\n  light g.a`, expect: /"g\.a" is a gap, which stands for omitted entries/ },
+  { rule: '격자: 카드는 없음', source: `${GRID_OPEN}  item a "A"\n}\nstep "s"\n  show g "x"`, expect: /a grid has no card/ },
+  { rule: '격자: flow에서만', source: 'state right\ngrid g "G" {\n  item a "A"\n}', expect: /"grid" is not allowed in a state figure/ },
   // 설계 charts.md 줄 표: point 줄의 x는 가로값 키
   { rule: '차트: 선 차트 계열 이름 x', source: 'chart line\nseries x "X"\npoint x=1 x=2', expect: /cannot be named "x"/ },
 ];
@@ -112,6 +136,11 @@ const VALID = [
   { form: 'CRLF', source: 'flow right\r\nbox a "A"\r\n' },
   { form: 'BOM', source: '﻿flow right\nbox a "A"' },
   { form: '유니코드 공백', source: 'flow right\nbox a "A" \nbox　b "B"' },
+  // 설계 grid.md 요구사항 "grid, item, gap을 이름으로 쓴 옛 원본이 문맥으로 구별되어 그대로 읽힌다"(호환 판정 H1)
+  { form: '격자 낱말을 도형 이름으로', source: 'flow right\nbox grid "격자"\nbox item "항목"\nbox gap "간격"\ngrid -> item\nitem -> gap\nstep "s"\n  light grid item\n  grid -> item' },
+  { form: '격자 낱말을 데이터 열 이름으로', source: 'data right\ntable t "t" {\n  grid bigint pk\n  item varchar\n  gap varchar\n}\nstep "s"\n  light t.grid t.item' },
+  { form: '격자 낱말을 칸 이름으로, 칸 이름이 격자마다 같음', source: 'flow right\ngrid grid "격자" cols=2 {\n  item item "A"\n  gap gap "…" count=2 col=1\n}\ngrid item "다른" {\n  item item "B"\n}\nstep "s"\n  light grid.item item.item' },
+  { form: '그룹 안 격자의 rows와 cols 생략', source: 'flow right\ngroup view "화면" {\n  grid g "한 칸" {\n    item only "칸"\n  }\n}' },
   { form: '새 tone 이름', source: 'flow right\nbox a "A"\nstep "s"\n  show a "x" tag="t" tone=teal' },
 ];
 

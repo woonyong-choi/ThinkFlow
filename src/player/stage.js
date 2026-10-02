@@ -21,7 +21,7 @@ function createStage(root, data) {
     groups: all('.fl-group'),
     edges: data.edgeEnds.map((_, j) => svg.querySelector(`#e-${j}`)),
     paths: data.edgeEnds.map((_, j) => svg.querySelector(`#p-${j}`)),
-    columns: all('.fl-col'),
+    parts: all('.fl-part'),
     seriesEls: Array.from({ length: data.seriesCount }, (_, i) => all(`.cs-${i}`)),
     labelEls: all('.chart-label.shift'),
     rowEls: Array.from({ length: data.rowCount }, (_, k) => all(`.cr-${k}`)),
@@ -50,7 +50,7 @@ function drawSegmentState(stage, seg) {
   stage.nodes.forEach((g, n) => g?.classList.toggle('on', seg.nodesOn.includes(n)));
   stage.groups.forEach((g, n) => g.classList.toggle('on', seg.groupsOn.includes(n)));
   stage.edges.forEach((e, j) => e?.classList.toggle('on', seg.edgesOn.includes(j)));
-  stage.columns.forEach((c) => c.classList.toggle('on', seg.columnsOn.includes(c.dataset.col)));
+  stage.parts.forEach((p) => p.classList.toggle('on', seg.partsOn.includes(p.dataset.part)));
   showCards(stage, seg.cardsBefore);
   stage.pendingCards = Object.entries(seg.cardsAt).map(([n, at]) => ({ n: Number(n), at }));
   drawChartState(stage, seg);

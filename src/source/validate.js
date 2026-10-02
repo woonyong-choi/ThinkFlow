@@ -47,7 +47,7 @@ function checkEdges(figure, names, problems) {
   };
   const seen = new Map();
   figure.edges.forEach((edge) => {
-    for (const end of [edge.from, edge.to]) if (!names.has(end) && !figure.rejectedNames.has(end)) problems.error(edge.line, unknownName('node', end, names.keys()));
+    for (const end of [edge.from, edge.to]) if (!names.has(end) && !figure.rejectedNames.has(end)) problems.error(edge.line, unknownEnd(end, names));
     // 자기 전이(재시도, 대기)는 상태 그림에서만 뜻이 있다. 다른 그림의 자기 선은 그릴 내용이 없다.
     if (edge.from === edge.to && figure.kind !== 'state') problems.error(edge.line, `an edge cannot go from "${edge.from}" to itself. Only state figures have self transitions`);
     if (isInside(edge.from, edge.to) || isInside(edge.to, edge.from)) problems.error(edge.line, 'an edge cannot join a group and a node inside it');
@@ -56,6 +56,15 @@ function checkEdges(figure, names, problems) {
     if (seen.has(key)) problems.error(edge.line, `there is already an edge ${edge.from} -> ${edge.to} (line ${seen.get(key)}). Merge the labels into one`);
     else seen.set(key, edge.line);
   });
+}
+
+// cost: time O(k), heap O(k), stack O(1)
+// vars: k = 이름 수(없는 이름 메시지)
+// basis: estimate
+// 선 끝 이름이 없을 때의 메시지. `격자.칸`은 칸이 선 끝이 될 수 없다는 안내다.
+function unknownEnd(end, names) {
+  const [id] = end.split('.');
+  return end.includes('.') && names.get(id)?.shape === 'grid' ? `"${end}" names a grid cell. Edges join a whole grid, so write "${id}"` : unknownName('node', end, names.keys());
 }
 
 // cost: time O(c·t), heap O(c), stack O(1)
@@ -130,7 +139,7 @@ function checkTimeline(figure, names, problems) {
 function resolveHop(hop, { figure, names, problems }, usedEdges) {
   const [fromId, fromColumn] = hop.from.split('.');
   const [toId, toColumn] = hop.to.split('.');
-  if (!checkColumnRefs([hop.from, hop.to], { figure, line: hop.line }, problems)) return;
+  if (!checkPartRefs([hop.from, hop.to], { figure, names, line: hop.line }, problems)) return;
   for (const id of [fromId, toId]) if (!names.has(id) && !figure.rejectedNames.has(id)) problems.error(hop.line, unknownName('node', id, names.keys()));
   if (figure.kind === 'sequence' || !names.has(fromId) || !names.has(toId)) return;
   const matches = (e, [a, ca], [b, cb]) => e.from === a && e.to === b && (ca === undefined || e.fromColumn === ca) && (cb === undefined || e.toColumn === cb);
@@ -163,28 +172,42 @@ function checkCardTarget(op, { figure, names }, problems) {
 }
 
 // cost: time O(k + c), heap O(k), stack O(1)
-// vars: k = 이름 수, c = 열 수
+// vars: k = 이름 수, c = 열이나 칸 수
 // basis: estimate
-// light 대상: 도형, 그룹, 상태, 테이블, 테이블.열
+// light 대상: 도형, 그룹, 상태, 테이블, 테이블.열, 격자, 격자.칸
 function checkLightTarget(target, { line, figure, names }, problems) {
-  const [id, column] = target.split('.');
+  const [id, part] = target.split('.');
   const item = names.get(id);
-  if (!checkColumnRefs([target], { figure, line }, problems)) return;
+  if (!checkPartRefs([target], { figure, names, line, isLight: true }, problems)) return;
   if (!item && !figure.rejectedNames.has(id)) problems.error(line, unknownName('node', id, names.keys()));
-  else if (column !== undefined && item.shape !== 'table') problems.error(line, `"${id}" is not a table, so "${target}" has no column`);
-  else if (column !== undefined && !item.columns.some((c) => c.name === column)) problems.error(line, `table "${id}" has no column "${column}"`);
+  else if (item && part !== undefined) checkPart({ item, part, target, line }, problems);
+}
+
+// cost: time O(c), heap O(c), stack O(1)
+// vars: c = 열이나 칸 수
+// basis: estimate
+// 도형 안 부분: 테이블의 열, 격자의 item. 부분 이름은 데이터 그림의 테이블과 구조 그림의 격자에만 온다. gap은 생략된 항목들이라 밝히지 못한다.
+function checkPart({ item, part, target, line }, problems) {
+  if (item.shape === 'grid') {
+    const cell = item.cells.find((c) => c.id === part);
+    if (!cell) problems.error(line, unknownName('cell', part, item.cells.map((c) => c.id)));
+    else if (cell.kind === 'gap') problems.error(line, `"${target}" is a gap, which stands for omitted entries. Light an item instead`);
+  } else if (!item.columns.some((c) => c.name === part)) problems.error(line, `table "${item.id}" has no column "${part}"`);
 }
 
 // cost: time O(r), heap O(1), stack O(1)
 // vars: r = 이름 수
 // basis: estimate
-// `테이블.열` 꼴 이름은 데이터 관계 그림에서만, 점 하나로만 쓴다. 맞으면 true다.
-function checkColumnRefs(refs, { figure, line }, problems) {
+// `이름.부분` 꼴 이름은 점 하나로만 쓴다. 데이터 관계 그림은 테이블.열을, 구조 그림은 light의 격자.칸을 쓸 수 있다. 맞으면 true다.
+function checkPartRefs(refs, { figure, names, line, isLight = false }, problems) {
   const bad = refs.find((ref) => ref.split('.').length > 2);
   if (bad) problems.error(line, `write a column as table.column. Found "${bad}"`);
-  const column = refs.find((ref) => ref.includes('.'));
-  if (!bad && column && figure.kind !== 'data') problems.error(line, `"${column}" names a column, which only data figures have`);
-  return !bad && !(column && figure.kind !== 'data');
+  const part = refs.find((ref) => ref.includes('.'));
+  if (bad || !part || figure.kind === 'data') return !bad;
+  const [id] = part.split('.');
+  if (names.get(id)?.shape === 'grid' && isLight) return true;
+  problems.error(line, names.get(id)?.shape === 'grid' ? `"${part}" names a grid cell, which only light can target. Edges and moves join a whole grid, so write "${id}"` : `"${part}" names a column, which only data figures have`);
+  return false;
 }
 
 // cost: time O(b), heap O(p), stack O(1)

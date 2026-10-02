@@ -236,6 +236,7 @@ html.embedded .fl-figure {
 
 .fl .fl-path,
 .fl .fl-stroke,
+.fl .grid-cell,
 .fl .fl-pill rect {
   transition: stroke var(--duration-fast), fill var(--duration-fast);
 }
@@ -261,6 +262,7 @@ html.embedded .fl-figure {
 @media (prefers-reduced-motion: reduce) {
   .fl .fl-path,
   .fl .fl-stroke,
+  .fl .grid-cell,
   .fl .fl-pill rect,
   .fl .fl-layer,
   .fl .fl-edge.quiet {
@@ -272,8 +274,13 @@ html.embedded .fl-figure {
   stroke: var(--color-state-active);
 }
 
-.fl .fl-col.on .col-bg {
+.fl .fl-part.on .part-bg {
   fill: var(--color-card-on);
+}
+
+.fl .fl-part.on .grid-cell {
+  fill: var(--color-card-on);
+  stroke: var(--color-state-active);
 }
 
 /* hidden 속성이 display: grid 같은 규칙에 지지 않게 한다. 시간 흐름 없는 그림의 빈 조작 막대를 숨기기 위해서다. */

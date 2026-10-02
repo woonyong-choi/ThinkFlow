@@ -125,6 +125,14 @@ test('buildTimeline_card_changes_at_the_latest_arrival_and_the_source_card_at_be
   assert.equal(seg.cardsAt.b, seg.move);
 });
 
+// 근거: 설계 grid.md 요구사항 "칸 light는 도형 light와 같은 박자 규칙이다: 단계 안에서 남고 다음 단계에서 꺼진다"
+test('buildTimeline_grid_cell_light_stays_for_the_rest_of_the_step_like_a_node_light', async () => {
+  const { timeline } = await buildFigure('flow right\nbox a "A"\ngrid g "G" cols=2 {\n  item x "X"\n  item y "Y" col=1\n}\nstep "하나"\n  light g.x\n  light g.y a\nstep "둘"\n  light a');
+  const lit = timeline.segs.map((seg) => [seg.partsOn, seg.nodesOn]);
+
+  assert.deepEqual(lit, [[['g.x'], []], [['g.x', 'g.y'], ['a']], [[], ['a']]]);
+});
+
 // 근거: 설계 playback.md 요구사항 "차트 계열은 단계가 바뀌어도 남고, 탭으로 건너뛰어도 보인다"
 test('buildTimeline_revealed_chart_series_stay_across_steps', async () => {
   const { timeline } = await buildFigure('chart bar\nseries a "A" role=main\nseries b "B" role=compare\nrow "r" a=1 b=2\nstep "1"\n  reveal a\nstep "2"\n  reveal b');

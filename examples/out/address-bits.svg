@@ -1,0 +1,470 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="fl" width="960" height="418" viewBox="0 0 960 418" role="img">
+<title>가상 주소를 VPN과 오프셋으로 나눈다</title>
+<style>@font-face{font-family:FigSansKo;font-weight:500;src:url(data:font/woff2;base64,d09GMgABAAAAAAWEABIAAAAACiQAAAUlAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGYFqGx4cRgZgP1NUQVQqAGwRCAqGeIVdCxQAATYCJAMWBCAFhCQHIAwHFyQYFBs7CMgGHvj3sj83SZUMt7NwinUFjFpPR5mCsw8yvqhcv9+qiMVPJOOREGmUSmmPn/6CN9H8SepJQmNIWVSSnEXypeuiIV1K+UxyEz9EPFj4ii9rz4hAsIgFgJdQSGpq6XJTE9x/eZas6HJ4hiwjMB+lBpQYZYYS2Hg2EJ8ni0QAZBR2ks4RbBlQJdsaHJyfj2A/ZPkJQGY7YPArZ7GddP4GXDgWBWEehyx3ALJ5C6DEgpGpJD/+NwsNlxfm5hGAyiZDI0R3TkYBME0Agt9EE0nF866MnkXPYmaVAgzjFfl28SsJIJ0g+YHO4kVinALRDJImESoI/gnqmxp6qbuJN+6TF83jQDlO6JM5IglA2ip9DOgkIhAkIwAXAtiEtG/UiAsBSAgAYRO/AiABMuBCRgAuFPzAKhzISDdx/00PVj3S9Njjj5/03L9v3GeaMPwNbtHibXq2/rHappoDSrXsPgQykvnCNLHbUoB/F8gAkQDiQABAKWwyiQmmkIBC0ACqCooZlaxYrIricCSqkKbMkagcqCWqExpqRDvsrbfc3ndDUkxZsYxJLmsnvvuuz3MuVR23ShZU2SosUQ11yoljxC7Zghasi3ZsqMIubJ4K3xJ9gIYmNMUy4qOugSPB1xBvh1i7+516Iqgp6oiGGjpxgM+b1BMC4vDA7TnhrYe6Eg+/rZ347qM+j7zjc+I4TzN+CALW5H02A+Tbze5n3rEKZijem3eKXIXbX2/s1yQ14sQxYcc2kujcjUVSfXhuO8+si50R6955te/q8vHI0X0/3vX82R3lvQfWXnFl34sH1Dv28+zHnpW62FkxT25P72nKqdYuLcW9N/Vdy/49wrhxoPbz6aKaG+o4+0TjGCP6RIW7wrg5uiFqPnvBvhck5S59kDwVvSm5XhVvHd93PHsGD7mtbcF24/tvvzcW740WffbtZzgy7D7/UMUFiyu9m0oHWtdNjeXv1+DyeQJZGwdK2npL9ZL+ro2zsfKT+vY9zcg0Ohsu9l2cIk0cs6O9q6Q4QUXExPhxO9q6iktkJD/lWH/tUOofmzf9MeSqrfO7/ti0+Q9/KtnxKm9VeI/xgyHfMNpckTndNDLWvlj44R6fP7Crv7KyTe/bnTo0N+9Oa0W29lcFdhpZvg8p91hb0+i6fSo49dORtPx0b32Hv3x2x/vbB7yjW7uyox+n3TYWkfbyvp3ZY1u9BvH++JFD5XUd6d78NQ8YXiNyaoWnojPt8sHLOXP0APcB4bPPv8H3lt3J49Pt37oGXQAgAEkkPvDN0RdP2Kt+S5bl7wA+ui0jB+DTM+5951/nP99rC0l2IBEJAAHKcf9/Btp9Aee/F3P/PI0l+TtC8nlkM0FOYttGjpEugBTxKdWCc8qTUlhGRigpwEViTSMUbOdHoYSNL4QyNVyVr9DCBKapECSSzrogIbBgkam2vw7dhAkRYy9z+AgTI4pBnB4WiLPAIAHmWaGTAbJXUr3XWWaFGAvMo1NADnnkUUQ2bRRQicECcYIU7AN6PuQUCFCmSs8RYIZwcpwIYfYjzAHFCbeE4nJ5FLJWtp4mGuil8hqpAxCtYJY0LK816NDokNc9Owmy6zpseeSLxCsowKk69YRYYIowOjsxiBNnkQpyyWXfyJVDgNbk3Hv0HLnsIgudkI0Rx0BnAFYS2zL7CLXptDwlatzTQ4A5du8dDLLA3hXU4KvtIAcZAMwjKSAcdp8wj75NORnhQPz6v+UD5Zn6f73FAAhZw0PVdN8iGSPMAQA=) format("woff2")}
+@font-face{font-family:FigSansKo;font-weight:400;src:url(data:font/woff2;base64,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) format("woff2")}
+@font-face{font-family:FigSansKo;font-weight:600;src:url(data:font/woff2;base64,d09GMgABAAAAAAQsABIAAAAACDwAAAPMAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGYFqGx4cRgZgP1NUQVQqAFQRCAqDKIJpCw4AATYCJAMQBCAFhDQHIAwHFyQYDhuzBsiO0x31wKRCoAUPPJ7+n5tkTEfnwZ3IrvWY98sP2iHI3f0CDDWyh9rKJJIWYKj5PJfTm7yfj9kQChNL7Ab9pu/n+dgaaC/ysXBMOkoTKqD8AAOLgDPP1Ar3vcqomZqKmFPx3wMRCHYzAfAsChFtHX1jNORe3lXM3etcwTys624aQCwRk7Devaz+dczCAZBR2G6jg8l9kVIlVbzy8wj2JMuPAZlNwKPPNNtqo54pWfy5IIwjyXI/IBvXAGXJ7rL5df4lh1P36mvrCCCabNnE6d2RKACGARCgbQTF0lNEm2kza54GBKsU+SZpijCQjp4y9L4kFiiJdpBUCXKC30dzaxmk6RTdmyzvNo6EcqTQFgtEBICUJ70HNOEIBJEIIJkAskkht8cvBCAhAEScNAWABMhAMhkBJFNoAiYikVCuL7rhzhvPvFm5N9kwYHlv+KWhnsGVAVo/QXumQBgGcQCEA2ACUoAfXAsAKACATDgKCopiUpSLiPbN55JIZR81PHpv9cBXyY9NvLFS2GIwzSYQn6q0ayF6UuXAfXFydc0z0peb+XhciRbqMW9Mjr/6anS0JY7YMbjuq2FJKV4VVfzdmGZRxc5fWvc8c8/4XyqDnp33Wq645IRQTcPCoY0XXdj15N6NySFLiJ27ydq0GBc6PZTwy8L7lvfvWAiUbpM9SUekjvkSUwcTD5DtW28p+d3y+1sI1NZGXp+1ly8+0xt5WQ1vfnSp7dLJh0NnhDb5GoK1wZZ++yvxeopp0Zv2Vry7n1NyDrAc4N6jebF5cVtwJRh3ynpoW4jttSV0Zmiu7lL7paf4A5+98FkgdJe/7PUXXgcAAUgiPPqUsUFLXN1vkbL8JeDdGzcVAHxw8h2v/xv7z1eqHhEHhCMBIEA58v8PQb3z39j/HlJ1BAAAACDJX3KUMymySw+zHgIIFx+oByDgvii8ZIQSBZwrtj6mYKd/TYlYvjdlWlw7qcRmGMtajHC2yk4SAhPxX1vEEQ9GOa1Z0kK3ymGS0xI3D78BOj/dKKt1Pr1G5KfJibBePkt06zQlChQpUiZflxK1PIqcPUIQdDEKpgtURbFrrFY4h/1cnPbkVKDchQrls4qUSuejWZsWg2prkiPjbgGrrLz5koachtRaczu7HXUqRYpP+zdKEFbTzEFn46TZzsPPb7cahQqFRqOANb6+gJ1uTaEdzDQhS/w8tFrw+fVeQU4Omg66dX6aAVZrcmzrkdYFeNk5bVNABgDjECWAUbxTGIdd5ThEPOLX/02g3mkk/teh6vDndMlfgnxuL08pAAAA) format("woff2")}
+@font-face{font-family:FigSans;font-weight:500;src:url(data:font/woff2;base64,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) format("woff2")}
+@font-face{font-family:FigSans;font-weight:400;src:url(data:font/woff2;base64,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) format("woff2")}
+@font-face{font-family:FigSans;font-weight:600;src:url(data:font/woff2;base64,d09GMgABAAAAAAK4AA8AAAAABZgAAAJfAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGx4cgRgGYD9TVEFUWgA0EQgKAC4LCAABNgIkAwwEIAWEMgcgDAcbuATIvgxwcqV1YFEsCajVVDWM2o4o56pvEPZBVWJv2Xj+v/1e97kzLykrUESos3xBIghTSxrQx9cYYFcWurbff37ud972zTC/ETFJLmnqd1jLpEALJBZwc/8XqlImWN5fEgAkkA4CggGPYFXCYUF2FkF+/8HWUiv7/olbcs8v+v2gWcIJddHzeZiFP3bZg/QNaGnWjXbDCYwnNjCZbpPy6PGww6tDYowQieiqYJp5RoljJy4eUNFhBAAkVrkidVuXznGIFobku6WdO+cz6IR5gOFxaS+IgnJEs8moiiAjGxtBk4qUYOmWaUpRZ0oftooiw9Y+Houg3pqsF4Whgf4pBAAm6vIef1iEst8NU77HyAvop4dPWKQhYoqG2WSsI129lv2IXXC3bRZBzt9SfHGIZIl+JU2pHAGCCNlWQFDZ0gJFapAuLFgEej1YtNywT8BL/EIbNDDGrN1Dgu7Ixd0z7X3/KnIF8OcjOfvfe1/5i6ZA+Eo6ZwAhmyPvbsNhTtUKqA6C5p4ZrikLABgXzPRak14Fj2IxMc8/U2b5xjRb/I47ZgY7hPSYee4aQmCGE41Z1bHObBo0zmypmMscapj2nCM1TIgEFKFTTOFzaJasirFrd4K7/f3knuOH4Z4h4DgW8emeGRwWGzsVYobUHBM86dWMIxIiq+YtWrRkh8XB5qxP/aoNmkXqkLj9nXuX7u1UAHfLlpxPkVLm1D8RiX1Lb8/Ics2n68gDm4GOX38jFXEZNIwcyTFbJJUhk2yMxTLbFiw8dWTLqeZpIoEFshvILHCS8ykys/ufSeU3GaX7AAAA) format("woff2")}
+/* tokens.json: 생성물, 손으로 고치지 않음 */
+:root {
+  --color-palette-gray-0: #ffffff;
+  --color-palette-gray-25: #f6f7f9;
+  --color-palette-gray-40: #eef0f3;
+  --color-palette-gray-100: #e3e7ec;
+  --color-palette-gray-200: #d5dbe3;
+  --color-palette-gray-500: #818b99;
+  --color-palette-neutral-100: #e3e3e3;
+  --color-palette-neutral-400: #9aa0a6;
+  --color-palette-neutral-500: #72767a;
+  --color-palette-neutral-750: #3c3e42;
+  --color-palette-neutral-800: #2c2d30;
+  --color-palette-neutral-850: #242526;
+  --color-palette-neutral-875: #202123;
+  --color-palette-neutral-900: #1b1b1d;
+  --color-palette-neutral-950: #111214;
+  --color-palette-blue-50: #edf5fb;
+  --color-palette-blue-200: #a9cdea;
+  --color-palette-blue-400: #79c0ff;
+  --color-palette-blue-550: #218fe5;
+  --color-palette-blue-600: #1072c2;
+  --color-palette-blue-800: #1d5d91;
+  --color-palette-blue-850: #2b4254;
+  --color-palette-blue-900: #1d2933;
+  --color-palette-orange-400: #f5a374;
+  --color-palette-orange-550: #d96c1f;
+  --color-palette-ink-200: #c6cacf;
+  --color-palette-ink-600: #52514e;
+  --color-palette-ink-850: #0d1117;
+  --color-palette-ink-900: #0b0b0b;
+  --color-palette-ink-1000: #000000;
+  --color-palette-purple-500: #8b5cf6;
+  --color-palette-green-500: #10b981;
+  --color-palette-slate-500: #8b949e;
+  --color-palette-teal-500: #11a6b0;
+  --color-state-active: var(--color-palette-blue-550);
+  --color-state-active-fill: var(--color-palette-blue-600);
+  --color-state-active-text: var(--color-palette-blue-600);
+  --color-state-on-active: var(--color-palette-gray-0);
+  --color-ui-link: var(--color-palette-blue-600);
+  --color-ui-focus: var(--color-palette-blue-550);
+  --color-ui-progress: var(--color-palette-blue-550);
+  --color-ui-control-on: var(--color-palette-gray-0);
+  --color-data-main: var(--color-palette-blue-550);
+  --color-data-compare: var(--color-palette-orange-550);
+  --color-data-heat-low: var(--color-palette-blue-200);
+  --color-data-heat-high: var(--color-palette-blue-800);
+  --color-data-heat-ink: var(--color-palette-ink-1000);
+  --color-data-heat-ink-on: var(--color-palette-gray-0);
+  --color-data-grid: var(--color-palette-ink-200);
+  --color-fg: var(--color-palette-ink-900);
+  --color-muted: var(--color-palette-ink-600);
+  --color-bg: var(--color-palette-gray-25);
+  --color-node: var(--color-palette-gray-0);
+  --color-surface: var(--color-palette-gray-40);
+  --color-border: var(--color-palette-gray-500);
+  --color-card-on: var(--color-palette-blue-50);
+  --color-group: var(--color-palette-gray-40);
+  --color-plate-border: var(--color-palette-gray-200);
+  --color-page: var(--color-palette-gray-0);
+  --color-tag-purple: var(--color-palette-purple-500);
+  --color-tag-green: var(--color-palette-green-500);
+  --color-tag-teal: var(--color-palette-teal-500);
+  --color-tag-gray: var(--color-palette-slate-500);
+  --font-sans: FigSans, FigSansKo, FigSansSym, FigSansMath, Inter, 'Inter Variable', 'Noto Sans KR', 'Noto Sans KR Variable', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif;
+  --font-mono: FigMono, FigSans, FigSansKo, FigSansSym, FigSansMath, ui-monospace, SFMono-Regular, Menlo, monospace;
+  --size-text-9: 9px;
+  --size-text-11: 11px;
+  --size-text-13: 13px;
+  --size-text-15: 15px;
+  --size-text-22: 22px;
+  --size-control-outer: 30px;
+  --size-control-inner: 22px;
+  --size-control-icon: 12px;
+  --size-pill-height: 18px;
+  --size-tag-height: 14px;
+  --size-packet-radius: 4.5px;
+  --size-packet-halo: 10px;
+  --size-packet-hop-ref: 300px;
+  --size-arrow-head: 5px;
+  --size-arrow-head-lit: 4px;
+  --size-node-card-width: 176px;
+  --size-node-min-width: 100px;
+  --size-node-max-width: 210px;
+  --size-node-min-height: 46px;
+  --size-node-store-cap: 12px;
+  --size-node-state-dot: 14px;
+  --size-node-table-row: 26px;
+  --size-grid-cell: 32px;
+  --size-figure-canvas: 960px;
+  --size-chip-max-width: 210px;
+  --size-player-caption-max: 720px;
+  --size-player-embedded-chrome: 150px;
+  --size-gallery-column: var(--size-figure-canvas);
+  --size-gallery-frame: 820px;
+  --size-document-column: var(--size-figure-canvas);
+  --size-chart-width: var(--size-figure-canvas);
+  --size-chart-label: 140px;
+  --size-chart-label-max: 240px;
+  --size-chart-bar: 12px;
+  --size-chart-row: 40px;
+  --size-chart-dot: 5px;
+  --size-chart-plot-h: 260px;
+  --size-chart-axis: 48px;
+  --size-chart-cell: 40px;
+  --size-chart-cap: 8px;
+  --size-chart-range: 6px;
+  --size-chart-arrow-min: 16px;
+  --size-person-width: 56px;
+  --size-person-head: 20px;
+  --size-person-shoulder: 14px;
+  --size-person-body: 22px;
+  --size-sequence-row: 44px;
+  --size-group-title: 28px;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --leading-normal: 1.5;
+  --leading-snug: 1.35;
+  --tracking-tag: 0.03em;
+  --tracking-frame: 0.04em;
+  --space-1: 2px;
+  --space-2: 4px;
+  --space-3: 6px;
+  --space-4: 8px;
+  --space-5: 10px;
+  --space-6: 12px;
+  --space-7: 14px;
+  --space-8: 16px;
+  --space-9: 18px;
+  --space-11: 22px;
+  --space-12: 24px;
+  --space-14: 28px;
+  --space-15: 30px;
+  --space-16: 32px;
+  --space-20: 40px;
+  --space-22: 44px;
+  --space-30: 60px;
+  --space-0-5: 1px;
+  --space-1-5: 3px;
+  --space-2-5: 5px;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 10px;
+  --radius-2xl: 14px;
+  --radius-route: 22px;
+  --radius-full: 999px;
+  --border-hair: 0.75px;
+  --border-thin: 1px;
+  --border-lifeline: 1.25px;
+  --border-tag: 1.5px;
+  --border-edge: 1.75px;
+  --border-strong: 2.5px;
+  --border-casing: 4.5px;
+  --border-halo: 8px;
+  --dash-line: 5;
+  --dash-gap: 4;
+  --dash-card: 3;
+  --opacity-tag: 0.15;
+  --opacity-halo: 0.2;
+  --opacity-dim: 0.3;
+  --opacity-dim-ink: 0.82;
+  --opacity-band: 0.22;
+  --opacity-range: 0.4;
+  --z-raised: 2;
+  --z-overlay: 10;
+  --duration-fast: 200ms;
+  --duration-hop: 3750ms;
+  --duration-caption-fade: 200ms;
+  --duration-hop-min: 500ms;
+  --duration-chip-slide: 300ms;
+  --duration-chip-fade: 150ms;
+  --duration-dwell: 700ms;
+  --duration-dwell-per-char: 45ms;
+  --duration-dwell-max: 3200ms;
+  --duration-step-end: 1600ms;
+  --duration-chart-cycle: 7000ms;
+  --duration-reveal: 900ms;
+  --easing-move: cubic-bezier(0.455, 0.03, 0.515, 0.955);
+  --easing-reveal: cubic-bezier(0, 0, 0.58, 1);
+  --scale-zoom-max: 6;
+  --scale-aspect-fit-max: 1.6;
+  --scale-fold-aspect: var(--scale-aspect-fit-max);
+  --scale-fold-step: 0.75;
+  --scale-aspect-max: 3;
+  --scale-zoom-step: 1.25;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --color-state-active: var(--color-palette-blue-400);
+    --color-state-active-fill: var(--color-palette-blue-400);
+    --color-state-active-text: var(--color-palette-blue-400);
+    --color-state-on-active: var(--color-palette-ink-850);
+    --color-ui-link: var(--color-palette-blue-400);
+    --color-ui-focus: var(--color-palette-blue-400);
+    --color-ui-progress: var(--color-palette-blue-400);
+    --color-ui-control-on: var(--color-palette-neutral-750);
+    --color-data-main: var(--color-palette-blue-400);
+    --color-data-compare: var(--color-palette-orange-400);
+    --color-data-heat-low: var(--color-palette-blue-850);
+    --color-data-heat-high: var(--color-palette-blue-600);
+    --color-data-heat-ink: var(--color-palette-gray-0);
+    --color-data-heat-ink-on: var(--color-palette-gray-0);
+    --color-data-grid: var(--color-palette-neutral-750);
+    --color-fg: var(--color-palette-neutral-100);
+    --color-muted: var(--color-palette-neutral-400);
+    --color-bg: var(--color-palette-neutral-900);
+    --color-node: var(--color-palette-neutral-850);
+    --color-surface: var(--color-palette-neutral-800);
+    --color-border: var(--color-palette-neutral-500);
+    --color-card-on: var(--color-palette-blue-900);
+    --color-page: var(--color-palette-neutral-950);
+    --color-group: var(--color-palette-neutral-875);
+    --color-plate-border: var(--color-palette-neutral-800);
+  }
+}
+[data-theme='dark'] {
+  --color-state-active: var(--color-palette-blue-400);
+  --color-state-active-fill: var(--color-palette-blue-400);
+  --color-state-active-text: var(--color-palette-blue-400);
+  --color-state-on-active: var(--color-palette-ink-850);
+  --color-ui-link: var(--color-palette-blue-400);
+  --color-ui-focus: var(--color-palette-blue-400);
+  --color-ui-progress: var(--color-palette-blue-400);
+  --color-ui-control-on: var(--color-palette-neutral-750);
+  --color-data-main: var(--color-palette-blue-400);
+  --color-data-compare: var(--color-palette-orange-400);
+  --color-data-heat-low: var(--color-palette-blue-850);
+  --color-data-heat-high: var(--color-palette-blue-600);
+  --color-data-heat-ink: var(--color-palette-gray-0);
+  --color-data-heat-ink-on: var(--color-palette-gray-0);
+  --color-data-grid: var(--color-palette-neutral-750);
+  --color-fg: var(--color-palette-neutral-100);
+  --color-muted: var(--color-palette-neutral-400);
+  --color-bg: var(--color-palette-neutral-900);
+  --color-node: var(--color-palette-neutral-850);
+  --color-surface: var(--color-palette-neutral-800);
+  --color-border: var(--color-palette-neutral-500);
+  --color-card-on: var(--color-palette-blue-900);
+  --color-page: var(--color-palette-neutral-950);
+  --color-group: var(--color-palette-neutral-875);
+  --color-plate-border: var(--color-palette-neutral-800);
+}
+/* 그림 안 글자와 모양. HTML 재생기와 움직이는 SVG가 같이 쓴다. */
+.fl text {
+  font-family: var(--font-sans);
+}
+
+.fl .label {
+  font-size: var(--size-text-13);
+  font-weight: var(--weight-medium);
+  text-anchor: middle;
+  fill: var(--color-fg);
+}
+
+.fl .sub {
+  font-size: var(--size-text-11);
+  text-anchor: middle;
+  fill: var(--color-muted);
+}
+
+.fl .frame {
+  font-size: var(--size-text-11);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-frame);
+  fill: var(--color-muted);
+}
+
+.fl .edgelabel {
+  font-size: var(--size-text-11);
+  text-anchor: middle;
+  fill: var(--color-muted);
+}
+
+.fl .row {
+  font-size: var(--size-text-11);
+  fill: var(--color-fg);
+}
+
+.fl .row.mono {
+  font-family: var(--font-mono);
+  font-size: var(--size-text-11);
+}
+
+/* 백틱으로 감싼 글. 코드 글꼴로 그린다. */
+.fl .code {
+  font-family: var(--font-mono);
+}
+
+.fl .muted {
+  fill: var(--color-muted);
+}
+
+.fl .tag {
+  font-size: var(--size-text-9);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-tag);
+  text-anchor: middle;
+  fill: var(--color-fg);
+}
+
+.fl .mark {
+  font-size: var(--size-text-11);
+  font-weight: var(--weight-semibold);
+  text-anchor: end;
+  fill: var(--color-state-active-text);
+}
+
+.fl .mini {
+  font-size: var(--size-text-11);
+  text-anchor: middle;
+  fill: var(--color-fg);
+}
+
+.fl .mini.on {
+  fill: var(--color-state-on-active);
+}
+
+.fl .chip {
+  font-size: var(--size-text-11);
+  text-anchor: middle;
+  fill: var(--color-state-on-active);
+}
+
+.fl .cell {
+  font-size: var(--size-text-13);
+  fill: var(--color-fg);
+}
+
+.fl .item {
+  font-size: var(--size-text-13);
+  text-anchor: middle;
+  fill: var(--color-fg);
+}
+
+.fl .item.gap {
+  fill: var(--color-muted);
+}
+
+.fl .cell.type {
+  font-family: var(--font-mono);
+  font-size: var(--size-text-11);
+  text-anchor: end;
+  fill: var(--color-muted);
+}
+
+.fl .fl-stroke {
+  stroke: var(--color-border);
+}
+
+.fl .fl-path {
+  fill: none;
+  stroke: var(--color-muted);
+  stroke-width: var(--border-edge);
+}
+
+.fl .cell .key {
+  font-size: var(--size-text-9);
+  font-weight: var(--weight-semibold);
+  fill: var(--color-muted);
+}
+
+.fl .frame-box {
+  fill: var(--color-group);
+  stroke: var(--color-border);
+}
+
+.fl .lifeline {
+  stroke: var(--color-border);
+  stroke-width: var(--border-lifeline);
+  stroke-dasharray: var(--dash-gap) var(--dash-gap);
+}
+
+.fl .note-box {
+  fill: var(--color-surface);
+  stroke: var(--color-border);
+  stroke-dasharray: var(--dash-card) var(--dash-card);
+}
+
+.fl .pill {
+  fill: var(--color-bg);
+  stroke: var(--color-border);
+}
+
+.fl .part-bg {
+  fill: transparent;
+}
+
+.fl .col-line {
+  stroke: var(--color-border);
+  stroke-width: var(--border-hair);
+}
+
+.fl .grid-cell {
+  fill: var(--color-node);
+  stroke: var(--color-border);
+  stroke-width: var(--border-thin);
+}
+
+.fl .grid-cell.gap {
+  fill: var(--color-surface);
+  stroke-dasharray: var(--dash-card) var(--dash-card);
+}
+
+.fl .grid-cell.empty {
+  fill: none;
+  stroke-dasharray: var(--dash-card) var(--dash-card);
+}
+
+.fl .fl-edge.mark .fl-path {
+  stroke: var(--color-fg);
+}
+/* 움직이는 SVG에만 있는 단계 이름과 설명 줄 */
+.fl .steplabel {
+  font-family: var(--font-sans);
+  font-size: var(--size-text-15);
+  font-weight: var(--weight-semibold);
+  text-anchor: middle;
+  fill: var(--color-fg);
+}
+
+.fl .caption {
+  font-size: var(--size-text-13);
+  text-anchor: middle;
+  fill: var(--color-muted);
+}
+
+@keyframes a0 { 0%,38.741% { stroke: var(--color-border) } 38.741%,55.474% { stroke: var(--color-border) } 55.475% { stroke: var(--color-border) } 56.93%,78.173% { stroke: var(--color-state-active) } 78.174%,83.266% { stroke: var(--color-state-active) } 83.267%,99.999% { stroke: var(--color-state-active) } }
+.fl .a0 { animation: a0 13.745s infinite linear; }
+@keyframes a1 { 0%,38.741% { fill: var(--color-card-on); stroke: var(--color-state-active) } 38.741%,55.474% { fill: var(--color-card-on); stroke: var(--color-state-active) } 55.475% { fill: var(--color-card-on); stroke: var(--color-state-active) } 56.93%,78.173% { fill: var(--color-node); stroke: var(--color-border) } 78.174%,83.266% { fill: var(--color-node); stroke: var(--color-border) } 83.267%,99.999% { fill: var(--color-node); stroke: var(--color-border) } }
+.fl .a1 { animation: a1 13.745s infinite linear; }
+@keyframes a2 { 0%,38.741% { fill: var(--color-node); stroke: var(--color-border) } 38.741% { fill: var(--color-node); stroke: var(--color-border) } 40.196%,55.474% { fill: var(--color-card-on); stroke: var(--color-state-active) } 55.475% { fill: var(--color-card-on); stroke: var(--color-state-active) } 56.93%,78.173% { fill: var(--color-node); stroke: var(--color-border) } 78.174%,83.266% { fill: var(--color-node); stroke: var(--color-border) } 83.267%,99.999% { fill: var(--color-node); stroke: var(--color-border) } }
+.fl .a2 { animation: a2 13.745s infinite linear; }
+@keyframes a3 { 0%,38.741% { fill: var(--color-node); stroke: var(--color-border) } 38.741%,55.474% { fill: var(--color-node); stroke: var(--color-border) } 55.475%,78.173% { fill: var(--color-node); stroke: var(--color-border) } 78.174% { fill: var(--color-node); stroke: var(--color-border) } 79.629%,83.266% { fill: var(--color-card-on); stroke: var(--color-state-active) } 83.267%,99.999% { fill: var(--color-card-on); stroke: var(--color-state-active) } }
+.fl .a3 { animation: a3 13.745s infinite linear; }
+@keyframes a4 { 0%,38.741% { fill: var(--color-node); stroke: var(--color-border) } 38.741%,55.474% { fill: var(--color-node); stroke: var(--color-border) } 55.475%,78.173% { fill: var(--color-node); stroke: var(--color-border) } 78.174%,83.266% { fill: var(--color-node); stroke: var(--color-border) } 83.267% { fill: var(--color-node); stroke: var(--color-border) } 84.722%,99.999% { fill: var(--color-card-on); stroke: var(--color-state-active) } }
+.fl .a4 { animation: a4 13.745s infinite linear; }
+@keyframes a5 { 0%,38.741% { stroke: var(--color-muted); stroke-width: var(--border-edge); marker-end: url(#fl-arrow) } 38.741%,55.474% { stroke: var(--color-muted); stroke-width: var(--border-edge); marker-end: url(#fl-arrow) } 55.475% { stroke: var(--color-muted); stroke-width: var(--border-edge); marker-end: url(#fl-arrow) } 56.93%,78.173% { stroke: var(--color-state-active); stroke-width: var(--border-strong); marker-end: url(#fl-arrow-on) } 78.174%,83.266% { stroke: var(--color-state-active); stroke-width: var(--border-strong); marker-end: url(#fl-arrow-on) } 83.267%,99.999% { stroke: var(--color-state-active); stroke-width: var(--border-strong); marker-end: url(#fl-arrow-on) } }
+.fl .a5 { animation: a5 13.745s infinite linear; }
+@keyframes a6 { 0%,38.741% { fill: var(--color-bg); stroke: var(--color-border) } 38.741%,55.474% { fill: var(--color-bg); stroke: var(--color-border) } 55.475% { fill: var(--color-bg); stroke: var(--color-border) } 56.93%,78.173% { fill: var(--color-state-active-fill); stroke: var(--color-state-active-fill) } 78.174%,83.266% { fill: var(--color-state-active-fill); stroke: var(--color-state-active-fill) } 83.267%,99.999% { fill: var(--color-state-active-fill); stroke: var(--color-state-active-fill) } }
+.fl .a6 { animation: a6 13.745s infinite linear; }
+@keyframes a7 { 0%,38.741% { fill: var(--color-muted) } 38.741%,55.474% { fill: var(--color-muted) } 55.475% { fill: var(--color-muted) } 56.93%,78.173% { fill: var(--color-state-on-active) } 78.174%,83.266% { fill: var(--color-state-on-active) } 83.267%,99.999% { fill: var(--color-state-on-active) } }
+.fl .a7 { animation: a7 13.745s infinite linear; }
+@keyframes a8 { 0%,38.741% { opacity: 1 } 38.741%,55.474% { opacity: 1 } 55.475% { opacity: 1 } 56.93%,78.173% { opacity: 0 } 78.174%,83.266% { opacity: 0 } 83.267%,99.999% { opacity: 0 } }
+.fl .a8 { animation: a8 13.745s infinite linear; }
+@keyframes a9 { 0%,38.741% { opacity: 0 } 38.741%,56.929% { opacity: 0 } 56.93% { opacity: 0 } 58.385%,78.173% { opacity: 1 } 78.174%,83.266% { opacity: 1 } 83.267%,99.999% { opacity: 1 } }
+.fl .a9 { animation: a9 13.745s infinite linear; }
+</style>
+<defs><marker id="fl-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-muted)"/></marker><marker id="fl-arrow-on" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-state-active)"/></marker><marker id="fl-arrow-main" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-data-main)"/></marker></defs>
+<rect x="0.5" y="0.5" width="959" height="417" rx="10" fill="var(--color-bg)" stroke="var(--color-plate-border)" stroke-width="1"/>
+<g transform="translate(184 0)">
+<g id="n-0" class="fl-node" data-id="va"><rect x="28" y="28" width="536" height="74" rx="10" fill="var(--color-node)" class="fl-stroke a0"/><text x="296" y="47.7" class="label">가상 주소 (16비트)</text><g class="fl-part" data-part="va.vpn"><rect x="40" y="58" width="320" height="32" class="grid-cell a1"/><text x="200" y="78.7" class="item">VPN (10비트)</text></g><g class="fl-part" data-part="va.offset"><rect x="360" y="58" width="192" height="32" class="grid-cell a2"/><text x="456" y="78.7" class="item">오프셋 (6비트)</text></g></g>
+<g id="n-1" class="fl-node" data-id="pa"><rect x="28" y="240" width="536" height="74" rx="10" fill="var(--color-node)" class="fl-stroke a0"/><text x="296" y="259.7" class="label">물리 주소 (16비트)</text><g class="fl-part" data-part="pa.pfn"><rect x="40" y="270" width="320" height="32" class="grid-cell a3"/><text x="200" y="290.7" class="item">PFN (10비트)</text></g><g class="fl-part" data-part="pa.offset"><rect x="360" y="270" width="192" height="32" class="grid-cell a4"/><text x="456" y="290.7" class="item">오프셋 (6비트)</text></g></g>
+<g id="e-0" class="fl-edge"><path id="p-0" d="M 296 102 L 296 240" class="fl-path a5" marker-end="url(#fl-arrow)"/><g class="fl-pill"><rect x="255.5" y="162" width="80.9" height="18" rx="9" class="pill a6"/><text x="296" y="175" class="edgelabel a7">페이지 표 조회</text></g></g>
+<g class="p2-0" opacity="0"><circle r="10" fill="var(--color-state-active)" opacity="0.2"/><circle r="4.5" fill="var(--color-state-active)"/><g><rect x="-48.1" y="-35" width="96.2" height="23" rx="8" fill="var(--color-state-active-fill)"/><text x="0" y="-20" class="chip">VPN을 PFN으로</text><animateTransform attributeName="transform" type="translate" dur="13.745s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.55475;0.5887;0.676;0.68025;1" values="92.5 47;92.5 47;92.5 47;92.5 0;92.5 0;92.5 0"/></g><animate attributeName="opacity" dur="13.745s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.55475;0.68025" values="0;1;0"/><animateMotion dur="13.745s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.55475;0.68025;1" keySplines="0 0 1 1;0.455 0.03 0.515 0.955;0 0 1 1" keyPoints="0;0;1;1"><mpath href="#p-0" xlink:href="#p-0"/></animateMotion></g>
+</g>
+<text x="480" y="360" opacity="0" class="steplabel a8">나누기</text>
+<text x="480" y="360" opacity="0" class="steplabel a9">바꾸기</text>
+<g opacity="0" class="a8"><text x="480" y="386" class="caption">윗 10비트는 페이지 번호이고 아랫 6비트는 페이지 안의 위치다</text></g>
+<g opacity="0" class="a9"><text x="480" y="386" class="caption">페이지 번호만 프레임 번호로 바뀌고 오프셋은 그대로 간다</text></g>
+</svg>

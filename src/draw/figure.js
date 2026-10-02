@@ -4,19 +4,22 @@ import { routePolyline } from '../route.js';
 import { centerBaseline, escapeXml, renderRich, roundCoord as r } from '../text.js';
 import { tokens, values } from '../tokens.js';
 import { cardGlyphs, createTones, drawCard } from './card.js';
+import { drawGrid } from './grid.js';
 
 const SPACE = values.space;
 const SIZE = values.size;
 const RADIUS = values.radius;
 const EDGE_DASH = `${values.dash.line} ${values.dash.gap}`;
 const INNER_Y = SPACE['6'];
+// 이름을 도형 안에서 따로 그리는 도형(테이블 머리, 격자 제목)
+const HAS_OWN_LABELS = new Set(['table', 'grid']);
 
 // cost: time O(s·k·r·n + e·p), heap O(out), stack O(1)
 // vars: s = 도형 수, k = 카드 내용 수, r = 카드 줄 수, n = 글자 수, e = 선 수, p = 경로 점 수, out = 만든 SVG 글자 수
 // basis: estimate
 /**
  * 장면을 그린다. 순서는 그룹, 생명선, 도형, 선, 메모다.
- * @param decorate (kind, index, extra) => class. 움직이는 SVG가 박자별 class를 넣는다. kind: node, edge, pill, pilltext, quiet, card, layer, column
+ * @param decorate (kind, index, extra) => class. 움직이는 SVG가 박자별 class를 넣는다. kind: node, edge, pill, pilltext, quiet, card, layer, part
  * @param glyphs 쓴 글자를 모으는 그릇(createGlyphSet)
  */
 export function drawScene(scene, decorate, glyphs) {
@@ -52,7 +55,7 @@ function drawItem(it, i, paint) {
   if (it.card) cardGlyphs(it.card.layouts, glyphs);
   const shape = drawShape(it, stroke, paint);
   const card = it.card ? drawCard(it.card, { box: cardBox(it), i }, paint) : '';
-  return `${open}${shape}${it.shape === 'table' ? '' : drawLabels(it)}${card}</g>`;
+  return `${open}${shape}${HAS_OWN_LABELS.has(it.shape) ? '' : drawLabels(it)}${card}</g>`;
 }
 
 // cost: time O(c), heap O(out), stack O(1)
@@ -88,6 +91,8 @@ function drawShape(it, stroke, paint) {
       return `<circle cx="${r(cx)}" cy="${r(y + h / 2)}" r="${r(w / 2)}" fill="none" ${stroke}/><circle cx="${r(cx)}" cy="${r(y + h / 2)}" r="${r(w / 4)}" fill="${tokens.color.fg}"/>`;
     case 'table':
       return drawTable(it, stroke, paint);
+    case 'grid':
+      return drawGrid(it, stroke, paint);
     default: {
       const dash = it.shape === 'external' ? ` stroke-dasharray="${EDGE_DASH}"` : '';
       return `<rect x="${r(x)}" y="${r(y)}" width="${r(w)}" height="${r(h)}" rx="${RADIUS.xl}" ${fill} ${stroke}${dash}/>`;
@@ -154,7 +159,7 @@ function drawTable(it, stroke, { decorate, glyphs }) {
     glyphs.add(key, 'semibold');
     const baseline = r(centerBaseline(y + rowH / 2, STYLE.cell.size));
     return (
-      `<g class="fl-col" data-col="${escapeXml(key2)}"><rect x="${r(it.x + values.border.thin)}" y="${r(y)}" width="${r(it.w - values.border.thin * 2)}" height="${r(rowH)}" class="col-bg ${decorate('column', 0, key2)}"/>` +
+      `<g class="fl-part" data-part="${escapeXml(key2)}"><rect x="${r(it.x + values.border.thin)}" y="${r(y)}" width="${r(it.w - values.border.thin * 2)}" height="${r(rowH)}" class="part-bg ${decorate('part', 0, key2)}"/>` +
       `<line x1="${r(it.x)}" x2="${r(it.x + it.w)}" y1="${r(y)}" y2="${r(y)}" class="col-line"/>` +
       `<text x="${r(it.x + SPACE['9'])}" y="${baseline}" class="cell">${escapeXml(c.name)}${key ? `<tspan class="key" dx="${SPACE['3']}">${key}</tspan>` : ''}</text>` +
       `<text x="${r(it.x + it.w - SPACE['9'])}" y="${baseline}" class="cell type">${escapeXml(c.type)}</text></g>`

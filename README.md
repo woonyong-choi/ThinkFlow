@@ -94,6 +94,7 @@ Open `examples/out/index.html` to see every example on one page.
 
 - Figure syntax: one statement per line, quoted text, unique names, and line-numbered errors with suggestions.
 - Figure kinds: structure, sequence, state, and data relation diagrams.
+- Cell grids: bit fields, arrays, stacks, and matrices drawn cell by cell, with merged, empty, and omitted cells and lit cells.
 - Charts: bar, dumbbell, box, scatter, line, and heatmap charts, with values from the source or a JSON file.
 - Layout: elkjs layout with per-group direction, using shape sizes measured with the embedded fonts.
 - Figure check: overlaps, edges through nodes, crowded edges, aspect ratio, and readability.
@@ -115,6 +116,7 @@ The design documents are written in Korean.
 - [Architecture](docs/architecture.md): components, flows, and invariants
 - [Figure syntax](docs/design/figure-syntax.md): line rules, file structure, flow figures, timeline, and errors
 - [Figure kinds](docs/design/figure-kinds.md): sequence, state, and data relation figures
+- [Cell grids](docs/design/grid.md): cell grid syntax, sizes, and lighting a cell
 - [Charts](docs/design/charts.md): six chart kinds, value sources, and revealing series
 - [Layout](docs/design/layout.md): text measurement, shape sizes and ports, group layout, and aspect ratio
 - [Figure check](docs/design/figure-check.md): screen error checks and messages

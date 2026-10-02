@@ -114,6 +114,7 @@
   --size-node-store-cap: 12px;
   --size-node-state-dot: 14px;
   --size-node-table-row: 26px;
+  --size-grid-cell: 32px;
   --size-figure-canvas: 960px;
   --size-chip-max-width: 210px;
   --size-player-caption-max: 720px;
@@ -555,6 +556,7 @@ html.embedded .fl-figure {
 
 .fl .fl-path,
 .fl .fl-stroke,
+.fl .grid-cell,
 .fl .fl-pill rect {
   transition: stroke var(--duration-fast), fill var(--duration-fast);
 }
@@ -580,6 +582,7 @@ html.embedded .fl-figure {
 @media (prefers-reduced-motion: reduce) {
   .fl .fl-path,
   .fl .fl-stroke,
+  .fl .grid-cell,
   .fl .fl-pill rect,
   .fl .fl-layer,
   .fl .fl-edge.quiet {
@@ -591,8 +594,13 @@ html.embedded .fl-figure {
   stroke: var(--color-state-active);
 }
 
-.fl .fl-col.on .col-bg {
+.fl .fl-part.on .part-bg {
   fill: var(--color-card-on);
+}
+
+.fl .fl-part.on .grid-cell {
+  fill: var(--color-card-on);
+  stroke: var(--color-state-active);
 }
 
 /* hidden 속성이 display: grid 같은 규칙에 지지 않게 한다. 시간 흐름 없는 그림의 빈 조작 막대를 숨기기 위해서다. */
@@ -685,6 +693,16 @@ html.embedded .fl-figure {
   fill: var(--color-fg);
 }
 
+.fl .item {
+  font-size: var(--size-text-13);
+  text-anchor: middle;
+  fill: var(--color-fg);
+}
+
+.fl .item.gap {
+  fill: var(--color-muted);
+}
+
 .fl .cell.type {
   font-family: var(--font-mono);
   font-size: var(--size-text-11);
@@ -730,13 +748,29 @@ html.embedded .fl-figure {
   stroke: var(--color-border);
 }
 
-.fl .col-bg {
+.fl .part-bg {
   fill: transparent;
 }
 
 .fl .col-line {
   stroke: var(--color-border);
   stroke-width: var(--border-hair);
+}
+
+.fl .grid-cell {
+  fill: var(--color-node);
+  stroke: var(--color-border);
+  stroke-width: var(--border-thin);
+}
+
+.fl .grid-cell.gap {
+  fill: var(--color-surface);
+  stroke-dasharray: var(--dash-card) var(--dash-card);
+}
+
+.fl .grid-cell.empty {
+  fill: none;
+  stroke-dasharray: var(--dash-card) var(--dash-card);
 }
 
 .fl .fl-edge.mark .fl-path {
@@ -1437,7 +1471,7 @@ function createStage(root, data) {
     groups: all('.fl-group'),
     edges: data.edgeEnds.map((_, j) => svg.querySelector(`#e-${j}`)),
     paths: data.edgeEnds.map((_, j) => svg.querySelector(`#p-${j}`)),
-    columns: all('.fl-col'),
+    parts: all('.fl-part'),
     seriesEls: Array.from({ length: data.seriesCount }, (_, i) => all(`.cs-${i}`)),
     labelEls: all('.chart-label.shift'),
     rowEls: Array.from({ length: data.rowCount }, (_, k) => all(`.cr-${k}`)),
@@ -1466,7 +1500,7 @@ function drawSegmentState(stage, seg) {
   stage.nodes.forEach((g, n) => g?.classList.toggle('on', seg.nodesOn.includes(n)));
   stage.groups.forEach((g, n) => g.classList.toggle('on', seg.groupsOn.includes(n)));
   stage.edges.forEach((e, j) => e?.classList.toggle('on', seg.edgesOn.includes(j)));
-  stage.columns.forEach((c) => c.classList.toggle('on', seg.columnsOn.includes(c.dataset.col)));
+  stage.parts.forEach((p) => p.classList.toggle('on', seg.partsOn.includes(p.dataset.part)));
   showCards(stage, seg.cardsBefore);
   stage.pendingCards = Object.entries(seg.cardsAt).map(([n, at]) => ({ n: Number(n), at }));
   drawChartState(stage, seg);
@@ -1658,7 +1692,7 @@ function chipSlide(hop, metrics) {
   };
 }
 
-figurePlay(document.querySelector('.fl-figure'), {"segs":[{"si":0,"t0":0,"t1":4695,"hops":[{"edge":0,"isBack":false,"ms":1375,"to":"app","line":10}],"edgesOn":[0],"nodesOn":[0,1],"groupsOn":[],"columnsOn":[],"cards":{},"cardsBefore":{},"cardsAt":{},"caption":"사용자가 인가 서버에서 직접 로그인한다","series":[],"growing":[],"lights":[]},{"si":0,"t0":4695,"t1":7318,"hops":[{"edge":1,"isBack":false,"ms":1923,"to":"auth","line":11}],"edgesOn":[0,1],"nodesOn":[0,1,2],"groupsOn":[],"columnsOn":[],"cards":{},"cardsBefore":{},"cardsAt":{},"caption":"사용자가 인가 서버에서 직접 로그인한다","series":[],"growing":[],"lights":[]},{"si":0,"t0":7318,"t1":11541,"hops":[{"edge":2,"isBack":false,"ms":1923,"to":"app","line":13}],"edgesOn":[0,1,2],"nodesOn":[0,1,2],"groupsOn":[],"columnsOn":[],"cards":{},"cardsBefore":{},"cardsAt":{},"caption":"사용자가 인가 서버에서 직접 로그인한다","series":[],"growing":[],"lights":[]},{"si":1,"t0":11541,"t1":14544,"hops":[{"edge":3,"isBack":false,"ms":1923,"to":"auth","line":15}],"edgesOn":[3],"nodesOn":[1,2],"groupsOn":[],"columnsOn":[],"cards":{},"cardsBefore":{},"cardsAt":{},"caption":"코드와 원래 비밀값을 함께 내야 토큰을 준다","series":[],"growing":[],"lights":[]},{"si":1,"t0":14544,"t1":17167,"hops":[{"edge":4,"isBack":false,"ms":1923,"to":"app","line":16}],"edgesOn":[3,4],"nodesOn":[1,2],"groupsOn":[],"columnsOn":[],"cards":{},"cardsBefore":{},"cardsAt":{},"caption":"코드와 원래 비밀값을 함께 내야 토큰을 준다","series":[],"growing":[],"lights":[]},{"si":1,"t0":17167,"t1":24212,"hops":[{"edge":5,"isBack":false,"ms":4745,"to":"api","line":17}],"edgesOn":[3,4,5],"nodesOn":[1,2,3],"groupsOn":[],"columnsOn":[],"cards":{},"cardsBefore":{},"cardsAt":{},"caption":"코드와 원래 비밀값을 함께 내야 토큰을 준다","series":[],"growing":[],"lights":[]}],"steps":["인가","토큰"],"cardCounts":[0,0,0,0],"edgeEnds":[[0,1],[1,2],[2,1],[1,2],[2,1],[1,3]],"seriesCount":0,"rowCount":0,"metrics":{"active":"var(--color-state-active)","chipFill":"var(--color-state-active-fill)","halo":10,"haloOpacity":0.2,"packet":4.5,"chipRadius":8,"chipLine":15,"chipPadX":18,"chipPadY":8,"chipGap":12,"icon":12,"iconStroke":1.75,"pauseStroke":2.5,"zoomMax":6,"zoomStep":1.25,"move":[0.455,0.03,0.515,0.955]}});
+figurePlay(document.querySelector('.fl-figure'), {"segs":[{"si":0,"t0":0,"t1":4695,"hops":[{"edge":0,"isBack":false,"ms":1375,"to":"app","line":10}],"edgesOn":[0],"nodesOn":[0,1],"groupsOn":[],"partsOn":[],"cards":{},"cardsBefore":{},"cardsAt":{},"caption":"사용자가 인가 서버에서 직접 로그인한다","series":[],"growing":[],"lights":[]},{"si":0,"t0":4695,"t1":7318,"hops":[{"edge":1,"isBack":false,"ms":1923,"to":"auth","line":11}],"edgesOn":[0,1],"nodesOn":[0,1,2],"groupsOn":[],"partsOn":[],"cards":{},"cardsBefore":{},"cardsAt":{},"caption":"사용자가 인가 서버에서 직접 로그인한다","series":[],"growing":[],"lights":[]},{"si":0,"t0":7318,"t1":11541,"hops":[{"edge":2,"isBack":false,"ms":1923,"to":"app","line":13}],"edgesOn":[0,1,2],"nodesOn":[0,1,2],"groupsOn":[],"partsOn":[],"cards":{},"cardsBefore":{},"cardsAt":{},"caption":"사용자가 인가 서버에서 직접 로그인한다","series":[],"growing":[],"lights":[]},{"si":1,"t0":11541,"t1":14544,"hops":[{"edge":3,"isBack":false,"ms":1923,"to":"auth","line":15}],"edgesOn":[3],"nodesOn":[1,2],"groupsOn":[],"partsOn":[],"cards":{},"cardsBefore":{},"cardsAt":{},"caption":"코드와 원래 비밀값을 함께 내야 토큰을 준다","series":[],"growing":[],"lights":[]},{"si":1,"t0":14544,"t1":17167,"hops":[{"edge":4,"isBack":false,"ms":1923,"to":"app","line":16}],"edgesOn":[3,4],"nodesOn":[1,2],"groupsOn":[],"partsOn":[],"cards":{},"cardsBefore":{},"cardsAt":{},"caption":"코드와 원래 비밀값을 함께 내야 토큰을 준다","series":[],"growing":[],"lights":[]},{"si":1,"t0":17167,"t1":24212,"hops":[{"edge":5,"isBack":false,"ms":4745,"to":"api","line":17}],"edgesOn":[3,4,5],"nodesOn":[1,2,3],"groupsOn":[],"partsOn":[],"cards":{},"cardsBefore":{},"cardsAt":{},"caption":"코드와 원래 비밀값을 함께 내야 토큰을 준다","series":[],"growing":[],"lights":[]}],"steps":["인가","토큰"],"cardCounts":[0,0,0,0],"edgeEnds":[[0,1],[1,2],[2,1],[1,2],[2,1],[1,3]],"seriesCount":0,"rowCount":0,"metrics":{"active":"var(--color-state-active)","chipFill":"var(--color-state-active-fill)","halo":10,"haloOpacity":0.2,"packet":4.5,"chipRadius":8,"chipLine":15,"chipPadX":18,"chipPadY":8,"chipGap":12,"icon":12,"iconStroke":1.75,"pauseStroke":2.5,"zoomMax":6,"zoomStep":1.25,"move":[0.455,0.03,0.515,0.955]}});
 </script>
 </body>
 </html>

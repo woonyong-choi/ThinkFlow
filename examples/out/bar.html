@@ -115,6 +115,7 @@
   --size-node-store-cap: 12px;
   --size-node-state-dot: 14px;
   --size-node-table-row: 26px;
+  --size-grid-cell: 32px;
   --size-figure-canvas: 960px;
   --size-chip-max-width: 210px;
   --size-player-caption-max: 720px;
@@ -556,6 +557,7 @@ html.embedded .fl-figure {
 
 .fl .fl-path,
 .fl .fl-stroke,
+.fl .grid-cell,
 .fl .fl-pill rect {
   transition: stroke var(--duration-fast), fill var(--duration-fast);
 }
@@ -581,6 +583,7 @@ html.embedded .fl-figure {
 @media (prefers-reduced-motion: reduce) {
   .fl .fl-path,
   .fl .fl-stroke,
+  .fl .grid-cell,
   .fl .fl-pill rect,
   .fl .fl-layer,
   .fl .fl-edge.quiet {
@@ -592,8 +595,13 @@ html.embedded .fl-figure {
   stroke: var(--color-state-active);
 }
 
-.fl .fl-col.on .col-bg {
+.fl .fl-part.on .part-bg {
   fill: var(--color-card-on);
+}
+
+.fl .fl-part.on .grid-cell {
+  fill: var(--color-card-on);
+  stroke: var(--color-state-active);
 }
 
 /* hidden 속성이 display: grid 같은 규칙에 지지 않게 한다. 시간 흐름 없는 그림의 빈 조작 막대를 숨기기 위해서다. */
@@ -686,6 +694,16 @@ html.embedded .fl-figure {
   fill: var(--color-fg);
 }
 
+.fl .item {
+  font-size: var(--size-text-13);
+  text-anchor: middle;
+  fill: var(--color-fg);
+}
+
+.fl .item.gap {
+  fill: var(--color-muted);
+}
+
 .fl .cell.type {
   font-family: var(--font-mono);
   font-size: var(--size-text-11);
@@ -731,13 +749,29 @@ html.embedded .fl-figure {
   stroke: var(--color-border);
 }
 
-.fl .col-bg {
+.fl .part-bg {
   fill: transparent;
 }
 
 .fl .col-line {
   stroke: var(--color-border);
   stroke-width: var(--border-hair);
+}
+
+.fl .grid-cell {
+  fill: var(--color-node);
+  stroke: var(--color-border);
+  stroke-width: var(--border-thin);
+}
+
+.fl .grid-cell.gap {
+  fill: var(--color-surface);
+  stroke-dasharray: var(--dash-card) var(--dash-card);
+}
+
+.fl .grid-cell.empty {
+  fill: none;
+  stroke-dasharray: var(--dash-card) var(--dash-card);
 }
 
 .fl .fl-edge.mark .fl-path {
@@ -1468,7 +1502,7 @@ function createStage(root, data) {
     groups: all('.fl-group'),
     edges: data.edgeEnds.map((_, j) => svg.querySelector(`#e-${j}`)),
     paths: data.edgeEnds.map((_, j) => svg.querySelector(`#p-${j}`)),
-    columns: all('.fl-col'),
+    parts: all('.fl-part'),
     seriesEls: Array.from({ length: data.seriesCount }, (_, i) => all(`.cs-${i}`)),
     labelEls: all('.chart-label.shift'),
     rowEls: Array.from({ length: data.rowCount }, (_, k) => all(`.cr-${k}`)),
@@ -1497,7 +1531,7 @@ function drawSegmentState(stage, seg) {
   stage.nodes.forEach((g, n) => g?.classList.toggle('on', seg.nodesOn.includes(n)));
   stage.groups.forEach((g, n) => g.classList.toggle('on', seg.groupsOn.includes(n)));
   stage.edges.forEach((e, j) => e?.classList.toggle('on', seg.edgesOn.includes(j)));
-  stage.columns.forEach((c) => c.classList.toggle('on', seg.columnsOn.includes(c.dataset.col)));
+  stage.parts.forEach((p) => p.classList.toggle('on', seg.partsOn.includes(p.dataset.part)));
   showCards(stage, seg.cardsBefore);
   stage.pendingCards = Object.entries(seg.cardsAt).map(([n, at]) => ({ n: Number(n), at }));
   drawChartState(stage, seg);
@@ -1689,7 +1723,7 @@ function chipSlide(hop, metrics) {
   };
 }
 
-figurePlay(document.querySelector('.fl-figure'), {"segs":[{"si":0,"t0":0,"t1":3715,"hops":[],"edgesOn":[],"nodesOn":[],"groupsOn":[],"columnsOn":[],"cards":{},"cardsBefore":{},"cardsAt":{},"caption":"기억 없이 답하면 여러 세션 질문에서 크게 틀린다","labelShifts":[8,8,16,8],"series":[1],"growing":[1],"lights":[]},{"si":1,"t0":3715,"t1":5875,"hops":[],"edgesOn":[],"nodesOn":[],"groupsOn":[],"columnsOn":[],"cards":{},"cardsBefore":{},"cardsAt":{},"caption":"같은 질문에 기억을 붙이면 모두 채택 기준을 넘는다","labelShifts":[0,0,0,0],"series":[1,0],"growing":[0],"lights":[]},{"si":1,"t0":5875,"t1":8175,"hops":[],"edgesOn":[],"nodesOn":[],"groupsOn":[],"columnsOn":[],"cards":{},"cardsBefore":{},"cardsAt":{},"caption":"같은 질문에 기억을 붙이면 모두 채택 기준을 넘는다","labelShifts":[0,0,0,0],"series":[1,0],"growing":[],"lights":[1]}],"steps":["기억 없음","기억 붙임"],"cardCounts":[],"edgeEnds":[],"seriesCount":2,"rowCount":4,"metrics":{"active":"var(--color-state-active)","chipFill":"var(--color-state-active-fill)","halo":10,"haloOpacity":0.2,"packet":4.5,"chipRadius":8,"chipLine":15,"chipPadX":18,"chipPadY":8,"chipGap":12,"icon":12,"iconStroke":1.75,"pauseStroke":2.5,"zoomMax":6,"zoomStep":1.25,"move":[0.455,0.03,0.515,0.955]}});
+figurePlay(document.querySelector('.fl-figure'), {"segs":[{"si":0,"t0":0,"t1":3715,"hops":[],"edgesOn":[],"nodesOn":[],"groupsOn":[],"partsOn":[],"cards":{},"cardsBefore":{},"cardsAt":{},"caption":"기억 없이 답하면 여러 세션 질문에서 크게 틀린다","labelShifts":[8,8,16,8],"series":[1],"growing":[1],"lights":[]},{"si":1,"t0":3715,"t1":5875,"hops":[],"edgesOn":[],"nodesOn":[],"groupsOn":[],"partsOn":[],"cards":{},"cardsBefore":{},"cardsAt":{},"caption":"같은 질문에 기억을 붙이면 모두 채택 기준을 넘는다","labelShifts":[0,0,0,0],"series":[1,0],"growing":[0],"lights":[]},{"si":1,"t0":5875,"t1":8175,"hops":[],"edgesOn":[],"nodesOn":[],"groupsOn":[],"partsOn":[],"cards":{},"cardsBefore":{},"cardsAt":{},"caption":"같은 질문에 기억을 붙이면 모두 채택 기준을 넘는다","labelShifts":[0,0,0,0],"series":[1,0],"growing":[],"lights":[1]}],"steps":["기억 없음","기억 붙임"],"cardCounts":[],"edgeEnds":[],"seriesCount":2,"rowCount":4,"metrics":{"active":"var(--color-state-active)","chipFill":"var(--color-state-active-fill)","halo":10,"haloOpacity":0.2,"packet":4.5,"chipRadius":8,"chipLine":15,"chipPadX":18,"chipPadY":8,"chipGap":12,"icon":12,"iconStroke":1.75,"pauseStroke":2.5,"zoomMax":6,"zoomStep":1.25,"move":[0.455,0.03,0.515,0.955]}});
 </script>
 </body>
 </html>

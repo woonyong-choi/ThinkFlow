@@ -13,6 +13,9 @@ const table = (entries) => Object.assign(Object.create(null), entries);
 const V1 = { since: 1 };
 const FLAG = { ...V1, type: 'flag' };
 const TEXT = { ...V1, type: 'text' };
+/** 칸 격자의 정수 선택 사항. min은 받는 가장 작은 값이다(칸 위치는 0, 크기와 개수는 1). */
+const COUNT = { ...V1, type: 'number', format: '양의 정수', min: 1 };
+const INDEX = { ...V1, type: 'number', format: '0 이상 정수', min: 0 };
 
 /** 그림 종류 문장. argument는 둘째 낱말이 읽는 값 목록 이름이다. */
 export const KINDS = table({
@@ -61,7 +64,7 @@ export const VALUES = {
 };
 
 /**
- * 문장 낱말. section은 파일 부분(version, header, declare, timeline), kinds는 쓸 수 있는 그림 종류다.
+ * 문장 낱말. section은 파일 부분(version, header, declare, timeline), kinds는 쓸 수 있는 그림 종류다. `item`과 `gap`은 `grid { }` 안에서만 쓴다.
  * display는 문서에 적는 꼴이다(선 줄은 첫 낱말이 이름이라 낱말로 가를 수 없다). node는 도형 선언이고 hasSub는 부제를 받는지, scopes는 선택 사항을 찾을 OPTIONS 범위(기본은 낱말 자신)다.
  * positional은 낱말 뒤 자리별 값 목록 이름이다.
  */
@@ -82,6 +85,9 @@ export const STATEMENTS = table({
   decision: { ...V1, section: 'declare', kinds: ['flow'], node: { hasSub: false } },
   state: { ...V1, section: 'declare', kinds: ['state'], node: { hasSub: false } },
   group: { ...V1, section: 'declare', kinds: ['flow', 'state'] },
+  grid: { ...V1, section: 'declare', kinds: ['flow'] },
+  item: { ...V1, section: 'declare', kinds: ['flow'] },
+  gap: { ...V1, section: 'declare', kinds: ['flow'], scopes: ['gap', 'item'] },
   start: { ...V1, section: 'declare', kinds: ['state'] },
   final: { ...V1, section: 'declare', kinds: ['state'] },
   table: { ...V1, section: 'declare', kinds: ['data'] },
@@ -107,7 +113,7 @@ export const STATEMENTS = table({
 
 /**
  * 선택 사항. 키는 `범위.이름`이고 type은 word, text, number, flag다.
- * values는 값 목록 이름, format은 값 목록이 없는 낱말 값의 문서용 이름, maxLength는 글자 수 상한이다. 값 없는 낱말(flag)은 폐기 별칭을 두지 않는다. 이름 자리의 낱말과 가를 수 없기 때문이다.
+ * values는 값 목록 이름, format은 값 목록이 없는 낱말 값의 문서용 이름, maxLength는 글자 수 상한, min은 정수만 받는 숫자 선택 사항의 가장 작은 값이다. 값 없는 낱말(flag)은 폐기 별칭을 두지 않는다. 이름 자리의 낱말과 가를 수 없기 때문이다.
  */
 export const OPTIONS = table({
   'group.direction': { ...V1, type: 'word', values: 'direction' },
@@ -124,6 +130,13 @@ export const OPTIONS = table({
   'series.role': { ...V1, type: 'word', values: 'role' },
   'series.key': TEXT,
   'point.series': { ...V1, type: 'word', format: '계열 이름' },
+  'grid.rows': COUNT,
+  'grid.cols': COUNT,
+  'item.row': INDEX,
+  'item.col': INDEX,
+  'item.rows': COUNT,
+  'item.cols': COUNT,
+  'gap.count': COUNT,
   'light.x': { ...V1, type: 'number', format: '숫자' },
   'column.pk': FLAG,
   'column.unique': FLAG,

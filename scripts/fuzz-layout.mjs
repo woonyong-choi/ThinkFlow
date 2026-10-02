@@ -26,6 +26,15 @@ const NODE_MIN = 3;
 const NODE_SPREAD = 7;
 const GROUP_MIN = 2;
 const GROUP_SPREAD = 3;
+const GRID_CHANCE = 0.25;
+const GRID_ROWS_MAX = 4;
+const GRID_COLS_MAX = 6;
+const EMPTY_CHANCE = 0.25;
+const GAP_CHANCE = 0.15;
+const SPAN_CHANCE = 0.3;
+const SPAN_GROW_CHANCE = 0.5;
+const GAP_COUNT_MAX = 9;
+const CELL_LABELS = ['A', '0x1F', '읽기', '긴 한글 글이 한 칸 안에서 줄을 바꿔 들어간다', 'a very long cell label that has to wrap inside its cell'];
 const SHAPES = ['box', 'box', 'person', 'store', 'external'];
 const ASPECTS = ['0.6', '1', '1.4', '1.6', '2.4'];
 const DIRECTIONS = ['right', 'down'];
@@ -50,22 +59,53 @@ function parseOptions(argv) {
   return options;
 }
 
+// cost: time O(r·c), heap O(r·c), stack O(1)
+// vars: r = 격자 행 수, c = 격자 열 수
+// basis: estimate
+// 칸 격자 선언 줄들. 칸은 겹치지 않게 앞에서부터 빈 자리에 놓고, 가끔 비우거나 합치거나 gap으로 접는다.
+function declareGrid(id, rnd) {
+  const [rows, cols] = [1 + rnd.int(GRID_ROWS_MAX), 1 + rnd.int(GRID_COLS_MAX)];
+  const taken = Array.from({ length: rows }, () => Array(cols).fill(false));
+  const lines = [`grid ${id} "${id}" rows=${rows} cols=${cols} {`];
+  for (let slot = 0; slot < rows * cols; slot++) {
+    const [row, col] = [Math.floor(slot / cols), slot % cols];
+    const isSkipped = taken[row][col] || (slot > 0 && rnd.next() < EMPTY_CHANCE);
+    if (!isSkipped) lines.push(`  ${cellLine(`c${lines.length}`, placeCell(taken, { row, col }, rnd), rnd)}`);
+  }
+  return [...lines, '}'];
+}
+
+// 빈 자리 (row, col)에 칸을 놓고 가끔 오른쪽으로 합쳐 차지한 자리를 표시한다.
+function placeCell(taken, { row, col }, rnd) {
+  let cols = 1;
+  if (rnd.next() < SPAN_CHANCE) while (col + cols < taken[row].length && !taken[row][col + cols] && rnd.next() < SPAN_GROW_CHANCE) cols++;
+  for (let c = col; c < col + cols; c++) taken[row][c] = true;
+  return { row, col, rows: 1, cols };
+}
+
+function cellLine(id, { row, col, rows, cols }, rnd) {
+  const place = `row=${row} col=${col} rows=${rows} cols=${cols}`;
+  if (rnd.next() < GAP_CHANCE) return `gap ${id} "…" count=${1 + rnd.int(GAP_COUNT_MAX)} ${place}`;
+  return `item ${id} "${rnd.pick(CELL_LABELS)}" ${place}`;
+}
+
 // cost: time O(n), heap O(n), stack O(1)
 // vars: n = 도형 수
 // basis: estimate
-// 도형 선언 줄들. 도형 둘 이상을 묶은 그룹을 섞고, 가끔 첫 그룹을 바깥 그룹으로 한 번 더 감싼다.
+// 도형 선언 줄들. 구조 그림은 가끔 칸 격자를 도형 하나로 섞는다. 도형 둘 이상을 묶은 그룹을 섞고, 가끔 첫 그룹을 바깥 그룹으로 한 번 더 감싼다.
 function declareNodes(ids, rnd, kind) {
   const shape = () => (kind === 'state' ? 'state' : rnd.pick(SHAPES));
+  const declare = (id) => (kind === 'flow' && rnd.next() < GRID_CHANCE ? declareGrid(id, rnd) : [`${shape()} ${id} "${id}"`]);
   const parts = [];
   let groups = 0;
   for (let i = 0; i < ids.length; ) {
     const size = Math.min(ids.length - i, GROUP_MIN + rnd.int(GROUP_SPREAD));
     if (rnd.next() < GROUP_CHANCE && i + GROUP_MIN <= ids.length) {
-      parts.push(`group g${groups} "그룹${groups}" direction=${rnd.pick(DIRECTIONS)} {`, ...ids.slice(i, i + size).map((m) => `  ${shape()} ${m} "${m}"`), '}');
+      parts.push(`group g${groups} "그룹${groups}" direction=${rnd.pick(DIRECTIONS)} {`, ...ids.slice(i, i + size).flatMap((m) => declare(m).map((line) => `  ${line}`)), '}');
       groups++;
       i += size;
     } else {
-      parts.push(`${shape()} ${ids[i]} "${ids[i]}"`);
+      parts.push(...declare(ids[i]));
       i++;
     }
   }

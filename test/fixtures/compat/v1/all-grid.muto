@@ -1,0 +1,25 @@
+mutoscope 1
+flow right
+title "칸 격자의 모든 낱말"
+subtitle "grid, item, gap과 칸 자리 선택 사항"
+
+box src "입력"
+group view "화면" direction=down {
+  grid address "주소 필드" rows=1 cols=16 {
+    item high "상위" col=0 cols=10
+    item low "하위" col=10 cols=6
+  }
+  grid table "표" rows=4 cols=3 {
+    item head "머리" row=0 col=0 rows=1 cols=3
+    item key "키" row=1 col=0
+    item value "값" row=1 col=1 cols=2
+    gap rest "나머지" row=2 col=0 rows=1 cols=3 count=40
+  }
+}
+src -> address "읽기"
+src -> table
+
+step "필드" "칸 하나와 격자 하나를 밝힌다"
+  light address.high
+  light table table.key
+  show src "입력" tag="in"

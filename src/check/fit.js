@@ -1,6 +1,6 @@
 // 1번: 글이 자기 칸 안쪽에 들어간다. 크기는 잰 글로 정하므로 구조 그림의 실패는 이 도구의 버그다.
 import { measure } from '../measure/fonts.js';
-import { CARD, STYLE, groupTitleWidth } from '../measure/sizes.js';
+import { CARD, GRID, STYLE, groupTitleWidth } from '../measure/sizes.js';
 import { values } from '../tokens.js';
 import { FIT_SLACK, fits } from './geometry.js';
 
@@ -29,7 +29,17 @@ function checkItemFits(it, fail) {
   for (const l of it.labelLines ?? []) if (!fits(measure(l, STYLE.label.size, STYLE.label.face), room)) fail(it.line, `label "${l}"`, `node "${it.id}"`);
   for (const l of it.subLines ?? []) if (!fits(measure(l, STYLE.sub.size, STYLE.sub.face), room)) fail(it.line, `subtitle "${l}"`, `node "${it.id}"`);
   if (it.shape === 'table') for (const c of it.columns) if (!fits(columnWidth(c), it.w - INNER_X * 2)) fail(it.line, `column "${c.name}"`, `table "${it.id}"`);
+  if (it.shape === 'grid') checkGridFits(it, fail);
   if (it.card) checkCardFits(it, fail);
+}
+
+// cost: time O(c·l), heap O(1), stack O(1)
+// vars: c = 칸 수, l = 칸 글 줄 수
+// basis: estimate
+// 격자 칸 글: 칸 너비에서 좌우 안쪽 간격을 뺀 폭에 줄이 들어간다.
+function checkGridFits(it, fail) {
+  const lines = it.cells.flatMap((c) => c.lines.map((l) => ({ cell: c, text: l })));
+  for (const { cell, text } of lines) if (!fits(measure(text, STYLE.item.size, STYLE.item.face), cell.w - GRID.cellPadX * 2)) fail(it.line, `cell "${cell.id}" text "${text}"`, `grid "${it.id}"`);
 }
 
 // 이름과 부제가 쓸 수 있는 폭. 사람은 몸통 아래 바깥 여백까지, 마름모는 내접 사각형 비율로 넓힌 만큼이다.

@@ -73,7 +73,7 @@ function hopMs(points, speed) {
 /**
  * 시간표를 만든다. 이동 시간에 선 길이가 필요해 배치가 끝난 장면을 받는다. 차트는 장면이 없다.
  * @param deps { cards, chips, scene }. chips는 이동 글을 글 상자 줄로 나누는 함수, scene은 배치가 끝난 장면(edges의 points를 쓴다)이고 차트면 없다
- * @returns { segs, total, steps, growMs }. growMs는 차트 계열이 자라는 시간이다. seg: { si, bi, t0, t1, labelShifts, move, hops, edgesOn, nodesOn, columnsOn, cards, cardsBefore, cardsAt, caption, series, growing, lights }
+ * @returns { segs, total, steps, growMs }. growMs는 차트 계열이 자라는 시간이다. seg: { si, bi, t0, t1, labelShifts, move, hops, edgesOn, nodesOn, partsOn, cards, cardsBefore, cardsAt, caption, series, growing, lights }
  */
 export function buildTimeline(figure, deps) {
   const speed = figure.speedMs ?? (figure.kind === 'chart' ? DWELL.reveal : DWELL.hop);
@@ -126,7 +126,7 @@ function beatSeg({ step, si, beat, bi }, { memory, run }, { cards, chips, scene 
     hops,
     edgesOn: [...memory.edgesOn],
     nodesOn: [...memory.lit].filter((id) => !id.includes('.')),
-    columnsOn: [...memory.lit].filter((id) => id.includes('.')),
+    partsOn: [...memory.lit].filter((id) => id.includes('.')),
     cards: card.after,
     cardsBefore: card.before,
     cardsAt: cardTimes(hops, card),

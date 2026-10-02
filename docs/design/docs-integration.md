@@ -87,6 +87,7 @@
 | `border` | 노드, 그룹, 카드, 조작부 윤곽(그룹 테두리도 같은 색) | `#818b99` | `#72767a` | 그림 바탕, 그룹, 카드 바탕, 노드, 문서 바탕 | 3.02 / 3.01 |
 
 - 표 열의 PK, FK 표시는 항상 있는 스키마 표시라 파랑이 아니라 `color.muted`다.
+- 칸 격자의 칸([칸 격자](grid.md))은 새 색 역할이 없다. 칸 면 `node`와 윤곽 `border`, 글 `fg`, 생략 칸 면 `surface`와 글 `muted`, 밝힌 칸 면 `card-on`과 윤곽 `state.active`가 위 기준의 기존 짝이다.
 - 파랑은 "지금"(`state`)과 "주장하는 계열"(`data.main`)을 뜻하고, 조작부(`ui`)도 같은 파랑을 쓴다. 그 밖의 뜻으로는 쓰지 않는다. 카드 태그는 파랑과 주황을 쓰지 않는다. 태그 색상이 `state.active`, `data.compare`와 40도 이상 떨어진다는 것을 `test/contrast.test.js`의 `tagColors_keep_their_hue_away_from_the_active_blue_and_the_compare_orange`가 잰다.
 - `data.main`, `data.compare`는 선언 순서가 아니라 계열의 `role`이 정한다([차트](charts.md)). 같은 계열 이름은 모든 예제에서 같은 역할이다. `test/chart.test.js`의 `examples_same_series_label_and_id_have_the_same_role_in_every_source`가 잰다.
 - 라이트 파랑은 이력서 저장소(woon-resume)의 `--manta-accent`에서 왔고 다크는 그대로다. 라이트 이력서 색은 회색 그림 바탕, 그룹 바탕, 카드 바탕 위에서 2.75~2.93이라 3에 못 미친다. 대비 규칙이 색 선택보다 우선이므로 그래픽 자리에는 같은 색상과 채도에서 3을 넘는 가장 밝은 `palette.blue.550`을 쓴다. 글자와 글자가 놓이는 면은 같은 색상에서 4.5를 넘는 가장 밝은 `palette.blue.600`이다.

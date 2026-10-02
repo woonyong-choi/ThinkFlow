@@ -140,6 +140,9 @@ export const tokens = freeze({
       "state-dot": "var(--size-node-state-dot)",
       "table-row": "var(--size-node-table-row)"
     },
+    "grid": {
+      "cell": "var(--size-grid-cell)"
+    },
     "figure-canvas": "var(--size-figure-canvas)",
     "chip": {
       "max-width": "var(--size-chip-max-width)"
@@ -415,6 +418,9 @@ export const values = freeze({
       "store-cap": 12,
       "state-dot": 14,
       "table-row": 26
+    },
+    "grid": {
+      "cell": 32
     },
     "figure-canvas": 960,
     "chip": {

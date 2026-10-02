@@ -4,6 +4,7 @@ import { STYLE, sizePill } from '../measure/sizes.js';
 import { plainText } from '../text.js';
 import { values } from '../tokens.js';
 import { labelRows } from './figure.js';
+import { gridRows } from './grid.js';
 
 const SPACE = values.space;
 const INNER_X = SPACE['9'];
@@ -33,7 +34,7 @@ function textBoxes(scene) {
       });
       continue;
     }
-    for (const row of labelRows(it)) {
+    for (const row of it.shape === 'grid' ? gridRows(it) : labelRows(it)) {
       const width = measure(row.text, row.style.size, row.style.face);
       add({ x: row.cx - width / 2, center: row.center, width }, row.style, row.text);
     }

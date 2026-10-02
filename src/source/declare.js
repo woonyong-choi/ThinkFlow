@@ -12,6 +12,7 @@ export function readDeclaration(statement, ctx) {
   else if (word === 'table') readTable(statement, ctx);
   else if (word === 'start' || word === 'final') readStateMark(statement, ctx);
   else if (STATEMENTS[word]?.node) readNode(statement, ctx);
+  else if (word === 'item' || word === 'gap') ctx.problems.error(statement.line, `"${word}" belongs inside a grid. Open one with: grid id "name" rows=N cols=N {`);
   else ctx.problems.error(statement.line, `unknown statement "${word}"`);
 }
 
@@ -172,7 +173,7 @@ function rejectName(token, ctx) {
 // cost: time O(1), heap O(1), stack O(1)
 // basis: estimate
 // 이름 낱말 형식을 확인한다. 문장 종류는 첫 낱말 자리로 정해서 예약어도 이름이 된다.
-function checkId(token, { line, ctx }, pattern) {
+export function checkId(token, { line, ctx }, pattern) {
   if (token?.type !== 'word') {
     ctx.problems.error(line, 'write a name (id) after the statement word');
     return false;
@@ -185,6 +186,6 @@ function checkId(token, { line, ctx }, pattern) {
   return true;
 }
 
-function currentGroup(ctx) {
+export function currentGroup(ctx) {
   return ctx.groups.at(-1)?.id;
 }

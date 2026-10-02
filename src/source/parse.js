@@ -1,6 +1,7 @@
 // 원본 전체를 읽어 그림 모형(figure)으로 만든다. 줄을 머리, 선언, 시간 흐름 세 부분으로 나누고 문장마다 맡을 함수를 고른다.
 import { readChartDeclaration } from './chart.js';
 import { closeGroup, readColumn, readDeclaration, readEdge } from './declare.js';
+import { readGrid, readGridLine } from './grid.js';
 import { DECIMALS_MAX, DEFAULT_VERSION, KINDS, STATEMENTS, VALUES, VERSION, valueNames } from './grammar.js';
 import { tokenizeLine } from './lexer.js';
 import { normalizeKind, normalizeStatement } from './normalize.js';
@@ -37,7 +38,7 @@ export function parseFigure(source) {
 export function readFigure(source, problems) {
   const statements = splitStatements(source, problems);
   const figure = emptyFigure();
-  const ctx = { figure, problems, version: DEFAULT_VERSION, section: 'header', groups: [], table: undefined, step: undefined, headers: new Map(), previous: undefined };
+  const ctx = { figure, problems, version: DEFAULT_VERSION, section: 'header', groups: [], table: undefined, grid: undefined, step: undefined, headers: new Map(), previous: undefined };
   if (!statements.length) {
     problems.error(1, 'the file is empty. Start with a kind such as "flow right"');
     problems.throwIfAny();
@@ -52,6 +53,7 @@ export function readFigure(source, problems) {
   }
   for (const statement of body) readStatement(statement, ctx);
   if (ctx.table) problems.error(ctx.table.line, `close table "${ctx.table.id}" with "}"`);
+  if (ctx.grid && !ctx.grid.isRejected) problems.error(ctx.grid.line, `close grid "${ctx.grid.id}" with "}"`);
   for (const group of ctx.groups) if (!group.isRejected) problems.error(group.line, `close group "${group.id}" with "}"`);
   validateFigure(figure, problems);
   return figure;
@@ -181,6 +183,10 @@ function isPlaced(word, { tokens, line }, ctx) {
 function readStatement(statement, ctx) {
   const { tokens, line } = statement;
   const { problems } = ctx;
+  if (ctx.grid) {
+    readGridLine(statement, ctx);
+    return;
+  }
   if (ctx.table) {
     normalizeStatement(statement, { word: 'column', isHeadWord: false }, ctx);
     readColumn(statement, ctx);
@@ -223,6 +229,7 @@ function readByPart({ word, section }, statement, ctx) {
     readTimeline(word, statement, ctx);
     ctx.previous = word;
   } else if (word === 'edge') readEdge(statement, ctx);
+  else if (word === 'grid') readGrid(statement, ctx);
   else if (ctx.figure.kind === 'chart') readChartDeclaration(statement, ctx);
   else readDeclaration(statement, ctx);
 }

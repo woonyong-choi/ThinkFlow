@@ -22,14 +22,64 @@ const fixture = (name) => readFileSync(new URL(`${name}.muto`, FIXTURES), 'utf8'
 const item = (scene, id) => scene.items.find((it) => it.id === id);
 const lineOf = (count, make) => Array.from({ length: count }, (_, i) => make(i)).join('\n');
 
-// 근거: 설계 layout.md 요구사항 "배치에 넘긴 도형 크기와 그린 도형 크기가 같다"
+// 근거: 설계 layout.md 요구사항 "배치에 넘긴 도형 크기와 그린 도형 크기가 같다"(상자, 저장소, 격자)
 test('layoutGraph_box_sizes_equal_measured_sizes', async () => {
-  const { scene, figure } = await buildFigure('flow right\nbox a "첫 상자" "부제"\nstore b "저장소"\na -> b "쓰기"');
+  const { scene, figure } = await buildFigure('flow right\nbox a "첫 상자" "부제"\nstore b "저장소"\ngrid c "격자" cols=4 {\n  item x "X" cols=3\n  item y "Y" col=3\n}\na -> b "쓰기"\nb -> c');
 
   for (const it of scene.items) {
     const size = sizeNode(figure.nodes.find((n) => n.id === it.id));
     assert.deepEqual([it.w, it.h], [size.w, size.h], it.id);
   }
+});
+
+const GRID_SOURCE = (body, options = 'rows=2 cols=16') => `flow right\ngrid g "필드" ${options} {\n${body}\n}`;
+const cellOf = (scene, id) => item(scene, 'g').cells.find((c) => c.id === id);
+
+// 근거: 설계 grid.md 요구사항 "칸의 너비와 높이는 차지한 칸 수에 비례한다(10:6 비트 필드, 합친 칸)"
+test('buildFigure_grid_cells_are_as_wide_and_tall_as_the_units_they_occupy', async () => {
+  const { scene } = await buildFigure(GRID_SOURCE('  item a "상위" col=0 cols=10\n  item b "하위" col=10 cols=6\n  item c "합침" row=1 col=0 cols=8\n  item d "하나" row=1 col=8'), { strict: true });
+  const tall = await buildFigure(GRID_SOURCE('  item a "둘" col=0 rows=2\n  item b "하나" col=1', 'rows=2 cols=2'), { strict: true });
+
+  assert.equal(cellOf(scene, 'a').w * 6, cellOf(scene, 'b').w * 10);
+  assert.equal(cellOf(scene, 'c').w, cellOf(scene, 'd').w * 8);
+  assert.equal(cellOf(tall.scene, 'a').h, cellOf(tall.scene, 'b').h * 2);
+});
+
+// 근거: 설계 grid.md 요구사항 "글이 긴 칸은 칸 안에서 줄을 바꾸고, 모든 행의 높이가 같다"
+test('buildFigure_grid_long_korean_text_wraps_inside_its_cell_and_rows_keep_one_height', async () => {
+  const long = '참조 비트는 CPU가 접근할 때 켜고 운영체제가 주기적으로 지워 최근에 쓰지 않은 페이지를 고른다';
+  const { scene } = await buildFigure(GRID_SOURCE(`  item a "${long}" cols=2\n  item b "짧음" row=1`, 'rows=2 cols=2'), { strict: true });
+  const short = await buildFigure(GRID_SOURCE('  item a "짧음" cols=2\n  item b "짧음" row=1', 'rows=2 cols=2'));
+
+  assert.ok(cellOf(scene, 'a').lines.length > 1);
+  assert.equal(cellOf(scene, 'a').h, cellOf(scene, 'b').h);
+  assert.ok(cellOf(scene, 'a').h > cellOf(short.scene, 'a').h);
+});
+
+// 근거: 설계 grid.md 요구사항 "칸이 없는 자리는 빈 칸으로 남고, gap은 생략을 뜻하는 칸이다. 칸끼리 겹치지 않고 격자 안에 있다"
+test('buildFigure_grid_positions_without_a_cell_stay_empty_and_every_cell_stays_inside_the_frame', async () => {
+  const { scene } = await buildFigure(GRID_SOURCE('  item a "A"\n  gap g "…" count=7 col=1\n  item b "B" row=1 col=2', 'rows=2 cols=3'), { strict: true });
+  const grid = item(scene, 'g');
+  const rects = [...grid.cells, ...grid.empties];
+  const overlaps = (p, q) => p.x < q.x + q.w && q.x < p.x + p.w && p.y < q.y + q.h && q.y < p.y + p.h;
+
+  assert.equal(grid.empties.length, 3);
+  assert.equal(cellOf(scene, 'g').kind, 'gap');
+  for (const [i, rect] of rects.entries()) {
+    assert.ok(rect.x >= 0 && rect.y >= 0 && rect.x + rect.w <= grid.w && rect.y + rect.h <= grid.h, `rect ${i} leaves the grid`);
+    for (const other of rects.slice(i + 1)) assert.equal(overlaps(rect, other), false, `rects ${i} overlap`);
+  }
+});
+
+// 근거: 설계 grid.md 요구사항 "격자는 구조 그림 안에서 크기가 정해진 도형 하나로 배치되고 선은 격자 테두리에 닿는다"
+test('buildFigure_grid_between_flow_boxes_is_one_shape_whose_edges_end_on_its_border', async () => {
+  const { scene } = await buildFigure('flow right\nbox a "A"\ngrid g "필드" cols=4 {\n  item x "X" cols=3\n  item y "Y" col=3\n}\nbox b "B"\na -> g\ng -> b', { strict: true });
+  const [a, g, b] = ['a', 'g', 'b'].map((id) => item(scene, id));
+  const [into, out] = scene.edges;
+
+  assert.ok(a.x + a.w < g.x && g.x + g.w < b.x);
+  assert.equal(into.points.at(-1).x, g.x);
+  assert.equal(out.points[0].x, g.x + g.w);
 });
 
 // 근거: 설계 layout.md 요구사항 "그룹의 direction이 안쪽 배치에 지켜진다"

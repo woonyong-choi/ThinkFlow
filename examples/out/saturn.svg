@@ -96,6 +96,7 @@
   --size-node-store-cap: 12px;
   --size-node-state-dot: 14px;
   --size-node-table-row: 26px;
+  --size-grid-cell: 32px;
   --size-figure-canvas: 960px;
   --size-chip-max-width: 210px;
   --size-player-caption-max: 720px;
@@ -336,6 +337,16 @@
   fill: var(--color-fg);
 }
 
+.fl .item {
+  font-size: var(--size-text-13);
+  text-anchor: middle;
+  fill: var(--color-fg);
+}
+
+.fl .item.gap {
+  fill: var(--color-muted);
+}
+
 .fl .cell.type {
   font-family: var(--font-mono);
   font-size: var(--size-text-11);
@@ -381,13 +392,29 @@
   stroke: var(--color-border);
 }
 
-.fl .col-bg {
+.fl .part-bg {
   fill: transparent;
 }
 
 .fl .col-line {
   stroke: var(--color-border);
   stroke-width: var(--border-hair);
+}
+
+.fl .grid-cell {
+  fill: var(--color-node);
+  stroke: var(--color-border);
+  stroke-width: var(--border-thin);
+}
+
+.fl .grid-cell.gap {
+  fill: var(--color-surface);
+  stroke-dasharray: var(--dash-card) var(--dash-card);
+}
+
+.fl .grid-cell.empty {
+  fill: none;
+  stroke-dasharray: var(--dash-card) var(--dash-card);
 }
 
 .fl .fl-edge.mark .fl-path {
