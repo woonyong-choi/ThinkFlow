@@ -19,12 +19,18 @@
 .fl .chart-value,
 .fl .chart-tick,
 .fl .chart-unit {
-  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
   font-size: var(--size-text-11);
   fill: var(--color-muted);
 }
 
 .fl .chart-value {
+  fill: var(--color-fg);
+}
+
+/* 값 글자와 점 이름은 뒤의 격자와 기준선이 글자 둘레에서 끊기게 바탕색 테두리를 두른다. */
+.fl .chart-value,
+.fl .chart-name {
   paint-order: stroke;
   stroke: var(--color-bg);
   stroke-width: var(--border-halo);
@@ -47,18 +53,10 @@
   text-anchor: end;
 }
 
-.fl .chart-value.ours {
-  font-weight: var(--weight-semibold);
-  fill: var(--color-accent);
-}
-
-.fl .chart-value.first {
-  fill: var(--color-series-1);
-}
-
+/* 값 글자는 계열과 상관없이 글자색이다. 계열은 막대, 점, 띠 색으로만 전하고 강조 계열(ours, second)은 굵기로만 구분한다. */
+.fl .chart-value.ours,
 .fl .chart-value.second {
   font-weight: var(--weight-semibold);
-  fill: var(--color-series-2);
 }
 
 .fl .chart-name.end {
@@ -72,11 +70,11 @@
 }
 
 .fl .chart-ratio {
-  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
   font-size: var(--size-text-12);
   font-weight: var(--weight-semibold);
   text-anchor: end;
-  fill: var(--color-accent);
+  fill: var(--color-fg);
 }
 
 .fl .chart-sub,
@@ -100,20 +98,31 @@
   text-anchor: start;
 }
 
+/* 칸 색은 변수로 계산해 다크 모드 heat-low를 따라간다. --s는 칸 강도(0~1)다. */
+.fl .chart-heat {
+  fill: color-mix(in srgb, var(--color-data-heat-high) calc(var(--s) * 100%), var(--color-data-heat-low));
+}
+
 .fl .chart-cell {
-  font-family: var(--font-mono);
+  --ink: var(--color-data-heat-ink);
+  font-variant-numeric: tabular-nums;
   font-size: var(--size-text-11);
   text-anchor: middle;
-  fill: var(--color-fg);
+  fill: var(--ink);
 }
 
 .fl .chart-cell.on {
-  fill: var(--color-on-accent);
+  --ink: var(--color-data-heat-ink-on);
+}
+
+/* 흐린 칸은 면이 바탕 쪽으로 옅어져 진한 칸의 밝은 글자가 묻힌다. 흐린 동안은 모든 칸이 어두운 글자(다크는 같은 밝은 글자)다. */
+.fl .chart-cell.dim {
+  fill: var(--color-data-heat-ink);
 }
 
 .fl .chart-axis,
 .fl .chart-grid {
-  stroke: var(--color-grid);
+  stroke: var(--color-data-grid);
   stroke-width: var(--border-thin);
 }
 
@@ -131,7 +140,12 @@
 
 .fl .chart-ci {
   stroke: var(--color-fg);
-  stroke-width: var(--border-strong);
+  stroke-width: var(--border-tag);
+}
+
+.fl .chart-ci-casing {
+  stroke: var(--color-bg);
+  stroke-width: var(--border-casing);
 }
 
 .fl .chart-interval {
@@ -155,20 +169,20 @@
 }
 
 .fl .chart-box {
-  fill: var(--color-card-on);
-  stroke: var(--color-series-1);
+  fill: var(--color-node);
+  stroke: var(--color-data-main);
   stroke-width: var(--border-tag);
 }
 
 .fl .chart-before {
   fill: var(--color-bg);
-  stroke: var(--color-series-1);
+  stroke: var(--color-data-compare);
   stroke-width: var(--border-tag);
 }
 
 .fl .chart-arrow,
 .fl .chart-link {
-  stroke: var(--color-series-2);
+  stroke: var(--color-data-main);
   stroke-width: var(--border-strong);
 }
 
@@ -201,8 +215,19 @@
   opacity: var(--opacity-dim);
 }
 
+/* 글자는 면보다 덜 흐려, 흐린 행에서도 글자가 바탕과 대비 4.5 이상이다. */
+.fl .ink.dim {
+  opacity: var(--opacity-dim-ink);
+}
+
 .fl .cs-0,
 .fl .cs-1,
 .fl [class*="cr-"] {
   transition: opacity var(--duration-fast);
+}
+
+/* 면이 바탕 쪽으로 옅어지는 중간에는 밝은 글자와 어두운 글자 모두 대비 4.5에 못 미친다. 칸 면과 글자는 서서히 가지 않고 한꺼번에 바뀐다. */
+.fl .chart-heat-cell,
+.fl .chart-cell.ink {
+  transition: none;
 }

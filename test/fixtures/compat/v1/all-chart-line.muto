@@ -1,0 +1,16 @@
+mutoscope 1
+chart line
+title "선 차트의 모든 낱말"
+subtitle "예시 데이터. 로그 축과 x 밝히기"
+x "주차(주)"
+y "지연(ms)"
+scale log
+series ours "기억 붙임" role=main
+series base "기억 없음" role=compare
+point x=1 ours=10 ours.low=8 ours.high=12 base=20
+point x=2 ours=12 base=30
+point x=3 ours=15 base=50
+step "선"
+  reveal base
+  reveal ours
+  light x=3

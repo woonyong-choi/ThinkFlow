@@ -1,11 +1,11 @@
 // 차트 규칙. docs/design/charts.md의 "종류와 행 줄", "머리와 선언 줄", "시간 흐름" 절을 확인한다.
+import { VALUES, valueNames } from './grammar.js';
 import { unknownName } from './problems.js';
 
-// 종류마다 계열 수의 [최소, 최대]
-const SERIES_RANGE = { bar: [1, 2], dumbbell: [2, 2], box: [0, 0], scatter: [0, 2], line: [1, 2], heatmap: [0, 0] };
+const CHART_TYPES = VALUES.chartType.items;
 // 신뢰구간(`값.low`, `값.high`)을 받는 종류
-export const INTERVAL_TYPES = ['bar', 'dumbbell', 'line'];
-const BOX_KEYS = ['min', 'q1', 'median', 'q3', 'max'];
+export const INTERVAL_TYPES = Object.keys(CHART_TYPES).filter((type) => CHART_TYPES[type].isInterval);
+const BOX_KEYS = CHART_TYPES.box.valueKeys;
 // 값의 절댓값 상한. 이보다 크면 십진 반올림이 12자리 정밀도를 넘어 눈금과 글자를 정확히 쓸 수 없다.
 const MAX_VALUE = 1e15;
 // 종류마다 고정 원소 키. 계열 키와 겹치면 JSON에서 둘을 가를 수 없다.
@@ -17,10 +17,11 @@ const FIXED_KEYS = ['label', 'name', 'x', 'y', 'series', 'row', 'col', 'value'];
 /** 원본을 다 읽은 뒤의 차트 규칙. `data`로 읽는 행은 checkChartRows가 읽은 뒤 확인한다. */
 export function checkChart(figure, problems) {
   const { chart, chartType } = figure;
-  const [low, high] = SERIES_RANGE[chartType];
+  const [low, high] = CHART_TYPES[chartType].seriesRange;
   if (chart.series.length < low || chart.series.length > high) {
     problems.error(chart.series[high]?.line ?? figure.line, `a ${chartType} chart takes ${low === high ? low : `${low} to ${high}`} series. Found ${chart.series.length}`);
   }
+  if (checkSeriesRoles(figure, problems)) orderSeriesByRole(figure);
   if (chart.missing !== undefined && chartType !== 'bar') problems.error(figure.line, 'missing is only for bar charts');
   if (chartType === 'bar' && chart.scale === 'log') problems.error(figure.line, 'a bar chart starts at 0, so scale log is not allowed');
   if (chartType === 'heatmap' && (chart.scaleLine !== undefined || chart.rules.length)) problems.error(chart.scaleLine ?? chart.rules[0].line, 'a heatmap has no value axis. Remove scale and rule');
@@ -34,6 +35,37 @@ export function checkChart(figure, problems) {
   }
   checkChartTimeline(figure, problems);
   checkAxisUnits(figure, problems);
+}
+
+// cost: time O(s), heap O(1), stack O(1)
+// vars: s = 계열 수
+// basis: estimate
+// 계열 역할: 하나면 main(role 생략 가능), 둘이면 적은 역할만 검사한다. 둘 다 적었으면 main 하나와 compare 하나여야 한다. 맞으면 true다.
+function checkSeriesRoles(figure, problems) {
+  const { series } = figure.chart;
+  if (series.length === 1) {
+    if (series[0].role !== 'compare') return true;
+    problems.error(series[0].line, 'a chart with one series shows it as main. Use role=main or remove role');
+    return false;
+  }
+  const given = series.filter((s) => s.role !== undefined);
+  if (series.length !== 2 || given.length < 2 || given.filter((s) => s.role === 'main').length === 1) return true;
+  problems.error(series[1].line, `two series need one role=main and one role=compare. Found ${series.map((s) => `${s.id} role=${s.role}`).join(', ')}`);
+  return false;
+}
+
+// cost: time O(s log s), heap O(s), stack O(1)
+// vars: s = 계열 수
+// basis: estimate
+// role을 생략한 계열에 역할을 주고 계열을 보이는 순서로 세운다. 보이는 순서는 차트 종류의 firstRole이 먼저다(grammar.js).
+// 생략한 계열은 다른 계열이 쓰지 않은 역할을 선언 순서대로 받는다. 덤벨은 시작점(compare)이 먼저라 옛 파일의 "첫 계열이 시작점" 뜻이 그대로다.
+function orderSeriesByRole(figure) {
+  const { series } = figure.chart;
+  const first = CHART_TYPES[figure.chartType].firstRole ?? valueNames('role')[0];
+  const order = [first, ...valueNames('role').filter((role) => role !== first)];
+  const open = order.filter((role) => !series.some((s) => s.role === role));
+  for (const s of series) s.role ??= series.length === 1 ? valueNames('role')[0] : (open.shift() ?? valueNames('role')[0]);
+  series.sort((a, b) => order.indexOf(a.role) - order.indexOf(b.role));
 }
 
 // 값 축 종류. 히트맵은 값 축이 없다.
@@ -153,7 +185,7 @@ function checkChartTimeline(figure, problems) {
         else if (!ids.includes(id)) problems.error(beat.line, unknownName('series', id, ids));
         else if (revealed.includes(id)) problems.error(beat.line, `series "${id}" is already revealed`);
         else revealed.push(id);
-        if (chartType === 'dumbbell' && id === ids[1] && !revealed.includes(ids[0])) problems.error(beat.line, `reveal "${ids[0]}" before "${ids[1]}". An arrow starts from the first series`);
+        if (chartType === 'dumbbell' && id === ids[1] && !revealed.includes(ids[0])) problems.error(beat.line, `reveal "${ids[0]}" before "${ids[1]}". The arrow starts from the compare series`);
       }
       for (const target of beat.chartLight) checkChartLightShape(target, chartType, problems);
     }

@@ -1,0 +1,9 @@
+chart line
+title "role 없는 선"
+subtitle "예시 데이터. 선언 순서 역할"
+x "주차(주)"
+y "지연(ms)"
+series ours "기억 붙임"
+series base "기억 없음"
+point x=1 ours=10 base=20
+point x=2 ours=12 base=30

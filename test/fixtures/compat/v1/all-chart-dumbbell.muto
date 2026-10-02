@@ -1,0 +1,16 @@
+mutoscope 1
+chart dumbbell
+title "덤벨 차트의 모든 낱말"
+subtitle "예시 데이터. 시작점은 compare, 끝점은 main"
+x "토큰(로그 눈금)"
+scale log
+series base "기억 없음" role=compare
+series ours "기억 붙임" role=main
+rule 50000 "예산"
+row "A" base=120000 base.low=104000 base.high=139000 ours=31000 ours.low=27000 ours.high=36000
+row "B" base=8000 ours=9200
+step "전"
+  reveal base
+step "후"
+  reveal ours
+  light "B"

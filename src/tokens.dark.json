@@ -1,44 +1,95 @@
 {
   "color": {
     "$type": "color",
-    "accent": {
-      "$value": "{color.blue.400}"
+    "state": {
+      "active": {
+        "$value": "{color.palette.blue.400}"
+      },
+      "active-fill": {
+        "$value": "{color.palette.blue.400}"
+      },
+      "active-text": {
+        "$value": "{color.palette.blue.400}"
+      },
+      "on-active": {
+        "$value": "{color.palette.ink.850}"
+      }
+    },
+    "ui": {
+      "link": {
+        "$value": "{color.palette.blue.400}"
+      },
+      "focus": {
+        "$value": "{color.palette.blue.400}"
+      },
+      "progress": {
+        "$value": "{color.palette.blue.400}"
+      },
+      "control-on": {
+        "$value": "{color.palette.neutral.750}"
+      }
+    },
+    "data": {
+      "main": {
+        "$value": "{color.palette.blue.400}"
+      },
+      "compare": {
+        "$value": "{color.palette.orange.400}"
+      },
+      "heat-low": {
+        "$value": "{color.palette.blue.850}"
+      },
+      "heat-high": {
+        "$value": "{color.palette.blue.600}"
+      },
+      "heat-ink": {
+        "$value": "{color.palette.gray.0}"
+      },
+      "heat-ink-on": {
+        "$value": "{color.palette.gray.0}"
+      },
+      "grid": {
+        "$value": "{color.palette.neutral.750}"
+      }
     },
     "fg": {
-      "$value": "{color.neutral.100}"
+      "$value": "{color.palette.neutral.100}"
     },
     "muted": {
-      "$value": "{color.neutral.400}"
+      "$value": "{color.palette.neutral.400}"
     },
     "bg": {
-      "$value": "{color.neutral.900}"
+      "$value": "{color.palette.neutral.900}"
+    },
+    "node": {
+      "$value": "{color.palette.neutral.850}"
     },
     "surface": {
-      "$value": "{color.neutral.850}"
+      "$value": "{color.palette.neutral.800}"
     },
     "border": {
-      "$value": "{color.neutral.700}"
+      "$value": "{color.palette.neutral.500}"
     },
     "card-on": {
-      "$value": "{color.blue.900}"
-    },
-    "dot": {
-      "$value": "{color.neutral.750}"
+      "$value": "{color.palette.blue.900}"
     },
     "frame": {
-      "$value": "{color.neutral.800}"
+      "$value": "{color.palette.neutral.800}"
     },
     "page": {
-      "$value": "{color.neutral.950}"
+      "$value": "{color.palette.neutral.950}"
     },
     "gallery": {
-      "$value": "{color.neutral.950}"
+      "$value": "{color.palette.neutral.950}"
     },
-    "series-2": {
-      "$value": "#f08a5d"
+    "group": {
+      "$value": "{color.palette.neutral.850}"
     },
-    "grid": {
-      "$value": "{color.neutral.750}"
+    "group-border": {
+      "$value": "{color.palette.neutral.500}"
+    },
+    "plate-border": {
+      "$value": "{color.palette.neutral.800}"
     }
   }
 }

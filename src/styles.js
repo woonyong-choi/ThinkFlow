@@ -14,24 +14,19 @@ export const STYLES = Object.freeze({
   tokens: readStyle('./tokens.css'),
   figure: readStyle('./styles/figure.css'),
   animated: readStyle('./styles/animated.css'),
+  control: readStyle('./styles/control.css'),
   player: readStyle('./styles/player.css'),
   gallery: readStyle('./styles/gallery.css'),
+  document: readStyle('./styles/document.css'),
   chart: readStyle('./styles/chart.css'),
 });
 
-/** 점 격자 바탕과 화살촉. 화살촉은 평소(`fl-arrow`), 밝힌 선(`fl-arrow-on`), 덤벨 둘째 계열(`fl-arrow-second`) 세 가지다. */
+/** 화살촉. 화살촉은 평소(`fl-arrow`), 밝힌 선(`fl-arrow-on`), 덤벨 main 계열(`fl-arrow-main`) 세 가지다. */
 export const DEFS =
-  drawDotPattern() +
   drawArrowMarker('fl-arrow', tokens.color.muted, values.size.marker) +
-  drawArrowMarker('fl-arrow-on', tokens.color.accent, values.size['marker-on']) +
-  drawArrowMarker('fl-arrow-second', tokens.color['series-2'], values.size['marker-on']);
+  drawArrowMarker('fl-arrow-on', tokens.color.state.active, values.size['marker-on']) +
+  drawArrowMarker('fl-arrow-main', tokens.color.data.main, values.size['marker-on']);
 
-function drawDotPattern() {
-  const grid = values.size.grid;
-  const dot = values.size['grid-dot'];
-  // 점 중심을 칸 모서리에서 반지름의 1.5배 안쪽에 둔다.
-  return `<pattern id="fl-dots" width="${grid}" height="${grid}" patternUnits="userSpaceOnUse"><circle cx="${dot * 1.5}" cy="${dot * 1.5}" r="${dot}" fill="${tokens.color.dot}"/></pattern>`;
-}
 
 // 화살촉 모양은 viewBox 10 안의 삼각형 좌표다. 크기는 markerWidth로 정한다.
 function drawArrowMarker(id, color, size) {

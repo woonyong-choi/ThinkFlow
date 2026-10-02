@@ -1,0 +1,17 @@
+flow down
+title "선이 그룹 제목 자리를 지나는 그림"
+
+store src "입력" "X"
+group proj "투영" direction=right {
+  box q "Q 투영"
+  box k "K 투영"
+  box v "V 투영"
+}
+box out "점수"
+
+src -> q
+src -> k
+src -> v
+q -> out
+k -> out
+v -> out

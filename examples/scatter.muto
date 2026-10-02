@@ -4,8 +4,8 @@ subtitle "예시 데이터. 작업당 평균, 화살표는 기억 없음에서 �
 x "작업당 비용(달러)"
 y "작업당 수정 횟수(회)"
 
-series base "기억 없음"
-series ours "기억 붙임"
+series base "기억 없음" role=compare
+series ours "기억 붙임" role=main
 
 point "A 없음" x=0.85 y=1.34 series=base
 point "A 붙음" x=0.36 y=0.47 series=ours

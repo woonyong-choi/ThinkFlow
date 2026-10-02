@@ -24,7 +24,6 @@
 }
 
 .fl .edgelabel {
-  font-family: var(--font-mono);
   font-size: var(--size-text-11);
   text-anchor: middle;
   fill: var(--color-muted);
@@ -37,7 +36,12 @@
 
 .fl .row.mono {
   font-family: var(--font-mono);
-  font-size: var(--size-text-10-5);
+  font-size: var(--size-text-11);
+}
+
+/* 백틱으로 감싼 글. 코드 글꼴로 그린다. */
+.fl .code {
+  font-family: var(--font-mono);
 }
 
 .fl .muted {
@@ -49,13 +53,14 @@
   font-weight: var(--weight-semibold);
   letter-spacing: var(--tracking-tag);
   text-anchor: middle;
+  fill: var(--color-fg);
 }
 
 .fl .mark {
   font-size: var(--size-text-11);
   font-weight: var(--weight-semibold);
   text-anchor: end;
-  fill: var(--color-accent);
+  fill: var(--color-state-active-text);
 }
 
 .fl .mark.key {
@@ -64,19 +69,19 @@
 }
 
 .fl .mini {
-  font-size: var(--size-text-10-5);
+  font-size: var(--size-text-11);
   text-anchor: middle;
   fill: var(--color-fg);
 }
 
 .fl .mini.on {
-  fill: var(--color-on-accent);
+  fill: var(--color-state-on-active);
 }
 
 .fl .chip {
-  font-size: var(--size-text-11-5);
+  font-size: var(--size-text-12);
   text-anchor: middle;
-  fill: var(--color-on-accent);
+  fill: var(--color-state-on-active);
 }
 
 .fl .md {
@@ -90,13 +95,13 @@
 }
 
 .fl .cell {
-  font-size: var(--size-text-11-5);
+  font-size: var(--size-text-12);
   fill: var(--color-fg);
 }
 
 .fl .cell.type {
   font-family: var(--font-mono);
-  font-size: var(--size-text-10-5);
+  font-size: var(--size-text-11);
   text-anchor: end;
   fill: var(--color-muted);
 }
@@ -114,12 +119,12 @@
 .fl .cell .key {
   font-size: var(--size-text-9);
   font-weight: var(--weight-semibold);
-  fill: var(--color-accent);
+  fill: var(--color-state-active-text);
 }
 
 .fl .frame-box {
-  fill: var(--color-surface);
-  stroke: var(--color-frame);
+  fill: var(--color-group);
+  stroke: var(--color-group-border);
 }
 
 .fl .lifeline {

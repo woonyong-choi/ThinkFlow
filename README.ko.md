@@ -71,7 +71,16 @@ SVG는 스크립트 없이 움직입니다. HTML에는 단계 탭, 일시정지,
 node src/cli.js check examples/memory.muto --strict --json
 ```
 
-오류와 경고가 없으면 아무것도 출력하지 않고 0으로 끝납니다.
+오류, 경고, 폐기된 형식이 없으면 아무것도 출력하지 않고 0으로 끝납니다. `--strict`는 경고도, `--no-deprecated`는 폐기된 형식도 실패로 칩니다. `--json`은 진단마다 `{ file, severity, code, line, column, message, fix? }` 한 줄을 출력합니다.
+
+### 옛 파일 고치기
+
+```sh
+node src/cli.js migrate examples/memory.muto
+node src/cli.js migrate examples/memory.muto --write
+```
+
+옛 문법으로 쓴 파일도 계속 동작합니다. `migrate`는 바뀔 줄을 diff로 보여 주고 `--write`일 때만 파일을 고칩니다. 고친 뒤에도 오류나 폐기된 형식이 남으면 쓰지 않습니다. 첫 줄에 `mutoscope 1`로 문법 판을 적을 수 있고, 없으면 판 1로 읽습니다.
 
 ### 예제 전부와 목록 쪽 만들기
 

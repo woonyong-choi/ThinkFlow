@@ -1,0 +1,29 @@
+data right
+title "계층 사슬"
+
+table app "응용 계층" {
+  line "GET /index.html HTTP/1.1"
+  host "Host: www.example.com"
+  carried_in "TCP 세그먼트의 데이터 부분" fk=tcp.header
+}
+table tcp "전송 계층" {
+  header "20바이트" pk
+  ports "51234 → 80"
+  seq_ack "seq 1000, ack 5000"
+  carried_in "IP 패킷의 데이터 부분" fk=ip.header
+}
+table ip "네트워크 계층" {
+  header "20바이트" pk
+  addrs "198.51.100.5 → 203.0.113.10"
+  carried_in "이더넷 프레임의 데이터 부분" fk=eth.header
+}
+table eth "링크 계층" {
+  header "14바이트" pk
+  macs "aa:bb:cc:00:00:01 → aa:bb:cc:00:00:02"
+  fcs "프레임 검사 합 4바이트"
+}
+
+step "내려감" "헤더가 앞에 붙는다"
+  app -> tcp
+  tcp -> ip
+  ip -> eth

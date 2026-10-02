@@ -1,12 +1,15 @@
-// 원본 하나를 장면과 시간표로 만든다. 읽기, 차트 값 읽기, 크기, 배치, 시간표, 그림 검사를 차례로 부른다(docs/architecture.md 그림 만들기).
+// 원본 하나를 장면과 시간표로 만든다. 읽기, 차트 값 읽기, 크기, 배치, 시간표(선 길이를 쓰려고 배치 뒤), 그림 검사를 차례로 부른다(docs/architecture.md 그림 만들기).
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { checkChartFigure, checkFigure } from './check.js';
-import { CHIP_GAP, sizeChip } from './chip.js';
+import { CHIP_GAP, planChip, sizeChip } from './chip.js';
+import { chipLines, chipObstacles } from './draw/boxes.js';
 import { drawChart } from './chart/draw.js';
+import { LayoutError } from './layout/error.js';
 import { layoutGraph } from './layout/graph.js';
 import { layoutSequence } from './layout/sequence.js';
 import { findMissingGlyph, wrap } from './measure/fonts.js';
+import { hasUnpairedBacktick } from './text.js';
 import { STYLE, sizeNode } from './measure/sizes.js';
 import { INTERVAL_TYPES, checkChartLightTargets, checkChartRows } from './source/chart-rules.js';
 import { readFigure } from './source/parse.js';
@@ -23,30 +26,85 @@ const LABEL_KEY = { bar: 'label', dumbbell: 'label', box: 'label', scatter: 'nam
 /**
  * 원본을 장면과 시간표로 만든다.
  * @param baseDir `data` 경로의 기준 폴더
- * @returns { figure, scene, timeline, warnings }. 차트면 scene 대신 chart가 있다
+ * @param strict 경고도 오류로 올린다
+ * @param noDeprecated 폐기 진단도 오류로 올린다
+ * @returns { figure, scene, timeline, warnings, deprecations }. 차트면 scene 대신 chart가 있다
  * @throws FigureError 원본 오류나 그림 검사 오류가 있을 때. 모든 문제를 담는다
  */
-export async function buildFigure(source, { baseDir = '.', strict = false, requireData = false, requireCi = false } = {}) {
-  const problems = createProblems();
+export async function buildFigure(source, { baseDir = '.', strict = false, noDeprecated = false, requireData = false, requireCi = false } = {}) {
+  const problems = createProblems(source);
   const figure = readFigure(source, problems);
   if (figure.kind === 'chart' && figure.chart.data) loadChartData(figure, baseDir, problems);
   checkGlyphs(figure, problems);
   if (figure.kind === 'chart') checkSkillRules(figure, { requireData, requireCi }, problems);
   problems.throwIfAny();
   const cards = collectCards(figure);
-  const timeline = buildTimeline(figure, cards, wrapChip);
   if (figure.kind === 'chart') {
+    const timeline = buildTimeline(figure, { cards, chips: wrapChip });
     const chart = drawChart(figure);
     checkChartFigure(chart, problems);
-    return finish({ figure, chart, timeline }, problems, strict);
+    return finish({ figure, chart, timeline }, problems, { strict, noDeprecated });
   }
   const sizes = new Map(figure.nodes.map((n) => [n.id, sizeNode(n, cards.contents.get(n.id), figure.kind === 'sequence' ? undefined : countLines(figure, n.id))]));
-  const scene = figure.kind === 'sequence' ? layoutSequence(figure, sizes) : await layoutGraph(figure, sizes);
+  const { scene, timeline } = await placeScene(figure, { sizes, cards, source }, problems);
+  return finish({ figure, scene, timeline }, problems, { strict, noDeprecated });
+}
+
+// 선이 도형을 뚫거나 선 끝이 연결점을 벗어나거나 두 선이 붙는 그림 검사(3번, 4번, 5번). elkjs의 줄 바꿈(aspect)과 모델 순서 배치가 낸다.
+const LAYOUT_CHECKS = new Set(['check-3', 'check-4', 'check-5']);
+
+// cost: time O(2·(elk + check)), heap O(s + e), stack O(1)
+// vars: elk = 배치 시간, check = 그림 검사 시간, s = 도형 수, e = 선 수
+// basis: estimate
+/**
+ * 배치, 시간표, 그림 검사를 한 번 하고 장면을 돌려준다. 구조 그림이 3번이나 4번 오류를 내면 안전 배치(줄 바꿈, 모델 순서 없음)로 한 번 더 하고,
+ * 그 오류가 줄면 그쪽을 쓴다. aspect를 적었는데 안전 배치를 쓰면 무시했다고 경고한다.
+ * @param inputs { sizes, cards, source }
+ */
+async function placeScene(figure, inputs, problems) {
+  const first = await attemptScene(figure, inputs);
+  const failures = (a) => a.local.errors.filter((d) => LAYOUT_CHECKS.has(d.code)).length;
+  let chosen = first;
+  if (figure.kind !== 'sequence' && failures(first) && !figure.safeLayout) {
+    const second = await attemptScene({ ...figure, aspect: undefined, safeLayout: true }, inputs);
+    if (failures(second) < failures(first)) {
+      chosen = second;
+      if (figure.aspect !== undefined) problems.warn(figure.line, 'the layout ignored "aspect" because wrapping drew an edge through a shape or off its connection point. Remove the aspect line or change a group direction');
+    }
+  }
+  problems.errors.push(...chosen.local.errors);
+  problems.warnings.push(...chosen.local.warnings);
+  return chosen;
+}
+
+// cost: time O(elk + check), heap O(s + e), stack O(1)
+// vars: elk = 배치 시간, check = 그림 검사 시간, s = 도형 수, e = 선 수
+// basis: estimate
+// 장면 한 번. 검사 결과는 따로 모은 진단 그릇(local)에 담는다.
+async function attemptScene(figure, { sizes, cards, source }) {
+  const local = createProblems(source);
+  const scene = figure.kind === 'sequence' ? layoutSequence(figure, sizes) : await layoutOrFail(figure, sizes, local);
+  const timeline = buildTimeline(figure, { cards, chips: wrapChip, scene });
   widenForChips(scene, timeline);
+  planChips(scene, timeline);
   // 태그 색은 원본에 처음 나온 순서로 정한다(docs/design/figure-syntax.md 카드 줄).
   scene.tagOrder = figure.steps.flatMap((s) => s.beats.flatMap((b) => b.ops.filter((o) => o.row?.tag && !o.row.tone).map((o) => o.row.tag)));
-  checkFigure(figure, scene, timeline, problems);
-  return finish({ figure, scene, timeline }, problems, strict);
+  checkFigure({ figure, scene, timeline }, local);
+  return { scene, timeline, local };
+}
+
+// cost: time O(elk), heap O(s + e), stack O(1)
+// vars: elk = 배치 시간, s = 도형 수, e = 선 수
+// basis: estimate
+// 구조 그림 배치. 배치가 끝내 실패하면 원인 선의 줄 번호가 있는 오류로 바꿔 알린다(내부 오류로 끝내지 않는다).
+async function layoutOrFail(figure, sizes, problems) {
+  try {
+    return await layoutGraph(figure, sizes);
+  } catch (error) {
+    if (!(error instanceof LayoutError)) throw error;
+    problems.error(error.line ?? figure.line, `${error.message}. Change a group direction, remove "aspect", or break the cycle into fewer back edges`, { code: 'layout' });
+    return problems.throwIfAny();
+  }
 }
 
 // cost: time O(e), heap O(1), stack O(1)
@@ -75,18 +133,29 @@ function widenForChips(scene, timeline) {
   scene.width = need;
 }
 
-// cost: time O(w), heap O(w), stack O(1)
-// vars: w = 경고 수
+// cost: time O(h·(k·p + k·a)), heap O(a + h·k), stack O(1)
+// vars: h = 글 상자 있는 이동 수, k = 재는 지점 수(21), p = 경로 점 수, a = 글자 사각형 수
 // basis: estimate
-function finish(result, problems, strict) {
-  if (strict) for (const w of problems.warnings) problems.error(w.line, w.message);
+// 글 상자 자리를 경로 지점마다 미리 정해 이동에 담는다. 움직이는 SVG와 재생기는 이 계획을 그대로 걸어 같은 자리를 쓴다.
+function planChips(scene, timeline) {
+  const avoid = [...chipObstacles(scene), ...chipLines(scene)];
+  for (const seg of timeline.segs) for (const hop of seg.hops) if (hop.data) hop.chipPath = planChip(scene, hop, avoid).path;
+}
+
+// cost: time O(w), heap O(w), stack O(1)
+// vars: w = 경고와 폐기 수
+// basis: estimate
+// 경고(strict)와 폐기(noDeprecated)를 오류로 올리고, 오류가 없으면 남은 진단과 함께 돌려준다.
+function finish(result, problems, { strict, noDeprecated }) {
+  const promoted = [...(strict ? problems.warnings : []), ...(noDeprecated ? problems.deprecations : [])];
+  for (const d of promoted) problems.error(d.line, d.message, { code: d.code, column: d.column, fix: d.fix });
   problems.throwIfAny();
-  return { ...result, warnings: problems.warnings };
+  return { ...result, warnings: problems.warnings, deprecations: problems.deprecations };
 }
 
 /** 글 상자 글을 토큰 `size.chip-max` 너비의 줄로 나눈다. HTML과 SVG가 같은 줄을 쓴다. */
-export function wrapChip(text) {
-  return wrap(text, values.size['chip-max'], STYLE.chip.size);
+function wrapChip(text) {
+  return wrap(text, values.size['chip-max'], STYLE.chip);
 }
 
 // cost: time O(j + r·k), heap O(j), stack O(1), io 1
@@ -190,14 +259,17 @@ function pointer(document, path) {
 // vars: n = 그림 모형의 글 글자 수, t = 글 수, d = 모형 깊이
 // basis: estimate
 // 그림 글꼴에 없는 글자를 줄 번호와 함께 알린다. 대신 그릴 글꼴의 폭을 알 수 없기 때문이다.
-// 모형의 모든 글을 본문 글꼴로, 고정폭으로 그리는 글은 고정폭 글꼴로도 본다. 글 종류를 빠뜨리지 않기 위해 모형 전체를 훑는다.
+// 모형의 모든 글을 본문 글꼴로, 테이블 열 타입은 고정폭 글꼴로도 본다. 백틱 구간은 글 안에서 고정폭으로 보고, 짝이 안 맞는 백틱은 오류다. 글 종류를 빠뜨리지 않기 위해 모형 전체를 훑는다.
 function checkGlyphs(figure, problems) {
   const texts = [];
   collectTexts(figure, figure.line ?? 1, texts);
-  const mono = [...figure.edges.map((e) => [e.label, e.line]), ...figure.nodes.flatMap((n) => (n.columns ?? []).map((c) => [c.type, c.line ?? n.line]))];
-  if (figure.kind === 'sequence') mono.push(...figure.steps.flatMap((s) => s.beats.flatMap((b) => b.hops.map((h) => [h.data, h.line]))));
+  const mono = figure.nodes.flatMap((n) => (n.columns ?? []).map((c) => [c.type, c.line ?? n.line]));
   const reported = new Set();
   for (const [text, line, face] of [...texts.map(([t, l]) => [t, l, 'regular']), ...mono.map(([t, l]) => [t, l, 'mono'])]) {
+    if (hasUnpairedBacktick(text) && !reported.has(`${line}\u0000${text}`)) {
+      reported.add(`${line}\u0000${text}`);
+      problems.error(line, `the backticks in "${text}" are not paired. Close the code span with a second backtick`);
+    }
     const missing = text ? findMissingGlyph(text, face) : undefined;
     if (missing === undefined || reported.has(`${line}\u0000${missing}`)) continue;
     reported.add(`${line}\u0000${missing}`);

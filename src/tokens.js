@@ -7,73 +7,100 @@ function freeze(node) {
 /** CSS에 넣을 토큰 참조. 값은 `var(--…)` 문자열이다. */
 export const tokens = freeze({
   "color": {
-    "gray": {
-      "0": "var(--color-gray-0)",
-      "25": "var(--color-gray-25)",
-      "50": "var(--color-gray-50)",
-      "100": "var(--color-gray-100)",
-      "200": "var(--color-gray-200)",
-      "300": "var(--color-gray-300)",
-      "600": "var(--color-gray-600)",
-      "900": "var(--color-gray-900)"
+    "palette": {
+      "gray": {
+        "0": "var(--color-palette-gray-0)",
+        "25": "var(--color-palette-gray-25)",
+        "40": "var(--color-palette-gray-40)",
+        "50": "var(--color-palette-gray-50)",
+        "100": "var(--color-palette-gray-100)",
+        "200": "var(--color-palette-gray-200)",
+        "500": "var(--color-palette-gray-500)"
+      },
+      "neutral": {
+        "100": "var(--color-palette-neutral-100)",
+        "400": "var(--color-palette-neutral-400)",
+        "500": "var(--color-palette-neutral-500)",
+        "750": "var(--color-palette-neutral-750)",
+        "800": "var(--color-palette-neutral-800)",
+        "850": "var(--color-palette-neutral-850)",
+        "900": "var(--color-palette-neutral-900)",
+        "950": "var(--color-palette-neutral-950)"
+      },
+      "blue": {
+        "50": "var(--color-palette-blue-50)",
+        "200": "var(--color-palette-blue-200)",
+        "400": "var(--color-palette-blue-400)",
+        "550": "var(--color-palette-blue-550)",
+        "600": "var(--color-palette-blue-600)",
+        "800": "var(--color-palette-blue-800)",
+        "850": "var(--color-palette-blue-850)",
+        "900": "var(--color-palette-blue-900)"
+      },
+      "orange": {
+        "400": "var(--color-palette-orange-400)",
+        "550": "var(--color-palette-orange-550)"
+      },
+      "ink": {
+        "200": "var(--color-palette-ink-200)",
+        "600": "var(--color-palette-ink-600)",
+        "850": "var(--color-palette-ink-850)",
+        "900": "var(--color-palette-ink-900)",
+        "1000": "var(--color-palette-ink-1000)"
+      },
+      "purple": {
+        "500": "var(--color-palette-purple-500)"
+      },
+      "green": {
+        "500": "var(--color-palette-green-500)"
+      },
+      "slate": {
+        "500": "var(--color-palette-slate-500)"
+      },
+      "teal": {
+        "500": "var(--color-palette-teal-500)"
+      }
     },
-    "neutral": {
-      "100": "var(--color-neutral-100)",
-      "400": "var(--color-neutral-400)",
-      "700": "var(--color-neutral-700)",
-      "750": "var(--color-neutral-750)",
-      "800": "var(--color-neutral-800)",
-      "850": "var(--color-neutral-850)",
-      "900": "var(--color-neutral-900)",
-      "950": "var(--color-neutral-950)"
+    "state": {
+      "active": "var(--color-state-active)",
+      "active-fill": "var(--color-state-active-fill)",
+      "active-text": "var(--color-state-active-text)",
+      "on-active": "var(--color-state-on-active)"
     },
-    "blue": {
-      "50": "var(--color-blue-50)",
-      "400": "var(--color-blue-400)",
-      "600": "var(--color-blue-600)",
-      "900": "var(--color-blue-900)",
-      "800": "var(--color-blue-800)"
+    "ui": {
+      "link": "var(--color-ui-link)",
+      "focus": "var(--color-ui-focus)",
+      "progress": "var(--color-ui-progress)",
+      "control-on": "var(--color-ui-control-on)"
     },
-    "tone": {
-      "blue": "var(--color-tone-blue)",
-      "purple": "var(--color-tone-purple)",
-      "green": "var(--color-tone-green)",
-      "orange": "var(--color-tone-orange)",
-      "gray": "var(--color-tone-gray)"
+    "data": {
+      "main": "var(--color-data-main)",
+      "compare": "var(--color-data-compare)",
+      "heat-low": "var(--color-data-heat-low)",
+      "heat-high": "var(--color-data-heat-high)",
+      "heat-ink": "var(--color-data-heat-ink)",
+      "heat-ink-on": "var(--color-data-heat-ink-on)",
+      "grid": "var(--color-data-grid)"
     },
-    "accent": "var(--color-accent)",
-    "on-accent": "var(--color-on-accent)",
     "fg": "var(--color-fg)",
     "muted": "var(--color-muted)",
     "bg": "var(--color-bg)",
+    "node": "var(--color-node)",
     "surface": "var(--color-surface)",
     "border": "var(--color-border)",
     "card-on": "var(--color-card-on)",
-    "dot": "var(--color-dot)",
+    "group": "var(--color-group)",
+    "group-border": "var(--color-group-border)",
     "frame": "var(--color-frame)",
+    "plate-border": "var(--color-plate-border)",
     "page": "var(--color-page)",
     "gallery": "var(--color-gallery)",
     "tag": {
-      "blue": "var(--color-tag-blue)",
       "purple": "var(--color-tag-purple)",
       "green": "var(--color-tag-green)",
-      "orange": "var(--color-tag-orange)",
+      "teal": "var(--color-tag-teal)",
       "gray": "var(--color-tag-gray)"
-    },
-    "orange": {
-      "100": "var(--color-orange-100)",
-      "600": "var(--color-orange-600)"
-    },
-    "ink": {
-      "900": "var(--color-ink-900)",
-      "600": "var(--color-ink-600)",
-      "200": "var(--color-ink-200)"
-    },
-    "series-1": "var(--color-series-1)",
-    "series-2": "var(--color-series-2)",
-    "heat-low": "var(--color-heat-low)",
-    "heat-high": "var(--color-heat-high)",
-    "grid": "var(--color-grid)"
+    }
   },
   "font": {
     "sans": "var(--font-sans)",
@@ -82,14 +109,10 @@ export const tokens = freeze({
   "size": {
     "text": {
       "9": "var(--size-text-9)",
-      "10-5": "var(--size-text-10-5)",
       "11": "var(--size-text-11)",
-      "11-5": "var(--size-text-11-5)",
       "12": "var(--size-text-12)",
       "13": "var(--size-text-13)",
-      "13-5": "var(--size-text-13-5)",
       "14": "var(--size-text-14)",
-      "14-5": "var(--size-text-14-5)",
       "15": "var(--size-text-15)",
       "22": "var(--size-text-22)"
     },
@@ -100,6 +123,7 @@ export const tokens = freeze({
       "22": "var(--size-line-22)"
     },
     "control": "var(--size-control)",
+    "control-inner": "var(--size-control-inner)",
     "pill": "var(--size-pill)",
     "tag": "var(--size-tag)",
     "icon": "var(--size-icon)",
@@ -107,20 +131,18 @@ export const tokens = freeze({
     "halo": "var(--size-halo)",
     "marker": "var(--size-marker)",
     "marker-on": "var(--size-marker-on)",
-    "grid": "var(--size-grid)",
-    "grid-dot": "var(--size-grid-dot)",
     "card": "var(--size-card)",
     "node-min": "var(--size-node-min)",
     "node-max": "var(--size-node-max)",
     "node-min-h": "var(--size-node-min-h)",
     "store-cap": "var(--size-store-cap)",
-    "figure-min": "var(--size-figure-min)",
+    "figure-canvas": "var(--size-figure-canvas)",
+    "hop-ref": "var(--size-hop-ref)",
     "chip-max": "var(--size-chip-max)",
     "caption-max": "var(--size-caption-max)",
-    "figure-max": "var(--size-figure-max)",
     "gallery-column": "var(--size-gallery-column)",
     "gallery-frame": "var(--size-gallery-frame)",
-    "player-chrome": "var(--size-player-chrome)",
+    "document-column": "var(--size-document-column)",
     "embedded-chrome": "var(--size-embedded-chrome)",
     "chart-width": "var(--size-chart-width)",
     "chart-label": "var(--size-chart-label)",
@@ -155,20 +177,14 @@ export const tokens = freeze({
     "frame": "var(--tracking-frame)"
   },
   "space": {
-    "0-5": "var(--space-0-5)",
     "1": "var(--space-1)",
-    "1-5": "var(--space-1-5)",
     "2": "var(--space-2)",
-    "2-5": "var(--space-2-5)",
     "3": "var(--space-3)",
-    "3-5": "var(--space-3-5)",
     "4": "var(--space-4)",
     "5": "var(--space-5)",
     "6": "var(--space-6)",
-    "6-5": "var(--space-6-5)",
     "7": "var(--space-7)",
     "8": "var(--space-8)",
-    "8-5": "var(--space-8-5)",
     "9": "var(--space-9)",
     "11": "var(--space-11)",
     "12": "var(--space-12)",
@@ -176,15 +192,15 @@ export const tokens = freeze({
     "14": "var(--space-14)",
     "15": "var(--space-15)",
     "16": "var(--space-16)",
-    "17": "var(--space-17)",
     "18": "var(--space-18)",
     "20": "var(--space-20)",
     "22": "var(--space-22)",
     "30": "var(--space-30)",
-    "32": "var(--space-32)"
+    "0-5": "var(--space-0-5)",
+    "1-5": "var(--space-1-5)",
+    "2-5": "var(--space-2-5)"
   },
   "radius": {
-    "xs": "var(--radius-xs)",
     "sm": "var(--radius-sm)",
     "md": "var(--radius-md)",
     "lg": "var(--radius-lg)",
@@ -200,6 +216,7 @@ export const tokens = freeze({
     "tag": "var(--border-tag)",
     "edge": "var(--border-edge)",
     "strong": "var(--border-strong)",
+    "casing": "var(--border-casing)",
     "halo": "var(--border-halo)"
   },
   "dash": {
@@ -210,11 +227,10 @@ export const tokens = freeze({
   "opacity": {
     "tag": "var(--opacity-tag)",
     "halo": "var(--opacity-halo)",
-    "tab-on": "var(--opacity-tab-on)",
     "dim": "var(--opacity-dim)",
+    "dim-ink": "var(--opacity-dim-ink)",
     "band": "var(--opacity-band)",
-    "range": "var(--opacity-range)",
-    "heat-text": "var(--opacity-heat-text)"
+    "range": "var(--opacity-range)"
   },
   "z": {
     "raised": "var(--z-raised)",
@@ -223,6 +239,8 @@ export const tokens = freeze({
   "duration": {
     "fast": "var(--duration-fast)",
     "hop": "var(--duration-hop)",
+    "caption-fade": "var(--duration-caption-fade)",
+    "hop-min": "var(--duration-hop-min)",
     "dwell": "var(--duration-dwell)",
     "dwell-per-char": "var(--duration-dwell-per-char)",
     "dwell-max": "var(--duration-dwell-max)",
@@ -236,6 +254,10 @@ export const tokens = freeze({
   },
   "scale": {
     "zoom-max": "var(--scale-zoom-max)",
+    "aspect-fit-max": "var(--scale-aspect-fit-max)",
+    "fold-aspect": "var(--scale-fold-aspect)",
+    "fold-step": "var(--scale-fold-step)",
+    "aspect-max": "var(--scale-aspect-max)",
     "zoom-step": "var(--scale-zoom-step)"
   }
 });
@@ -243,89 +265,112 @@ export const tokens = freeze({
 /** 배치 계산에 쓸 밝은 테마의 실제 값. 크기는 px 숫자, 시간은 ms 숫자다. */
 export const values = freeze({
   "color": {
-    "gray": {
-      "0": "#ffffff",
-      "25": "#f7f8fa",
-      "50": "#f5f7fa",
-      "100": "#e3e7ec",
-      "200": "#d5dbe3",
-      "300": "#b6c0cc",
-      "600": "#4b5563",
-      "900": "#111418"
+    "palette": {
+      "gray": {
+        "0": "#ffffff",
+        "25": "#f6f7f9",
+        "40": "#eef0f3",
+        "50": "#eef1f5",
+        "100": "#e3e7ec",
+        "200": "#d5dbe3",
+        "500": "#818b99"
+      },
+      "neutral": {
+        "100": "#e3e3e3",
+        "400": "#9aa0a6",
+        "500": "#72767a",
+        "750": "#3c3e42",
+        "800": "#2c2d30",
+        "850": "#242526",
+        "900": "#1b1b1d",
+        "950": "#111214"
+      },
+      "blue": {
+        "50": "#edf5fb",
+        "200": "#a9cdea",
+        "400": "#79c0ff",
+        "550": "#218fe5",
+        "600": "#1072c2",
+        "800": "#1d5d91",
+        "850": "#2b4254",
+        "900": "#1d2933"
+      },
+      "orange": {
+        "400": "#f5a374",
+        "550": "#d96c1f"
+      },
+      "ink": {
+        "200": "#c6cacf",
+        "600": "#52514e",
+        "850": "#0d1117",
+        "900": "#0b0b0b",
+        "1000": "#000000"
+      },
+      "purple": {
+        "500": "#8b5cf6"
+      },
+      "green": {
+        "500": "#10b981"
+      },
+      "slate": {
+        "500": "#8b949e"
+      },
+      "teal": {
+        "500": "#11a6b0"
+      }
     },
-    "neutral": {
-      "100": "#e3e3e3",
-      "400": "#9aa0a6",
-      "700": "#3a3b3c",
-      "750": "#34363a",
-      "800": "#2c2d30",
-      "850": "#242526",
-      "900": "#1b1b1d",
-      "950": "#111214"
+    "state": {
+      "active": "#218fe5",
+      "active-fill": "#1072c2",
+      "active-text": "#1072c2",
+      "on-active": "#ffffff"
     },
-    "blue": {
-      "50": "#edf3fb",
-      "400": "#3396e8",
-      "600": "#2a78d6",
-      "900": "#1d2733",
-      "800": "#1d4f91"
+    "ui": {
+      "link": "#1072c2",
+      "focus": "#218fe5",
+      "progress": "#218fe5",
+      "control-on": "#ffffff"
     },
-    "tone": {
-      "blue": "#3b82f6",
-      "purple": "#8b5cf6",
-      "green": "#10b981",
-      "orange": "#f59e0b",
-      "gray": "#8b949e"
+    "data": {
+      "main": "#218fe5",
+      "compare": "#d96c1f",
+      "heat-low": "#a9cdea",
+      "heat-high": "#1d5d91",
+      "heat-ink": "#000000",
+      "heat-ink-on": "#ffffff",
+      "grid": "#c6cacf"
     },
-    "accent": "#2a78d6",
-    "on-accent": "#ffffff",
     "fg": "#0b0b0b",
     "muted": "#52514e",
-    "bg": "#ffffff",
-    "surface": "#f5f7fa",
-    "border": "#b6c0cc",
-    "card-on": "#edf3fb",
-    "dot": "#d5dbe3",
+    "bg": "#f6f7f9",
+    "node": "#ffffff",
+    "surface": "#eef1f5",
+    "border": "#818b99",
+    "card-on": "#edf5fb",
+    "group": "#eef0f3",
+    "group-border": "#818b99",
     "frame": "#e3e7ec",
+    "plate-border": "#d5dbe3",
     "page": "#ffffff",
-    "gallery": "#f7f8fa",
+    "gallery": "#ffffff",
     "tag": {
-      "blue": "#3b82f6",
       "purple": "#8b5cf6",
       "green": "#10b981",
-      "orange": "#f59e0b",
+      "teal": "#11a6b0",
       "gray": "#8b949e"
-    },
-    "orange": {
-      "100": "#fbe1d5",
-      "600": "#eb6834"
-    },
-    "ink": {
-      "900": "#0b0b0b",
-      "600": "#52514e",
-      "200": "#e6e5e1"
-    },
-    "series-1": "#2a78d6",
-    "series-2": "#eb6834",
-    "heat-low": "#edf3fb",
-    "heat-high": "#1d4f91",
-    "grid": "#e6e5e1"
+    }
   },
   "font": {
-    "sans": "FigSans, Pretendard, -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif",
-    "mono": "FigMono, D2Coding, ui-monospace, SFMono-Regular, Menlo, monospace"
+    "sans": "FigSans, FigSansKo, FigSansSym, FigSansMath, Inter, 'Inter Variable', 'Noto Sans KR', 'Noto Sans KR Variable', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif",
+    "mono": "FigMono, FigSans, FigSansKo, FigSansSym, FigSansMath, ui-monospace, SFMono-Regular, Menlo, monospace"
   },
   "size": {
     "text": {
       "9": 9,
-      "10-5": 10.5,
       "11": 11,
-      "11-5": 11.5,
       "12": 12,
       "13": 13,
-      "13-5": 13.5,
       "14": 14,
-      "14-5": 14.5,
       "15": 15,
       "22": 22
     },
@@ -336,6 +381,7 @@ export const values = freeze({
       "22": 22
     },
     "control": 30,
+    "control-inner": 22,
     "pill": 18,
     "tag": 14,
     "icon": 12,
@@ -343,22 +389,20 @@ export const values = freeze({
     "halo": 10,
     "marker": 5,
     "marker-on": 4,
-    "grid": 16,
-    "grid-dot": 1,
     "card": 176,
     "node-min": 100,
     "node-max": 210,
     "node-min-h": 46,
     "store-cap": 12,
-    "figure-min": 560,
+    "figure-canvas": 960,
+    "hop-ref": 300,
     "chip-max": 210,
     "caption-max": 720,
-    "figure-max": 1400,
-    "gallery-column": 760,
+    "gallery-column": 960,
     "gallery-frame": 820,
-    "player-chrome": 190,
+    "document-column": 960,
     "embedded-chrome": 150,
-    "chart-width": 640,
+    "chart-width": 960,
     "chart-label": 140,
     "chart-label-max": 240,
     "chart-bar": 12,
@@ -391,20 +435,14 @@ export const values = freeze({
     "frame": 0.04
   },
   "space": {
-    "0-5": 1,
     "1": 2,
-    "1-5": 3,
     "2": 4,
-    "2-5": 5,
     "3": 6,
-    "3-5": 7,
     "4": 8,
     "5": 10,
     "6": 12,
-    "6-5": 13,
     "7": 14,
     "8": 16,
-    "8-5": 17,
     "9": 18,
     "11": 22,
     "12": 24,
@@ -412,15 +450,15 @@ export const values = freeze({
     "14": 28,
     "15": 30,
     "16": 32,
-    "17": 34,
     "18": 36,
     "20": 40,
     "22": 44,
     "30": 60,
-    "32": 64
+    "0-5": 1,
+    "1-5": 3,
+    "2-5": 5
   },
   "radius": {
-    "xs": 2,
     "sm": 4,
     "md": 6,
     "lg": 8,
@@ -436,6 +474,7 @@ export const values = freeze({
     "tag": 1.5,
     "edge": 1.75,
     "strong": 2.5,
+    "casing": 4.5,
     "halo": 8
   },
   "dash": {
@@ -446,11 +485,10 @@ export const values = freeze({
   "opacity": {
     "tag": 0.15,
     "halo": 0.2,
-    "tab-on": 0.06,
     "dim": 0.3,
-    "band": 0.16,
-    "range": 0.32,
-    "heat-text": 0.55
+    "dim-ink": 0.65,
+    "band": 0.22,
+    "range": 0.4
   },
   "z": {
     "raised": 2,
@@ -459,6 +497,8 @@ export const values = freeze({
   "duration": {
     "fast": 200,
     "hop": 3750,
+    "caption-fade": 200,
+    "hop-min": 500,
     "dwell": 700,
     "dwell-per-char": 45,
     "dwell-max": 3200,
@@ -472,6 +512,10 @@ export const values = freeze({
   },
   "scale": {
     "zoom-max": 6,
+    "aspect-fit-max": 1.6,
+    "fold-aspect": 1.6,
+    "fold-step": 0.75,
+    "aspect-max": 3,
     "zoom-step": 1.25
   }
 });

@@ -1,0 +1,36 @@
+flow down
+title "셀프 어텐션 한 층의 계산 흐름"
+subtitle "토큰 4개, 차원 64 기준 예시. 점이 실어 나르는 글은 값의 모양이다"
+
+store emb "입력 임베딩" "`X` [4×64]"
+group proj "투영" direction=right {
+  box q "Q 투영" "`X·Wq`"
+  box k "K 투영" "`X·Wk`"
+  box v "V 투영" "`X·Wv`"
+}
+box score "점수" "`Q·K^T / √d`"
+box soft "softmax" "행마다 합 1"
+box mix "가중합" "`weights · V`"
+store out "출력" "[4×64]"
+
+emb -> q
+emb -> k
+emb -> v
+q -> score
+k -> score
+score -> soft
+soft -> mix
+v -> mix
+mix -> out
+
+step "투영" "같은 임베딩에 서로 다른 가중치를 곱해 Q, K, V를 만든다"
+  emb -> q "`Q` [4×64]" & emb -> k "`K` [4×64]" & emb -> v "`V` [4×64]"
+step "점수 계산" "모든 질의가 모든 키와 내적한다"
+  q -> score "`Q` [4×64]" & k -> score "`K` [4×64]"
+  show score "4×4 점수" tag="shape" mono
+step "정규화" "각 행을 확률로 바꾼다. 고양이 행 기준"
+  score -> soft "점수 [4×4]"
+  show soft "the 0.05 · cat 0.71 · sat 0.18 · down 0.06" tag="cat 행" mono
+step "가중합" "가중치로 V를 섞어 토큰마다 새 벡터를 만든다"
+  soft -> mix "`weights` [4×4]" & v -> mix "`V` [4×64]"
+  mix -> out "출력 [4×64]"

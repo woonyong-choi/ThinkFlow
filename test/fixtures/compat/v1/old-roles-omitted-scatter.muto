@@ -1,0 +1,9 @@
+chart scatter
+title "role 없는 산점도"
+subtitle "예시 데이터. 선언 순서 역할"
+x "비용(달러)"
+y "정확도(%)"
+series ours "기억 붙임"
+series base "기억 없음"
+point "p1" x=1 y=50 series=base
+point "p2" x=2 y=70 series=ours

@@ -71,7 +71,16 @@ The SVG animates without scripts. The HTML adds step tabs, pause, speed, fullscr
 node src/cli.js check examples/memory.muto --strict --json
 ```
 
-The command prints nothing and exits with 0 when the figure has no errors or warnings.
+The command prints nothing and exits with 0 when the figure has no errors, warnings, or deprecated forms. `--strict` fails on warnings and `--no-deprecated` fails on deprecated forms. `--json` prints one `{ file, severity, code, line, column, message, fix? }` object per diagnostic.
+
+### Migrate old files
+
+```sh
+node src/cli.js migrate examples/memory.muto
+node src/cli.js migrate examples/memory.muto --write
+```
+
+Files written for an older grammar keep working. `migrate` shows the lines it would change as a diff and rewrites the file only with `--write`. It refuses a file that still has errors or deprecated forms after the change. The first line may be `mutoscope 1` to name the grammar version, and a file without it reads as version 1.
 
 ### Render all examples with a gallery
 

@@ -1,4 +1,8 @@
 // 경로 점을 SVG path로 바꾼다. 점은 옮기지 않고 꺾이는 모서리만 둥글게 한다.
+import { values } from './tokens.js';
+
+// 둥근 모서리(곡선)를 직선 몇 개로 펴서 길이를 재는 칸 수
+const CURVE_STEPS = 16;
 
 // cost: time O(p), heap O(p), stack O(1)
 // vars: p = 경로 점 수
@@ -8,14 +12,42 @@ export function routePolyline(points, radius) {
   const pts = dropRepeats(points);
   let d = `M ${pts[0].x} ${pts[0].y}`;
   for (let i = 1; i < pts.length - 1; i++) {
-    const [a, b, c] = [pts[i - 1], pts[i], pts[i + 1]];
-    const corner = Math.min(radius, distance(a, b) / 2, distance(b, c) / 2);
-    const p1 = pointToward(b, a, corner);
-    const p2 = pointToward(b, c, corner);
-    d += ` L ${roundTenth(p1.x)} ${roundTenth(p1.y)} Q ${roundTenth(b.x)} ${roundTenth(b.y)}, ${roundTenth(p2.x)} ${roundTenth(p2.y)}`;
+    const { from, via, to } = cornerAt(pts, i, radius);
+    d += ` L ${roundTenth(from.x)} ${roundTenth(from.y)} Q ${roundTenth(via.x)} ${roundTenth(via.y)}, ${roundTenth(to.x)} ${roundTenth(to.y)}`;
   }
   d += ` L ${roundTenth(pts.at(-1).x)} ${roundTenth(pts.at(-1).y)}`;
   return { d, mid: pointAlong(pts, 0.5) };
+}
+
+// cost: time O(p·CURVE_STEPS), heap O(p·CURVE_STEPS), stack O(1)
+// vars: p = 경로 점 수, CURVE_STEPS = 모서리 하나를 펴는 직선 수(16)
+// basis: estimate
+/**
+ * 그려지는 경로(둥근 모서리)를 직선으로 편 점 목록. 점이 따라가는 길(SVG path)의 길이와 자리는 꺾은선이 아니라 이 둥근 경로가 정한다.
+ * 모서리가 둥글면 꺾은선보다 짧아, 같은 비율이라도 점 자리가 달라진다.
+ */
+export function flattenRoute(points, radius = values.radius.route) {
+  const pts = dropRepeats(points);
+  const flat = [pts[0]];
+  for (let i = 1; i < pts.length - 1; i++) {
+    const { from, via, to } = cornerAt(pts, i, radius);
+    for (let k = 0; k <= CURVE_STEPS; k++) flat.push(quadAt({ from, via, to }, k / CURVE_STEPS));
+  }
+  flat.push(pts.at(-1));
+  return flat;
+}
+
+// 모서리 i의 둥글게 깎기 시작점, 꺾이는 점, 끝점
+function cornerAt(pts, i, radius) {
+  const [a, b, c] = [pts[i - 1], pts[i], pts[i + 1]];
+  const corner = Math.min(radius, distance(a, b) / 2, distance(b, c) / 2);
+  return { from: pointToward(b, a, corner), via: b, to: pointToward(b, c, corner) };
+}
+
+// 2차 베지어 곡선 위 t 지점
+function quadAt({ from, via, to }, t) {
+  const [u, w] = [(1 - t) ** 2, t * t];
+  return { x: u * from.x + 2 * (1 - t) * t * via.x + w * to.x, y: u * from.y + 2 * (1 - t) * t * via.y + w * to.y };
 }
 
 // cost: time O(p), heap O(1), stack O(1)
@@ -31,6 +63,14 @@ export function pointAlong(pts, fraction) {
     left -= length;
   }
   return pts.at(-1);
+}
+
+// cost: time O(p), heap O(1), stack O(1)
+// vars: p = 경로 점 수
+// basis: estimate
+/** 꺾은선 길이(px). 점 이동 시간을 정할 때 쓴다. */
+export function routeLength(points) {
+  return points.slice(1).reduce((sum, p, i) => sum + distance(points[i], p), 0);
 }
 
 // cost: time O(p), heap O(p), stack O(1)

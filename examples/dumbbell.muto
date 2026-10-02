@@ -4,8 +4,8 @@ subtitle "예시 데이터. 에이전트마다 작업 61개 평균"
 x "토큰(로그 눈금)"
 scale log
 
-series base "기억 없음"
-series ours "기억 붙임"
+series base "기억 없음" role=compare
+series ours "기억 붙임" role=main
 
 row "코딩 에이전트 A" base=120000 base.low=104000 base.high=139000 ours=31000 ours.low=27000 ours.high=36000
 row "코딩 에이전트 B" base=95000 base.low=83000 base.high=108000 ours=28000 ours.low=24000 ours.high=33000

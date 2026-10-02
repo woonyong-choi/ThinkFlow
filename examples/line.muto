@@ -4,8 +4,8 @@ subtitle "예시 데이터. 띠는 신뢰구간, 점선은 목표 5%"
 x "주차"
 y "재시도 비율(%)"
 
-series ours "새 판단기"
-series base "기존 판단기"
+series ours "새 판단기" role=main
+series base "기존 판단기" role=compare
 rule 5 "목표"
 
 point x=1 ours=12.4 ours.low=10.9 ours.high=14.1 base=12.1 base.low=10.6 base.high=13.7

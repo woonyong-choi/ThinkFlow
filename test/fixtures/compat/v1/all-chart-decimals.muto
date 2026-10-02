@@ -1,0 +1,9 @@
+mutoscope 1
+chart heatmap
+title "소수 자릿수 머리 줄"
+subtitle "예시 데이터. decimals로 값 글자의 소수 자릿수를 정한다"
+decimals 2
+cell "행1" "열1" 0.6
+cell "행1" "열2" 0.05
+cell "행2" "열1" 0.25
+cell "행2" "열2" 1

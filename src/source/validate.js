@@ -111,9 +111,9 @@ function checkTimeline(figure, names, problems) {
   for (const step of figure.steps) {
     if (!step.beats.length && !step.hasError) problems.error(step.line, `step "${step.label}" has no lines. Add a move, show, light, say, or wait`);
     for (const beat of step.beats) {
-      for (const hop of beat.hops) resolveHop(hop, figure, names, problems, usedEdges);
-      for (const op of beat.ops) checkCardTarget(op, figure, names, problems);
-      for (const target of beat.light) checkLightTarget(target, beat.line, figure, names, problems);
+      for (const hop of beat.hops) resolveHop(hop, { figure, names, problems }, usedEdges);
+      for (const op of beat.ops) checkCardTarget(op, { figure, names }, problems);
+      for (const target of beat.light) checkLightTarget(target, { line: beat.line, figure, names }, problems);
       for (const note of beat.notes) if (!names.has(note.node) && !figure.rejectedNames.has(note.node)) problems.error(note.line, unknownName('participant', note.node, names.keys()));
     }
   }
@@ -127,15 +127,15 @@ function checkTimeline(figure, names, problems) {
 // vars: e = 선 수
 // basis: estimate
 // 이동이 따라갈 선을 고른다. 같은 방향 선이 먼저, 없으면 반대 방향 선을 거꾸로. 순서 그림 메시지는 선이 없다.
-function resolveHop(hop, figure, names, problems, usedEdges) {
+function resolveHop(hop, { figure, names, problems }, usedEdges) {
   const [fromId, fromColumn] = hop.from.split('.');
   const [toId, toColumn] = hop.to.split('.');
-  if (!checkColumnRefs([hop.from, hop.to], figure, hop.line, problems)) return;
+  if (!checkColumnRefs([hop.from, hop.to], { figure, line: hop.line }, problems)) return;
   for (const id of [fromId, toId]) if (!names.has(id) && !figure.rejectedNames.has(id)) problems.error(hop.line, unknownName('node', id, names.keys()));
   if (figure.kind === 'sequence' || !names.has(fromId) || !names.has(toId)) return;
-  const matches = (e, a, b, ca, cb) => e.from === a && e.to === b && (ca === undefined || e.fromColumn === ca) && (cb === undefined || e.toColumn === cb);
-  const forward = figure.edges.map((e, i) => (matches(e, fromId, toId, fromColumn, toColumn) ? i : -1)).filter((i) => i >= 0);
-  const backward = figure.edges.map((e, i) => (matches(e, toId, fromId, toColumn, fromColumn) ? i : -1)).filter((i) => i >= 0);
+  const matches = (e, [a, ca], [b, cb]) => e.from === a && e.to === b && (ca === undefined || e.fromColumn === ca) && (cb === undefined || e.toColumn === cb);
+  const forward = figure.edges.map((e, i) => (matches(e, [fromId, fromColumn], [toId, toColumn]) ? i : -1)).filter((i) => i >= 0);
+  const backward = figure.edges.map((e, i) => (matches(e, [toId, toColumn], [fromId, fromColumn]) ? i : -1)).filter((i) => i >= 0);
   const candidates = forward.length ? forward : backward;
   if (!candidates.length) {
     problems.error(hop.line, `there is no edge between "${fromId}" and "${toId}". Declare "${fromId} -> ${toId}" first`);
@@ -156,7 +156,7 @@ function resolveHop(hop, figure, names, problems, usedEdges) {
 // vars: k = 이름 수(없는 이름 메시지)
 // basis: estimate
 // show, clear 대상: 구조 그림의 상자, 외부, 저장소, 사람, 데이터 그림의 테이블
-function checkCardTarget(op, figure, names, problems) {
+function checkCardTarget(op, { figure, names }, problems) {
   const target = names.get(op.node);
   if (!target && !figure.rejectedNames.has(op.node)) problems.error(op.line, unknownName('node', op.node, names.keys()));
   else if (target && !CARD_SHAPES.includes(target.shape)) problems.error(op.line, `a ${target.shape} has no card. Use show on ${CARD_SHAPES.slice(0, 4).join(', ')} or table`);
@@ -166,10 +166,10 @@ function checkCardTarget(op, figure, names, problems) {
 // vars: k = 이름 수, c = 열 수
 // basis: estimate
 // light 대상: 도형, 그룹, 상태, 테이블, 테이블.열
-function checkLightTarget(target, line, figure, names, problems) {
+function checkLightTarget(target, { line, figure, names }, problems) {
   const [id, column] = target.split('.');
   const item = names.get(id);
-  if (!checkColumnRefs([target], figure, line, problems)) return;
+  if (!checkColumnRefs([target], { figure, line }, problems)) return;
   if (!item && !figure.rejectedNames.has(id)) problems.error(line, unknownName('node', id, names.keys()));
   else if (column !== undefined && item.shape !== 'table') problems.error(line, `"${id}" is not a table, so "${target}" has no column`);
   else if (column !== undefined && !item.columns.some((c) => c.name === column)) problems.error(line, `table "${id}" has no column "${column}"`);
@@ -179,7 +179,7 @@ function checkLightTarget(target, line, figure, names, problems) {
 // vars: r = 이름 수
 // basis: estimate
 // `테이블.열` 꼴 이름은 데이터 관계 그림에서만, 점 하나로만 쓴다. 맞으면 true다.
-function checkColumnRefs(refs, figure, line, problems) {
+function checkColumnRefs(refs, { figure, line }, problems) {
   const bad = refs.find((ref) => ref.split('.').length > 2);
   if (bad) problems.error(line, `write a column as table.column. Found "${bad}"`);
   const column = refs.find((ref) => ref.includes('.'));

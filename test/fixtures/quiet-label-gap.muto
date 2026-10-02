@@ -1,0 +1,17 @@
+flow down
+title "숨은 선 라벨 자리"
+
+box a "A"
+box b "B"
+box c "C"
+box d "D"
+
+a -> b "VA"
+b -> c "VPN"
+c -> d "L1 실패" quiet
+
+step "앞" "보이는 선만 지난다"
+  a -> b
+  b -> c
+step "뒤" "숨은 선이 이때 나타난다"
+  c -> d

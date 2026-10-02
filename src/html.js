@@ -1,41 +1,59 @@
 // 재생 화면 HTML 한 장과 목록 쪽. 스크립트, 스타일, 글꼴, 그림을 모두 안에 넣어 파일 하나로 열린다.
 import { readFileSync } from 'node:fs';
-import { chartText } from './chart/draw.js';
-import { drawScene } from './draw/figure.js';
-import { curveOf } from './easing.js';
+import { chartMotionCss } from './chart/motion.js';
+import { fitCanvas } from './canvas.js';
 import { createGlyphSet, embedFonts } from './measure/fonts.js';
 import { DEFS, STYLES } from './styles.js';
-import { escapeXml, roundCoord as r } from './text.js';
-import { chartMotionCss } from './chart/motion.js';
-import { chartSeriesIds, litIds } from './timeline.js';
-import { tokens, values } from './tokens.js';
+import { escapeXml, plainText, roundCoord as r } from './text.js';
+import { values } from './tokens.js';
+import { chartContent, figureContent } from './html/content.js';
 
-const PLAYER = readFileSync(new URL('./player.js', import.meta.url), 'utf8');
-const VIEWER = readFileSync(new URL('./viewer.js', import.meta.url), 'utf8');
+// 브라우저 스크립트 파일(src/player/). 한 스크립트로 이어 붙여 HTML에 넣는다.
+const PLAYER_FILES = ['view', 'play', 'controls', 'stage', 'curve'];
+const PLAYER = PLAYER_FILES.map((name) => readFileSync(new URL(`./player/${name}.js`, import.meta.url), 'utf8')).join('\n');
 // iframe 안에서 열리면 틀을 빼고, 목록 쪽이 iframe 높이를 맞추도록 본문 높이를 알린다. 문서(html) 높이는 iframe 창보다 작아지지 않아 쓰지 않는다.
-const EMBED_SCRIPT = `<script>if (window.self !== window.top) {\n  document.documentElement.classList.add('embedded');\n  addEventListener('load', () => new ResizeObserver(() => parent.postMessage({ figureHeight: Math.ceil(document.body.getBoundingClientRect().height) }, '*')).observe(document.body));\n}</script>`;
-// 전체 화면 단추와, 전체 화면에서만 보이는 확대·축소 단추. 아이콘은 viewer.js가 그린다.
+// 목록 쪽의 라이트·다크 선택은 iframe의 prefers-color-scheme에 안정적으로 전해지지 않아, 목록 쪽이 보내는 테마 메시지로 이 문서의 data-theme을 바꾼다. 처음에는 목록 쪽에 현재 테마를 물어본다.
+const EMBED_SCRIPT = `<script>if (window.self !== window.top) {
+  document.documentElement.classList.add('embedded');
+  addEventListener('message', (e) => {
+    if (e.source !== parent || !e.data || !('theme' in e.data)) return;
+    const root = document.documentElement;
+    if (e.data.theme === 'light' || e.data.theme === 'dark') {
+      root.setAttribute('data-theme', e.data.theme);
+      root.style.colorScheme = e.data.theme;
+    } else {
+      root.removeAttribute('data-theme');
+      root.style.colorScheme = '';
+    }
+  });
+  parent.postMessage({ themeRequest: true }, '*');
+  addEventListener('load', () => new ResizeObserver(() => parent.postMessage({ figureHeight: Math.ceil(document.body.getBoundingClientRect().height) }, '*')).observe(document.body));
+}</script>`;
+// 원 단추 하나. 일시정지, 배속, 전체 화면, 확대·축소가 모두 이 구성을 쓴다. 아이콘이 필요한 단추는 player/view.js와 player/controls.js가 그린다.
+function roundButton(extraClass, { label, zoom, content = '' } = {}) {
+  const className = extraClass ? `fl-round ${extraClass}` : 'fl-round';
+  const labelAttr = label ? ` aria-label="${label}"` : '';
+  const zoomAttr = zoom ? ` data-zoom="${zoom}"` : '';
+  return `<button type="button" class="${className}"${zoomAttr}${labelAttr}>${content}</button>`;
+}
+
+// 일시정지 단추 둘레의 진행 고리. 단추 바깥 테두리(size.control)를 덮고, 선 굵기의 한가운데가 둘레다. 12시에서 시작한다.
+const RING_START_DEGREES = -90;
+function ringSvg() {
+  const size = values.size.control;
+  const width = values.border.edge;
+  const center = size / 2;
+  const radius = (size - width) / 2;
+  const start = `rotate(${RING_START_DEGREES} ${center} ${center})`;
+  return `<svg class="fl-ring" viewBox="0 0 ${size} ${size}" aria-hidden="true"><circle class="fl-ring-fill" cx="${center}" cy="${center}" r="${radius}" stroke-width="${width}" transform="${start}"/></svg>`;
+}
+
+// 전체 화면 단추와, 전체 화면에서만 보이는 확대·축소 단추.
 const VIEW_BUTTONS =
-  '<button type="button" class="fl-round fl-full"></button>' +
-  '<div class="fl-zoom"><button type="button" class="fl-round" data-zoom="in" aria-label="확대"></button><button type="button" class="fl-round" data-zoom="out" aria-label="축소"></button><button type="button" class="fl-round" data-zoom="fit" aria-label="전체 보기"></button></div>';
-// 재생기가 점과 글 상자, 아이콘을 그릴 때 쓰는 값. 브라우저 코드는 tokens.js를 불러올 수 없어 데이터로 넘긴다.
-const PLAYER_METRICS = Object.freeze({
-  accent: tokens.color.accent,
-  halo: values.size.halo,
-  haloOpacity: values.opacity.halo,
-  packet: values.size.packet,
-  chipRadius: values.radius.lg,
-  chipLine: values.size.line['15'],
-  chipPadX: values.space['9'],
-  chipPadY: values.space['4'],
-  chipGap: values.space['6'],
-  icon: values.size.icon,
-  iconStroke: values.border.edge,
-  pauseStroke: values.border.strong,
-  zoomMax: values.scale['zoom-max'],
-  zoomStep: values.scale['zoom-step'],
-  move: curveOf('move'),
-});
+  roundButton('fl-full') +
+  `<div class="fl-zoom">${roundButton('', { label: '확대', zoom: 'in' })}${roundButton('', { label: '축소', zoom: 'out' })}${roundButton('', { label: '전체 보기', zoom: 'fit' })}</div>`;
+const PAUSE_BUTTON = roundButton('fl-pause', { content: `${ringSvg()}<span class="fl-pause-icon"></span>` });
+const RATE_BUTTON = roundButton('fl-rate', { label: '배속', content: '1×' });
 
 // cost: time O(s + e + b·(e + k) + out), heap O(out), stack O(1), io 1
 // vars: s = 도형 수, e = 선 수, b = 박자 수, k = 카드 있는 도형 수, out = 만든 HTML 글자 수
@@ -45,37 +63,29 @@ export async function toHtml(result, name) {
   const { figure, timeline } = result;
   const glyphs = createGlyphSet();
   const content = result.chart ? chartContent(result, glyphs) : figureContent(result, glyphs);
-  for (const label of timeline.steps) glyphs.add(label, 'regular');
-  for (const seg of timeline.segs) {
-    glyphs.add(seg.caption, 'regular');
-    for (const hop of seg.hops) for (const line of hop.data ?? []) glyphs.add(line, 'regular');
-  }
+  addTimelineGlyphs(timeline, glyphs);
   const fonts = await embedFonts(glyphs.used);
-  const { width, height } = content;
-  const svg =
-    `<svg xmlns="http://www.w3.org/2000/svg" class="fl" width="${r(width)}" height="${r(height)}" style="aspect-ratio: ${r(width)} / ${r(height)}" viewBox="0 0 ${r(width)} ${r(height)}" role="img">` +
-    `<title>${escapeXml(figure.title ?? name)}</title><defs>${DEFS}</defs>${content.svg}<g class="fl-packets"></g></svg>`;
+  const svg = playerSvg(content, plainText(figure.title ?? name));
   return `<!doctype html>
 <html lang="ko">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>${escapeXml(figure.title ?? name)}</title>
+<title>${escapeXml(plainText(figure.title ?? name))}</title>
 ${EMBED_SCRIPT}
 <style>${fonts}
-${STYLES.tokens}${STYLES.player}${STYLES.figure}${STYLES.chart}${result.chart ? chartMotionCss(timeline.growMs, result.chart.dotAts) : ''}</style>
+${STYLES.tokens}${STYLES.control}${STYLES.player}${STYLES.figure}${STYLES.chart}${result.chart ? chartMotionCss(timeline.growMs, result.chart.dotAts) : ''}</style>
 </head>
 <body>
 <figure class="fl-figure${result.chart ? ' fl-chart-page' : ''}" tabindex="0">
 ${VIEW_BUTTONS}
 <div class="fl-canvas">${svg}</div>
 <figcaption class="fl-foot">
-<div class="fl-bar"><button type="button" class="fl-round fl-pause"></button><div class="fl-tabs" role="tablist"></div><button type="button" class="fl-round fl-rate" aria-label="배속">1×</button></div>
+<div class="fl-bar">${PAUSE_BUTTON}<div class="fl-tabs" role="tablist"></div>${RATE_BUTTON}</div>
 <p class="fl-caption" aria-live="polite"></p>
 </figcaption>
 </figure>
 <script>
-${VIEWER}
 ${PLAYER}
 figurePlay(document.querySelector('.fl-figure'), ${JSON.stringify(content.data).replace(/</g, '\\u003c')});
 </script>
@@ -84,115 +94,26 @@ figurePlay(document.querySelector('.fl-figure'), ${JSON.stringify(content.data).
 `;
 }
 
-// cost: time O(s + e + b·(e + k)), heap O(b·(e + k)), stack O(1)
-// vars: s = 도형 수, e = 선 수, b = 박자 수, k = 카드 있는 도형 수
+// cost: time O(b·h), heap O(1), stack O(1)
+// vars: b = 박자 수, h = 박자의 이동 수
 // basis: estimate
-// 구조, 상태, 데이터, 순서 그림. 시간표의 id를 도형, 그룹 번호로 바꿔 넘긴다.
-function figureContent(result, glyphs) {
-  const { scene, timeline } = result;
-  const itemIndex = new Map(scene.items.map((it, i) => [it.id, i]));
-  const groupIndex = new Map(scene.groups.map((g, i) => [g.id, i]));
-  const toIndex = (map, obj) => Object.fromEntries(Object.entries(obj).map(([id, v]) => [map.get(id), v]));
-  const segs = timeline.segs.map((seg) => {
-    const lit = litIds(seg, scene.edges);
-    return {
-      si: seg.si,
-      t0: seg.t0,
-      t1: seg.t1,
-      hops: seg.hops,
-      edgesOn: seg.edgesOn,
-      nodesOn: [...lit].filter((id) => itemIndex.has(id)).map((id) => itemIndex.get(id)),
-      groupsOn: [...lit].filter((id) => groupIndex.has(id)).map((id) => groupIndex.get(id)),
-      columnsOn: seg.columnsOn,
-      cards: toIndex(itemIndex, seg.cards),
-      cardsBefore: toIndex(itemIndex, seg.cardsBefore),
-      cardsAt: toIndex(itemIndex, seg.cardsAt),
-      caption: seg.caption,
-      series: [],
-      growing: [],
-      lights: [],
-    };
-  });
-  const data = {
-    segs,
-    steps: timeline.steps,
-    cardCounts: scene.items.map((it) => it.card?.layouts.length ?? 0),
-    edgeEnds: scene.edges.map((e) => [itemIndex.get(e.from.split('.')[0]) ?? -1, itemIndex.get(e.to.split('.')[0]) ?? -1]),
-    seriesCount: 0,
-    rowCount: 0,
-    metrics: PLAYER_METRICS,
-  };
-  return { svg: drawScene(scene, () => '', glyphs), width: scene.width, height: scene.height, data };
+// 재생기가 설명, 단계 이름, 이동 글로 그리는 글자를 글꼴 부분 집합에 더한다.
+function addTimelineGlyphs(timeline, glyphs) {
+  for (const label of timeline.steps) glyphs.add(label, 'regular');
+  for (const seg of timeline.segs) {
+    glyphs.add(seg.caption, 'regular');
+    for (const hop of seg.hops) for (const line of hop.data ?? []) glyphs.add(line, 'regular');
+  }
 }
 
-// cost: time O(b·(s + l) + c), heap O(b·(s + l)), stack O(1)
-// vars: b = 박자 수, s = 계열 수, l = 밝히기 수, c = 차트 글자 수
-// basis: estimate
-// 차트. 계열은 번호로, light는 행 번호로 바꿔 넘긴다.
-function chartContent(result, glyphs) {
-  const { figure, chart, timeline } = result;
-  for (const face of ['regular', 'mono', 'semibold']) glyphs.add(chartText(figure), face);
-  const ids = chartSeriesIds(figure);
-  const segs = timeline.segs.map((seg) => ({
-    si: seg.si,
-    t0: seg.t0,
-    t1: seg.t1,
-    hops: [],
-    edgesOn: [],
-    nodesOn: [],
-    groupsOn: [],
-    columnsOn: [],
-    cards: {},
-    cardsBefore: {},
-    cardsAt: {},
-    caption: seg.caption,
-    labelShift: seg.labelShift,
-    series: seg.series.map((id) => ids.indexOf(id)),
-    growing: seg.growing.map((id) => ids.indexOf(id)),
-    lights: seg.lights.map((key) => chart.rowKeys.indexOf(key)),
-  }));
-  const data = { segs, steps: timeline.steps, cardCounts: [], edgeEnds: [], seriesCount: ids.length, rowCount: chart.rowKeys.length, metrics: PLAYER_METRICS };
-  const bg = `<rect width="100%" height="100%" fill="${tokens.color.bg}"/>`;
-  return { svg: bg + chart.body, width: chart.width, height: chart.height, data };
+// 재생기 SVG. 표시 폭은 SVG 파일과 같은 표준 캔버스 폭이다. 좁은 내용은 viewBox를 왼쪽으로 넓혀 가운데에 두고, 넓은 내용은 viewBox 그대로 표시 폭만 줄인다.
+function playerSvg(content, title) {
+  const { height } = content;
+  const { viewWidth, shownWidth, shownHeight } = fitCanvas(content.width, height);
+  return (
+    `<svg xmlns="http://www.w3.org/2000/svg" class="fl" width="${r(shownWidth)}" height="${r(shownHeight)}" style="aspect-ratio: ${r(viewWidth)} / ${r(height)}" viewBox="${r((content.width - viewWidth) / 2)} 0 ${r(viewWidth)} ${r(height)}" role="img">` +
+    `<title>${escapeXml(title)}</title><defs>${DEFS}</defs>${content.svg}<g class="fl-packets"></g></svg>`
+  );
 }
 
-// cost: time O(f), heap O(out), stack O(1)
-// vars: f = 그림 수, out = 만든 HTML 글자 수
-// basis: estimate
-/**
- * 여러 그림을 한 쪽에서 보는 목록. 그림마다 재생 화면을 iframe으로 넣는다.
- * @param figures { name, title, href }[]. href는 목록 쪽에서 본 확장자 뺀 상대 경로다.
- */
-export function toGallery(figures, heading) {
-  const cards = figures
-    .map(
-      (f) =>
-        `<section><header><h2>${escapeXml(f.name)}</h2><p>${escapeXml(f.title)}</p><nav><a href="${escapeXml(f.href)}.html">열기</a><a href="${escapeXml(f.href)}.svg">SVG</a></nav></header>` +
-        `<iframe src="${escapeXml(f.href)}.html" loading="lazy" allowfullscreen title="${escapeXml(f.name)}"></iframe></section>`,
-    )
-    .join('\n');
-  return `<!doctype html>
-<html lang="ko">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>${escapeXml(heading)}</title>
-<style>${STYLES.tokens}${STYLES.gallery}</style>
-</head>
-<body>
-<h1>${escapeXml(heading)}</h1>
-<p>그림 ${figures.length}개</p>
-<main>
-${cards}
-</main>
-<script>
-// 그림 쪽이 알려 준 본문 높이로 iframe 높이를 맞춘다. 그림 아래 빈 공간을 없애기 위해서다.
-addEventListener('message', (e) => {
-  const frame = [...document.querySelectorAll('iframe')].find((f) => f.contentWindow === e.source);
-  if (frame && e.data?.figureHeight) frame.style.height = e.data.figureHeight + 'px';
-});
-</script>
-</body>
-</html>
-`;
-}
+export { toDocument, toGallery } from './html/listing.js';

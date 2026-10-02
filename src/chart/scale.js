@@ -1,4 +1,5 @@
 // 차트 축 눈금, 숫자 표기, 바뀐 비율. 규칙은 docs/design/charts.md의 그리기 절이다.
+import { DECIMALS_MAX } from '../source/grammar.js';
 
 // cost: time O(1), heap O(1), stack O(1)
 // basis: estimate
@@ -26,6 +27,27 @@ export function formatNumber(value) {
   return `${roundHalfAway(value / 1e6, 1)}M`;
 }
 
+// cost: time O(n), heap O(n), stack O(1)
+// vars: n = 값 수
+// basis: estimate
+/** 값 목록에 쓰인 가장 긴 소수 자릿수(상한 DECIMALS_MAX). 1000 이상 값은 k, M 표기라 세지 않는다. */
+export function decimalPlaces(list) {
+  const places = list.filter((v) => Math.abs(v) < 1000).map((v) => (String(Number(v.toPrecision(12))).split('.')[1] ?? '').length);
+  return Math.min(DECIMALS_MAX, Math.max(0, ...places));
+}
+
+// cost: time O(n), heap O(1), stack O(1)
+// vars: n = 값 수
+// basis: estimate
+/**
+ * 값 글자를 만드는 함수. 같은 목록(계열, 표)은 같은 소수 자릿수로 쓴다. 자릿수는 decimals(머리 줄)이고, 없으면 목록에 쓰인 가장 긴 소수 자릿수다.
+ * 1000 이상은 formatNumber(k, M)로 쓴다.
+ */
+export function valueFormat(list, decimals) {
+  const places = decimals ?? decimalPlaces(list);
+  return (value) => (Math.abs(value) >= 1000 ? formatNumber(value) : roundHalfAway(value, places).toFixed(places));
+}
+
 /** 덤벨 바뀐 비율 글자. 줄면 −, 늘면 +. 첫 값이 0이면 빈 글이다. */
 export function formatChange(before, after) {
   if (before === 0) return '';
@@ -39,13 +61,16 @@ export function formatChange(before, after) {
 /**
  * 값 → 좌표 함수와 눈금. log는 10의 거듭제곱마다, linear는 1, 2, 5 단위로 다섯 칸 안팎이다.
  * linear는 0과 가장 작은 값 가운데 작은 쪽에서 시작한다. 값 축이 아닌 축(선 차트 가로축)은 fromZero=false로 가장 작은 값에서 시작한다.
+ * @param range { min, max, start, length, fromZero }. 값 범위와, 좌표에서 축이 놓이는 시작과 길이
+ * @returns { at, ticks, origin, start, length }
  */
-export function makeScale(kind, min, max, start, length, { fromZero = true } = {}) {
+export function makeScale(kind, { min, max, start, length, fromZero = true }) {
+  const axis = { start, length };
   if (kind === 'log') {
     const lo = Math.floor(Math.log10(min));
     const hi = Math.max(lo + 1, Math.ceil(Math.log10(max)));
     const ticks = Array.from({ length: hi - lo + 1 }, (_, k) => 10 ** (lo + k));
-    return { at: (v) => start + ((Math.log10(v) - lo) / (hi - lo)) * length, ticks, origin: 10 ** lo };
+    return { ...axis, at: (v) => start + ((Math.log10(v) - lo) / (hi - lo)) * length, ticks, origin: 10 ** lo };
   }
   const low = fromZero ? Math.min(0, min) : min;
   const step = niceStep((max - low) / 5 || 1);
@@ -53,7 +78,7 @@ export function makeScale(kind, min, max, start, length, { fromZero = true } = {
   const top = Math.max(bottom + step, Math.ceil(max / step) * step);
   const count = Math.round((top - bottom) / step);
   const ticks = Array.from({ length: count + 1 }, (_, k) => roundHalfAway(bottom + k * step, 10));
-  return { at: (v) => start + ((v - bottom) / (top - bottom)) * length, ticks, origin: Math.max(bottom, Math.min(0, top)) };
+  return { ...axis, at: (v) => start + ((v - bottom) / (top - bottom)) * length, ticks, origin: Math.max(bottom, Math.min(0, top)) };
 }
 
 // cost: time O(1), heap O(1), stack O(1), alloc 1

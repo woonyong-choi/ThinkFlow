@@ -1,0 +1,156 @@
+// elkjs 결과를 그림 좌표로 바꾼다. 그룹 경계 연결점에서 끊긴 선 조각은 이어 붙인다(docs/design/layout.md 선 그리기).
+import { values } from '../tokens.js';
+import { LayoutError } from './error.js';
+import { placeTitles } from './titles.js';
+import { ROOT } from './model.js';
+
+const SETTLE = values.space['4'];
+// 두 좌표가 같다고 보는 거리
+const TOUCH = 0.5;
+// 같은 면의 선 끝이 이보다 가까워지면 붙어 보인다(그림 검사 5번과 같은 값)
+const CROWD = values.space['2-5'];
+
+// cost: time O(s + e·(d + p)), heap O(s + e·p), stack O(d)
+// vars: s = 도형 수, e = 선 수, d = 그룹 깊이, p = 경로 점 수
+// basis: estimate
+/** @returns { items, groups, edges, width, height }. items는 몸통 사각형, edges는 이어 붙인 경로 점과 라벨 자리 */
+export function readElk(laid, model) {
+  laid.x = 0;
+  laid.y = 0;
+  const { items, groups, offsets } = readNodes(laid, model);
+  const { sections, labels } = readEdges(laid, model, offsets);
+  const rects = new Map(items.map((it) => [it.id, it]));
+  // 선 번호는 원본에 적은 선의 번호다. 시간표와 그리기가 같은 번호로 선을 찾으므로, 처음 점과 끝 겹원의 선(모델 순서에서는 앞뒤에 놓인다)은 맨 뒤에 둔다.
+  const declared = [...model.edges.filter((edge) => !edge.isMark), ...model.edges.filter((edge) => edge.isMark)];
+  const joined = declared.map((edge) => model.pieces.get(edge.index).map((_, k) => routeOf(sections, edge, k)).flatMap((p, k) => (k === 0 ? p : p.slice(1))));
+  const crowd = endsByNode(declared, joined);
+  const edges = declared.map((edge, i) => {
+    const near = (end) => (other) => other.at !== `${edge.index}:${end}`;
+    const start = settleEnd(joined[i], freeRect(edge.from, rects), crowd.get(edge.from)?.filter(near('start')));
+    const points = dropCollinear(settleEnd(start.reverse(), freeRect(edge.to, rects), crowd.get(edge.to)?.filter(near('end'))).reverse());
+    return { ...edge, points, labelAt: labels.get(`label::${edge.index}`) };
+  });
+  placeTitles(groups, edges);
+  return { items, groups, edges, width: laid.width, height: laid.height };
+}
+
+// 선 조각 하나의 경로. elkjs가 경로를 주지 않은 조각이 있으면 선을 그릴 수 없으므로 실패다.
+function routeOf(sections, edge, k) {
+  const route = sections.get(`${edge.index}::${k}`);
+  if (!route) throw new LayoutError(`the layout has no route for edge ${edge.from} -> ${edge.to}`, edge.line);
+  return route;
+}
+
+// cost: time O(s), heap O(s + d), stack O(d)
+// vars: s = 도형과 그룹 수, d = 그룹 깊이
+// basis: estimate
+// 도형 사각형과 그룹 사각형을 절대 좌표로 모은다. offsets는 그룹마다 안쪽 좌표의 원점이다.
+function readNodes(laid, model) {
+  const items = [];
+  const groups = [];
+  const offsets = new Map([[ROOT, { x: 0, y: 0 }]]);
+  // cost: time O(s), heap O(d), stack O(d)
+  // vars: s = 도형과 그룹 수, d = 그룹 깊이
+  // basis: estimate
+  const walk = (node, ox, oy) => {
+    for (const child of node.children ?? []) {
+      const x = ox + node.x + child.x;
+      const y = oy + node.y + child.y;
+      if (model.containers.has(child.id)) {
+        const c = model.containers.get(child.id);
+        groups.push({ id: child.id, label: c.label, line: c.line, parent: c.parent, x, y, w: child.width, h: child.height });
+        offsets.set(child.id, { x, y });
+      } else {
+        const n = model.nodes.get(child.id);
+        // 배치 사각형에서 바깥 여백을 빼서 몸통 사각형으로 되돌린다.
+        items.push({ ...n, ...n.size, x: x + (n.size.marginSide ?? 0), y: y + n.size.marginTop, w: n.size.w, h: n.size.h });
+      }
+      walk(child, ox + node.x, oy + node.y);
+    }
+  };
+  walk(laid, 0, 0);
+  return { items, groups, offsets };
+}
+
+// cost: time O(e + l), heap O(e·p + l), stack O(d)
+// vars: e = 선 조각 수, l = 라벨 수, p = 경로 점 수, d = 그룹 깊이
+// basis: estimate
+// 선 조각 경로와 라벨 자리를 절대 좌표로 모은다. 라벨은 가운데 점이다.
+function readEdges(laid, model, offsets) {
+  const sections = new Map();
+  const labels = new Map();
+  // cost: time O(e + l), heap O(d), stack O(d)
+  // vars: e = 선 조각 수, l = 라벨 수, d = 그룹 깊이
+  // basis: estimate
+  const collect = (node, ox, oy) => {
+    for (const e of node.edges ?? []) {
+      const base = offsets.get(e.container ?? node.id) ?? { x: ox, y: oy };
+      const s = e.sections?.[0];
+      if (s) sections.set(e.id, [s.startPoint, ...(s.bendPoints ?? []), s.endPoint].map((p) => ({ x: base.x + p.x, y: base.y + p.y })));
+      for (const l of e.labels ?? []) labels.set(l.id, { x: base.x + l.x + l.width / 2, y: base.y + l.y + l.height / 2 });
+    }
+    for (const child of node.children ?? []) if (model.containers.has(child.id)) collect(child, ox + node.x + child.x, oy + node.y + child.y);
+  };
+  collect(laid, 0, 0);
+  return { sections, labels };
+}
+
+// cost: time O(e), heap O(e), stack O(1)
+// vars: e = 선 수
+// basis: estimate
+// 도형마다 그 도형에 닿는 선 끝(고르기 전 elkjs 자리). 선 끝을 펼 때 같은 도형의 다른 선 끝과 붙지 않게 하는 데 쓴다.
+function endsByNode(declared, joined) {
+  const ends = new Map();
+  const add = (id, point, at) => ends.set(id, [...(ends.get(id) ?? []), { point, at }]);
+  declared.forEach((edge, i) => {
+    add(edge.from, joined[i][0], `${edge.index}:start`);
+    add(edge.to, joined[i].at(-1), `${edge.index}:end`);
+  });
+  return ends;
+}
+
+// 연결점 제약이 없는 도형만 선 끝을 옮길 수 있다. 사람(세로), 갈림길, 원통(세로), 테이블 열은 연결점이 정해져 있다.
+function freeRect(id, rects) {
+  const it = rects.get(id);
+  return it && !it.ports.length ? it : undefined;
+}
+
+// cost: time O(p), heap O(p), stack O(1)
+// vars: p = 경로 점 수
+// basis: estimate
+/**
+ * 선 끝에서 시작해 가로지르는 방향으로 SETTLE 미만만 흔들리는 구간을, 구간 끝의 높이로 편다.
+ * 그룹 경계 연결점 높이는 안쪽 배치가, 선 끝은 바깥 배치가 정해 몇 px 어긋나는 계단이 남기 때문이다.
+ * 옮긴 선 끝이 도형 면 밖으로 나가거나 같은 면의 다른 선 끝(others)에 CROWD보다 가까워지면 펴지 않는다. 선 끝 쪽 한 구간만 다룬다.
+ */
+function settleEnd(points, rect, others = []) {
+  if (!rect || points.length < 3) return points;
+  const [start, next] = points;
+  const isHorizontal = Math.abs(start.y - next.y) < 0.5;
+  const along = isHorizontal ? 'x' : 'y';
+  const across = isHorizontal ? 'y' : 'x';
+  let end = 1;
+  while (end + 1 < points.length && Math.abs(points[end + 1][across] - start[across]) < SETTLE && Math.abs(points[end + 1][along] - points[end][along]) >= 0) {
+    const isStep = Math.abs(points[end + 1][along] - points[end][along]) < 0.5;
+    const isRun = Math.abs(points[end + 1][across] - points[end][across]) < 0.5;
+    if (!isStep && !isRun) break;
+    end++;
+  }
+  const target = points[end][across];
+  const [low, high] = isHorizontal ? [rect.y, rect.y + rect.h] : [rect.x, rect.x + rect.w];
+  if (end < 2 || target < low || target > high) return points;
+  if (others.some((o) => Math.abs(o.point[along] - start[along]) < TOUCH && Math.abs(o.point[across] - target) < CROWD)) return points;
+  return [{ ...start, [across]: target }, ...points.slice(end)];
+}
+
+// cost: time O(p), heap O(p), stack O(1)
+// vars: p = 경로 점 수
+// basis: estimate
+/**
+ * 같은 방향으로 곧게 이어지는 가운데 점을 뺀다. elkjs가 선 끝을 펴고 남긴 점이 한 선분을 둘로 쪼개면
+ * 그림 검사 5번이 쪼개진 쪽을 같은 도형에서 나가는 첫 선분으로 보지 못해, 바르게 그린 선을 붙었다고 알린다.
+ */
+function dropCollinear(points) {
+  const isStraight = (a, b, c) => (Math.abs(a.y - b.y) < TOUCH && Math.abs(b.y - c.y) < TOUCH && (b.x - a.x) * (c.x - b.x) > 0) || (Math.abs(a.x - b.x) < TOUCH && Math.abs(b.x - c.x) < TOUCH && (b.y - a.y) * (c.y - b.y) > 0);
+  return points.filter((p, i) => i === 0 || i === points.length - 1 || !isStraight(points[i - 1], p, points[i + 1]));
+}

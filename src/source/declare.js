@@ -1,5 +1,6 @@
 // 구조, 순서, 상태, 데이터 관계 그림의 선언 문장을 읽는다. 이름 확인과 겹침 확인은 validate.js가 파일을 다 읽은 뒤 한다.
-import { COLUMN_PATTERN, DIRECTIONS, FK_PATTERN, ID_PATTERN, TABLE_PATTERN } from './words.js';
+import { STATEMENTS, flagNames, valueNames } from './grammar.js';
+import { COLUMN_PATTERN, FK_PATTERN, ID_PATTERN, TABLE_PATTERN } from './words.js';
 
 // cost: time O(t), heap O(t), stack O(1)
 // vars: t = 문장 낱말 수
@@ -10,7 +11,7 @@ export function readDeclaration(statement, ctx) {
   if (word === 'group') readGroup(statement, ctx);
   else if (word === 'table') readTable(statement, ctx);
   else if (word === 'start' || word === 'final') readStateMark(statement, ctx);
-  else if (['person', 'box', 'external', 'store', 'decision', 'state'].includes(word)) readNode(statement, ctx);
+  else if (STATEMENTS[word]?.node) readNode(statement, ctx);
   else ctx.problems.error(statement.line, `unknown statement "${word}"`);
 }
 
@@ -21,8 +22,8 @@ export function readDeclaration(statement, ctx) {
 function readNode({ tokens, line }, ctx) {
   const [head, id, label, sub, ...rest] = tokens;
   const shape = head.value;
-  const takesSub = ['box', 'external', 'store'].includes(shape);
-  if (!checkId(id, line, ctx, ID_PATTERN)) return rejectName(id, ctx);
+  const takesSub = STATEMENTS[shape].node.hasSub;
+  if (!checkId(id, { line, ctx }, ID_PATTERN)) return rejectName(id, ctx);
   if (label?.type !== 'text') {
     ctx.problems.error(line, `write ${shape} as: ${shape} ${id.value} "${shape === 'decision' ? 'question' : 'name'}"`);
     return;
@@ -38,7 +39,7 @@ function readNode({ tokens, line }, ctx) {
 // `group id "이름" [direction=down] {`
 function readGroup({ tokens, line }, ctx) {
   const [, id, label, ...rest] = tokens;
-  if (!checkId(id, line, ctx, ID_PATTERN)) {
+  if (!checkId(id, { line, ctx }, ID_PATTERN)) {
     rejectName(id, ctx);
     // 닫는 `}`가 짝을 찾도록 자리만 연다.
     if (tokens.at(-1).type === 'open') ctx.groups.push({ isRejected: true, line });
@@ -50,7 +51,7 @@ function readGroup({ tokens, line }, ctx) {
   else if (openAt < rest.length - 1) ctx.problems.error(line, 'end the group line with "{" and put the group contents on the next lines');
   let direction;
   for (const t of openAt === -1 ? rest : rest.slice(0, openAt)) {
-    if (t.type === 'option' && t.key === 'direction' && DIRECTIONS.includes(t.value) && t.valueType === 'word') direction = t.value;
+    if (t.type === 'option' && t.key === 'direction' && valueNames('direction').includes(t.value) && t.valueType === 'word') direction = t.value;
     else ctx.problems.error(line, 'a group takes only direction=right or direction=down');
   }
   const group = { id: id.value, label: label?.value ?? '', direction, parent: currentGroup(ctx), line, hasError: openAt !== rest.length - 1 };
@@ -88,7 +89,7 @@ function readStateMark({ tokens, line }, ctx) {
 // `table id "이름" {`
 function readTable({ tokens, line }, ctx) {
   const [, id, label, open, extra] = tokens;
-  if (!checkId(id, line, ctx, TABLE_PATTERN)) {
+  if (!checkId(id, { line, ctx }, TABLE_PATTERN)) {
     rejectName(id, ctx);
     // 열 줄을 그 테이블의 열로 읽어 넘기도록 버린 테이블 자리를 연다.
     if (tokens.at(-1).type === 'open') ctx.table = { id: id?.value, columns: [], isRejected: true };
@@ -118,7 +119,7 @@ export function readColumn({ tokens, line }, ctx) {
     ctx.problems.error(line, 'a column name uses letters, digits, and "_", starting with a letter');
     return;
   }
-  if (!type || (type.type !== 'word' && type.type !== 'text') || ['pk', 'unique'].includes(type.value)) {
+  if (!type || (type.type !== 'word' && type.type !== 'text') || flagNames('column').includes(type.value)) {
     ctx.problems.error(line, `write the column as: ${name.value} type [pk] [unique] [fk=table.column]`);
     return;
   }
@@ -129,7 +130,7 @@ export function readColumn({ tokens, line }, ctx) {
   }
   const column = { name: name.value, type: type.value, pk: false, unique: false, fk: undefined, line };
   for (const t of rest) {
-    if (t.type === 'word' && (t.value === 'pk' || t.value === 'unique')) column[t.value] = true;
+    if (t.type === 'word' && flagNames('column').includes(t.value)) column[t.value] = true;
     else if (t.type === 'option' && t.key === 'fk' && FK_PATTERN.test(t.value)) {
       const [table, col] = t.value.split('.');
       column.fk = { table, column: col };
@@ -152,7 +153,7 @@ export function readEdge({ tokens, line }, ctx) {
   const edge = { from: from.value, to: to.value, label: undefined, quiet: false, dashed: false, line };
   for (const t of rest) {
     if (t.type === 'text' && edge.label === undefined) edge.label = t.value;
-    else if (t.type === 'word' && (t.value === 'quiet' || t.value === 'dashed')) {
+    else if (t.type === 'word' && flagNames('edge').includes(t.value)) {
       if (edge[t.value]) ctx.problems.error(line, `"${t.value}" is written twice`);
       edge[t.value] = true;
     } else ctx.problems.error(line, `an edge takes a quoted label, quiet, and dashed. Found "${t.value}"`);
@@ -171,7 +172,7 @@ function rejectName(token, ctx) {
 // cost: time O(1), heap O(1), stack O(1)
 // basis: estimate
 // 이름 낱말 형식을 확인한다. 문장 종류는 첫 낱말 자리로 정해서 예약어도 이름이 된다.
-function checkId(token, line, ctx, pattern) {
+function checkId(token, { line, ctx }, pattern) {
   if (token?.type !== 'word') {
     ctx.problems.error(line, 'write a name (id) after the statement word');
     return false;

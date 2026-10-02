@@ -1,0 +1,24 @@
+mutoscope 1
+data right
+title "데이터 관계 그림의 모든 낱말"
+subtitle "테이블 열의 pk, unique, fk와 카드 줄"
+speed 1s
+aspect 1.6
+
+table users "사용자" {
+  id int pk
+  email "varchar(255)" unique
+}
+table orders "주문" {
+  id int pk
+  user_id int fk=users.id
+}
+
+step "조회"
+  orders.user_id -> users.id time=2s
+  show users "김민지" tag="row" tone=gray meta="1건" mark="OK" mono
+  show orders graph "a -> b" lit="b"
+  clear users
+  light users.id orders
+  say "주문이 사용자를 가리킨다"
+  wait 1s

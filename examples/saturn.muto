@@ -13,9 +13,9 @@ external codex "Codex CLI"
 user -> cli "명령"
 user -> tui "입력"
 cli -> engine "엔진 시작"
-tui -> engine "JSON-RPC"
+tui -> engine "`JSON-RPC` 연결"
 engine -> db "기록" quiet
-engine -> codex "app-server 요청"
+engine -> codex "`app-server` 요청"
 
 step "대화" "입력은 화면을 거쳐 엔진이 에이전트로 보낸다"
   user -> tui "질문"

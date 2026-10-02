@@ -1,0 +1,51 @@
+flow right
+title "이벤트 루프와 스레드 풀"
+subtitle "느린 일은 워커로, 기다리는 일은 운영체제로 넘기고 루프는 계속 돈다"
+
+box caller "호출 코드" "`await fetch()`"
+group loop "이벤트 루프" direction=down {
+  store queue "작업 대기열"
+  box runner "실행기" "한 번에 하나씩"
+}
+group pool "스레드 풀" direction=down {
+  box w1 "워커 1"
+  box w2 "워커 2"
+}
+external os "운영체제 I/O" "`epoll`"
+store result "결과 채널" "Future"
+
+caller -> queue "작업 제출"
+queue -> runner "다음 작업"
+runner -> w1 "블로킹 작업"
+runner -> w2 "블로킹 작업"
+runner -> os "소켓 읽기"
+os -> queue "완료 알림" dashed
+w1 -> result "결과"
+w2 -> result "결과"
+result -> caller "값 반환" dashed
+
+step "작업 제출" "호출 코드가 만든 작업이 대기열에 쌓인다"
+  caller -> queue "`task A`"
+  show queue "A: 파일 해시" tag="대기"
+  show queue "B: 이미지 변환" tag="대기"
+  say "작업 둘이 줄을 선다"
+step "블로킹 작업을 워커로" "루프를 막을 작업은 스레드 풀로 보낸다"
+  queue -> runner
+  clear queue
+  show queue "B: 이미지 변환" tag="대기"
+  runner -> w1 "A: 파일 해시"
+  show w1 "A: 파일 해시" tag="실행"
+step "두 워커가 동시에" "워커 둘이 같은 시각에 일하고 루프는 다른 일을 받는다"
+  queue -> runner
+  clear queue
+  runner -> w2 "B: 이미지 변환" & runner -> os "C: 소켓 읽기"
+  show w2 "B: 이미지 변환" tag="실행"
+  say "워커 1, 워커 2, 운영체제가 한 박자에 모두 일한다"
+step "I/O 완료 알림" "운영체제가 끝났다고 알리면 작업이 다시 대기열에 들어온다"
+  os -> queue "C 준비됨"
+  show queue "C: 읽기 완료" tag="재개"
+step "결과 반환" "끝난 값이 결과 채널을 거쳐 호출 코드로 돌아온다"
+  w1 -> result "A 해시" & w2 -> result "B 이미지"
+  show result "A, B 완료" tag="완료"
+  result -> caller
+  show caller "A, B 결과 수신" tag="완료"

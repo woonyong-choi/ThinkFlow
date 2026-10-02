@@ -13,14 +13,14 @@ export const STYLE = Object.freeze({
   label: { size: TEXT['14'], face: 'medium', line: LINE['18'] },
   sub: { size: TEXT['12'], face: 'regular', line: LINE['15'] },
   row: { size: TEXT['11'], face: 'regular', line: LINE['15'] },
-  mono: { size: TEXT['10-5'], face: 'mono', line: LINE['15'] },
+  mono: { size: TEXT['11'], face: 'mono', line: LINE['15'] },
   tag: { size: TEXT['9'], face: 'semibold' },
   mark: { size: TEXT['11'], face: 'semibold' },
-  pill: { size: TEXT['11'], face: 'mono' },
+  pill: { size: TEXT['11'], face: 'regular' },
   group: { size: TEXT['11'], face: 'semibold' },
-  chip: { size: TEXT['11-5'], face: 'regular', line: LINE['15'] },
-  cell: { size: TEXT['11-5'], face: 'regular' },
-  type: { size: TEXT['10-5'], face: 'mono' },
+  chip: { size: TEXT['12'], face: 'regular', line: LINE['15'] },
+  cell: { size: TEXT['12'], face: 'regular' },
+  type: { size: TEXT['11'], face: 'mono' },
 });
 
 /** 카드 안쪽 간격 */
@@ -43,8 +43,8 @@ export function sizeNode(node, contents = [], lineCounts = { out: 0, in: 0 }) {
   if (node.shape === 'table') return sizeTable(node, contents);
   if (node.shape === 'start' || node.shape === 'final') return { w: SIZE['state-dot'], h: SIZE['state-dot'], marginTop: 0, marginBottom: 0, labelLines: [], subLines: [] };
   const maxInner = SIZE['node-max'] - INNER_X * 2;
-  const labelLines = wrap(node.label, maxInner, STYLE.label.size, STYLE.label.face);
-  const subLines = node.sub ? wrap(node.sub, maxInner, STYLE.sub.size, STYLE.sub.face) : [];
+  const labelLines = wrap(node.label, maxInner, STYLE.label);
+  const subLines = node.sub ? wrap(node.sub, maxInner, STYLE.sub) : [];
   const textW = Math.max(...labelLines.map((l) => measure(l, STYLE.label.size, STYLE.label.face)), ...subLines.map((l) => measure(l, STYLE.sub.size)));
   let w = Math.min(SIZE['node-max'], Math.max(SIZE['node-min'], textW + INNER_X * 2));
   if (contents.length) w = Math.max(w, SIZE.card);
@@ -65,7 +65,7 @@ export function sizeNode(node, contents = [], lineCounts = { out: 0, in: 0 }) {
 // 사람 모양: 배치 사각형은 몸통의 곧은 옆면. 머리와 어깨는 위 여백, 이름표와 카드는 아래 여백이다.
 // 몸통 높이는 토큰 기본값이고, 한 면의 연결점 간격이 선 굵기와 틈의 합보다 좁아질 때만 그 면이 필요한 만큼 늘어난다.
 function sizePerson(node, contents, lineCounts) {
-  const labelLines = wrap(node.label, SIZE['node-max'], STYLE.label.size, STYLE.label.face);
+  const labelLines = wrap(node.label, SIZE['node-max'], STYLE.label);
   const labelW = Math.max(...labelLines.map((l) => measure(l, STYLE.label.size, STYLE.label.face)));
   const card = contents.length ? sizeCard(contents, SIZE.card - CARD.margin * 2) : undefined;
   // 배치 사각형은 늘 몸통 너비다. 넓은 이름표와 카드 자리는 좌우 바깥 여백으로 넘긴다.
@@ -106,7 +106,7 @@ function sizeTable(node, contents) {
 // vars: k = 카드 내용 수, r = 줄 수, n = 줄 글자 수
 // basis: estimate
 /** 카드 크기. 높이는 내용 가운데 가장 큰 것이다. */
-export function sizeCard(contents, width) {
+function sizeCard(contents, width) {
   const layouts = contents.map((rows) => layoutCard(rows, width));
   return { w: width, h: Math.max(...layouts.map((l) => l.height)), layouts };
 }
@@ -118,7 +118,7 @@ export function sizeCard(contents, width) {
  * 카드 줄을 너비에 맞게 나눈다. 태그가 세 글자를 넘으면 글 위에 따로 선다.
  * @returns { rows: { row, isHeading, tagW, lines, graph? }[], height }
  */
-export function layoutCard(rows, width) {
+function layoutCard(rows, width) {
   const inner = width - CARD.side * 2;
   if (!rows.length) return { rows: [], height: STYLE.row.line + CARD.pad * 2 };
   const laid = rows.map((row) => {
@@ -129,7 +129,7 @@ export function layoutCard(rows, width) {
     const markW = row.mark && !isHeading ? measure(row.mark, STYLE.mark.size, STYLE.mark.face) + SPACE['3'] : 0;
     const style = row.isMono ? STYLE.mono : STYLE.row;
     const body = row.text + (row.meta !== undefined ? ` · ${row.meta}` : '');
-    return { row, isHeading, tagW, lines: wrap(body, inner - tagW - markW, style.size, style.face) };
+    return { row, isHeading, tagW, lines: wrap(body, inner - tagW - markW, style) };
   });
   const textH = laid.reduce((h, r) => h + (r.isHeading ? STYLE.row.line : 0) + r.lines.length * STYLE.row.line + (r.graph?.height ?? 0), 0);
   return { rows: laid, height: textH + CARD.gap * (laid.length - 1) + CARD.pad * 2 };

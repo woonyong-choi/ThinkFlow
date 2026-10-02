@@ -1,9 +1,8 @@
 // 시간 흐름 문장(step과 박자 줄)을 읽는다. 이름이 선언됐는지는 validate.js가 확인한다.
 import { parseMiniGraph } from './minigraph.js';
 import { parseTime } from './values.js';
-import { NUMBER_PATTERN, TONES } from './words.js';
-
-const ROW_OPTIONS = ['tag', 'tone', 'meta', 'mark'];
+import { flagNames, optionsOf, valueNames } from './grammar.js';
+import { NUMBER_PATTERN } from './words.js';
 
 // cost: time O(t), heap O(t), stack O(1)
 // vars: t = 문장 낱말 수
@@ -15,7 +14,7 @@ export function readTimeline(word, statement, ctx) {
 }
 
 /** 빈 박자. 박자 줄마다 하나씩 만든다. */
-export function emptyBeat(line) {
+function emptyBeat(line) {
   return { line, hops: [], ops: [], light: [], chartLight: [], say: undefined, waitMs: 0, reveal: [], notes: [], isPause: false };
 }
 
@@ -49,14 +48,14 @@ function readHops({ tokens, line }, ctx) {
       continue;
     }
     const hop = { from: from.value, to: to.value, data: undefined, timeMs: undefined, dashed: false, line };
-    for (const t of rest) readHopOption(t, hop, isSequence, line, ctx);
+    for (const t of rest) readHopOption(t, hop, { isSequence, line, ctx });
     if (isSequence && hop.data === undefined) ctx.problems.error(line, 'a sequence message needs text: a -> b "message"');
     beat.hops.push(hop);
   }
 }
 
 // 이동 줄의 글, time=, 순서 그림의 dashed
-function readHopOption(t, hop, isSequence, line, ctx) {
+function readHopOption(t, hop, { isSequence, line, ctx }) {
   if (t.type === 'text' && hop.data === undefined) hop.data = t.value;
   else if (t.type === 'option' && t.key === 'time' && t.valueType === 'word' && hop.timeMs === undefined) {
     hop.timeMs = parseTime(t.value);
@@ -101,23 +100,44 @@ function readShow({ tokens, line }, ctx) {
     return;
   }
   const row = { text: first.value };
-  for (const t of rest) readRowOption(t, row, line, ctx);
-  if (row.mark !== undefined && [...row.mark].length > 8) ctx.problems.error(line, 'mark is at most 8 characters');
+  for (const t of rest) readRowOption(t, row, { line, ctx });
+  checkRowLengths(row, line, ctx);
   if (row.tone !== undefined && row.tag === undefined) ctx.problems.error(line, 'tone colors a tag. Add tag="..." or remove tone');
   beat.ops.push({ type: 'show', node: id.value, row, line });
 }
 
+// cost: time O(k), heap O(1), stack O(1)
+// vars: k = 선택 사항 수
+// basis: estimate
+// 글자 수 상한이 있는 선택 사항(mark)을 넘으면 오류다. 카드 오른쪽 끝에 들어갈 자리가 정해져 있기 때문이다.
+function checkRowLengths(row, line, ctx) {
+  for (const [key, spec] of Object.entries(optionsOf('show'))) {
+    const isTooLong = spec.maxLength && row[key] !== undefined && [...row[key]].length > spec.maxLength;
+    if (isTooLong) ctx.problems.error(line, `${key} is at most ${spec.maxLength} characters`);
+  }
+}
+
 // cost: time O(1), heap O(1), stack O(1)
 // basis: estimate
-// 카드 줄 선택 사항 하나
-function readRowOption(t, row, line, ctx) {
-  if (t.type === 'word' && t.value === 'mono' && !row.isMono) row.isMono = true;
-  else if (t.type === 'option' && ROW_OPTIONS.includes(t.key) && row[t.key] === undefined) {
-    const isTone = t.key === 'tone';
-    if (isTone && (t.valueType !== 'word' || !TONES.includes(t.value))) ctx.problems.error(line, `tone is one of ${TONES.join(', ')}`);
-    else if (!isTone && t.valueType !== 'text') ctx.problems.error(line, `write ${t.key} as quoted text: ${t.key}="..."`);
-    else row[t.key] = t.value;
-  } else ctx.problems.error(line, `a card row takes tag=, tone=, meta=, mark=, and mono once each. Found "${t.key ?? t.value}"`);
+// 카드 줄 선택 사항 하나. 키와 값 목록은 grammar.js의 show 범위다.
+function readRowOption(t, row, { line, ctx }) {
+  const spec = t.type === 'option' ? optionsOf('show')[t.key] : undefined;
+  if (t.type === 'word' && flagNames('show').includes(t.value) && !row.isMono) row.isMono = true;
+  else if (spec && spec.type !== 'flag' && row[t.key] === undefined) readRowValue(t, { spec, row }, { line, ctx });
+  else {
+    const keys = Object.entries(optionsOf('show')).filter(([, o]) => o.type !== 'flag').map(([key]) => `${key}=`);
+    ctx.problems.error(line, `a card row takes ${keys.join(', ')}, and ${flagNames('show').join(', ')} once each. Found "${t.key ?? t.value}"`);
+  }
+}
+
+// cost: time O(v), heap O(v), stack O(1)
+// vars: v = 값 목록의 값 수
+// basis: estimate
+// 카드 줄 선택 사항의 값. 값 목록이 있으면 그 안의 값만 받는다. 옛 값은 normalize.js가 이미 바꿔 놓았다.
+function readRowValue(t, { spec, row }, { line, ctx }) {
+  if (spec.values && (t.valueType !== 'word' || !valueNames(spec.values).includes(t.value))) ctx.problems.error(line, `${t.key} is one of ${valueNames(spec.values).join(', ')}`);
+  else if (!spec.values && t.valueType !== 'text') ctx.problems.error(line, `write ${t.key} as quoted text: ${t.key}="..."`);
+  else row[t.key] = t.value;
 }
 
 // `clear id`

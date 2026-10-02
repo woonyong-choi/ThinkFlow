@@ -1,0 +1,25 @@
+state down
+title "주문 상태"
+
+state created "생성됨"
+state paid "결제됨"
+state shipped "배송 중"
+state delivered "배송 완료"
+state cancelled "취소됨"
+start created
+final delivered
+final cancelled
+
+created -> paid "결제 승인"
+paid -> shipped "출고"
+shipped -> delivered "수령 확인"
+created -> cancelled "결제 실패"
+paid -> cancelled "고객 취소" dashed
+
+step "정상 주문" "결제가 끝나면 출고되고 수령으로 끝난다"
+  created -> paid "39,000원"
+  paid -> shipped
+  shipped -> delivered
+step "취소" "결제 뒤에도 출고 전이면 취소할 수 있다"
+  created -> paid
+  paid -> cancelled "환불"

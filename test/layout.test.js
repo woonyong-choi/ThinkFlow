@@ -3,6 +3,8 @@ import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
 import { fileURLToPath } from 'node:url';
 import { buildFigure } from '../src/build.js';
+import { titleBox } from '../src/check/geometry.js';
+import { TITLE_INSET } from '../src/layout/titles.js';
 import { sizeNode } from '../src/measure/sizes.js';
 import { toSvg } from '../src/svg.js';
 import { docExamples } from './helpers.js';
@@ -125,7 +127,7 @@ test('buildFigure_state_without_start_draws_no_start_dot_or_line', async () => {
   assert.equal(without.scene.edges.filter((e) => e.isMark).length, 1);
 });
 
-const WRAP_CHAIN = `flow right\naspect 1.6\n${Array.from({ length: 16 }, (_, i) => `box n${i} "단계 ${i}"`).join('\n')}\ngroup g "묶음" {\n  box a "가"\n  box b "나"\n  a -> b\n}\n${Array.from({ length: 15 }, (_, i) => `n${i} -> n${i + 1}`).join('\n')}\nn15 -> a`;
+const WRAP_CHAIN = `flow right\naspect 1.2\n${Array.from({ length: 12 }, (_, i) => `box n${i} "단계 ${i}"`).join('\n')}\ngroup g "묶음" {\n  box a "가"\n  box b "나"\n  a -> b\n}\n${Array.from({ length: 11 }, (_, i) => `n${i} -> n${i + 1}`).join('\n')}\nn11 -> a`;
 
 test('layoutGraph_group_chain_with_aspect_wraps_and_passes_strict', async () => {
   const { scene } = await buildFigure(WRAP_CHAIN, { strict: true });
@@ -160,3 +162,28 @@ test('layoutGraph_wrap_with_group_back_edges_and_labels_keeps_edge_ends', async 
   const result = await buildFigure(source);
 
   assert.equal(result.scene.edges.length, 11);});
+
+test('buildFigure_group_title_steps_aside_so_no_edge_crosses_it', async () => {
+  const source = readFileSync(new URL('./fixtures/layout/group-title-edge.muto', import.meta.url), 'utf8');
+
+  const { scene } = await buildFigure(source, { strict: true });
+
+  for (const g of scene.groups) {
+    const box = titleBox(g);
+    for (const e of scene.edges) {
+      e.points.slice(1).forEach((p, i) => {
+        const a = e.points[i];
+        const hit = Math.min(a.x, p.x) < box.x + box.w && box.x < Math.max(a.x, p.x) && Math.min(a.y, p.y) < box.y + box.h && box.y < Math.max(a.y, p.y);
+        assert.ok(!hit, `edge ${e.from} -> ${e.to} crosses the title of group ${g.id}`);
+      });
+    }
+  }
+});
+
+test('buildFigure_group_title_fixture_needs_the_step_aside', async () => {
+  const source = readFileSync(new URL('./fixtures/layout/group-title-edge.muto', import.meta.url), 'utf8');
+
+  const { scene } = await buildFigure(source, { strict: true });
+
+  assert.ok(scene.groups[0].titleDx > TITLE_INSET);
+});

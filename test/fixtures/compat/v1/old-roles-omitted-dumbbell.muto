@@ -1,0 +1,12 @@
+chart dumbbell
+title "role 없는 덤벨"
+subtitle "예시 데이터. 첫 계열이 시작점"
+x "토큰(로그 눈금)"
+scale log
+series base "기억 없음"
+series ours "기억 붙임"
+row "A" base=120000 ours=31000
+step "전"
+  reveal base
+step "후"
+  reveal ours

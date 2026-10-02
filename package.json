@@ -18,8 +18,11 @@
   },
   "scripts": {
     "test": "node --test test/*.test.js",
+    "grammar": "node scripts/build-grammar-doc.mjs",
+    "fuzz": "node scripts/fuzz-layout.mjs",
+    "checkdoc": "node scripts/build-check-doc.mjs",
     "tokens": "node scripts/build-tokens.mjs src/tokens.json --out src",
-    "check": "node scripts/check-tokens.mjs src && node scripts/check-cost-comments.mjs src test",
+    "check": "node scripts/check-tokens.mjs src && node scripts/check-cost-comments.mjs src test && node scripts/check-size.mjs src scripts",
     "examples": "node src/cli.js gallery examples --out examples/out --title \"예제\"",
     "screens": "node scripts/screens.mjs"
   },
@@ -27,10 +30,13 @@
     "node": ">=20"
   },
   "dependencies": {
-    "d2coding": "^1.3.2",
+    "@expo-google-fonts/inter": "^0.4.2",
+    "@expo-google-fonts/noto-sans": "^0.4.2",
+    "@expo-google-fonts/noto-sans-kr": "^0.4.3",
+    "@expo-google-fonts/noto-sans-math": "^0.4.2",
     "elkjs": "^0.9.3",
     "fontkit": "^2.0.4",
-    "pretendard": "^1.3.9",
+    "jetbrains-mono": "^1.0.6",
     "subset-font": "^2.9.0"
   },
   "devDependencies": {

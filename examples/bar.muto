@@ -3,8 +3,8 @@ title "장기 기억 정확도"
 subtitle "예시 데이터. n=500, 점선은 채택 기준 80%"
 x "정확도(%)"
 
-series ours "기억 붙임"
-series base "기억 없음"
+series ours "기억 붙임" role=main
+series base "기억 없음" role=compare
 missing "비교 없음"
 rule 80 "채택 기준"
 

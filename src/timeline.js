@@ -1,9 +1,12 @@
 // 시간 흐름을 시간표로 편다. 박자마다 상태를 완전히 적어서, 탭으로 건너뛰어도 앞 박자를 다시 계산하지 않는다(docs/design/playback.md).
+import { presentSlots, slotMiddle } from './chart/slots.js';
+import { flattenRoute, routeLength } from './route.js';
 import { values } from './tokens.js';
 
 const DWELL = values.duration;
-const BAR = values.size['chart-bar'];
-const BAR_GAP = values.space['2'];
+const HOP_REF = values.size['hop-ref'];
+// 행 이름 세로 옮김(px)을 반올림하는 단위의 역수(소수 둘째 자리)
+const SHIFT_PRECISION = 100;
 
 // cost: time O(b·(o + k)), heap O(c·r), stack O(1)
 // vars: b = 박자 수, o = 박자의 카드 줄 수, k = 카드 있는 도형 수, c = 카드 내용 수, r = 줄 수
@@ -43,7 +46,7 @@ export function collectCards(figure) {
 }
 
 /** 계열이 없는 차트(상자, 히트맵, 계열 없는 산점도)가 통째로 자랄 때 쓰는 계열 id */
-export const WHOLE_CHART = '*';
+const WHOLE_CHART = '*';
 
 // cost: time O(s), heap O(s), stack O(1)
 // vars: s = 계열 수
@@ -53,85 +56,107 @@ export function chartSeriesIds(figure) {
   return figure.chart.series.length ? figure.chart.series.map((s) => s.id) : [WHOLE_CHART];
 }
 
+// cost: time O(p), heap O(1), stack O(1)
+// vars: p = 경로 점 수
+// basis: estimate
+// 이동 시간은 선 길이에 비례한다. 기준 길이를 speed(기본 duration.hop)에 지나되, 아주 짧은 선만 최소 시간으로 올린다. 최대는 없다. 같은 속도로 보이게 하려는 것이다.
+// 최소는 speed를 기본값에서 바꾼 비율만큼 같이 늘고 줄어, 빠르게 한 그림이 최소 시간에 막히지 않는다.
+function hopMs(points, speed) {
+  const scale = speed / DWELL.hop;
+  const ms = (routeLength(flattenRoute(points)) / HOP_REF) * speed;
+  return Math.round(Math.max(DWELL['hop-min'] * scale, ms));
+}
+
 // cost: time O(b·(h + e + k)), heap O(b·(e + k)), stack O(1)
 // vars: b = 박자 수, h = 박자의 이동 수, e = 선 수, k = 카드 있는 도형 수
 // basis: estimate
 /**
- * 시간표를 만든다.
- * @param chips 이동 글을 글 상자 줄로 나누는 함수
- * @returns { segs, total, steps, growMs }. growMs는 차트 계열이 자라는 시간이다. seg: { si, bi, t0, t1, labelShift, move, hops, edgesOn, nodesOn, columnsOn, cards, cardsBefore, cardsAt, caption, series, growing, lights }
+ * 시간표를 만든다. 이동 시간에 선 길이가 필요해 배치가 끝난 장면을 받는다. 차트는 장면이 없다.
+ * @param deps { cards, chips, scene }. chips는 이동 글을 글 상자 줄로 나누는 함수, scene은 배치가 끝난 장면(edges의 points를 쓴다)이고 차트면 없다
+ * @returns { segs, total, steps, growMs }. growMs는 차트 계열이 자라는 시간이다. seg: { si, bi, t0, t1, labelShifts, move, hops, edgesOn, nodesOn, columnsOn, cards, cardsBefore, cardsAt, caption, series, growing, lights }
  */
-export function buildTimeline(figure, cards, chips) {
+export function buildTimeline(figure, deps) {
   const speed = figure.speedMs ?? (figure.kind === 'chart' ? DWELL.reveal : DWELL.hop);
-  const segs = [];
-  const revealed = [];
-  const hasReveal = figure.steps.some((s) => s.beats.some((b) => b.reveal.length));
-  const seriesIds = chartSeriesIds(figure);
-  let t = 0;
-  let messageIndex = 0;
-  figure.steps.forEach((step, si) => {
-    const edgesOn = new Set();
-    const lit = new Set();
-    const lights = [];
-    let caption = step.caption ?? '';
-    step.beats.forEach((beat, bi) => {
-      const hops = beat.hops.map((hop) => {
-        const edge = figure.kind === 'sequence' ? messageIndex++ : hop.edge;
-        return { edge, isBack: Boolean(hop.isBack), ms: hop.timeMs ?? speed, to: hop.to.split('.')[0], data: hop.data !== undefined && figure.kind !== 'sequence' ? chips(hop.data) : undefined, line: hop.line };
-      });
-      for (const h of hops) edgesOn.add(h.edge);
-      for (const target of beat.light) lit.add(target);
-      lights.push(...beat.chartLight.map((l) => (l.x !== undefined ? `x=${l.x}` : l.names.join('\u0000'))));
-      const growing = hasReveal ? beat.reveal : bi === 0 && si === 0 ? seriesIds : [];
-      revealed.push(...beat.reveal);
-      if (beat.say !== undefined) caption = beat.say;
-      const move = Math.max(0, ...hops.map((h) => h.ms));
-      const grow = growing.length ? speed : 0;
-      const said = beat.say ?? (bi === 0 ? step.caption : undefined);
-      const isLast = bi === step.beats.length - 1;
-      const hold = dwellOf(said) + (isLast ? DWELL['step-end'] : 0);
-      const card = cards.beats.get(beat) ?? { before: {}, after: {} };
-      const cardsAt = cardTimes(hops, card);
-      const seg = {
-        si,
-        bi,
-        t0: t,
-        t1: t + Math.max(move, grow) + beat.waitMs + hold,
-        labelShift: hasReveal ? labelShiftOf(figure, [...revealed]) : 0,
-        move,
-        hops,
-        edgesOn: [...edgesOn],
-        nodesOn: [...lit].filter((id) => !id.includes('.')),
-        columnsOn: [...lit].filter((id) => id.includes('.')),
-        cards: card.after,
-        cardsBefore: card.before,
-        cardsAt,
-        caption,
-        series: hasReveal ? [...revealed] : seriesIds,
-        growing,
-        lights: [...lights],
-      };
-      segs.push(seg);
-      t = seg.t1;
-    });
+  // 박자를 지나며 이어지는 값: 시각, 순서 그림 메시지 번호, 드러난 계열
+  const run = {
+    figure,
+    speed,
+    t: 0,
+    messageIndex: 0,
+    revealed: [],
+    hasReveal: figure.steps.some((s) => s.beats.some((b) => b.reveal.length)),
+    seriesIds: chartSeriesIds(figure),
+  };
+  const segs = figure.steps.flatMap((step, si) => {
+    // 단계 안에서 쌓이는 값: 지나간 선, 밝힌 대상, 차트 밝히기, 마지막 설명
+    const memory = { edgesOn: new Set(), lit: new Set(), lights: [], caption: step.caption ?? '' };
+    return step.beats.map((beat, bi) => beatSeg({ step, si, beat, bi }, { memory, run }, deps));
   });
-  return { segs, total: t || 1, steps: figure.steps.map((s) => s.label), growMs: speed };
+  return { segs, total: run.t || 1, steps: figure.steps.map((s) => s.label), growMs: speed };
 }
 
-// cost: time O(s), heap O(s), stack O(1)
-// vars: s = 계열 수
+// cost: time O(h + e + k), heap O(e + k), stack O(1)
+// vars: h = 박자의 이동 수, e = 선 수, k = 카드 있는 도형 수
+// basis: estimate
+// 박자 하나의 상태. 시각 t를 이 박자 길이만큼 앞으로 보낸다.
+function beatSeg({ step, si, beat, bi }, { memory, run }, { cards, chips, scene }) {
+  const { figure, speed } = run;
+  const hops = beat.hops.map((hop) => {
+    const edge = figure.kind === 'sequence' ? run.messageIndex++ : hop.edge;
+    return { edge, isBack: Boolean(hop.isBack), ms: hop.timeMs ?? hopMs(scene.edges[edge].points, speed), to: hop.to.split('.')[0], data: hop.data !== undefined && figure.kind !== 'sequence' ? chips(hop.data) : undefined, line: hop.line };
+  });
+  for (const h of hops) memory.edgesOn.add(h.edge);
+  for (const target of beat.light) memory.lit.add(target);
+  memory.lights.push(...beat.chartLight.map((l) => (l.x !== undefined ? `x=${l.x}` : l.names.join('\u0000'))));
+  const growing = run.hasReveal ? beat.reveal : bi === 0 && si === 0 ? run.seriesIds : [];
+  run.revealed.push(...beat.reveal);
+  if (beat.say !== undefined) memory.caption = beat.say;
+  const move = Math.max(0, ...hops.map((h) => h.ms));
+  const grow = growing.length ? speed : 0;
+  const said = beat.say ?? (bi === 0 ? step.caption : undefined);
+  const hold = dwellOf(said) + (bi === step.beats.length - 1 ? DWELL['step-end'] : 0);
+  const card = cards.beats.get(beat) ?? { before: {}, after: {} };
+  const seg = {
+    si,
+    bi,
+    t0: run.t,
+    t1: run.t + Math.max(move, grow) + beat.waitMs + hold,
+    labelShifts: run.hasReveal ? labelShiftsOf(figure, [...run.revealed]) : [],
+    move,
+    hops,
+    edgesOn: [...memory.edgesOn],
+    nodesOn: [...memory.lit].filter((id) => !id.includes('.')),
+    columnsOn: [...memory.lit].filter((id) => id.includes('.')),
+    cards: card.after,
+    cardsBefore: card.before,
+    cardsAt: cardTimes(hops, card),
+    caption: memory.caption,
+    series: run.hasReveal ? [...run.revealed] : run.seriesIds,
+    growing,
+    lights: [...memory.lights],
+  };
+  run.t = seg.t1;
+  return seg;
+}
+
+// cost: time O(r·s), heap O(r), stack O(1)
+// vars: r = 행 수, s = 계열 수
 // basis: estimate
 /**
- * 막대 차트의 행 이름이 보이는 막대 묶음 가운데로 가도록 세로로 옮길 거리(px). 이름은 모든 계열이 보일 때 묶음 가운데에 그려져 있으므로,
- * 계열을 하나씩 드러내는 동안은 보이는 막대의 가운데와 묶음 가운데의 차이만큼 옮긴다. 플레이어는 이 값을 읽어 적용만 한다.
+ * 막대 차트의 행 이름이 보이는 막대 가운데로 가도록 행마다 세로로 옮길 거리(px). 이름은 모든 계열이 보일 때 값이 있는 막대 묶음의 가운데에 그려져 있으므로,
+ * 계열을 하나씩 드러내는 동안은 보이는 막대의 가운데와 그 자리의 차이만큼 옮긴다. 값이 없는 계열 슬롯(비교 없음 글)은 막대가 아니라서 묶음 가운데를 정할 때 빼고,
+ * 막대가 하나도 안 보이고 그 글만 보이는 동안에는 그 글 슬롯에 맞춘다. 플레이어는 이 값을 읽어 적용만 한다. 막대가 아니거나 계열이 하나면 빈 목록이다.
  */
-function labelShiftOf(figure, shown) {
-  const { series } = figure.chart;
-  if (figure.chartType !== 'bar' || series.length < 2) return 0;
+function labelShiftsOf(figure, shown) {
+  const { series, rows } = figure.chart;
+  if (figure.chartType !== 'bar' || series.length < 2) return [];
   const seen = series.flatMap((s, i) => (shown.includes(s.id) ? [i] : []));
-  if (!seen.length) return 0;
-  const middle = (indexes) => ((Math.min(...indexes) + Math.max(...indexes)) * (BAR + BAR_GAP)) / 2;
-  return Math.round((middle(seen) - middle(series.map((_, i) => i))) * 100) / 100;
+  return rows.map((row) => {
+    if (!seen.length) return 0;
+    const present = presentSlots(row, series);
+    const bars = seen.filter((i) => present.includes(i));
+    return Math.round((slotMiddle(bars.length ? bars : seen) - slotMiddle(present)) * SHIFT_PRECISION) / SHIFT_PRECISION;
+  });
 }
 
 // cost: time O(h + k), heap O(k), stack O(1)

@@ -8,10 +8,10 @@ external api "리소스 API"
 
 step "인가" "사용자가 인가 서버에서 직접 로그인한다"
   user -> app "로그인 누름"
-  app -> auth "authorize?code_challenge"
-  note auth "challenge = S256(verifier)"
+  app -> auth "`authorize` 요청"
+  note auth "`challenge = S256(verifier)`를 저장한다"
   auth -> app "redirect ?code" dashed
 step "토큰" "코드와 원래 비밀값을 함께 내야 토큰을 준다"
   app -> auth "token (code + verifier)"
-  auth -> app "access_token" dashed
-  app -> api "GET /me (Bearer)"
+  auth -> app "`access_token` 발급" dashed
+  app -> api "`GET /me` 호출"

@@ -1,0 +1,11 @@
+mutoscope 1
+chart heatmap
+title "히트맵의 모든 낱말"
+subtitle "예시 데이터. 칸과 밝히기"
+x "열(개)"
+cell "행1" "열1" 1
+cell "행1" "열2" 5
+cell "행2" "열1" 3
+cell "행2" "열2" 8
+step "칸"
+  light "행2" "열2"

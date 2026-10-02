@@ -3,6 +3,7 @@ import { test } from 'node:test';
 import { buildFigure } from '../src/build.js';
 import { checkFigure } from '../src/check.js';
 import { createProblems } from '../src/source/problems.js';
+import { formatProblem } from './helpers.js';
 
 // cost: time O(build), heap O(build), stack O(1)
 // vars: build = 원본 하나를 만드는 비용
@@ -13,7 +14,7 @@ async function problemsOf(source) {
     return [];
   } catch (error) {
     if (!error.problems) throw error;
-    return error.problems.map((p) => `${p.line}: ${p.message}`);
+    return error.problems.map(formatProblem);
   }
 }
 
@@ -22,8 +23,8 @@ async function problemsOf(source) {
 // basis: estimate
 function recheck({ figure, scene, timeline }) {
   const problems = createProblems();
-  checkFigure(figure, scene, timeline, problems);
-  return problems.errors.map((p) => `${p.line}: ${p.message}`);
+  checkFigure({ figure, scene, timeline }, problems);
+  return problems.errors.map(formatProblem);
 }
 
 test('checkFigure_moving_text_taller_than_short_figure_is_check_7_error', async () => {
@@ -31,7 +32,7 @@ test('checkFigure_moving_text_taller_than_short_figure_is_check_7_error', async 
 
   const messages = await problemsOf(source);
 
-  assert.ok(messages.some((m) => m.startsWith('8: [check 7]')), messages.join('\n'));
+  assert.ok(messages.some((m) => m.startsWith('8: [check-7]')), messages.join('\n'));
 });
 
 test('buildFigure_narrow_figure_widens_for_moving_text', async () => {
@@ -55,7 +56,7 @@ test('checkFigure_label_wider_than_node_is_check_1_internal_error', async () => 
 
   const messages = recheck(result);
 
-  assert.ok(messages.some((m) => m.startsWith('2: [check 1] internal: label')), messages.join('\n'));
+  assert.ok(messages.some((m) => m.startsWith('2: [check-1] internal: label')), messages.join('\n'));
 });
 
 test('checkFigure_card_text_wider_than_card_is_check_1_internal_error', async () => {
@@ -65,7 +66,7 @@ test('checkFigure_card_text_wider_than_card_is_check_1_internal_error', async ()
 
   const messages = recheck(result);
 
-  assert.ok(messages.some((m) => m.startsWith('2: [check 1] internal: card text')), messages.join('\n'));
+  assert.ok(messages.some((m) => m.startsWith('2: [check-1] internal: card text')), messages.join('\n'));
 });
 
 test('toSvg_moving_text_near_side_edge_is_pushed_inside', async () => {
@@ -74,7 +75,7 @@ test('toSvg_moving_text_near_side_edge_is_pushed_inside', async () => {
 
   const svg = await toSvg(await buildFigure(source), {});
 
-  assert.match(svg, /<animateTransform attributeName="transform" type="translate"[^>]*values="[1-9][\d.]* 0;/);
+  assert.match(svg, /<animateTransform attributeName="transform" type="translate"[^>]*values="[1-9][\d.]* \d+;/);
 });
 
 const GROUPED = 'flow right\nbox a "A"\ngroup g "묶음" {\n  box b "B"\n}\nbox c "C"\na -> b "보냄"\nb -> c';
@@ -88,7 +89,7 @@ test('checkFigure_edge_through_unrelated_group_is_check_3_error', async () => {
 
   const messages = recheck(result);
 
-  assert.ok(messages.some((m) => m.includes('[check 3]') && m.includes('group "g"')), messages.join('\n'));
+  assert.ok(messages.some((m) => m.includes('[check-3]') && m.includes('group "g"')), messages.join('\n'));
 });
 
 test('checkFigure_node_inside_unrelated_group_is_check_6_internal_error', async () => {
@@ -99,7 +100,7 @@ test('checkFigure_node_inside_unrelated_group_is_check_6_internal_error', async 
 
   const messages = recheck(result);
 
-  assert.ok(messages.some((m) => m.includes('[check 6] internal: node "c" overlaps group "g"') || m.includes('[check 6] internal: group "g" overlaps node "c"')), messages.join('\n'));
+  assert.ok(messages.some((m) => m.includes('[check-6] internal: node "c" overlaps group "g"') || m.includes('[check-6] internal: group "g" overlaps node "c"')), messages.join('\n'));
 });
 
 test('checkFigure_edge_label_on_group_title_is_check_2_error', async () => {
@@ -110,7 +111,7 @@ test('checkFigure_edge_label_on_group_title_is_check_2_error', async () => {
 
   const messages = recheck(result);
 
-  assert.ok(messages.some((m) => m.includes('[check 2]') && m.includes('title of group "g"')), messages.join('\n'));
+  assert.ok(messages.some((m) => m.includes('[check-2]') && m.includes('title of group "g"')), messages.join('\n'));
 });
 
 test('checkFigure_decision_edge_off_vertex_is_check_4_internal_error', async () => {
@@ -121,7 +122,7 @@ test('checkFigure_decision_edge_off_vertex_is_check_4_internal_error', async () 
 
   const messages = recheck(result);
 
-  assert.ok(messages.some((m) => m.includes('[check 4] internal')), messages.join('\n'));
+  assert.ok(messages.some((m) => m.includes('[check-4] internal')), messages.join('\n'));
 });
 
 test('buildFigure_sequence_without_participants_is_error_not_crash', async () => {
@@ -131,12 +132,22 @@ test('buildFigure_sequence_without_participants_is_error_not_crash', async () =>
 });
 
 test('checkFigure_tall_group_suggests_direction_right', async () => {
-  const chain = Array.from({ length: 16 }, (_, i) => `  box n${i} "N${i}"`).join('\n');
-  const edges = Array.from({ length: 15 }, (_, i) => `  n${i} -> n${i + 1}`).join('\n');
+  const chain = Array.from({ length: 30 }, (_, i) => `  box n${i} "N${i}"`).join('\n');
+  const edges = Array.from({ length: 29 }, (_, i) => `  n${i} -> n${i + 1}`).join('\n');
 
   const { warnings } = await buildFigure(`flow down\ngroup g "G" {\n${chain}\n${edges}\n}`);
 
   assert.ok(warnings.some((w) => w.message.includes('Set direction=right on group "g"')), JSON.stringify(warnings));
+});
+
+test('checkFigure_narrow_tall_figure_is_judged_by_the_canvas_width_it_is_shown_at', async () => {
+  const chain = Array.from({ length: 16 }, (_, i) => `  box n${i} "N${i}"`).join('\n');
+  const edges = Array.from({ length: 15 }, (_, i) => `  n${i} -> n${i + 1}`).join('\n');
+
+  const { scene, warnings } = await buildFigure(`flow down\ngroup g "G" {\n${chain}\n${edges}\n}`);
+
+  assert.ok(scene.width / scene.height < 1 / 3, '내용 비율은 1/3보다 작다');
+  assert.deepEqual(warnings.filter((w) => w.code === 'check-9'), []);
 });
 
 test('checkFigure_small_wide_figure_has_no_aspect_warning', async () => {
@@ -162,15 +173,15 @@ test('checkFigure_parallel_segments_of_edges_between_different_shapes_stay_check
   const scene = { edges: [edge('a', 'b', [{ x: 0, y: 0 }, { x: 100, y: 0 }]), edge('c', 'd', [{ x: 0, y: 4 }, { x: 100, y: 4 }])], items: [], groups: [], width: 100, height: 100 };
   const problems = createProblems();
 
-  checkFigure({ kind: 'flow', direction: 'right' }, scene, { segs: [] }, problems);
+  checkFigure({ figure: { kind: 'flow', direction: 'right' }, scene, timeline: { segs: [] } }, problems);
 
-  assert.ok(problems.errors.some((p) => p.message.startsWith('[check 5]')), JSON.stringify(problems.errors));
+  assert.ok(problems.errors.some((p) => p.code === 'check-5'), JSON.stringify(problems.errors));
 });
 
-test('checkFigure_wide_group_figure_without_turnable_group_suggests_aspect', async () => {
+test('checkFigure_wide_group_figure_with_too_wide_aspect_suggests_smaller_aspect', async () => {
   const chain = Array.from({ length: 16 }, (_, i) => `box n${i} "N${i}"`).join('\n');
   const edges = Array.from({ length: 15 }, (_, i) => `n${i} -> n${i + 1}`).join('\n');
 
-  const { warnings } = await buildFigure(`flow right\n${chain}\ngroup g "G" {\n  box a "A"\n}\n${edges}\nn15 -> a`);
+  const { warnings } = await buildFigure(`flow right\naspect 20\n${chain}\ngroup g "G" {\n  box a "A"\n}\n${edges}\nn15 -> a`);
 
-  assert.ok(warnings.some((w) => w.message.includes('Add "aspect 1.6"')), JSON.stringify(warnings));});
+  assert.ok(warnings.some((w) => w.message.includes('Use a smaller aspect than 20')), JSON.stringify(warnings));});

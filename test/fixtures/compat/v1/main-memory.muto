@@ -1,0 +1,36 @@
+flow right
+title "대화에서 기억 그래프 키우기"
+
+person user "사용자"
+group memory "기억 엔진" direction=down {
+  box extract "추출기" "LLM"
+  box resolve "개체 정리" "같은 사람 합치기"
+  store graph "기억 그래프"
+}
+box answer "답변" "질의 시점"
+
+user -> extract "대화"
+extract -> resolve
+resolve -> graph
+graph -> answer
+user -> answer "질문" quiet
+
+step "첫 대화" "처음 들은 사실로 그래프를 시작한다"
+  user -> extract "민지는 3월에 토스로 옮겼어"
+  show extract "민지" tag="person"
+  show extract "토스" tag="org" meta="3월"
+  extract -> resolve
+  resolve -> graph
+  show graph graph "민지 -> 토스" lit="민지"
+step "다음 대화" "같은 사람이 다른 이름으로 나와도 한 개체로 합친다"
+  user -> extract "김민지가 결제팀을 맡았대"
+  show extract "김민지 = 민지" tag="person"
+  extract -> resolve
+  show resolve "김민지 → 민지" tag="merge" tone=orange
+  resolve -> graph
+  show graph graph "민지 -> 토스; 토스 -> 결제팀; 민지 -> 결제팀" lit="민지, 결제팀"
+step "질문" "질문이 오면 쓰지 않던 선이 나타난다"
+  show graph graph "민지 -> 토스; 토스 -> 결제팀; 민지 -> 결제팀" lit="민지, 결제팀"
+  user -> answer "민지 지금 어디 팀이야?"
+  graph -> answer "민지 → 결제팀"
+  show answer "토스 결제팀" tag="answer" tone=green mark="✓"

@@ -1,6 +1,6 @@
 // 예제 결과(examples/out)를 로컬 Chrome으로 열어 UI 화면을 examples/screens에 찍는다. 먼저 npm run examples를 실행한다.
 import { execFileSync } from 'node:child_process';
-import { rmSync } from 'node:fs';
+import { renameSync, rmSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { chromium } from 'playwright-core';
 
@@ -31,7 +31,8 @@ const SHOTS = [
 // basis: estimate
 async function main() {
   execFileSync(process.execPath, ['src/cli.js', 'render', 'examples/saturn.muto', '--static', '--out', 'examples/screens-static'], { stdio: 'ignore' });
-  execFileSync('mv', ['examples/screens-static/saturn.svg', `${OUT}/saturn-static.svg`]);
+  // 같은 이름 saturn.svg가 움직이는 SVG(examples/out)와 겹치지 않도록 정적 SVG는 따로 렌더해 이름을 바꿔 옮긴다. SHOTS의 13번이 이 이름을 연다.
+  renameSync('examples/screens-static/saturn.svg', `${OUT}/saturn-static.svg`);
   rmSync('examples/screens-static', { recursive: true });
   const browser = await chromium.launch({ executablePath: CHROME });
   for (const shot of SHOTS) {

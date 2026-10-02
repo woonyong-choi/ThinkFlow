@@ -6,70 +6,79 @@
 <title>예제</title>
 <style>/* tokens.json: 생성물, 손으로 고치지 않음 */
 :root {
-  --color-gray-0: #ffffff;
-  --color-gray-25: #f7f8fa;
-  --color-gray-50: #f5f7fa;
-  --color-gray-100: #e3e7ec;
-  --color-gray-200: #d5dbe3;
-  --color-gray-300: #b6c0cc;
-  --color-gray-600: #4b5563;
-  --color-gray-900: #111418;
-  --color-neutral-100: #e3e3e3;
-  --color-neutral-400: #9aa0a6;
-  --color-neutral-700: #3a3b3c;
-  --color-neutral-750: #34363a;
-  --color-neutral-800: #2c2d30;
-  --color-neutral-850: #242526;
-  --color-neutral-900: #1b1b1d;
-  --color-neutral-950: #111214;
-  --color-blue-50: #edf3fb;
-  --color-blue-400: #3396e8;
-  --color-blue-600: #2a78d6;
-  --color-blue-900: #1d2733;
-  --color-blue-800: #1d4f91;
-  --color-tone-blue: #3b82f6;
-  --color-tone-purple: #8b5cf6;
-  --color-tone-green: #10b981;
-  --color-tone-orange: #f59e0b;
-  --color-tone-gray: #8b949e;
-  --color-accent: var(--color-blue-600);
-  --color-on-accent: var(--color-gray-0);
-  --color-fg: var(--color-ink-900);
-  --color-muted: var(--color-ink-600);
-  --color-bg: var(--color-gray-0);
-  --color-surface: var(--color-gray-50);
-  --color-border: var(--color-gray-300);
-  --color-card-on: var(--color-blue-50);
-  --color-dot: var(--color-gray-200);
-  --color-frame: var(--color-gray-100);
-  --color-page: var(--color-gray-0);
-  --color-gallery: var(--color-gray-25);
-  --color-tag-blue: var(--color-tone-blue);
-  --color-tag-purple: var(--color-tone-purple);
-  --color-tag-green: var(--color-tone-green);
-  --color-tag-orange: var(--color-tone-orange);
-  --color-tag-gray: var(--color-tone-gray);
-  --color-orange-100: #fbe1d5;
-  --color-orange-600: #eb6834;
-  --color-ink-900: #0b0b0b;
-  --color-ink-600: #52514e;
-  --color-ink-200: #e6e5e1;
-  --color-series-1: var(--color-accent);
-  --color-series-2: var(--color-orange-600);
-  --color-heat-low: var(--color-blue-50);
-  --color-heat-high: var(--color-blue-800);
-  --color-grid: var(--color-ink-200);
-  --font-sans: FigSans, Pretendard, -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', 'Noto Sans KR', sans-serif;
-  --font-mono: FigMono, D2Coding, ui-monospace, SFMono-Regular, Menlo, monospace;
+  --color-palette-gray-0: #ffffff;
+  --color-palette-gray-25: #f6f7f9;
+  --color-palette-gray-40: #eef0f3;
+  --color-palette-gray-50: #eef1f5;
+  --color-palette-gray-100: #e3e7ec;
+  --color-palette-gray-200: #d5dbe3;
+  --color-palette-gray-500: #818b99;
+  --color-palette-neutral-100: #e3e3e3;
+  --color-palette-neutral-400: #9aa0a6;
+  --color-palette-neutral-500: #72767a;
+  --color-palette-neutral-750: #3c3e42;
+  --color-palette-neutral-800: #2c2d30;
+  --color-palette-neutral-850: #242526;
+  --color-palette-neutral-900: #1b1b1d;
+  --color-palette-neutral-950: #111214;
+  --color-palette-blue-50: #edf5fb;
+  --color-palette-blue-200: #a9cdea;
+  --color-palette-blue-400: #79c0ff;
+  --color-palette-blue-550: #218fe5;
+  --color-palette-blue-600: #1072c2;
+  --color-palette-blue-800: #1d5d91;
+  --color-palette-blue-850: #2b4254;
+  --color-palette-blue-900: #1d2933;
+  --color-palette-orange-400: #f5a374;
+  --color-palette-orange-550: #d96c1f;
+  --color-palette-ink-200: #c6cacf;
+  --color-palette-ink-600: #52514e;
+  --color-palette-ink-850: #0d1117;
+  --color-palette-ink-900: #0b0b0b;
+  --color-palette-ink-1000: #000000;
+  --color-palette-purple-500: #8b5cf6;
+  --color-palette-green-500: #10b981;
+  --color-palette-slate-500: #8b949e;
+  --color-palette-teal-500: #11a6b0;
+  --color-state-active: var(--color-palette-blue-550);
+  --color-state-active-fill: var(--color-palette-blue-600);
+  --color-state-active-text: var(--color-palette-blue-600);
+  --color-state-on-active: var(--color-palette-gray-0);
+  --color-ui-link: var(--color-palette-blue-600);
+  --color-ui-focus: var(--color-palette-blue-550);
+  --color-ui-progress: var(--color-palette-blue-550);
+  --color-ui-control-on: var(--color-palette-gray-0);
+  --color-data-main: var(--color-palette-blue-550);
+  --color-data-compare: var(--color-palette-orange-550);
+  --color-data-heat-low: var(--color-palette-blue-200);
+  --color-data-heat-high: var(--color-palette-blue-800);
+  --color-data-heat-ink: var(--color-palette-ink-1000);
+  --color-data-heat-ink-on: var(--color-palette-gray-0);
+  --color-data-grid: var(--color-palette-ink-200);
+  --color-fg: var(--color-palette-ink-900);
+  --color-muted: var(--color-palette-ink-600);
+  --color-bg: var(--color-palette-gray-25);
+  --color-node: var(--color-palette-gray-0);
+  --color-surface: var(--color-palette-gray-50);
+  --color-border: var(--color-palette-gray-500);
+  --color-card-on: var(--color-palette-blue-50);
+  --color-group: var(--color-palette-gray-40);
+  --color-group-border: var(--color-palette-gray-500);
+  --color-frame: var(--color-palette-gray-100);
+  --color-plate-border: var(--color-palette-gray-200);
+  --color-page: var(--color-palette-gray-0);
+  --color-gallery: var(--color-palette-gray-0);
+  --color-tag-purple: var(--color-palette-purple-500);
+  --color-tag-green: var(--color-palette-green-500);
+  --color-tag-teal: var(--color-palette-teal-500);
+  --color-tag-gray: var(--color-palette-slate-500);
+  --font-sans: FigSans, FigSansKo, FigSansSym, FigSansMath, Inter, 'Inter Variable', 'Noto Sans KR', 'Noto Sans KR Variable', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif;
+  --font-mono: FigMono, FigSans, FigSansKo, FigSansSym, FigSansMath, ui-monospace, SFMono-Regular, Menlo, monospace;
   --size-text-9: 9px;
-  --size-text-10-5: 10.5px;
   --size-text-11: 11px;
-  --size-text-11-5: 11.5px;
   --size-text-12: 12px;
   --size-text-13: 13px;
-  --size-text-13-5: 13.5px;
   --size-text-14: 14px;
-  --size-text-14-5: 14.5px;
   --size-text-15: 15px;
   --size-text-22: 22px;
   --size-line-15: 15px;
@@ -77,6 +86,7 @@
   --size-line-20: 20px;
   --size-line-22: 22px;
   --size-control: 30px;
+  --size-control-inner: 22px;
   --size-pill: 18px;
   --size-tag: 14px;
   --size-icon: 12px;
@@ -84,22 +94,20 @@
   --size-halo: 10px;
   --size-marker: 5px;
   --size-marker-on: 4px;
-  --size-grid: 16px;
-  --size-grid-dot: 1px;
   --size-card: 176px;
   --size-node-min: 100px;
   --size-node-max: 210px;
   --size-node-min-h: 46px;
   --size-store-cap: 12px;
-  --size-figure-min: 560px;
+  --size-figure-canvas: 960px;
+  --size-hop-ref: 300px;
   --size-chip-max: 210px;
   --size-caption-max: 720px;
-  --size-figure-max: 1400px;
-  --size-gallery-column: 760px;
+  --size-gallery-column: var(--size-figure-canvas);
   --size-gallery-frame: 820px;
-  --size-player-chrome: 190px;
+  --size-document-column: var(--size-figure-canvas);
   --size-embedded-chrome: 150px;
-  --size-chart-width: 640px;
+  --size-chart-width: var(--size-figure-canvas);
   --size-chart-label: 140px;
   --size-chart-label-max: 240px;
   --size-chart-bar: 12px;
@@ -124,20 +132,14 @@
   --leading-normal: 1.5;
   --tracking-tag: 0.03em;
   --tracking-frame: 0.04em;
-  --space-0-5: 1px;
   --space-1: 2px;
-  --space-1-5: 3px;
   --space-2: 4px;
-  --space-2-5: 5px;
   --space-3: 6px;
-  --space-3-5: 7px;
   --space-4: 8px;
   --space-5: 10px;
   --space-6: 12px;
-  --space-6-5: 13px;
   --space-7: 14px;
   --space-8: 16px;
-  --space-8-5: 17px;
   --space-9: 18px;
   --space-11: 22px;
   --space-12: 24px;
@@ -145,13 +147,13 @@
   --space-14: 28px;
   --space-15: 30px;
   --space-16: 32px;
-  --space-17: 34px;
   --space-18: 36px;
   --space-20: 40px;
   --space-22: 44px;
   --space-30: 60px;
-  --space-32: 64px;
-  --radius-xs: 2px;
+  --space-0-5: 1px;
+  --space-1-5: 3px;
+  --space-2-5: 5px;
   --radius-sm: 4px;
   --radius-md: 6px;
   --radius-lg: 8px;
@@ -165,21 +167,23 @@
   --border-tag: 1.5px;
   --border-edge: 1.75px;
   --border-strong: 2.5px;
+  --border-casing: 4.5px;
   --border-halo: 8px;
   --dash-line: 5;
   --dash-gap: 4;
   --dash-card: 3;
   --opacity-tag: 0.15;
   --opacity-halo: 0.2;
-  --opacity-tab-on: 0.06;
   --opacity-dim: 0.3;
-  --opacity-band: 0.16;
-  --opacity-range: 0.32;
-  --opacity-heat-text: 0.55;
+  --opacity-dim-ink: 0.65;
+  --opacity-band: 0.22;
+  --opacity-range: 0.4;
   --z-raised: 2;
   --z-overlay: 10;
   --duration-fast: 200ms;
   --duration-hop: 3750ms;
+  --duration-caption-fade: 200ms;
+  --duration-hop-min: 500ms;
   --duration-dwell: 700ms;
   --duration-dwell-per-char: 45ms;
   --duration-dwell-max: 3200ms;
@@ -189,41 +193,128 @@
   --easing-move: cubic-bezier(0.455, 0.03, 0.515, 0.955);
   --easing-reveal: cubic-bezier(0, 0, 0.58, 1);
   --scale-zoom-max: 6;
+  --scale-aspect-fit-max: 1.6;
+  --scale-fold-aspect: var(--scale-aspect-fit-max);
+  --scale-fold-step: 0.75;
+  --scale-aspect-max: 3;
   --scale-zoom-step: 1.25;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) {
-    --color-accent: var(--color-blue-400);
-    --color-fg: var(--color-neutral-100);
-    --color-muted: var(--color-neutral-400);
-    --color-bg: var(--color-neutral-900);
-    --color-surface: var(--color-neutral-850);
-    --color-border: var(--color-neutral-700);
-    --color-card-on: var(--color-blue-900);
-    --color-dot: var(--color-neutral-750);
-    --color-frame: var(--color-neutral-800);
-    --color-page: var(--color-neutral-950);
-    --color-gallery: var(--color-neutral-950);
-    --color-series-2: #f08a5d;
-    --color-grid: var(--color-neutral-750);
+    --color-state-active: var(--color-palette-blue-400);
+    --color-state-active-fill: var(--color-palette-blue-400);
+    --color-state-active-text: var(--color-palette-blue-400);
+    --color-state-on-active: var(--color-palette-ink-850);
+    --color-ui-link: var(--color-palette-blue-400);
+    --color-ui-focus: var(--color-palette-blue-400);
+    --color-ui-progress: var(--color-palette-blue-400);
+    --color-ui-control-on: var(--color-palette-neutral-750);
+    --color-data-main: var(--color-palette-blue-400);
+    --color-data-compare: var(--color-palette-orange-400);
+    --color-data-heat-low: var(--color-palette-blue-850);
+    --color-data-heat-high: var(--color-palette-blue-600);
+    --color-data-heat-ink: var(--color-palette-gray-0);
+    --color-data-heat-ink-on: var(--color-palette-gray-0);
+    --color-data-grid: var(--color-palette-neutral-750);
+    --color-fg: var(--color-palette-neutral-100);
+    --color-muted: var(--color-palette-neutral-400);
+    --color-bg: var(--color-palette-neutral-900);
+    --color-node: var(--color-palette-neutral-850);
+    --color-surface: var(--color-palette-neutral-800);
+    --color-border: var(--color-palette-neutral-500);
+    --color-card-on: var(--color-palette-blue-900);
+    --color-frame: var(--color-palette-neutral-800);
+    --color-page: var(--color-palette-neutral-950);
+    --color-gallery: var(--color-palette-neutral-950);
+    --color-group: var(--color-palette-neutral-850);
+    --color-group-border: var(--color-palette-neutral-500);
+    --color-plate-border: var(--color-palette-neutral-800);
   }
 }
 [data-theme='dark'] {
-  --color-accent: var(--color-blue-400);
-  --color-fg: var(--color-neutral-100);
-  --color-muted: var(--color-neutral-400);
-  --color-bg: var(--color-neutral-900);
-  --color-surface: var(--color-neutral-850);
-  --color-border: var(--color-neutral-700);
-  --color-card-on: var(--color-blue-900);
-  --color-dot: var(--color-neutral-750);
-  --color-frame: var(--color-neutral-800);
-  --color-page: var(--color-neutral-950);
-  --color-gallery: var(--color-neutral-950);
-  --color-series-2: #f08a5d;
-  --color-grid: var(--color-neutral-750);
+  --color-state-active: var(--color-palette-blue-400);
+  --color-state-active-fill: var(--color-palette-blue-400);
+  --color-state-active-text: var(--color-palette-blue-400);
+  --color-state-on-active: var(--color-palette-ink-850);
+  --color-ui-link: var(--color-palette-blue-400);
+  --color-ui-focus: var(--color-palette-blue-400);
+  --color-ui-progress: var(--color-palette-blue-400);
+  --color-ui-control-on: var(--color-palette-neutral-750);
+  --color-data-main: var(--color-palette-blue-400);
+  --color-data-compare: var(--color-palette-orange-400);
+  --color-data-heat-low: var(--color-palette-blue-850);
+  --color-data-heat-high: var(--color-palette-blue-600);
+  --color-data-heat-ink: var(--color-palette-gray-0);
+  --color-data-heat-ink-on: var(--color-palette-gray-0);
+  --color-data-grid: var(--color-palette-neutral-750);
+  --color-fg: var(--color-palette-neutral-100);
+  --color-muted: var(--color-palette-neutral-400);
+  --color-bg: var(--color-palette-neutral-900);
+  --color-node: var(--color-palette-neutral-850);
+  --color-surface: var(--color-palette-neutral-800);
+  --color-border: var(--color-palette-neutral-500);
+  --color-card-on: var(--color-palette-blue-900);
+  --color-frame: var(--color-palette-neutral-800);
+  --color-page: var(--color-palette-neutral-950);
+  --color-gallery: var(--color-palette-neutral-950);
+  --color-group: var(--color-palette-neutral-850);
+  --color-group-border: var(--color-palette-neutral-500);
+  --color-plate-border: var(--color-palette-neutral-800);
 }
-/* 여러 그림을 모은 목록 쪽 */
+/* 조작 단추의 공통 모양과 상태. 재생기(원 단추, 탭), 목록 쪽과 문서 미리보기(테마 묶음)가 모두 이 파일 하나를 쓴다. */
+.fl-round:hover,
+.fl-tabs button:hover,
+.theme button:hover {
+  color: var(--color-fg);
+}
+
+.fl-round:focus-visible,
+.fl-tabs button:focus-visible,
+.theme button:focus-visible {
+  outline: var(--border-tag) solid var(--color-ui-focus);
+  outline-offset: var(--space-1);
+}
+
+/* 분할 조작(재생기 탭, 테마 묶음)과 둥근 단추는 한 모양이다. 바깥 높이 control, 안쪽 단추 높이 control-inner, 반지름 full. */
+.fl-tabs,
+.theme {
+  display: flex;
+  box-sizing: border-box;
+  min-height: var(--size-control);
+  padding: var(--space-1-5);
+  background: var(--color-bg);
+  border: var(--border-thin) solid var(--color-border);
+  border-radius: var(--radius-full);
+}
+
+.fl-tabs button,
+.theme button {
+  min-height: var(--size-control-inner);
+  font: var(--size-text-13) var(--font-sans);
+  color: var(--color-muted);
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-full);
+}
+
+.theme button {
+  padding: 0 var(--space-6);
+}
+
+/* segmented 방식: 켜진 항목은 꽉 찬 알약(ui.control-on)이다. 켜짐 표시는 묶음 바탕과 대비 3인 border 색 고리다. */
+.fl-tabs button.on,
+.theme button[aria-pressed='true'] {
+  font-weight: var(--weight-semibold);
+  color: var(--color-fg);
+  background: var(--color-ui-control-on);
+  box-shadow: 0 0 0 var(--border-thin) var(--color-border);
+}
+/* 여러 그림을 모은 목록 쪽. 시스템 테마에서는 루트가 라이트와 다크를 모두 허용해 iframe 그림도 OS 설정을 따른다. */
+:root {
+  color-scheme: light dark;
+}
+
 body {
   margin: 0;
   padding: var(--space-20) var(--space-16);
@@ -232,14 +323,32 @@ body {
   background: var(--color-gallery);
 }
 
+.top {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: end;
+  margin-bottom: var(--space-14);
+}
+
 h1 {
   margin: 0 0 var(--space-3);
   font-size: var(--size-text-22);
 }
 
-body > p {
-  margin: 0 0 var(--space-14);
+.top p {
+  grid-column: 1;
+  margin: 0;
+  font-size: var(--size-text-15);
   color: var(--color-muted);
+}
+
+.top a {
+  color: var(--color-ui-link);
+}
+
+.theme {
+  grid-row: 1 / 3;
+  grid-column: 2;
 }
 
 main {
@@ -250,11 +359,12 @@ main {
   align-items: start;
 }
 
+/* 카드 테두리는 레이아웃 폭을 차지하지 않는 고리다. 카드 안쪽 폭이 그림 표시 폭 규칙의 컨테이너 폭이 되게 한다(player.css 맨 위). */
 section {
   overflow: hidden;
   background: var(--color-bg);
-  border: var(--border-thin) solid var(--color-frame);
   border-radius: var(--radius-2xl);
+  box-shadow: 0 0 0 var(--border-thin) var(--color-frame);
 }
 
 header {
@@ -267,19 +377,31 @@ header {
 
 h2 {
   margin: 0;
-  font: var(--weight-semibold) var(--size-text-14) var(--font-mono);
+  font: var(--weight-semibold) var(--size-text-15) var(--font-sans);
 }
 
-header p {
-  grid-column: 1;
-  margin: 0;
+/* 백틱으로 감싼 글은 코드 글꼴로 그린다. */
+code {
+  font-family: var(--font-mono);
+}
+
+/* 파일 이름은 코드 글꼴의 보통 글자이고, 종류는 그 옆 작은 회색 꼬리표다. 제목이 앞에 있으면 제목과 간격을 둔다. */
+.name {
   font-size: var(--size-text-13);
+}
+
+.name:not(:first-child) {
+  margin-left: var(--space-3);
+}
+
+.kind {
+  margin-left: var(--space-3);
+  font-size: var(--size-text-11);
   color: var(--color-muted);
 }
 
 nav {
   display: flex;
-  grid-row: 1 / 3;
   grid-column: 2;
   gap: var(--space-5);
   align-self: center;
@@ -287,12 +409,12 @@ nav {
 
 nav a {
   font-size: var(--size-text-13);
-  color: var(--color-accent);
+  color: var(--color-ui-link);
   text-decoration: none;
 }
 
 nav a:focus-visible {
-  outline: var(--border-tag) solid var(--color-accent);
+  outline: var(--border-tag) solid var(--color-ui-focus);
   outline-offset: var(--space-1);
 }
 
@@ -303,28 +425,69 @@ iframe {
   border: 0;
 }
 </style>
+<script>
+const THEME_KEY = 'mutoscope-theme';
+// cost: time O(1), heap O(1), stack O(1)
+// vars: 단추 3개
+// basis: estimate
+function applyTheme(mode) {
+  const root = document.documentElement;
+  if (mode === 'light' || mode === 'dark') {
+    root.setAttribute('data-theme', mode);
+    root.style.colorScheme = mode;
+  } else {
+    root.removeAttribute('data-theme');
+    root.style.colorScheme = 'light dark';
+  }
+  for (const frame of document.querySelectorAll('iframe')) frame.contentWindow?.postMessage({ theme: mode }, '*');
+  for (const button of document.querySelectorAll('.theme button')) button.setAttribute('aria-pressed', String(button.dataset.mode === (mode === 'light' || mode === 'dark' ? mode : 'system')));
+}
+function savedTheme() {
+  try {
+    return localStorage.getItem(THEME_KEY);
+  } catch {
+    return null;
+  }
+}
+applyTheme(savedTheme());
+addEventListener('DOMContentLoaded', () => {
+  applyTheme(savedTheme());
+  document.querySelector('.theme').addEventListener('click', (e) => {
+    const mode = e.target.dataset?.mode;
+    if (!mode) return;
+    try {
+      localStorage.setItem(THEME_KEY, mode);
+    } catch {}
+    applyTheme(mode);
+  });
+});</script>
 </head>
 <body>
+<div class="top">
 <h1>예제</h1>
-<p>그림 11개</p>
+<p>그림 11개 · <a href="document.html">문서 안 모습 보기</a></p>
+<div class="theme" role="group" aria-label="테마"><button type="button" data-mode="system" aria-pressed="false">시스템</button><button type="button" data-mode="light" aria-pressed="false">라이트</button><button type="button" data-mode="dark" aria-pressed="false">다크</button></div>
+</div>
 <main>
-<section><header><h2>bar</h2><p>장기 기억 정확도</p><nav><a href="bar.html">열기</a><a href="bar.svg">SVG</a></nav></header><iframe src="bar.html" loading="lazy" allowfullscreen title="bar"></iframe></section>
-<section><header><h2>box</h2><p>응답 지연 분포</p><nav><a href="box.html">열기</a><a href="box.svg">SVG</a></nav></header><iframe src="box.html" loading="lazy" allowfullscreen title="box"></iframe></section>
-<section><header><h2>dumbbell</h2><p>작업당 토큰</p><nav><a href="dumbbell.html">열기</a><a href="dumbbell.svg">SVG</a></nav></header><iframe src="dumbbell.html" loading="lazy" allowfullscreen title="dumbbell"></iframe></section>
-<section><header><h2>heatmap</h2><p>판단 교차표</p><nav><a href="heatmap.html">열기</a><a href="heatmap.svg">SVG</a></nav></header><iframe src="heatmap.html" loading="lazy" allowfullscreen title="heatmap"></iframe></section>
-<section><header><h2>line</h2><p>주차별 재시도 비율</p><nav><a href="line.html">열기</a><a href="line.svg">SVG</a></nav></header><iframe src="line.html" loading="lazy" allowfullscreen title="line"></iframe></section>
-<section><header><h2>memory</h2><p>대화에서 기억 그래프 키우기</p><nav><a href="memory.html">열기</a><a href="memory.svg">SVG</a></nav></header><iframe src="memory.html" loading="lazy" allowfullscreen title="memory"></iframe></section>
-<section><header><h2>oauth</h2><p>OAuth 인가 코드와 PKCE</p><nav><a href="oauth.html">열기</a><a href="oauth.svg">SVG</a></nav></header><iframe src="oauth.html" loading="lazy" allowfullscreen title="oauth"></iframe></section>
-<section><header><h2>order-state</h2><p>주문 상태</p><nav><a href="order-state.html">열기</a><a href="order-state.svg">SVG</a></nav></header><iframe src="order-state.html" loading="lazy" allowfullscreen title="order-state"></iframe></section>
-<section><header><h2>orders</h2><p></p><nav><a href="orders.html">열기</a><a href="orders.svg">SVG</a></nav></header><iframe src="orders.html" loading="lazy" allowfullscreen title="orders"></iframe></section>
-<section><header><h2>saturn</h2><p>Saturn 구성</p><nav><a href="saturn.html">열기</a><a href="saturn.svg">SVG</a></nav></header><iframe src="saturn.html" loading="lazy" allowfullscreen title="saturn"></iframe></section>
-<section><header><h2>scatter</h2><p>수정 횟수와 비용</p><nav><a href="scatter.html">열기</a><a href="scatter.svg">SVG</a></nav></header><iframe src="scatter.html" loading="lazy" allowfullscreen title="scatter"></iframe></section>
+<section><header><h2><code class="name">bar.muto</code><span class="kind">bar</span></h2><nav><a href="bar.html">열기</a><a href="bar.svg">SVG</a></nav></header><iframe src="bar.html" loading="lazy" allowfullscreen title="bar"></iframe></section>
+<section><header><h2><code class="name">box.muto</code><span class="kind">box</span></h2><nav><a href="box.html">열기</a><a href="box.svg">SVG</a></nav></header><iframe src="box.html" loading="lazy" allowfullscreen title="box"></iframe></section>
+<section><header><h2><code class="name">dumbbell.muto</code><span class="kind">dumbbell</span></h2><nav><a href="dumbbell.html">열기</a><a href="dumbbell.svg">SVG</a></nav></header><iframe src="dumbbell.html" loading="lazy" allowfullscreen title="dumbbell"></iframe></section>
+<section><header><h2><code class="name">heatmap.muto</code><span class="kind">heatmap</span></h2><nav><a href="heatmap.html">열기</a><a href="heatmap.svg">SVG</a></nav></header><iframe src="heatmap.html" loading="lazy" allowfullscreen title="heatmap"></iframe></section>
+<section><header><h2><code class="name">line.muto</code><span class="kind">line</span></h2><nav><a href="line.html">열기</a><a href="line.svg">SVG</a></nav></header><iframe src="line.html" loading="lazy" allowfullscreen title="line"></iframe></section>
+<section><header><h2>대화에서 기억 그래프 키우기<code class="name">memory.muto</code><span class="kind">flow</span></h2><nav><a href="memory.html">열기</a><a href="memory.svg">SVG</a></nav></header><iframe src="memory.html" loading="lazy" allowfullscreen title="memory"></iframe></section>
+<section><header><h2>OAuth 인가 코드와 PKCE<code class="name">oauth.muto</code><span class="kind">sequence</span></h2><nav><a href="oauth.html">열기</a><a href="oauth.svg">SVG</a></nav></header><iframe src="oauth.html" loading="lazy" allowfullscreen title="oauth"></iframe></section>
+<section><header><h2>주문 상태<code class="name">order-state.muto</code><span class="kind">state</span></h2><nav><a href="order-state.html">열기</a><a href="order-state.svg">SVG</a></nav></header><iframe src="order-state.html" loading="lazy" allowfullscreen title="order-state"></iframe></section>
+<section><header><h2><code class="name">orders.muto</code><span class="kind">data</span></h2><nav><a href="orders.html">열기</a><a href="orders.svg">SVG</a></nav></header><iframe src="orders.html" loading="lazy" allowfullscreen title="orders"></iframe></section>
+<section><header><h2>Saturn 구성<code class="name">saturn.muto</code><span class="kind">flow</span></h2><nav><a href="saturn.html">열기</a><a href="saturn.svg">SVG</a></nav></header><iframe src="saturn.html" loading="lazy" allowfullscreen title="saturn"></iframe></section>
+<section><header><h2><code class="name">scatter.muto</code><span class="kind">scatter</span></h2><nav><a href="scatter.html">열기</a><a href="scatter.svg">SVG</a></nav></header><iframe src="scatter.html" loading="lazy" allowfullscreen title="scatter"></iframe></section>
 </main>
 <script>
-// 그림 쪽이 알려 준 본문 높이로 iframe 높이를 맞춘다. 그림 아래 빈 공간을 없애기 위해서다.
+// 그림 쪽이 알려 준 본문 높이로 iframe 높이를 맞추고(그림 아래 빈 공간을 없애기 위해서다), 새로 뜬 그림에는 현재 테마를 보낸다.
 addEventListener('message', (e) => {
   const frame = [...document.querySelectorAll('iframe')].find((f) => f.contentWindow === e.source);
-  if (frame && e.data?.figureHeight) frame.style.height = e.data.figureHeight + 'px';
+  if (!frame) return;
+  if (e.data?.figureHeight) frame.style.height = e.data.figureHeight + 'px';
+  if (e.data?.themeRequest) frame.contentWindow.postMessage({ theme: savedTheme() }, '*');
 });
 </script>
 </body>

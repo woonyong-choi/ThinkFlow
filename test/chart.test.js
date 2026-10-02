@@ -3,7 +3,7 @@ import { test } from 'node:test';
 import { buildFigure } from '../src/build.js';
 import { parseFigure } from '../src/source/parse.js';
 import { formatChange, formatNumber, makeScale } from '../src/chart/scale.js';
-import { errorsOf } from './helpers.js';
+import { errorsOf, formatProblem } from './helpers.js';
 
 const FIXTURES = new URL('./fixtures/', import.meta.url).pathname;
 
@@ -16,7 +16,7 @@ test('formatChange_rounds_half_away_and_skips_zero_base', () => {
 });
 
 test('makeScale_log_ticks_are_powers_of_ten', () => {
-  assert.deepEqual(makeScale('log', 28000, 120000, 0, 100).ticks, [10000, 100000, 1000000]);
+  assert.deepEqual(makeScale('log', { min: 28000, max: 120000, start: 0, length: 100 }).ticks, [10000, 100000, 1000000]);
 });
 
 test('parseChart_rules_reject_values_that_cannot_be_drawn', () => {
@@ -26,7 +26,7 @@ test('parseChart_rules_reject_values_that_cannot_be_drawn', () => {
     ['chart bar\nseries a "A"\nrow "r" a=0', /all values are 0/],
     ['chart dumbbell\nseries a "A"\nrow "r" a=1', /takes 2 series/],
     ['chart box\nrow "r" min=- q1=1 median=2 q3=3 max=4', /only for bar series/],
-    ['chart dumbbell\nseries a "A"\nseries b "B"\nrow "r" a=1 b=2\nstep "s"\n  reveal b\n  reveal a', /reveal "a" before "b"/],
+    ['chart dumbbell\nseries a "A" role=compare\nseries b "B" role=main\nrow "r" a=1 b=2\nstep "s"\n  reveal b\n  reveal a', /reveal "a" before "b"/],
   ];
   for (const [source, pattern] of cases) assert.match(errorsOf(source).join('\n'), pattern, source);
 });
@@ -54,7 +54,7 @@ async function buildErrors(source) {
     return [];
   } catch (error) {
     if (!error.problems) throw error;
-    return error.problems.map((p) => `${p.line}: ${p.message}`);
+    return error.problems.map(formatProblem);
   }
 }
 
@@ -63,7 +63,7 @@ test('checkChartFigure_name_wider_than_label_column_is_check_1_error', async () 
 
   const errors = await buildErrors(source);
 
-  assert.ok(errors.some((e) => e.startsWith('3: [check 1] item name')), errors.join('\n'));
+  assert.ok(errors.some((e) => e.startsWith('3: [check-1] item name')), errors.join('\n'));
 });
 
 test('checkChart_heatmap_with_scale_line_is_error', () => {
@@ -86,7 +86,7 @@ test('drawChart_series_less_chart_grows_as_one_series', async () => {
 });
 
 test('drawChart_rule_outside_values_stays_inside_plot', async () => {
-  const { chart } = await buildFigure('chart dumbbell\nseries a "전"\nseries b "후"\nrule 100 "기준"\nrow "x" a=10 b=20');
+  const { chart } = await buildFigure('chart dumbbell\nseries a "전" role=compare\nseries b "후" role=main\nrule 100 "기준"\nrow "x" a=10 b=20');
   const ruleX = Number(/<line x1="([\d.]+)"[^>]*class="chart-rule"/.exec(chart.body)[1]);
 
   assert.ok(ruleX < chart.width, `${ruleX} >= ${chart.width}`);
@@ -114,7 +114,7 @@ test('roundHalfAway_handles_exponent_notation', async () => {
   const { roundHalfAway, makeScale } = await import('../src/chart/scale.js');
 
   assert.deepEqual([roundHalfAway(1e21), roundHalfAway(5e-7, 7)], [1e21, 5e-7]);
-  assert.ok(makeScale('linear', 0.000001, 0.000002, 0, 100).ticks.every(Number.isFinite));
+  assert.ok(makeScale('linear', { min: 0.000001, max: 0.000002, start: 0, length: 100 }).ticks.every(Number.isFinite));
 });
 
 test('drawChart_scatter_name_near_right_edge_moves_left', async () => {
@@ -175,7 +175,7 @@ async function bodyOf(source, options) {
 }
 
 test('drawChart_interval_is_drawn_for_bar_dumbbell_and_line', async () => {
-  const dumbbell = await bodyOf('chart dumbbell\nseries a "A"\nseries b "B"\nrow "r" a=100 a.low=80 a.high=120 b=40 b.low=30 b.high=50');
+  const dumbbell = await bodyOf('chart dumbbell\nseries a "A" role=compare\nseries b "B" role=main\nrow "r" a=100 a.low=80 a.high=120 b=40 b.low=30 b.high=50');
   const bar = await bodyOf('chart bar\nseries a "A"\nrow "r" a=5 a.low=4 a.high=6');
   const line = await bodyOf('chart line\nseries a "A"\npoint x=1 a=2 a.low=1 a.high=3\npoint x=2 a=3 a.low=2 a.high=4');
 
@@ -188,7 +188,7 @@ test('drawChart_interval_is_drawn_for_bar_dumbbell_and_line', async () => {
 test('checkChartRows_interval_order_and_pairing_are_errors_in_bar_dumbbell_and_line', async () => {
   const sources = [
     'chart bar\nseries a "A"\nrow "r" a=5 a.low=6 a.high=7',
-    'chart dumbbell\nseries a "A"\nseries b "B"\nrow "r" a=5 a.low=6 a.high=7 b=3',
+    'chart dumbbell\nseries a "A" role=compare\nseries b "B" role=main\nrow "r" a=5 a.low=6 a.high=7 b=3',
     'chart line\nseries a "A"\npoint x=1 a=2 a.low=1',
   ];
   const results = await Promise.all(sources.map(buildErrors));
@@ -197,7 +197,7 @@ test('checkChartRows_interval_order_and_pairing_are_errors_in_bar_dumbbell_and_l
 });
 
 test('buildFigure_require_ci_covers_dumbbell_and_line_but_not_scatter', async () => {
-  const sources = ['chart dumbbell\nseries a "A"\nseries b "B"\nrow "r" a=5 b=3', 'chart line\nseries a "A"\npoint x=1 a=2'];
+  const sources = ['chart dumbbell\nseries a "A" role=compare\nseries b "B" role=main\nrow "r" a=5 b=3', 'chart line\nseries a "A"\npoint x=1 a=2'];
 
   for (const source of sources) await assert.rejects(buildFigure(source, { requireCi: true }), /require-ci/, source);
   await buildFigure('chart scatter\npoint "p" x=1 y=2', { requireCi: true });
@@ -209,21 +209,24 @@ test('loadChartData_interval_keys_match_inline_rows_for_line_and_dumbbell', asyn
     await bodyOf('chart line\nseries s "S" key="new_judge"\ndata "summary.json" at "/weeks"', { baseDir: FIXTURES }),
   ];
   const [inlineDumbbell, dataDumbbell] = [
-    await bodyOf('chart dumbbell\nseries a "A" key="before"\nseries b "B" key="after"\nrow "A" a=120000 a.low=100000 a.high=140000 b=30000 b.low=25000 b.high=36000'),
-    await bodyOf('chart dumbbell\nseries a "A" key="before"\nseries b "B" key="after"\ndata "summary.json" at "/tokens"', { baseDir: FIXTURES }),
+    await bodyOf('chart dumbbell\nseries a "A" key="before" role=compare\nseries b "B" key="after" role=main\nrow "A" a=120000 a.low=100000 a.high=140000 b=30000 b.low=25000 b.high=36000'),
+    await bodyOf('chart dumbbell\nseries a "A" key="before" role=compare\nseries b "B" key="after" role=main\ndata "summary.json" at "/tokens"', { baseDir: FIXTURES }),
   ];
 
   assert.deepEqual([dataLine, dataDumbbell], [inlineLine, inlineDumbbell]);
 });
 
-test('drawDumbbells_close_values_drop_arrow_and_keep_value_text_apart', async () => {
-  const close = await bodyOf('chart dumbbell\nscale log\nseries a "A"\nseries b "B"\nrow "r" a=8000 b=9200\nrow "s" a=100000 b=1000');
-  const [near, far] = close.split('class="chart-label cr-1"');
+test('drawDumbbells_every_row_ends_in_the_same_main_dot_and_close_rows_only_lose_the_arrow', async () => {
+  const close = await bodyOf('chart dumbbell\nscale log\nseries a "A" role=compare\nseries b "B" role=main\nrow "r" a=8000 b=9200\nrow "s" a=100000 b=1000');
+  const [near, far] = close.split('<g class="cr-1 ink"><text');
   const textX = (svg, cls) => Number(new RegExp(`<text x="([\\d.]+)"[^>]*class="chart-value ${cls} late`).exec(svg)[1]);
 
+  const dots = (svg) => [...svg.matchAll(/<circle [^>]*r="(\d+)" fill="([^"]+)" class="chart-after pop"/g)].map((m) => m.slice(1).join(' '));
+
   assert.equal(near.includes('chart-arrow'), false);
-  assert.match(near, /class="chart-after pop"/);
   assert.match(far, /chart-arrow draw/);
+  assert.equal(dots(near).length, 1);
+  assert.deepEqual(dots(far), dots(near));
   assert.ok(textX(near, 'second') > textX(near, 'first'));
 });
 
@@ -243,7 +246,7 @@ test('drawBars_value_text_stays_next_to_bar_end_and_draws_after_rule', async () 
 test('chartCss_value_halo_uses_the_background_color_token_that_dark_mode_overrides', async () => {
   const { STYLES } = await import('../src/styles.js');
 
-  assert.match(STYLES.chart, /\.fl \.chart-value \{[^}]*paint-order: stroke;[^}]*stroke: var\(--color-bg\);[^}]*stroke-width: var\(--border-halo\)/);
+  assert.match(STYLES.chart, /\.fl \.chart-value,\s*\.fl \.chart-name \{[^}]*paint-order: stroke;[^}]*stroke: var\(--color-bg\);[^}]*stroke-width: var\(--border-halo\)/);
   assert.match(STYLES.tokens, /prefers-color-scheme: dark\) \{[\s\S]*?--color-bg:/);
 });
 
@@ -293,19 +296,19 @@ test('drawChart_line_chart_draw_class_gets_dash_so_the_line_grows_with_the_band'
   assert.match(css, /\.fl \.draw \{\s*stroke-dasharray: 1;/);
 });
 
-const STEPPED_BAR = 'chart bar\nx "정확도(%)"\nseries a "A"\nseries b "B"\nrow "r" a=5 b=3\nstep "하나" "첫째"\n  reveal b\nstep "둘" "둘째"\n  reveal a';
+const STEPPED_BAR = 'chart bar\nx "정확도(%)"\nseries a "A" role=main\nseries b "B" role=compare\nrow "r" a=5 b=3\nstep "하나" "첫째"\n  reveal a\nstep "둘" "둘째"\n  reveal b';
 
 test('buildTimeline_bar_label_shift_follows_visible_bars_and_is_zero_when_all_shown', async () => {
-  const shifts = (await buildFigure(STEPPED_BAR)).timeline.segs.map((seg) => seg.labelShift);
+  const shifts = (await buildFigure(STEPPED_BAR)).timeline.segs.map((seg) => seg.labelShifts[0]);
 
-  assert.ok(shifts[0] > 0, `only the second bar is visible: ${shifts}`);
+  assert.ok(shifts[0] < 0, `only the first (main) bar is visible: ${shifts}`);
   assert.equal(shifts.at(-1), 0);
 });
 
 test('buildTimeline_label_shift_is_zero_for_single_series_and_other_kinds', async () => {
   const single = await buildFigure('chart bar\nx "정확도(%)"\nseries a "A"\nrow "r" a=5\nstep "s" "c"\n  reveal a');
 
-  assert.deepEqual(single.timeline.segs.map((seg) => seg.labelShift), [0]);
+  assert.deepEqual(single.timeline.segs.map((seg) => seg.labelShifts), [[]]);
 });
 
 test('toSvg_static_chart_shows_every_series_and_has_no_motion', async () => {
@@ -323,6 +326,110 @@ test('toSvg_animated_chart_moves_row_label_with_the_timeline_shift', async () =>
   const { toSvg } = await import('../src/svg.js');
   const svg = await toSvg(await buildFigure(STEPPED_BAR));
 
-  assert.match(svg, /@keyframes ls \{[^}]*translateY\([\d.]+px\)/);
-  assert.match(svg, /\.fl \.chart-label\.shift \{ animation: ls /);
+  assert.match(svg, /@keyframes ls0 \{[^}]*translateY\(-?[\d.]+px\)/);
+  assert.match(svg, /\.fl \.cr-0 \.chart-label\.shift \{ animation: ls0 /);
+});
+
+// cost: time O(build), heap O(m), stack O(1)
+// vars: m = SVG 글자 수
+// basis: estimate
+test('toSvg_heatmap_cell_color_follows_css_variables_so_dark_mode_applies', async () => {
+  const { toSvg } = await import('../src/svg.js');
+  const svg = await toSvg(await buildFigure('chart heatmap\ncell "a" "x" 10\ncell "a" "y" 5'));
+
+  assert.match(svg, /<rect [^>]*class="chart-heat" style="--s:1" fill="#[0-9a-f]{6}"/);
+  assert.match(svg, /<rect [^>]*class="chart-heat" style="--s:0.5"/);
+  assert.match(svg, /\.fl \.chart-heat \{\s*fill: color-mix\(in srgb, var\(--color-data-heat-high\) calc\(var\(--s\) \* 100%\), var\(--color-data-heat-low\)\)/);
+  assert.match(svg, /prefers-color-scheme: dark[^}]*--color-data-heat-low: var\(--color-palette-blue-850\)[^}]*--color-data-heat-high: var\(--color-palette-blue-600\)/s);
+  assert.match(svg, /\.fl \.chart-cell\.on \{\s*--ink: var\(--color-data-heat-ink-on\)/);
+});
+
+// cost: time O(build), heap O(m), stack O(1)
+// vars: m = SVG 글자 수
+// basis: estimate
+test('toSvg_box_fill_is_node_and_group_has_its_own_border_token', async () => {
+  const { toSvg } = await import('../src/svg.js');
+  const svg = await toSvg(await buildFigure('chart box\nrow "a" min=1 q1=2 median=3 q3=4 max=5'));
+
+  assert.match(svg, /\.fl \.chart-box \{\s*fill: var\(--color-node\)/);
+  assert.match(svg, /\.fl \.frame-box \{\s*fill: var\(--color-group\);\s*stroke: var\(--color-group-border\)/);
+});
+
+// cost: time O(build), heap O(m), stack O(1)
+// vars: m = SVG 글자 수
+// basis: estimate
+test('toSvg_heatmap_cell_fill_darkens_monotonically_with_value_and_max_is_heat_high', async () => {
+  const { toSvg } = await import('../src/svg.js');
+  const svg = await toSvg(await buildFigure('chart heatmap\ncell "a" "x" 1\ncell "a" "y" 4\ncell "a" "z" 9\ncell "a" "w" 10'), { isStatic: true });
+  const cells = [...svg.matchAll(/class="chart-heat" style="--s:([\d.]+)" fill="#([0-9a-f]{6})"/g)].map(([, s, hex]) => [Number(s), parseInt(hex.slice(0, 2), 16)]);
+
+  assert.deepEqual(cells.map(([s]) => s), [0.1, 0.4, 0.9, 1]);
+  assert.ok(cells.every(([, red], i) => i === 0 || red < cells[i - 1][1]), JSON.stringify(cells));
+  assert.equal(cells[3][1], 0x1d);
+});
+
+// 라이트 그림 바탕은 흰 문서 위에서 회색으로 보이고, 그룹 바탕은 그 바탕보다 아주 약간만 진하다. 상자 채움은 흰색이라 바탕 위에 떠 보인다.
+test('tokens_light_bg_is_visibly_gray_and_group_is_slightly_darker', async () => {
+  const { values: tokens } = await import('../src/tokens.js');
+  const light = (hex) => Number.parseInt(hex.slice(1, 3), 16) + Number.parseInt(hex.slice(3, 5), 16) + Number.parseInt(hex.slice(5, 7), 16);
+
+  assert.ok(light(tokens.color.bg) < light(tokens.color.node), tokens.color.bg);
+  assert.ok(light(tokens.color.bg) <= light('#f8f9fb'), tokens.color.bg);
+  assert.ok(light(tokens.color.group) < light(tokens.color.bg));
+  assert.ok(light(tokens.color.bg) - light(tokens.color.group) <= 24, tokens.color.group);
+  assert.equal(tokens.color.node, '#ffffff');
+});
+
+const MISSING_BAR = 'chart bar\nx "정확도(%)"\nseries a "A" role=main\nseries b "B" role=compare\nrow "r" a=5 b=3\nrow "m" a=- b=4\nstep "하나" "첫째"\n  reveal a\nstep "둘" "둘째"\n  reveal b';
+
+test('buildTimeline_bar_label_shift_ignores_the_missing_note_slot_and_follows_it_only_when_alone', async () => {
+  const shifts = (await buildFigure(MISSING_BAR)).timeline.segs.map((seg) => seg.labelShifts);
+
+  // r 행은 모든 계열이 값이 있어 첫째(main) 막대 가운데로 갔다가 0으로 돌아온다.
+  assert.ok(shifts[0][0] < 0);
+  assert.equal(shifts.at(-1)[0], 0);
+  // m 행의 첫째(main) 계열은 값이 없다. 이름은 둘째 막대 가운데에 있고, 안내 글만 보이는 단계에서만 그 글 슬롯으로 올라간다.
+  assert.ok(shifts[0][1] < 0);
+  assert.equal(shifts.at(-1)[1], 0);
+});
+
+test('drawChart_bar_label_of_a_row_with_a_missing_series_is_centered_on_its_only_bar', async () => {
+  const body = await bodyOf(MISSING_BAR);
+  const bars = [...body.matchAll(/<rect x="[\d.]+" y="([\d.]+)" width="[\d.]+" height="12"[^>]*class="grow"/g)].map((m) => Number(m[1]) + 6);
+  const labels = [...body.matchAll(/<text x="28" y="([\d.]+)" class="chart-label shift">/g)].map((m) => Number(m[1]) - 13 * 0.36);
+
+  assert.equal(bars.length, 3);
+  // r 행은 두 막대 가운데(첫 막대 가운데 + 8), m 행은 하나뿐인 막대(둘째 슬롯) 가운데
+  assert.ok(Math.abs(labels[0] - (bars[0] + 8)) < 0.2, `${labels[0]} ${bars[0]}`);
+  assert.ok(Math.abs(labels[1] - bars[2]) < 0.2, `${labels[1]} ${bars[2]}`);
+});
+
+test('toSvg_light_dims_the_face_more_than_the_text_and_heat_text_turns_to_the_dark_ink', async () => {
+  const { toSvg } = await import('../src/svg.js');
+  const { values } = await import('../src/tokens.js');
+  const dim = values.opacity.dim;
+  const dimInk = values.opacity['dim-ink'];
+  const heat = await toSvg(await buildFigure('chart heatmap\ncell "a" "x" 10\ncell "a" "y" 5\nstep "s"\n  light "a" "x"'));
+  const bar = await toSvg(await buildFigure('chart bar\nseries a "A"\nrow "r" a=1\nrow "s" a=2\nstep "s"\n  light "r"'));
+
+  assert.ok(dimInk > dim);
+  assert.match(heat, new RegExp(`opacity: ${dim}[^}]*\\}`));
+  assert.match(heat, new RegExp(`opacity: ${dimInk}; fill: var\\(--color-data-heat-ink\\)`));
+  assert.match(heat, /opacity: 1; fill: var\(--ink\)/);
+  assert.match(bar, new RegExp(`opacity: ${dimInk}[^;}]*\\}`));
+  assert.doesNotMatch(bar, /opacity: 1; fill: var\(--ink\)/);
+  assert.match(bar, /\.fl \.cr-1\.ink \{ animation: a\d+ /);
+});
+
+// cost: time O(build), heap O(m), stack O(1)
+// vars: build = 원본 하나를 만드는 비용, m = 결과 글자 수
+// basis: estimate
+async function ruleLabelClass(rows) {
+  const body = await bodyOf(`chart line\nseries a "A"\nrule 5 "목표"\n${rows}`);
+  return /class="(chart-rule-label[^"]*)">목표/.exec(body)[1];
+}
+
+test('drawLine_rule_label_moves_to_the_left_end_when_the_data_covers_the_right_end', async () => {
+  assert.equal(await ruleLabelClass('point x=1 a=12\npoint x=2 a=5.2'), 'chart-rule-label');
+  assert.equal(await ruleLabelClass('point x=1 a=5.2\npoint x=2 a=12'), 'chart-rule-label end');
 });

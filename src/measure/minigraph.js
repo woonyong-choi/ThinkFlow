@@ -4,7 +4,7 @@ import { values } from '../tokens.js';
 import { measure } from './fonts.js';
 
 const SPACE = values.space;
-const NODE_TEXT = values.size.text['10-5'];
+const NODE_TEXT = values.size.text['11'];
 const NODE_H = values.size.pill;
 const ROW_GAP = SPACE['3'];
 

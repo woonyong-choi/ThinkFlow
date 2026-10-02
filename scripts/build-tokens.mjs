@@ -3,8 +3,9 @@
 // 정본 형식은 DTCG(Design Tokens Community Group) 2025.10이다. 토큰은 `$value`가 있는 객체이고, 묶음의 `$type`은 안쪽 토큰에 이어진다.
 // 참조 `{color.blue.600}`는 CSS에서 `var(--color-blue-600)`로 남겨 테마를 바꾸면 따라 바뀌게 한다.
 // 정본 키 순서를 그대로 지키려고 객체를 Map으로 읽는다. 일반 객체는 숫자 키(`"600"`)를 앞으로 옮긴다.
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, writeFileSync } from 'node:fs';
 import { basename, dirname, join, resolve } from 'node:path';
+import { readJson } from './lib/read-json.mjs';
 
 const REFERENCE = /^\{([^{}]+)\}$/;
 const HEADER = '생성물, 손으로 고치지 않음';
@@ -12,8 +13,6 @@ const HEADER = '생성물, 손으로 고치지 않음';
 const NUMERIC_TYPES = new Set(['dimension', 'number', 'fontWeight', 'duration']);
 const UNITS = { dimension: 'px', duration: 'ms' };
 const USAGE = 'usage: build-tokens.mjs [--out OUT] source';
-const JSON_LITERAL = /"(?:[^"\\]|\\.)*"|-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?|true|false|null/y;
-const SPACE = /[ \t\n\r]*/y;
 
 /** 정본 참조 오류. 이 오류만 메시지 한 줄로 알리고 1로 끝낸다. */
 class TokenError extends Error {}
@@ -79,91 +78,6 @@ function parseArgs(argv) {
 function exitWithUsage(message) {
   console.error(`${USAGE}\nbuild-tokens.mjs: error: ${message}`);
   process.exit(2);
-}
-
-// cost: time O(n), heap O(n), stack O(d), io 1
-// vars: n = 파일 글자 수, d = 중첩 깊이
-// basis: estimate
-/** JSON 파일을 읽는다. 객체는 키 순서를 지키는 Map이다. */
-function readJson(path) {
-  const state = { text: readFileSync(path, 'utf8'), at: 0 };
-  const value = readValue(state);
-  skipSpace(state);
-  if (state.at < state.text.length) throw new SyntaxError(`${path}: unexpected text at ${state.at}`);
-  return value;
-}
-
-// cost: time O(n), heap O(n), stack O(d)
-// vars: n = 값 글자 수, d = 중첩 깊이
-// basis: estimate
-function readValue(state) {
-  skipSpace(state);
-  const char = state.text[state.at];
-  if (char === '{') return readObject(state);
-  if (char === '[') return readArray(state);
-  JSON_LITERAL.lastIndex = state.at;
-  const match = JSON_LITERAL.exec(state.text);
-  if (!match) throw new SyntaxError(`unexpected character at ${state.at}`);
-  state.at = JSON_LITERAL.lastIndex;
-  return JSON.parse(match[0]);
-}
-
-// cost: time O(n), heap O(n), stack O(d)
-// vars: n = 객체 글자 수, d = 중첩 깊이
-// basis: estimate
-function readObject(state) {
-  const map = new Map();
-  state.at += 1;
-  skipSpace(state);
-  if (state.text[state.at] === '}') {
-    state.at += 1;
-    return map;
-  }
-  for (;;) {
-    const key = readValue(state);
-    if (typeof key !== 'string') throw new SyntaxError(`object key must be a string at ${state.at}`);
-    readMark(state, ':');
-    map.set(key, readValue(state));
-    if (readMark(state, ',}') === '}') return map;
-  }
-}
-
-// cost: time O(n), heap O(n), stack O(d)
-// vars: n = 배열 글자 수, d = 중첩 깊이
-// basis: estimate
-function readArray(state) {
-  const list = [];
-  state.at += 1;
-  skipSpace(state);
-  if (state.text[state.at] === ']') {
-    state.at += 1;
-    return list;
-  }
-  for (;;) {
-    list.push(readValue(state));
-    if (readMark(state, ',]') === ']') return list;
-  }
-}
-
-// cost: time O(w), heap O(1), stack O(1)
-// vars: w = 공백 수
-// basis: estimate
-/** 공백 뒤 글자 하나를 읽는다. `marks` 중 하나가 아니면 오류다. */
-function readMark(state, marks) {
-  skipSpace(state);
-  const char = state.text[state.at];
-  if (!char || !marks.includes(char)) throw new SyntaxError(`expected one of ${marks} at ${state.at}`);
-  state.at += 1;
-  return char;
-}
-
-// cost: time O(w), heap O(1), stack O(1)
-// vars: w = 공백 수
-// basis: estimate
-function skipSpace(state) {
-  SPACE.lastIndex = state.at;
-  SPACE.exec(state.text);
-  state.at = SPACE.lastIndex;
 }
 
 // cost: time O(t), heap O(t), stack O(d), alloc t

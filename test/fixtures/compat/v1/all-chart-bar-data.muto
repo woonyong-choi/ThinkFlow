@@ -1,0 +1,7 @@
+mutoscope 1
+chart bar
+title "데이터 파일로 읽는 막대"
+subtitle "예시 데이터. data 줄과 JSON 포인터"
+x "점수(점)"
+series a "점수" role=main key="score"
+data "all-chart-bar-data.json" at "/rows"
