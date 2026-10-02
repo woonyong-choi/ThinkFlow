@@ -68,10 +68,10 @@
 
 | 요구사항 | 검증 계획 |
 |---|---|
-| 검사 항목마다 실패하는 원본에서 그 항목 메시지를 낸다. | 항목마다 일부러 실패하게 만든 원본으로 확인. 1번과 7번은 `test/check.test.js` |
+| 검사 항목마다 실패하는 원본에서 그 항목 메시지를 낸다. | `test/check.test.js`의 `checkFigure_each_item_reports_its_code_for_a_scene_that_breaks_it`(1, 2, 3, 4, 5, 6, 12번), `buildFigure_moving_text_taller_than_a_short_figure_is_a_check_7_error`(7번), `buildFigure_check_9_aspect_warning_suggests_what_the_source_can_change`(9번), `buildFigure_content_still_wider_than_the_canvas_after_shrinking_warns_check_10`(10번). 11번은 `test/compat.test.js`의 `compat_cli_json_keeps_the_old_fields_with_old_values_next_to_the_new_ones`. 나머지 항목은 일부러 실패하게 만든 원본으로 확인 |
 | 모든 예제가 오류 없이 검사를 통과한다. | 예제 전체에 `check` 실행 |
-| 오류가 있으면 그림 파일을 쓰지 않는다. | 실패 원본에 `render` 뒤 결과 파일 없음 확인 |
-| `--json` 출력이 한 줄에 메시지 하나다. | 출력 줄마다 JSON으로 읽히는지 확인 |
+| 오류가 있으면 그림 파일을 쓰지 않는다. | `test/cli.test.js`의 `main_render_with_an_error_writes_no_file_and_reports_the_line`. 실패 원본에 `render` 뒤 결과 파일 없음 확인 |
+| `--json` 출력이 한 줄에 메시지 하나다. | `test/cli.test.js`의 `main_json_prints_one_message_per_line_with_the_documented_fields`. 출력 줄마다 JSON으로 읽히는지 확인 |
 
 ## 단점
 

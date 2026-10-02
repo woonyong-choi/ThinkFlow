@@ -1,10 +1,13 @@
-// 글자와 그래픽 쌍의 대비 기준. 토큰 정본(tokens.json, tokens.dark.json)에서 라이트와 다크 색을 풀어 잰다.
+// 색과 대비: 글자 4.5, 그래픽 3, 꾸밈 요소 1.5와 1.3(docs/design/docs-integration.md 대비 기준 표). 토큰 정본(tokens.json, tokens.dark.json)에서 라이트와 다크 색을 풀어 잰다.
 import assert from 'node:assert/strict';
+import { readdirSync, readFileSync } from 'node:fs';
 import { test } from 'node:test';
 import { buildFigure } from '../src/build.js';
 import { heatLook } from '../src/chart/heatmap.js';
 import { contrast, mixHex, pickInk } from '../src/contrast.js';
-import { RESUME_ACCENT, themeColor, tokenValue } from './helpers.js';
+import { toSvg } from '../src/svg.js';
+import { values } from '../src/tokens.js';
+import { linearChannelsOf as channelsOf, linearToOklab, oklchOf, RESUME_ACCENT, RESUME_ORANGE, themeColor, tokenValue } from './helpers.js';
 
 const TEXT = 4.5;
 const GRAPHIC = 3;
@@ -14,12 +17,25 @@ const DECORATIVE_PLATE_EDGE = 1.3;
 const FIGURE_FACES = ['bg', 'node', 'group', 'card-on'];
 const DOCUMENT_FACES = ['page', 'gallery'];
 const ALL_FACES = [...FIGURE_FACES, ...DOCUMENT_FACES];
-// 글자 역할(4.5)과 그래픽 역할(3). 역할마다 놓이는 면은 모두 ALL_FACES 안이다.
+const BORDER_FACES = [...FIGURE_FACES, 'surface', ...DOCUMENT_FACES];
 // 강조 글자는 그룹 바탕 위에 놓이지 않는다. 카드 표시는 내용이 찬 카드 바탕(card-on)에, 링크는 문서 면에 놓인다.
 const TEXT_FACES = ['bg', 'node', 'card-on', ...DOCUMENT_FACES];
 const TEXT_ROLES = ['state.active-text', 'ui.link'];
 const GRAPHIC_ROLES = ['state.active', 'ui.focus', 'ui.progress', 'data.main', 'data.compare'];
 const THEMES = ['light', 'dark'];
+const ORANGE_HUE = 50;
+const HUE_TOLERANCE = 1;
+const LIGHTNESS_TOLERANCE = 0.01;
+const CHROMA_TOLERANCE = 0.01;
+const CVD_MIN_DISTANCE = 0.1;
+const MIN_TAG_HUE_GAP = 40;
+const NEUTRAL_CHROMA = 0.03;
+const FPS = 60;
+const MS_PER_SECOND = 1000;
+const PERCENT = 100;
+const HEAT_STEPS = 1000;
+// 한 단계 위나 아래 색을 만드는 섞음 비율. 이보다 작은 차이는 같은 단계로 본다.
+const STEP_MIX = 0.01;
 
 const color = themeColor;
 const opacity = (name) => tokenValue(`opacity.${name}`);
@@ -34,28 +50,37 @@ function expectAtLeast(theme, minimum, pairs) {
   }
 }
 
-for (const theme of THEMES) {
-  test(`contrast_${theme}_body_and_muted_text_reach_4_5_on_every_face`, () => {
-    const faces = ['bg', 'node', 'surface', 'card-on', 'group', 'page', 'gallery'];
-    expectAtLeast(theme, TEXT, faces.flatMap((face) => [['fg', face], ['muted', face]]));
-  });
+const SRC = new URL('../src/', import.meta.url);
+const GENERATED_OR_SOURCE = new Set(['tokens.js', 'tokens.css', 'tokens.json', 'tokens.dark.json']);
+const PALETTE_REFERENCE = /palette/;
+const HEX_VALUE = /^#[0-9a-f]{6}$/;
 
-  test(`contrast_${theme}_text_roles_reach_4_5_on_their_faces`, () => {
-    // 링크(열기, SVG, 목록으로), 카드 표시 ✓, 열 표시 PK
+// cost: time O(f), heap O(f), stack O(1), io f
+// vars: f = src 아래 파일 수
+// basis: estimate
+// src 아래 코드와 CSS 파일. 토큰 정본과 생성물은 뺀다.
+function codeFiles() {
+  return readdirSync(SRC, { recursive: true })
+    .filter((name) => /\.(js|css)$/.test(name) && !GENERATED_OR_SOURCE.has(name))
+    .map((name) => ({ name, text: readFileSync(new URL(name, SRC), 'utf8') }));
+}
+
+// cost: time O(t), heap O(t), stack O(d)
+// vars: t = 토큰 수, d = 묶음 깊이
+// basis: estimate
+// 정본의 토큰을 [점 이름 경로, 값] 목록으로 편다.
+function listTokens(node, path = []) {
+  if (node && typeof node === 'object' && '$value' in node) return [[path.join('.'), node.$value]];
+  return Object.entries(node).flatMap(([key, child]) => (key.startsWith('$') || typeof child !== 'object' ? [] : listTokens(child, [...path, key])));
+}
+
+
+// 근거: 규칙 docs-integration.md 대비 기준 표: 본문·보조·강조·태그 글자, 켜진 면 위 글자, 켜진 탭 글자는 모든 면에서 4.5 이상
+test('contrast_text_pairs_reach_4_5_in_both_themes', () => {
+  for (const theme of THEMES) {
+    expectAtLeast(theme, TEXT, ['bg', 'node', 'surface', 'card-on', 'group', 'page', 'gallery'].flatMap((face) => [['fg', face], ['muted', face]]));
     expectAtLeast(theme, TEXT, TEXT_FACES.flatMap((face) => TEXT_ROLES.map((role) => [role, face])));
-  });
-
-  test(`contrast_${theme}_graphic_roles_reach_3_on_every_figure_and_document_face`, () => {
-    // 밝힌 선과 점, 도형·그룹·카드 테두리(state), 진행 고리, 초점 고리(ui), 계열 막대와 점(data)
-    expectAtLeast(theme, GRAPHIC, ALL_FACES.flatMap((face) => GRAPHIC_ROLES.map((role) => [role, face])));
-  });
-
-  test(`contrast_${theme}_text_on_active_fill_reaches_4_5`, () => {
-    // 켜진 선 라벨 알약, 이동 글 상자, 켜진 테마 단추, 카드 안 켜진 이름 알약
-    expectAtLeast(theme, TEXT, [['state.on-active', 'state.active-fill']]);
-  });
-
-  test(`contrast_${theme}_card_tag_text_reaches_4_5_on_every_tone_band`, () => {
+    expectAtLeast(theme, TEXT, [['state.on-active', 'state.active-fill'], ['fg', 'ui.control-on'], ['muted', 'bg']]);
     for (const face of ['node', 'surface', 'card-on']) {
       for (const tone of ['purple', 'green', 'teal', 'gray']) {
         const band = mixHex(color(theme, face), color(theme, `tag.${tone}`), opacity('tag'));
@@ -63,111 +88,175 @@ for (const theme of THEMES) {
         assert.ok(ratio >= TEXT, `${theme} tag ${tone} on ${face}: ${ratio.toFixed(2)}`);
       }
     }
-  });
+  }
+});
 
-  test(`contrast_${theme}_borders_reach_3_on_every_face_they_separate`, () => {
-    // 노드, 그룹, 카드(surface 면)와 조작부 윤곽
-    const faces = [...FIGURE_FACES, 'surface', ...DOCUMENT_FACES];
-    expectAtLeast(theme, GRAPHIC, faces.flatMap((face) => [['border', face], ['group-border', face]]));
-  });
+// 근거: 규칙 docs-integration.md 대비 기준 표: 강조 그래픽, 계열 막대와 점, 경계, 켜진 탭 고리, 신뢰구간 선은 3 이상(WCAG 그래픽, 예외 없음)
+test('contrast_graphic_pairs_reach_3_in_both_themes', () => {
+  for (const theme of THEMES) {
+    expectAtLeast(theme, GRAPHIC, ALL_FACES.flatMap((face) => GRAPHIC_ROLES.map((role) => [role, face])));
+    expectAtLeast(theme, GRAPHIC, BORDER_FACES.flatMap((face) => [['border', face], ['group-border', face]]));
+    expectAtLeast(theme, GRAPHIC, [['fg', 'bg']]);
+  }
+});
 
-  test(`contrast_${theme}_node_face_is_brighter_than_the_figure_ground`, () => {
-    assert.ok(contrast(color(theme, 'node'), color(theme, 'bg')) > 1.05);
-  });
-
-  test(`contrast_${theme}_active_tab_state_ring_reaches_3_on_the_tab_group_face_and_text_keeps_4_5`, () => {
-    // 켜진 탭 표시는 border 색 고리다. 알약 면은 글자 대비만 맡는다.
-    expectAtLeast(theme, TEXT, [['fg', 'ui.control-on'], ['muted', 'bg']]);
-    expectAtLeast(theme, GRAPHIC, [['border', 'bg']]);
-  });
-
-  test(`decorative_${theme}_lines_and_bands_reach_1_5_on_the_figure_ground`, () => {
-    // 격자, 히트맵 값 0 칸, 신뢰구간 띠는 값이 숫자로도 적혀 있어 색은 거들 뿐이라 WCAG 적용 대상 밖이다.
+// 근거: 규칙 docs-integration.md 대비 기준 표 "꾸밈 요소": 격자, 히트맵 값 0 칸, 신뢰구간 띠 1.5 이상, 문서용 판 테두리 1.3 이상
+test('contrast_decorative_pairs_reach_their_lower_floors', () => {
+  for (const theme of THEMES) {
     expectAtLeast(theme, DECORATIVE_LINE, [['data.grid', 'bg'], ['data.heat-low', 'bg']]);
     for (const series of ['data.main', 'data.compare']) {
-      const band = mixHex(color(theme, 'bg'), color(theme, series), opacity('range'));
-      const ratio = contrast(band, color(theme, 'bg'));
+      const ratio = contrast(mixHex(color(theme, 'bg'), color(theme, series), opacity('range')), color(theme, 'bg'));
       assert.ok(ratio >= DECORATIVE_LINE, `${theme} range band ${series}: ${ratio.toFixed(2)}`);
     }
-  });
+    expectAtLeast(theme, DECORATIVE_PLATE_EDGE, [['plate-border', 'page']]);
+  }
+});
 
-  test(`contrast_${theme}_heat_text_reaches_4_5_on_every_cell_strength`, () => {
-    const [low, high] = [color(theme, 'data.heat-low'), color(theme, 'data.heat-high')];
-    const [dark, light] = [color(theme, 'data.heat-ink'), color(theme, 'data.heat-ink-on')];
-    for (let step = 0; step <= 1000; step += 1) {
-      const cell = mixHex(low, high, step / 1000);
-      const ratio = contrast(pickInk(cell, dark, light), cell);
-      assert.ok(ratio >= TEXT, `${theme} heat strength ${step / 1000} (${cell}): ${ratio.toFixed(2)}`);
-    }
-  });
-
-  test(`contrast_${theme}_heat_cell_look_reaches_4_5_on_every_hundredth_of_strength_lit_and_dimmed`, () => {
-    // 칸 색과 글자색은 heatLook 한 식이 함께 고른다. 0.01 단위로 훑어 평소(밝힘)와 흐림 모두 잰다.
+// 근거: 규칙 docs-integration.md 대비 기준 표 "히트맵 칸 숫자와 그 칸 색은 어느 강도에서나 4.5 이상"(평소와 흐림). 버그: 히트맵 대비
+test('contrast_heat_cell_text_reaches_4_5_on_every_strength_lit_and_dimmed', () => {
+  for (const theme of THEMES) {
     const heat = { low: color(theme, 'data.heat-low'), high: color(theme, 'data.heat-high'), ink: color(theme, 'data.heat-ink'), inkOn: color(theme, 'data.heat-ink-on') };
     const bg = color(theme, 'bg');
-    for (let step = 0; step <= 100; step++) {
-      const look = heatLook(step / 100, heat);
-      const lit = contrast(look.isOn ? heat.inkOn : heat.ink, look.fill);
-      assert.ok(lit >= TEXT, `${theme} lit strength ${step / 100} (${look.fill}): ${lit.toFixed(2)}`);
+    for (let step = 0; step <= HEAT_STEPS; step++) {
+      const look = heatLook(step / HEAT_STEPS, heat);
+      const lit = contrast(pickInk(look.fill, heat.ink, heat.inkOn), look.fill);
       const face = mixHex(bg, look.fill, opacity('dim'));
       const dimmed = contrast(mixHex(face, heat.ink, opacity('dim-ink')), face);
-      assert.ok(dimmed >= TEXT, `${theme} dimmed strength ${step / 100}: ${dimmed.toFixed(2)}`);
+      assert.ok(lit >= TEXT, `${theme} lit strength ${step / HEAT_STEPS} (${look.fill}): ${lit.toFixed(2)}`);
+      assert.ok(dimmed >= TEXT, `${theme} dimmed strength ${step / HEAT_STEPS}: ${dimmed.toFixed(2)}`);
     }
-  });
+  }
+  assert.equal(color('dark', 'data.heat-ink'), color('dark', 'data.heat-ink-on'), '다크는 글자색이 하나라 빌드 때 라이트로 고른 글자색이 다크에서도 맞다');
+});
 
-  test(`contrast_${theme}_confidence_line_reaches_3_against_its_casing_on_every_bar_color`, () => {
-    // 신뢰구간 선(fg)은 막대 위에 얹히므로 둘레 바탕색 테두리(bg)와 맞닿는다. 테두리와 선이 3 이상이면 막대 색과 상관없이 보인다.
-    expectAtLeast(theme, GRAPHIC, [['fg', 'bg']]);
-  });
-
-  test(`contrast_${theme}_dimmed_row_text_keeps_value_text_at_4_5_and_helper_text_at_3`, () => {
-    // 밝히지 않은 행의 글자는 opacity.dim-ink로 바탕에 얹힌다. 값 글자(fg)는 읽혀야 하고, 보조 글자(muted)는 흐린 상태에서도 3 이상이다.
+// 근거: 규칙 docs-integration.md 대비 기준 표: 밝히지 않은 행의 값 글자(fg)는 4.5, 보조 글자(muted)는 흐린 상태에서도 3 이상
+test('contrast_dimmed_row_text_keeps_value_text_at_4_5_and_helper_text_at_3', () => {
+  for (const theme of THEMES) {
     const bg = color(theme, 'bg');
     for (const [role, minimum] of [['fg', TEXT], ['muted', GRAPHIC]]) {
       const ratio = contrast(mixHex(bg, color(theme, role), opacity('dim-ink')), bg);
       assert.ok(ratio >= minimum, `${theme} dimmed ${role}: ${ratio.toFixed(2)} < ${minimum}`);
     }
-  });
+  }
+});
 
-  test(`contrast_${theme}_dimmed_heat_text_reaches_4_5_on_every_cell_strength`, () => {
-    // 흐린 칸: 면은 opacity.dim으로 바탕 쪽으로 옅어지고, 글자는 어두운 글자(heat-ink)가 opacity.dim-ink로 얹힌다.
-    const [bg, low, high] = ['bg', 'data.heat-low', 'data.heat-high'].map((name) => color(theme, name));
-    const ink = color(theme, 'data.heat-ink');
-    for (let step = 0; step <= 1000; step++) {
-      const face = mixHex(bg, mixHex(low, high, step / 1000), opacity('dim'));
-      const ratio = contrast(mixHex(face, ink, opacity('dim-ink')), face);
-      assert.ok(ratio >= TEXT, `${theme} dimmed heat strength ${step / 1000}: ${ratio.toFixed(2)}`);
-    }
-  });
+// 근거: 결정 #14 "라이트 그림 바탕 #f6f7f9, 그룹 바탕은 그보다 아주 약간 진하게, 카드는 흰색으로 바탕보다 한 톤 위"
+test('figureGround_light_bg_is_gray_group_is_slightly_darker_and_node_face_is_brighter_in_both_themes', () => {
+  const sum = (hex) => Number.parseInt(hex.slice(1, 3), 16) + Number.parseInt(hex.slice(3, 5), 16) + Number.parseInt(hex.slice(5, 7), 16);
+  const [bg, group, node] = ['bg', 'group', 'node'].map((name) => color('light', name));
 
-  test(`decorative_${theme}_figure_plate_edge_reaches_1_3_on_the_document_ground`, () => {
-    // 판 테두리는 흰 문서 위 판 모양만 잡는 꾸밈이다. 판 안 도형은 각자 3을 맞춘다.
-    expectAtLeast(theme, DECORATIVE_PLATE_EDGE, [['plate-border', 'page']]);
-  });
-}
+  assert.equal(node, '#ffffff');
+  assert.ok(sum(bg) <= sum('#f8f9fb') && sum(bg) < sum(node), bg);
+  assert.ok(sum(group) < sum(bg) && sum(bg) - sum(group) <= 24, group);
+  for (const theme of THEMES) assert.ok(contrast(color(theme, 'node'), color(theme, 'bg')) > 1.05, `${theme} node on bg`);
+});
 
-test('stateRoles_values_follow_the_resume_accent_and_strong_is_the_lightest_same_hue_that_reaches_4_5', () => {
-  assert.ok(contrast(RESUME_ACCENT, color('light', 'bg')) < GRAPHIC, 'the resume accent itself misses 3 on the figure ground');
+// 근거: 결정 docs-integration.md "대비 규칙이 색 선택보다 우선: 같은 색상에서 기준을 넘는 가장 밝은 단계를 그 자리에만 쓴다"
+test('palette_graphic_text_and_border_colors_are_the_lightest_step_that_reaches_their_floor', () => {
+  const graphicFaces = ['bg', 'group', 'card-on', 'node', 'page', 'gallery'];
+  const lowest = (value, faces, theme = 'light') => Math.min(...faces.map((face) => contrast(value, color(theme, face))));
+  for (const [hue, base] of [['blue', RESUME_ACCENT], ['orange', RESUME_ORANGE]]) {
+    const graphic = color('light', `palette.${hue}.550`);
+    const [, baseC, baseHue] = oklchOf(base);
+    const [, graphicC, graphicHue] = oklchOf(graphic);
+
+    assert.ok(Math.abs(graphicHue - baseHue) <= HUE_TOLERANCE && Math.abs(graphicC - baseC) <= CHROMA_TOLERANCE, `${hue} hue/chroma`);
+    assert.ok(lowest(graphic, graphicFaces) >= GRAPHIC && lowest(mixHex(graphic, '#ffffff', STEP_MIX), graphicFaces) < GRAPHIC, `${hue} graphic step`);
+  }
+  const textFaces = ['node', 'bg', 'card-on', 'page', 'gallery'];
+  const strong = color('light', 'state.active-text');
+  assert.ok(lowest(strong, textFaces) >= TEXT && lowest(mixHex(strong, '#ffffff', STEP_MIX), textFaces) < TEXT, 'light active text step');
+  assert.ok(contrast(color('light', 'state.active'), color('light', 'node')) < TEXT, 'state.active itself is a graphic color, not a text color');
+  // 경계는 바탕 쪽으로 한 단계 가면(라이트는 흰색, 다크는 검정 쪽) 3 아래로 떨어져야 최소 값이다.
+  for (const [theme, toward] of [['light', '#ffffff'], ['dark', '#000000']]) {
+    const border = color(theme, 'border');
+
+    assert.ok(lowest(border, BORDER_FACES, theme) >= GRAPHIC && lowest(mixHex(border, toward, STEP_MIX), BORDER_FACES, theme) < GRAPHIC, `${theme} border step`);
+  }
+});
+
+// 근거: 결정 docs-integration.md "accent 파랑은 이력서 색(라이트 #2b96ed에서 3을 넘는 가장 밝은 단계, 다크 #79c0ff), 주황은 같은 L·C로 만든다"
+test('palette_orange_keeps_the_blue_lightness_and_chroma_and_only_turns_the_hue', () => {
+  for (const [theme, blue, orange] of [['light', RESUME_ACCENT, RESUME_ORANGE], ['dark', color('dark', 'palette.blue.400'), color('dark', 'palette.orange.400')]]) {
+    const [blueL, blueC] = oklchOf(blue);
+    const [orangeL, orangeC, orangeHue] = oklchOf(orange);
+
+    assert.ok(Math.abs(blueL - orangeL) <= LIGHTNESS_TOLERANCE, `${theme} L ${blueL.toFixed(3)} / ${orangeL.toFixed(3)}`);
+    assert.ok(Math.abs(blueC - orangeC) <= CHROMA_TOLERANCE, `${theme} C ${blueC.toFixed(3)} / ${orangeC.toFixed(3)}`);
+    assert.ok(Math.abs(orangeHue - ORANGE_HUE) <= HUE_TOLERANCE, `${theme} h ${orangeHue.toFixed(1)}`);
+  }
+  assert.equal(color('light', 'data.compare'), color('light', 'palette.orange.550'));
+  assert.equal(color('dark', 'data.compare'), color('dark', 'palette.orange.400'));
   assert.equal(color('light', 'state.active'), color('light', 'palette.blue.550'));
   assert.equal(color('dark', 'state.active'), '#79c0ff');
-  assert.equal(color('light', 'state.on-active'), '#ffffff');
-  assert.equal(color('dark', 'state.on-active'), '#0d1117');
-  assert.equal(color('dark', 'state.active-text'), color('dark', 'state.active'));
-  // 흰 글자가 놓이는 면(state.active-fill)은 라이트에서 state.active와 같은 색상의 어두운 단계다.
-  assert.equal(color('light', 'state.active-text'), '#1072c2');
-  assert.equal(color('light', 'state.active-fill'), color('light', 'state.active-text'));
-  assert.equal(color('dark', 'state.active-fill'), color('dark', 'state.active'));
-  const faces = ['node', 'bg', 'card-on', 'page', 'gallery'];
-  const lowest = Math.min(...faces.map((face) => contrast(color('light', 'state.active-text'), color('light', face))));
-  const brighter = Math.min(...faces.map((face) => contrast(mixHex(color('light', 'state.active-text'), '#ffffff', 0.01), color('light', face))));
-  assert.ok(lowest >= TEXT && brighter < TEXT, `${lowest.toFixed(2)} / ${brighter.toFixed(2)}`);
-  assert.ok(contrast(color('light', 'state.active'), color('light', 'node')) < TEXT, 'state.active itself is a graphic color, not a text color');
+  assert.ok(contrast(RESUME_ACCENT, color('light', 'bg')) < GRAPHIC, 'the resume accent itself misses 3 on the figure ground');
 });
 
-test('contrast_dark_heat_inks_are_one_color_so_the_build_time_light_pick_is_right_in_dark', () => {
-  assert.equal(color('dark', 'data.heat-ink'), color('dark', 'data.heat-ink-on'));
+// 색각 이상 시뮬레이션(Machado 2009, 심한 정도 1.0). 선형 sRGB에 곱한다.
+const CVD = {
+  protanopia: [[0.152286, 1.052583, -0.204868], [0.114503, 0.786281, 0.099216], [-0.003882, -0.048116, 1.051998]],
+  deuteranopia: [[0.367322, 0.860646, -0.227968], [0.280085, 0.672501, 0.047413], [-0.011820, 0.042940, 0.968881]],
+};
+
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+const distanceOf = (p, q) => Math.hypot(...p.map((v, i) => v - q[i]));
+
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+// 색각 이상 눈에 비친 OKLab 좌표.
+const seenBy = (matrix, hex) => linearToOklab(matrix.map((row) => row.reduce((sum, weight, i) => sum + weight * channelsOf(hex)[i], 0)));
+
+
+// 근거: 규칙 docs-integration.md "파랑과 주황은 적록 색각 이상(protanopia, deuteranopia) 시뮬레이션에서도 OKLab 거리 0.1 이상"
+test('palette_blue_and_orange_stay_apart_for_protanopia_and_deuteranopia_in_both_themes', () => {
+  for (const theme of THEMES) {
+    const [blue, orange] = theme === 'light' ? ['palette.blue.550', 'palette.orange.550'] : ['palette.blue.400', 'palette.orange.400'];
+    for (const [name, matrix] of Object.entries(CVD)) {
+      const distance = distanceOf(seenBy(matrix, color(theme, blue)), seenBy(matrix, color(theme, orange)));
+
+      assert.ok(distance >= CVD_MIN_DISTANCE, `${theme} ${name}: ${distance.toFixed(3)}`);
+    }
+  }
 });
 
+// 근거: 규칙 docs-integration.md "카드 태그 색상이 state.active, data.compare와 40도 이상 떨어진다"
+test('tagColors_keep_their_hue_away_from_the_active_blue_and_the_compare_orange', () => {
+  for (const theme of THEMES) {
+    for (const tag of ['purple', 'green', 'teal']) {
+      for (const role of ['state.active', 'data.compare']) {
+        const [, tagChroma, tagHue] = oklchOf(color(theme, `tag.${tag}`));
+        const [, , roleHue] = oklchOf(color(theme, role));
+        const gap = Math.min(Math.abs(tagHue - roleHue), 360 - Math.abs(tagHue - roleHue));
+
+        assert.ok(tagChroma < NEUTRAL_CHROMA || gap >= MIN_TAG_HUE_GAP, `${theme} tag.${tag} vs ${role}: ${gap.toFixed(0)} degrees`);
+      }
+    }
+    assert.ok(oklchOf(color(theme, 'tag.gray'))[1] < NEUTRAL_CHROMA, 'tag.gray is a neutral, not a hue that can read as blue');
+  }
+});
+
+// 근거: 규칙 docs-integration.md 색의 두 층 "코드와 CSS는 역할 토큰만 쓰고 원색을 직접 쓰지 않는다"
+test('tokens_color_literals_live_only_in_the_palette_layer_and_code_never_names_it', () => {
+  const colors = listTokens(JSON.parse(readFileSync(new URL('tokens.json', SRC), 'utf8')).color);
+  const dark = listTokens(JSON.parse(readFileSync(new URL('tokens.dark.json', SRC), 'utf8')).color);
+  const literals = colors.filter(([, value]) => HEX_VALUE.test(value)).map(([name]) => name);
+
+  assert.deepEqual(codeFiles().filter(({ text }) => PALETTE_REFERENCE.test(text)).map(({ name }) => name), []);
+  assert.ok(literals.length > 0);
+  assert.deepEqual(literals.filter((name) => !name.startsWith('palette.')), []);
+  assert.deepEqual(dark.filter(([, value]) => HEX_VALUE.test(value)), []);
+});
+
+// 근거: 설계 layout.md 글자 크기 "토큰 size.text의 일곱 단계(9, 11, 12, 13, 14, 15, 22)뿐이고 0.5px 차이 단계는 없다"
+test('textScale_has_seven_steps_and_no_half_pixel_pairs', () => {
+  const sizes = Object.values(values.size.text);
+
+  assert.deepEqual(sizes, [9, 11, 12, 13, 14, 15, 22]);
+  assert.ok(sizes.every((a, i) => i === 0 || a - sizes[i - 1] >= 1));
+});
+
+// 근거: 규칙 대비 "히트맵 칸 색과 글자색은 빌드 때 같은 강도 한 값에서 고른다". 문서 대비 표의 칸 숫자 대비를 SVG가 지킨다
 test('buildFigure_heatmap_cells_draw_fill_and_ink_from_the_strength_written_in_the_style', async () => {
   // 칸 색(--s와 fill 속성)과 글자색(on class)이 같은 강도에서 나온다. 0~100을 1씩 훑는다.
   const rows = Array.from({ length: 101 }, (_, v) => `cell "r${v}" "c" ${v}`);
@@ -178,29 +267,101 @@ test('buildFigure_heatmap_cells_draw_fill_and_ink_from_the_strength_written_in_t
   assert.equal(cells.length, 101);
   for (const [, strength, fill, on] of cells) {
     const look = heatLook(Number(strength), heat);
+
     assert.equal(fill, look.fill, `strength ${strength}`);
     assert.equal(Boolean(on), look.isOn, `strength ${strength}`);
     assert.equal(look.strength, Number(strength));
   }
 });
 
-test('buildFigure_heatmap_cells_pick_the_ink_with_the_larger_contrast', async () => {
-  const source = 'chart heatmap\ncell "a" "x" 1\ncell "a" "y" 50\ncell "b" "x" 100\ncell "b" "y" 0\n';
-  const { chart } = await buildFigure(source);
-  const [low, high] = [color('light', 'data.heat-low'), color('light', 'data.heat-high')];
-  const picked = [...chart.body.matchAll(/class="chart-heat" style="--s:([\d.]+)"[^]*?class="cr-\d+ ink chart-cell( on)?"/g)];
+const HEAT_FIGURE = [
+  'chart heatmap',
+  'cell "a" "x" 10',
+  'cell "a" "y" 8',
+  'cell "a" "z" 6',
+  'cell "b" "x" 4',
+  'cell "b" "y" 2',
+  'cell "b" "z" 0.5',
+  'step "one"',
+  '  light "a" "x"',
+  'step "two"',
+  '  light "b" "y"',
+  'step "three"',
+  '  light "a" "z"',
+].join('\n');
 
-  assert.equal(picked.length, 4);
-  for (const [, strength, on] of picked) {
-    const cell = mixHex(low, high, Number(strength));
-    const expected = pickInk(cell, color('light', 'data.heat-ink'), color('light', 'data.heat-ink-on')) === color('light', 'data.heat-ink-on');
-    assert.equal(Boolean(on), expected, `strength ${strength}`);
+// cost: time O(k), heap O(k), stack O(1)
+// vars: k = keyframes 본문 글자 수
+// basis: estimate
+// keyframes 이름 하나의 [{ at(0~100), props: Map }] 목록. 같은 줄에 퍼센트 여럿이면 같은 값을 모두에 건다.
+function stopsOf(css, name) {
+  const body = new RegExp(`@keyframes ${name} \\{((?:[^{}]|\\{[^}]*\\})*)\\}`).exec(css)[1];
+  const stops = [...body.matchAll(/([\d.%,\s]+)\{([^}]*)\}/g)].flatMap(([, ats, decls]) => {
+    const props = new Map(decls.split(';').map((d) => d.split(':').map((s) => s.trim())).filter(([k]) => k));
+    return ats.split(',').map((at) => ({ at: parseFloat(at), props }));
+  });
+  return stops.sort((a, b) => a.at - b.at);
+}
+
+// cost: time O(s), heap O(1), stack O(1)
+// vars: s = 정지점 수
+// basis: estimate
+// 이름 있는 애니메이션 하나가 시각 at(0~100)에 내는 속성 값. 값이 서로 다른 정지점 사이는 선형으로 보간한다(animation linear).
+function sample(stops, at, resolve) {
+  const before = stops.findLastIndex((s) => s.at <= at);
+  if (before < 0) return new Map();
+  const [from, to] = [stops[before], stops[before + 1]];
+  const out = new Map();
+  for (const [prop, value] of from.props) {
+    const next = to?.props.get(prop);
+    if (prop === 'animation-timing-function' || next === undefined || next === value) {
+      out.set(prop, value);
+      continue;
+    }
+    const p = (at - from.at) / (to.at - from.at);
+    out.set(prop, prop === 'opacity' ? String(Number(value) + (Number(next) - Number(value)) * p) : mixHex(resolve(value), resolve(next), p));
+  }
+  return out;
+}
+
+// cost: time O(r), heap O(1), stack O(1)
+// vars: r = 규칙 수
+// basis: estimate
+// `.fl .cr-K { animation: aN 12s ..., aM 12s ... }`에서 애니메이션 이름들과 한 바퀴 길이(ms)
+function animationsOf(css, selector) {
+  const decl = new RegExp(`${selector.replaceAll('.', '\\.')} \\{ animation: ([^;]*);`).exec(css)[1];
+  return { names: [...decl.matchAll(/(a\d+) [\d.]+s/g)].map((m) => m[1]), total: parseFloat(/[\d.]+(?=s )/.exec(decl)[0]) * MS_PER_SECOND };
+}
+
+
+// 근거: 규칙 docs-integration.md 대비 기준 표 "히트맵 칸 숫자와 그 칸 색 4.5 이상"을 단계가 바뀌는 동안 60fps 프레임마다. 버그: 히트맵 대비
+test('toSvg_heat_cell_text_keeps_contrast_4_5_on_the_cell_face_in_every_60fps_frame_of_every_step_change', async () => {
+  const svg = await toSvg(await buildFigure(HEAT_FIGURE));
+  const css = /<style>([^]*?)<\/style>/.exec(svg)[1];
+  const cells = [...svg.matchAll(/class="chart-heat" style="--s:([\d.]+)"[^]*?class="cr-(\d+) ink chart-cell( on)?"/g)];
+  assert.equal(cells.length, 6);
+
+  for (const theme of ['light', 'dark']) {
+    const color = (name) => themeColor(theme, name);
+    const resolve = (value) => (value.startsWith('var(--color-data-heat-ink-on)') ? color('data.heat-ink-on') : color('data.heat-ink'));
+    let frames = 0;
+    for (const [, strength, k, on] of cells) {
+      const inkOf = (value) => (value === 'var(--ink)' ? (on ? color('data.heat-ink-on') : color('data.heat-ink')) : resolve(value));
+      const face = animationsOf(css, `.fl .cr-${k}`);
+      const text = animationsOf(css, `.fl .cr-${k}.ink`);
+      const fill = mixHex(color('data.heat-low'), color('data.heat-high'), Number(strength));
+      for (let ms = 0; ms < face.total; ms += MS_PER_SECOND / FPS) {
+        const at = (ms / face.total) * PERCENT;
+        const faceProps = new Map(face.names.flatMap((n) => [...sample(stopsOf(css, n), at, inkOf)]));
+        const textProps = new Map(text.names.flatMap((n) => [...sample(stopsOf(css, n), at, inkOf)]));
+        const facePaint = mixHex(color('bg'), fill, Number(faceProps.get('opacity') ?? 1));
+        const textPaint = mixHex(facePaint, inkOf(textProps.get('fill') ?? 'var(--ink)'), Number(textProps.get('opacity') ?? 1));
+        const ratio = contrast(textPaint, facePaint);
+        assert.ok(ratio >= TEXT, `${theme} cell ${k} strength ${strength} at ${ms.toFixed(0)}ms: ${ratio.toFixed(2)}`);
+        frames++;
+      }
+    }
+    assert.ok(frames > cells.length * FPS, `${theme} sampled ${frames} frames`);
   }
 });
 
-test('chartCss_confidence_line_is_thin_text_color_with_a_background_casing', async () => {
-  const { STYLES } = await import('../src/styles.js');
-
-  assert.match(STYLES.chart, /\.fl \.chart-ci \{[^}]*stroke: var\(--color-fg\);[^}]*stroke-width: var\(--border-tag\)/);
-  assert.match(STYLES.chart, /\.fl \.chart-ci-casing \{[^}]*stroke: var\(--color-bg\);[^}]*stroke-width: var\(--border-casing\)/);
-});

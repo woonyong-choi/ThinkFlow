@@ -146,12 +146,12 @@ step "결제" "결제 행은 주문 행을 외래 키로 가리킨다"
 
 | 요구사항 | 검증 계획 |
 |---|---|
-| 문서의 모든 예시 원본이 오류와 경고 없이 읽힌다. | 예시 원본을 뽑아 `check --strict` 실행 |
-| 종류 사이 규칙 표의 `오류` 칸마다 오류를 낸다. | 칸마다 원본 하나로 오류 여부 확인 |
-| 순서 그림 메시지는 적은 순서대로 위에서 아래로 놓인다. | 메시지 행의 y가 줄 순서대로 커지는지 확인 |
-| 상태 그림의 `start`는 없거나 하나다. | `start` 없음에서 점이 없고, 둘인 원본은 오류인지 확인 |
-| 외래 키는 `pk`나 `unique` 열만 가리키고, 외래 키가 둘인 두 테이블 사이 이동은 열까지 적는다. | 두 원본의 오류 확인 |
-| 외래 키 선은 두 열의 행 높이에 붙는다. | 선 양 끝 y와 열 행 가운데 y 비교 |
+| 문서의 모든 예시 원본이 오류와 경고 없이 읽힌다. | `test/grammar.test.js`의 `docExamples_every_design_doc_example_builds_without_errors_or_warnings`. 예시 원본을 뽑아 strict로 읽는다 |
+| 종류 사이 규칙 표의 `오류` 칸마다 오류를 낸다. | `test/grammar.test.js`의 `parseFigure_malformed_source_reports_the_line_and_the_rule`(종류 행). 칸마다 원본 하나로 오류 확인 |
+| 순서 그림 메시지는 적은 순서대로 위에서 아래로 놓인다. | `test/layout.test.js`의 `layoutSequence_messages_go_down_in_the_written_order`. 메시지 행의 y가 줄 순서대로 커지는지 확인 |
+| 상태 그림의 `start`는 없거나 하나다. | `test/layout.test.js`의 `buildFigure_state_without_start_draws_no_start_dot_or_line`, `test/grammar.test.js`의 `parseFigure_malformed_source_reports_the_line_and_the_rule`(start 둘 행) |
+| 외래 키는 `pk`나 `unique` 열만 가리키고, 외래 키가 둘인 두 테이블 사이 이동은 열까지 적는다. | 두 원본의 오류 확인. `pk`나 `unique`가 아닌 열은 `test/grammar.test.js`의 `parseFigure_malformed_source_reports_the_line_and_the_rule`(외래 키 행). 테스트 없음: 처음부터 대응 테스트를 두지 않았고 눈으로 확인한다(외래 키가 둘인 두 테이블 사이 이동) |
+| 외래 키 선은 두 열의 행 높이에 붙는다. | `test/layout.test.js`의 `buildFigure_table_column_edges_of_a_stack_leave_and_enter_on_the_right_face_at_the_row`. 선 양 끝 y와 열 행 가운데 y 비교 |
 
 ## 단점
 

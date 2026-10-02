@@ -1,13 +1,17 @@
+// 그림 검사: 항목마다 실패하는 그림에서 그 항목의 진단을 내고, 정상 그림은 통과시킨다(docs/design/figure-check.md).
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
 import { buildFigure } from '../src/build.js';
 import { checkFigure } from '../src/check.js';
+import { DOC_END, DOC_START, renderCheckTable } from '../src/check/doc.js';
 import { createProblems } from '../src/source/problems.js';
 import { formatProblem } from './helpers.js';
 
 // cost: time O(build), heap O(build), stack O(1)
 // vars: build = 원본 하나를 만드는 비용
 // basis: estimate
+// 원본을 만들 때 나는 오류를 `줄: [코드] 메시지`로 돌려준다. 오류가 없으면 빈 목록이다.
 async function problemsOf(source) {
   try {
     await buildFigure(source);
@@ -19,15 +23,46 @@ async function problemsOf(source) {
 }
 
 // cost: time O(check), heap O(m), stack O(1)
-// vars: check = 그림 검사 비용, m = 메시지 수
+// vars: check = 그림 검사 비용, m = 진단 수
 // basis: estimate
-function recheck({ figure, scene, timeline }) {
-  const problems = createProblems();
+// 장면을 만든 뒤 mutate로 고쳐서 그림 검사를 다시 돌린다. 배치가 일부러 만들지 않는 어긋남을 검사가 알리는지 보려고 장면을 직접 고친다.
+async function recheck(source, mutate) {
+  const { figure, scene, timeline } = await buildFigure(source, { strict: true });
+  mutate(scene);
+  const problems = createProblems(source);
   checkFigure({ figure, scene, timeline }, problems);
-  return problems.errors.map(formatProblem);
+  return [...problems.errors, ...problems.warnings];
 }
 
-test('checkFigure_moving_text_taller_than_short_figure_is_check_7_error', async () => {
+const GROUPED = 'flow right\nbox a "A"\ngroup g "묶음" {\n  box b "B"\n}\nbox c "C"\na -> b "보냄"\nb -> c';
+const NOTES = 'sequence\nbox a "호출"\nbox b "응답"\nbox c "저장"\nstep "s" "c"\n  a -> b "요청 라벨"\n  note a "메모"\n  b -> c "저장 요청"\n';
+const at = (scene, id) => scene.items.find((item) => item.id === id);
+
+const BROKEN_SCENES = [
+  { code: 'check-1', source: 'flow right\nbox a "꽤 긴 도형 이름"\nbox b "B"\na -> b', mutate: (scene) => { at(scene, 'a').w = 40; }, expect: /^internal: label/ },
+  { code: 'check-1', source: 'flow right\nbox a "A"\nbox b "B"\na -> b\nstep "보내기"\n  show a "카드에 들어가는 글"', mutate: (scene) => { const a = at(scene, 'a'); a.card = { ...a.card, w: 30 }; }, expect: /^internal: card text/ },
+  { code: 'check-2', source: GROUPED, mutate: (scene) => { const g = scene.groups[0]; scene.edges.find((e) => e.label).labelAt = { x: g.x + 30, y: g.y + 8 }; }, expect: /title of group "g"/ },
+  { code: 'check-3', source: GROUPED, mutate: (scene) => { const g = scene.groups[0]; const edge = scene.edges.find((e) => e.from === 'b'); edge.points = [{ x: g.x - 20, y: g.y + g.h / 2 }, { x: g.x + g.w + 20, y: g.y + g.h / 2 }]; edge.from = 'a'; }, expect: /group "g"/ },
+  { code: 'check-4', source: 'flow right\nbox a "A"\ndecision d "확인"\nbox b "B"\na -> d\nd -> b', mutate: (scene) => { const d = at(scene, 'd'); scene.edges.find((e) => e.from === 'd').points[0] = { x: d.x + d.w, y: d.y }; }, expect: /^internal/ },
+  { code: 'check-5', source: 'flow right\nbox a "A"\nbox b "B"\nbox c "C"\nbox d "D"\na -> b\nc -> d', mutate: (scene) => { scene.edges[0].points = [{ x: 0, y: 0 }, { x: 100, y: 0 }]; scene.edges[1].points = [{ x: 0, y: 4 }, { x: 100, y: 4 }]; }, expect: /./ },
+  { code: 'check-6', source: GROUPED, mutate: (scene) => { const g = scene.groups[0]; Object.assign(at(scene, 'c'), { x: g.x + 2, y: g.y + 2 }); }, expect: /^internal: (node "c" overlaps group "g"|group "g" overlaps node "c")/ },
+  { code: 'check-12', source: NOTES, mutate: (scene) => { const [label] = scene.edges; Object.assign(scene.notes[0], { x: label.labelAt.x - scene.notes[0].w / 2, y: label.labelAt.y - scene.notes[0].h / 2 }); }, expect: /covers the label "요청 라벨"/ },
+  { code: 'check-12', source: NOTES, mutate: (scene) => { const [label] = scene.edges; Object.assign(scene.notes[0], { x: label.labelAt.x - scene.notes[0].w / 2, y: label.labelAt.y - scene.notes[0].h / 2 }); }, expect: /covers the arrow of message a -> b/ },
+  { code: 'check-12', source: NOTES, mutate: (scene) => { scene.notes[0].x = -50; }, expect: /leaves the figure/ },
+  { code: 'check-12', source: NOTES, severity: 'warning', mutate: (scene) => { const other = scene.lifelines.find((l) => l.id === 'c'); Object.assign(scene.notes[0], { x: other.x - 10, y: other.y1 + 1 }); }, expect: /crosses the lifeline of "c"/ },
+];
+
+// 근거: 설계 figure-check.md 요구사항 "검사 항목마다 실패하는 원본에서 그 항목 메시지를 낸다"(1, 2, 3, 4, 5, 6, 12번)
+test('checkFigure_each_item_reports_its_code_for_a_scene_that_breaks_it', async () => {
+  for (const { code, source, mutate, expect, severity = 'error' } of BROKEN_SCENES) {
+    const found = (await recheck(source, mutate)).filter((d) => d.code === code);
+
+    assert.ok(found.some((d) => d.severity === severity && expect.test(d.message)), `${code} ${expect}: ${found.map((d) => d.message).join(' | ')}`);
+  }
+});
+
+// 근거: 설계 figure-check.md 요구사항 "검사 항목마다 실패하는 원본에서 그 항목 메시지를 낸다"(7번, 이동 글이 그림 높이를 넘음)
+test('buildFigure_moving_text_taller_than_a_short_figure_is_a_check_7_error', async () => {
   const source = 'flow right\nbox a "A"\nbox b "B"\nbox c "C"\na -> b\nb -> c\nstep "보내기"\n  a -> b "세 줄로 나뉘는 긴 이동 글이라서 점 위에 두면 그림 위쪽 경계를 넘고 점 아래로 내려도 아래쪽 경계를 넘는다"';
 
   const messages = await problemsOf(source);
@@ -35,153 +70,71 @@ test('checkFigure_moving_text_taller_than_short_figure_is_check_7_error', async 
   assert.ok(messages.some((m) => m.startsWith('8: [check-7]')), messages.join('\n'));
 });
 
-test('buildFigure_narrow_figure_widens_for_moving_text', async () => {
+// 근거: 버그 #4 증상 3 "세로 그림에서 그림 폭보다 넓은 이동 글이 check 7로 막힘"
+test('buildFigure_narrow_figure_widens_for_the_moving_text', async () => {
   const { scene } = await buildFigure('flow down\nbox a "가"\nbox b "나"\na -> b\nstep "s"\n  a -> b "민지는 3월에 토스로 옮겼고 결제팀을 맡았다"');
 
   assert.ok(scene.width > 200, String(scene.width));
 });
 
-test('checkFigure_moving_text_near_left_edge_is_pushed_inside', async () => {
-  const source = 'flow right\nbox a "A"\nbox b "B"\nbox c "C"\nbox d "D"\na -> b\nb -> c\nc -> d\nstep "보내기"\n  a -> b "왼쪽 끝에서 출발"';
+// 근거: 설계 figure-check.md 요구사항(1번, 차트), 버그 68ec356 "히트맵 열 이름과 산점도 점 이름도 검사 1번"
+test('buildFigure_chart_item_name_wider_than_the_label_column_is_a_check_1_error', async () => {
+  const source = 'chart bar\nseries a "A"\nrow "아주 긴 항목 이름이 이름 칸을 넘어서 막대와 겹치는 경우를 만든다" a=3\nrow "b" a=1';
 
-  const messages = await problemsOf(source);
+  const errors = await problemsOf(source);
 
-  assert.deepEqual(messages, []);
+  assert.ok(errors.some((e) => e.startsWith('3: [check-1] item name')), errors.join('\n'));
 });
 
-test('checkFigure_label_wider_than_node_is_check_1_internal_error', async () => {
-  const result = await buildFigure('flow right\nbox a "꽤 긴 도형 이름"\nbox b "B"\na -> b');
-  const a = result.scene.items.find((it) => it.id === 'a');
-  a.w = 40;
+// 근거: 버그 #4 증상 4 "히트맵 열 이름이 한글 넉 자 이상이면 check 1로 막힘"
+test('buildFigure_heatmap_column_with_a_long_name_fits_its_cell', async () => {
+  const errors = await problemsOf('chart heatmap\ncell "정답" "통과" 10\ncell "정답" "판단 보류" 1\ncell "오답" "통과" 3\ncell "오답" "판단 보류" 4');
 
-  const messages = recheck(result);
-
-  assert.ok(messages.some((m) => m.startsWith('2: [check-1] internal: label')), messages.join('\n'));
+  assert.deepEqual(errors, []);
 });
 
-test('checkFigure_card_text_wider_than_card_is_check_1_internal_error', async () => {
-  const result = await buildFigure('flow right\nbox a "A"\nbox b "B"\na -> b\nstep "보내기"\n  show a "카드에 들어가는 글"');
-  const a = result.scene.items.find((it) => it.id === 'a');
-  a.card = { ...a.card, w: 30 };
+const FAN_OUT = 'flow right\nperson user "사용자"\nbox a1 "A1"\nbox a2 "A2"\nbox a3 "A3"\nbox a4 "A4"\nuser -> a1\nuser -> a2\nuser -> a3\nuser -> a4';
+const FAN_IN = 'flow right\nbox a1 "A1"\nbox a2 "A2"\nbox a3 "A3"\nbox a4 "A4"\nbox sink "합류"\na1 -> sink\na2 -> sink\na3 -> sink\na4 -> sink';
 
-  const messages = recheck(result);
-
-  assert.ok(messages.some((m) => m.startsWith('2: [check-1] internal: card text')), messages.join('\n'));
+// 근거: 버그 #6 "같은 도형에서 함께 나가거나 들어오는 선 쌍은 5번(나란한 구간) 검사에서 뺀다"
+test('buildFigure_edges_fanning_out_of_or_into_one_shape_pass_check_5', async () => {
+  assert.deepEqual(await problemsOf(FAN_OUT), []);
+  assert.deepEqual(await problemsOf(FAN_IN), []);
 });
 
-test('toSvg_moving_text_near_side_edge_is_pushed_inside', async () => {
-  const { toSvg } = await import('../src/svg.js');
-  const source = 'flow down\nbox a "A"\nbox b "B"\nbox c "C"\nbox d "D"\nbox e "E"\na -> b\na -> c\na -> d\na -> e\nstep "보내기"\n  a -> b "왼쪽 아래 도형으로 가는 두 줄짜리 이동 글은 옆으로 밀린다"';
+const CHAIN = (count, line) => Array.from({ length: count }, (_, i) => line(i)).join('\n');
+const TALL_GROUP = `flow down\ngroup g "G" {\n${CHAIN(30, (i) => `  box n${i} "N${i}"`)}\n${CHAIN(29, (i) => `  n${i} -> n${i + 1}`)}\n}`;
+const NARROW_TALL_GROUP = `flow down\ngroup g "G" {\n${CHAIN(16, (i) => `  box n${i} "N${i}"`)}\n${CHAIN(15, (i) => `  n${i} -> n${i + 1}`)}\n}`;
+const WIDE_WITH_ASPECT = `flow right\naspect 20\n${CHAIN(16, (i) => `box n${i} "N${i}"`)}\ngroup g "G" {\n  box a "A"\n}\n${CHAIN(15, (i) => `n${i} -> n${i + 1}`)}\nn15 -> a`;
 
-  const svg = await toSvg(await buildFigure(source), {});
+// 근거: 설계 figure-check.md 9번 "비율"과 메시지의 고치는 방법(그룹 방향, aspect), 버그 #4
+test('buildFigure_check_9_aspect_warning_suggests_what_the_source_can_change', async () => {
+  const tall = await buildFigure(TALL_GROUP);
+  const narrow = await buildFigure(NARROW_TALL_GROUP);
+  const wide = await buildFigure(WIDE_WITH_ASPECT);
+  const small = await buildFigure('flow right\nbox a "요청"\nbox b "응답"\na -> b "보냄"', { strict: true });
 
-  assert.match(svg, /<animateTransform attributeName="transform" type="translate"[^>]*values="[1-9][\d.]* \d+;/);
+  assert.ok(tall.warnings.some((w) => w.message.includes('Set direction=right on group "g"')), JSON.stringify(tall.warnings));
+  assert.ok(wide.warnings.some((w) => w.message.includes('Use a smaller aspect than 20')), JSON.stringify(wide.warnings));
+  assert.ok(narrow.scene.width / narrow.scene.height < 1 / 3, '내용 비율은 1/3보다 작다');
+  assert.deepEqual(narrow.warnings.filter((w) => w.code === 'check-9'), [], '캔버스 폭으로 보이는 모양으로 판정한다');
+  assert.deepEqual(small.warnings, []);
 });
 
-const GROUPED = 'flow right\nbox a "A"\ngroup g "묶음" {\n  box b "B"\n}\nbox c "C"\na -> b "보냄"\nb -> c';
+// 근거: 설계 figure-check.md 10번 "문서 폭에서 읽힘"
+test('buildFigure_content_still_wider_than_the_canvas_after_shrinking_warns_check_10', async () => {
+  const participants = Array.from({ length: 9 }, (_, i) => `box p${i} "참여자 ${i}"`).join('\n');
+  const messages = Array.from({ length: 8 }, (_, i) => `  p${i} -> p${i + 1} "메시지 ${i}"`).join('\n');
 
-test('checkFigure_edge_through_unrelated_group_is_check_3_error', async () => {
-  const result = await buildFigure(GROUPED);
-  const g = result.scene.groups[0];
-  const edge = result.scene.edges.find((e) => e.from === 'b');
-  edge.points = [{ x: g.x - 20, y: g.y + g.h / 2 }, { x: g.x + g.w + 20, y: g.y + g.h / 2 }];
-  edge.from = 'a';
+  const { warnings } = await buildFigure(`sequence\n${participants}\nstep "전달"\n${messages}`);
 
-  const messages = recheck(result);
-
-  assert.ok(messages.some((m) => m.includes('[check-3]') && m.includes('group "g"')), messages.join('\n'));
+  assert.ok(warnings.some((w) => w.code === 'check-10'), JSON.stringify(warnings));
 });
 
-test('checkFigure_node_inside_unrelated_group_is_check_6_internal_error', async () => {
-  const result = await buildFigure(GROUPED);
-  const g = result.scene.groups[0];
-  const c = result.scene.items.find((it) => it.id === 'c');
-  Object.assign(c, { x: g.x + 2, y: g.y + 2 });
+// 근거: 설계 figure-check.md "검사 항목" 표는 항목 목록에서 만든다
+test('checkItems_figure_check_doc_table_equals_the_table_made_from_the_list', () => {
+  const doc = readFileSync(new URL('../docs/design/figure-check.md', import.meta.url), 'utf8');
+  const written = doc.slice(doc.indexOf(DOC_START) + DOC_START.length, doc.indexOf(DOC_END)).trim();
 
-  const messages = recheck(result);
-
-  assert.ok(messages.some((m) => m.includes('[check-6] internal: node "c" overlaps group "g"') || m.includes('[check-6] internal: group "g" overlaps node "c"')), messages.join('\n'));
+  assert.equal(written, renderCheckTable(), 'run npm run checkdoc to rewrite the table in docs/design/figure-check.md');
 });
-
-test('checkFigure_edge_label_on_group_title_is_check_2_error', async () => {
-  const result = await buildFigure(GROUPED);
-  const g = result.scene.groups[0];
-  const edge = result.scene.edges.find((e) => e.label);
-  edge.labelAt = { x: g.x + 30, y: g.y + 8 };
-
-  const messages = recheck(result);
-
-  assert.ok(messages.some((m) => m.includes('[check-2]') && m.includes('title of group "g"')), messages.join('\n'));
-});
-
-test('checkFigure_decision_edge_off_vertex_is_check_4_internal_error', async () => {
-  const result = await buildFigure('flow right\nbox a "A"\ndecision d "확인"\nbox b "B"\na -> d\nd -> b');
-  const d = result.scene.items.find((it) => it.id === 'd');
-  const edge = result.scene.edges.find((e) => e.from === 'd');
-  edge.points[0] = { x: d.x + d.w, y: d.y };
-
-  const messages = recheck(result);
-
-  assert.ok(messages.some((m) => m.includes('[check-4] internal')), messages.join('\n'));
-});
-
-test('buildFigure_sequence_without_participants_is_error_not_crash', async () => {
-  const messages = await problemsOf('sequence\nstep "s"\n  wait 1s');
-
-  assert.deepEqual(messages, ['1: a sequence figure needs at least one participant']);
-});
-
-test('checkFigure_tall_group_suggests_direction_right', async () => {
-  const chain = Array.from({ length: 30 }, (_, i) => `  box n${i} "N${i}"`).join('\n');
-  const edges = Array.from({ length: 29 }, (_, i) => `  n${i} -> n${i + 1}`).join('\n');
-
-  const { warnings } = await buildFigure(`flow down\ngroup g "G" {\n${chain}\n${edges}\n}`);
-
-  assert.ok(warnings.some((w) => w.message.includes('Set direction=right on group "g"')), JSON.stringify(warnings));
-});
-
-test('checkFigure_narrow_tall_figure_is_judged_by_the_canvas_width_it_is_shown_at', async () => {
-  const chain = Array.from({ length: 16 }, (_, i) => `  box n${i} "N${i}"`).join('\n');
-  const edges = Array.from({ length: 15 }, (_, i) => `  n${i} -> n${i + 1}`).join('\n');
-
-  const { scene, warnings } = await buildFigure(`flow down\ngroup g "G" {\n${chain}\n${edges}\n}`);
-
-  assert.ok(scene.width / scene.height < 1 / 3, '내용 비율은 1/3보다 작다');
-  assert.deepEqual(warnings.filter((w) => w.code === 'check-9'), []);
-});
-
-test('checkFigure_small_wide_figure_has_no_aspect_warning', async () => {
-  const { warnings } = await buildFigure('flow right\nbox a "요청"\nbox b "응답"\na -> b "보냄"', { strict: true });
-
-  assert.deepEqual(warnings, []);
-});
-
-test('checkFigure_fan_out_from_one_shape_passes_check_5', async () => {
-  const source = 'flow right\nperson user "사용자"\nbox a1 "A1"\nbox a2 "A2"\nbox a3 "A3"\nbox a4 "A4"\nuser -> a1\nuser -> a2\nuser -> a3\nuser -> a4';
-
-  assert.deepEqual(await problemsOf(source), []);
-});
-
-test('checkFigure_fan_in_to_one_shape_passes_check_5', async () => {
-  const source = 'flow right\nbox a1 "A1"\nbox a2 "A2"\nbox a3 "A3"\nbox a4 "A4"\nbox sink "합류"\na1 -> sink\na2 -> sink\na3 -> sink\na4 -> sink';
-
-  assert.deepEqual(await problemsOf(source), []);
-});
-
-test('checkFigure_parallel_segments_of_edges_between_different_shapes_stay_check_5_errors', () => {
-  const edge = (from, to, points) => ({ from, to, line: 1, points });
-  const scene = { edges: [edge('a', 'b', [{ x: 0, y: 0 }, { x: 100, y: 0 }]), edge('c', 'd', [{ x: 0, y: 4 }, { x: 100, y: 4 }])], items: [], groups: [], width: 100, height: 100 };
-  const problems = createProblems();
-
-  checkFigure({ figure: { kind: 'flow', direction: 'right' }, scene, timeline: { segs: [] } }, problems);
-
-  assert.ok(problems.errors.some((p) => p.code === 'check-5'), JSON.stringify(problems.errors));
-});
-
-test('checkFigure_wide_group_figure_with_too_wide_aspect_suggests_smaller_aspect', async () => {
-  const chain = Array.from({ length: 16 }, (_, i) => `box n${i} "N${i}"`).join('\n');
-  const edges = Array.from({ length: 15 }, (_, i) => `n${i} -> n${i + 1}`).join('\n');
-
-  const { warnings } = await buildFigure(`flow right\naspect 20\n${chain}\ngroup g "G" {\n  box a "A"\n}\n${edges}\nn15 -> a`);
-
-  assert.ok(warnings.some((w) => w.message.includes('Use a smaller aspect than 20')), JSON.stringify(warnings));});

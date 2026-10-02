@@ -70,7 +70,7 @@
 
 ### 색 역할
 
-색은 두 층이다. 원색(`color.palette.*`)이 값(hex)을 갖고, 역할 토큰이 원색을 가리킨다. 코드와 CSS는 역할 토큰만 쓰고 원색을 직접 쓰지 않는다(`test/token-layers.test.js`가 막는다). 역할 표는 이 문서에만 있고 다른 문서는 이 표를 링크한다.
+색은 두 층이다. 원색(`color.palette.*`)이 값(hex)을 갖고, 역할 토큰이 원색을 가리킨다. 코드와 CSS는 역할 토큰만 쓰고 원색을 직접 쓰지 않는다(`test/contrast.test.js`의 `tokens_color_literals_live_only_in_the_palette_layer_and_code_never_names_it`가 막는다). 역할 표는 이 문서에만 있고 다른 문서는 이 표를 링크한다.
 
 | 역할 | 뜻 | 라이트 | 다크 | 맞닿는 면 | 대비 |
 |---|---|---|---|---|---|
@@ -86,8 +86,8 @@
 | `tag.purple`, `tag.green`, `tag.teal`, `tag.gray` | 카드 태그 범주색. 글자는 `fg`, 색은 옅은 띠(`opacity.tag`)로만 | `#8b5cf6`, `#10b981`, `#11a6b0`, `#8b949e` | 같음 | 노드, 카드 바탕 위 띠와 글자 `fg` | 8.46 이상 |
 | `border`, `group-border` | 노드, 그룹, 카드, 조작부 윤곽 | `#818b99` | `#72767a` | 그림 바탕, 그룹, 카드 바탕, 노드, 문서 바탕 | 3.02 / 3.01 |
 
-- 파랑은 "지금"(`state`)과 "주장하는 계열"(`data.main`)을 뜻하고, 조작부(`ui`)도 같은 파랑을 쓴다. 그 밖의 뜻으로는 쓰지 않는다. 카드 태그는 파랑과 주황을 쓰지 않는다. 태그 색상이 `state.active`, `data.compare`와 40도 이상 떨어진다는 것을 `test/palette.test.js`가 잰다.
-- `data.main`, `data.compare`는 선언 순서가 아니라 계열의 `role`이 정한다([차트](charts.md)). 같은 계열 이름은 모든 예제에서 같은 역할이다. `test/series-role.test.js`가 잰다.
+- 파랑은 "지금"(`state`)과 "주장하는 계열"(`data.main`)을 뜻하고, 조작부(`ui`)도 같은 파랑을 쓴다. 그 밖의 뜻으로는 쓰지 않는다. 카드 태그는 파랑과 주황을 쓰지 않는다. 태그 색상이 `state.active`, `data.compare`와 40도 이상 떨어진다는 것을 `test/contrast.test.js`의 `tagColors_keep_their_hue_away_from_the_active_blue_and_the_compare_orange`가 잰다.
+- `data.main`, `data.compare`는 선언 순서가 아니라 계열의 `role`이 정한다([차트](charts.md)). 같은 계열 이름은 모든 예제에서 같은 역할이다. `test/chart.test.js`의 `examples_same_series_label_and_id_have_the_same_role_in_every_source`가 잰다.
 - 라이트 파랑은 이력서 저장소(woon-resume)의 `--manta-accent`에서 왔고 다크는 그대로다. 라이트 이력서 색은 회색 그림 바탕, 그룹 바탕, 카드 바탕 위에서 2.75~2.93이라 3에 못 미친다. 대비 규칙이 색 선택보다 우선이므로 그래픽 자리에는 같은 색상과 채도에서 3을 넘는 가장 밝은 `palette.blue.550`을 쓴다. 글자와 글자가 놓이는 면은 같은 색상에서 4.5를 넘는 가장 밝은 `palette.blue.600`이다.
 - 주황은 파랑에서 만든다. 파랑을 OKLCH로 바꿔 L(밝기)과 C(채도)는 그대로 두고 색상만 h 50(주황)으로 돌렸다. 두 기준 색은 토큰이 아니라 `test/helpers.js`의 상수(`RESUME_ACCENT`, `RESUME_ORANGE`)다. 같은 규칙으로 그래픽 자리에는 3을 넘는 가장 밝은 `palette.orange.550`을 쓴다. 파랑과 주황은 적록 색각 이상(protanopia, deuteranopia) 시뮬레이션에서도 OKLab 거리 0.1 이상으로 구분된다. 글자, 보조 글자는 스킬 값이다.
 - 라이트 모드 그림 바탕(`color.bg`)은 흰 문서 안에서 그림 경계가 보이도록 아주 옅은 회색(`palette.gray.25`)이고, 판 테두리(`color.plate-border`)가 경계를 더한다. 상자, 원통, 사람, 테이블 채우기(`color.node`)는 라이트에서 흰색이라 바탕 위에 떠 보이고, 다크에서는 바탕(`palette.neutral.900`)보다 한 단계 밝은 `palette.neutral.850`이다. 구조 그림의 그룹은 `color.group`(바탕, 라이트 `palette.gray.40`)과 `color.group-border`로 경계를 잡는다. 이 회색 판은 문서에 넣는 SVG 파일에만 있다. 재생기와 목록 쪽 카드 안에서는 카드 전체가 같은 `color.bg` 한 톤이다.

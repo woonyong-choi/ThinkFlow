@@ -216,7 +216,7 @@ step "대화" "입력은 화면을 거쳐 엔진이 에이전트로 보낸다"
 - `mutoscope migrate 원본... [--write]`는 진단의 `fix`를 그대로 적용한다. 기본은 바뀔 줄만 `-`, `+`로 보여 주고, `--write`일 때만 파일을 고친다. 원본에 오류가 있거나 고친 글에 오류나 폐기가 남으면 아무것도 쓰지 않는다. 새 폐기 항목은 표에 `replace`만 적으면 된다.
 
 - CLI 출력과 옵션도 같은 규칙이다. 명령과 옵션 이름, 종료 코드, `--json` 필드는 추가만 하고, 옛 `--json` 필드(`lines`, `check`, `level`)는 `src/diagnostics.js` 표에 deprecated로 표시해 다음 판까지 함께 낸다.
-- 고정 묶음: `test/fixtures/compat/v1/`는 판 1 원본의 고정 묶음이다. 폐기 전 예제 원본(`main-*`), 옛 형식 사례(`old-*`), 모든 낱말과 선택 사항을 한 번씩 쓰는 파일(`all-*`)이 들어 있고, 앞으로 고치지 않는다. 테스트는 모든 파일이 오류 없이 읽히고 구조 요약(도형, 선, 박자, 계열 수)이 스냅샷과 같은지, 문법 표의 모든 항목이 묶음에 쓰였는지 본다. 새 판이 생기면 `v2` 폴더를 더한다.
+- 고정 묶음: `test/fixtures/compat/v1/`는 판 1 원본의 고정 묶음이다. 폐기 전 예제 원본(`main-*`), 옛 형식 사례(`old-*`), 모든 낱말과 선택 사항을 한 번씩 쓰는 파일(`all-*`)이 들어 있고, 앞으로 고치지 않는다. `test/compat.test.js`는 모든 파일이 오류 없이 읽히고 구조 요약(도형, 선, 박자, 계열 수)이 스냅샷과 같은지, 문법 표의 모든 항목이 묶음에 쓰였는지 본다. 새 판이 생기면 `v2` 폴더를 더한다.
 - 기능 추가 체크리스트: 표에 항목을 더한다(`since`는 현재 판). 생략했을 때의 기본값이 옛 뜻을 지키는지 확인한다. 항목을 쓰는 `all-*` 파일을 묶음에 더한다(있는 파일은 고치지 않는다). 옛 형식을 없애면 표에 `deprecated.replace`를 적는다. `npm run grammar`로 아래 문법 표를 다시 쓴다.
 
 다음 표는 문법 표에서 만든다. 손으로 고치지 않고 `npm run grammar`로 다시 쓰며, 문법 표와 어긋나면 테스트가 실패한다. 선택 사항의 앞 이름은 쓰이는 문장이다(`graph`는 `show id graph`, `column`은 테이블 열 줄).
@@ -275,16 +275,16 @@ step "대화" "입력은 화면을 거쳐 엔진이 에이전트로 보낸다"
 
 | 요구사항 | 검증 계획 |
 |---|---|
-| 문서의 모든 예시 원본이 오류와 경고 없이 읽힌다. | 문서의 예시 원본을 뽑아 `check --strict` 실행 |
-| 세 부분 순서, 낱말 공백, 이름 형식, 값 형식을 어긴 줄을 줄 번호와 함께 알린다. | 규칙마다 원본 하나로 오류 확인 |
-| 선언하지 않은 이름과 비슷한 이름을 함께 알린다. | `cdex`를 쓴 원본이 `codex`를 제안하는지 확인 |
-| 같은 방향 선 두 개, 자기 자신으로 가는 선, 그룹과 안 도형 사이 선을 막는다. | 원본마다 오류 확인 |
-| 이동은 같은 방향 선을 먼저, 없으면 반대 방향 선을 거꾸로 따라간다. | 두 경우의 이동 방향 확인 |
-| 카드는 도착 규칙대로 바뀐다. | `&`로 다른 시간에 도착하는 두 이동의 카드 바뀌는 시점 확인 |
-| 오류를 모두 모아 알리고 파일을 쓰지 않는다. | 오류 세 개 원본에서 메시지 세 줄과 결과 파일 없음 확인 |
-| 옛 형식 원본이 오류 없이 읽히고 폐기 진단과 fix를 낸다. | `test/fixtures/compat/v1/`의 원본으로 오류 0, 구조 요약 스냅샷, 폐기 진단 확인 |
-| 문법 표와 이 문서의 표가 같다. | 표에서 만든 글과 문서 구간을 비교하는 테스트 |
-| `migrate`가 고친 원본에 오류와 폐기가 남지 않는다. | 옛 형식 원본에 `migrate --write` 뒤 `check --strict --no-deprecated` |
+| 문서의 모든 예시 원본이 오류와 경고 없이 읽힌다. | `test/grammar.test.js`의 `docExamples_every_design_doc_example_builds_without_errors_or_warnings`. 문서의 예시 원본을 뽑아 strict로 읽는다 |
+| 세 부분 순서, 낱말 공백, 이름 형식, 값 형식을 어긴 줄을 줄 번호와 함께 알린다. | `test/grammar.test.js`의 `parseFigure_malformed_source_reports_the_line_and_the_rule`. 규칙마다 원본 하나로 줄 번호와 오류 확인 |
+| 선언하지 않은 이름과 비슷한 이름을 함께 알린다. | `test/grammar.test.js`의 `parseFigure_unknown_name_suggests_the_nearest_declared_name`. `cdex`를 쓴 원본이 `codex`를 제안하는지 확인 |
+| 같은 방향 선 두 개, 자기 자신으로 가는 선, 그룹과 안 도형 사이 선을 막는다. | `test/grammar.test.js`의 `parseFigure_malformed_source_reports_the_line_and_the_rule`(선 행). 원본마다 오류 확인 |
+| 이동은 같은 방향 선을 먼저, 없으면 반대 방향 선을 거꾸로 따라간다. | `test/grammar.test.js`의 `parseFigure_hop_follows_the_same_direction_edge_first_then_the_reverse_one`. 두 경우의 이동 방향 확인 |
+| 카드는 도착 규칙대로 바뀐다. | `test/motion.test.js`의 `buildTimeline_card_changes_at_the_latest_arrival_and_the_source_card_at_beat_start`. `&`로 다른 시간에 도착하는 두 이동의 카드 바뀌는 시점 확인 |
+| 오류를 모두 모아 알리고 파일을 쓰지 않는다. | `test/grammar.test.js`의 `parseFigure_all_errors_are_reported_together`(오류 세 개 원본에서 메시지 세 줄), `test/cli.test.js`의 `main_render_with_an_error_writes_no_file_and_reports_the_line`(결과 파일 없음) |
+| 옛 형식 원본이 오류 없이 읽히고 폐기 진단과 fix를 낸다. | `test/compat.test.js`의 `compat_v1_every_fixture_builds_without_errors_and_matches_the_structure_snapshot`, `compat_v1_old_forms_report_only_deprecated_never_errors_or_warnings`. `test/fixtures/compat/v1/`의 원본으로 오류 0, 구조 요약 스냅샷, 폐기 진단 확인 |
+| 문법 표와 이 문서의 표가 같다. | `test/grammar.test.js`의 `grammarDoc_figure_syntax_tables_equal_the_tables_made_from_the_grammar`. 표에서 만든 글과 문서 구간을 비교 |
+| `migrate`가 고친 원본에 오류와 폐기가 남지 않는다. | `test/compat.test.js`의 `cli_migrate_previews_a_diff_and_write_fixes_the_file_so_check_reports_nothing`. 옛 형식 원본에 `migrate --write` 뒤 `check --strict --no-deprecated` |
 
 ## 단점
 

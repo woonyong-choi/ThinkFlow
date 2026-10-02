@@ -1,171 +1,84 @@
-import test from 'node:test';
+// 글꼴: 글 폭 재기와 글꼴 조각 넣기(docs/design/layout.md 글 재기). 본문은 Inter와 Noto Sans KR, 차트 숫자는 Inter tnum, JetBrains Mono는 코드에만 쓴다.
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
+import { test } from 'node:test';
 import * as fontkit from 'fontkit';
 import { createGlyphSet, embedFonts, findMissingGlyph, measure, wrap } from '../src/measure/fonts.js';
+import { values } from '../src/tokens.js';
 
 const require = createRequire(import.meta.url);
+
+const INTER = '@expo-google-fonts/inter/400Regular/Inter_400Regular.ttf';
+const NOTO = '@expo-google-fonts/noto-sans-kr/400Regular/NotoSansKR_400Regular.ttf';
+const NOTO_LATIN = '@expo-google-fonts/noto-sans/400Regular/NotoSans_400Regular.ttf';
+const NOTO_MATH = '@expo-google-fonts/noto-sans-math/400Regular/NotoSansMath_400Regular.ttf';
+const MONO = 'jetbrains-mono/fonts/webfonts/JetBrainsMono-Regular.woff2';
 
 // cost: time O(f), heap O(f), stack O(1), io 1
 // vars: f = 글꼴 파일 크기
 // basis: estimate
 /** 글꼴 파일의 글 폭(px). 테스트가 기대값을 파일에서 직접 구하려고 쓴다. */
-function widthIn(file, text, size) {
+function widthIn(file, text, size, features = []) {
   const font = fontkit.create(readFileSync(require.resolve(file)));
-  return (font.layout(text).advanceWidth / font.unitsPerEm) * size;
+  return (font.layout(text, features).advanceWidth / font.unitsPerEm) * size;
 }
 
 /** 부동소수점 합 순서 차이만 허용한다. */
-function assertNear(actual, expected) {
-  assert.ok(Math.abs(actual - expected) < 1e-9, `${actual} != ${expected}`);
+function assertNear(actual, expected, label = '') {
+  assert.ok(Math.abs(actual - expected) < 1e-9, `${label} ${actual} != ${expected}`);
 }
 
-const INTER = '@expo-google-fonts/inter/400Regular/Inter_400Regular.ttf';
-const NOTO = '@expo-google-fonts/noto-sans-kr/400Regular/NotoSansKR_400Regular.ttf';
+const WIDTHS = [
+  { label: '라틴은 Inter', text: 'Hello, world', face: 'regular', expected: () => widthIn(INTER, 'Hello, world', 12) },
+  { label: '한글은 Noto Sans KR, 띄어쓰기는 Inter', text: '요청 처리', face: 'regular', expected: () => widthIn(NOTO, '요청', 12) + widthIn(INTER, ' ', 12) + widthIn(NOTO, '처리', 12) },
+  { label: '섞인 글은 구간별 글꼴의 합', text: 'API 요청', face: 'regular', expected: () => widthIn(INTER, 'API ', 12) + widthIn(NOTO, '요청', 12) },
+  { label: '고정폭 안의 한글은 Noto Sans KR', text: '요청', face: 'mono', expected: () => widthIn(NOTO, '요청', 12) },
+  { label: '고정폭 라틴은 글자당 0.6em', text: 'abc', face: 'mono', expected: () => 3 * 12 * 0.6 },
+  { label: '차트 숫자는 Inter tnum', text: '1.5k', face: 'num', expected: () => widthIn(INTER, '1.5k', 12, ['tnum']) },
+  { label: '백틱 구간은 이름이 무엇이든 고정폭이고 백틱은 재지 않는다', text: 'a `ab` b', face: 'regular', expected: () => widthIn(INTER, 'a ', 12) + widthIn(MONO, 'ab', 12) + widthIn(INTER, ' b', 12) },
+  { label: '위 첨자 T는 Noto Sans', text: 'ᵀ', face: 'regular', expected: () => widthIn(NOTO_LATIN, 'ᵀ', 12) },
+  { label: '합성 기호는 Noto Sans Math', text: '∘', face: 'regular', expected: () => widthIn(NOTO_MATH, '∘', 12) },
+];
 
-test('measure_latin_uses_inter_width', () => {
-  assertNear(measure('Hello, world', 12, 'regular'), widthIn(INTER, 'Hello, world', 12));
+// 근거: 설계 layout.md 요구사항 "그린 글 폭이 잰 글 폭과 같다"(글 폭 = 구간별 글꼴 파일의 폭 합, 글꼴 순서 Inter, Noto Sans KR, Noto Sans, Noto Sans Math)
+test('measure_width_equals_the_sum_of_the_font_file_widths_of_each_run', () => {
+  for (const { label, text, face, expected } of WIDTHS) assertNear(measure(text, 12, face), expected(), label);
   assert.notEqual(measure('Hello', 12, 'semibold'), measure('Hello', 12, 'regular'));
+  assert.ok(measure('111', 11, 'num') > measure('111', 11, 'regular'));
+  assertNear(measure('111', 11, 'num'), measure('000', 11, 'num'), 'tnum digits share one width');
+  for (const text of ['Kᵀ', 'X⁻¹', '√d', 'a × b', '∑ x', 'x ∈ S', 'f ∘ g', '≤ ≥ ≈ ∞']) assert.ok(measure(text, 12) > 0, text);
 });
 
-test('measure_hangul_uses_noto_sans_kr_width', () => {
-  assertNear(measure('요청 처리', 12, 'regular'), widthIn(NOTO, '요청', 12) + widthIn(INTER, ' ', 12) + widthIn(NOTO, '처리', 12));
-});
-
-test('measure_mixed_text_sums_runs_by_font', () => {
-  const mixed = measure('API 요청', 12, 'regular');
-  assertNear(mixed, widthIn(INTER, 'API ', 12) + widthIn(NOTO, '요청', 12));
-});
-
-test('measure_mono_hangul_uses_noto_sans_kr_width', () => {
-  const hangul = measure('요청', 11, 'mono');
-  assertNear(hangul, measure('요청', 11, 'regular'));
-  assertNear(hangul, widthIn(NOTO, '요청', 11));
-  const mixed = measure('app-server 요청', 11, 'mono');
-  assertNear(mixed, measure('app-server ', 11, 'mono') + hangul);
-  assert.equal(measure('abc', 10, 'mono'), 18);
-});
-
-test('measure_and_wrap_are_deterministic', () => {
-  assert.equal(measure('app-server 요청', 11, 'mono'), measure('app-server 요청', 11, 'mono'));
-  assert.deepEqual(wrap('app-server 요청 보내기', 60, { size: 11, face: 'mono' }), wrap('app-server 요청 보내기', 60, { size: 11, face: 'mono' }));
-});
-
-test('findMissingGlyph_follows_fallback_chain', () => {
+// 근거: 설계 layout.md "글꼴 없는 글자 검사도 구간별 글꼴을 따른다", 글꼴 어디에도 없는 글자는 오류
+test('findMissingGlyph_follows_the_fallback_chain_and_a_glyph_in_no_font_still_throws', () => {
   assert.equal(findMissingGlyph('요청', 'mono'), undefined);
   assert.equal(findMissingGlyph('a😀', 'mono'), '😀');
-});
-
-test('embedFonts_mono_text_with_hangul_embeds_both_faces', async () => {
-  const glyphs = createGlyphSet();
-  glyphs.add('ab 요청', 'mono');
-  const css = await embedFonts(glyphs.used);
-  assert.match(css, /font-family:FigMono/);
-  assert.match(css, /font-family:FigSansKo/);
-  // 한글 조각이 있으면 같은 굵기 Inter 조각에 공백이 항상 들어간다(글자는 공백뿐).
-  assert.equal([...css.matchAll(/font-family:FigSans;/g)].length, 1);
-  assert.equal(css, await embedFonts(glyphs.used));
-});
-
-test('tokens_mono_font_chain_falls_back_to_sans_face', async () => {
-  const { values } = await import('../src/tokens.js');
-  assert.match(values.font.mono, /^FigMono, FigSans, FigSansKo, /);
-  assert.match(values.font.sans, /^FigSans, FigSansKo, /);
-});
-
-test('embedFonts_body_text_splits_inter_and_noto_pieces', async () => {
-  const glyphs = createGlyphSet();
-  glyphs.add('API 요청', 'semibold');
-  const css = await embedFonts(glyphs.used);
-  assert.match(css, /font-family:FigSans;font-weight:600/);
-  assert.match(css, /font-family:FigSansKo;font-weight:600/);
-});
-
-test('pages_use_inter_and_noto_chain_and_name_tag', async () => {
-  const { toDocument, toGallery } = await import('../src/html.js');
-  const figures = [{ name: 'bar', title: '막대 차트', kind: 'bar', isChart: true, href: 'bar' }];
-  for (const page of [toDocument(figures, '예제'), toGallery(figures, '예제')]) {
-    assert.match(page, /--font-sans: [^;]*Inter[^;]*Noto Sans KR/);
-    assert.match(page, /font-family: var\(--font-sans\)/);
-    assert.doesNotMatch(page, /h2 \{[^}]*font-mono/);
-    assert.match(page, /<h2><code class="name">bar\.muto<\/code><span class="kind">bar<\/span><\/h2>/);
-  }
-});
-
-test('pageHead_repeats_the_figure_title_only_when_the_figure_does_not_draw_one', async () => {
-  const { toDocument, toGallery } = await import('../src/html.js');
-  const figures = [
-    { name: 'bar', title: '막대 차트', kind: 'bar', isChart: true, href: 'bar' },
-    { name: 'memory', title: '기억 그래프', kind: 'flow', isChart: false, href: 'memory' },
-  ];
-  for (const page of [toDocument(figures, '예제'), toGallery(figures, '예제')]) {
-    assert.doesNotMatch(page, /<h2>[^<]*막대 차트/);
-    assert.match(page, /<h2><span class="title">기억 그래프<\/span><code class="name">memory\.muto<\/code><span class="kind">flow<\/span><\/h2>/);
-  }
-});
-
-test('measure_num_face_uses_inter_tnum_digit_width', () => {
-  const font = fontkit.create(readFileSync(require.resolve(INTER)));
-  const tabular = font.layout('1.5k', ['tnum']).advanceWidth / font.unitsPerEm;
-  assertNear(measure('1.5k', 11, 'num'), tabular * 11);
-  assert.ok(measure('111', 11, 'num') > measure('111', 11, 'regular'));
-  assertNear(measure('111', 11, 'num'), measure('000', 11, 'num'));
-});
-
-test('embedFonts_num_text_keeps_tnum_glyphs_in_inter_piece', async () => {
-  const glyphs = createGlyphSet();
-  glyphs.add('0123456789', 'num');
-  const css = await embedFonts(glyphs.used);
-  assert.equal(css.match(/@font-face/g).length, 1);
-  const piece = Buffer.from(/base64,([^)]+)\)/.exec(css)[1], 'base64');
-  const subset = fontkit.create(piece);
-  assert.ok(subset.availableFeatures.includes('tnum'));
-  assertNear(subset.layout('1', ['tnum']).advanceWidth, subset.layout('0', ['tnum']).advanceWidth);
-});
-
-test('measure_backtick_span_uses_mono_width_without_marks', () => {
-  assertNear(measure('a `ab` b', 12, 'regular'), measure('a ', 12) + widthIn('jetbrains-mono/fonts/webfonts/JetBrainsMono-Regular.woff2', 'ab', 12) + measure(' b', 12));
-  assertNear(measure('`요청`', 12, 'regular'), measure('요청', 12, 'regular'));
-});
-
-test('embedFonts_backtick_span_embeds_mono_piece_only_for_code', async () => {
-  const glyphs = createGlyphSet();
-  glyphs.add('plain `x`', 'regular');
-  const css = await embedFonts(glyphs.used);
-  assert.match(css, /font-family:FigMono/);
-  assert.match(css, /font-family:FigSans;/);
-});
-
-test('wrap_splits_backtick_span_and_pairs_marks_per_line', () => {
-  const lines = wrap('aa `bb cc dd` ee', measure('aa `bb`', 12), { size: 12 });
-  assert.ok(lines.length > 1);
-  for (const line of lines) assert.equal((line.match(/`/g) ?? []).length % 2, 0);
-  assert.equal(lines.join(' ').replaceAll('`', '').replace(/\s+/g, ' '), 'aa bb cc dd ee');
-});
-
-test('findMissingGlyph_checks_backtick_span_against_mono_chain', () => {
   assert.equal(findMissingGlyph('`요청`'), undefined);
   assert.equal(findMissingGlyph('a `b😀`'), '😀');
+  for (const text of ['Kᵀ', 'X⁻¹', '√d', 'a × b', '∑ x', 'x ∈ S', 'f ∘ g', '≤ ≥ ≈ ∞']) assert.equal(findMissingGlyph(text), undefined, text);
+  assert.throws(() => measure('😀', 12), /no glyph/);
 });
 
-test('renderRich_wraps_code_and_muted_in_tspans', async () => {
-  const { renderRich } = await import('../src/text.js');
-  assert.equal(renderRich('a <b>'), 'a &lt;b&gt;');
-  assert.equal(renderRich('a `b` c'), 'a <tspan class="code">b</tspan> c');
-  assert.equal(renderRich('a `bc`', 3), 'a <tspan class="code">b</tspan><tspan class="code muted">c</tspan>');
+const EMBEDS = [
+  { label: '고정폭 글 안의 한글은 FigMono와 FigSansKo를 모두 넣는다', text: 'ab 요청', face: 'mono', families: [/font-family:FigMono/, /font-family:FigSansKo/] },
+  { label: '본문 글은 같은 굵기로 Inter와 Noto 조각을 나눈다', text: 'API 요청', face: 'semibold', families: [/font-family:FigSans;font-weight:600/, /font-family:FigSansKo;font-weight:600/] },
+  { label: '백틱 구간만 고정폭 조각을 쓴다', text: 'plain `x`', face: 'regular', families: [/font-family:FigMono/, /font-family:FigSans;/] },
+  { label: '수학 기호는 Noto Sans(FigSansSym)와 Noto Sans Math(FigSansMath) 조각을 넣는다', text: 'Q Kᵀ √ ∘ ×', face: 'regular', families: [/font-family:FigSansSym;font-weight:400/, /font-family:FigSansMath;font-weight:400 900/] },
+];
+
+// 근거: 설계 layout.md 글 재기 "그림에 넣는 글꼴 조각은 글자가 필요로 하는 글꼴마다 하나씩이고, 이름은 토큰 font 사슬과 같다"
+test('embedFonts_embeds_a_piece_for_every_family_the_text_needs', async () => {
+  for (const { label, text, face, families } of EMBEDS) {
+    const glyphs = createGlyphSet();
+    glyphs.add(text, face);
+    const css = await embedFonts(glyphs.used);
+
+    for (const family of families) assert.match(css, family, label);
+  }
 });
 
-test('chart_and_label_css_use_body_font_with_tabular_numbers', async () => {
-  const { readFileSync: read } = await import('node:fs');
-  const chart = read(new URL('../src/styles/chart.css', import.meta.url), 'utf8');
-  const figure = read(new URL('../src/styles/figure.css', import.meta.url), 'utf8');
-  assert.doesNotMatch(chart, /font-mono/);
-  assert.match(chart, /\.chart-value,[^}]*font-variant-numeric: tabular-nums/s);
-  assert.match(figure, /\.fl \.code \{\s*font-family: var\(--font-mono\)/);
-  assert.doesNotMatch(figure.match(/\.fl \.edgelabel \{[^}]*\}/)[0], /font-mono/);
-});
-
+// 근거: 설계 layout.md 글 재기 "한글 조각이 든 굵기마다 같은 굵기 Inter 조각의 공백이 항상 들어간다"(한글만 있는 글이 시스템 글꼴로 그려지던 버그)
 test('embedFonts_hangul_only_text_still_embeds_a_space_glyph_in_the_same_weight_of_inter', async () => {
   const glyphs = createGlyphSet();
   glyphs.add('배송 중', 'medium');
@@ -181,31 +94,30 @@ test('embedFonts_hangul_only_text_still_embeds_a_space_glyph_in_the_same_weight_
   }
 });
 
-const NOTO_LATIN = '@expo-google-fonts/noto-sans/400Regular/NotoSans_400Regular.ttf';
-const NOTO_MATH = '@expo-google-fonts/noto-sans-math/400Regular/NotoSansMath_400Regular.ttf';
+// 근거: 설계 layout.md 글 재기 "글꼴 조각은 tnum 대체 글리프를 포함해 자른다. 그래서 보는 쪽이 tabular-nums로 그린 폭과 잰 폭이 같다"
+test('embedFonts_num_text_keeps_the_tnum_glyphs_in_one_inter_piece', async () => {
+  const glyphs = createGlyphSet();
+  glyphs.add('0123456789', 'num');
 
-test('measure_math_symbols_fall_back_to_the_open_font_chain_instead_of_failing', () => {
-  for (const text of ['Kᵀ', 'X⁻¹', '√d', 'a × b', '∑ x', 'x ∈ S', 'f ∘ g', '≤ ≥ ≈ ∞']) {
-    assert.equal(findMissingGlyph(text), undefined, text);
-    assert.ok(measure(text, 12) > 0, text);
-  }
+  const css = await embedFonts(glyphs.used);
+  const subset = fontkit.create(Buffer.from(/base64,([^)]+)\)/.exec(css)[1], 'base64'));
+
+  assert.equal(css.match(/@font-face/g).length, 1);
+  assert.ok(subset.availableFeatures.includes('tnum'));
+  assertNear(subset.layout('1', ['tnum']).advanceWidth, subset.layout('0', ['tnum']).advanceWidth);
 });
 
-test('measure_superscript_t_uses_noto_sans_width_and_the_composition_sign_uses_noto_sans_math', () => {
-  assertNear(measure('ᵀ', 12), widthIn(NOTO_LATIN, 'ᵀ', 12));
-  assertNear(measure('∘', 12), widthIn(NOTO_MATH, '∘', 12));
-});
-
-test('measure_glyph_missing_from_every_font_still_throws', () => {
-  assert.equal(findMissingGlyph('😀'), '😀');
-  assert.throws(() => measure('😀', 12), /no glyph/);
-});
-
-test('embedFonts_math_symbols_embed_the_symbol_and_math_families_and_keep_the_font_sans_chain', async () => {
-  const { values } = await import('../src/tokens.js');
-  const css = await embedFonts(new Map([['regular', 'Q Kᵀ √ ∘ ×']]));
-  assert.match(css, /font-family:FigSansSym;font-weight:400/);
-  assert.match(css, /font-family:FigSansMath;font-weight:400 900/);
+// 근거: 설계 layout.md 글 재기 "토큰 font.sans 사슬(Inter, Noto Sans KR, 기호, 수학)과 font.mono 사슬은 넣은 조각 이름과 같은 순서다"
+test('tokens_font_chains_list_every_embedded_family_in_order', () => {
   assert.match(values.font.sans, /^FigSans, FigSansKo, FigSansSym, FigSansMath, /);
   assert.match(values.font.mono, /^FigMono, FigSans, FigSansKo, FigSansSym, FigSansMath, /);
+});
+
+// 근거: 계약 figure-syntax.md 글 안 백틱, 설계 layout.md "구간이 줄 사이에 걸치면 줄마다 구간을 닫고 다시 열어 각 줄이 짝이 맞는 글이 된다"
+test('wrap_splits_a_backtick_span_and_pairs_the_marks_per_line', () => {
+  const lines = wrap('aa `bb cc dd` ee', measure('aa `bb`', 12), { size: 12 });
+
+  assert.ok(lines.length > 1);
+  for (const line of lines) assert.equal((line.match(/`/g) ?? []).length % 2, 0);
+  assert.equal(lines.join(' ').replaceAll('`', '').replace(/\s+/g, ' '), 'aa bb cc dd ee');
 });

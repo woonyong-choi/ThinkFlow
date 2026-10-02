@@ -170,22 +170,24 @@
 
 | 요구사항 | 검증 계획 |
 |---|---|
-| 배치에 넘긴 도형 크기와 그린 도형 크기가 같다. | 모든 예제에서 두 값 비교 |
+| 배치에 넘긴 도형 크기와 그린 도형 크기가 같다. | `test/layout.test.js`의 `layoutGraph_box_sizes_equal_measured_sizes`. 상자와 저장소 원본에서 두 값 비교 |
 | 선 양 끝이 도형의 연결점 규칙 자리에 있다. | 모든 예제에서 선 끝과 도형 연결점 규칙 비교 |
-| 그룹의 `direction`이 안쪽 배치에 지켜진다. | 세로 그룹의 안쪽 도형 x가 같고 y가 커지는지 확인 |
-| 선이 그룹 제목 글을 가로지르지 않는다. | 제목 자리에 선이 걸리는 원본에서 제목이 선 오른쪽으로 옮겨졌는지 확인. 옮기는 반복은 선분 수 + 1번이 상한이고 값이 더 커지지 않으면 멈춘다(`test/layout-titles.test.js`) |
-| 그룹 경계를 넘는 선이 끊김 없는 경로 하나가 된다. | 경로 조각의 끝과 다음 조각의 시작이 같은 점인지 확인 |
-| 같은 원본을 두 번 그리면 결과가 같다. | 두 결과 파일의 바이트 비교 |
-| 순환에서 되돌아가는 선만 위로 가고, 한 줄이 넓으면 방향을 돌려 폭 안에 든다. | `test/layout-fit.test.js` |
+| 그룹의 `direction`이 안쪽 배치에 지켜진다. | `test/layout.test.js`의 `layoutGraph_group_direction_down_stacks_the_children`. 세로 그룹의 안쪽 도형 x가 같고 y가 커지는지 확인 |
+| 선이 그룹 제목 글을 가로지르지 않는다. | `test/layout.test.js`의 `buildFigure_group_title_steps_aside_so_no_edge_crosses_it`, `placeTitles_fuzz_segment_at_the_rounding_edge_ends_and_keeps_the_title_clear`, `buildFigure_fuzz_group_title_float_stall_fixture_finishes`. 제목 자리에 선이 걸리는 원본에서 제목이 선 오른쪽으로 옮겨졌는지 확인. 옮기는 반복은 선분 수 + 1번이 상한이고 값이 더 커지지 않으면 멈춘다 |
+| 그룹 경계를 넘는 선이 끊김 없는 경로 하나가 된다. | 경로 조각의 끝과 다음 조각의 시작이 같은 점인지 확인. 테스트 없음: 처음부터 대응 테스트를 두지 않았고 눈으로 확인한다 |
+| 같은 원본을 두 번 그리면 결과가 같다. | `test/layout.test.js`의 `toSvg_same_source_gives_the_same_bytes`. 두 결과의 바이트 비교 |
+| 순환에서 되돌아가는 선만 위로 가고, 한 줄이 넓으면 방향을 돌려 폭 안에 든다. | `test/layout.test.js`의 `buildFigure_cycle_through_groups_sends_back_only_the_edge_declared_last_in_the_cycle`, `buildFigure_flow_right_wider_than_the_canvas_turns_down_instead_of_shrinking_the_text`, `buildFigure_state_cycle_that_does_not_fit_turns_down_and_keeps_the_return_edge_short` |
 | 올바른 무작위 구조 그림이 배치 오류나 그림 검사 오류가 되지 않는다. | `node scripts/fuzz-layout.mjs`(씨앗, 그림 종류 flow, state, data, `--no-aspect`)로 그림 수천 개를 만들어 실패 수 0 확인. 그림 하나가 5초를 넘으면 멈춘 것으로 세고 원본을 `--hang-dir`에 남긴다. 2026-10-02 종류 셋, aspect 유무, 씨앗 셋으로 27000개 0건 |
-| 같은 도형의 같은 면에 닿는 선 끝이 `space.2-5`보다 붙지 않고, 곧은 구간 가운데 점이 없다. | `test/layout-ports.test.js` |
-| 이름 `root`가 배치 내부 이름과 부딪히지 않는다. | `test/layout-names.test.js` |
-| 배치 실패가 줄 번호 있는 오류가 되고 안전 배치로 다시 그린다. | `test/layout-failure.test.js` |
-| 메모가 같은 행 화살표와 라벨을 가리지 않는다. | `test/sequence-note.test.js` |
-| 상태 그림이 밝히는 선이 이동 줄과 같다. | `test/state-edges.test.js` |
-| 폭을 넘는 열 선 사슬이 세로로 쌓이고 선 길이 합이 줄 바꿈의 절반 아래이며, 세로 그림의 열 선이 오른쪽 면 열 높이에 닿는다. | `test/table-layout.test.js` |
-| 세로 층의 quiet 선은 층 간격을 늘리지 않고(라벨 없는 선과 같다) 라벨이 선 옆에 있으며, 그 간격에서 이동 글 상자가 알약을 가리지 않는다. 가로 층의 quiet 선은 보이는 선과 같은 폭이다. | `test/quiet-layout.test.js` |
-| 그린 글 폭이 잰 글 폭과 같다. | 브라우저에서 잰 글 폭과 배치 값 비교 |
+| 같은 도형의 같은 면에 닿는 선 끝이 `space.2-5`보다 붙지 않고, 곧은 구간 가운데 점이 없다. | `test/layout.test.js`의 `buildFigure_fuzz_ends_of_in_and_out_edges_on_one_side_of_a_shape_keep_the_crowd_gap`, `buildFigure_paths_have_no_middle_point_on_a_straight_run` |
+| 이름 `root`가 배치 내부 이름과 부딪히지 않는다. | `test/layout.test.js`의 `buildFigure_nodes_and_groups_named_root_are_laid_out_like_any_other_name` |
+| 배치 실패가 줄 번호 있는 오류가 되고 안전 배치로 다시 그린다. | `test/layout.test.js`의 `buildFigure_layout_that_always_throws_becomes_an_error_diagnostic_with_a_line_number`, `buildFigure_layout_that_fails_once_is_retried_with_the_safe_layout_and_draws`, `buildFigure_edge_without_a_route_is_reported_at_the_edge_line`, `buildFigure_fuzz_wrapped_layout_that_crosses_a_shape_falls_back_and_warns_about_aspect` |
+| 메모가 같은 행 화살표와 라벨을 가리지 않는다. | `test/layout.test.js`의 `buildFigure_every_sequence_source_keeps_notes_clear_of_the_same_row_arrow_and_label`. 검사 12번은 `test/check.test.js`의 `checkFigure_each_item_reports_its_code_for_a_scene_that_breaks_it` |
+| 상태 그림이 밝히는 선이 이동 줄과 같다. | `test/layout.test.js`의 `buildFigure_state_figures_light_the_edges_their_move_lines_name` |
+| 폭을 넘는 열 선 사슬이 세로로 쌓이고 선 길이 합이 줄 바꿈의 절반 아래이며, 세로 그림의 열 선이 오른쪽 면 열 높이에 닿는다. | `test/layout.test.js`의 `buildFigure_table_chain_wider_than_the_canvas_stacks_vertically_without_a_snake_edge`, `buildFigure_table_column_edges_of_a_stack_leave_and_enter_on_the_right_face_at_the_row` |
+| 세로 층의 quiet 선은 층 간격을 늘리지 않고(라벨 없는 선과 같다) 라벨이 선 옆에 있으며, 그 간격에서 이동 글 상자가 알약을 가리지 않는다. 가로 층의 quiet 선은 보이는 선과 같은 폭이다. | `test/layout.test.js`의 `buildFigure_quiet_edge_label_does_not_widen_the_layer_gap_but_a_visible_label_does`, `buildFigure_quiet_edge_label_sits_beside_the_line_between_the_two_boxes`, `buildFigure_quiet_edge_gap_holds_the_pill_and_a_moving_text_without_covering_each_other`, `buildFigure_quiet_edge_in_a_row_keeps_its_label_on_the_line_and_the_figure_width` |
+| 그린 글 폭이 잰 글 폭과 같다. | `test/fonts.test.js`의 `measure_width_equals_the_sum_of_the_font_file_widths_of_each_run`(글꼴 파일의 폭 합). 브라우저에서 잰 글 폭과 배치 값 비교 |
+| 차트 숫자는 `tabular-nums`로 그린다. | `test/pages.test.js`의 `player_chart_numbers_are_tabular_and_monospace_is_used_only_for_code`(Chrome이 있을 때). `.chart-value`, `.chart-tick`의 계산된 `font-variant-numeric` 확인 |
+| 고정폭 글꼴은 코드(백틱 구간)에만 쓴다. | `test/pages.test.js`의 `player_chart_numbers_are_tabular_and_monospace_is_used_only_for_code`(Chrome이 있을 때). 라벨, 선 라벨, 탭, 설명은 고정폭이 아니고 `.code`는 고정폭인지 계산된 `font-family` 확인 |
 
 ## 단점
 

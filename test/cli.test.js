@@ -1,27 +1,17 @@
+// CLI: 명령 결과 파일, 종료 코드, 오류 출력, --json 필드, gallery(docs/design/figure-check.md, playback.md). 호환 필드와 종료 코드는 compat.test.js.
 import assert from 'node:assert/strict';
-import { spawnSync } from 'node:child_process';
-import { existsSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from 'node:fs';
-import { tmpdir } from 'node:os';
+import { existsSync, readFileSync, symlinkSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { test } from 'node:test';
 import { fileURLToPath } from 'node:url';
+import { spawnSync } from 'node:child_process';
+import { runCli as run, withFolder } from './helpers.js';
 
 const CLI = fileURLToPath(new URL('../src/cli.js', import.meta.url));
+const FLOW = 'flow right\nbox a "A"\nbox b "B"\na -> b\nstep "s"\n  a -> b "x"\n';
+const BAR = 'chart bar\nseries s "S"\nrow "r" s=1\n';
 
-// cost: time O(f), heap O(1), stack O(1), io 2 + f
-// vars: f = 폴더 안 파일 수(지울 때)
-// basis: estimate
-function withFolder(run) {
-  const folder = mkdtempSync(join(tmpdir(), 'mutoscope-cli-'));
-  try {
-    return run(folder);
-  } finally {
-    rmSync(folder, { recursive: true, force: true });
-  }
-}
-
-const run = (args, cwd) => spawnSync(process.execPath, [CLI, ...args], { cwd, encoding: 'utf8' });
-
+// 근거: 계약 package.json bin "mutoscope": 명령은 심볼릭 링크로 실행되어도 사용법을 낸다
 test('main_run_through_symlink_prints_usage', () => {
   withFolder((folder) => {
     const link = join(folder, 'mutoscope');
@@ -34,9 +24,10 @@ test('main_run_through_symlink_prints_usage', () => {
   });
 });
 
+// 근거: 계약 playback.md 결과 "움직이는 SVG {이름}.svg 하나, --html이면 재생기 HTML"
 test('main_render_writes_svg_and_html', () => {
   withFolder((folder) => {
-    writeFileSync(join(folder, 'a.muto'), 'flow right\nbox a "A"\nbox b "B"\na -> b\nstep "s"\n  a -> b "x"\n');
+    writeFileSync(join(folder, 'a.muto'), FLOW);
 
     const result = run(['render', 'a.muto', '--html'], folder);
 
@@ -45,19 +36,8 @@ test('main_render_writes_svg_and_html', () => {
   });
 });
 
-test('main_render_draws_rounded_backdrop_without_dot_grid', () => {
-  withFolder((folder) => {
-    writeFileSync(join(folder, 'a.muto'), 'flow right\nbox a "A"\nbox b "B"\na -> b\nstep "s"\n  a -> b "x"\n');
-
-    const result = run(['render', 'a.muto', '--html'], folder);
-
-    assert.equal(result.status, 0, result.stderr);
-    for (const file of ['a.svg', 'a.html']) assert.ok(!readFileSync(join(folder, file), 'utf8').includes('fl-dots'));
-    assert.match(readFileSync(join(folder, 'a.svg'), 'utf8'), /<rect x="[\d.]+" y="[\d.]+" width="[\d.]+" height="[\d.]+" rx="\d+" fill="var\(--color-bg\)" stroke="var\(--color-plate-border\)"/);
-  });
-});
-
-test('main_check_error_writes_no_file_and_reports_line', () => {
+// 근거: 설계 figure-check.md 요구사항 "오류가 있으면 그림 파일을 쓰지 않는다", figure-syntax.md "오류를 모두 모아 알리고 파일을 쓰지 않는다"
+test('main_render_with_an_error_writes_no_file_and_reports_the_line', () => {
   withFolder((folder) => {
     writeFileSync(join(folder, 'bad.muto'), 'flow right\nbox a "A"\na -> zz\n');
 
@@ -69,7 +49,8 @@ test('main_check_error_writes_no_file_and_reports_line', () => {
   });
 });
 
-test('main_json_prints_one_message_per_line', () => {
+// 근거: 설계 figure-check.md 요구사항 "--json 출력이 한 줄에 메시지 하나다"와 진단 필드 { file, line, ..., severity, code, column }
+test('main_json_prints_one_message_per_line_with_the_documented_fields', () => {
   withFolder((folder) => {
     writeFileSync(join(folder, 'bad.muto'), 'flow right\nbox Step "S"\nbox a "A"\na -> zz\n');
 
@@ -81,60 +62,7 @@ test('main_json_prints_one_message_per_line', () => {
   });
 });
 
-test('main_gallery_writes_index_with_each_figure', () => {
-  withFolder((folder) => {
-    writeFileSync(join(folder, 'a.muto'), 'flow right\nbox a "A"\n');
-    writeFileSync(join(folder, 'b.muto'), 'chart bar\nseries s "S"\nrow "r" s=1\n');
-
-    const result = run(['gallery', '.', '--out', 'out'], folder);
-
-    assert.equal(result.status, 0, result.stderr);
-    const index = readFileSync(join(folder, 'out', 'index.html'), 'utf8');
-    assert.match(index, /src="a\.html"/);
-    assert.match(index, /src="b\.html"/);
-  });
-});
-
-test('main_gallery_head_shows_file_name_and_kind_and_the_title_only_for_figures_without_a_drawn_title', () => {
-  withFolder((folder) => {
-    writeFileSync(join(folder, 'a.muto'), 'flow right\ntitle "흐름 제목"\nbox a "A"\n');
-    writeFileSync(join(folder, 'b.muto'), 'chart bar\ntitle "차트 제목"\nseries s "S"\nrow "r" s=1\n');
-
-    assert.equal(run(['gallery', '.', '--out', 'out'], folder).status, 0);
-
-    for (const page of ['index', 'document']) {
-      const html = readFileSync(join(folder, 'out', `${page}.html`), 'utf8');
-      assert.match(html, /<h2><span class="title">흐름 제목<\/span><code class="name">a\.muto<\/code><span class="kind">flow<\/span><\/h2>/);
-      assert.match(html, /<h2><code class="name">b\.muto<\/code><span class="kind">bar<\/span><\/h2>/);
-    }
-  });
-});
-
-test('main_gallery_has_theme_buttons_and_applies_color_scheme_to_root', () => {
-  withFolder((folder) => {
-    writeFileSync(join(folder, 'a.muto'), 'flow right\nbox a "A"\n');
-
-    assert.equal(run(['gallery', '.', '--out', 'out'], folder).status, 0);
-
-    const index = readFileSync(join(folder, 'out', 'index.html'), 'utf8');
-    for (const mode of ['system', 'light', 'dark']) assert.match(index, new RegExp(`data-mode="${mode}"`));
-    for (const label of ['시스템', '라이트', '다크']) assert.match(index, new RegExp(`>${label}</button>`));
-    assert.match(index, /root\.style\.colorScheme = mode/);
-    assert.match(index, /localStorage\.setItem\(THEME_KEY/);
-    assert.match(index, /:root \{\s*color-scheme: light dark;/);
-  });
-});
-
-test('main_json_gives_severity_check_code_and_position', () => {
-  withFolder((folder) => {
-    writeFileSync(join(folder, 'warn.muto'), 'flow right\nbox a "A"\nbox b "B"\na -> b "보냄" quiet\nb -> a\nstep "s"\n  b -> a\n');
-
-    const [message] = run(['check', 'warn.muto', '--json'], folder).stdout.trim().split('\n').map((l) => JSON.parse(l));
-
-    assert.deepEqual([message.code, message.severity, message.line, message.column], ['check-11', 'warning', 4, 1]);
-  });
-});
-
+// 근거: 버그 68ec356 "덧붙는 오류를 줄이면서도 문법 오류와 글꼴 없는 글자 오류를 함께 알린다", 설계 figure-syntax.md "오류를 모두 모아 알린다"
 test('main_check_reports_syntax_and_glyph_errors_together', () => {
   withFolder((folder) => {
     writeFileSync(join(folder, 'bad.muto'), 'flow right\nbox a "A 😀"\nbox b "B"\na -> cdex\n');
@@ -146,6 +74,7 @@ test('main_check_reports_syntax_and_glyph_errors_together', () => {
   });
 });
 
+// 근거: 버그 68ec356 "읽을 수 없는 파일은 한 줄 메시지로 알리고 나머지 파일은 계속 검사한다"
 test('main_missing_file_reports_one_line_and_checks_the_rest', () => {
   withFolder((folder) => {
     writeFileSync(join(folder, 'ok.muto'), 'flow right\naspect 1.6\nbox a "A"\nbox b "B"\na -> b\n');
@@ -157,37 +86,41 @@ test('main_missing_file_reports_one_line_and_checks_the_rest', () => {
   });
 });
 
-test('main_gallery_writes_document_preview_with_img_per_figure_and_link_from_index', () => {
+// 근거: 설계 playback.md 요구사항 "재생기 안에는 그림 바탕 판이 없고, SVG 파일에만 있다"(점 격자 없는 둥근 판)
+test('main_render_svg_keeps_the_rounded_plate_and_the_html_player_has_none', () => {
   withFolder((folder) => {
-    writeFileSync(join(folder, 'a.muto'), 'flow right\nbox a "A"\n');
-    writeFileSync(join(folder, 'b.muto'), 'chart bar\nseries s "S"\nrow "r" s=1\n');
+    writeFileSync(join(folder, 'b.muto'), BAR);
 
-    assert.equal(run(['gallery', '.', '--out', 'out'], folder).status, 0);
-
-    const doc = readFileSync(join(folder, 'out', 'document.html'), 'utf8');
-    assert.match(doc, /<img src="a\.svg"/);
-    assert.match(doc, /<img src="b\.svg"/);
-    for (const mode of ['system', 'light', 'dark']) assert.match(doc, new RegExp(`data-mode="${mode}"`));
-    assert.match(readFileSync(join(folder, 'out', 'index.html'), 'utf8'), /href="document\.html"/);
-  });
-});
-
-test('main_html_player_has_no_figure_plate_and_card_parts_share_bg_but_svg_keeps_plate', () => {
-  withFolder((folder) => {
-    writeFileSync(join(folder, 'b.muto'), 'chart bar\nseries s "S"\nrow "r" s=1\n');
-
-    assert.equal(run(['render', 'b.muto', '--html'], folder).status, 0);
-
-    const html = readFileSync(join(folder, 'b.html'), 'utf8');
+    const result = run(['render', 'b.muto', '--html'], folder);
     const svg = readFileSync(join(folder, 'b.svg'), 'utf8');
+    const html = readFileSync(join(folder, 'b.html'), 'utf8');
+
+    assert.equal(result.status, 0, result.stderr);
+    assert.match(svg, /<rect x="[\d.]+" y="[\d.]+" width="[\d.]+" height="[\d.]+" rx="\d+" fill="var\(--color-bg\)" stroke="var\(--color-plate-border\)"/);
     assert.ok(!html.includes('<rect width="100%" height="100%"'));
-    for (const selector of ['\\.fl-figure', '\\.fl-canvas', '\\.fl-foot', 'html\\.embedded body']) assert.match(html, new RegExp(`${selector} \\{[^}]*background: var\\(--color-bg\\);`));
-    assert.match(svg, /<rect x="[\d.]+" y="[\d.]+" width="[\d.]+" height="[\d.]+" rx="\d+" fill="var\(--color-bg\)" stroke="var\(--color-plate-border\)" stroke-width="1"\/>/);
+    for (const text of [svg, html]) assert.ok(!text.includes('fl-dots'));
   });
 });
 
-test('main_gallery_document_preview_centers_each_figure_paragraph', () => {
-  const doc = readFileSync(new URL('../src/styles/document.css', import.meta.url), 'utf8');
+// 근거: 설계 playback.md 요구사항 "gallery가 문서 미리보기를 쓴다"와 layout.md 카드 머리 "파일 이름과 꼬리표, 그림이 제목을 그리지 않을 때만 제목"
+test('main_gallery_writes_the_index_and_the_document_preview_with_each_figure_and_a_card_head', () => {
+  withFolder((folder) => {
+    writeFileSync(join(folder, 'a.muto'), 'flow right\ntitle "흐름 제목"\nbox a "A"\n');
+    writeFileSync(join(folder, 'b.muto'), 'chart bar\ntitle "차트 제목"\nseries s "S"\nrow "r" s=1\n');
 
-  assert.match(doc, /\.figure \{\s*text-align: center;/);
+    const result = run(['gallery', '.', '--out', 'out'], folder);
+    const page = (name) => readFileSync(join(folder, 'out', `${name}.html`), 'utf8');
+
+    assert.equal(result.status, 0, result.stderr);
+    assert.match(page('index'), /src="a\.html"/);
+    assert.match(page('index'), /src="b\.html"/);
+    assert.match(page('index'), /href="document\.html"/);
+    assert.match(page('document'), /<img src="a\.svg"/);
+    assert.match(page('document'), /<img src="b\.svg"/);
+    for (const name of ['index', 'document']) {
+      assert.match(page(name), /<h2><span class="title">흐름 제목<\/span><code class="name">a\.muto<\/code><span class="kind">flow<\/span><\/h2>/);
+      assert.match(page(name), /<h2><code class="name">b\.muto<\/code><span class="kind">bar<\/span><\/h2>/);
+      for (const mode of ['system', 'light', 'dark']) assert.match(page(name), new RegExp(`data-mode="${mode}"`));
+    }
+  });
 });

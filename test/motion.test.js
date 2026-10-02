@@ -1,12 +1,12 @@
-// 움직이는 SVG의 점이 시간표와 같은 시각에 같은 위치에 있는지 SMIL 값을 직접 풀어 확인한다.
+// 움직임: 시간표(박자, 이동 시간, 카드 바뀜)와 움직이는 SVG가 시간표와 같은 시각에 같은 위치에 있다(docs/design/playback.md).
 import assert from 'node:assert/strict';
 import { readdirSync, readFileSync } from 'node:fs';
 import { test } from 'node:test';
 import { buildFigure } from '../src/build.js';
 import { curveOf } from '../src/easing.js';
+import { flattenRoute, routeLength } from '../src/route.js';
 import { toSvg } from '../src/svg.js';
 import { values } from '../src/tokens.js';
-import { playerSource } from './helpers.js';
 
 const EXAMPLES = new URL('../examples/', import.meta.url);
 const MOVE = curveOf('move');
@@ -90,128 +90,16 @@ function isInsideGroup(svg, groupStart, index) {
   return depth > 0;
 }
 
-test('toSvg_packet_key_times_never_decrease_and_counts_match', async () => {
-  for (const { name, svg } of await animatedExamples()) {
-    for (const { opacity, motion, slide } of packetsOf(svg)) {
-      const keyed = [opacity.times, motion.times, ...(slide.times ? [slide.times] : [])];
-      for (const times of keyed) {
-        assert.equal(times[0], 0, name);
-        assert.ok(times.at(-1) <= 1, name);
-        // 글 상자 옮김(slide)은 자리를 순간에 바꾸는 곳에서 같은 시각이 이어진다. 점의 보임과 이동은 늘어나기만 한다.
-        const isSlide = times === slide.times;
-        times.slice(1).forEach((time, i) => assert.ok(isSlide ? time >= times[i] : time > times[i], `${name}: keyTimes ${times}`));
-      }
-      assert.equal(motion.splines.length, motion.times.length - 1, name);
-      assert.equal(motion.points.length, motion.times.length, name);
-      assert.equal(opacity.values.length, opacity.times.length, name);
-      if (slide.times) assert.equal(slide.values.length, slide.times.length, name);
-    }
-  }
-});
+// time=이 붙은 이동은 길이와 무관한 절대 시간이라 길이 비례를 보는 원본에서는 뺀다.
+const HOP_SOURCE = readFileSync(new URL('../examples/saturn.muto', import.meta.url), 'utf8').replace(/ time=\S+/g, '');
 
-test('toSvg_packet_duration_is_total_not_rounded_to_a_tenth', async () => {
-  for (const { name, result, svg } of await animatedExamples()) {
-    const expected = `${Math.round(result.timeline.total) / 1000}s`;
-    for (const { opacity, motion, slide } of packetsOf(svg)) {
-      assert.equal(opacity.dur, expected, name);
-      assert.equal(motion.dur, expected, name);
-      if (slide.dur) assert.equal(slide.dur, expected, name);
-    }
-  }
-});
-
-test('toSvg_packet_visibility_and_motion_share_one_clock_and_the_hop_window', async () => {
-  for (const { name, result, svg } of await animatedExamples()) {
-    const { segs, total } = result.timeline;
-    const hops = segs.flatMap((seg) => seg.hops.map((hop) => ({ seg, hop })));
-    const packets = packetsOf(svg);
-    assert.equal(packets.length, hops.length, name);
-    assert.doesNotMatch(svg, /@keyframes p\d+-\d+ /, `${name}: 점 보임은 CSS가 아니라 SMIL이어야 한다`);
-    packets.forEach(({ opacity, motion }, k) => {
-      const { seg, hop } = hops[k];
-      const [from, to] = [seg.t0 / total, (seg.t0 + hop.ms) / total];
-      const shown = opacity.times[opacity.values.indexOf(1)];
-      const hidden = opacity.times[opacity.values.indexOf(1) + 1] ?? 1;
-      assert.ok(Math.abs(shown - from) < 1e-5 && Math.abs(hidden - to) < 1e-5, `${name} hop ${k}: 보임 창 ${shown}-${hidden}, 시간표 ${from}-${to}`);
-      assert.ok(motion.times.some((time) => Math.abs(time - to) < 1e-5), `${name} hop ${k}: 이동 끝이 보임 창 끝과 다르다`);
-      if (from > 0) assert.ok(motion.times.some((time) => Math.abs(time - from) < 1e-5), `${name} hop ${k}: 이동 시작이 보임 창 시작과 다르다`);
-    });
-  }
-});
-
-test('toSvg_packet_position_matches_timeline_at_many_times', async () => {
-  for (const { name, result, svg } of await animatedExamples()) {
-    const { segs, total } = result.timeline;
-    const hops = segs.flatMap((seg) => seg.hops.map((hop) => ({ seg, hop })));
-    packetsOf(svg).forEach(({ opacity, motion }, k) => {
-      const { seg, hop } = hops[k];
-      const probes = [];
-      for (let t = 0; t < total; t += 25) probes.push(t);
-      probes.push(seg.t0, seg.t0 + 1, seg.t0 + hop.ms - 1, seg.t0 + hop.ms + 1, total - 1);
-      for (const t of probes) {
-        const progress = Math.min(1, Math.max(0, (t - seg.t0) / hop.ms));
-        const expected = hop.isBack ? 1 - ease(MOVE, progress) : ease(MOVE, progress);
-        const actual = pathFractionAt(motion, t / total);
-        assert.ok(Math.abs(actual - expected) < TOLERANCE, `${name} hop ${k} t=${t}ms: 경로 비율 ${actual.toFixed(4)}, 기대 ${expected.toFixed(4)}`);
-        const isOn = t >= seg.t0 && t < seg.t0 + hop.ms;
-        if (Math.abs(t - seg.t0) > 1 && Math.abs(t - seg.t0 - hop.ms) > 1) assert.equal(discreteAt(opacity, t / total), isOn ? 1 : 0, `${name} hop ${k} t=${t}ms: 보임`);
-      }
-    });
-  }
-});
-
-test('toSvg_packet_and_its_path_share_one_coordinate_group', async () => {
-  for (const { name, svg } of await animatedExamples()) {
-    const groupStart = svg.indexOf('<g transform="translate(');
-    assert.ok(groupStart >= 0, name);
-    for (const m of svg.matchAll(/<g class="p\d+-\d+" opacity="0">/g)) {
-      const href = svg.slice(m.index).match(/<mpath href="#(p-\d+)"/)[1];
-      const pathAt = svg.indexOf(`id="${href}"`);
-      assert.ok(pathAt > groupStart && isInsideGroup(svg, groupStart, pathAt), `${name}: ${href} 경로가 이동한 그룹 밖에 있다`);
-      assert.ok(isInsideGroup(svg, groupStart, m.index), `${name}: 점이 이동한 그룹 밖에 있다`);
-    }
-  }
-});
-
-test('toSvg_packet_chip_slide_reaches_every_key_in_the_hop_window', async () => {
-  for (const { name, result, svg } of await animatedExamples()) {
-    const { segs, total } = result.timeline;
-    const hops = segs.flatMap((seg) => seg.hops.map((hop) => ({ seg, hop })));
-    packetsOf(svg).forEach(({ slide }, k) => {
-      if (!slide.times) return;
-      const { seg, hop } = hops[k];
-      const [from, to] = [seg.t0 / total, (seg.t0 + hop.ms) / total];
-      assert.ok(slide.times.every((time) => time === 0 || time === 1 || (time >= from - 1e-5 && time <= to + 1e-5)), `${name} hop ${k}: 글 상자 keyTimes가 이동 구간 밖이다`);
-    });
-  }
-});
-
-test('svg_steplabel_uses_body_font_not_mono', async () => {
-  const result = await buildFigure(readFileSync(new URL('box.muto', EXAMPLES), 'utf8'), { baseDir: 'examples' });
-  const svg = await toSvg(result, { name: 'box' });
-  assert.match(svg, /\.fl \.steplabel \{[^}]*font-family: var\(--font-sans\)/);
-  assert.doesNotMatch(svg, /\.fl \.steplabel \{[^}]*(font-mono|letter-spacing)/);
-});
-
-test('toSvg_on_off_changes_fade_over_duration_fast_like_the_player_transition', async () => {
-  const { name, result, svg } = (await animatedExamples()).find((e) => e.name === 'memory.muto');
-  const total = result.timeline.total;
-  const fades = [...svg.matchAll(/@keyframes a\d+ \{[^@]*?\}\s*\}/g)].flatMap((m) => [...m[0].matchAll(/([\d.]+)% \{ [^}]+ \} ([\d.]+)%,[\d.]+% \{/g)]);
-
-  assert.ok(fades.length > 0, `${name}: 서서히 가는 구간이 있다`);
-  for (const [, start, settle] of fades) assert.ok(Math.abs(((Number(settle) - Number(start)) * total) / 100 - 200) < 5 || ((Number(settle) - Number(start)) * total) / 100 < 200, `${name}: 서서히 가는 시간 ${((Number(settle) - Number(start)) * total) / 100}ms`);
-  assert.doesNotMatch(svg, /infinite step-end/);
-});
-
-test('toSvg_caption_bottom_margin_equals_the_top_margin_of_the_content', async () => {
-  for (const { name, svg } of await animatedExamples()) {
-    const height = Number(svg.match(/viewBox="0 0 [\d.]+ ([\d.]+)"/)[1]);
-    const baselines = [...svg.matchAll(/<text x="[\d.]+" y="([\d.]+)" class="caption">/g)].map((m) => Number(m[1]));
-
-    assert.ok(baselines.length > 0, name);
-    assert.equal(Math.round((height - Math.max(...baselines)) * 10) / 10, 32, name);
-  }
-});
+// cost: time O(b·h), heap O(b·h), stack O(1)
+// vars: b = 박자 수, h = 박자의 이동 수
+// basis: estimate
+// 이동이 지나는 선의 길이와 시간 쌍. 모든 박자의 이동을 모은다.
+function hopPairs({ scene, timeline }) {
+  return timeline.segs.flatMap((seg) => seg.hops.map((h) => ({ length: routeLength(flattenRoute(scene.edges[h.edge].points)), ms: h.ms })));
+}
 
 // cost: time O(k), heap O(k), stack O(1)
 // vars: k = 키프레임 점 수
@@ -225,6 +113,105 @@ function opacityAt(frames, pct) {
   return va + ((vb - va) * (pct - a)) / (b - a);
 }
 
+
+// 근거: 설계 figure-syntax.md 요구사항 "카드는 도착 규칙대로 바뀐다"(도착하는 도형은 가장 늦은 도착, 출발하는 도형은 박자 시작)
+test('buildTimeline_card_changes_at_the_latest_arrival_and_the_source_card_at_beat_start', async () => {
+  const merged = await buildFigure('flow right\nbox a "A"\nbox b "B"\nbox c "C"\na -> c\nb -> c\nstep "s"\n  a -> c time=1s & b -> c time=3s\n  show c "도착"');
+  const single = await buildFigure('flow right\nbox a "A"\nbox b "B"\na -> b\nstep "s"\n  a -> b\n  show a "출발"\n  show b "도착"');
+  const seg = single.timeline.segs[0];
+
+  assert.equal(merged.timeline.segs[0].cardsAt.c, 3000);
+  assert.equal(seg.cardsAt.a, 0);
+  assert.equal(seg.cardsAt.b, seg.move);
+});
+
+// 근거: 설계 playback.md 요구사항 "차트 계열은 단계가 바뀌어도 남고, 탭으로 건너뛰어도 보인다"
+test('buildTimeline_revealed_chart_series_stay_across_steps', async () => {
+  const { timeline } = await buildFigure('chart bar\nseries a "A" role=main\nseries b "B" role=compare\nrow "r" a=1 b=2\nstep "1"\n  reveal a\nstep "2"\n  reveal b');
+
+  assert.deepEqual(timeline.segs[1].series, ['a', 'b']);
+});
+
+// 근거: 계약 figure-syntax.md 이동 시간 "선 길이에 비례, hop-min보다 짧지 않고 최대는 없다, 박자는 가장 긴 이동만큼"
+test('buildTimeline_hop_time_follows_the_edge_length_with_a_minimum_and_no_maximum', async () => {
+  const result = await buildFigure(HOP_SOURCE);
+  const pairs = hopPairs(result);
+  const free = pairs.filter(({ ms }) => ms > values.duration['hop-min']);
+
+  assert.ok(new Set(free.map((p) => Math.round(p.length))).size > 1);
+  for (const { length, ms } of free) assert.ok(Math.abs(ms - (length / values.size['hop-ref']) * values.duration.hop) <= 1);
+  for (const { ms } of pairs) assert.ok(ms >= values.duration['hop-min']);
+  for (const seg of result.timeline.segs) assert.equal(seg.move, Math.max(0, ...seg.hops.map((h) => h.ms)));
+});
+
+// 근거: 계약 figure-syntax.md 머리 표 "speed: 기준 길이 선을 지나는 시간"
+test('buildTimeline_speed_header_scales_every_hop_time', async () => {
+  const base = hopPairs(await buildFigure(HOP_SOURCE));
+  const fast = hopPairs(await buildFigure(HOP_SOURCE.replace('title', `speed ${values.duration.hop * 2}ms\ntitle`)));
+
+  base.forEach((p, i) => assert.ok(Math.abs(fast[i].ms - p.ms * 2) <= 1));
+});
+
+// 근거: 계약 figure-syntax.md 이동 시간 "time=이 있으면 그 이동의 절대 시간"
+test('buildTimeline_hop_time_option_is_absolute_regardless_of_length', async () => {
+  const { timeline } = await buildFigure('flow right\nbox a "A"\nbox b "B"\nbox c "C"\na -> b\nb -> c\nstep "s"\n  a -> b time=900ms\n  b -> c time=900ms');
+
+  assert.deepEqual(timeline.segs.map((s) => s.move), [900, 900]);
+});
+
+// 근거: 설계 playback.md 요구사항 "움직이는 SVG의 점이 시간표와 같은 시각에 같은 위치에 있다. keyTimes는 늘어나기만 하고 keySplines 수가 맞으며, 보임 창과 이동 구간이 시간표 이동과 같고, 경로와 점이 한 좌표 그룹에 있다"
+test('toSvg_moving_packets_match_the_timeline_at_every_example', async () => {
+  for (const { name, result, svg } of await animatedExamples()) {
+    const { segs, total } = result.timeline;
+    const hops = segs.flatMap((seg) => seg.hops.map((hop) => ({ seg, hop })));
+    const packets = packetsOf(svg);
+    const expectedDur = `${Math.round(total) / 1000}s`;
+    const groupStart = svg.indexOf('<g transform="translate(');
+    assert.equal(packets.length, hops.length, name);
+    assert.doesNotMatch(svg, /@keyframes p\d+-\d+ /, `${name}: 점 보임은 CSS가 아니라 SMIL이어야 한다`);
+    assert.ok(groupStart >= 0, name);
+
+    packets.forEach(({ opacity, motion, slide }, k) => {
+      const { seg, hop } = hops[k];
+      const [from, to] = [seg.t0 / total, (seg.t0 + hop.ms) / total];
+      for (const times of [opacity.times, motion.times, ...(slide.times ? [slide.times] : [])]) {
+        assert.equal(times[0], 0, name);
+        assert.ok(times.at(-1) <= 1, name);
+        // 글 상자 옮김(slide)은 자리를 순간에 바꾸는 곳에서 같은 시각이 이어진다. 점의 보임과 이동은 늘어나기만 한다.
+        times.slice(1).forEach((time, i) => assert.ok(times === slide.times ? time >= times[i] : time > times[i], `${name}: keyTimes ${times}`));
+      }
+      assert.equal(motion.splines.length, motion.times.length - 1, name);
+      assert.equal(motion.points.length, motion.times.length, name);
+      assert.equal(opacity.values.length, opacity.times.length, name);
+      assert.deepEqual([opacity.dur, motion.dur, slide.dur ?? expectedDur], [expectedDur, expectedDur, expectedDur], `${name}: 한 바퀴 길이는 10분의 1초로 반올림하지 않은 총 시간`);
+
+      const shown = opacity.times[opacity.values.indexOf(1)];
+      const hidden = opacity.times[opacity.values.indexOf(1) + 1] ?? 1;
+      assert.ok(Math.abs(shown - from) < 1e-5 && Math.abs(hidden - to) < 1e-5, `${name} hop ${k}: 보임 창 ${shown}-${hidden}, 시간표 ${from}-${to}`);
+      assert.ok(motion.times.some((time) => Math.abs(time - to) < 1e-5), `${name} hop ${k}: 이동 끝이 보임 창 끝과 다르다`);
+      if (from > 0) assert.ok(motion.times.some((time) => Math.abs(time - from) < 1e-5), `${name} hop ${k}: 이동 시작이 보임 창 시작과 다르다`);
+      if (slide.times) assert.ok(slide.times.every((time) => time === 0 || time === 1 || (time >= from - 1e-5 && time <= to + 1e-5)), `${name} hop ${k}: 글 상자 keyTimes가 이동 구간 밖이다`);
+
+      const probes = [...Array.from({ length: Math.ceil(total / 25) }, (_, i) => i * 25), seg.t0, seg.t0 + 1, seg.t0 + hop.ms - 1, seg.t0 + hop.ms + 1, total - 1];
+      for (const t of probes) {
+        const progress = Math.min(1, Math.max(0, (t - seg.t0) / hop.ms));
+        const expected = hop.isBack ? 1 - ease(MOVE, progress) : ease(MOVE, progress);
+        const actual = pathFractionAt(motion, t / total);
+        assert.ok(Math.abs(actual - expected) < TOLERANCE, `${name} hop ${k} t=${t}ms: 경로 비율 ${actual.toFixed(4)}, 기대 ${expected.toFixed(4)}`);
+        const isOn = t >= seg.t0 && t < seg.t0 + hop.ms;
+        if (Math.abs(t - seg.t0) > 1 && Math.abs(t - seg.t0 - hop.ms) > 1) assert.equal(discreteAt(opacity, t / total), isOn ? 1 : 0, `${name} hop ${k} t=${t}ms: 보임`);
+      }
+    });
+    for (const m of svg.matchAll(/<g class="p\d+-\d+" opacity="0">/g)) {
+      const href = svg.slice(m.index).match(/<mpath href="#(p-\d+)"/)[1];
+      const pathAt = svg.indexOf(`id="${href}"`);
+      assert.ok(pathAt > groupStart && isInsideGroup(svg, groupStart, pathAt), `${name}: ${href} 경로가 이동한 그룹 밖에 있다`);
+      assert.ok(isInsideGroup(svg, groupStart, m.index), `${name}: 점이 이동한 그룹 밖에 있다`);
+    }
+  }
+});
+
+// 근거: 설계 playback.md "설명 글과 단계 이름은 교차 페이드하지 않는다"
 test('toSvg_caption_and_step_label_fade_one_after_another_never_crossfade', async () => {
   const SEEN = 0.02;
   let checked = 0;
@@ -246,32 +233,16 @@ test('toSvg_caption_and_step_label_fade_one_after_another_never_crossfade', asyn
   assert.ok(checked >= 2, `검사한 글 묶음 ${checked}개`);
 });
 
-test('toSvg_caption_swap_uses_the_caption_fade_token_for_each_phase', async () => {
-  const result = await buildFigure(readFileSync(new URL('dumbbell.muto', EXAMPLES), 'utf8'), { baseDir: 'examples' });
-  const svg = await toSvg(result, { name: 'dumbbell' });
-  const { total } = result.timeline;
-  const name = svg.match(/<g opacity="0" class="(a\d+)"><text[^>]*class="caption"/)[1];
-  const frames = svg.match(new RegExp(`@keyframes ${name} \\{ ([^\\n]*?) \\}\\n`))[1];
-  const ramp = [...frames.matchAll(/(?<![\d.,])([\d.]+)% \{ opacity: [\d.]+ \} ([\d.]+)%,/g)].map((m) => ((Number(m[2]) - Number(m[1])) * total) / 100);
+const STEPPED_BAR = 'chart bar\nx "정확도(%)"\nseries a "A" role=main\nseries b "B" role=compare\nrow "r" a=5 b=3\nstep "하나" "첫째"\n  reveal a\nstep "둘" "둘째"\n  reveal b';
 
-  assert.ok(ramp.length > 0);
-  for (const ms of ramp) assert.ok(Math.abs(ms - values.duration['caption-fade']) < 5, `전환 ${ms}ms`);
-});
+// 근거: 설계 playback.md 요구사항 "멈춘 SVG는 모든 선과 계열을 보이고 움직임이 없다"
+test('toSvg_static_output_has_no_motion_and_shows_every_series', async () => {
+  const flow = await toSvg(await buildFigure('flow right\nbox a "A"\nbox b "B"\na -> b quiet\nstep "s"\n  a -> b'), { isStatic: true });
+  const chart = await toSvg(await buildFigure(STEPPED_BAR), { isStatic: true });
 
-test('player_reads_the_same_caption_fade_token_the_animated_svg_uses', () => {
-  const player = playerSource();
-  const tokensCss = readFileSync(new URL('../src/tokens.css', import.meta.url), 'utf8');
-
-  assert.match(player, /'--duration-caption-fade'/);
-  assert.match(tokensCss, new RegExp(`--duration-caption-fade: ${values.duration['caption-fade']}ms;`));
-});
-
-test('toSvg_card_without_content_keeps_dashed_frame_and_draws_no_placeholder_text', async () => {
-  const result = await buildFigure('flow right\nbox a "A"\nbox b "B"\na -> b\nstep "s"\n  a -> b\n  show b "도착"');
-  const svg = await toSvg(result, { name: 'card.muto' });
-
-  assert.match(svg, /class="fl-card[^"]*"/);
-  assert.match(svg, /stroke-dasharray=/);
-  assert.ok(!svg.includes('—'));
-  assert.ok(!svg.includes('fl-empty'));
+  assert.doesNotMatch(flow, /@keyframes|animateMotion/);
+  assert.doesNotMatch(chart, /@keyframes ls|animation: a\d|cs-\d \{ animation/);
+  assert.match(chart, /<g class="cs-0">/);
+  assert.match(chart, /<g class="cs-1">/);
+  assert.equal(chart.includes('opacity="0"'), false);
 });

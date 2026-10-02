@@ -1,5 +1,9 @@
 // 테스트가 같이 쓰는 도구. 문서 예시 원본 뽑기와 오류 메시지 모으기.
-import { readdirSync, readFileSync } from 'node:fs';
+import { spawnSync } from 'node:child_process';
+import { mkdtempSync, readdirSync, readFileSync, rmSync } from 'node:fs';
+import { tmpdir } from 'node:os';
+import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import assert from 'node:assert/strict';
 import { parseFigure } from '../src/source/parse.js';
 
@@ -96,4 +100,27 @@ const PLAYER_DIR = new URL('../src/player/', import.meta.url);
 /** 브라우저 재생기 스크립트(src/player/ 모든 파일)를 이어 붙인 글. */
 export function playerSource() {
   return readdirSync(PLAYER_DIR).filter((f) => f.endsWith('.js')).sort().map((f) => readFileSync(new URL(f, PLAYER_DIR), 'utf8')).join('\n');
+}
+
+const CLI = fileURLToPath(new URL('../src/cli.js', import.meta.url));
+
+// cost: time O(1), heap O(1), stack O(1), io 1
+// basis: estimate
+/** CLI를 실행해 { status, stdout, stderr }를 돌려준다. cwd를 주면 그 폴더에서 실행한다. */
+export const runCli = (args, cwd) => spawnSync(process.execPath, [CLI, ...args], { cwd, encoding: 'utf8' });
+
+// cost: time O(f), heap O(1), stack O(1), io 2 + f
+// vars: f = 폴더 안 파일 수(지울 때)
+// basis: estimate
+/** 테스트마다 새 폴더를 만들어 run(folder)를 돌리고 끝나면 지운다. run이 Promise를 돌려주면 끝난 뒤에 지운다. */
+export function withFolder(run) {
+  const folder = mkdtempSync(join(tmpdir(), 'mutoscope-test-'));
+  const cleanup = () => rmSync(folder, { recursive: true, force: true });
+  try {
+    const result = run(folder);
+    return result instanceof Promise ? result.finally(cleanup) : (cleanup(), result);
+  } catch (error) {
+    cleanup();
+    throw error;
+  }
 }

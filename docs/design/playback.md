@@ -148,17 +148,20 @@
 | 요구사항 | 검증 계획 |
 |---|---|
 | 박자 상태가 앞 박자와 상관없이 완전하다. | 아무 박자를 골라 시간표만으로 그린 상태와 처음부터 재생한 상태 비교 |
-| 목록 쪽 테마 단추가 목록과 iframe 그림을 함께 바꾼다. | `test/cli.test.js`의 `main_gallery_has_theme_buttons_and_applies_color_scheme_to_root`. 시스템을 다크로 둔 브라우저에서 라이트 단추를 눌러 카드 전체가 그림과 같은 한 톤인 채 라이트로 바뀌는지 확인 |
-| 재생기 안에는 그림 바탕 판이 없고, SVG 파일에만 있다. | `test/cli.test.js`의 `main_html_player_has_no_figure_plate_and_page_colored_canvas_but_svg_keeps_plate` |
-| gallery가 문서 미리보기를 쓴다. | `test/cli.test.js`의 `main_gallery_writes_document_preview_with_img_per_figure_and_link_from_index` |
-| 차트 계열은 단계가 바뀌어도 남고, 탭으로 건너뛰어도 보인다. | 둘째 탭 상태의 계열 목록 확인 |
+| 목록 쪽 테마 단추가 목록과 iframe 그림을 함께 바꾼다. | `test/pages.test.js`의 `gallery_theme_buttons_set_the_root_color_scheme_and_remember_the_choice`(Chrome이 있을 때). 시스템을 다크로 둔 브라우저에서 라이트 단추를 눌러 카드 전체가 그림과 같은 한 톤인 채 라이트로 바뀌는지 확인 |
+| 재생기 안에는 그림 바탕 판이 없고, SVG 파일에만 있다. | `test/cli.test.js`의 `main_render_svg_keeps_the_rounded_plate_and_the_html_player_has_none` |
+| gallery가 문서 미리보기를 쓴다. | `test/cli.test.js`의 `main_gallery_writes_the_index_and_the_document_preview_with_each_figure_and_a_card_head` |
+| 차트 계열은 단계가 바뀌어도 남고, 탭으로 건너뛰어도 보인다. | `test/motion.test.js`의 `buildTimeline_revealed_chart_series_stay_across_steps`. 둘째 탭 상태의 계열 목록 확인 |
 | HTML과 움직이는 SVG의 글 상자 줄이 같다. | 두 결과의 글 상자 줄 비교 |
-| 그림 옆 경계에 가까운 선의 글 상자는 움직이는 SVG에서도 안으로 밀린다. | `test/check.test.js`의 `toSvg_moving_text_near_side_edge_is_pushed_inside` |
-| 이동 글 상자가 모든 예제와 CS:APP, async 데모(`test/fixtures`)에서 60fps 프레임마다 보이는 동안 도형 이름, 열, 그룹 제목, 알약을 가리지 않고 그림 안에 있다. 한 프레임에 점의 움직임보다 `CHIP_STEP_MAX` 넘게 더 움직이지 않는다(순간 이동 없음). 미끄러질 수 있으면 흐리지 않고, 길이 없으면 바꾸지 않고 흐린다. SVG와 재생기가 같은 계획을 쓴다. | `test/chip.test.js` |
-| 움직이는 SVG의 점이 시간표와 같은 시각에 같은 위치에 있다. keyTimes는 늘어나기만 하고 keySplines 수가 맞으며, 보임 창과 이동 구간이 시간표 이동과 같고, 경로와 점이 한 좌표 그룹에 있다. | `test/svg-motion.test.js`. 예제마다 25ms 간격으로 SMIL 값을 풀어 시간표 기대와 비교 |
+| 그림 옆 경계에 가까운 선의 글 상자는 움직이는 SVG에서도 안으로 밀린다. | `test/chip.test.js`의 `buildFigure_every_example_and_demo_chip_stays_inside_clear_and_never_jumps_in_any_60fps_frame`(경계 가까운 선 원본 두 개 포함) |
+| 이동 글 상자가 모든 예제와 CS:APP, async 데모(`test/fixtures`)에서 60fps 프레임마다 보이는 동안 도형 이름, 열, 그룹 제목, 알약을 가리지 않고 그림 안에 있다. 한 프레임에 점의 움직임보다 `CHIP_STEP_MAX` 넘게 더 움직이지 않는다(순간 이동 없음). 미끄러질 수 있으면 흐리지 않고, 길이 없으면 바꾸지 않고 흐린다. SVG와 재생기가 같은 계획을 쓴다. | `test/chip.test.js`의 `buildFigure_every_example_and_demo_chip_stays_inside_clear_and_never_jumps_in_any_60fps_frame`, `placeChip_places_the_chip_clear_of_obstacles_or_reports_what_it_cannot_avoid`, `planChip_slides_to_the_other_side_instead_of_jumping_when_one_side_is_blocked_midway`, `planChip_fades_instead_of_switching_when_every_slide_would_cover_something`, `toHtml_and_toSvg_share_the_chip_plan_from_the_timeline` |
+| 움직이는 SVG의 점이 시간표와 같은 시각에 같은 위치에 있다. keyTimes는 늘어나기만 하고 keySplines 수가 맞으며, 보임 창과 이동 구간이 시간표 이동과 같고, 경로와 점이 한 좌표 그룹에 있다. | `test/motion.test.js`의 `toSvg_moving_packets_match_the_timeline_at_every_example`. 예제마다 25ms 간격으로 SMIL 값을 풀어 시간표 기대와 비교 |
 | 전체 화면에서 휠로 확대하면 커서 아래 지점이 고정된다. | 브라우저에서 확대 전후 커서 아래 그림 좌표 비교 |
-| 멈춘 SVG는 모든 선과 계열을 보이고 움직임이 없다. | 결과에 조용한 선이 있고 `@keyframes`와 `animateMotion`이 없는지 확인. 단계가 있는 차트는 모든 계열이 숨김 없이 있는지 확인 |
-| 막대 차트 행 이름이 보이는 막대와 세로로 맞는다. | 한 계열만 드러난 박자의 `labelShifts`가 0이 아니고 모든 계열이 보이면 0인지, 값이 없는 슬롯이 있는 행은 막대가 보이는 동안 이름이 그 막대에 맞는지 확인 |
+| 멈춘 SVG는 모든 선과 계열을 보이고 움직임이 없다. | `test/motion.test.js`의 `toSvg_static_output_has_no_motion_and_shows_every_series`. 결과에 `@keyframes`와 `animateMotion`이 없는지, 단계가 있는 차트는 모든 계열이 숨김 없이 있는지 확인 |
+| 막대 차트 행 이름이 보이는 막대와 세로로 맞는다. | `test/chart.test.js`의 `buildTimeline_bar_label_shift_follows_the_visible_bars_and_is_zero_when_all_are_shown`, `drawChart_bar_label_of_a_row_with_a_missing_series_is_centered_on_its_only_bar` |
+| 조작 막대의 탭 묶음과 설명이 한 가운데 축에 있고, 탭 묶음 높이가 둥근 단추 높이와 같다. | `test/pages.test.js`의 `player_controls_share_one_axis_and_height_and_the_ring_and_active_tab_show_state`(Chrome이 있을 때). `getBoundingClientRect`로 가운데 축 차이 1px 이하, 높이 차이 1px 이하 확인 |
+| 현재 탭의 진행은 일시정지 단추 둘레의 고리로 보이고 시간에 따라 채워진다. | `test/pages.test.js`의 `player_controls_share_one_axis_and_height_and_the_ring_and_active_tab_show_state`(Chrome이 있을 때). 고리가 단추를 감싸고 `stroke-dashoffset`이 줄어드는지 확인 |
+| 탭은 segmented 방식이라 켜진 탭만 채운 알약 면과 굵은 글을 갖는다. | `test/pages.test.js`의 `player_controls_share_one_axis_and_height_and_the_ring_and_active_tab_show_state`(Chrome이 있을 때). 켜진 탭과 나머지 탭의 계산된 글 굵기, 면, 글 색 비교 |
 
 ## 단점
 
