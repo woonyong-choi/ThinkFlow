@@ -154,9 +154,9 @@ function finish(result, problems, { strict, noDeprecated }) {
   return { ...result, warnings: problems.warnings, deprecations: problems.deprecations };
 }
 
-/** 글 상자 글을 토큰 `size.chip-max` 너비의 줄로 나눈다. HTML과 SVG가 같은 줄을 쓴다. */
+/** 글 상자 글을 토큰 `size.chip.max-width` 너비의 줄로 나눈다. HTML과 SVG가 같은 줄을 쓴다. */
 function wrapChip(text) {
-  return wrap(text, values.size['chip-max'], STYLE.chip);
+  return wrap(text, values.size.chip['max-width'], STYLE.chip);
 }
 
 // cost: time O(j + r·k), heap O(j), stack O(1), io 1

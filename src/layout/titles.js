@@ -28,7 +28,7 @@ function titleDx(g, edges) {
   const segments = edges.flatMap((e) => e.points.slice(1).map((p, i) => [e.points[i], p]));
   let dx = TITLE_INSET;
   for (let pass = 0; pass <= segments.length; pass++) {
-    const box = { x: g.x + dx - TITLE_CLEAR, y: g.y, w: w + TITLE_CLEAR * 2, h: SIZE['group-title'] };
+    const box = { x: g.x + dx - TITLE_CLEAR, y: g.y, w: w + TITLE_CLEAR * 2, h: SIZE.group.title };
     const crossing = segments.filter(([a, b]) => crosses(a, b, box));
     if (!crossing.length) return dx;
     const next = Math.max(...crossing.map(([a, b]) => Math.max(a.x, b.x))) - g.x + TITLE_CLEAR;

@@ -4,14 +4,14 @@
 }
 
 .fl .label {
-  font-size: var(--size-text-14);
+  font-size: var(--size-text-13);
   font-weight: var(--weight-medium);
   text-anchor: middle;
   fill: var(--color-fg);
 }
 
 .fl .sub {
-  font-size: var(--size-text-12);
+  font-size: var(--size-text-11);
   text-anchor: middle;
   fill: var(--color-muted);
 }
@@ -63,11 +63,6 @@
   fill: var(--color-state-active-text);
 }
 
-.fl .mark.key {
-  font-size: var(--size-text-9);
-  text-anchor: start;
-}
-
 .fl .mini {
   font-size: var(--size-text-11);
   text-anchor: middle;
@@ -79,23 +74,13 @@
 }
 
 .fl .chip {
-  font-size: var(--size-text-12);
+  font-size: var(--size-text-11);
   text-anchor: middle;
   fill: var(--color-state-on-active);
 }
 
-.fl .md {
-  font-size: var(--size-text-13);
-  fill: var(--color-fg);
-}
-
-.fl .md.h {
-  font-size: var(--size-text-15);
-  font-weight: var(--weight-semibold);
-}
-
 .fl .cell {
-  font-size: var(--size-text-12);
+  font-size: var(--size-text-13);
   fill: var(--color-fg);
 }
 
@@ -119,12 +104,12 @@
 .fl .cell .key {
   font-size: var(--size-text-9);
   font-weight: var(--weight-semibold);
-  fill: var(--color-state-active-text);
+  fill: var(--color-muted);
 }
 
 .fl .frame-box {
   fill: var(--color-group);
-  stroke: var(--color-group-border);
+  stroke: var(--color-border);
 }
 
 .fl .lifeline {

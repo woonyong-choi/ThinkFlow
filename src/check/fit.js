@@ -16,7 +16,7 @@ export function checkFits({ scene, timeline }, problems) {
   for (const g of scene.groups) if (!fits(groupTitleWidth(g.label), g.w)) fail(g.line ?? 1, `group title "${g.label}"`, `group "${g.id}"`);
   for (const seg of timeline.segs) {
     for (const hop of seg.hops) {
-      for (const l of hop.data ?? []) if (!fits(measure(l, STYLE.chip.size, STYLE.chip.face), values.size['chip-max'])) fail(hop.line ?? 1, `moving text "${l}"`, 'the text box');
+      for (const l of hop.data ?? []) if (!fits(measure(l, STYLE.chip.size, STYLE.chip.face), values.size.chip['max-width'])) fail(hop.line ?? 1, `moving text "${l}"`, 'the text box');
     }
   }
 }

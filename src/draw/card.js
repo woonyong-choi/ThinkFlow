@@ -78,7 +78,7 @@ function drawTag(row, { x, y }, toneOf) {
   if (!row.tag) return '';
   const tag = row.tag.toUpperCase();
   const tone = toneOf(row);
-  const height = values.size.tag;
+  const height = values.size.tag.height;
   const width = measureTag(tag);
   return (
     `<rect x="${r(x)}" y="${r(y + SPACE['0-5'])}" width="${r(width)}" height="${height}" rx="${RADIUS.sm}" fill="${tone}" fill-opacity="${values.opacity.tag}"/>` +

@@ -4,8 +4,8 @@ import { centerBaseline, renderRich, roundCoord as r } from '../text.js';
 import { values } from '../tokens.js';
 import { BAR, PAD, SIZE, SPACE, TEXT, seriesColor } from './metrics.js';
 
-const LABEL_W = SIZE['chart-label'];
-const LABEL_MAX = SIZE['chart-label-max'];
+const LABEL_W = SIZE.chart.label;
+const LABEL_MAX = SIZE.chart['label-max'];
 const LABEL_GAP = SPACE['6'];
 // 차트 항목 이름이 칸에 들어가는 최대 폭
 const LABEL_ROOM = LABEL_MAX - LABEL_GAP;
@@ -15,7 +15,7 @@ const LABEL_ROOM = LABEL_MAX - LABEL_GAP;
 // basis: estimate
 /** 항목 이름 칸 너비. 가장 긴 이름에 맞추되 LABEL_W와 LABEL_MAX 사이다. 넘는 이름은 그림 검사 1번이 알린다. */
 export function labelColumn(names) {
-  return Math.min(LABEL_MAX, Math.max(LABEL_W, ...names.map((name) => measure(name, TEXT['13']) + LABEL_GAP)));
+  return Math.min(LABEL_MAX, Math.max(LABEL_W, ...names.map((name) => measure(name, TEXT['13'], 'medium') + LABEL_GAP)));
 }
 
 // cost: time O(n), heap O(1), stack O(1)
@@ -23,7 +23,7 @@ export function labelColumn(names) {
 // basis: estimate
 /** 항목 이름이 이름 칸에 들어가야 한다는 그림 검사 항목 */
 export function labelFit(name, line) {
-  return { text: name, width: measure(name, TEXT['13']), room: LABEL_ROOM, line, what: 'item name' };
+  return { text: name, width: measure(name, TEXT['13'], 'medium'), room: LABEL_ROOM, line, what: 'item name' };
 }
 
 // cost: time O(n), heap O(n), stack O(1)
@@ -68,7 +68,7 @@ function drawLegend(chart, y) {
   let x = PAD;
   const items = legendOrder(chart.series).map(({ s, i }) => {
     const item = `<rect x="${x}" y="${r(y + SPACE['2'])}" width="${BAR}" height="${BAR}" rx="${values.radius.sm}" fill="${seriesColor(chart, i)}"/>` + `<text x="${x + BAR + SPACE['3']}" y="${r(y + BAR)}" class="chart-legend">${renderRich(s.label)}</text>`;
-    x += BAR + SPACE['3'] + measure(s.label, TEXT['12']) + SPACE['9'];
+    x += BAR + SPACE['3'] + measure(s.label, TEXT['11']) + SPACE['9'];
     return item;
   });
   return { svg: items, bottom: y + BAR + SPACE['6'] };
@@ -86,8 +86,8 @@ export function drawHeader(figure) {
     y += TEXT['15'] + SPACE['4'];
   }
   if (figure.subtitle) {
-    parts.push(`<text x="${PAD}" y="${r(y + TEXT['12'])}" class="chart-sub">${renderRich(figure.subtitle)}</text>`);
-    y += TEXT['12'] + SPACE['5'];
+    parts.push(`<text x="${PAD}" y="${r(y + TEXT['11'])}" class="chart-sub">${renderRich(figure.subtitle)}</text>`);
+    y += TEXT['11'] + SPACE['5'];
   }
   if (figure.chart.series.length) {
     const legend = drawLegend(figure.chart, y);

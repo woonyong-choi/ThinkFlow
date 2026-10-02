@@ -37,10 +37,10 @@ function roundButton(extraClass, { label, zoom, content = '' } = {}) {
   return `<button type="button" class="${className}"${zoomAttr}${labelAttr}>${content}</button>`;
 }
 
-// 일시정지 단추 둘레의 진행 고리. 단추 바깥 테두리(size.control)를 덮고, 선 굵기의 한가운데가 둘레다. 12시에서 시작한다.
+// 일시정지 단추 둘레의 진행 고리. 단추 바깥 테두리(size.control.outer)를 덮고, 선 굵기의 한가운데가 둘레다. 12시에서 시작한다.
 const RING_START_DEGREES = -90;
 function ringSvg() {
-  const size = values.size.control;
+  const size = values.size.control.outer;
   const width = values.border.edge;
   const center = size / 2;
   const radius = (size - width) / 2;

@@ -59,7 +59,7 @@ export function drawHeatmap(figure, top) {
   const plotX = labelColumn(rows) + PAD;
   // 칸 너비는 이름 칸 오른쪽에서 내용의 오른쪽 끝까지 남은 폭을 열 수로 나눈 값이다. 상한 없이 채워 다른 차트처럼 960 폭을 채우고 좌우 여백이 같다. 칸 높이는 토큰 그대로다.
   const cellW = (RIGHT - plotX + SPACE['1']) / cols.length;
-  const grid = { rows, cols, plotX, cellW, cellH: SIZE['chart-cell'], top: top + TEXT['11'] + SPACE['4'], max: Math.max(...chart.rows.map((c) => c.values.value)), format: valueFormat(chart.rows.map((c) => c.values.value), chart.decimals) };
+  const grid = { rows, cols, plotX, cellW, cellH: SIZE.chart.cell, top: top + TEXT['11'] + SPACE['4'], max: Math.max(...chart.rows.map((c) => c.values.value)), format: valueFormat(chart.rows.map((c) => c.values.value), chart.decimals) };
   const parts = cols.map((c, j) => `<text x="${r(plotX + j * cellW + cellW / 2)}" y="${r(top + TEXT['11'])}" class="chart-tick">${renderRich(c)}</text>`);
   rows.forEach((row, i) => parts.push(labelText(row, grid.top + i * grid.cellH + grid.cellH / 2, 'chart-label')));
   chart.rows.forEach((c, k) => parts.push(heatCell(grid, c, k)));

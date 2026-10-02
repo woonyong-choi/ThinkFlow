@@ -29,9 +29,9 @@ const NARROW = 'flow down\nbox a "A"\nbox b "B"\na -> b';
 
 // 근거: 설계 docs-integration.md "모든 그림 같은 캔버스 폭 960, 차트도 꽉 채움", playback.md "표시 폭은 문서 미리보기, 목록 카드, 재생기에서 같다"
 test('sizeTokens_chart_gallery_and_document_widths_equal_the_figure_canvas', () => {
-  assert.equal(values.size['chart-width'], CANVAS);
-  assert.equal(values.size['document-column'], CANVAS);
-  assert.equal(values.size['gallery-column'], CANVAS);
+  assert.equal(values.size.chart.width, CANVAS);
+  assert.equal(values.size.document.column, CANVAS);
+  assert.equal(values.size.gallery.column, CANVAS);
 });
 
 // 근거: 설계 docs-integration.md "모든 그림의 SVG width는 같은 표준 캔버스 폭이다"(모든 예제와 여섯 차트 종류)

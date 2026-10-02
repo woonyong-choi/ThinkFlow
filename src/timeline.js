@@ -4,7 +4,7 @@ import { flattenRoute, routeLength } from './route.js';
 import { values } from './tokens.js';
 
 const DWELL = values.duration;
-const HOP_REF = values.size['hop-ref'];
+const HOP_REF = values.size.packet['hop-ref'];
 // 행 이름 세로 옮김(px)을 반올림하는 단위의 역수(소수 둘째 자리)
 const SHIFT_PRECISION = 100;
 

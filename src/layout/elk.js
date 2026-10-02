@@ -117,9 +117,9 @@ function rootOptions(figure) {
 // basis: estimate
 function groupOptions(c, ctx) {
   return {
-    'elk.padding': `[top=${SIZE['group-title'] + SPACE['6']},left=${SPACE['12']},bottom=${SPACE['12']},right=${SPACE['12']}]`,
+    'elk.padding': `[top=${SIZE.group.title + SPACE['6']},left=${SPACE['12']},bottom=${SPACE['12']},right=${SPACE['12']}]`,
     'elk.nodeSize.constraints': 'MINIMUM_SIZE',
-    'elk.nodeSize.minimum': `(${groupTitleWidth(c.label)}, ${SIZE['group-title']})`,
+    'elk.nodeSize.minimum': `(${groupTitleWidth(c.label)}, ${SIZE.group.title})`,
     ...alignOf(c.parent, ctx),
   };
 }

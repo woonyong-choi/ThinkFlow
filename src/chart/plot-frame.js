@@ -35,8 +35,8 @@ function yAxisTitle(chart, plotTop) {
  */
 export function plotFrame(figure, top, { xs, ys }) {
   const { chart } = figure;
-  const left = PAD + SIZE['chart-axis'];
-  const plotH = SIZE['chart-plot-h'];
+  const left = PAD + SIZE.chart.axis;
+  const plotH = SIZE.chart['plot-h'];
   const plotTop = top + (chart.y ? Y_TITLE_H : 0);
   const xKind = figure.chartType === 'scatter' ? chart.scale : 'linear';
   // 선 차트 가로축은 값 축이 아니라 0에서 시작하지 않는다(docs/design/charts.md 값 축 표).

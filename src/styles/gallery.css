@@ -8,7 +8,7 @@ body {
   padding: var(--space-20) var(--space-16);
   font-family: var(--font-sans);
   color: var(--color-fg);
-  background: var(--color-gallery);
+  background: var(--color-page);
 }
 
 .top {
@@ -21,6 +21,7 @@ body {
 h1 {
   margin: 0 0 var(--space-3);
   font-size: var(--size-text-22);
+  font-weight: var(--weight-semibold);
 }
 
 .top p {
@@ -52,7 +53,7 @@ section {
   overflow: hidden;
   background: var(--color-bg);
   border-radius: var(--radius-2xl);
-  box-shadow: 0 0 0 var(--border-thin) var(--color-frame);
+  box-shadow: 0 0 0 var(--border-thin) var(--color-plate-border);
 }
 
 header {
@@ -60,7 +61,7 @@ header {
   grid-template-columns: 1fr auto;
   gap: var(--space-1) var(--space-8);
   padding: var(--space-7) var(--space-9);
-  border-bottom: var(--border-thin) solid var(--color-frame);
+  border-bottom: var(--border-thin) solid var(--color-plate-border);
 }
 
 h2 {

@@ -385,7 +385,7 @@ test('buildFigure_fuzz_wrapped_layout_that_crosses_a_shape_falls_back_and_warns_
   assert.equal(scene.edges.length, 8);
 });
 
-const BODY = values.size['person-body'];
+const BODY = values.size.person.body;
 const GAP = values.border.edge + values.space['0-5'];
 
 // 근거: 기능 #12 "사람 한 면의 선 n개는 연결점 간격이 선 굵기와 틈의 합 이상이 되도록 몸통을 (n+1) x 간격까지만 늘린다"

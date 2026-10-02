@@ -5,21 +5,26 @@ import { layoutMiniGraph } from './minigraph.js';
 
 const SPACE = values.space;
 const TEXT = values.size.text;
-const LINE = values.size.line;
+const SNUG = values.leading.snug;
 const SIZE = values.size;
+
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+/** 글자 크기에 줄 높이 비율을 곱해 반올림한 줄 높이 */
+export const lineHeight = (size, leading) => Math.round(size * leading);
 
 /** 글 모양. 크기, 글꼴, 줄 높이 */
 export const STYLE = Object.freeze({
-  label: { size: TEXT['14'], face: 'medium', line: LINE['18'] },
-  sub: { size: TEXT['12'], face: 'regular', line: LINE['15'] },
-  row: { size: TEXT['11'], face: 'regular', line: LINE['15'] },
-  mono: { size: TEXT['11'], face: 'mono', line: LINE['15'] },
+  label: { size: TEXT['13'], face: 'medium', line: lineHeight(TEXT['13'], SNUG) },
+  sub: { size: TEXT['11'], face: 'regular', line: lineHeight(TEXT['11'], SNUG) },
+  row: { size: TEXT['11'], face: 'regular', line: lineHeight(TEXT['11'], SNUG) },
+  mono: { size: TEXT['11'], face: 'mono', line: lineHeight(TEXT['11'], SNUG) },
   tag: { size: TEXT['9'], face: 'semibold' },
   mark: { size: TEXT['11'], face: 'semibold' },
   pill: { size: TEXT['11'], face: 'regular' },
   group: { size: TEXT['11'], face: 'semibold' },
-  chip: { size: TEXT['12'], face: 'regular', line: LINE['15'] },
-  cell: { size: TEXT['12'], face: 'regular' },
+  chip: { size: TEXT['11'], face: 'regular', line: lineHeight(TEXT['11'], SNUG) },
+  cell: { size: TEXT['13'], face: 'regular' },
   type: { size: TEXT['11'], face: 'mono' },
 });
 
@@ -41,21 +46,21 @@ const INNER_Y = SPACE['6'];
 export function sizeNode(node, contents = [], lineCounts = { out: 0, in: 0 }) {
   if (node.shape === 'person') return sizePerson(node, contents, lineCounts);
   if (node.shape === 'table') return sizeTable(node, contents);
-  if (node.shape === 'start' || node.shape === 'final') return { w: SIZE['state-dot'], h: SIZE['state-dot'], marginTop: 0, marginBottom: 0, labelLines: [], subLines: [] };
-  const maxInner = SIZE['node-max'] - INNER_X * 2;
+  if (node.shape === 'start' || node.shape === 'final') return { w: SIZE.node['state-dot'], h: SIZE.node['state-dot'], marginTop: 0, marginBottom: 0, labelLines: [], subLines: [] };
+  const maxInner = SIZE.node['max-width'] - INNER_X * 2;
   const labelLines = wrap(node.label, maxInner, STYLE.label);
   const subLines = node.sub ? wrap(node.sub, maxInner, STYLE.sub) : [];
   const textW = Math.max(...labelLines.map((l) => measure(l, STYLE.label.size, STYLE.label.face)), ...subLines.map((l) => measure(l, STYLE.sub.size)));
-  let w = Math.min(SIZE['node-max'], Math.max(SIZE['node-min'], textW + INNER_X * 2));
-  if (contents.length) w = Math.max(w, SIZE.card);
+  let w = Math.min(SIZE.node['max-width'], Math.max(SIZE.node['min-width'], textW + INNER_X * 2));
+  if (contents.length) w = Math.max(w, SIZE.node['card-width']);
   const textH = labelLines.length * STYLE.label.line + subLines.length * STYLE.sub.line;
   if (node.shape === 'decision') {
     // 마름모 안에 글 사각형이 들어가려면 가로세로가 글의 두 배쯤 필요하다(마름모 내접 사각형 비율).
     return { w: Math.max(w, (textW + INNER_X) * 2), h: (textH + INNER_Y) * 2, marginTop: 0, marginBottom: 0, labelLines, subLines };
   }
   const card = contents.length ? sizeCard(contents, w - CARD.margin * 2) : undefined;
-  const h = Math.max(SIZE['node-min-h'], INNER_Y * 2 + textH + (card ? card.h + CARD.margin : 0));
-  const cap = node.shape === 'store' ? SIZE['store-cap'] : 0;
+  const h = Math.max(SIZE.node['min-height'], INNER_Y * 2 + textH + (card ? card.h + CARD.margin : 0));
+  const cap = node.shape === 'store' ? SIZE.node['store-cap'] : 0;
   return { w, h, marginTop: cap, marginBottom: cap, labelLines, subLines, card };
 }
 
@@ -65,15 +70,15 @@ export function sizeNode(node, contents = [], lineCounts = { out: 0, in: 0 }) {
 // 사람 모양: 배치 사각형은 몸통의 곧은 옆면. 머리와 어깨는 위 여백, 이름표와 카드는 아래 여백이다.
 // 몸통 높이는 토큰 기본값이고, 한 면의 연결점 간격이 선 굵기와 틈의 합보다 좁아질 때만 그 면이 필요한 만큼 늘어난다.
 function sizePerson(node, contents, lineCounts) {
-  const labelLines = wrap(node.label, SIZE['node-max'], STYLE.label);
+  const labelLines = wrap(node.label, SIZE.node['max-width'], STYLE.label);
   const labelW = Math.max(...labelLines.map((l) => measure(l, STYLE.label.size, STYLE.label.face)));
-  const card = contents.length ? sizeCard(contents, SIZE.card - CARD.margin * 2) : undefined;
+  const card = contents.length ? sizeCard(contents, SIZE.node['card-width'] - CARD.margin * 2) : undefined;
   // 배치 사각형은 늘 몸통 너비다. 넓은 이름표와 카드 자리는 좌우 바깥 여백으로 넘긴다.
-  const w = SIZE['person-w'];
-  const wide = Math.max(w, card ? SIZE.card : 0, labelW);
+  const w = SIZE.person.width;
+  const wide = Math.max(w, card ? SIZE.node['card-width'] : 0, labelW);
   const below = SPACE['3'] + labelLines.length * STYLE.label.line + (card ? CARD.margin + card.h : 0);
   const h = bodyHeight(Math.max(lineCounts.out, lineCounts.in));
-  return { w, h, marginTop: SIZE['person-head'] + SIZE['person-shoulder'] + SPACE['1'], marginBottom: below, marginSide: (wide - w) / 2, labelLines, subLines: [], card };
+  return { w, h, marginTop: SIZE.person.head + SIZE.person.shoulder + SPACE['1'], marginBottom: below, marginSide: (wide - w) / 2, labelLines, subLines: [], card };
 }
 
 // cost: time O(1), heap O(1), stack O(1)
@@ -83,7 +88,7 @@ function sizePerson(node, contents, lineCounts) {
  * @param lines 두 면(오른쪽, 왼쪽) 가운데 선이 더 많은 면의 선 수
  */
 export function bodyHeight(lines) {
-  return Math.max(SIZE['person-body'], (lines + 1) * (values.border.edge + SPACE['0-5']));
+  return Math.max(SIZE.person.body, (lines + 1) * (values.border.edge + SPACE['0-5']));
 }
 
 // cost: time O(c + r·n²), heap O(r·n), stack O(1)
@@ -91,12 +96,12 @@ export function bodyHeight(lines) {
 // basis: estimate
 // 테이블: 머리 칸, 열 칸, 카드 칸이 모두 배치 사각형 안이다.
 function sizeTable(node, contents) {
-  const rowH = SIZE['table-row'];
+  const rowH = SIZE.node['table-row'];
   const nameW = Math.max(...node.columns.map((c) => measure(c.name, STYLE.cell.size) + (c.pk || c.fk || c.unique ? measure('UNQ', STYLE.tag.size, STYLE.tag.face) + SPACE['3'] : 0)));
   const typeW = Math.max(...node.columns.map((c) => measure(c.type, STYLE.type.size, STYLE.type.face)));
   const titleW = measure(node.label, STYLE.label.size, STYLE.label.face);
-  let w = Math.max(SIZE['node-min'], nameW + typeW + INNER_X * 2 + SPACE['8'], titleW + INNER_X * 2);
-  if (contents.length) w = Math.max(w, SIZE.card);
+  let w = Math.max(SIZE.node['min-width'], nameW + typeW + INNER_X * 2 + SPACE['8'], titleW + INNER_X * 2);
+  if (contents.length) w = Math.max(w, SIZE.node['card-width']);
   const card = contents.length ? sizeCard(contents, w - CARD.margin * 2) : undefined;
   const h = rowH * (node.columns.length + 1) + (card ? card.h + CARD.margin * 2 : 0);
   return { w, h, marginTop: 0, marginBottom: 0, labelLines: [node.label], subLines: [], card, rowH };
@@ -137,7 +142,7 @@ function layoutCard(rows, width) {
 
 /** 선 라벨 알약 크기 */
 export function sizePill(label) {
-  return { w: measure(label, STYLE.pill.size, STYLE.pill.face) + SPACE['7'], h: SIZE.pill };
+  return { w: measure(label, STYLE.pill.size, STYLE.pill.face) + SPACE['7'], h: SIZE.pill.height };
 }
 
 // cost: time O(g·n), heap O(1), stack O(1)

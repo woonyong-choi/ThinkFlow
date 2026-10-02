@@ -38,7 +38,7 @@ function textBoxes(scene) {
       add({ x: row.cx - width / 2, center: row.center, width }, row.style, row.text);
     }
   }
-  for (const g of scene.groups) if (g.label) add({ x: g.x + g.titleDx, center: g.y + values.size['group-title'] / 2, width: measure(g.label, STYLE.group.size, STYLE.group.face) }, STYLE.group, g.label);
+  for (const g of scene.groups) if (g.label) add({ x: g.x + g.titleDx, center: g.y + values.size.group.title / 2, width: measure(g.label, STYLE.group.size, STYLE.group.face) }, STYLE.group, g.label);
   return boxes;
 }
 
@@ -61,8 +61,8 @@ function shapeBoxes(scene) {
   return scene.items.flatMap((it) => {
     const name = plainText(it.label ?? it.id);
     if (it.shape === 'person') {
-      const head = SIZE['person-head'];
-      const shoulder = SIZE['person-shoulder'];
+      const head = SIZE.person.head;
+      const shoulder = SIZE.person.shoulder;
       const headTop = it.y - shoulder - SPACE['1'] - head;
       return [
         { x: it.x + it.w / 2 - head / 2, y: headTop, w: head, h: head, name },

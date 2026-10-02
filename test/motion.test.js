@@ -139,7 +139,7 @@ test('buildTimeline_hop_time_follows_the_edge_length_with_a_minimum_and_no_maxim
   const free = pairs.filter(({ ms }) => ms > values.duration['hop-min']);
 
   assert.ok(new Set(free.map((p) => Math.round(p.length))).size > 1);
-  for (const { length, ms } of free) assert.ok(Math.abs(ms - (length / values.size['hop-ref']) * values.duration.hop) <= 1);
+  for (const { length, ms } of free) assert.ok(Math.abs(ms - (length / values.size.packet['hop-ref']) * values.duration.hop) <= 1);
   for (const { ms } of pairs) assert.ok(ms >= values.duration['hop-min']);
   for (const seg of result.timeline.segs) assert.equal(seg.move, Math.max(0, ...seg.hops.map((h) => h.ms)));
 });

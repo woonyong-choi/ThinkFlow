@@ -30,7 +30,6 @@
   --color-palette-gray-0: #ffffff;
   --color-palette-gray-25: #f6f7f9;
   --color-palette-gray-40: #eef0f3;
-  --color-palette-gray-50: #eef1f5;
   --color-palette-gray-100: #e3e7ec;
   --color-palette-gray-200: #d5dbe3;
   --color-palette-gray-500: #818b99;
@@ -40,6 +39,7 @@
   --color-palette-neutral-750: #3c3e42;
   --color-palette-neutral-800: #2c2d30;
   --color-palette-neutral-850: #242526;
+  --color-palette-neutral-875: #202123;
   --color-palette-neutral-900: #1b1b1d;
   --color-palette-neutral-950: #111214;
   --color-palette-blue-50: #edf5fb;
@@ -80,15 +80,12 @@
   --color-muted: var(--color-palette-ink-600);
   --color-bg: var(--color-palette-gray-25);
   --color-node: var(--color-palette-gray-0);
-  --color-surface: var(--color-palette-gray-50);
+  --color-surface: var(--color-palette-gray-40);
   --color-border: var(--color-palette-gray-500);
   --color-card-on: var(--color-palette-blue-50);
   --color-group: var(--color-palette-gray-40);
-  --color-group-border: var(--color-palette-gray-500);
-  --color-frame: var(--color-palette-gray-100);
   --color-plate-border: var(--color-palette-gray-200);
   --color-page: var(--color-palette-gray-0);
-  --color-gallery: var(--color-palette-gray-0);
   --color-tag-purple: var(--color-palette-purple-500);
   --color-tag-green: var(--color-palette-green-500);
   --color-tag-teal: var(--color-palette-teal-500);
@@ -97,60 +94,55 @@
   --font-mono: FigMono, FigSans, FigSansKo, FigSansSym, FigSansMath, ui-monospace, SFMono-Regular, Menlo, monospace;
   --size-text-9: 9px;
   --size-text-11: 11px;
-  --size-text-12: 12px;
   --size-text-13: 13px;
-  --size-text-14: 14px;
   --size-text-15: 15px;
   --size-text-22: 22px;
-  --size-line-15: 15px;
-  --size-line-18: 18px;
-  --size-line-20: 20px;
-  --size-line-22: 22px;
-  --size-control: 30px;
+  --size-control-outer: 30px;
   --size-control-inner: 22px;
-  --size-pill: 18px;
-  --size-tag: 14px;
-  --size-icon: 12px;
-  --size-packet: 4.5px;
-  --size-halo: 10px;
-  --size-marker: 5px;
-  --size-marker-on: 4px;
-  --size-card: 176px;
-  --size-node-min: 100px;
-  --size-node-max: 210px;
-  --size-node-min-h: 46px;
-  --size-store-cap: 12px;
+  --size-control-icon: 12px;
+  --size-pill-height: 18px;
+  --size-tag-height: 14px;
+  --size-packet-radius: 4.5px;
+  --size-packet-halo: 10px;
+  --size-packet-hop-ref: 300px;
+  --size-arrow-head: 5px;
+  --size-arrow-head-lit: 4px;
+  --size-node-card-width: 176px;
+  --size-node-min-width: 100px;
+  --size-node-max-width: 210px;
+  --size-node-min-height: 46px;
+  --size-node-store-cap: 12px;
+  --size-node-state-dot: 14px;
+  --size-node-table-row: 26px;
   --size-figure-canvas: 960px;
-  --size-hop-ref: 300px;
-  --size-chip-max: 210px;
-  --size-caption-max: 720px;
+  --size-chip-max-width: 210px;
+  --size-player-caption-max: 720px;
+  --size-player-embedded-chrome: 150px;
   --size-gallery-column: var(--size-figure-canvas);
   --size-gallery-frame: 820px;
   --size-document-column: var(--size-figure-canvas);
-  --size-embedded-chrome: 150px;
   --size-chart-width: var(--size-figure-canvas);
   --size-chart-label: 140px;
   --size-chart-label-max: 240px;
   --size-chart-bar: 12px;
   --size-chart-row: 40px;
   --size-chart-dot: 5px;
-  --size-person-w: 56px;
-  --size-person-head: 20px;
-  --size-person-shoulder: 14px;
-  --size-person-body: 22px;
-  --size-state-dot: 14px;
-  --size-table-row: 26px;
-  --size-seq-row: 44px;
-  --size-group-title: 28px;
   --size-chart-plot-h: 260px;
   --size-chart-axis: 48px;
   --size-chart-cell: 40px;
   --size-chart-cap: 8px;
   --size-chart-range: 6px;
   --size-chart-arrow-min: 16px;
+  --size-person-width: 56px;
+  --size-person-head: 20px;
+  --size-person-shoulder: 14px;
+  --size-person-body: 22px;
+  --size-sequence-row: 44px;
+  --size-group-title: 28px;
   --weight-medium: 500;
   --weight-semibold: 600;
   --leading-normal: 1.5;
+  --leading-snug: 1.35;
   --tracking-tag: 0.03em;
   --tracking-frame: 0.04em;
   --space-1: 2px;
@@ -164,11 +156,9 @@
   --space-9: 18px;
   --space-11: 22px;
   --space-12: 24px;
-  --space-13: 26px;
   --space-14: 28px;
   --space-15: 30px;
   --space-16: 32px;
-  --space-18: 36px;
   --space-20: 40px;
   --space-22: 44px;
   --space-30: 60px;
@@ -196,7 +186,7 @@
   --opacity-tag: 0.15;
   --opacity-halo: 0.2;
   --opacity-dim: 0.3;
-  --opacity-dim-ink: 0.65;
+  --opacity-dim-ink: 0.82;
   --opacity-band: 0.22;
   --opacity-range: 0.4;
   --z-raised: 2;
@@ -246,11 +236,8 @@
     --color-surface: var(--color-palette-neutral-800);
     --color-border: var(--color-palette-neutral-500);
     --color-card-on: var(--color-palette-blue-900);
-    --color-frame: var(--color-palette-neutral-800);
     --color-page: var(--color-palette-neutral-950);
-    --color-gallery: var(--color-palette-neutral-950);
-    --color-group: var(--color-palette-neutral-850);
-    --color-group-border: var(--color-palette-neutral-500);
+    --color-group: var(--color-palette-neutral-875);
     --color-plate-border: var(--color-palette-neutral-800);
   }
 }
@@ -277,11 +264,8 @@
   --color-surface: var(--color-palette-neutral-800);
   --color-border: var(--color-palette-neutral-500);
   --color-card-on: var(--color-palette-blue-900);
-  --color-frame: var(--color-palette-neutral-800);
   --color-page: var(--color-palette-neutral-950);
-  --color-gallery: var(--color-palette-neutral-950);
-  --color-group: var(--color-palette-neutral-850);
-  --color-group-border: var(--color-palette-neutral-500);
+  --color-group: var(--color-palette-neutral-875);
   --color-plate-border: var(--color-palette-neutral-800);
 }
 /* 조작 단추의 공통 모양과 상태. 재생기(원 단추, 탭), 목록 쪽과 문서 미리보기(테마 묶음)가 모두 이 파일 하나를 쓴다. */
@@ -303,7 +287,7 @@
 .theme {
   display: flex;
   box-sizing: border-box;
-  min-height: var(--size-control);
+  min-height: var(--size-control-outer);
   padding: var(--space-1-5);
   background: var(--color-bg);
   border: var(--border-thin) solid var(--color-border);
@@ -358,7 +342,7 @@ html.embedded body {
   color: var(--color-fg);
   background: var(--color-bg);
   border-radius: var(--radius-2xl);
-  box-shadow: 0 0 0 var(--border-thin) var(--color-frame);
+  box-shadow: 0 0 0 var(--border-thin) var(--color-plate-border);
 }
 
 html.embedded .fl-figure {
@@ -394,7 +378,7 @@ html.embedded .fl-figure {
   justify-items: center;
   padding: var(--space-8);
   background: var(--color-bg);
-  border-top: var(--border-thin) solid var(--color-frame);
+  border-top: var(--border-thin) solid var(--color-plate-border);
 }
 
 /* 양쪽 칸 너비가 같아(1fr) 배속 글자가 바뀌어도 탭 묶음이 설명과 같은 축에 있다. */
@@ -439,8 +423,8 @@ html.embedded .fl-figure {
 .fl-round {
   display: grid;
   place-items: center;
-  min-width: var(--size-control);
-  height: var(--size-control);
+  min-width: var(--size-control-outer);
+  height: var(--size-control-outer);
   padding: 0 var(--space-2);
   font: var(--size-text-13) var(--font-sans);
   font-variant-numeric: tabular-nums;
@@ -471,10 +455,10 @@ html.embedded .fl-figure {
 }
 
 .fl-caption {
-  max-width: var(--size-caption-max);
-  min-height: calc(var(--size-text-14) * var(--leading-normal));
+  max-width: var(--size-player-caption-max);
+  min-height: calc(var(--size-text-13) * var(--leading-normal));
   margin: 0;
-  font-size: var(--size-text-14);
+  font-size: var(--size-text-13);
   line-height: var(--leading-normal);
   text-align: center;
   color: var(--color-muted);
@@ -506,7 +490,7 @@ html.embedded .fl-figure {
 .fl-figure.full .fl-canvas svg {
   width: 100%;
   min-width: 0;
-  height: calc(100vh - var(--size-embedded-chrome));
+  height: calc(100vh - var(--size-player-embedded-chrome));
   max-height: none;
   touch-action: none;
   user-select: none;
@@ -523,7 +507,7 @@ html.embedded .fl-figure {
 /* 확대·축소는 전체 화면에서만 보인다. 문서 안에서는 그림을 그대로 보이는 편이 읽기 쉽다. */
 .fl-zoom {
   position: absolute;
-  top: calc(var(--space-5) + var(--size-control) + var(--space-3));
+  top: calc(var(--space-5) + var(--size-control-outer) + var(--space-3));
   right: var(--space-5);
   z-index: var(--z-raised);
   display: none;
@@ -621,14 +605,14 @@ html.embedded .fl-figure {
 }
 
 .fl .label {
-  font-size: var(--size-text-14);
+  font-size: var(--size-text-13);
   font-weight: var(--weight-medium);
   text-anchor: middle;
   fill: var(--color-fg);
 }
 
 .fl .sub {
-  font-size: var(--size-text-12);
+  font-size: var(--size-text-11);
   text-anchor: middle;
   fill: var(--color-muted);
 }
@@ -680,11 +664,6 @@ html.embedded .fl-figure {
   fill: var(--color-state-active-text);
 }
 
-.fl .mark.key {
-  font-size: var(--size-text-9);
-  text-anchor: start;
-}
-
 .fl .mini {
   font-size: var(--size-text-11);
   text-anchor: middle;
@@ -696,23 +675,13 @@ html.embedded .fl-figure {
 }
 
 .fl .chip {
-  font-size: var(--size-text-12);
+  font-size: var(--size-text-11);
   text-anchor: middle;
   fill: var(--color-state-on-active);
 }
 
-.fl .md {
-  font-size: var(--size-text-13);
-  fill: var(--color-fg);
-}
-
-.fl .md.h {
-  font-size: var(--size-text-15);
-  font-weight: var(--weight-semibold);
-}
-
 .fl .cell {
-  font-size: var(--size-text-12);
+  font-size: var(--size-text-13);
   fill: var(--color-fg);
 }
 
@@ -736,12 +705,12 @@ html.embedded .fl-figure {
 .fl .cell .key {
   font-size: var(--size-text-9);
   font-weight: var(--weight-semibold);
-  fill: var(--color-state-active-text);
+  fill: var(--color-muted);
 }
 
 .fl .frame-box {
   fill: var(--color-group);
-  stroke: var(--color-group-border);
+  stroke: var(--color-border);
 }
 
 .fl .lifeline {
@@ -780,15 +749,10 @@ html.embedded .fl-figure {
   fill: var(--color-fg);
 }
 
-.fl .chart-legend,
 .fl .chart-label {
   font-size: var(--size-text-13);
+  font-weight: var(--weight-medium);
   fill: var(--color-fg);
-}
-
-.fl .chart-legend {
-  font-size: var(--size-text-12);
-  fill: var(--color-muted);
 }
 
 .fl .chart-value,
@@ -846,22 +810,18 @@ html.embedded .fl-figure {
 
 .fl .chart-ratio {
   font-variant-numeric: tabular-nums;
-  font-size: var(--size-text-12);
+  font-size: var(--size-text-13);
   font-weight: var(--weight-semibold);
   text-anchor: end;
   fill: var(--color-fg);
 }
 
+.fl .chart-legend,
 .fl .chart-sub,
 .fl .chart-name,
 .fl .chart-rule-label {
-  font-size: var(--size-text-12);
-  fill: var(--color-muted);
-}
-
-.fl .chart-name,
-.fl .chart-rule-label {
   font-size: var(--size-text-11);
+  fill: var(--color-muted);
 }
 
 .fl .chart-tick.end,
@@ -990,7 +950,7 @@ html.embedded .fl-figure {
   opacity: var(--opacity-dim);
 }
 
-/* 글자는 면보다 덜 흐려, 흐린 행에서도 글자가 바탕과 대비 4.5 이상이다. */
+/* 글자는 면보다 덜 흐려, 흐린 행에서도 글자가 바탕과 대비 4.5 이상이다(opacity.dim-ink). */
 .fl .ink.dim {
   opacity: var(--opacity-dim-ink);
 }
@@ -1011,9 +971,9 @@ html.embedded .fl-figure {
 <body>
 <figure class="fl-figure" tabindex="0">
 <button type="button" class="fl-round fl-full"></button><div class="fl-zoom"><button type="button" class="fl-round" data-zoom="in" aria-label="확대"></button><button type="button" class="fl-round" data-zoom="out" aria-label="축소"></button><button type="button" class="fl-round" data-zoom="fit" aria-label="전체 보기"></button></div>
-<div class="fl-canvas"><svg xmlns="http://www.w3.org/2000/svg" class="fl" width="960" height="186" style="aspect-ratio: 960 / 186" viewBox="-243.7 0 960 186" role="img"><title>orders</title><defs><marker id="fl-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-muted)"/></marker><marker id="fl-arrow-on" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-state-active)"/></marker><marker id="fl-arrow-main" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-data-main)"/></marker></defs><g id="n-0" class="fl-node" data-id="payments"><rect x="28" y="28" width="217.3" height="104" rx="10" fill="var(--color-node)" class="fl-stroke "/><text x="136.7" y="46" class="label">payments</text><g class="fl-col" data-col="payments.id"><rect x="29" y="54" width="215.3" height="26" class="col-bg "/><line x1="28" x2="245.3" y1="54" y2="54" class="col-line"/><text x="46" y="71.3" class="cell">id<tspan class="key" dx="6">PK</tspan></text><text x="227.3" y="71.3" class="cell type">bigint</text></g><g class="fl-col" data-col="payments.order_id"><rect x="29" y="80" width="215.3" height="26" class="col-bg "/><line x1="28" x2="245.3" y1="80" y2="80" class="col-line"/><text x="46" y="97.3" class="cell">order_id<tspan class="key" dx="6">FK</tspan></text><text x="227.3" y="97.3" class="cell type">bigint</text></g><g class="fl-col" data-col="payments.amount"><rect x="29" y="106" width="215.3" height="26" class="col-bg "/><line x1="28" x2="245.3" y1="106" y2="106" class="col-line"/><text x="46" y="123.3" class="cell">amount</text><text x="227.3" y="123.3" class="cell type">numeric(10, 2)</text></g></g>
-<g id="n-1" class="fl-node" data-id="orders"><rect x="305.3" y="54" width="139.3" height="104" rx="10" fill="var(--color-node)" class="fl-stroke "/><text x="375" y="72" class="label">orders</text><g class="fl-col" data-col="orders.id"><rect x="306.3" y="80" width="137.3" height="26" class="col-bg "/><line x1="305.3" x2="444.6" y1="80" y2="80" class="col-line"/><text x="323.3" y="97.3" class="cell">id<tspan class="key" dx="6">PK</tspan></text><text x="426.6" y="97.3" class="cell type">bigint</text></g><g class="fl-col" data-col="orders.user_id"><rect x="306.3" y="106" width="137.3" height="26" class="col-bg "/><line x1="305.3" x2="444.6" y1="106" y2="106" class="col-line"/><text x="323.3" y="123.3" class="cell">user_id</text><text x="426.6" y="123.3" class="cell type">bigint</text></g><g class="fl-col" data-col="orders.status"><rect x="306.3" y="132" width="137.3" height="26" class="col-bg "/><line x1="305.3" x2="444.6" y1="132" y2="132" class="col-line"/><text x="323.3" y="149.3" class="cell">status</text><text x="426.6" y="149.3" class="cell type">varchar</text></g></g>
-<g id="e-0" class="fl-edge"><path id="p-0" d="M 245.31845703125 93 L 305.3 93" class="fl-path " marker-end="url(#fl-arrow)"/></g><g class="fl-packets"></g></svg></div>
+<div class="fl-canvas"><svg xmlns="http://www.w3.org/2000/svg" class="fl" width="960" height="186" style="aspect-ratio: 960 / 186" viewBox="-240.1 0 960 186" role="img"><title>orders</title><defs><marker id="fl-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-muted)"/></marker><marker id="fl-arrow-on" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-state-active)"/></marker><marker id="fl-arrow-main" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-data-main)"/></marker></defs><g id="n-0" class="fl-node" data-id="payments"><rect x="28" y="28" width="221.2" height="104" rx="10" fill="var(--color-node)" class="fl-stroke "/><text x="138.6" y="45.7" class="label">payments</text><g class="fl-col" data-col="payments.id"><rect x="29" y="54" width="219.2" height="26" class="col-bg "/><line x1="28" x2="249.2" y1="54" y2="54" class="col-line"/><text x="46" y="71.7" class="cell">id<tspan class="key" dx="6">PK</tspan></text><text x="231.2" y="71.7" class="cell type">bigint</text></g><g class="fl-col" data-col="payments.order_id"><rect x="29" y="80" width="219.2" height="26" class="col-bg "/><line x1="28" x2="249.2" y1="80" y2="80" class="col-line"/><text x="46" y="97.7" class="cell">order_id<tspan class="key" dx="6">FK</tspan></text><text x="231.2" y="97.7" class="cell type">bigint</text></g><g class="fl-col" data-col="payments.amount"><rect x="29" y="106" width="219.2" height="26" class="col-bg "/><line x1="28" x2="249.2" y1="106" y2="106" class="col-line"/><text x="46" y="123.7" class="cell">amount</text><text x="231.2" y="123.7" class="cell type">numeric(10, 2)</text></g></g>
+<g id="n-1" class="fl-node" data-id="orders"><rect x="309.2" y="54" width="142.7" height="104" rx="10" fill="var(--color-node)" class="fl-stroke "/><text x="380.5" y="71.7" class="label">orders</text><g class="fl-col" data-col="orders.id"><rect x="310.2" y="80" width="140.7" height="26" class="col-bg "/><line x1="309.2" x2="451.9" y1="80" y2="80" class="col-line"/><text x="327.2" y="97.7" class="cell">id<tspan class="key" dx="6">PK</tspan></text><text x="433.9" y="97.7" class="cell type">bigint</text></g><g class="fl-col" data-col="orders.user_id"><rect x="310.2" y="106" width="140.7" height="26" class="col-bg "/><line x1="309.2" x2="451.9" y1="106" y2="106" class="col-line"/><text x="327.2" y="123.7" class="cell">user_id</text><text x="433.9" y="123.7" class="cell type">bigint</text></g><g class="fl-col" data-col="orders.status"><rect x="310.2" y="132" width="140.7" height="26" class="col-bg "/><line x1="309.2" x2="451.9" y1="132" y2="132" class="col-line"/><text x="327.2" y="149.7" class="cell">status</text><text x="433.9" y="149.7" class="cell type">varchar</text></g></g>
+<g id="e-0" class="fl-edge"><path id="p-0" d="M 249.1939453125 93 L 309.2 93" class="fl-path " marker-end="url(#fl-arrow)"/></g><g class="fl-packets"></g></svg></div>
 <figcaption class="fl-foot">
 <div class="fl-bar"><button type="button" class="fl-round fl-pause"><svg class="fl-ring" viewBox="0 0 30 30" aria-hidden="true"><circle class="fl-ring-fill" cx="15" cy="15" r="14.125" stroke-width="1.75" transform="rotate(-90 15 15)"/></svg><span class="fl-pause-icon"></span></button><div class="fl-tabs" role="tablist"></div><button type="button" class="fl-round fl-rate" aria-label="배속">1×</button></div>
 <p class="fl-caption" aria-live="polite"></p>
@@ -1686,7 +1646,7 @@ function chipSlide(hop, metrics) {
   };
 }
 
-figurePlay(document.querySelector('.fl-figure'), {"segs":[{"si":0,"t0":0,"t1":4740,"hops":[],"edgesOn":[],"nodesOn":[],"groupsOn":[],"columnsOn":["payments.order_id","orders.id"],"cards":{},"cardsBefore":{},"cardsAt":{},"caption":"결제 행은 주문 행을 외래 키로 가리킨다","series":[],"growing":[],"lights":[]},{"si":0,"t0":4740,"t1":7790,"hops":[{"edge":0,"isBack":false,"ms":750,"to":"orders","data":["order_id 1042"],"line":16,"chipPath":[[0,51.70117187248539,-31,1],[0.005964783915087195,51.34328484009475,-31,1],[0.018437560239978185,50.594918260601276,-31,1],[0.03811187083526059,49.41445962488433,-31,1],[0.06570096117429003,47.759114204542584,-31,1],[0.10187787646557456,45.5884992870655,-31,1],[0.1471694540672311,42.8710046309661,-31,1],[0.20178945770550127,39.5938044126699,-31,1],[0.2654118923904264,35.77645833157442,-31,1],[0.336927964018532,31.485494033888074,-31,1],[0.41429543374262523,26.843445850442492,-31,1],[0.5745912671782765,17.225695844303402,-31,1],[0.6510007925372481,12.641124322765108,-31,1],[0.7213290129396324,8.421431098622065,-31,1],[0.7839458953917328,4.664418151496022,-31,1],[0.8380716006702216,1.4168758347867083,-31,1],[0.8835734692388322,-1.3132362793299421,-31,1],[0.9207356536169877,-3.542967342019267,-31,1],[0.9500707149255626,-5.303071020533764,-31,1],[0.9721901497987274,-6.6302371129236235,-31,1],[0.9877253322178113,-7.562348058068665,-31,1],[0.9972839607967611,-8.135865772805687,-31,1],[1,-8.298828121228155,-31,1]]}],"edgesOn":[0],"nodesOn":[0,1],"groupsOn":[],"columnsOn":["payments.order_id","orders.id"],"cards":{},"cardsBefore":{},"cardsAt":{},"caption":"결제 행은 주문 행을 외래 키로 가리킨다","series":[],"growing":[],"lights":[]}],"steps":["결제"],"cardCounts":[0,0],"edgeEnds":[[0,1]],"seriesCount":0,"rowCount":0,"metrics":{"active":"var(--color-state-active)","chipFill":"var(--color-state-active-fill)","halo":10,"haloOpacity":0.2,"packet":4.5,"chipRadius":8,"chipLine":15,"chipPadX":18,"chipPadY":8,"chipGap":12,"icon":12,"iconStroke":1.75,"pauseStroke":2.5,"zoomMax":6,"zoomStep":1.25,"move":[0.455,0.03,0.515,0.955]}});
+figurePlay(document.querySelector('.fl-figure'), {"segs":[{"si":0,"t0":0,"t1":4740,"hops":[],"edgesOn":[],"nodesOn":[],"groupsOn":[],"columnsOn":["payments.order_id","orders.id"],"cards":{},"cardsBefore":{},"cardsAt":{},"caption":"결제 행은 주문 행을 외래 키로 가리킨다","series":[],"growing":[],"lights":[]},{"si":0,"t0":4740,"t1":7790,"hops":[{"edge":0,"isBack":false,"ms":750,"to":"orders","data":["order_id 1042"],"line":16,"chipPath":[[0,48.47607421623539,-31,1],[0.005964783915087195,48.11818718384475,-31,1],[0.018437560239978185,47.369820604351276,-31,1],[0.03811187083526059,46.18936196863433,-31,1],[0.06570096117429003,44.534016548292584,-31,1],[0.10187787646557456,42.3634016308155,-31,1],[0.1471694540672311,39.64590697471613,-31,1],[0.20178945770550127,36.3687067564199,-31,1],[0.2654118923904264,32.55136067532442,-31,1],[0.336927964018532,28.260396377638074,-31,1],[0.41429543374262523,23.618348194192492,-31,1],[0.5745912671782765,14.000598188053402,-31,1],[0.6510007925372481,9.416026666515108,-31,1],[0.7213290129396324,5.196333442372065,-31,1],[0.7839458953917328,1.4393204952460223,-31,1],[0.8380716006702216,-1.8082218214632917,-31,1],[0.8835734692388322,-4.538333935579942,-31,1],[0.9207356536169877,-6.768064998269267,-31,1],[0.9500707149255626,-8.528168676783764,-31,1],[0.9721901497987274,-9.855334769173623,-31,1],[0.9877253322178113,-10.787445714318665,-31,1],[0.9972839607967611,-11.360963429055687,-31,1],[1,-11.523925777478155,-31,1]]}],"edgesOn":[0],"nodesOn":[0,1],"groupsOn":[],"columnsOn":["payments.order_id","orders.id"],"cards":{},"cardsBefore":{},"cardsAt":{},"caption":"결제 행은 주문 행을 외래 키로 가리킨다","series":[],"growing":[],"lights":[]}],"steps":["결제"],"cardCounts":[0,0],"edgeEnds":[[0,1]],"seriesCount":0,"rowCount":0,"metrics":{"active":"var(--color-state-active)","chipFill":"var(--color-state-active-fill)","halo":10,"haloOpacity":0.2,"packet":4.5,"chipRadius":8,"chipLine":15,"chipPadX":18,"chipPadY":8,"chipGap":12,"icon":12,"iconStroke":1.75,"pauseStroke":2.5,"zoomMax":6,"zoomStep":1.25,"move":[0.455,0.03,0.515,0.955]}});
 </script>
 </body>
 </html>

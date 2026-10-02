@@ -26,7 +26,7 @@ export function drawChart(figure) {
 }
 
 /** 차트 글자가 쓰는 글꼴. 숫자는 Inter의 자리 폭 같은 숫자(num)로 그린다. */
-export const CHART_FACES = ['regular', 'semibold', 'num', 'numSemibold'];
+export const CHART_FACES = ['regular', 'medium', 'semibold', 'num', 'numSemibold'];
 
 // cost: time O(r + n), heap O(n), stack O(1)
 // vars: r = 행 수, n = 글자 수

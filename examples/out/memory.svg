@@ -11,7 +11,6 @@
   --color-palette-gray-0: #ffffff;
   --color-palette-gray-25: #f6f7f9;
   --color-palette-gray-40: #eef0f3;
-  --color-palette-gray-50: #eef1f5;
   --color-palette-gray-100: #e3e7ec;
   --color-palette-gray-200: #d5dbe3;
   --color-palette-gray-500: #818b99;
@@ -21,6 +20,7 @@
   --color-palette-neutral-750: #3c3e42;
   --color-palette-neutral-800: #2c2d30;
   --color-palette-neutral-850: #242526;
+  --color-palette-neutral-875: #202123;
   --color-palette-neutral-900: #1b1b1d;
   --color-palette-neutral-950: #111214;
   --color-palette-blue-50: #edf5fb;
@@ -61,15 +61,12 @@
   --color-muted: var(--color-palette-ink-600);
   --color-bg: var(--color-palette-gray-25);
   --color-node: var(--color-palette-gray-0);
-  --color-surface: var(--color-palette-gray-50);
+  --color-surface: var(--color-palette-gray-40);
   --color-border: var(--color-palette-gray-500);
   --color-card-on: var(--color-palette-blue-50);
   --color-group: var(--color-palette-gray-40);
-  --color-group-border: var(--color-palette-gray-500);
-  --color-frame: var(--color-palette-gray-100);
   --color-plate-border: var(--color-palette-gray-200);
   --color-page: var(--color-palette-gray-0);
-  --color-gallery: var(--color-palette-gray-0);
   --color-tag-purple: var(--color-palette-purple-500);
   --color-tag-green: var(--color-palette-green-500);
   --color-tag-teal: var(--color-palette-teal-500);
@@ -78,60 +75,55 @@
   --font-mono: FigMono, FigSans, FigSansKo, FigSansSym, FigSansMath, ui-monospace, SFMono-Regular, Menlo, monospace;
   --size-text-9: 9px;
   --size-text-11: 11px;
-  --size-text-12: 12px;
   --size-text-13: 13px;
-  --size-text-14: 14px;
   --size-text-15: 15px;
   --size-text-22: 22px;
-  --size-line-15: 15px;
-  --size-line-18: 18px;
-  --size-line-20: 20px;
-  --size-line-22: 22px;
-  --size-control: 30px;
+  --size-control-outer: 30px;
   --size-control-inner: 22px;
-  --size-pill: 18px;
-  --size-tag: 14px;
-  --size-icon: 12px;
-  --size-packet: 4.5px;
-  --size-halo: 10px;
-  --size-marker: 5px;
-  --size-marker-on: 4px;
-  --size-card: 176px;
-  --size-node-min: 100px;
-  --size-node-max: 210px;
-  --size-node-min-h: 46px;
-  --size-store-cap: 12px;
+  --size-control-icon: 12px;
+  --size-pill-height: 18px;
+  --size-tag-height: 14px;
+  --size-packet-radius: 4.5px;
+  --size-packet-halo: 10px;
+  --size-packet-hop-ref: 300px;
+  --size-arrow-head: 5px;
+  --size-arrow-head-lit: 4px;
+  --size-node-card-width: 176px;
+  --size-node-min-width: 100px;
+  --size-node-max-width: 210px;
+  --size-node-min-height: 46px;
+  --size-node-store-cap: 12px;
+  --size-node-state-dot: 14px;
+  --size-node-table-row: 26px;
   --size-figure-canvas: 960px;
-  --size-hop-ref: 300px;
-  --size-chip-max: 210px;
-  --size-caption-max: 720px;
+  --size-chip-max-width: 210px;
+  --size-player-caption-max: 720px;
+  --size-player-embedded-chrome: 150px;
   --size-gallery-column: var(--size-figure-canvas);
   --size-gallery-frame: 820px;
   --size-document-column: var(--size-figure-canvas);
-  --size-embedded-chrome: 150px;
   --size-chart-width: var(--size-figure-canvas);
   --size-chart-label: 140px;
   --size-chart-label-max: 240px;
   --size-chart-bar: 12px;
   --size-chart-row: 40px;
   --size-chart-dot: 5px;
-  --size-person-w: 56px;
-  --size-person-head: 20px;
-  --size-person-shoulder: 14px;
-  --size-person-body: 22px;
-  --size-state-dot: 14px;
-  --size-table-row: 26px;
-  --size-seq-row: 44px;
-  --size-group-title: 28px;
   --size-chart-plot-h: 260px;
   --size-chart-axis: 48px;
   --size-chart-cell: 40px;
   --size-chart-cap: 8px;
   --size-chart-range: 6px;
   --size-chart-arrow-min: 16px;
+  --size-person-width: 56px;
+  --size-person-head: 20px;
+  --size-person-shoulder: 14px;
+  --size-person-body: 22px;
+  --size-sequence-row: 44px;
+  --size-group-title: 28px;
   --weight-medium: 500;
   --weight-semibold: 600;
   --leading-normal: 1.5;
+  --leading-snug: 1.35;
   --tracking-tag: 0.03em;
   --tracking-frame: 0.04em;
   --space-1: 2px;
@@ -145,11 +137,9 @@
   --space-9: 18px;
   --space-11: 22px;
   --space-12: 24px;
-  --space-13: 26px;
   --space-14: 28px;
   --space-15: 30px;
   --space-16: 32px;
-  --space-18: 36px;
   --space-20: 40px;
   --space-22: 44px;
   --space-30: 60px;
@@ -177,7 +167,7 @@
   --opacity-tag: 0.15;
   --opacity-halo: 0.2;
   --opacity-dim: 0.3;
-  --opacity-dim-ink: 0.65;
+  --opacity-dim-ink: 0.82;
   --opacity-band: 0.22;
   --opacity-range: 0.4;
   --z-raised: 2;
@@ -227,11 +217,8 @@
     --color-surface: var(--color-palette-neutral-800);
     --color-border: var(--color-palette-neutral-500);
     --color-card-on: var(--color-palette-blue-900);
-    --color-frame: var(--color-palette-neutral-800);
     --color-page: var(--color-palette-neutral-950);
-    --color-gallery: var(--color-palette-neutral-950);
-    --color-group: var(--color-palette-neutral-850);
-    --color-group-border: var(--color-palette-neutral-500);
+    --color-group: var(--color-palette-neutral-875);
     --color-plate-border: var(--color-palette-neutral-800);
   }
 }
@@ -258,11 +245,8 @@
   --color-surface: var(--color-palette-neutral-800);
   --color-border: var(--color-palette-neutral-500);
   --color-card-on: var(--color-palette-blue-900);
-  --color-frame: var(--color-palette-neutral-800);
   --color-page: var(--color-palette-neutral-950);
-  --color-gallery: var(--color-palette-neutral-950);
-  --color-group: var(--color-palette-neutral-850);
-  --color-group-border: var(--color-palette-neutral-500);
+  --color-group: var(--color-palette-neutral-875);
   --color-plate-border: var(--color-palette-neutral-800);
 }
 /* 그림 안 글자와 모양. HTML 재생기와 움직이는 SVG가 같이 쓴다. */
@@ -271,14 +255,14 @@
 }
 
 .fl .label {
-  font-size: var(--size-text-14);
+  font-size: var(--size-text-13);
   font-weight: var(--weight-medium);
   text-anchor: middle;
   fill: var(--color-fg);
 }
 
 .fl .sub {
-  font-size: var(--size-text-12);
+  font-size: var(--size-text-11);
   text-anchor: middle;
   fill: var(--color-muted);
 }
@@ -330,11 +314,6 @@
   fill: var(--color-state-active-text);
 }
 
-.fl .mark.key {
-  font-size: var(--size-text-9);
-  text-anchor: start;
-}
-
 .fl .mini {
   font-size: var(--size-text-11);
   text-anchor: middle;
@@ -346,23 +325,13 @@
 }
 
 .fl .chip {
-  font-size: var(--size-text-12);
+  font-size: var(--size-text-11);
   text-anchor: middle;
   fill: var(--color-state-on-active);
 }
 
-.fl .md {
-  font-size: var(--size-text-13);
-  fill: var(--color-fg);
-}
-
-.fl .md.h {
-  font-size: var(--size-text-15);
-  font-weight: var(--weight-semibold);
-}
-
 .fl .cell {
-  font-size: var(--size-text-12);
+  font-size: var(--size-text-13);
   fill: var(--color-fg);
 }
 
@@ -386,12 +355,12 @@
 .fl .cell .key {
   font-size: var(--size-text-9);
   font-weight: var(--weight-semibold);
-  fill: var(--color-state-active-text);
+  fill: var(--color-muted);
 }
 
 .fl .frame-box {
   fill: var(--color-group);
-  stroke: var(--color-group-border);
+  stroke: var(--color-border);
 }
 
 .fl .lifeline {
@@ -426,14 +395,14 @@
 /* 움직이는 SVG에만 있는 단계 이름과 설명 줄 */
 .fl .steplabel {
   font-family: var(--font-sans);
-  font-size: var(--size-text-13);
+  font-size: var(--size-text-15);
   font-weight: var(--weight-semibold);
   text-anchor: middle;
   fill: var(--color-fg);
 }
 
 .fl .caption {
-  font-size: var(--size-text-14);
+  font-size: var(--size-text-13);
   text-anchor: middle;
   fill: var(--color-muted);
 }
@@ -501,24 +470,24 @@
 <rect x="0.5" y="0.5" width="959" height="848" rx="10" fill="var(--color-bg)" stroke="var(--color-plate-border)" stroke-width="1"/>
 <g transform="translate(116.9 0)">
 <g id="g-0" class="fl-group" data-id="memory"><rect x="238.2" y="31.3" width="224" height="665" rx="14" class="frame-box fl-stroke a0"/><text x="256.2" y="49.3" class="frame">기억 엔진</text></g>
-<g id="n-0" class="fl-node" data-id="user"><circle cx="56" cy="38" r="10" fill="var(--color-node)" class="fl-stroke a1"/><path d="M28 86 V 64 A 28 14 0 0 1 84 64 V 86 Z" fill="var(--color-node)" class="fl-stroke a1"/><text x="56" y="106" class="label">사용자</text></g>
-<g id="n-1" class="fl-node" data-id="extract"><rect x="262.2" y="131.3" width="176" height="128" rx="10" fill="var(--color-node)" class="fl-stroke a2"/><text x="350.2" y="157.4" class="label">추출기</text><text x="350.2" y="173.2" class="sub">LLM</text><rect x="272.2" y="188.3" width="156" height="61" rx="6" fill="var(--color-surface)" stroke="var(--color-border)" stroke-dasharray="3 3" class="fl-card a5"/><g id="n-1-c0" opacity="0" class="fl-layer a3"><rect x="280.2" y="195.3" width="44.7" height="14" rx="4" fill="var(--color-tag-purple)" fill-opacity="0.15"/><text x="302.6" y="205.6" class="tag">PERSON</text><text x="280.2" y="220.3" class="row">민지</text><rect x="280.2" y="229.3" width="27.5" height="14" rx="4" fill="var(--color-tag-green)" fill-opacity="0.15"/><text x="294" y="239.6" class="tag">ORG</text><text x="312.8" y="239.3" class="row">토스<tspan class="muted"> · 3월</tspan></text></g><g id="n-1-c1" opacity="0" class="fl-layer a4"><rect x="280.2" y="195.3" width="44.7" height="14" rx="4" fill="var(--color-tag-purple)" fill-opacity="0.15"/><text x="302.6" y="205.6" class="tag">PERSON</text><text x="280.2" y="220.3" class="row">김민지 = 민지</text></g></g>
-<g id="n-2" class="fl-node" data-id="resolve"><rect x="262.2" y="319.3" width="176" height="109" rx="10" fill="var(--color-node)" class="fl-stroke a6"/><text x="350.2" y="345.4" class="label">개체 정리</text><text x="350.2" y="361.2" class="sub">같은 사람 합치기</text><rect x="272.2" y="376.3" width="156" height="42" rx="6" fill="var(--color-surface)" stroke="var(--color-border)" stroke-dasharray="3 3" class="fl-card a8"/><g id="n-2-c0" opacity="0" class="fl-layer a7"><rect x="280.2" y="383.3" width="39.8" height="14" rx="4" fill="var(--color-tag-teal)" fill-opacity="0.15"/><text x="300.1" y="393.6" class="tag">MERGE</text><text x="280.2" y="408.3" class="row">김민지 → 민지</text></g></g>
-<g id="n-3" class="fl-node" data-id="graph"><path d="M262.2 500.3 a 88 12 0 0 1 176 0 v 100 a 88 12 0 0 1 -176 0 z" fill="var(--color-node)" class="fl-stroke a9"/><path d="M262.2 500.3 a 88 12 0 0 0 176 0" fill="none" class="fl-stroke a9"/><text x="350.2" y="526.4" class="label">기억 그래프</text><rect x="272.2" y="542.3" width="156" height="48" rx="6" fill="var(--color-surface)" stroke="var(--color-border)" stroke-dasharray="3 3" class="fl-card a12"/><g id="n-3-c0" opacity="0" class="fl-layer a10"><line x1="336.4" y1="557.3" x2="364.1" y2="557.3" stroke="var(--color-border)" stroke-width="1"/><rect x="294.1" y="548.3" width="42.2" height="18" rx="9" fill="var(--color-state-active-fill)" stroke="var(--color-state-active-fill)" stroke-width="1"/><text x="315.2" y="561.3" class="mini on">민지</text><rect x="364.1" y="548.3" width="42.2" height="18" rx="9" fill="var(--color-node)" stroke="var(--color-border)" stroke-width="1"/><text x="385.2" y="561.3" class="mini">토스</text></g><g id="n-3-c1" opacity="0" class="fl-layer a11"><line x1="324.7" y1="575.3" x2="329.1" y2="575.3" stroke="var(--color-border)" stroke-width="1"/><line x1="371.4" y1="575.3" x2="375.6" y2="575.3" stroke="var(--color-border)" stroke-width="1"/><path d="M 303.6 566.3 Q 350.2 530.3 396.9 566.3" fill="none" stroke="var(--color-state-active)" stroke-width="1"/><rect x="282.5" y="566.3" width="42.2" height="18" rx="9" fill="var(--color-state-active-fill)" stroke="var(--color-state-active-fill)" stroke-width="1"/><text x="303.6" y="579.3" class="mini on">민지</text><rect x="329.1" y="566.3" width="42.2" height="18" rx="9" fill="var(--color-node)" stroke="var(--color-border)" stroke-width="1"/><text x="350.2" y="579.3" class="mini">토스</text><rect x="375.6" y="566.3" width="42.7" height="18" rx="9" fill="var(--color-state-active-fill)" stroke="var(--color-state-active-fill)" stroke-width="1"/><text x="396.9" y="579.3" class="mini on">결제팀</text></g></g>
-<g id="n-4" class="fl-node" data-id="answer"><rect x="522.2" y="636" width="176" height="109" rx="10" fill="var(--color-node)" class="fl-stroke a13"/><text x="610.2" y="662" class="label">답변</text><text x="610.2" y="677.8" class="sub">질의 시점</text><rect x="532.2" y="693" width="156" height="42" rx="6" fill="var(--color-surface)" stroke="var(--color-border)" stroke-dasharray="3 3" class="fl-card a15"/><g id="n-4-c0" opacity="0" class="fl-layer a14"><rect x="540.2" y="700" width="47.7" height="14" rx="4" fill="var(--color-tag-gray)" fill-opacity="0.15"/><text x="564.1" y="710.2" class="tag">ANSWER</text><text x="680.2" y="710" class="mark">✓</text><text x="540.2" y="725" class="row">토스 결제팀</text></g></g>
+<g id="n-0" class="fl-node" data-id="user"><circle cx="56" cy="38" r="10" fill="var(--color-node)" class="fl-stroke a1"/><path d="M28 86 V 64 A 28 14 0 0 1 84 64 V 86 Z" fill="var(--color-node)" class="fl-stroke a1"/><text x="56" y="105.7" class="label">사용자</text></g>
+<g id="n-1" class="fl-node" data-id="extract"><rect x="262.2" y="131.3" width="176" height="128" rx="10" fill="var(--color-node)" class="fl-stroke a2"/><text x="350.2" y="157" class="label">추출기</text><text x="350.2" y="172.8" class="sub">LLM</text><rect x="272.2" y="188.3" width="156" height="61" rx="6" fill="var(--color-surface)" stroke="var(--color-border)" stroke-dasharray="3 3" class="fl-card a5"/><g id="n-1-c0" opacity="0" class="fl-layer a3"><rect x="280.2" y="195.3" width="44.7" height="14" rx="4" fill="var(--color-tag-purple)" fill-opacity="0.15"/><text x="302.6" y="205.6" class="tag">PERSON</text><text x="280.2" y="220.3" class="row">민지</text><rect x="280.2" y="229.3" width="27.5" height="14" rx="4" fill="var(--color-tag-green)" fill-opacity="0.15"/><text x="294" y="239.6" class="tag">ORG</text><text x="312.8" y="239.3" class="row">토스<tspan class="muted"> · 3월</tspan></text></g><g id="n-1-c1" opacity="0" class="fl-layer a4"><rect x="280.2" y="195.3" width="44.7" height="14" rx="4" fill="var(--color-tag-purple)" fill-opacity="0.15"/><text x="302.6" y="205.6" class="tag">PERSON</text><text x="280.2" y="220.3" class="row">김민지 = 민지</text></g></g>
+<g id="n-2" class="fl-node" data-id="resolve"><rect x="262.2" y="319.3" width="176" height="109" rx="10" fill="var(--color-node)" class="fl-stroke a6"/><text x="350.2" y="345" class="label">개체 정리</text><text x="350.2" y="360.8" class="sub">같은 사람 합치기</text><rect x="272.2" y="376.3" width="156" height="42" rx="6" fill="var(--color-surface)" stroke="var(--color-border)" stroke-dasharray="3 3" class="fl-card a8"/><g id="n-2-c0" opacity="0" class="fl-layer a7"><rect x="280.2" y="383.3" width="39.8" height="14" rx="4" fill="var(--color-tag-teal)" fill-opacity="0.15"/><text x="300.1" y="393.6" class="tag">MERGE</text><text x="280.2" y="408.3" class="row">김민지 → 민지</text></g></g>
+<g id="n-3" class="fl-node" data-id="graph"><path d="M262.2 500.3 a 88 12 0 0 1 176 0 v 100 a 88 12 0 0 1 -176 0 z" fill="var(--color-node)" class="fl-stroke a9"/><path d="M262.2 500.3 a 88 12 0 0 0 176 0" fill="none" class="fl-stroke a9"/><text x="350.2" y="526" class="label">기억 그래프</text><rect x="272.2" y="542.3" width="156" height="48" rx="6" fill="var(--color-surface)" stroke="var(--color-border)" stroke-dasharray="3 3" class="fl-card a12"/><g id="n-3-c0" opacity="0" class="fl-layer a10"><line x1="336.4" y1="557.3" x2="364.1" y2="557.3" stroke="var(--color-border)" stroke-width="1"/><rect x="294.1" y="548.3" width="42.2" height="18" rx="9" fill="var(--color-state-active-fill)" stroke="var(--color-state-active-fill)" stroke-width="1"/><text x="315.2" y="561.3" class="mini on">민지</text><rect x="364.1" y="548.3" width="42.2" height="18" rx="9" fill="var(--color-node)" stroke="var(--color-border)" stroke-width="1"/><text x="385.2" y="561.3" class="mini">토스</text></g><g id="n-3-c1" opacity="0" class="fl-layer a11"><line x1="324.7" y1="575.3" x2="329.1" y2="575.3" stroke="var(--color-border)" stroke-width="1"/><line x1="371.4" y1="575.3" x2="375.6" y2="575.3" stroke="var(--color-border)" stroke-width="1"/><path d="M 303.6 566.3 Q 350.2 530.3 396.9 566.3" fill="none" stroke="var(--color-state-active)" stroke-width="1"/><rect x="282.5" y="566.3" width="42.2" height="18" rx="9" fill="var(--color-state-active-fill)" stroke="var(--color-state-active-fill)" stroke-width="1"/><text x="303.6" y="579.3" class="mini on">민지</text><rect x="329.1" y="566.3" width="42.2" height="18" rx="9" fill="var(--color-node)" stroke="var(--color-border)" stroke-width="1"/><text x="350.2" y="579.3" class="mini">토스</text><rect x="375.6" y="566.3" width="42.7" height="18" rx="9" fill="var(--color-state-active-fill)" stroke="var(--color-state-active-fill)" stroke-width="1"/><text x="396.9" y="579.3" class="mini on">결제팀</text></g></g>
+<g id="n-4" class="fl-node" data-id="answer"><rect x="522.2" y="636" width="176" height="109" rx="10" fill="var(--color-node)" class="fl-stroke a13"/><text x="610.2" y="661.7" class="label">답변</text><text x="610.2" y="677.5" class="sub">질의 시점</text><rect x="532.2" y="693" width="156" height="42" rx="6" fill="var(--color-surface)" stroke="var(--color-border)" stroke-dasharray="3 3" class="fl-card a15"/><g id="n-4-c0" opacity="0" class="fl-layer a14"><rect x="540.2" y="700" width="47.7" height="14" rx="4" fill="var(--color-tag-gray)" fill-opacity="0.15"/><text x="564.1" y="710.2" class="tag">ANSWER</text><text x="680.2" y="710" class="mark">✓</text><text x="540.2" y="725" class="row">토스 결제팀</text></g></g>
 <g id="e-0" class="fl-edge"><path id="p-0" d="M 84 71.33333333333334 L 328.2 71.3 Q 350.2 71.3, 350.2 93.3 L 350.2 131.3" class="fl-path a16" marker-end="url(#fl-arrow)"/><g class="fl-pill"><rect x="144" y="61.8" width="34.2" height="18" rx="9" class="pill a17"/><text x="161.1" y="74.8" class="edgelabel a18">대화</text></g></g>
 <g id="e-1" class="fl-edge"><path id="p-1" d="M 350.24 259.3333333333333 L 350.2 319.3" class="fl-path a19" marker-end="url(#fl-arrow)"/></g>
 <g id="e-2" class="fl-edge"><path id="p-2" d="M 350.24 428.3333333333333 L 350.2 488.3" class="fl-path a20" marker-end="url(#fl-arrow)"/></g>
 <g id="e-3" class="fl-edge"><path id="p-3" d="M 350.24 612.3333333333334 L 350.2 650.3 Q 350.2 672.3, 372.2 672.3 L 522.2 672.3" class="fl-path a21" marker-end="url(#fl-arrow)"/></g>
 <g id="e-4" class="fl-edge quiet a23"><path id="p-4" d="M 84 78.66666666666666 L 92 78.7 Q 100 78.7, 100 86.7 L 100 690.3 Q 100 712.3, 122 712.3 L 522.2 712.3" class="fl-path a22" marker-end="url(#fl-arrow)"/><g class="fl-pill"><rect x="144" y="702.8" width="34.2" height="18" rx="9" class="pill a24"/><text x="161.1" y="715.8" class="edgelabel a25">질문</text></g></g>
-<g class="p0-0" opacity="0"><circle r="10" fill="var(--color-state-active)" opacity="0.2"/><circle r="4.5" fill="var(--color-state-active)"/><g><rect x="-78.5" y="-35" width="157" height="23" rx="8" fill="var(--color-state-active-fill)"/><text x="0" y="-20" class="chip">민지는 3월에 토스로 옮겼어</text><animateTransform attributeName="transform" type="translate" dur="39.016s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.00171;0.00342;0.00513;0.00683;0.00854;0.01025;0.01196;0.01367;0.01538;0.01709;0.0188;0.0205;0.02136;0.02221;0.02307;0.02392;0.02478;0.02563;0.02648;0.02734;0.02819;0.02905;0.0299;0.03076;0.03161;0.03247;0.03417;0.03588;0.03759;0.0393;0.04101;0.04272;0.04528;0.0487;0.05297;0.05553;0.05724;0.05895;0.06066;0.06237;0.06408;0.06578;0.06664;0.06749;0.06835;0.08373;0.10186;1" values="100.5 47;100 47;99.2 47;98.2 47;96.8 47;95.2 47;93.2 47;90.9 47;88.2 47;85.2 47;81.8 47;78 47;73.9 47;71.6 47;69.3 47;66.8 47;64.3 47;61.7 47;58.9 47;56 47;53.1 47;50 47;46.8 47;43.5 47;40.1 47;36.7 47;33.1 47;25.6 47;17.7 47;9.4 47;0.8 47;-8 47;-17.2 47;-31.3 47;-50.5 47;-74.7 47;-88.8 47;-98 47;-107 47;-115.7 47;-124.1 47;-132.1 47;-139.8 47;-143.5 47;-147.1 47;-150.5 47;0 0;0 0;0 0"/></g><animate attributeName="opacity" dur="39.016s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.10186" values="1;0"/><animateMotion dur="39.016s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.10186;1" keySplines="0.455 0.03 0.515 0.955;0 0 1 1" keyPoints="0;1;1"><mpath href="#p-0" xlink:href="#p-0"/></animateMotion></g>
+<g class="p0-0" opacity="0"><circle r="10" fill="var(--color-state-active)" opacity="0.2"/><circle r="4.5" fill="var(--color-state-active)"/><g><rect x="-72.7" y="-35" width="145.4" height="23" rx="8" fill="var(--color-state-active-fill)"/><text x="0" y="-20" class="chip">민지는 3월에 토스로 옮겼어</text><animateTransform attributeName="transform" type="translate" dur="39.016s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.00171;0.00342;0.00513;0.00683;0.00854;0.01025;0.01196;0.01367;0.01538;0.01709;0.0188;0.0205;0.02136;0.02221;0.02307;0.02392;0.02478;0.02563;0.02648;0.02734;0.02819;0.02905;0.0299;0.03076;0.03161;0.03247;0.03417;0.03588;0.03759;0.0393;0.04101;0.04272;0.04528;0.0487;0.05297;0.05553;0.05724;0.05895;0.06066;0.06237;0.06408;0.06578;0.06664;0.06749;0.06835;0.0692;0.08458;0.10186;1" values="101.5 47;101.1 47;100.3 47;99.2 47;97.9 47;96.2 47;94.3 47;91.9 47;89.3 47;86.3 47;82.9 47;79.1 47;74.9 47;72.7 47;70.3 47;67.9 47;65.4 47;62.7 47;60 47;57.1 47;54.1 47;51.1 47;47.9 47;44.6 47;41.2 47;37.7 47;34.1 47;26.6 47;18.7 47;10.5 47;1.9 47;-7 47;-16.1 47;-30.2 47;-49.5 47;-73.6 47;-87.8 47;-97 47;-106 47;-114.6 47;-123 47;-131 47;-138.7 47;-142.4 47;-146 47;-149.5 47;-152.8 47;0 0;0 0;0 0"/></g><animate attributeName="opacity" dur="39.016s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.10186" values="1;0"/><animateMotion dur="39.016s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.10186;1" keySplines="0.455 0.03 0.515 0.955;0 0 1 1" keyPoints="0;1;1"><mpath href="#p-0" xlink:href="#p-0"/></animateMotion></g>
 <g class="p1-0" opacity="0"><circle r="10" fill="var(--color-state-active)" opacity="0.2"/><circle r="4.5" fill="var(--color-state-active)"/><animate attributeName="opacity" dur="39.016s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.12377;0.14299" values="0;1;0"/><animateMotion dur="39.016s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.12377;0.14299;1" keySplines="0 0 1 1;0.455 0.03 0.515 0.955;0 0 1 1" keyPoints="0;0;1;1"><mpath href="#p-1" xlink:href="#p-1"/></animateMotion></g>
 <g class="p2-0" opacity="0"><circle r="10" fill="var(--color-state-active)" opacity="0.2"/><circle r="4.5" fill="var(--color-state-active)"/><animate attributeName="opacity" dur="39.016s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.16093;0.18016" values="0;1;0"/><animateMotion dur="39.016s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.16093;0.18016;1" keySplines="0 0 1 1;0.455 0.03 0.515 0.955;0 0 1 1" keyPoints="0;0;1;1"><mpath href="#p-2" xlink:href="#p-2"/></animateMotion></g>
-<g class="p3-0" opacity="0"><circle r="10" fill="var(--color-state-active)" opacity="0.2"/><circle r="4.5" fill="var(--color-state-active)"/><g><rect x="-73.1" y="-35" width="146.2" height="23" rx="8" fill="var(--color-state-active-fill)"/><text x="0" y="-20" class="chip">김민지가 결제팀을 맡았대</text><animateTransform attributeName="transform" type="translate" dur="39.016s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.23911;0.24082;0.24252;0.24423;0.24594;0.24765;0.24936;0.25107;0.25278;0.25449;0.25619;0.2579;0.25961;0.26047;0.26132;0.26217;0.26303;0.26388;0.26474;0.26559;0.26645;0.2673;0.26815;0.26901;0.26986;0.27072;0.27157;0.27328;0.27499;0.2767;0.27841;0.28012;0.28182;0.28439;0.28781;0.29208;0.29464;0.29635;0.29806;0.29977;0.30147;0.30318;0.30489;0.30575;0.3066;0.30746;0.30831;0.32369;0.34096;1" values="101.1 47;101.1 47;100.7 47;99.9 47;98.8 47;97.5 47;95.8 47;93.9 47;91.5 47;88.9 47;85.9 47;82.5 47;78.7 47;74.5 47;72.3 47;69.9 47;67.5 47;65 47;62.3 47;59.6 47;56.7 47;53.7 47;50.7 47;47.5 47;44.2 47;40.8 47;37.3 47;33.7 47;26.2 47;18.3 47;10.1 47;1.5 47;-7.4 47;-16.5 47;-30.6 47;-49.9 47;-74 47;-88.2 47;-97.4 47;-106.4 47;-115 47;-123.4 47;-131.4 47;-139.1 47;-142.8 47;-146.4 47;-149.9 47;-153.1 47;0 0;0 0;0 0"/></g><animate attributeName="opacity" dur="39.016s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.23911;0.34096" values="0;1;0"/><animateMotion dur="39.016s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.23911;0.34096;1" keySplines="0 0 1 1;0.455 0.03 0.515 0.955;0 0 1 1" keyPoints="0;0;1;1"><mpath href="#p-0" xlink:href="#p-0"/></animateMotion></g>
+<g class="p3-0" opacity="0"><circle r="10" fill="var(--color-state-active)" opacity="0.2"/><circle r="4.5" fill="var(--color-state-active)"/><g><rect x="-67.8" y="-35" width="135.5" height="23" rx="8" fill="var(--color-state-active-fill)"/><text x="0" y="-20" class="chip">김민지가 결제팀을 맡았대</text><animateTransform attributeName="transform" type="translate" dur="39.016s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.23911;0.24082;0.24252;0.24423;0.24594;0.24765;0.24936;0.25107;0.25278;0.25449;0.25619;0.2579;0.25961;0.26047;0.26132;0.26217;0.26303;0.26388;0.26474;0.26559;0.26645;0.2673;0.26815;0.26901;0.26986;0.27072;0.27157;0.27328;0.27499;0.2767;0.27841;0.28012;0.28182;0.28439;0.28781;0.29208;0.29464;0.29635;0.29806;0.29977;0.30147;0.30318;0.30489;0.30575;0.3066;0.30746;0.32283;0.34096;1" values="106.5 47;106.5 47;106 47;105.2 47;104.2 47;102.8 47;101.2 47;99.2 47;96.9 47;94.2 47;91.2 47;87.8 47;84 47;79.9 47;77.6 47;75.3 47;72.8 47;70.3 47;67.7 47;64.9 47;62 47;59.1 47;56 47;52.8 47;49.5 47;46.1 47;42.7 47;39.1 47;31.6 47;23.7 47;15.4 47;6.8 47;-2 47;-11.2 47;-25.3 47;-44.5 47;-68.7 47;-82.8 47;-92 47;-101 47;-109.7 47;-118.1 47;-126.1 47;-133.8 47;-137.5 47;-141.1 47;-144.5 47;0 0;0 0;0 0"/></g><animate attributeName="opacity" dur="39.016s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.23911;0.34096" values="0;1;0"/><animateMotion dur="39.016s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.23911;0.34096;1" keySplines="0 0 1 1;0.455 0.03 0.515 0.955;0 0 1 1" keyPoints="0;0;1;1"><mpath href="#p-0" xlink:href="#p-0"/></animateMotion></g>
 <g class="p4-0" opacity="0"><circle r="10" fill="var(--color-state-active)" opacity="0.2"/><circle r="4.5" fill="var(--color-state-active)"/><animate attributeName="opacity" dur="39.016s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.37326;0.39248" values="0;1;0"/><animateMotion dur="39.016s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.37326;0.39248;1" keySplines="0 0 1 1;0.455 0.03 0.515 0.955;0 0 1 1" keyPoints="0;0;1;1"><mpath href="#p-1" xlink:href="#p-1"/></animateMotion></g>
 <g class="p5-0" opacity="0"><circle r="10" fill="var(--color-state-active)" opacity="0.2"/><circle r="4.5" fill="var(--color-state-active)"/><animate attributeName="opacity" dur="39.016s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.41042;0.42964" values="0;1;0"/><animateMotion dur="39.016s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.41042;0.42964;1" keySplines="0 0 1 1;0.455 0.03 0.515 0.955;0 0 1 1" keyPoints="0;0;1;1"><mpath href="#p-2" xlink:href="#p-2"/></animateMotion></g>
-<g class="p7-0" opacity="0"><circle r="10" fill="var(--color-state-active)" opacity="0.2"/><circle r="4.5" fill="var(--color-state-active)"/><g><rect x="-66.8" y="-35" width="133.6" height="23" rx="8" fill="var(--color-state-active-fill)"/><text x="0" y="-20" class="chip">민지 지금 어디 팀이야?</text><animateTransform attributeName="transform" type="translate" dur="39.016s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.51166;0.51508;0.5185;0.52191;0.52533;0.52875;0.53217;0.53644;0.53815;0.53986;0.54156;0.54413;0.66715;0.67484;0.68424;0.68937;0.69364;0.6962;0.69706;0.69791;0.69876;0.69962;0.70047;0.70133;0.70218;0.71756;0.74832;0.85145;1" values="62.1 47;62.1 47;61.3 47;60.1 47;58.6 47;56.7 47;54.5 47;51.9 47;48.5 47;47.4 47;46.7 47;46.2 47;46.1 47;46.1 47;0 104.7;0 51.5;0 22.8;0 -0.9;0 -15;0 -19.6;0 -24;0 -27.8;0 -30.8;0 -32.7;0 -33.7;0 -34;0 -34;0 71.7;0 71.7;0 71.7"/></g><animate attributeName="opacity" dur="39.016s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.51166;0.85145" values="0;1;0"/><animateMotion dur="39.016s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.51166;0.85145;1" keySplines="0 0 1 1;0.455 0.03 0.515 0.955;0 0 1 1" keyPoints="0;0;1;1"><mpath href="#p-4" xlink:href="#p-4"/></animateMotion></g>
-<g class="p8-0" opacity="0"><circle r="10" fill="var(--color-state-active)" opacity="0.2"/><circle r="4.5" fill="var(--color-state-active)"/><g><rect x="-45.7" y="-35" width="91.4" height="23" rx="8" fill="var(--color-state-active-fill)"/><text x="0" y="-20" class="chip">민지 → 결제팀</text><animateTransform attributeName="transform" type="translate" dur="39.016s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.86939;0.8711;0.87195;0.8728;0.87366;0.87451;0.87537;0.87622;0.87708;0.87793;0.87878;0.87964;0.88049;0.88135;0.8822;0.88306;0.88391;0.88477;0.88562;0.88647;0.88733;0.88818;0.88904;0.88989;0.89075;0.8916;0.89245;0.89331;0.89416;0.89502;0.89587;0.89673;0.89758;0.89929;0.901;0.90442;0.90698;0.90869;0.9104;0.91125;0.9121;0.91296;0.91381;0.91467;0.91552;0.91638;0.91723;0.91808;0.91894;0.91979;0.92065;0.9215;0.92236;0.92321;0.92407;0.92492;0.92577;0.92663;0.92748;0.92834;0.92919;0.93005;0.9309;0.93175;0.93261;0.93346;0.93432;0.93603;0.93773;0.93944;0.94105;1" values="60.3 39;60.3 39;60.3 38.5;60.3 38;60.3 37.5;60.3 36.9;60.3 36.1;60.3 35.3;60.3 34.3;60.3 33.3;60.3 32.1;60.3 30.7;60.3 29.3;60.3 27.7;60.3 26;60.3 24.1;60.3 22.1;60.3 20;60.3 17.7;60.3 15.3;60.3 12.8;60.3 10;60.3 7.2;60.3 4.2;60.3 1;60.1 -2.3;59.7 -5.8;58.7 -9.2;57.1 -12.6;54.6 -15.6;51.4 -18.1;47.6 -19.7;43.5 -20.7;39.1 -21;30 -21;20.7 -21;1.4 -21;-13 -21;-22.5 -21;-31.6 -21;-36 -21;-40.3 -21;-44.5 -21;-48.6 -21;-52.6 -21;-56.4 -21;-60.1 -21;-63.6 -21;-67.1 -21;-70.4 -21;-73.5 -21;-76.5 -21;-79.4 -21;-82.1 -21;-84.7 -21;-87.2 -21;-89.5 -21;-91.7 -21;-93.8 -21;-95.7 -21;-97.5 -21;-99.2 -21;-100.8 -21;-102.2 -21;-103.6 -21;-104.8 -21;-106 -21;-107 -21;-108.7 -21;-110.1 -21;-111.1 -21;-111.7 -21;-111.7 -21"/></g><animate attributeName="opacity" dur="39.016s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.86939;0.94105" values="0;1;0"/><animateMotion dur="39.016s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.86939;0.94105;1" keySplines="0 0 1 1;0.455 0.03 0.515 0.955;0 0 1 1" keyPoints="0;0;1;1"><mpath href="#p-3" xlink:href="#p-3"/></animateMotion></g>
+<g class="p7-0" opacity="0"><circle r="10" fill="var(--color-state-active)" opacity="0.2"/><circle r="4.5" fill="var(--color-state-active)"/><g><rect x="-62" y="-35" width="124" height="23" rx="8" fill="var(--color-state-active-fill)"/><text x="0" y="-20" class="chip">민지 지금 어디 팀이야?</text><animateTransform attributeName="transform" type="translate" dur="39.016s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.51166;0.53046;0.53302;0.53473;0.53644;0.53815;0.53986;0.54242;0.54584;0.5484;0.55096;0.55353;0.56121;0.69535;0.6962;0.69706;0.69791;0.69876;0.69962;0.70047;0.70218;0.7056;0.70902;0.71243;0.74319;0.85145;1" values="0 69.8;0 69.8;0 69.8;0 69.5;0 69;0 68.2;0 67;0 65.4;0 62.6;0 58.5;0 55.2;0 51.7;0 47.9;-22 47;-22 47;-22.1 47;-22.8 47;-24.3 47;-26.9 47;-30.4 47;-34.6 47;-43.6 47;-61.7 47;-79.4 47;-96.8 47;0 71.7;0 71.7;0 71.7"/></g><animate attributeName="opacity" dur="39.016s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.51166;0.85145" values="0;1;0"/><animateMotion dur="39.016s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.51166;0.85145;1" keySplines="0 0 1 1;0.455 0.03 0.515 0.955;0 0 1 1" keyPoints="0;0;1;1"><mpath href="#p-4" xlink:href="#p-4"/></animateMotion></g>
+<g class="p8-0" opacity="0"><circle r="10" fill="var(--color-state-active)" opacity="0.2"/><circle r="4.5" fill="var(--color-state-active)"/><g><rect x="-42.6" y="-35" width="85.3" height="23" rx="8" fill="var(--color-state-active-fill)"/><text x="0" y="-20" class="chip">민지 → 결제팀</text><animateTransform attributeName="transform" type="translate" dur="39.016s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.86939;0.8711;0.87195;0.8728;0.87366;0.87451;0.87537;0.87622;0.87708;0.87793;0.87878;0.87964;0.88049;0.88135;0.8822;0.88306;0.88391;0.88477;0.88562;0.88647;0.88733;0.88818;0.88904;0.88989;0.89075;0.8916;0.89245;0.89331;0.89416;0.89502;0.89587;0.89673;0.89758;0.89929;0.901;0.90442;0.90698;0.90869;0.9104;0.91125;0.9121;0.91296;0.91381;0.91467;0.91552;0.91638;0.91723;0.91808;0.91894;0.91979;0.92065;0.9215;0.92236;0.92321;0.92407;0.92492;0.92577;0.92663;0.92748;0.92834;0.92919;0.93005;0.9309;0.93175;0.93261;0.93346;0.93432;0.93603;0.93773;0.93944;0.94105;1" values="63.4 39;63.4 39;63.4 38.5;63.4 38;63.4 37.5;63.4 36.9;63.4 36.1;63.4 35.3;63.4 34.3;63.4 33.3;63.4 32.1;63.4 30.7;63.4 29.3;63.4 27.7;63.4 26;63.4 24.1;63.4 22.1;63.4 20;63.4 17.7;63.4 15.3;63.4 12.8;63.4 10;63.4 7.2;63.4 4.2;63.4 1;63.2 -2.3;62.7 -5.8;61.7 -9.2;60.1 -12.6;57.7 -15.6;54.5 -18.1;50.7 -19.7;46.5 -20.7;42.1 -21;33.1 -21;23.7 -21;4.4 -21;-10 -21;-19.4 -21;-28.5 -21;-32.9 -21;-37.2 -21;-41.4 -21;-45.5 -21;-49.5 -21;-53.3 -21;-57 -21;-60.6 -21;-64 -21;-67.3 -21;-70.5 -21;-73.5 -21;-76.3 -21;-79.1 -21;-81.7 -21;-84.1 -21;-86.4 -21;-88.6 -21;-90.7 -21;-92.6 -21;-94.5 -21;-96.2 -21;-97.7 -21;-99.2 -21;-100.5 -21;-101.8 -21;-102.9 -21;-103.9 -21;-105.7 -21;-107 -21;-108 -21;-108.6 -21;-108.6 -21"/></g><animate attributeName="opacity" dur="39.016s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.86939;0.94105" values="0;1;0"/><animateMotion dur="39.016s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.86939;0.94105;1" keySplines="0 0 1 1;0.455 0.03 0.515 0.955;0 0 1 1" keyPoints="0;0;1;1"><mpath href="#p-3" xlink:href="#p-3"/></animateMotion></g>
 </g>
 <text x="480" y="791" opacity="0" class="steplabel a26">첫 대화</text>
 <text x="480" y="791" opacity="0" class="steplabel a27">다음 대화</text>

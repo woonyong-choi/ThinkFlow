@@ -6,7 +6,7 @@ import { inkGroup, labelText, valueText } from './labels.js';
 import { DOT, ROW, SIZE, SPACE, TEXT, WIDTH, PAD, seriesColor } from './metrics.js';
 import { formatChange, valueFormat } from './scale.js';
 
-const ARROW_MIN = SIZE['chart-arrow-min'];
+const ARROW_MIN = SIZE.chart['arrow-min'];
 
 // cost: time O(1), heap O(1), stack O(1)
 // basis: estimate
@@ -35,7 +35,7 @@ function dumbbellReach(chart, unit) {
     const change = formatChange(before, after);
     const isAfterRight = unit.at(after) >= unit.at(before);
     const rightText = measure((isAfterRight ? formatSecond(after) : formatFirst(before)), TEXT['11'], isAfterRight ? 'numSemibold' : 'num');
-    const tail = SPACE['3'] + rightText + (change ? SPACE['6'] + measure(change, TEXT['12'], 'numSemibold') : 0);
+    const tail = SPACE['3'] + rightText + (change ? SPACE['6'] + measure(change, TEXT['13'], 'numSemibold') : 0);
     const bounds = [first, second].flatMap((s) => boundsOf(row, s));
     return [...[before, after].map((value) => ({ value, extra: DOT + tail })), ...bounds.map((value) => ({ value, extra: tail }))];
   });
@@ -58,7 +58,7 @@ function dumbbellScale(chart) {
 function rangeBar(ctx, row, i) {
   const { chart, scale, cy } = ctx;
   const [low, high] = [row.values[`${chart.series[i].id}.low`], row.values[`${chart.series[i].id}.high`]];
-  return low === undefined ? '' : `<line x1="${r(scale.at(low))}" x2="${r(scale.at(high))}" y1="${r(cy)}" y2="${r(cy)}" stroke="${seriesColor(chart, i)}" stroke-width="${SIZE['chart-range']}" class="chart-range pop"/>`;
+  return low === undefined ? '' : `<line x1="${r(scale.at(low))}" x2="${r(scale.at(high))}" y1="${r(cy)}" y2="${r(cy)}" stroke="${seriesColor(chart, i)}" stroke-width="${SIZE.chart.range}" class="chart-range pop"/>`;
 }
 
 // cost: time O(1), heap O(1), stack O(1)
@@ -97,7 +97,7 @@ function dumbbellRow(ctx, row, k) {
   const [left, right] = valueTextEdges(ctx, row, xs);
   const [firstX, secondX] = xs[0] < xs[1] ? [left, right] : [right, left];
   const side = (x) => (x === left ? 'end' : 'start');
-  const ratio = `<text x="${WIDTH - PAD}" y="${r(centerBaseline(cy, TEXT['12']))}" class="chart-ratio late">${formatChange(before, after)}</text>`;
+  const ratio = `<text x="${WIDTH - PAD}" y="${r(centerBaseline(cy, TEXT['13']))}" class="chart-ratio late">${formatChange(before, after)}</text>`;
   const marks = `<g class="cr-${k}"><g class="cs-0">${rangeBar(ctx, row, 0)}<circle cx="${r(xs[0])}" cy="${r(cy)}" r="${DOT}" class="chart-before pop"/></g><g class="cs-1">${rangeBar(ctx, row, 1)}${endMark(ctx, xs)}</g></g>`;
   const texts = `<g class="cr-${k} ink"><g class="cs-0">${valueText({ x: firstX, cy }, formats[0](before), `chart-value first late ${side(firstX)}`)}</g><g class="cs-1">${valueText({ x: secondX, cy }, formats[1](after), `chart-value second late ${side(secondX)}`)}${ratio}</g></g>`;
   return inkGroup(k, labelText(row.label, cy, 'chart-label')) + marks + texts;

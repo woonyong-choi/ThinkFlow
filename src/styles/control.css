@@ -17,7 +17,7 @@
 .theme {
   display: flex;
   box-sizing: border-box;
-  min-height: var(--size-control);
+  min-height: var(--size-control-outer);
   padding: var(--space-1-5);
   background: var(--color-bg);
   border: var(--border-thin) solid var(--color-border);

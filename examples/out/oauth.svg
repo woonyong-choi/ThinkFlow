@@ -12,7 +12,6 @@
   --color-palette-gray-0: #ffffff;
   --color-palette-gray-25: #f6f7f9;
   --color-palette-gray-40: #eef0f3;
-  --color-palette-gray-50: #eef1f5;
   --color-palette-gray-100: #e3e7ec;
   --color-palette-gray-200: #d5dbe3;
   --color-palette-gray-500: #818b99;
@@ -22,6 +21,7 @@
   --color-palette-neutral-750: #3c3e42;
   --color-palette-neutral-800: #2c2d30;
   --color-palette-neutral-850: #242526;
+  --color-palette-neutral-875: #202123;
   --color-palette-neutral-900: #1b1b1d;
   --color-palette-neutral-950: #111214;
   --color-palette-blue-50: #edf5fb;
@@ -62,15 +62,12 @@
   --color-muted: var(--color-palette-ink-600);
   --color-bg: var(--color-palette-gray-25);
   --color-node: var(--color-palette-gray-0);
-  --color-surface: var(--color-palette-gray-50);
+  --color-surface: var(--color-palette-gray-40);
   --color-border: var(--color-palette-gray-500);
   --color-card-on: var(--color-palette-blue-50);
   --color-group: var(--color-palette-gray-40);
-  --color-group-border: var(--color-palette-gray-500);
-  --color-frame: var(--color-palette-gray-100);
   --color-plate-border: var(--color-palette-gray-200);
   --color-page: var(--color-palette-gray-0);
-  --color-gallery: var(--color-palette-gray-0);
   --color-tag-purple: var(--color-palette-purple-500);
   --color-tag-green: var(--color-palette-green-500);
   --color-tag-teal: var(--color-palette-teal-500);
@@ -79,60 +76,55 @@
   --font-mono: FigMono, FigSans, FigSansKo, FigSansSym, FigSansMath, ui-monospace, SFMono-Regular, Menlo, monospace;
   --size-text-9: 9px;
   --size-text-11: 11px;
-  --size-text-12: 12px;
   --size-text-13: 13px;
-  --size-text-14: 14px;
   --size-text-15: 15px;
   --size-text-22: 22px;
-  --size-line-15: 15px;
-  --size-line-18: 18px;
-  --size-line-20: 20px;
-  --size-line-22: 22px;
-  --size-control: 30px;
+  --size-control-outer: 30px;
   --size-control-inner: 22px;
-  --size-pill: 18px;
-  --size-tag: 14px;
-  --size-icon: 12px;
-  --size-packet: 4.5px;
-  --size-halo: 10px;
-  --size-marker: 5px;
-  --size-marker-on: 4px;
-  --size-card: 176px;
-  --size-node-min: 100px;
-  --size-node-max: 210px;
-  --size-node-min-h: 46px;
-  --size-store-cap: 12px;
+  --size-control-icon: 12px;
+  --size-pill-height: 18px;
+  --size-tag-height: 14px;
+  --size-packet-radius: 4.5px;
+  --size-packet-halo: 10px;
+  --size-packet-hop-ref: 300px;
+  --size-arrow-head: 5px;
+  --size-arrow-head-lit: 4px;
+  --size-node-card-width: 176px;
+  --size-node-min-width: 100px;
+  --size-node-max-width: 210px;
+  --size-node-min-height: 46px;
+  --size-node-store-cap: 12px;
+  --size-node-state-dot: 14px;
+  --size-node-table-row: 26px;
   --size-figure-canvas: 960px;
-  --size-hop-ref: 300px;
-  --size-chip-max: 210px;
-  --size-caption-max: 720px;
+  --size-chip-max-width: 210px;
+  --size-player-caption-max: 720px;
+  --size-player-embedded-chrome: 150px;
   --size-gallery-column: var(--size-figure-canvas);
   --size-gallery-frame: 820px;
   --size-document-column: var(--size-figure-canvas);
-  --size-embedded-chrome: 150px;
   --size-chart-width: var(--size-figure-canvas);
   --size-chart-label: 140px;
   --size-chart-label-max: 240px;
   --size-chart-bar: 12px;
   --size-chart-row: 40px;
   --size-chart-dot: 5px;
-  --size-person-w: 56px;
-  --size-person-head: 20px;
-  --size-person-shoulder: 14px;
-  --size-person-body: 22px;
-  --size-state-dot: 14px;
-  --size-table-row: 26px;
-  --size-seq-row: 44px;
-  --size-group-title: 28px;
   --size-chart-plot-h: 260px;
   --size-chart-axis: 48px;
   --size-chart-cell: 40px;
   --size-chart-cap: 8px;
   --size-chart-range: 6px;
   --size-chart-arrow-min: 16px;
+  --size-person-width: 56px;
+  --size-person-head: 20px;
+  --size-person-shoulder: 14px;
+  --size-person-body: 22px;
+  --size-sequence-row: 44px;
+  --size-group-title: 28px;
   --weight-medium: 500;
   --weight-semibold: 600;
   --leading-normal: 1.5;
+  --leading-snug: 1.35;
   --tracking-tag: 0.03em;
   --tracking-frame: 0.04em;
   --space-1: 2px;
@@ -146,11 +138,9 @@
   --space-9: 18px;
   --space-11: 22px;
   --space-12: 24px;
-  --space-13: 26px;
   --space-14: 28px;
   --space-15: 30px;
   --space-16: 32px;
-  --space-18: 36px;
   --space-20: 40px;
   --space-22: 44px;
   --space-30: 60px;
@@ -178,7 +168,7 @@
   --opacity-tag: 0.15;
   --opacity-halo: 0.2;
   --opacity-dim: 0.3;
-  --opacity-dim-ink: 0.65;
+  --opacity-dim-ink: 0.82;
   --opacity-band: 0.22;
   --opacity-range: 0.4;
   --z-raised: 2;
@@ -228,11 +218,8 @@
     --color-surface: var(--color-palette-neutral-800);
     --color-border: var(--color-palette-neutral-500);
     --color-card-on: var(--color-palette-blue-900);
-    --color-frame: var(--color-palette-neutral-800);
     --color-page: var(--color-palette-neutral-950);
-    --color-gallery: var(--color-palette-neutral-950);
-    --color-group: var(--color-palette-neutral-850);
-    --color-group-border: var(--color-palette-neutral-500);
+    --color-group: var(--color-palette-neutral-875);
     --color-plate-border: var(--color-palette-neutral-800);
   }
 }
@@ -259,11 +246,8 @@
   --color-surface: var(--color-palette-neutral-800);
   --color-border: var(--color-palette-neutral-500);
   --color-card-on: var(--color-palette-blue-900);
-  --color-frame: var(--color-palette-neutral-800);
   --color-page: var(--color-palette-neutral-950);
-  --color-gallery: var(--color-palette-neutral-950);
-  --color-group: var(--color-palette-neutral-850);
-  --color-group-border: var(--color-palette-neutral-500);
+  --color-group: var(--color-palette-neutral-875);
   --color-plate-border: var(--color-palette-neutral-800);
 }
 /* 그림 안 글자와 모양. HTML 재생기와 움직이는 SVG가 같이 쓴다. */
@@ -272,14 +256,14 @@
 }
 
 .fl .label {
-  font-size: var(--size-text-14);
+  font-size: var(--size-text-13);
   font-weight: var(--weight-medium);
   text-anchor: middle;
   fill: var(--color-fg);
 }
 
 .fl .sub {
-  font-size: var(--size-text-12);
+  font-size: var(--size-text-11);
   text-anchor: middle;
   fill: var(--color-muted);
 }
@@ -331,11 +315,6 @@
   fill: var(--color-state-active-text);
 }
 
-.fl .mark.key {
-  font-size: var(--size-text-9);
-  text-anchor: start;
-}
-
 .fl .mini {
   font-size: var(--size-text-11);
   text-anchor: middle;
@@ -347,23 +326,13 @@
 }
 
 .fl .chip {
-  font-size: var(--size-text-12);
+  font-size: var(--size-text-11);
   text-anchor: middle;
   fill: var(--color-state-on-active);
 }
 
-.fl .md {
-  font-size: var(--size-text-13);
-  fill: var(--color-fg);
-}
-
-.fl .md.h {
-  font-size: var(--size-text-15);
-  font-weight: var(--weight-semibold);
-}
-
 .fl .cell {
-  font-size: var(--size-text-12);
+  font-size: var(--size-text-13);
   fill: var(--color-fg);
 }
 
@@ -387,12 +356,12 @@
 .fl .cell .key {
   font-size: var(--size-text-9);
   font-weight: var(--weight-semibold);
-  fill: var(--color-state-active-text);
+  fill: var(--color-muted);
 }
 
 .fl .frame-box {
   fill: var(--color-group);
-  stroke: var(--color-group-border);
+  stroke: var(--color-border);
 }
 
 .fl .lifeline {
@@ -427,14 +396,14 @@
 /* 움직이는 SVG에만 있는 단계 이름과 설명 줄 */
 .fl .steplabel {
   font-family: var(--font-sans);
-  font-size: var(--size-text-13);
+  font-size: var(--size-text-15);
   font-weight: var(--weight-semibold);
   text-anchor: middle;
   fill: var(--color-fg);
 }
 
 .fl .caption {
-  font-size: var(--size-text-14);
+  font-size: var(--size-text-13);
   text-anchor: middle;
   fill: var(--color-muted);
 }
@@ -490,15 +459,15 @@
 </style>
 <defs><marker id="fl-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-muted)"/></marker><marker id="fl-arrow-on" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-state-active)"/></marker><marker id="fl-arrow-main" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-data-main)"/></marker></defs>
 <rect x="0.5" y="0.5" width="959" height="539" rx="10" fill="var(--color-bg)" stroke="var(--color-plate-border)" stroke-width="1"/>
-<g transform="translate(167.9 0)">
+<g transform="translate(168.2 0)">
 <line x1="56" x2="56" y1="110" y2="436" class="lifeline"/>
 <line x1="166" x2="166" y1="110" y2="436" class="lifeline"/>
 <line x1="319.9" x2="319.9" y1="110" y2="436" class="lifeline"/>
 <line x1="545.6" x2="545.6" y1="110" y2="436" class="lifeline"/>
-<g id="n-0" class="fl-node" data-id="user"><circle cx="56" cy="38" r="10" fill="var(--color-node)" class="fl-stroke a0"/><path d="M28 86 V 64 A 28 14 0 0 1 84 64 V 86 Z" fill="var(--color-node)" class="fl-stroke a0"/><text x="56" y="106" class="label">사용자</text></g>
-<g id="n-1" class="fl-node" data-id="app"><rect x="116" y="64" width="100" height="46" rx="10" fill="var(--color-node)" class="fl-stroke a1"/><text x="166" y="92" class="label">앱</text></g>
-<g id="n-2" class="fl-node" data-id="auth"><rect x="269.9" y="64" width="100" height="46" rx="10" fill="var(--color-node)" class="fl-stroke a2"/><text x="319.9" y="92" class="label">인가 서버</text></g>
-<g id="n-3" class="fl-node" data-id="api"><rect x="495" y="64" width="101.1" height="46" rx="10" fill="var(--color-node)" class="fl-stroke a3" stroke-dasharray="5 4"/><text x="545.6" y="92" class="label">리소스 API</text></g>
+<g id="n-0" class="fl-node" data-id="user"><circle cx="56" cy="38" r="10" fill="var(--color-node)" class="fl-stroke a0"/><path d="M28 86 V 64 A 28 14 0 0 1 84 64 V 86 Z" fill="var(--color-node)" class="fl-stroke a0"/><text x="56" y="105.7" class="label">사용자</text></g>
+<g id="n-1" class="fl-node" data-id="app"><rect x="116" y="64" width="100" height="46" rx="10" fill="var(--color-node)" class="fl-stroke a1"/><text x="166" y="91.7" class="label">앱</text></g>
+<g id="n-2" class="fl-node" data-id="auth"><rect x="269.9" y="64" width="100" height="46" rx="10" fill="var(--color-node)" class="fl-stroke a2"/><text x="319.9" y="91.7" class="label">인가 서버</text></g>
+<g id="n-3" class="fl-node" data-id="api"><rect x="495.6" y="64" width="100" height="46" rx="10" fill="var(--color-node)" class="fl-stroke a3" stroke-dasharray="5 4"/><text x="545.6" y="91.7" class="label">리소스 API</text></g>
 <g id="e-0" class="fl-edge"><path id="p-0" d="M 56 162 L 166 162" class="fl-path a4" marker-end="url(#fl-arrow)"/><g class="fl-pill"><rect x="77.2" y="140" width="67.7" height="18" rx="9" class="pill a5"/><text x="111" y="153" class="edgelabel a6">로그인 누름</text></g></g>
 <g id="e-1" class="fl-edge"><path id="p-1" d="M 166 228 L 319.9 228" class="fl-path a7" marker-end="url(#fl-arrow)"/><g class="fl-pill"><rect x="194.6" y="206" width="96.7" height="18" rx="9" class="pill a8"/><text x="242.9" y="219" class="edgelabel a9"><tspan class="code">authorize</tspan> 요청</text></g></g>
 <g id="e-2" class="fl-edge"><path id="p-2" d="M 319.85986328125 272 L 166 272" class="fl-path a10" stroke-dasharray="5 4" marker-end="url(#fl-arrow)"/><g class="fl-pill"><rect x="198.5" y="250" width="88.8" height="18" rx="9" class="pill a11"/><text x="242.9" y="263" class="edgelabel a12">redirect ?code</text></g></g>

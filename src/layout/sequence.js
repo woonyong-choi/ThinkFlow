@@ -8,7 +8,7 @@ const SIZE = values.size;
 const PAD = SPACE['14'];
 // 메모 상자 안쪽 여백과 최대 너비
 const NOTE_PAD = SPACE['5'];
-const NOTE_MAX = SIZE['chip-max'];
+const NOTE_MAX = SIZE.chip['max-width'];
 // 메모 상자와 같은 행 화살표 라벨 사이의 최소 간격. 이동 글 상자 간격과 같다.
 const NOTE_CLEAR = SPACE['2'];
 
@@ -70,10 +70,10 @@ function layoutRow(beat, rowNotes, { index, centers, m, y }) {
   const mid = (centers[a] + centers[b]) / 2;
   const span = isSelf ? [centers[a], centers[a] + loop + pill.w / 2] : [Math.min(centers[a], centers[b], mid - pill.w / 2), Math.max(centers[a], centers[b], mid + pill.w / 2)];
   const isStacked = placed.some((n) => n.x < span[1] && n.x + n.w > span[0]);
-  const selfExtra = isSelf ? SIZE['seq-row'] / 2 : 0;
+  const selfExtra = isSelf ? SIZE.sequence.row / 2 : 0;
   // 메모 위 여백 + 메모 + 최소 간격 + 라벨 위 간격 + 라벨 + 화살표 아래 여백
   const stack = isStacked ? SPACE['2'] + Math.max(...placed.map((n) => n.h)) + NOTE_CLEAR + pill.h + SPACE['2'] + SPACE['8'] + selfExtra : 0;
-  const height = Math.max(SIZE['seq-row'] * (isSelf ? 2 : 1), ...placed.map((n) => n.h + SPACE['8']), stack);
+  const height = Math.max(SIZE.sequence.row * (isSelf ? 2 : 1), ...placed.map((n) => n.h + SPACE['8']), stack);
   const lineY = y + height - SPACE['8'] - selfExtra;
   const points = isSelf
     ? [{ x: centers[a], y: lineY }, { x: centers[a] + loop, y: lineY }, { x: centers[a] + loop, y: lineY + SPACE['14'] }, { x: centers[a], y: lineY + SPACE['14'] }]

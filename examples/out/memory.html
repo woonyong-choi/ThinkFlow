@@ -31,7 +31,6 @@
   --color-palette-gray-0: #ffffff;
   --color-palette-gray-25: #f6f7f9;
   --color-palette-gray-40: #eef0f3;
-  --color-palette-gray-50: #eef1f5;
   --color-palette-gray-100: #e3e7ec;
   --color-palette-gray-200: #d5dbe3;
   --color-palette-gray-500: #818b99;
@@ -41,6 +40,7 @@
   --color-palette-neutral-750: #3c3e42;
   --color-palette-neutral-800: #2c2d30;
   --color-palette-neutral-850: #242526;
+  --color-palette-neutral-875: #202123;
   --color-palette-neutral-900: #1b1b1d;
   --color-palette-neutral-950: #111214;
   --color-palette-blue-50: #edf5fb;
@@ -81,15 +81,12 @@
   --color-muted: var(--color-palette-ink-600);
   --color-bg: var(--color-palette-gray-25);
   --color-node: var(--color-palette-gray-0);
-  --color-surface: var(--color-palette-gray-50);
+  --color-surface: var(--color-palette-gray-40);
   --color-border: var(--color-palette-gray-500);
   --color-card-on: var(--color-palette-blue-50);
   --color-group: var(--color-palette-gray-40);
-  --color-group-border: var(--color-palette-gray-500);
-  --color-frame: var(--color-palette-gray-100);
   --color-plate-border: var(--color-palette-gray-200);
   --color-page: var(--color-palette-gray-0);
-  --color-gallery: var(--color-palette-gray-0);
   --color-tag-purple: var(--color-palette-purple-500);
   --color-tag-green: var(--color-palette-green-500);
   --color-tag-teal: var(--color-palette-teal-500);
@@ -98,60 +95,55 @@
   --font-mono: FigMono, FigSans, FigSansKo, FigSansSym, FigSansMath, ui-monospace, SFMono-Regular, Menlo, monospace;
   --size-text-9: 9px;
   --size-text-11: 11px;
-  --size-text-12: 12px;
   --size-text-13: 13px;
-  --size-text-14: 14px;
   --size-text-15: 15px;
   --size-text-22: 22px;
-  --size-line-15: 15px;
-  --size-line-18: 18px;
-  --size-line-20: 20px;
-  --size-line-22: 22px;
-  --size-control: 30px;
+  --size-control-outer: 30px;
   --size-control-inner: 22px;
-  --size-pill: 18px;
-  --size-tag: 14px;
-  --size-icon: 12px;
-  --size-packet: 4.5px;
-  --size-halo: 10px;
-  --size-marker: 5px;
-  --size-marker-on: 4px;
-  --size-card: 176px;
-  --size-node-min: 100px;
-  --size-node-max: 210px;
-  --size-node-min-h: 46px;
-  --size-store-cap: 12px;
+  --size-control-icon: 12px;
+  --size-pill-height: 18px;
+  --size-tag-height: 14px;
+  --size-packet-radius: 4.5px;
+  --size-packet-halo: 10px;
+  --size-packet-hop-ref: 300px;
+  --size-arrow-head: 5px;
+  --size-arrow-head-lit: 4px;
+  --size-node-card-width: 176px;
+  --size-node-min-width: 100px;
+  --size-node-max-width: 210px;
+  --size-node-min-height: 46px;
+  --size-node-store-cap: 12px;
+  --size-node-state-dot: 14px;
+  --size-node-table-row: 26px;
   --size-figure-canvas: 960px;
-  --size-hop-ref: 300px;
-  --size-chip-max: 210px;
-  --size-caption-max: 720px;
+  --size-chip-max-width: 210px;
+  --size-player-caption-max: 720px;
+  --size-player-embedded-chrome: 150px;
   --size-gallery-column: var(--size-figure-canvas);
   --size-gallery-frame: 820px;
   --size-document-column: var(--size-figure-canvas);
-  --size-embedded-chrome: 150px;
   --size-chart-width: var(--size-figure-canvas);
   --size-chart-label: 140px;
   --size-chart-label-max: 240px;
   --size-chart-bar: 12px;
   --size-chart-row: 40px;
   --size-chart-dot: 5px;
-  --size-person-w: 56px;
-  --size-person-head: 20px;
-  --size-person-shoulder: 14px;
-  --size-person-body: 22px;
-  --size-state-dot: 14px;
-  --size-table-row: 26px;
-  --size-seq-row: 44px;
-  --size-group-title: 28px;
   --size-chart-plot-h: 260px;
   --size-chart-axis: 48px;
   --size-chart-cell: 40px;
   --size-chart-cap: 8px;
   --size-chart-range: 6px;
   --size-chart-arrow-min: 16px;
+  --size-person-width: 56px;
+  --size-person-head: 20px;
+  --size-person-shoulder: 14px;
+  --size-person-body: 22px;
+  --size-sequence-row: 44px;
+  --size-group-title: 28px;
   --weight-medium: 500;
   --weight-semibold: 600;
   --leading-normal: 1.5;
+  --leading-snug: 1.35;
   --tracking-tag: 0.03em;
   --tracking-frame: 0.04em;
   --space-1: 2px;
@@ -165,11 +157,9 @@
   --space-9: 18px;
   --space-11: 22px;
   --space-12: 24px;
-  --space-13: 26px;
   --space-14: 28px;
   --space-15: 30px;
   --space-16: 32px;
-  --space-18: 36px;
   --space-20: 40px;
   --space-22: 44px;
   --space-30: 60px;
@@ -197,7 +187,7 @@
   --opacity-tag: 0.15;
   --opacity-halo: 0.2;
   --opacity-dim: 0.3;
-  --opacity-dim-ink: 0.65;
+  --opacity-dim-ink: 0.82;
   --opacity-band: 0.22;
   --opacity-range: 0.4;
   --z-raised: 2;
@@ -247,11 +237,8 @@
     --color-surface: var(--color-palette-neutral-800);
     --color-border: var(--color-palette-neutral-500);
     --color-card-on: var(--color-palette-blue-900);
-    --color-frame: var(--color-palette-neutral-800);
     --color-page: var(--color-palette-neutral-950);
-    --color-gallery: var(--color-palette-neutral-950);
-    --color-group: var(--color-palette-neutral-850);
-    --color-group-border: var(--color-palette-neutral-500);
+    --color-group: var(--color-palette-neutral-875);
     --color-plate-border: var(--color-palette-neutral-800);
   }
 }
@@ -278,11 +265,8 @@
   --color-surface: var(--color-palette-neutral-800);
   --color-border: var(--color-palette-neutral-500);
   --color-card-on: var(--color-palette-blue-900);
-  --color-frame: var(--color-palette-neutral-800);
   --color-page: var(--color-palette-neutral-950);
-  --color-gallery: var(--color-palette-neutral-950);
-  --color-group: var(--color-palette-neutral-850);
-  --color-group-border: var(--color-palette-neutral-500);
+  --color-group: var(--color-palette-neutral-875);
   --color-plate-border: var(--color-palette-neutral-800);
 }
 /* 조작 단추의 공통 모양과 상태. 재생기(원 단추, 탭), 목록 쪽과 문서 미리보기(테마 묶음)가 모두 이 파일 하나를 쓴다. */
@@ -304,7 +288,7 @@
 .theme {
   display: flex;
   box-sizing: border-box;
-  min-height: var(--size-control);
+  min-height: var(--size-control-outer);
   padding: var(--space-1-5);
   background: var(--color-bg);
   border: var(--border-thin) solid var(--color-border);
@@ -359,7 +343,7 @@ html.embedded body {
   color: var(--color-fg);
   background: var(--color-bg);
   border-radius: var(--radius-2xl);
-  box-shadow: 0 0 0 var(--border-thin) var(--color-frame);
+  box-shadow: 0 0 0 var(--border-thin) var(--color-plate-border);
 }
 
 html.embedded .fl-figure {
@@ -395,7 +379,7 @@ html.embedded .fl-figure {
   justify-items: center;
   padding: var(--space-8);
   background: var(--color-bg);
-  border-top: var(--border-thin) solid var(--color-frame);
+  border-top: var(--border-thin) solid var(--color-plate-border);
 }
 
 /* 양쪽 칸 너비가 같아(1fr) 배속 글자가 바뀌어도 탭 묶음이 설명과 같은 축에 있다. */
@@ -440,8 +424,8 @@ html.embedded .fl-figure {
 .fl-round {
   display: grid;
   place-items: center;
-  min-width: var(--size-control);
-  height: var(--size-control);
+  min-width: var(--size-control-outer);
+  height: var(--size-control-outer);
   padding: 0 var(--space-2);
   font: var(--size-text-13) var(--font-sans);
   font-variant-numeric: tabular-nums;
@@ -472,10 +456,10 @@ html.embedded .fl-figure {
 }
 
 .fl-caption {
-  max-width: var(--size-caption-max);
-  min-height: calc(var(--size-text-14) * var(--leading-normal));
+  max-width: var(--size-player-caption-max);
+  min-height: calc(var(--size-text-13) * var(--leading-normal));
   margin: 0;
-  font-size: var(--size-text-14);
+  font-size: var(--size-text-13);
   line-height: var(--leading-normal);
   text-align: center;
   color: var(--color-muted);
@@ -507,7 +491,7 @@ html.embedded .fl-figure {
 .fl-figure.full .fl-canvas svg {
   width: 100%;
   min-width: 0;
-  height: calc(100vh - var(--size-embedded-chrome));
+  height: calc(100vh - var(--size-player-embedded-chrome));
   max-height: none;
   touch-action: none;
   user-select: none;
@@ -524,7 +508,7 @@ html.embedded .fl-figure {
 /* 확대·축소는 전체 화면에서만 보인다. 문서 안에서는 그림을 그대로 보이는 편이 읽기 쉽다. */
 .fl-zoom {
   position: absolute;
-  top: calc(var(--space-5) + var(--size-control) + var(--space-3));
+  top: calc(var(--space-5) + var(--size-control-outer) + var(--space-3));
   right: var(--space-5);
   z-index: var(--z-raised);
   display: none;
@@ -622,14 +606,14 @@ html.embedded .fl-figure {
 }
 
 .fl .label {
-  font-size: var(--size-text-14);
+  font-size: var(--size-text-13);
   font-weight: var(--weight-medium);
   text-anchor: middle;
   fill: var(--color-fg);
 }
 
 .fl .sub {
-  font-size: var(--size-text-12);
+  font-size: var(--size-text-11);
   text-anchor: middle;
   fill: var(--color-muted);
 }
@@ -681,11 +665,6 @@ html.embedded .fl-figure {
   fill: var(--color-state-active-text);
 }
 
-.fl .mark.key {
-  font-size: var(--size-text-9);
-  text-anchor: start;
-}
-
 .fl .mini {
   font-size: var(--size-text-11);
   text-anchor: middle;
@@ -697,23 +676,13 @@ html.embedded .fl-figure {
 }
 
 .fl .chip {
-  font-size: var(--size-text-12);
+  font-size: var(--size-text-11);
   text-anchor: middle;
   fill: var(--color-state-on-active);
 }
 
-.fl .md {
-  font-size: var(--size-text-13);
-  fill: var(--color-fg);
-}
-
-.fl .md.h {
-  font-size: var(--size-text-15);
-  font-weight: var(--weight-semibold);
-}
-
 .fl .cell {
-  font-size: var(--size-text-12);
+  font-size: var(--size-text-13);
   fill: var(--color-fg);
 }
 
@@ -737,12 +706,12 @@ html.embedded .fl-figure {
 .fl .cell .key {
   font-size: var(--size-text-9);
   font-weight: var(--weight-semibold);
-  fill: var(--color-state-active-text);
+  fill: var(--color-muted);
 }
 
 .fl .frame-box {
   fill: var(--color-group);
-  stroke: var(--color-group-border);
+  stroke: var(--color-border);
 }
 
 .fl .lifeline {
@@ -781,15 +750,10 @@ html.embedded .fl-figure {
   fill: var(--color-fg);
 }
 
-.fl .chart-legend,
 .fl .chart-label {
   font-size: var(--size-text-13);
+  font-weight: var(--weight-medium);
   fill: var(--color-fg);
-}
-
-.fl .chart-legend {
-  font-size: var(--size-text-12);
-  fill: var(--color-muted);
 }
 
 .fl .chart-value,
@@ -847,22 +811,18 @@ html.embedded .fl-figure {
 
 .fl .chart-ratio {
   font-variant-numeric: tabular-nums;
-  font-size: var(--size-text-12);
+  font-size: var(--size-text-13);
   font-weight: var(--weight-semibold);
   text-anchor: end;
   fill: var(--color-fg);
 }
 
+.fl .chart-legend,
 .fl .chart-sub,
 .fl .chart-name,
 .fl .chart-rule-label {
-  font-size: var(--size-text-12);
-  fill: var(--color-muted);
-}
-
-.fl .chart-name,
-.fl .chart-rule-label {
   font-size: var(--size-text-11);
+  fill: var(--color-muted);
 }
 
 .fl .chart-tick.end,
@@ -991,7 +951,7 @@ html.embedded .fl-figure {
   opacity: var(--opacity-dim);
 }
 
-/* 글자는 면보다 덜 흐려, 흐린 행에서도 글자가 바탕과 대비 4.5 이상이다. */
+/* 글자는 면보다 덜 흐려, 흐린 행에서도 글자가 바탕과 대비 4.5 이상이다(opacity.dim-ink). */
 .fl .ink.dim {
   opacity: var(--opacity-dim-ink);
 }
@@ -1013,11 +973,11 @@ html.embedded .fl-figure {
 <figure class="fl-figure" tabindex="0">
 <button type="button" class="fl-round fl-full"></button><div class="fl-zoom"><button type="button" class="fl-round" data-zoom="in" aria-label="확대"></button><button type="button" class="fl-round" data-zoom="out" aria-label="축소"></button><button type="button" class="fl-round" data-zoom="fit" aria-label="전체 보기"></button></div>
 <div class="fl-canvas"><svg xmlns="http://www.w3.org/2000/svg" class="fl" width="960" height="773" style="aspect-ratio: 960 / 773" viewBox="-116.9 0 960 773" role="img"><title>대화에서 기억 그래프 키우기</title><defs><marker id="fl-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-muted)"/></marker><marker id="fl-arrow-on" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-state-active)"/></marker><marker id="fl-arrow-main" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-data-main)"/></marker></defs><g id="g-0" class="fl-group" data-id="memory"><rect x="238.2" y="31.3" width="224" height="665" rx="14" class="frame-box fl-stroke "/><text x="256.2" y="49.3" class="frame">기억 엔진</text></g>
-<g id="n-0" class="fl-node" data-id="user"><circle cx="56" cy="38" r="10" fill="var(--color-node)" class="fl-stroke "/><path d="M28 86 V 64 A 28 14 0 0 1 84 64 V 86 Z" fill="var(--color-node)" class="fl-stroke "/><text x="56" y="106" class="label">사용자</text></g>
-<g id="n-1" class="fl-node" data-id="extract"><rect x="262.2" y="131.3" width="176" height="128" rx="10" fill="var(--color-node)" class="fl-stroke "/><text x="350.2" y="157.4" class="label">추출기</text><text x="350.2" y="173.2" class="sub">LLM</text><rect x="272.2" y="188.3" width="156" height="61" rx="6" fill="var(--color-surface)" stroke="var(--color-border)" stroke-dasharray="3 3" class="fl-card "/><g id="n-1-c0" opacity="0" class="fl-layer "><rect x="280.2" y="195.3" width="44.7" height="14" rx="4" fill="var(--color-tag-purple)" fill-opacity="0.15"/><text x="302.6" y="205.6" class="tag">PERSON</text><text x="280.2" y="220.3" class="row">민지</text><rect x="280.2" y="229.3" width="27.5" height="14" rx="4" fill="var(--color-tag-green)" fill-opacity="0.15"/><text x="294" y="239.6" class="tag">ORG</text><text x="312.8" y="239.3" class="row">토스<tspan class="muted"> · 3월</tspan></text></g><g id="n-1-c1" opacity="0" class="fl-layer "><rect x="280.2" y="195.3" width="44.7" height="14" rx="4" fill="var(--color-tag-purple)" fill-opacity="0.15"/><text x="302.6" y="205.6" class="tag">PERSON</text><text x="280.2" y="220.3" class="row">김민지 = 민지</text></g></g>
-<g id="n-2" class="fl-node" data-id="resolve"><rect x="262.2" y="319.3" width="176" height="109" rx="10" fill="var(--color-node)" class="fl-stroke "/><text x="350.2" y="345.4" class="label">개체 정리</text><text x="350.2" y="361.2" class="sub">같은 사람 합치기</text><rect x="272.2" y="376.3" width="156" height="42" rx="6" fill="var(--color-surface)" stroke="var(--color-border)" stroke-dasharray="3 3" class="fl-card "/><g id="n-2-c0" opacity="0" class="fl-layer "><rect x="280.2" y="383.3" width="39.8" height="14" rx="4" fill="var(--color-tag-teal)" fill-opacity="0.15"/><text x="300.1" y="393.6" class="tag">MERGE</text><text x="280.2" y="408.3" class="row">김민지 → 민지</text></g></g>
-<g id="n-3" class="fl-node" data-id="graph"><path d="M262.2 500.3 a 88 12 0 0 1 176 0 v 100 a 88 12 0 0 1 -176 0 z" fill="var(--color-node)" class="fl-stroke "/><path d="M262.2 500.3 a 88 12 0 0 0 176 0" fill="none" class="fl-stroke "/><text x="350.2" y="526.4" class="label">기억 그래프</text><rect x="272.2" y="542.3" width="156" height="48" rx="6" fill="var(--color-surface)" stroke="var(--color-border)" stroke-dasharray="3 3" class="fl-card "/><g id="n-3-c0" opacity="0" class="fl-layer "><line x1="336.4" y1="557.3" x2="364.1" y2="557.3" stroke="var(--color-border)" stroke-width="1"/><rect x="294.1" y="548.3" width="42.2" height="18" rx="9" fill="var(--color-state-active-fill)" stroke="var(--color-state-active-fill)" stroke-width="1"/><text x="315.2" y="561.3" class="mini on">민지</text><rect x="364.1" y="548.3" width="42.2" height="18" rx="9" fill="var(--color-node)" stroke="var(--color-border)" stroke-width="1"/><text x="385.2" y="561.3" class="mini">토스</text></g><g id="n-3-c1" opacity="0" class="fl-layer "><line x1="324.7" y1="575.3" x2="329.1" y2="575.3" stroke="var(--color-border)" stroke-width="1"/><line x1="371.4" y1="575.3" x2="375.6" y2="575.3" stroke="var(--color-border)" stroke-width="1"/><path d="M 303.6 566.3 Q 350.2 530.3 396.9 566.3" fill="none" stroke="var(--color-state-active)" stroke-width="1"/><rect x="282.5" y="566.3" width="42.2" height="18" rx="9" fill="var(--color-state-active-fill)" stroke="var(--color-state-active-fill)" stroke-width="1"/><text x="303.6" y="579.3" class="mini on">민지</text><rect x="329.1" y="566.3" width="42.2" height="18" rx="9" fill="var(--color-node)" stroke="var(--color-border)" stroke-width="1"/><text x="350.2" y="579.3" class="mini">토스</text><rect x="375.6" y="566.3" width="42.7" height="18" rx="9" fill="var(--color-state-active-fill)" stroke="var(--color-state-active-fill)" stroke-width="1"/><text x="396.9" y="579.3" class="mini on">결제팀</text></g></g>
-<g id="n-4" class="fl-node" data-id="answer"><rect x="522.2" y="636" width="176" height="109" rx="10" fill="var(--color-node)" class="fl-stroke "/><text x="610.2" y="662" class="label">답변</text><text x="610.2" y="677.8" class="sub">질의 시점</text><rect x="532.2" y="693" width="156" height="42" rx="6" fill="var(--color-surface)" stroke="var(--color-border)" stroke-dasharray="3 3" class="fl-card "/><g id="n-4-c0" opacity="0" class="fl-layer "><rect x="540.2" y="700" width="47.7" height="14" rx="4" fill="var(--color-tag-gray)" fill-opacity="0.15"/><text x="564.1" y="710.2" class="tag">ANSWER</text><text x="680.2" y="710" class="mark">✓</text><text x="540.2" y="725" class="row">토스 결제팀</text></g></g>
+<g id="n-0" class="fl-node" data-id="user"><circle cx="56" cy="38" r="10" fill="var(--color-node)" class="fl-stroke "/><path d="M28 86 V 64 A 28 14 0 0 1 84 64 V 86 Z" fill="var(--color-node)" class="fl-stroke "/><text x="56" y="105.7" class="label">사용자</text></g>
+<g id="n-1" class="fl-node" data-id="extract"><rect x="262.2" y="131.3" width="176" height="128" rx="10" fill="var(--color-node)" class="fl-stroke "/><text x="350.2" y="157" class="label">추출기</text><text x="350.2" y="172.8" class="sub">LLM</text><rect x="272.2" y="188.3" width="156" height="61" rx="6" fill="var(--color-surface)" stroke="var(--color-border)" stroke-dasharray="3 3" class="fl-card "/><g id="n-1-c0" opacity="0" class="fl-layer "><rect x="280.2" y="195.3" width="44.7" height="14" rx="4" fill="var(--color-tag-purple)" fill-opacity="0.15"/><text x="302.6" y="205.6" class="tag">PERSON</text><text x="280.2" y="220.3" class="row">민지</text><rect x="280.2" y="229.3" width="27.5" height="14" rx="4" fill="var(--color-tag-green)" fill-opacity="0.15"/><text x="294" y="239.6" class="tag">ORG</text><text x="312.8" y="239.3" class="row">토스<tspan class="muted"> · 3월</tspan></text></g><g id="n-1-c1" opacity="0" class="fl-layer "><rect x="280.2" y="195.3" width="44.7" height="14" rx="4" fill="var(--color-tag-purple)" fill-opacity="0.15"/><text x="302.6" y="205.6" class="tag">PERSON</text><text x="280.2" y="220.3" class="row">김민지 = 민지</text></g></g>
+<g id="n-2" class="fl-node" data-id="resolve"><rect x="262.2" y="319.3" width="176" height="109" rx="10" fill="var(--color-node)" class="fl-stroke "/><text x="350.2" y="345" class="label">개체 정리</text><text x="350.2" y="360.8" class="sub">같은 사람 합치기</text><rect x="272.2" y="376.3" width="156" height="42" rx="6" fill="var(--color-surface)" stroke="var(--color-border)" stroke-dasharray="3 3" class="fl-card "/><g id="n-2-c0" opacity="0" class="fl-layer "><rect x="280.2" y="383.3" width="39.8" height="14" rx="4" fill="var(--color-tag-teal)" fill-opacity="0.15"/><text x="300.1" y="393.6" class="tag">MERGE</text><text x="280.2" y="408.3" class="row">김민지 → 민지</text></g></g>
+<g id="n-3" class="fl-node" data-id="graph"><path d="M262.2 500.3 a 88 12 0 0 1 176 0 v 100 a 88 12 0 0 1 -176 0 z" fill="var(--color-node)" class="fl-stroke "/><path d="M262.2 500.3 a 88 12 0 0 0 176 0" fill="none" class="fl-stroke "/><text x="350.2" y="526" class="label">기억 그래프</text><rect x="272.2" y="542.3" width="156" height="48" rx="6" fill="var(--color-surface)" stroke="var(--color-border)" stroke-dasharray="3 3" class="fl-card "/><g id="n-3-c0" opacity="0" class="fl-layer "><line x1="336.4" y1="557.3" x2="364.1" y2="557.3" stroke="var(--color-border)" stroke-width="1"/><rect x="294.1" y="548.3" width="42.2" height="18" rx="9" fill="var(--color-state-active-fill)" stroke="var(--color-state-active-fill)" stroke-width="1"/><text x="315.2" y="561.3" class="mini on">민지</text><rect x="364.1" y="548.3" width="42.2" height="18" rx="9" fill="var(--color-node)" stroke="var(--color-border)" stroke-width="1"/><text x="385.2" y="561.3" class="mini">토스</text></g><g id="n-3-c1" opacity="0" class="fl-layer "><line x1="324.7" y1="575.3" x2="329.1" y2="575.3" stroke="var(--color-border)" stroke-width="1"/><line x1="371.4" y1="575.3" x2="375.6" y2="575.3" stroke="var(--color-border)" stroke-width="1"/><path d="M 303.6 566.3 Q 350.2 530.3 396.9 566.3" fill="none" stroke="var(--color-state-active)" stroke-width="1"/><rect x="282.5" y="566.3" width="42.2" height="18" rx="9" fill="var(--color-state-active-fill)" stroke="var(--color-state-active-fill)" stroke-width="1"/><text x="303.6" y="579.3" class="mini on">민지</text><rect x="329.1" y="566.3" width="42.2" height="18" rx="9" fill="var(--color-node)" stroke="var(--color-border)" stroke-width="1"/><text x="350.2" y="579.3" class="mini">토스</text><rect x="375.6" y="566.3" width="42.7" height="18" rx="9" fill="var(--color-state-active-fill)" stroke="var(--color-state-active-fill)" stroke-width="1"/><text x="396.9" y="579.3" class="mini on">결제팀</text></g></g>
+<g id="n-4" class="fl-node" data-id="answer"><rect x="522.2" y="636" width="176" height="109" rx="10" fill="var(--color-node)" class="fl-stroke "/><text x="610.2" y="661.7" class="label">답변</text><text x="610.2" y="677.5" class="sub">질의 시점</text><rect x="532.2" y="693" width="156" height="42" rx="6" fill="var(--color-surface)" stroke="var(--color-border)" stroke-dasharray="3 3" class="fl-card "/><g id="n-4-c0" opacity="0" class="fl-layer "><rect x="540.2" y="700" width="47.7" height="14" rx="4" fill="var(--color-tag-gray)" fill-opacity="0.15"/><text x="564.1" y="710.2" class="tag">ANSWER</text><text x="680.2" y="710" class="mark">✓</text><text x="540.2" y="725" class="row">토스 결제팀</text></g></g>
 <g id="e-0" class="fl-edge"><path id="p-0" d="M 84 71.33333333333334 L 328.2 71.3 Q 350.2 71.3, 350.2 93.3 L 350.2 131.3" class="fl-path " marker-end="url(#fl-arrow)"/><g class="fl-pill"><rect x="144" y="61.8" width="34.2" height="18" rx="9" class="pill "/><text x="161.1" y="74.8" class="edgelabel ">대화</text></g></g>
 <g id="e-1" class="fl-edge"><path id="p-1" d="M 350.24 259.3333333333333 L 350.2 319.3" class="fl-path " marker-end="url(#fl-arrow)"/></g>
 <g id="e-2" class="fl-edge"><path id="p-2" d="M 350.24 428.3333333333333 L 350.2 488.3" class="fl-path " marker-end="url(#fl-arrow)"/></g>
@@ -1695,7 +1655,7 @@ function chipSlide(hop, metrics) {
   };
 }
 
-figurePlay(document.querySelector('.fl-figure'), {"segs":[{"si":0,"t0":0,"t1":4829,"hops":[{"edge":0,"isBack":false,"ms":3974,"to":"extract","data":["민지는 3월에 토스로 옮겼어"],"line":19,"chipPath":[[0,100.48855467417543,47,1],[0.0015290015487513405,100.00242909168831,47,1],[0.003926492535172719,99.24017889306752,47,1],[0.007227379279594161,98.19070609387435,47,1],[0.011467699776988624,96.84255289552623,47,1],[0.01668449617855551,95.18394224139644,47,1],[0.022915631089471866,93.20283622248763,47,1],[0.03019954123314506,90.88701439658854,47,1],[0.03857491072842526,88.22417766541516,47,1],[0.048080246430098936,85.20208328942206,47,1],[0.05875334199893471,81.80871527956462,47,1],[0.07063060711007776,78.03249766651976,47,1],[0.08374624088695472,73.86255729632266,47,1],[0.09077828626699677,71.62681250395185,47,1],[0.0981312311083138,69.28904201910524,47,1],[0.10580825445515045,66.84823510717706,47,1],[0.11381217168618536,64.30349665616521,47,1],[0.12214539162449897,61.65406081298329,47,1],[0.13080986490160895,58.89930740042513,47,1],[0.1398070253173053,56.03878056102104,47,1],[0.14913773755326698,53.072205380794145,47,1],[0.15880223583827333,49.99950738983631,47,1],[0.16880006196344857,46.82083226953216,47,1],[0.17913000431926576,43.53656523492853,47,1],[0.18979003225070043,40.14735190563542,47,1],[0.20077723336479733,36.65411823804695,47,1],[0.2120877514411297,33.058090265880395,47,1],[0.2356582355767019,25.564170031900147,47,1],[0.2604495509144109,17.682102842798173,47,1],[0.28639127279063564,9.43427927861714,47,1],[0.313393430064524,0.8493044604494457,47,1],[0.3413461550898395,-8.037890662792023,47,1],[0.37012020374556864,-17.186214651151403,47,1],[0.41449520676053353,-31.294653453853414,47,1],[0.47504540044591403,-50.545777827047345,47,1],[0.5509235050023207,-74.67020648878892,47,1],[0.5954782029368032,-88.83577688817653,47,1],[0.6244356652679531,-98.0424148019317,47,1],[0.6526316801581951,-107.00696068432629,47,1],[0.6799451759326016,-115.69092141535137,47,1],[0.7062741966327069,-124.06188146142145,47,1],[0.7315359207559535,-132.09350883333119,47,1],[0.7556659291566901,-139.76532232516732,47,1],[0.767291135950203,-143.46140136677823,47,1],[0.7786169291005145,-147.0574742407275,47,1],[0.7896398035763592,-150.52468358963526,47,1],[0.9362043226202836,0,0,1],[1,0,0,1]]}],"edgesOn":[0],"nodesOn":[0,1],"groupsOn":[],"columnsOn":[],"cards":{"1":0},"cardsBefore":{},"cardsAt":{"1":3974},"caption":"처음 들은 사실로 그래프를 시작한다","series":[],"growing":[],"lights":[]},{"si":0,"t0":4829,"t1":6279,"hops":[{"edge":1,"isBack":false,"ms":750,"to":"resolve","line":22}],"edgesOn":[0,1],"nodesOn":[0,1,2],"groupsOn":[],"columnsOn":[],"cards":{"1":0},"cardsBefore":{"1":0},"cardsAt":{},"caption":"처음 들은 사실로 그래프를 시작한다","series":[],"growing":[],"lights":[]},{"si":0,"t0":6279,"t1":9329,"hops":[{"edge":2,"isBack":false,"ms":750,"to":"graph","line":23}],"edgesOn":[0,1,2],"nodesOn":[0,1,2,3],"groupsOn":[],"columnsOn":[],"cards":{"1":0,"3":0},"cardsBefore":{"1":0},"cardsAt":{"3":750},"caption":"처음 들은 사실로 그래프를 시작한다","series":[],"growing":[],"lights":[]},{"si":1,"t0":9329,"t1":14563,"hops":[{"edge":0,"isBack":false,"ms":3974,"to":"extract","data":["김민지가 결제팀을 맡았대"],"line":26,"chipPath":[[0,101.14499998667544,47,1],[0.0015290015487513405,100.65887440418832,47,1],[0.003926492535172719,99.89662420556753,47,1],[0.007227379279594161,98.84715140637437,47,1],[0.011467699776988624,97.49899820802624,47,1],[0.01668449617855551,95.84038755389645,47,1],[0.022915631089471866,93.85928153498764,47,1],[0.03019954123314506,91.54345970908855,47,1],[0.03857491072842526,88.88062297791517,47,1],[0.048080246430098936,85.85852860192207,47,1],[0.05875334199893471,82.46516059206463,47,1],[0.07063060711007776,78.68894297901977,47,1],[0.08374624088695472,74.51900260882267,47,1],[0.09077828626699677,72.28325781645187,47,1],[0.0981312311083138,69.94548733160525,47,1],[0.10580825445515045,67.50468041967707,47,1],[0.11381217168618536,64.95994196866522,47,1],[0.12214539162449897,62.3105061254833,47,1],[0.13080986490160895,59.55575271292514,47,1],[0.1398070253173053,56.69522587352105,47,1],[0.14913773755326698,53.728650693294156,47,1],[0.15880223583827333,50.65595270233632,47,1],[0.16880006196344857,47.47727758203217,47,1],[0.17913000431926576,44.19301054742854,47,1],[0.18979003225070043,40.80379721813543,47,1],[0.20077723336479733,37.31056355054696,47,1],[0.2120877514411297,33.714535578380406,47,1],[0.2356582355767019,26.22061534440016,47,1],[0.2604495509144109,18.338548155298184,47,1],[0.28639127279063564,10.090724591117151,47,1],[0.313393430064524,1.505749772949457,47,1],[0.3413461550898395,-7.381445350292012,47,1],[0.37012020374556864,-16.52976933865139,47,1],[0.41449520676053353,-30.638208141353402,47,1],[0.47504540044591403,-49.889332514547334,47,1],[0.5509235050023207,-74.01376117628891,47,1],[0.5954782029368032,-88.17933157567651,47,1],[0.6244356652679531,-97.38596948943169,47,1],[0.6526316801581951,-106.35051537182628,47,1],[0.6799451759326016,-115.03447610285136,47,1],[0.7062741966327069,-123.40543614892144,47,1],[0.7315359207559535,-131.43706352083117,47,1],[0.7556659291566901,-139.1088770126673,47,1],[0.767291135950203,-142.80495605427822,47,1],[0.7786169291005145,-146.40102892822748,47,1],[0.7896398035763592,-149.86823827713525,47,1],[0.8003571051940053,-153.14937105099338,47,1],[0.9416090651765701,0,0,1],[1,0,0,1]]}],"edgesOn":[0],"nodesOn":[0,1],"groupsOn":[],"columnsOn":[],"cards":{"1":1},"cardsBefore":{},"cardsAt":{"1":3974},"caption":"같은 사람이 다른 이름으로 나와도 한 개체로 합친다","series":[],"growing":[],"lights":[]},{"si":1,"t0":14563,"t1":16013,"hops":[{"edge":1,"isBack":false,"ms":750,"to":"resolve","line":28}],"edgesOn":[0,1],"nodesOn":[0,1,2],"groupsOn":[],"columnsOn":[],"cards":{"1":1,"2":0},"cardsBefore":{"1":1},"cardsAt":{"2":750},"caption":"같은 사람이 다른 이름으로 나와도 한 개체로 합친다","series":[],"growing":[],"lights":[]},{"si":1,"t0":16013,"t1":19063,"hops":[{"edge":2,"isBack":false,"ms":750,"to":"graph","line":30}],"edgesOn":[0,1,2],"nodesOn":[0,1,2,3],"groupsOn":[],"columnsOn":[],"cards":{"1":1,"2":0,"3":1},"cardsBefore":{"1":1,"2":0},"cardsAt":{"3":750},"caption":"같은 사람이 다른 이름으로 나와도 한 개체로 합친다","series":[],"growing":[],"lights":[]},{"si":2,"t0":19063,"t1":19963,"hops":[],"edgesOn":[],"nodesOn":[3],"groupsOn":[],"columnsOn":[],"cards":{"3":1},"cardsBefore":{},"cardsAt":{"3":0},"caption":"질문이 오면 쓰지 않던 선이 나타난다","series":[],"growing":[],"lights":[]},{"si":2,"t0":19963,"t1":33920,"hops":[{"edge":4,"isBack":false,"ms":13257,"to":"answer","data":["민지 지금 어디 팀이야?"],"line":34,"chipPath":[[0,62.129882768051445,47,1],[0.0008143425093812687,61.26620426940724,47,1],[0.0019359269350225417,60.07666990084115,47,1],[0.0033721208774694206,58.55346574838494,47,1],[0.005130447169005317,56.68861321734214,47,1],[0.007218578778626792,54.473974480437604,47,1],[0.009644329640449754,51.91242489104215,47,1],[0.013163408928396906,48.5268443566858,47,1],[0.014725751032477634,47.42446709410157,47,1],[0.016378025911378092,46.65196121633768,47,1],[0.018121260444574898,46.242651689796276,47,1],[0.02090891735411486,46.1298828125,47,1],[0.43794694934701706,46.1298828125,47,1],[0.4789348594981518,0,104.69666407237696,1],[0.5290865705451928,0,51.5065674831327,1],[0.5561972003451069,0,22.75347037942481,1],[0.5785391507259122,0,-0.9420421751214008,1],[0.591804253989246,0,-15.00757803117358,1],[0.5961994610472198,0,-19.612903130903646,1],[0.6005805798790591,0,-23.98651072785117,1],[0.6049471181401995,0,-27.82634052583819,1],[0.6092985893437227,0,-30.78762440445064,1],[0.6136345182358138,0,-32.68668097157888,1],[0.6179544395528516,0,-33.678843593580496,1],[0.6222578941677629,0,-33.987516477574445,1],[0.6964385841296596,0,-34,1],[0.8212184838925074,0,71.66666666666663,1],[1,0,71.66666666666663,1]]}],"edgesOn":[4],"nodesOn":[0,4,3],"groupsOn":[],"columnsOn":[],"cards":{"3":1},"cardsBefore":{"3":1},"cardsAt":{},"caption":"질문이 오면 쓰지 않던 선이 나타난다","series":[],"growing":[],"lights":[]},{"si":2,"t0":33920,"t1":39016,"hops":[{"edge":3,"isBack":false,"ms":2796,"to":"answer","data":["민지 → 결제팀"],"line":35,"chipPath":[[0,60.30039062499998,38.999999990624815,1],[0.002431241438533707,60.30039062499998,38.45613948962625,1],[0.004309611434419702,60.30039062499998,38.03595445639917,1],[0.0066465748510115205,60.30039062499998,37.51318362157883,1],[0.009455063904245354,60.30039062499998,36.88493409207422,1],[0.012748274203523466,60.30039062499998,36.14825405456497,1],[0.016539633943221648,60.30039062499998,35.30013966725585,1],[0.02084276774584796,60.30039062499998,34.33754314804139,1],[0.025671450778098848,60.30039062499998,33.257383038588614,1],[0.03103955086114886,60.30039062499998,32.05655715407033,1],[0.03696096135142479,60.30039062499998,30.731957597509677,1],[0.04344951990761289,60.30039062499998,29.28048893132643,1],[0.0505189142473389,60.30039062499998,27.69908925924983,1],[0.05818256421791291,60.30039062499998,25.98475660669544,1],[0.06645349561317668,60.30039062499998,24.134577147510754,1],[0.07534418499556572,60.30039062499998,22.145759916756333,1],[0.08486638692667017,60.30039062499998,20.015675458647138,1],[0.09503093363375266,60.30039062499998,17.741900640476388,1],[0.10584751433822258,60.30039062499998,15.322268016092153,1],[0.11732442439450061,60.30039062499998,12.754921942686565,1],[0.12946828827215937,60.30039062499998,10.038380548757686,1],[0.14228375986949807,60.30039062499998,7.171602772951246,1],[0.15577320007803386,60.30039062499998,4.154060491797168,1],[0.16993632645350443,60.29993334308779,0.9858242607210741,1],[0.1847698588968216,60.145824941024614,-2.3274682784286824,1],[0.20026714730972553,59.660171982143424,-5.757180671425431,1],[0.2164178096059105,58.68846964929912,-9.23046471568,1],[0.23320737732090432,57.067639286088706,-12.609405803024288,1],[0.2506169702893953,54.64003232234421,-15.641492619990458,1],[0.26862301628367174,51.42762020342923,-18.05240355415617,1],[0.2871970310817916,47.62673172548341,-19.70862449186461,1],[0.30630548205237174,43.46272595189657,-20.655123087611855,1],[0.32590973851134386,39.0916971298156,-20.97447398371571,1],[0.3664262552393167,30.028700583687737,-21.000000000000114,1],[0.40834166370871783,20.65236506991073,-21.000000000000114,1],[0.49445402404776967,1.3893204782865496,-21.000000000000114,1],[0.558992048821957,-13.047618007496908,-21.000000000000114,1],[0.6010404173878203,-22.453696246441098,-21.000000000000114,1],[0.6417785925595925,-31.56668864178903,-21.000000000000114,1],[0.6615350170112351,-35.98613416255546,-21.000000000000114,1],[0.6808276784077988,-40.30183745195393,-21.000000000000114,1],[0.6996212182665098,-44.505888936635415,-21.000000000000114,1],[0.7178851642926484,-48.59147206703966,-21.000000000000114,1],[0.7355938195079151,-52.55283851578491,-21.000000000000114,1],[0.7527260530708164,-56.38526138489334,-21.000000000000114,1],[0.769265046454112,-60.08497842654219,-21.000000000000114,1],[0.7851979909374688,-63.64912437319077,-21.000000000000114,1],[0.8005157556300421,-67.0756566753513,-21.000000000000114,1],[0.8152125414130911,-70.36327808971907,-21.000000000000114,1],[0.8292855428589838,-73.51136105159424,-21.000000000000114,1],[0.8427345977059814,-76.51986926357307,-21.000000000000114,1],[0.8555618645743863,-79.38928560173713,-21.000000000000114,1],[0.8677715123517922,-82.12054263218147,-21.000000000000114,1],[0.8793694331344363,-84.7149583969632,-21.000000000000114,1],[0.8903629743665329,-87.17417649457349,-21.000000000000114,1],[0.9007607003724556,-89.50011273549137,-21.000000000000114,1],[0.9105721763340882,-91.69490681864534,-21.000000000000114,1],[0.9198077730521326,-93.7608786571767,-21.000000000000114,1],[0.9284784976874416,-95.7004905158463,-21.000000000000114,1],[0.9365958420145539,-97.51631306586205,-21.000000000000114,1],[0.9441716547385702,-99.2109968225949,-21.000000000000114,1],[0.9512180241889339,-100.78724590457318,-21.000000000000114,1],[0.9577471857345485,-102.2477973225565,-21.000000000000114,1],[0.9637714342793094,-103.59540140508136,-21.000000000000114,1],[0.9693030587054743,-104.83280713366423,-21.000000000000114,1],[0.9743542797004063,-105.96274823485362,-21.000000000000114,1],[0.9789372007246046,-106.98793221194387,-21.000000000000114,1],[0.9867457446001833,-108.73467714238927,-21.000000000000114,1],[0.9928218414395169,-110.09387951355029,-21.000000000000114,1],[0.9972548885021624,-111.08553719089514,-21.000000000000114,1],[1,-111.69960936093742,-21.000000000000114,1]]}],"edgesOn":[4,3],"nodesOn":[0,4,3],"groupsOn":[],"columnsOn":[],"cards":{"3":1,"4":0},"cardsBefore":{"3":1},"cardsAt":{"4":2796},"caption":"질문이 오면 쓰지 않던 선이 나타난다","series":[],"growing":[],"lights":[]}],"steps":["첫 대화","다음 대화","질문"],"cardCounts":[0,2,1,2,1],"edgeEnds":[[0,1],[1,2],[2,3],[3,4],[0,4]],"seriesCount":0,"rowCount":0,"metrics":{"active":"var(--color-state-active)","chipFill":"var(--color-state-active-fill)","halo":10,"haloOpacity":0.2,"packet":4.5,"chipRadius":8,"chipLine":15,"chipPadX":18,"chipPadY":8,"chipGap":12,"icon":12,"iconStroke":1.75,"pauseStroke":2.5,"zoomMax":6,"zoomStep":1.25,"move":[0.455,0.03,0.515,0.955]}});
+figurePlay(document.querySelector('.fl-figure'), {"segs":[{"si":0,"t0":0,"t1":4829,"hops":[{"edge":0,"isBack":false,"ms":3974,"to":"extract","data":["민지는 3월에 토스로 옮겼어"],"line":19,"chipPath":[[0,101.54215818980045,47,1],[0.0015290015487513405,101.05603260731333,47,1],[0.003926492535172719,100.29378240869254,47,1],[0.007227379279594161,99.24430960949937,47,1],[0.011467699776988624,97.89615641115124,47,1],[0.01668449617855551,96.23754575702145,47,1],[0.022915631089471866,94.25643973811265,47,1],[0.03019954123314506,91.94061791221355,47,1],[0.03857491072842526,89.27778118104017,47,1],[0.048080246430098936,86.25568680504708,47,1],[0.05875334199893471,82.86231879518964,47,1],[0.07063060711007776,79.08610118214477,47,1],[0.08374624088695472,74.91616081194768,47,1],[0.09077828626699677,72.68041601957687,47,1],[0.0981312311083138,70.34264553473025,47,1],[0.10580825445515045,67.90183862280207,47,1],[0.11381217168618536,65.35710017179022,47,1],[0.12214539162449897,62.7076643286083,47,1],[0.13080986490160895,59.95291091605014,47,1],[0.1398070253173053,57.092384076646056,47,1],[0.14913773755326698,54.12580889641916,47,1],[0.15880223583827333,51.053110905461324,47,1],[0.16880006196344857,47.874435785157175,47,1],[0.17913000431926576,44.590168750553545,47,1],[0.18979003225070043,41.20095542126043,47,1],[0.20077723336479733,37.70772175367196,47,1],[0.2120877514411297,34.11169378150541,47,1],[0.2356582355767019,26.61777354752516,47,1],[0.2604495509144109,18.735706358423187,47,1],[0.28639127279063564,10.487882794242154,47,1],[0.313393430064524,1.9029079760744594,47,1],[0.3413461550898395,-6.984287147167009,47,1],[0.37012020374556864,-16.13261113552639,47,1],[0.41449520676053353,-30.2410499382284,47,1],[0.47504540044591403,-49.49217431142233,47,1],[0.5509235050023207,-73.61660297316391,47,1],[0.5954782029368032,-87.78217337255151,47,1],[0.6244356652679531,-96.98881128630669,47,1],[0.6526316801581951,-105.95335716870127,47,1],[0.6799451759326016,-114.63731789972636,47,1],[0.7062741966327069,-123.00827794579644,47,1],[0.7315359207559535,-131.03990531770617,47,1],[0.7556659291566901,-138.7117188095423,47,1],[0.767291135950203,-142.40779785115322,47,1],[0.7786169291005145,-146.00387072510247,47,1],[0.7896398035763592,-149.47108007401025,47,1],[0.8003571051940053,-152.75221284786838,47,1],[0.9416090651765701,0,0,1],[1,0,0,1]]}],"edgesOn":[0],"nodesOn":[0,1],"groupsOn":[],"columnsOn":[],"cards":{"1":0},"cardsBefore":{},"cardsAt":{"1":3974},"caption":"처음 들은 사실로 그래프를 시작한다","series":[],"growing":[],"lights":[]},{"si":0,"t0":4829,"t1":6279,"hops":[{"edge":1,"isBack":false,"ms":750,"to":"resolve","line":22}],"edgesOn":[0,1],"nodesOn":[0,1,2],"groupsOn":[],"columnsOn":[],"cards":{"1":0},"cardsBefore":{"1":0},"cardsAt":{},"caption":"처음 들은 사실로 그래프를 시작한다","series":[],"growing":[],"lights":[]},{"si":0,"t0":6279,"t1":9329,"hops":[{"edge":2,"isBack":false,"ms":750,"to":"graph","line":23}],"edgesOn":[0,1,2],"nodesOn":[0,1,2,3],"groupsOn":[],"columnsOn":[],"cards":{"1":0,"3":0},"cardsBefore":{"1":0},"cardsAt":{"3":750},"caption":"처음 들은 사실로 그래프를 시작한다","series":[],"growing":[],"lights":[]},{"si":1,"t0":9329,"t1":14563,"hops":[{"edge":0,"isBack":false,"ms":3974,"to":"extract","data":["김민지가 결제팀을 맡았대"],"line":26,"chipPath":[[0,106.48624998667545,47,1],[0.0015290015487513405,106.00012440418833,47,1],[0.003926492535172719,105.23787420556754,47,1],[0.007227379279594161,104.18840140637437,47,1],[0.011467699776988624,102.84024820802624,47,1],[0.01668449617855551,101.18163755389645,47,1],[0.022915631089471866,99.20053153498765,47,1],[0.03019954123314506,96.88470970908855,47,1],[0.03857491072842526,94.22187297791517,47,1],[0.048080246430098936,91.19977860192208,47,1],[0.05875334199893471,87.80641059206464,47,1],[0.07063060711007776,84.03019297901977,47,1],[0.08374624088695472,79.86025260882268,47,1],[0.09077828626699677,77.62450781645187,47,1],[0.0981312311083138,75.28673733160525,47,1],[0.10580825445515045,72.84593041967707,47,1],[0.11381217168618536,70.30119196866522,47,1],[0.12214539162449897,67.6517561254833,47,1],[0.13080986490160895,64.89700271292514,47,1],[0.1398070253173053,62.036475873521056,47,1],[0.14913773755326698,59.06990069329416,47,1],[0.15880223583827333,55.997202702336324,47,1],[0.16880006196344857,52.818527582032175,47,1],[0.17913000431926576,49.534260547428545,47,1],[0.18979003225070043,46.14504721813543,47,1],[0.20077723336479733,42.65181355054696,47,1],[0.2120877514411297,39.05578557838041,47,1],[0.2356582355767019,31.56186534440016,47,1],[0.2604495509144109,23.679798155298187,47,1],[0.28639127279063564,15.431974591117154,47,1],[0.313393430064524,6.846999772949459,47,1],[0.3413461550898395,-2.0401953502920094,47,1],[0.37012020374556864,-11.188519338651389,47,1],[0.41449520676053353,-25.2969581413534,47,1],[0.47504540044591403,-44.54808251454733,47,1],[0.5509235050023207,-68.67251117628891,47,1],[0.5954782029368032,-82.83808157567651,47,1],[0.6244356652679531,-92.04471948943169,47,1],[0.6526316801581951,-101.00926537182627,47,1],[0.6799451759326016,-109.69322610285136,47,1],[0.7062741966327069,-118.06418614892144,47,1],[0.7315359207559535,-126.09581352083117,47,1],[0.7556659291566901,-133.7676270126673,47,1],[0.767291135950203,-137.46370605427822,47,1],[0.7786169291005145,-141.05977892822747,47,1],[0.7896398035763592,-144.52698827713525,47,1],[0.9362043226202836,0,0,1],[1,0,0,1]]}],"edgesOn":[0],"nodesOn":[0,1],"groupsOn":[],"columnsOn":[],"cards":{"1":1},"cardsBefore":{},"cardsAt":{"1":3974},"caption":"같은 사람이 다른 이름으로 나와도 한 개체로 합친다","series":[],"growing":[],"lights":[]},{"si":1,"t0":14563,"t1":16013,"hops":[{"edge":1,"isBack":false,"ms":750,"to":"resolve","line":28}],"edgesOn":[0,1],"nodesOn":[0,1,2],"groupsOn":[],"columnsOn":[],"cards":{"1":1,"2":0},"cardsBefore":{"1":1},"cardsAt":{"2":750},"caption":"같은 사람이 다른 이름으로 나와도 한 개체로 합친다","series":[],"growing":[],"lights":[]},{"si":1,"t0":16013,"t1":19063,"hops":[{"edge":2,"isBack":false,"ms":750,"to":"graph","line":30}],"edgesOn":[0,1,2],"nodesOn":[0,1,2,3],"groupsOn":[],"columnsOn":[],"cards":{"1":1,"2":0,"3":1},"cardsBefore":{"1":1,"2":0},"cardsAt":{"3":750},"caption":"같은 사람이 다른 이름으로 나와도 한 개체로 합친다","series":[],"growing":[],"lights":[]},{"si":2,"t0":19063,"t1":19963,"hops":[],"edgesOn":[],"nodesOn":[3],"groupsOn":[],"columnsOn":[],"cards":{"3":1},"cardsBefore":{},"cardsAt":{"3":0},"caption":"질문이 오면 쓰지 않던 선이 나타난다","series":[],"growing":[],"lights":[]},{"si":2,"t0":19963,"t1":33920,"hops":[{"edge":4,"isBack":false,"ms":13257,"to":"answer","data":["민지 지금 어디 팀이야?"],"line":34,"chipPath":[[0,0,69.83333333333334,1],[0.008388758298490366,0,69.8044134769952,1],[0.01030444882897208,0,69.50077367303578,1],[0.011689979922325339,0,69.01651566226259,1],[0.013163408928396906,0,68.18359351937964,1],[0.014725751032477634,0,66.9561872833664,1],[0.016378025911378092,0,65.38975592091855,1],[0.019027309617044394,0,62.63345098300509,1],[0.022884069127258943,0,58.54345018055416,1],[0.02602446808887163,0,55.21279364641789,1],[0.029381199501412866,0,51.65269840081905,1],[0.03295778375745462,0,47.85943077212356,1],[0.04504174490513539,-21.992392578124992,47,1],[0.5873954581103731,-21.992392578124992,47,1],[0.591804253989246,-22.113866167556736,47,1],[0.5961994610472198,-22.804005454778007,47,1],[0.6005805798790591,-24.342469626047034,47,1],[0.6049471181401995,-26.89798715974689,47,1],[0.6092985893437227,-30.412766707706695,47,1],[0.6136345182358138,-34.587681762335535,47,1],[0.6222578941677629,-43.605403382931854,47,1],[0.6392982121138165,-61.6778887131743,47,1],[0.6560408491955392,-79.43485981033552,47,1],[0.6724610233085997,-96.84983187911845,47,1],[0.8028482098105174,0,71.66666666666663,1],[1,0,71.66666666666663,1]]}],"edgesOn":[4],"nodesOn":[0,4,3],"groupsOn":[],"columnsOn":[],"cards":{"3":1},"cardsBefore":{"3":1},"cardsAt":{},"caption":"질문이 오면 쓰지 않던 선이 나타난다","series":[],"growing":[],"lights":[]},{"si":2,"t0":33920,"t1":39016,"hops":[{"edge":3,"isBack":false,"ms":2796,"to":"answer","data":["민지 → 결제팀"],"line":35,"chipPath":[[0,63.35869140624999,38.999999990624815,1],[0.002431241438533707,63.35869140624999,38.45613948962625,1],[0.004309611434419702,63.35869140624999,38.03595445639917,1],[0.0066465748510115205,63.35869140624999,37.51318362157883,1],[0.009455063904245354,63.35869140624999,36.88493409207422,1],[0.012748274203523466,63.35869140624999,36.14825405456497,1],[0.016539633943221648,63.35869140624999,35.30013966725585,1],[0.02084276774584796,63.35869140624999,34.33754314804139,1],[0.025671450778098848,63.35869140624999,33.257383038588614,1],[0.03103955086114886,63.35869140624999,32.05655715407033,1],[0.03696096135142479,63.35869140624999,30.731957597509677,1],[0.04344951990761289,63.35869140624999,29.28048893132643,1],[0.0505189142473389,63.35869140624999,27.69908925924983,1],[0.05818256421791291,63.35869140624999,25.98475660669544,1],[0.06645349561317668,63.35869140624999,24.134577147510754,1],[0.07534418499556572,63.35869140624999,22.145759916756333,1],[0.08486638692667017,63.35869140624999,20.015675458647138,1],[0.09503093363375266,63.35869140624999,17.741900640476388,1],[0.10584751433822258,63.35869140624999,15.322268016092153,1],[0.11732442439450061,63.35869140624999,12.754921942686565,1],[0.12946828827215937,63.35869140624999,10.038380548757686,1],[0.14228375986949807,63.35869140624999,7.171602772951246,1],[0.15577320007803386,63.35869140624999,4.154060491797168,1],[0.16993632645350443,63.3582341243378,0.9858242607210741,1],[0.1847698588968216,63.204125722274625,-2.3274682784286824,1],[0.20026714730972553,62.718472763393436,-5.757180671425431,1],[0.2164178096059105,61.746770430549134,-9.23046471568,1],[0.23320737732090432,60.12594006733872,-12.609405803024288,1],[0.2506169702893953,57.69833310359422,-15.641492619990458,1],[0.26862301628367174,54.48592098467924,-18.05240355415617,1],[0.2871970310817916,50.68503250673342,-19.70862449186461,1],[0.30630548205237174,46.521026733146584,-20.655123087611855,1],[0.32590973851134386,42.14999791106561,-20.97447398371571,1],[0.3664262552393167,33.08700136493775,-21.000000000000114,1],[0.40834166370871783,23.71066585116074,-21.000000000000114,1],[0.49445402404776967,4.447621259536561,-21.000000000000114,1],[0.558992048821957,-9.989317226246897,-21.000000000000114,1],[0.6010404173878203,-19.395395465191086,-21.000000000000114,1],[0.6417785925595925,-28.508387860539017,-21.000000000000114,1],[0.6615350170112351,-32.92783338130545,-21.000000000000114,1],[0.6808276784077988,-37.24353667070392,-21.000000000000114,1],[0.6996212182665098,-41.447588155385404,-21.000000000000114,1],[0.7178851642926484,-45.53317128578965,-21.000000000000114,1],[0.7355938195079151,-49.4945377345349,-21.000000000000114,1],[0.7527260530708164,-53.32696060364333,-21.000000000000114,1],[0.769265046454112,-57.02667764529218,-21.000000000000114,1],[0.7851979909374688,-60.59082359194076,-21.000000000000114,1],[0.8005157556300421,-64.01735589410129,-21.000000000000114,1],[0.8152125414130911,-67.30497730846906,-21.000000000000114,1],[0.8292855428589838,-70.45306027034422,-21.000000000000114,1],[0.8427345977059814,-73.46156848232306,-21.000000000000114,1],[0.8555618645743863,-76.33098482048712,-21.000000000000114,1],[0.8677715123517922,-79.06224185093146,-21.000000000000114,1],[0.8793694331344363,-81.65665761571319,-21.000000000000114,1],[0.8903629743665329,-84.11587571332348,-21.000000000000114,1],[0.9007607003724556,-86.44181195424136,-21.000000000000114,1],[0.9105721763340882,-88.63660603739532,-21.000000000000114,1],[0.9198077730521326,-90.70257787592669,-21.000000000000114,1],[0.9284784976874416,-92.64218973459629,-21.000000000000114,1],[0.9365958420145539,-94.45801228461204,-21.000000000000114,1],[0.9441716547385702,-96.15269604134488,-21.000000000000114,1],[0.9512180241889339,-97.72894512332317,-21.000000000000114,1],[0.9577471857345485,-99.18949654130648,-21.000000000000114,1],[0.9637714342793094,-100.53710062383135,-21.000000000000114,1],[0.9693030587054743,-101.77450635241422,-21.000000000000114,1],[0.9743542797004063,-102.90444745360361,-21.000000000000114,1],[0.9789372007246046,-103.92963143069386,-21.000000000000114,1],[0.9867457446001833,-105.67637636113926,-21.000000000000114,1],[0.9928218414395169,-107.03557873230028,-21.000000000000114,1],[0.9972548885021624,-108.02723640964513,-21.000000000000114,1],[1,-108.6413085796874,-21.000000000000114,1]]}],"edgesOn":[4,3],"nodesOn":[0,4,3],"groupsOn":[],"columnsOn":[],"cards":{"3":1,"4":0},"cardsBefore":{"3":1},"cardsAt":{"4":2796},"caption":"질문이 오면 쓰지 않던 선이 나타난다","series":[],"growing":[],"lights":[]}],"steps":["첫 대화","다음 대화","질문"],"cardCounts":[0,2,1,2,1],"edgeEnds":[[0,1],[1,2],[2,3],[3,4],[0,4]],"seriesCount":0,"rowCount":0,"metrics":{"active":"var(--color-state-active)","chipFill":"var(--color-state-active-fill)","halo":10,"haloOpacity":0.2,"packet":4.5,"chipRadius":8,"chipLine":15,"chipPadX":18,"chipPadY":8,"chipGap":12,"icon":12,"iconStroke":1.75,"pauseStroke":2.5,"zoomMax":6,"zoomStep":1.25,"move":[0.455,0.03,0.515,0.955]}});
 </script>
 </body>
 </html>

@@ -15,7 +15,7 @@ const GRAPHIC = 3;
 const DECORATIVE_LINE = 1.5;
 const DECORATIVE_PLATE_EDGE = 1.3;
 const FIGURE_FACES = ['bg', 'node', 'group', 'card-on'];
-const DOCUMENT_FACES = ['page', 'gallery'];
+const DOCUMENT_FACES = ['page'];
 const ALL_FACES = [...FIGURE_FACES, ...DOCUMENT_FACES];
 const BORDER_FACES = [...FIGURE_FACES, 'surface', ...DOCUMENT_FACES];
 // 강조 글자는 그룹 바탕 위에 놓이지 않는다. 카드 표시는 내용이 찬 카드 바탕(card-on)에, 링크는 문서 면에 놓인다.
@@ -36,6 +36,8 @@ const PERCENT = 100;
 const HEAT_STEPS = 1000;
 // 한 단계 위나 아래 색을 만드는 섞음 비율. 이보다 작은 차이는 같은 단계로 본다.
 const STEP_MIX = 0.01;
+// 글자 크기 이웃 단계의 최소 비율. 1px 차이 단계는 크기로 구분되지 않아 굵기와 색에만 기댄다.
+const MIN_STEP_RATIO = 1.15;
 
 const color = themeColor;
 const opacity = (name) => tokenValue(`opacity.${name}`);
@@ -78,7 +80,7 @@ function listTokens(node, path = []) {
 // 근거: 규칙 docs-integration.md 대비 기준 표: 본문·보조·강조·태그 글자, 켜진 면 위 글자, 켜진 탭 글자는 모든 면에서 4.5 이상
 test('contrast_text_pairs_reach_4_5_in_both_themes', () => {
   for (const theme of THEMES) {
-    expectAtLeast(theme, TEXT, ['bg', 'node', 'surface', 'card-on', 'group', 'page', 'gallery'].flatMap((face) => [['fg', face], ['muted', face]]));
+    expectAtLeast(theme, TEXT, ['bg', 'node', 'surface', 'card-on', 'group', 'page'].flatMap((face) => [['fg', face], ['muted', face]]));
     expectAtLeast(theme, TEXT, TEXT_FACES.flatMap((face) => TEXT_ROLES.map((role) => [role, face])));
     expectAtLeast(theme, TEXT, [['state.on-active', 'state.active-fill'], ['fg', 'ui.control-on'], ['muted', 'bg']]);
     for (const face of ['node', 'surface', 'card-on']) {
@@ -95,7 +97,7 @@ test('contrast_text_pairs_reach_4_5_in_both_themes', () => {
 test('contrast_graphic_pairs_reach_3_in_both_themes', () => {
   for (const theme of THEMES) {
     expectAtLeast(theme, GRAPHIC, ALL_FACES.flatMap((face) => GRAPHIC_ROLES.map((role) => [role, face])));
-    expectAtLeast(theme, GRAPHIC, BORDER_FACES.flatMap((face) => [['border', face], ['group-border', face]]));
+    expectAtLeast(theme, GRAPHIC, BORDER_FACES.flatMap((face) => [['border', face]]));
     expectAtLeast(theme, GRAPHIC, [['fg', 'bg']]);
   }
 });
@@ -129,13 +131,13 @@ test('contrast_heat_cell_text_reaches_4_5_on_every_strength_lit_and_dimmed', () 
   assert.equal(color('dark', 'data.heat-ink'), color('dark', 'data.heat-ink-on'), '다크는 글자색이 하나라 빌드 때 라이트로 고른 글자색이 다크에서도 맞다');
 });
 
-// 근거: 규칙 docs-integration.md 대비 기준 표: 밝히지 않은 행의 값 글자(fg)는 4.5, 보조 글자(muted)는 흐린 상태에서도 3 이상
-test('contrast_dimmed_row_text_keeps_value_text_at_4_5_and_helper_text_at_3', () => {
+// 근거: 규칙 docs-integration.md 대비 기준 표 "글자 4.5 예외 없음": 밝히지 않은 행의 값 글자(fg)와 보조 글자(muted)는 흐린 상태에서도 4.5 이상. 버그: dim-ink 0.65에서 muted가 라이트 3.18, 다크 3.51
+test('contrast_dimmed_row_text_keeps_value_and_helper_text_at_4_5', () => {
   for (const theme of THEMES) {
     const bg = color(theme, 'bg');
-    for (const [role, minimum] of [['fg', TEXT], ['muted', GRAPHIC]]) {
+    for (const role of ['fg', 'muted']) {
       const ratio = contrast(mixHex(bg, color(theme, role), opacity('dim-ink')), bg);
-      assert.ok(ratio >= minimum, `${theme} dimmed ${role}: ${ratio.toFixed(2)} < ${minimum}`);
+      assert.ok(ratio >= TEXT, `${theme} dimmed ${role}: ${ratio.toFixed(2)} < ${TEXT}`);
     }
   }
 });
@@ -149,11 +151,13 @@ test('figureGround_light_bg_is_gray_group_is_slightly_darker_and_node_face_is_br
   assert.ok(sum(bg) <= sum('#f8f9fb') && sum(bg) < sum(node), bg);
   assert.ok(sum(group) < sum(bg) && sum(bg) - sum(group) <= 24, group);
   for (const theme of THEMES) assert.ok(contrast(color(theme, 'node'), color(theme, 'bg')) > 1.05, `${theme} node on bg`);
+  // 그룹과 그 안 노드는 두 테마 모두 다른 면이다(다크 그룹이 노드와 같은 색이던 문제)
+  for (const theme of THEMES) assert.notEqual(color(theme, 'group'), color(theme, 'node'), `${theme} group face equals node face`);
 });
 
 // 근거: 결정 docs-integration.md "대비 규칙이 색 선택보다 우선: 같은 색상에서 기준을 넘는 가장 밝은 단계를 그 자리에만 쓴다"
 test('palette_graphic_text_and_border_colors_are_the_lightest_step_that_reaches_their_floor', () => {
-  const graphicFaces = ['bg', 'group', 'card-on', 'node', 'page', 'gallery'];
+  const graphicFaces = ['bg', 'group', 'card-on', 'node', 'page'];
   const lowest = (value, faces, theme = 'light') => Math.min(...faces.map((face) => contrast(value, color(theme, face))));
   for (const [hue, base] of [['blue', RESUME_ACCENT], ['orange', RESUME_ORANGE]]) {
     const graphic = color('light', `palette.${hue}.550`);
@@ -163,7 +167,7 @@ test('palette_graphic_text_and_border_colors_are_the_lightest_step_that_reaches_
     assert.ok(Math.abs(graphicHue - baseHue) <= HUE_TOLERANCE && Math.abs(graphicC - baseC) <= CHROMA_TOLERANCE, `${hue} hue/chroma`);
     assert.ok(lowest(graphic, graphicFaces) >= GRAPHIC && lowest(mixHex(graphic, '#ffffff', STEP_MIX), graphicFaces) < GRAPHIC, `${hue} graphic step`);
   }
-  const textFaces = ['node', 'bg', 'card-on', 'page', 'gallery'];
+  const textFaces = ['node', 'bg', 'card-on', 'page'];
   const strong = color('light', 'state.active-text');
   assert.ok(lowest(strong, textFaces) >= TEXT && lowest(mixHex(strong, '#ffffff', STEP_MIX), textFaces) < TEXT, 'light active text step');
   assert.ok(contrast(color('light', 'state.active'), color('light', 'node')) < TEXT, 'state.active itself is a graphic color, not a text color');
@@ -248,12 +252,12 @@ test('tokens_color_literals_live_only_in_the_palette_layer_and_code_never_names_
   assert.deepEqual(dark.filter(([, value]) => HEX_VALUE.test(value)), []);
 });
 
-// 근거: 설계 layout.md 글자 크기 "토큰 size.text의 일곱 단계(9, 11, 12, 13, 14, 15, 22)뿐이고 0.5px 차이 단계는 없다"
-test('textScale_has_seven_steps_and_no_half_pixel_pairs', () => {
+// 근거: 설계 layout.md 글자 크기 "토큰 size.text의 다섯 단계(9, 11, 13, 15, 22)뿐이고 이웃 단계 비율이 1.15 이상이다"
+test('textScale_has_five_steps_each_at_least_15_percent_above_the_last', () => {
   const sizes = Object.values(values.size.text);
 
-  assert.deepEqual(sizes, [9, 11, 12, 13, 14, 15, 22]);
-  assert.ok(sizes.every((a, i) => i === 0 || a - sizes[i - 1] >= 1));
+  assert.deepEqual(sizes, [9, 11, 13, 15, 22]);
+  assert.ok(sizes.every((a, i) => i === 0 || a / sizes[i - 1] >= MIN_STEP_RATIO));
 });
 
 // 근거: 규칙 대비 "히트맵 칸 색과 글자색은 빌드 때 같은 강도 한 값에서 고른다". 문서 대비 표의 칸 숫자 대비를 SVG가 지킨다

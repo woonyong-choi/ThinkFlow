@@ -24,7 +24,7 @@ export function drawPacket(clock, { seg, hop, name }, glyphs) {
   const [from, to] = [clock.keyTime(seg.t0), clock.keyTime(seg.t0 + hop.ms)];
   const chip = hop.data ? drawChip(hop.data, glyphs) + pushChip(clock, seg, hop) : '';
   return (
-    `<g class="${name}" opacity="0"><circle r="${values.size.halo}" fill="${tokens.color.state.active}" opacity="${values.opacity.halo}"/><circle r="${values.size.packet}" fill="${tokens.color.state.active}"/>${chip ? `<g>${chip}</g>` : ''}` +
+    `<g class="${name}" opacity="0"><circle r="${values.size.packet.halo}" fill="${tokens.color.state.active}" opacity="${values.opacity.halo}"/><circle r="${values.size.packet.radius}" fill="${tokens.color.state.active}"/>${chip ? `<g>${chip}</g>` : ''}` +
     showWindow(clock, from, to) +
     moveMotion(clock, [from, to], hop) +
     `</g>`

@@ -5,7 +5,7 @@ import { measure } from './fonts.js';
 
 const SPACE = values.space;
 const NODE_TEXT = values.size.text['11'];
-const NODE_H = values.size.pill;
+const NODE_H = values.size.pill.height;
 const ROW_GAP = SPACE['3'];
 
 // cost: time O(n·e + n² + n·m), heap O(n), stack O(1)

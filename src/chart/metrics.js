@@ -4,12 +4,12 @@ import { tokens, values } from '../tokens.js';
 export const SPACE = values.space;
 export const SIZE = values.size;
 export const TEXT = values.size.text;
-export const WIDTH = SIZE['chart-width'];
-export const BAR = SIZE['chart-bar'];
-export const ROW = SIZE['chart-row'];
-export const DOT = SIZE['chart-dot'];
+export const WIDTH = SIZE.chart.width;
+export const BAR = SIZE.chart.bar;
+export const ROW = SIZE.chart.row;
+export const DOT = SIZE.chart.dot;
 export const PAD = SPACE['14'];
-export const CAP = SIZE['chart-cap'];
+export const CAP = SIZE.chart.cap;
 // 내용이 닿는 오른쪽 끝. 왼쪽 여백(PAD)과 같은 여백을 오른쪽에도 둔다.
 export const RIGHT = WIDTH - PAD;
 

@@ -61,7 +61,7 @@ function addStateMarks(figure, nodes, containers) {
   // start가 없으면 처음 점과 그 선을 그리지 않는다.
   const marks = [...(figure.start ? [{ id: '__start', shape: 'start', from: '__start', to: figure.start.id }] : []), ...figure.finals.map((f, i) => ({ id: `__final${i}`, shape: 'final', from: f.id, to: `__final${i}` }))];
   marks.forEach((m, i) => {
-    const size = { w: SIZE['state-dot'], h: SIZE['state-dot'], marginTop: 0, marginBottom: 0, labelLines: [], subLines: [] };
+    const size = { w: SIZE.node['state-dot'], h: SIZE.node['state-dot'], marginTop: 0, marginBottom: 0, labelLines: [], subLines: [] };
     nodes.set(m.id, { id: m.id, shape: m.shape, label: '', size, ports: [], parent: ROOT, direction: figure.direction });
     if (m.shape === 'start') containers.get(ROOT).children.unshift(m.id);
     else containers.get(ROOT).children.push(m.id);

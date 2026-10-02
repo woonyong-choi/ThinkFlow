@@ -35,7 +35,7 @@ function drawGroup(g, j, { decorate, glyphs }) {
   glyphs.add(g.label, 'semibold');
   return (
     `<g id="g-${j}" class="fl-group" data-id="${escapeXml(g.id)}"><rect x="${r(g.x)}" y="${r(g.y)}" width="${r(g.w)}" height="${r(g.h)}" rx="${RADIUS['2xl']}" class="frame-box fl-stroke ${decorate('group', j)}"/>` +
-    `<text x="${r(g.x + g.titleDx)}" y="${r(centerBaseline(g.y + SIZE['group-title'] / 2, STYLE.group.size))}" class="frame">${renderRich(g.label)}</text></g>`
+    `<text x="${r(g.x + g.titleDx)}" y="${r(centerBaseline(g.y + SIZE.group.title / 2, STYLE.group.size))}" class="frame">${renderRich(g.label)}</text></g>`
   );
 }
 
@@ -71,8 +71,8 @@ function drawShape(it, stroke, paint) {
       );
     }
     case 'person': {
-      const head = SIZE['person-head'] / 2;
-      const shoulder = SIZE['person-shoulder'];
+      const head = SIZE.person.head / 2;
+      const shoulder = SIZE.person.shoulder;
       const bodyW = w;
       const bx = x;
       return (

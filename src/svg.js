@@ -4,15 +4,16 @@ import { CHART_FACES, chartText } from './chart/draw.js';
 import { createAnimator } from './animate/animator.js';
 import { drawScene } from './draw/figure.js';
 import { createGlyphSet, embedFonts, wrap } from './measure/fonts.js';
+import { lineHeight } from './measure/sizes.js';
 import { DEFS, STYLES } from './styles.js';
 import { escapeXml, plainText, renderRich, roundCoord as r } from './text.js';
 import { chartMotionCss } from './chart/motion.js';
 import { tokens, values } from './tokens.js';
 
 const SPACE = values.space;
-const LINE = values.size.line;
-const CAPTION = { size: values.size.text['14'], face: 'regular' };
-const STEP_LABEL = { size: values.size.text['13'], face: 'semibold' };
+const CAPTION = { size: values.size.text['13'], face: 'regular' };
+const CAPTION_LINE = lineHeight(CAPTION.size, values.leading.normal);
+const STEP_LABEL = { size: values.size.text['15'], face: 'semibold' };
 
 // cost: time O(g·b + b·h + out), heap O(out), stack O(1), io 1
 // vars: g = 켜고 끄는 요소 수, b = 박자 수, h = 박자의 이동 수, out = 만든 SVG 글자 수
@@ -84,7 +85,7 @@ function drawCaptions(timeline, { animator, glyphs }, { width, top }) {
   const wrapped = new Map(captions.map((c) => [c, wrap(c, wrapWidth, CAPTION)]));
   const lines = Math.max(1, ...[...wrapped.values()].map((l) => l.length));
   // 설명 글 아래 여백은 그림 내용 위 여백(그림 둘레 여백 space.14)과 같다. 마지막 줄 기준선에서 글자 내림 4를 더한 만큼 아래에 둔다.
-  const height = captions.length ? SPACE['22'] + (lines - 1) * LINE['20'] + SPACE['2'] + SPACE['14'] : SPACE['15'];
+  const height = captions.length ? SPACE['22'] + (lines - 1) * CAPTION_LINE + SPACE['2'] + SPACE['14'] : SPACE['15'];
   const labels = timeline.steps.map((label, si) => {
     glyphs.add(label, STEP_LABEL.face);
     const cls = animator.windows(timeline.segs.map((s) => s.si === si), { on: 'opacity: 1', off: 'opacity: 0', isSwap: true });
@@ -93,7 +94,7 @@ function drawCaptions(timeline, { animator, glyphs }, { width, top }) {
   const said = captions.map((text) => {
     glyphs.add(text, CAPTION.face);
     const cls = animator.windows(timeline.segs.map((s) => s.caption === text), { on: 'opacity: 1', off: 'opacity: 0', isSwap: true });
-    const rows = wrapped.get(text).map((line, li) => `<text x="${r(width / 2)}" y="${r(top + SPACE['22'] + li * LINE['20'])}" class="caption">${renderRich(line)}</text>`);
+    const rows = wrapped.get(text).map((line, li) => `<text x="${r(width / 2)}" y="${r(top + SPACE['22'] + li * CAPTION_LINE)}" class="caption">${renderRich(line)}</text>`);
     return `<g opacity="0" class="${cls}">${rows.join('')}</g>`;
   });
   return { svg: [...labels, ...said].join('\n'), height };

@@ -1,7 +1,7 @@
 // 막대 차트 한 행 안 계열 자리(슬롯). 행 이름의 세로 자리를 그리는 쪽과 시간표가 같은 규칙으로 정한다.
 import { values } from '../tokens.js';
 
-const STEP = values.size['chart-bar'] + values.space['2'];
+const STEP = values.size.chart.bar + values.space['2'];
 
 // cost: time O(s), heap O(s), stack O(1)
 // vars: s = 계열 수

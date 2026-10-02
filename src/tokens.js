@@ -12,7 +12,6 @@ export const tokens = freeze({
         "0": "var(--color-palette-gray-0)",
         "25": "var(--color-palette-gray-25)",
         "40": "var(--color-palette-gray-40)",
-        "50": "var(--color-palette-gray-50)",
         "100": "var(--color-palette-gray-100)",
         "200": "var(--color-palette-gray-200)",
         "500": "var(--color-palette-gray-500)"
@@ -24,6 +23,7 @@ export const tokens = freeze({
         "750": "var(--color-palette-neutral-750)",
         "800": "var(--color-palette-neutral-800)",
         "850": "var(--color-palette-neutral-850)",
+        "875": "var(--color-palette-neutral-875)",
         "900": "var(--color-palette-neutral-900)",
         "950": "var(--color-palette-neutral-950)"
       },
@@ -90,11 +90,8 @@ export const tokens = freeze({
     "border": "var(--color-border)",
     "card-on": "var(--color-card-on)",
     "group": "var(--color-group)",
-    "group-border": "var(--color-group-border)",
-    "frame": "var(--color-frame)",
     "plate-border": "var(--color-plate-border)",
     "page": "var(--color-page)",
-    "gallery": "var(--color-gallery)",
     "tag": {
       "purple": "var(--color-tag-purple)",
       "green": "var(--color-tag-green)",
@@ -110,67 +107,88 @@ export const tokens = freeze({
     "text": {
       "9": "var(--size-text-9)",
       "11": "var(--size-text-11)",
-      "12": "var(--size-text-12)",
       "13": "var(--size-text-13)",
-      "14": "var(--size-text-14)",
       "15": "var(--size-text-15)",
       "22": "var(--size-text-22)"
     },
-    "line": {
-      "15": "var(--size-line-15)",
-      "18": "var(--size-line-18)",
-      "20": "var(--size-line-20)",
-      "22": "var(--size-line-22)"
+    "control": {
+      "outer": "var(--size-control-outer)",
+      "inner": "var(--size-control-inner)",
+      "icon": "var(--size-control-icon)"
     },
-    "control": "var(--size-control)",
-    "control-inner": "var(--size-control-inner)",
-    "pill": "var(--size-pill)",
-    "tag": "var(--size-tag)",
-    "icon": "var(--size-icon)",
-    "packet": "var(--size-packet)",
-    "halo": "var(--size-halo)",
-    "marker": "var(--size-marker)",
-    "marker-on": "var(--size-marker-on)",
-    "card": "var(--size-card)",
-    "node-min": "var(--size-node-min)",
-    "node-max": "var(--size-node-max)",
-    "node-min-h": "var(--size-node-min-h)",
-    "store-cap": "var(--size-store-cap)",
+    "pill": {
+      "height": "var(--size-pill-height)"
+    },
+    "tag": {
+      "height": "var(--size-tag-height)"
+    },
+    "packet": {
+      "radius": "var(--size-packet-radius)",
+      "halo": "var(--size-packet-halo)",
+      "hop-ref": "var(--size-packet-hop-ref)"
+    },
+    "arrow": {
+      "head": "var(--size-arrow-head)",
+      "head-lit": "var(--size-arrow-head-lit)"
+    },
+    "node": {
+      "card-width": "var(--size-node-card-width)",
+      "min-width": "var(--size-node-min-width)",
+      "max-width": "var(--size-node-max-width)",
+      "min-height": "var(--size-node-min-height)",
+      "store-cap": "var(--size-node-store-cap)",
+      "state-dot": "var(--size-node-state-dot)",
+      "table-row": "var(--size-node-table-row)"
+    },
     "figure-canvas": "var(--size-figure-canvas)",
-    "hop-ref": "var(--size-hop-ref)",
-    "chip-max": "var(--size-chip-max)",
-    "caption-max": "var(--size-caption-max)",
-    "gallery-column": "var(--size-gallery-column)",
-    "gallery-frame": "var(--size-gallery-frame)",
-    "document-column": "var(--size-document-column)",
-    "embedded-chrome": "var(--size-embedded-chrome)",
-    "chart-width": "var(--size-chart-width)",
-    "chart-label": "var(--size-chart-label)",
-    "chart-label-max": "var(--size-chart-label-max)",
-    "chart-bar": "var(--size-chart-bar)",
-    "chart-row": "var(--size-chart-row)",
-    "chart-dot": "var(--size-chart-dot)",
-    "person-w": "var(--size-person-w)",
-    "person-head": "var(--size-person-head)",
-    "person-shoulder": "var(--size-person-shoulder)",
-    "person-body": "var(--size-person-body)",
-    "state-dot": "var(--size-state-dot)",
-    "table-row": "var(--size-table-row)",
-    "seq-row": "var(--size-seq-row)",
-    "group-title": "var(--size-group-title)",
-    "chart-plot-h": "var(--size-chart-plot-h)",
-    "chart-axis": "var(--size-chart-axis)",
-    "chart-cell": "var(--size-chart-cell)",
-    "chart-cap": "var(--size-chart-cap)",
-    "chart-range": "var(--size-chart-range)",
-    "chart-arrow-min": "var(--size-chart-arrow-min)"
+    "chip": {
+      "max-width": "var(--size-chip-max-width)"
+    },
+    "player": {
+      "caption-max": "var(--size-player-caption-max)",
+      "embedded-chrome": "var(--size-player-embedded-chrome)"
+    },
+    "gallery": {
+      "column": "var(--size-gallery-column)",
+      "frame": "var(--size-gallery-frame)"
+    },
+    "document": {
+      "column": "var(--size-document-column)"
+    },
+    "chart": {
+      "width": "var(--size-chart-width)",
+      "label": "var(--size-chart-label)",
+      "label-max": "var(--size-chart-label-max)",
+      "bar": "var(--size-chart-bar)",
+      "row": "var(--size-chart-row)",
+      "dot": "var(--size-chart-dot)",
+      "plot-h": "var(--size-chart-plot-h)",
+      "axis": "var(--size-chart-axis)",
+      "cell": "var(--size-chart-cell)",
+      "cap": "var(--size-chart-cap)",
+      "range": "var(--size-chart-range)",
+      "arrow-min": "var(--size-chart-arrow-min)"
+    },
+    "person": {
+      "width": "var(--size-person-width)",
+      "head": "var(--size-person-head)",
+      "shoulder": "var(--size-person-shoulder)",
+      "body": "var(--size-person-body)"
+    },
+    "sequence": {
+      "row": "var(--size-sequence-row)"
+    },
+    "group": {
+      "title": "var(--size-group-title)"
+    }
   },
   "weight": {
     "medium": "var(--weight-medium)",
     "semibold": "var(--weight-semibold)"
   },
   "leading": {
-    "normal": "var(--leading-normal)"
+    "normal": "var(--leading-normal)",
+    "snug": "var(--leading-snug)"
   },
   "tracking": {
     "tag": "var(--tracking-tag)",
@@ -188,11 +206,9 @@ export const tokens = freeze({
     "9": "var(--space-9)",
     "11": "var(--space-11)",
     "12": "var(--space-12)",
-    "13": "var(--space-13)",
     "14": "var(--space-14)",
     "15": "var(--space-15)",
     "16": "var(--space-16)",
-    "18": "var(--space-18)",
     "20": "var(--space-20)",
     "22": "var(--space-22)",
     "30": "var(--space-30)",
@@ -272,7 +288,6 @@ export const values = freeze({
         "0": "#ffffff",
         "25": "#f6f7f9",
         "40": "#eef0f3",
-        "50": "#eef1f5",
         "100": "#e3e7ec",
         "200": "#d5dbe3",
         "500": "#818b99"
@@ -284,6 +299,7 @@ export const values = freeze({
         "750": "#3c3e42",
         "800": "#2c2d30",
         "850": "#242526",
+        "875": "#202123",
         "900": "#1b1b1d",
         "950": "#111214"
       },
@@ -346,15 +362,12 @@ export const values = freeze({
     "muted": "#52514e",
     "bg": "#f6f7f9",
     "node": "#ffffff",
-    "surface": "#eef1f5",
+    "surface": "#eef0f3",
     "border": "#818b99",
     "card-on": "#edf5fb",
     "group": "#eef0f3",
-    "group-border": "#818b99",
-    "frame": "#e3e7ec",
     "plate-border": "#d5dbe3",
     "page": "#ffffff",
-    "gallery": "#ffffff",
     "tag": {
       "purple": "#8b5cf6",
       "green": "#10b981",
@@ -370,67 +383,88 @@ export const values = freeze({
     "text": {
       "9": 9,
       "11": 11,
-      "12": 12,
       "13": 13,
-      "14": 14,
       "15": 15,
       "22": 22
     },
-    "line": {
-      "15": 15,
-      "18": 18,
-      "20": 20,
-      "22": 22
+    "control": {
+      "outer": 30,
+      "inner": 22,
+      "icon": 12
     },
-    "control": 30,
-    "control-inner": 22,
-    "pill": 18,
-    "tag": 14,
-    "icon": 12,
-    "packet": 4.5,
-    "halo": 10,
-    "marker": 5,
-    "marker-on": 4,
-    "card": 176,
-    "node-min": 100,
-    "node-max": 210,
-    "node-min-h": 46,
-    "store-cap": 12,
+    "pill": {
+      "height": 18
+    },
+    "tag": {
+      "height": 14
+    },
+    "packet": {
+      "radius": 4.5,
+      "halo": 10,
+      "hop-ref": 300
+    },
+    "arrow": {
+      "head": 5,
+      "head-lit": 4
+    },
+    "node": {
+      "card-width": 176,
+      "min-width": 100,
+      "max-width": 210,
+      "min-height": 46,
+      "store-cap": 12,
+      "state-dot": 14,
+      "table-row": 26
+    },
     "figure-canvas": 960,
-    "hop-ref": 300,
-    "chip-max": 210,
-    "caption-max": 720,
-    "gallery-column": 960,
-    "gallery-frame": 820,
-    "document-column": 960,
-    "embedded-chrome": 150,
-    "chart-width": 960,
-    "chart-label": 140,
-    "chart-label-max": 240,
-    "chart-bar": 12,
-    "chart-row": 40,
-    "chart-dot": 5,
-    "person-w": 56,
-    "person-head": 20,
-    "person-shoulder": 14,
-    "person-body": 22,
-    "state-dot": 14,
-    "table-row": 26,
-    "seq-row": 44,
-    "group-title": 28,
-    "chart-plot-h": 260,
-    "chart-axis": 48,
-    "chart-cell": 40,
-    "chart-cap": 8,
-    "chart-range": 6,
-    "chart-arrow-min": 16
+    "chip": {
+      "max-width": 210
+    },
+    "player": {
+      "caption-max": 720,
+      "embedded-chrome": 150
+    },
+    "gallery": {
+      "column": 960,
+      "frame": 820
+    },
+    "document": {
+      "column": 960
+    },
+    "chart": {
+      "width": 960,
+      "label": 140,
+      "label-max": 240,
+      "bar": 12,
+      "row": 40,
+      "dot": 5,
+      "plot-h": 260,
+      "axis": 48,
+      "cell": 40,
+      "cap": 8,
+      "range": 6,
+      "arrow-min": 16
+    },
+    "person": {
+      "width": 56,
+      "head": 20,
+      "shoulder": 14,
+      "body": 22
+    },
+    "sequence": {
+      "row": 44
+    },
+    "group": {
+      "title": 28
+    }
   },
   "weight": {
     "medium": 500,
     "semibold": 600
   },
   "leading": {
-    "normal": 1.5
+    "normal": 1.5,
+    "snug": 1.35
   },
   "tracking": {
     "tag": 0.03,
@@ -448,11 +482,9 @@ export const values = freeze({
     "9": 18,
     "11": 22,
     "12": 24,
-    "13": 26,
     "14": 28,
     "15": 30,
     "16": 32,
-    "18": 36,
     "20": 40,
     "22": 44,
     "30": 60,
@@ -488,7 +520,7 @@ export const values = freeze({
     "tag": 0.15,
     "halo": 0.2,
     "dim": 0.3,
-    "dim-ink": 0.65,
+    "dim-ink": 0.82,
     "band": 0.22,
     "range": 0.4
   },

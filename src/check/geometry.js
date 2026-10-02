@@ -22,7 +22,7 @@ export function drawnBox(it) {
 
 // 그룹 제목 글이 차지하는 사각형. 그리는 자리는 draw/figure.js drawGroup이다.
 export function titleBox(g) {
-  return { x: g.x + g.titleDx, y: g.y, w: measure(g.label, STYLE.group.size, STYLE.group.face), h: values.size['group-title'] };
+  return { x: g.x + g.titleDx, y: g.y, w: measure(g.label, STYLE.group.size, STYLE.group.face), h: values.size.group.title };
 }
 
 export function pillBox(e) {
