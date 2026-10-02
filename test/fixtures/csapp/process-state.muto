@@ -1,0 +1,35 @@
+state down
+title "프로세스 상태"
+subtitle "생성부터 회수까지. 중단과 좀비는 시그널과 wait로 바뀐다"
+
+state ready "준비"
+state running "실행 중"
+state waiting "대기"
+state stopped "중단됨"
+state zombie "종료됨, 회수 전"
+state gone "회수됨"
+final gone
+
+ready -> running "스케줄러가 CPU 부여"
+running -> ready "시간 조각 끝, 타이머 인터럽트"
+running -> waiting "read 등 블록하는 호출"
+waiting -> ready "I/O 완료 인터럽트"
+running -> stopped "SIGSTOP, SIGTSTP"
+stopped -> ready "SIGCONT"
+running -> zombie "exit 또는 종료 시그널"
+zombie -> gone "부모가 wait로 회수"
+
+step "fork 직후" "새 프로세스는 준비 상태로 시작해 스케줄되면 실행된다"
+  ready -> running
+  running -> ready
+  ready -> running
+step "I/O와 중단" "디스크를 기다리면 대기, Ctrl+Z를 받으면 중단되고 SIGCONT로 되살아난다"
+  running -> waiting
+  waiting -> ready
+  ready -> running
+  running -> stopped
+  stopped -> ready
+step "종료와 회수" "종료해도 부모가 wait하기 전에는 좀비로 남는다"
+  ready -> running
+  running -> zombie
+  zombie -> gone

@@ -1,4 +1,5 @@
 // elkjs 결과를 그림 좌표로 바꾼다. 그룹 경계 연결점에서 끊긴 선 조각은 이어 붙인다(docs/design/layout.md 선 그리기).
+import { sizePill } from '../measure/sizes.js';
 import { values } from '../tokens.js';
 import { LayoutError } from './error.js';
 import { placeTitles } from './titles.js';
@@ -9,6 +10,8 @@ const SETTLE = values.space['4'];
 const TOUCH = 0.5;
 // 같은 면의 선 끝이 이보다 가까워지면 붙어 보인다(그림 검사 5번과 같은 값)
 const CROWD = values.space['2-5'];
+// 선 옆에 두는 라벨 알약과 선 사이 간격
+const BESIDE_GAP = values.space['3'];
 
 // cost: time O(s + e·(d + p)), heap O(s + e·p), stack O(d)
 // vars: s = 도형 수, e = 선 수, d = 그룹 깊이, p = 경로 점 수
@@ -28,10 +31,24 @@ export function readElk(laid, model) {
     const near = (end) => (other) => other.at !== `${edge.index}:${end}`;
     const start = settleEnd(joined[i], freeRect(edge.from, rects), crowd.get(edge.from)?.filter(near('start')));
     const points = dropCollinear(settleEnd(start.reverse(), freeRect(edge.to, rects), crowd.get(edge.to)?.filter(near('end'))).reverse());
-    return { ...edge, points, labelAt: labels.get(`label::${edge.index}`) };
+    return { ...edge, points, labelAt: labels.get(`label::${edge.index}`) ?? (edge.quiet && edge.label ? besideLabel(points, edge.label, laid.width) : undefined) };
   });
   placeTitles(groups, edges);
   return { items, groups, edges, width: laid.width, height: laid.height };
+}
+
+// cost: time O(p), heap O(1), stack O(1)
+// vars: p = 경로 점 수
+// basis: estimate
+// 선 옆에 두는 라벨 자리(알약 가운데). 가장 긴 곧은 구간이 세로면 그 가운데 옆, 가로면 그 위 가운데다.
+// 세로선 옆은 그림 가장자리가 가까운 쪽에 둔다. 넓은 이동 글 상자가 알약을 비켜 반대쪽(넓은 쪽)에 들어갈 자리를 남기기 위해서다.
+function besideLabel(points, label, width) {
+  const { w, h } = sizePill(label);
+  const runs = points.slice(1).map((p, i) => [points[i], p]);
+  const [a, b] = runs.reduce((best, run) => (Math.hypot(run[1].x - run[0].x, run[1].y - run[0].y) > Math.hypot(best[1].x - best[0].x, best[1].y - best[0].y) ? run : best));
+  const mid = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
+  const side = mid.x < width - mid.x ? -1 : 1;
+  return Math.abs(a.x - b.x) < TOUCH ? { x: mid.x + side * (BESIDE_GAP + w / 2), y: mid.y } : { x: mid.x, y: mid.y - BESIDE_GAP - h / 2 };
 }
 
 // 선 조각 하나의 경로. elkjs가 경로를 주지 않은 조각이 있으면 선을 그릴 수 없으므로 실패다.

@@ -1,0 +1,42 @@
+flow right
+title "DNS 이름 풀이 구조와 캐시"
+subtitle "첫 질의는 루트부터 권한 서버까지 내려가고, 두 번째 질의는 리졸버 캐시에서 끝난다"
+
+person user "사용자"
+group host "내 컴퓨터" direction=down {
+  box browser "브라우저" "www.example.com 접속"
+  box stub "스텁 리졸버" "OS 캐시, /etc/hosts"
+}
+box resolver "로컬 리졸버" "재귀 리졸버, 캐시 보유"
+group tree "DNS 서버 계층" direction=down {
+  external rootns "루트 서버" "."
+  external tld "TLD 서버" ".com"
+  external auth "권한 서버" "example.com"
+}
+
+user -> browser "주소 입력"
+browser -> stub "gethostbyname"
+stub -> resolver "재귀 질의"
+resolver -> rootns "반복 질의 1" 
+resolver -> tld "반복 질의 2"
+resolver -> auth "반복 질의 3"
+
+step "첫 질의: 캐시 없음" "리졸버가 루트, TLD, 권한 서버에 차례로 묻는다"
+  user -> browser "www.example.com"
+  browser -> stub "이름 → IP?"
+  show stub "OS 캐시 없음" tag="miss" tone=gray
+  stub -> resolver "A 레코드 질의"
+  show resolver "캐시 없음" tag="miss" tone=gray
+  resolver -> rootns "www.example.com?"
+  show rootns "NS: .com 담당 서버" tag="위임"
+  resolver -> tld "www.example.com?"
+  show tld "NS: example.com 담당 서버" tag="위임"
+  resolver -> auth "www.example.com?"
+  show auth "A 203.0.113.10, TTL 3600" tag="답" tone=green
+  show resolver "www.example.com = 203.0.113.10" tag="저장" tone=teal
+step "두 번째 질의: 캐시 적중" "TTL 안에 같은 이름을 다시 물으면 계층 서버까지 가지 않는다"
+  user -> browser "www.example.com"
+  browser -> stub "이름 → IP?"
+  stub -> resolver "A 레코드 질의"
+  show resolver "캐시 적중, 남은 TTL 3000초" tag="hit" tone=green
+  say "답 203.0.113.10을 바로 돌려주므로 서버 세 대는 쉰다"

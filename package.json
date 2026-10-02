@@ -20,6 +20,7 @@
     "test": "node --test test/*.test.js",
     "grammar": "node scripts/build-grammar-doc.mjs",
     "fuzz": "node scripts/fuzz-layout.mjs",
+    "perf": "node scripts/perf-chips.mjs",
     "checkdoc": "node scripts/build-check-doc.mjs",
     "tokens": "node scripts/build-tokens.mjs src/tokens.json --out src",
     "check": "node scripts/check-tokens.mjs src && node scripts/check-cost-comments.mjs src test && node scripts/check-size.mjs src scripts",

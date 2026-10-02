@@ -36,10 +36,11 @@ function packetsOf(svg) {
     .split('<g class="p')
     .slice(1)
     .map((chunk) => {
-      const attr = (tag, name) => chunk.match(new RegExp(`<${tag} [^>]*?${name}="([^"]*)"`))?.[1];
-      const list = (tag, name, sep = ';') => attr(tag, name)?.split(sep).map((v) => (name === 'keySplines' ? v.split(' ').map(Number) : Number(v)));
+      // 점 보임 창은 calcMode="discrete", 글 상자 흐려짐은 linear다. 둘 다 animate 요소라 모양으로 가른다.
+      const attr = (tag, name, mode = '') => chunk.match(new RegExp(`<${tag}(?=[^>]*${mode})[^>]*?\\b${name}="([^"]*)"`))?.[1];
+      const list = (tag, name, mode = '', sep = ';') => attr(tag, name, mode)?.split(sep).map((v) => (name === 'keySplines' ? v.split(' ').map(Number) : Number(v)));
       return {
-        opacity: { dur: attr('animate', 'dur'), times: list('animate', 'keyTimes'), values: list('animate', 'values') },
+        opacity: { dur: attr('animate', 'dur', 'discrete'), times: list('animate', 'keyTimes', 'discrete'), values: list('animate', 'values', 'discrete') },
         motion: { dur: attr('animateMotion', 'dur'), times: list('animateMotion', 'keyTimes'), splines: list('animateMotion', 'keySplines'), points: list('animateMotion', 'keyPoints') },
         slide: { dur: attr('animateTransform', 'dur'), times: list('animateTransform', 'keyTimes'), values: attr('animateTransform', 'values')?.split(';') },
         href: attr('mpath', 'href'),

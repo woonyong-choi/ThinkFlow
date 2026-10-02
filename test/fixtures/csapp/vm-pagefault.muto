@@ -1,0 +1,34 @@
+sequence
+title "페이지 오류 처리 순서"
+subtitle "VP 3을 읽다가 페이지 오류. 희생 페이지 VP 4를 내보내고 VP 3을 들여온 뒤 같은 명령을 다시 실행한다"
+
+person proc "프로세스"
+box mmu "MMU"
+store pt "페이지 테이블" "메모리 안 PTE 배열"
+box kernel "커널 폴트 핸들러"
+store disk "디스크" "스왑과 파일"
+store dram "DRAM 캐시" "물리 메모리"
+
+step "페이지 오류 발생" "PTE의 유효 비트가 0이면 MMU가 예외를 일으킨다"
+  proc -> mmu "load VA 0x00C4 (VP 3)"
+  mmu -> pt "PTE 3 읽기"
+  pt -> mmu "유효 0" dashed
+  note pt "유효 0, 주소 D3"
+  mmu -> kernel "페이지 오류 (예외 14)"
+  note kernel "복귀 주소 I_curr"
+step "희생 페이지 교체" "DRAM이 가득 차면 VP 4를 내보내고 그 자리에 VP 3을 들여온다"
+  kernel -> pt "희생 페이지 VP 4 선택"
+  kernel -> kernel "VP 4 수정 비트 1 확인"
+  kernel -> disk "VP 4를 디스크에 씀"
+  disk -> kernel "쓰기 완료" dashed
+  kernel -> pt "PTE 4 유효 0, 주소 D4"
+  kernel -> disk "VP 3 읽기 (D3)"
+  disk -> dram "VP 3을 PP 3에 적재" dashed
+  kernel -> pt "PTE 3 유효 1, PP 3"
+step "명령 재실행" "핸들러가 돌아가면 같은 load 명령이 이번에는 페이지 적중이다"
+  kernel -> proc "복귀, I_curr 재실행"
+  proc -> mmu "load VA 0x00C4 (다시)"
+  mmu -> pt "PTE 3 읽기"
+  pt -> mmu "유효 1, PPN 3" dashed
+  mmu -> dram "PA 0x00C4"
+  dram -> proc "데이터 바이트" dashed

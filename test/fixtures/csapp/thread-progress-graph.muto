@@ -1,0 +1,50 @@
+chart heatmap
+title "진행 그래프: 두 스레드의 cnt++ 실행 궤적"
+subtitle "열은 스레드 1의 명령, 행은 스레드 2의 명령. 1인 칸은 둘 다 임계 영역(L, U, S)에 있는 불안전 영역이다"
+
+cell "H2" "H1" 0
+cell "H2" "L1" 0
+cell "H2" "U1" 0
+cell "H2" "S1" 0
+cell "H2" "T1" 0
+cell "L2" "H1" 0
+cell "L2" "L1" 1
+cell "L2" "U1" 1
+cell "L2" "S1" 1
+cell "L2" "T1" 0
+cell "U2" "H1" 0
+cell "U2" "L1" 1
+cell "U2" "U1" 1
+cell "U2" "S1" 1
+cell "U2" "T1" 0
+cell "S2" "H1" 0
+cell "S2" "L1" 1
+cell "S2" "U1" 1
+cell "S2" "S1" 1
+cell "S2" "T1" 0
+cell "T2" "H1" 0
+cell "T2" "L1" 0
+cell "T2" "U1" 0
+cell "T2" "S1" 0
+cell "T2" "T1" 0
+
+step "안전한 궤적" "스레드 1이 끝난 뒤 스레드 2가 실행하면 불안전 영역을 피한다"
+  light "H2" "H1"
+  light "H2" "L1"
+  light "H2" "U1"
+  light "H2" "S1"
+  light "H2" "T1"
+  light "L2" "T1"
+  light "U2" "T1"
+  light "S2" "T1"
+  light "T2" "T1"
+step "불안전한 궤적" "두 스레드가 임계 영역에서 번갈아 실행하면 불안전 영역을 지난다"
+  light "H2" "H1"
+  light "H2" "L1"
+  light "L2" "L1"
+  light "L2" "U1"
+  light "U2" "U1"
+  light "U2" "S1"
+  light "S2" "S1"
+  light "S2" "T1"
+  light "T2" "T1"

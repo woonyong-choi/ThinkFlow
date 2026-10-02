@@ -2,7 +2,8 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { checkChartFigure, checkFigure } from './check.js';
-import { CHIP_GAP, planChip, sizeChip } from './chip.js';
+import { CHIP_GAP, sizeChip } from './chip.js';
+import { planHops } from './chip-plan.js';
 import { chipLines, chipObstacles } from './draw/boxes.js';
 import { drawChart } from './chart/draw.js';
 import { LayoutError } from './layout/error.js';
@@ -139,7 +140,7 @@ function widenForChips(scene, timeline) {
 // 글 상자 자리를 경로 지점마다 미리 정해 이동에 담는다. 움직이는 SVG와 재생기는 이 계획을 그대로 걸어 같은 자리를 쓴다.
 function planChips(scene, timeline) {
   const avoid = [...chipObstacles(scene), ...chipLines(scene)];
-  for (const seg of timeline.segs) for (const hop of seg.hops) if (hop.data) hop.chipPath = planChip(scene, hop, avoid).path;
+  planHops(scene, timeline, avoid);
 }
 
 // cost: time O(w), heap O(w), stack O(1)

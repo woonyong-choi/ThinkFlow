@@ -1,0 +1,32 @@
+data right
+title "스택 프레임 배치"
+subtitle "call caller와 call swap_add 직후의 스택. 높은 주소의 프레임이 낮은 주소의 프레임을 부른다"
+
+table frame_main "main 프레임 (0x7FFFE010 위)" {
+  base "0x7FFFE020" pk
+  locals "main의 지역 변수"
+}
+table frame_caller "caller 프레임 (rbp = 0x7FFFE000)" {
+  ret_addr "0x7FFFE008: 0x401156"
+  saved_rbp "0x7FFFE000: 0x7FFFE020" pk fk=frame_main.base
+  arg2 "0x7FFFDFF8: 1057" pk
+  arg1 "0x7FFFDFF0: 534" pk
+}
+table frame_swap "swap_add 프레임 (rbp = 0x7FFFDFE0)" {
+  ret_addr "0x7FFFDFE8: 0x401172"
+  saved_rbp "0x7FFFDFE0: 0x7FFFE000" fk=frame_caller.saved_rbp
+  x "0x7FFFDFD8: 534"
+  y "0x7FFFDFD0: 1057"
+  xp "0x7FFFDFC8: 0x7FFFDFF0" fk=frame_caller.arg1
+  yp "0x7FFFDFC0: 0x7FFFDFF8" fk=frame_caller.arg2
+}
+
+step "caller 프레임" "caller는 이전 rbp를 저장하고 지역 변수 arg1, arg2를 16바이트에 둔다"
+  light frame_caller.ret_addr frame_caller.saved_rbp frame_caller.arg1 frame_caller.arg2
+  show frame_caller "rsp = 0x7FFFDFF0" tag="rsp"
+  show frame_caller "rbp = 0x7FFFE000" tag="rbp"
+  frame_caller -> frame_main
+step "swap_add 프레임" "swap_add는 포인터 xp, yp로 caller의 지역 변수를 고친다"
+  light frame_swap.ret_addr frame_swap.saved_rbp
+  show frame_swap "rbp = 0x7FFFDFE0" tag="rbp"
+  frame_swap.xp -> frame_caller.arg1 "xp = &arg1"

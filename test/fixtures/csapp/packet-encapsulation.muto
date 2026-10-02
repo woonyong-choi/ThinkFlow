@@ -1,0 +1,45 @@
+data right
+title "패킷 캡슐화 계층"
+subtitle "HTTP 요청이 TCP 세그먼트, IP 패킷, 이더넷 프레임에 차례로 담긴다"
+
+table http_msg "응용 계층: HTTP 요청" {
+  request_line "GET /index.html HTTP/1.1"
+  host "Host: www.example.com"
+  carried_in "TCP 세그먼트의 데이터 부분" fk=tcp_seg.header
+}
+table tcp_seg "전송 계층: TCP 세그먼트" {
+  header "20바이트" pk
+  ports "51234 → 80"
+  seq_ack "seq 1000, ack 5000"
+  flags "PSH ACK"
+  carried_in "IP 패킷의 데이터 부분" fk=ip_pkt.header
+}
+table ip_pkt "네트워크 계층: IP 패킷" {
+  header "20바이트" pk
+  addrs "198.51.100.5 → 203.0.113.10"
+  proto "6, TCP"
+  ttl "64"
+  carried_in "이더넷 프레임의 데이터 부분" fk=eth_frame.header
+}
+table eth_frame "링크 계층: 이더넷 프레임" {
+  header "14바이트" pk
+  macs "aa:bb:cc:00:00:01 → aa:bb:cc:00:00:02"
+  ethertype "0x0800, IPv4"
+  fcs "프레임 검사 합 4바이트"
+}
+
+step "송신: 캡슐화" "아래 계층으로 내려갈 때마다 헤더가 앞에 붙는다"
+  light http_msg.request_line http_msg.carried_in
+  http_msg -> tcp_seg
+  show tcp_seg "TCP 헤더 + HTTP 요청" tag="L4"
+  tcp_seg -> ip_pkt
+  show ip_pkt "IP 헤더 + TCP 세그먼트" tag="L3"
+  ip_pkt -> eth_frame
+  show eth_frame "이더넷 헤더 + IP 패킷 + FCS" tag="L2"
+step "수신: 역캡슐화" "받는 쪽은 위 계층으로 올라가며 헤더를 하나씩 벗긴다"
+  eth_frame -> ip_pkt
+  show ip_pkt "이더넷 헤더와 FCS를 벗김" tag="L3"
+  ip_pkt -> tcp_seg
+  show tcp_seg "IP 헤더를 벗김, 포트 80으로 전달" tag="L4"
+  tcp_seg -> http_msg
+  show http_msg "TCP 헤더를 벗김, 서버가 요청을 읽음" tag="L7" tone=green

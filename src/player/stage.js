@@ -132,7 +132,11 @@ function createPacket(hop, stage) {
       const eased = progressAt(metrics.move, p);
       const point = path.getPointAtLength(length * (hop.isBack ? 1 - eased : eased));
       g.setAttribute('transform', `translate(${point.x} ${point.y})`);
-      if (chip) chip.g.setAttribute('transform', `translate(${slide(p)})`);
+      if (chip) {
+        const [dx, dy, opacity] = slide(p);
+        chip.g.setAttribute('transform', `translate(${dx} ${dy})`);
+        chip.g.style.opacity = opacity;
+      }
       g.style.opacity = p >= 1 ? 0 : 1;
     },
   };

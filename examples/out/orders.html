@@ -205,6 +205,8 @@
   --duration-hop: 3750ms;
   --duration-caption-fade: 200ms;
   --duration-hop-min: 500ms;
+  --duration-chip-slide: 300ms;
+  --duration-chip-fade: 150ms;
   --duration-dwell: 700ms;
   --duration-dwell-per-char: 45ms;
   --duration-dwell-max: 3200ms;
@@ -1574,7 +1576,11 @@ function createPacket(hop, stage) {
       const eased = progressAt(metrics.move, p);
       const point = path.getPointAtLength(length * (hop.isBack ? 1 - eased : eased));
       g.setAttribute('transform', `translate(${point.x} ${point.y})`);
-      if (chip) chip.g.setAttribute('transform', `translate(${slide(p)})`);
+      if (chip) {
+        const [dx, dy, opacity] = slide(p);
+        chip.g.setAttribute('transform', `translate(${dx} ${dy})`);
+        chip.g.style.opacity = opacity;
+      }
       g.style.opacity = p >= 1 ? 0 : 1;
     },
   };
@@ -1664,23 +1670,23 @@ function timeAtProgress([x1, y1, x2, y2], f) {
 }
 
 // cost: time O(STEPS·k), 프레임마다 O(k), heap O(k), stack O(1)
-// vars: STEPS = BISECT_STEPS, k = 경로 지점 수(21)
+// vars: STEPS = BISECT_STEPS, k = 경로 지점 수
 // basis: estimate
-// 글 상자 옮김. 빌드 때 시간표에 담은 경로 지점별 옮김 [진행 비율, dx, dy]를 움직이는 SVG의 옮김 움직임(SMIL, 지점이 점에 닿는 시각 사이를 선형)과 같게 시간 비율 p에서 보간한다.
+// 글 상자 옮김과 불투명도. 빌드 때 시간표에 담은 경로 지점별 [진행 비율, dx, dy, opacity]를 움직이는 SVG의 SMIL(지점이 점에 닿는 시각 사이를 선형)과 같게 시간 비율 p에서 보간한다. [dx, dy, opacity]를 돌려준다.
 function chipSlide(hop, metrics) {
   const path = hop.chipPath ?? [];
   const times = path.map(([at]) => timeAtProgress(metrics.move, at));
   return (p) => {
-    if (!path.length) return '0 0';
+    if (!path.length) return [0, 0, 1];
     const k = times.findLastIndex((time) => time <= p);
-    if (k < 0) return `${path[0][1]} ${path[0][2]}`;
-    if (k === path.length - 1) return `${path[k][1]} ${path[k][2]}`;
+    if (k < 0) return path[0].slice(1);
+    if (k === path.length - 1) return path[k].slice(1);
     const ratio = times[k + 1] > times[k] ? (p - times[k]) / (times[k + 1] - times[k]) : 1;
-    return `${path[k][1] + (path[k + 1][1] - path[k][1]) * ratio} ${path[k][2] + (path[k + 1][2] - path[k][2]) * ratio}`;
+    return [1, 2, 3].map((i) => path[k][i] + (path[k + 1][i] - path[k][i]) * ratio);
   };
 }
 
-figurePlay(document.querySelector('.fl-figure'), {"segs":[{"si":0,"t0":0,"t1":4740,"hops":[],"edgesOn":[],"nodesOn":[],"groupsOn":[],"columnsOn":["payments.order_id","orders.id"],"cards":{},"cardsBefore":{},"cardsAt":{},"caption":"결제 행은 주문 행을 외래 키로 가리킨다","series":[],"growing":[],"lights":[]},{"si":0,"t0":4740,"t1":7790,"hops":[{"edge":0,"isBack":false,"ms":750,"to":"orders","data":["order_id 1042"],"line":16,"chipPath":[[0,0,78],[0.05,0,78],[0.1,0,78],[0.15,0,78],[0.2,0,78],[0.203125,0,78],[0.20535865397655056,0,78],[0.20535865397655056,39.326171875,-31],[0.20625000000000002,39.326171875,-31],[0.21250000000000002,38.951171875,-31],[0.225,38.201171875,-31],[0.25,36.701171875,-31],[0.3,33.701171875,-31],[0.35,30.701171875,-31],[0.4,27.701171875,-31],[0.45,24.701171875,-31],[0.5,21.701171875,-31],[0.55,18.701171875,-31],[0.6,15.701171875,-31],[0.65,12.701171875,-31],[0.7,9.701171875,-31],[0.75,6.701171875,-31],[0.8,0,-31],[0.85,0,-31],[0.9,0,-31],[0.95,0,-31],[1,0,-31]]}],"edgesOn":[0],"nodesOn":[0,1],"groupsOn":[],"columnsOn":["payments.order_id","orders.id"],"cards":{},"cardsBefore":{},"cardsAt":{},"caption":"결제 행은 주문 행을 외래 키로 가리킨다","series":[],"growing":[],"lights":[]}],"steps":["결제"],"cardCounts":[0,0],"edgeEnds":[[0,1]],"seriesCount":0,"rowCount":0,"metrics":{"active":"var(--color-state-active)","chipFill":"var(--color-state-active-fill)","halo":10,"haloOpacity":0.2,"packet":4.5,"chipRadius":8,"chipLine":15,"chipPadX":18,"chipPadY":8,"chipGap":12,"icon":12,"iconStroke":1.75,"pauseStroke":2.5,"zoomMax":6,"zoomStep":1.25,"move":[0.455,0.03,0.515,0.955]}});
+figurePlay(document.querySelector('.fl-figure'), {"segs":[{"si":0,"t0":0,"t1":4740,"hops":[],"edgesOn":[],"nodesOn":[],"groupsOn":[],"columnsOn":["payments.order_id","orders.id"],"cards":{},"cardsBefore":{},"cardsAt":{},"caption":"결제 행은 주문 행을 외래 키로 가리킨다","series":[],"growing":[],"lights":[]},{"si":0,"t0":4740,"t1":7790,"hops":[{"edge":0,"isBack":false,"ms":750,"to":"orders","data":["order_id 1042"],"line":16,"chipPath":[[0,51.70117187248539,-31,1],[0.005964783915087195,51.34328484009475,-31,1],[0.018437560239978185,50.594918260601276,-31,1],[0.03811187083526059,49.41445962488433,-31,1],[0.06570096117429003,47.759114204542584,-31,1],[0.10187787646557456,45.5884992870655,-31,1],[0.1471694540672311,42.8710046309661,-31,1],[0.20178945770550127,39.5938044126699,-31,1],[0.2654118923904264,35.77645833157442,-31,1],[0.336927964018532,31.485494033888074,-31,1],[0.41429543374262523,26.843445850442492,-31,1],[0.5745912671782765,17.225695844303402,-31,1],[0.6510007925372481,12.641124322765108,-31,1],[0.7213290129396324,8.421431098622065,-31,1],[0.7839458953917328,4.664418151496022,-31,1],[0.8380716006702216,1.4168758347867083,-31,1],[0.8835734692388322,-1.3132362793299421,-31,1],[0.9207356536169877,-3.542967342019267,-31,1],[0.9500707149255626,-5.303071020533764,-31,1],[0.9721901497987274,-6.6302371129236235,-31,1],[0.9877253322178113,-7.562348058068665,-31,1],[0.9972839607967611,-8.135865772805687,-31,1],[1,-8.298828121228155,-31,1]]}],"edgesOn":[0],"nodesOn":[0,1],"groupsOn":[],"columnsOn":["payments.order_id","orders.id"],"cards":{},"cardsBefore":{},"cardsAt":{},"caption":"결제 행은 주문 행을 외래 키로 가리킨다","series":[],"growing":[],"lights":[]}],"steps":["결제"],"cardCounts":[0,0],"edgeEnds":[[0,1]],"seriesCount":0,"rowCount":0,"metrics":{"active":"var(--color-state-active)","chipFill":"var(--color-state-active-fill)","halo":10,"haloOpacity":0.2,"packet":4.5,"chipRadius":8,"chipLine":15,"chipPadX":18,"chipPadY":8,"chipGap":12,"icon":12,"iconStroke":1.75,"pauseStroke":2.5,"zoomMax":6,"zoomStep":1.25,"move":[0.455,0.03,0.515,0.955]}});
 </script>
 </body>
 </html>

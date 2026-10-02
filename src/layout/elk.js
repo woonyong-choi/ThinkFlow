@@ -28,11 +28,16 @@ function edgesByContainer({ containers, pieces, edges }) {
   for (const [index, list] of pieces) {
     const edge = edges.find((e) => e.index === index);
     list.forEach((p, k) => {
-      const labels = p.hasLabel && edge.label ? [{ id: `label::${index}`, text: edge.label, ...sizeOf(sizePill(edge.label)), layoutOptions: LABEL_OPTIONS }] : [];
+      const labels = p.hasLabel && edge.label && !isBeside(edge, containers.get(p.container)) ? [{ id: `label::${index}`, text: edge.label, ...sizeOf(sizePill(edge.label)), layoutOptions: LABEL_OPTIONS }] : [];
       byContainer.get(p.container).push({ id: `${index}::${k}`, sources: [p.from], targets: [p.to], labels });
     });
   }
   return byContainer;
+}
+
+// 세로로 쌓는 층의 quiet 선 라벨은 층 사이에 자리를 만들지 않고 선 옆에 둔다(read.js). 숨은 선 때문에 층 간격이 벌어져 보이지 않게 하려는 것이다.
+function isBeside(edge, container) {
+  return edge.quiet && container.direction === 'down';
 }
 
 // 줄 바꿈한 그림에서 그룹이 있으면, 그룹이 든 열만 넓어져 같은 열의 상자가 가운데나 왼쪽에 놓이고 칸 간격이 줄마다 달라진다.

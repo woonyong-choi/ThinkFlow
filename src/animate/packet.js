@@ -1,5 +1,5 @@
 // 점 하나가 한 박자 동안 선을 건너고, 실어 보내는 글은 점 위의 상자로 따라간다.
-// 점의 보임과 이동과 글 상자 밀어 넣기는 모두 SMIL이라 한 시계로 돈다. 보임을 CSS에 두면 시계 둘이 따로 반복해, 한 바퀴가 돌아올 때 점이 끝 지점에 잠깐 보였다가 시작 지점으로 뛴다.
+// 점의 보임과 이동과 글 상자 옮김과 흐려짐은 모두 SMIL이라 한 시계로 돈다. 보임을 CSS에 두면 시계 둘이 따로 반복해, 한 바퀴가 돌아올 때 점이 끝 지점에 잠깐 보였다가 시작 지점으로 뛴다.
 import { CHIP_GAP, sizeChip } from '../chip.js';
 import { curveOf, keySpline, timeAt } from '../easing.js';
 import { STYLE } from '../measure/sizes.js';
@@ -15,7 +15,7 @@ const LINEAR = '0 0 1 1';
 // vars: k = 재는 지점 수(21), out = 만든 SVG 글자 수
 // basis: estimate
 /**
- * 점 요소 하나. 후광, 점, 글 상자와 SMIL 움직임 셋(보임, 이동, 글 상자 밀어 넣기)을 담는다.
+ * 점 요소 하나. 후광, 점, 글 상자와 SMIL 움직임(보임, 이동, 글 상자 옮김과 흐려짐)을 담는다.
  * @param clock createClock 결과
  * @param move { seg, hop, name }. 박자, 그 박자의 이동, class 이름
  * @param glyphs 쓴 글자를 모으는 그릇
@@ -71,19 +71,24 @@ function moveMotion(clock, [from, to], hop) {
 }
 
 // cost: time O(k), heap O(k), stack O(1)
-// vars: k = 재는 지점 수(21)
+// vars: k = 경로 지점 수
 // basis: estimate
-// 글 상자가 점 위 기본 자리에서 벗어나는 선이면(그림 밖으로 나가거나 도형 이름을 피할 때), 시간표가 정해 둔 경로 지점별 옮김을 옮김 움직임으로 건다. 점이 그 지점에 닿는 시각은 이동 곡선을 거꾸로 풀어 구한다.
+// 글 상자가 점 위 기본 자리에서 벗어나거나 흐려지는 선이면, 시간표가 정해 둔 경로 지점별 옮김과 불투명도를 SMIL로 건다. 점이 그 지점에 닿는 시각은 이동 곡선을 거꾸로 풀어 구한다.
 function pushChip(clock, seg, hop) {
   const path = hop.chipPath;
-  if (path.every(([, dx, dy]) => dx === 0 && dy === 0)) return '';
   const at = (f) => clock.keyTime(seg.t0 + timeAt(MOVE, f) * hop.ms);
-  const keys = [[0, path[0]], ...path.map((p) => [at(p[0]), p]), [1, path.at(-1)]].filter(([time, p], i, all) => i === 0 || time > all[i - 1][0] || (time === all[i - 1][0] && !isSameOffset(p, all[i - 1][1])));
-  const moves = keys.map(([, [, dx, dy]]) => `${r(dx)} ${r(dy)}`);
-  return `<animateTransform attributeName="transform" type="translate" dur="${clock.duration}" repeatCount="indefinite" calcMode="linear" keyTimes="${keys.map(([time]) => time).join(';')}" values="${moves.join(';')}"/>`;
+  const keys = [[0, path[0]], ...path.map((p) => [at(p[0]), p]), [1, path.at(-1)]].filter(([time], i, all) => i === 0 || time > all[i - 1][0]);
+  const keyTimes = keys.map(([time]) => time).join(';');
+  const moves = path.some(([, dx, dy]) => dx !== 0 || dy !== 0) ? animateOf(clock, { name: 'transform', type: 'translate' }, { keyTimes, values: keys.map(([, [, dx, dy]]) => `${r(dx)} ${r(dy)}`) }) : '';
+  const fades = path.some(([, , , opacity]) => opacity !== 1) ? animateOf(clock, { name: 'opacity' }, { keyTimes, values: keys.map(([, p]) => r(p[3])) }) : '';
+  return moves + fades;
 }
 
-// 두 경로 지점의 옮김이 같은지
-function isSameOffset(a, b) {
-  return a[1] === b[1] && a[2] === b[2];
+// cost: time O(k), heap O(k), stack O(1)
+// vars: k = 경로 지점 수
+// basis: estimate
+// 지점 사이를 시간에 선형으로 잇는 SMIL 값 하나. 글 상자 옮김(transform)과 흐려짐(opacity)이 같은 키 시각을 쓴다.
+function animateOf(clock, { name, type }, { keyTimes, values: levels }) {
+  const tag = type ? 'animateTransform' : 'animate';
+  return `<${tag} attributeName="${name}"${type ? ` type="${type}"` : ''} dur="${clock.duration}" repeatCount="indefinite" calcMode="linear" keyTimes="${keyTimes}" values="${levels.join(';')}"/>`;
 }

@@ -18,7 +18,7 @@
 | `src/svg.js`, `src/html.js`, `src/html/`, `src/cli.js` | 움직이는 SVG, HTML 재생기 문서와 목록, 명령 |
 | `src/player/` | 브라우저에서 도는 재생기(`play.js`, `controls.js`, `stage.js`, `curve.js`)와 전체 화면·확대(`view.js`) |
 | `examples/` | 예제 원본, `out/` 결과, `screens/` UI 화면 |
-| `scripts/` | 화면 확인 도구(`shoot.mjs`, `screens.mjs`), 토큰 생성(`build-tokens.mjs`), 하드코딩, 비용 주석, 수치 기준 검사(`check-tokens.mjs`, `check-cost-comments.mjs`, `check-size.mjs`), 배치 무작위 시험(`fuzz-layout.mjs`), 문서 표 생성(`build-grammar-doc.mjs`, `build-check-doc.mjs`) |
+| `scripts/` | 화면 확인 도구(`shoot.mjs`, `screens.mjs`), 토큰 생성(`build-tokens.mjs`), 하드코딩, 비용 주석, 수치 기준 검사(`check-tokens.mjs`, `check-cost-comments.mjs`, `check-size.mjs`), 배치 무작위 시험(`fuzz-layout.mjs`), 빌드 시간 기준 검사(`perf-chips.mjs`, 로컬 전용), 문서 표 생성(`build-grammar-doc.mjs`, `build-check-doc.mjs`) |
 | `docs/` | 설계 문서 |
 
 ## 명령
