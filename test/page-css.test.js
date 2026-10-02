@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
 import { buildFigure } from '../src/build.js';
-import { toHtml } from '../src/html.js';
+import { toDocument, toGallery, toHtml } from '../src/html.js';
 import { values } from '../src/tokens.js';
 import { playerSource } from './helpers.js';
 
@@ -157,4 +157,19 @@ test('playerSource_every_template_placeholder_sits_in_a_template_literal', () =>
   const player = playerSource();
 
   assert.doesNotMatch(player, /'[^'\n]*\$\{[^'\n]*'/);
+});
+
+test('cardHead_title_name_and_kind_are_separate_flex_items_with_token_gap_aligned_on_the_baseline', async () => {
+  const figures = [{ name: 'call-registers', title: '호출 중 레지스터 값의 변화', kind: 'flow', isChart: false, href: 'call-registers' }];
+
+  for (const [html, sheet] of [[toGallery(figures, '예제'), GALLERY], [toDocument(figures, '예제'), DOCUMENT]]) {
+    const head = declarationsOf(sheet, 'h2');
+
+    assert.match(html, /<h2><span class="title">호출 중 레지스터 값의 변화<\/span><code class="name">call-registers\.muto<\/code>/);
+    assert.equal(head.display, 'flex');
+    assert.equal(head['align-items'], 'baseline');
+    assert.equal(head['flex-wrap'], 'wrap', 'a narrow head wraps instead of clipping');
+    assert.match(head.gap, /^var\(--space-1\) var\(--space-3\)$/);
+    assert.doesNotMatch(sheet, /\.(name|kind)[^{]*\{[^}]*margin-left/);
+  }
 });

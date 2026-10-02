@@ -101,7 +101,7 @@ test('pageHead_repeats_the_figure_title_only_when_the_figure_does_not_draw_one',
   ];
   for (const page of [toDocument(figures, '예제'), toGallery(figures, '예제')]) {
     assert.doesNotMatch(page, /<h2>[^<]*막대 차트/);
-    assert.match(page, /<h2>기억 그래프<code class="name">memory\.muto<\/code><span class="kind">flow<\/span><\/h2>/);
+    assert.match(page, /<h2><span class="title">기억 그래프<\/span><code class="name">memory\.muto<\/code><span class="kind">flow<\/span><\/h2>/);
   }
 });
 

@@ -350,6 +350,10 @@ h1 {
 }
 
 h2 {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-3);
+  align-items: baseline;
   margin-top: var(--space-16);
   font: var(--weight-semibold) var(--size-text-15) var(--font-sans);
 }
@@ -359,17 +363,13 @@ code {
   font-family: var(--font-mono);
 }
 
-/* 파일 이름은 코드 글꼴의 보통 글자이고, 종류는 그 옆 작은 회색 꼬리표다. 제목이 앞에 있으면 제목과 간격을 둔다. */
+/* 제목, 파일 이름, 종류 꼬리표는 기준선을 맞춰 한 줄에 놓고 사이를 간격 토큰으로 띄운다. 머리가 좁으면 칸 단위로 다음 줄로 넘긴다(말줄임 없음). */
 .name {
   font-size: var(--size-text-13);
-}
-
-.name:not(:first-child) {
-  margin-left: var(--space-3);
+  overflow-wrap: anywhere;
 }
 
 .kind {
-  margin-left: var(--space-3);
   font-size: var(--size-text-11);
   color: var(--color-muted);
 }
@@ -440,15 +440,15 @@ addEventListener('DOMContentLoaded', () => {
 <p class="figure"><img src="heatmap.svg" alt="판단 교차표"></p>
 <h2><code class="name">line.muto</code><span class="kind">line</span></h2>
 <p class="figure"><img src="line.svg" alt="주차별 재시도 비율"></p>
-<h2>대화에서 기억 그래프 키우기<code class="name">memory.muto</code><span class="kind">flow</span></h2>
+<h2><span class="title">대화에서 기억 그래프 키우기</span><code class="name">memory.muto</code><span class="kind">flow</span></h2>
 <p class="figure"><img src="memory.svg" alt="대화에서 기억 그래프 키우기"></p>
-<h2>OAuth 인가 코드와 PKCE<code class="name">oauth.muto</code><span class="kind">sequence</span></h2>
+<h2><span class="title">OAuth 인가 코드와 PKCE</span><code class="name">oauth.muto</code><span class="kind">sequence</span></h2>
 <p class="figure"><img src="oauth.svg" alt="OAuth 인가 코드와 PKCE"></p>
-<h2>주문 상태<code class="name">order-state.muto</code><span class="kind">state</span></h2>
+<h2><span class="title">주문 상태</span><code class="name">order-state.muto</code><span class="kind">state</span></h2>
 <p class="figure"><img src="order-state.svg" alt="주문 상태"></p>
 <h2><code class="name">orders.muto</code><span class="kind">data</span></h2>
 <p class="figure"><img src="orders.svg" alt="orders"></p>
-<h2>Saturn 구성<code class="name">saturn.muto</code><span class="kind">flow</span></h2>
+<h2><span class="title">Saturn 구성</span><code class="name">saturn.muto</code><span class="kind">flow</span></h2>
 <p class="figure"><img src="saturn.svg" alt="Saturn 구성"></p>
 <h2><code class="name">scatter.muto</code><span class="kind">scatter</span></h2>
 <p class="figure"><img src="scatter.svg" alt="수정 횟수와 비용"></p>

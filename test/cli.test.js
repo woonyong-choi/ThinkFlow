@@ -104,7 +104,7 @@ test('main_gallery_head_shows_file_name_and_kind_and_the_title_only_for_figures_
 
     for (const page of ['index', 'document']) {
       const html = readFileSync(join(folder, 'out', `${page}.html`), 'utf8');
-      assert.match(html, /<h2>흐름 제목<code class="name">a\.muto<\/code><span class="kind">flow<\/span><\/h2>/);
+      assert.match(html, /<h2><span class="title">흐름 제목<\/span><code class="name">a\.muto<\/code><span class="kind">flow<\/span><\/h2>/);
       assert.match(html, /<h2><code class="name">b\.muto<\/code><span class="kind">bar<\/span><\/h2>/);
     }
   });
