@@ -103,6 +103,7 @@
 
 .fl .fl-stroke {
   stroke: var(--color-border);
+  stroke-width: var(--border-thin);
 }
 
 .fl .fl-path {
@@ -166,4 +167,47 @@
 
 .fl .fl-edge.mark .fl-path {
   stroke: var(--color-fg);
+}
+
+/* 도형 윗줄과 그룹 제목 줄의 장식: 글자 배지, 아이콘 */
+.fl .badge {
+  font-size: var(--size-text-11);
+  font-weight: var(--weight-semibold);
+  text-anchor: middle;
+  fill: var(--color-fg);
+}
+
+.fl .badge-pill {
+  fill: var(--color-node);
+  stroke: var(--color-border);
+  stroke-width: var(--border-thin);
+}
+
+.fl .fl-icon {
+  color: var(--color-figure-icon);
+}
+
+/* 그룹 제목 줄 탭(NHN box_type): 틀 왼쪽 위 모서리의 정사각 면. 아이콘 색 파랑 면에 노드 면 색 아이콘이고, 아이콘이 있는 그룹의 틀도 같은 파랑이다. */
+.fl .group-tab {
+  fill: var(--color-figure-icon);
+}
+
+.fl .fl-icon.on-tab {
+  color: var(--color-node);
+}
+
+.fl .fl-group.tabbed:not(.on) .frame-box {
+  stroke: var(--color-figure-icon);
+}
+
+/* 선 번호 원. 라벨 알약과 달리 켜져도 색이 바뀌지 않아 정지 그림과 같은 순서로 읽힌다. */
+.fl .number-pill {
+  fill: var(--color-fg);
+}
+
+.fl .number {
+  font-size: var(--size-text-11);
+  font-weight: var(--weight-semibold);
+  text-anchor: middle;
+  fill: var(--color-bg);
 }

@@ -1,0 +1,44 @@
+flow right
+title "배포 구성도"
+subtitle "커밋이 빌드와 이미지를 거쳐 클러스터에 배포되고 파드가 데이터 저장소를 쓰는 순서(1~7)"
+
+group ci "CI/CD" icon=githubactions border=dashed direction=down {
+  box repo "GitHub" shape=tile icon=github
+  box actions "Actions" shape=tile icon=githubactions
+  box registry "Docker" shape=tile icon=docker
+}
+group cluster "Kubernetes" icon=kubernetes {
+  group ns "네임스페이스" icon=container border=dashed {
+    box svc "서비스" shape=tile icon=apigw
+    box pod "파드" shape=tile icon=nodejs count=3
+  }
+}
+group data "데이터" icon=db border=dashed direction=down {
+  store pg "PostgreSQL" icon=postgresql
+  store cache "Redis" icon=redis
+}
+group obs "관측" icon=monitoring border=dashed direction=down {
+  box prom "Prometheus" shape=tile icon=prometheus
+  box grafana "Grafana" shape=tile icon=grafana
+}
+
+repo -> actions no=1
+actions -> registry no=2
+registry -> svc no=3
+svc -> pod no=4
+pod -> pg no=5
+pod -> cache no=6
+pod -> prom no=7
+prom -> grafana
+
+step "올리기" "커밋을 올리면 빌드가 시작된다"
+  repo -> actions
+step "이미지" "빌드가 이미지를 만들어 레지스트리에 둔다"
+  actions -> registry
+step "배포" "클러스터가 이미지를 받아 파드를 띄운다"
+  registry -> svc
+  svc -> pod
+step "사용" "파드가 데이터를 쓰고 지표를 내보낸다"
+  pod -> pg & pod -> cache
+  pod -> prom
+  prom -> grafana

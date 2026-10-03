@@ -1,5 +1,5 @@
 // 2번과 6번: 글과 도형이 겹치지 않는다.
-import { overlaps } from './geometry.js';
+import { labelOf, overlaps, segmentHits, THROUGH_INSET } from './geometry.js';
 
 // cost: time O((l + t)² + (l + t)·s), heap O(1), stack O(1)
 // vars: l = 선 라벨 수, t = 그룹 제목 수, s = 도형 수
@@ -9,13 +9,13 @@ import { overlaps } from './geometry.js';
 export function checkLabels({ pills, titles, boxes, family }, problems) {
   pills.forEach((a, i) => {
     for (const b of pills.slice(i + 1)) {
-      if (overlaps(a, b)) problems.error(a.edge.line, `[check 2] edge label "${a.edge.label}" overlaps edge label "${b.edge.label}" (line ${b.edge.line}). Shorten a label or ${family.hint}`);
+      if (overlaps(a, b)) problems.error(a.edge.line, `[check 2] edge label "${labelOf(a.edge)}" overlaps edge label "${labelOf(b.edge)}" (line ${b.edge.line}). Shorten a label or ${family.hint}`);
     }
     for (const box of boxes) {
-      if (overlaps(a, box)) problems.error(a.edge.line, `[check 2] edge label "${a.edge.label}" overlaps node "${box.id}" (line ${box.line}). Shorten the label`);
+      if (overlaps(a, box)) problems.error(a.edge.line, `[check 2] edge label "${labelOf(a.edge)}" overlaps node "${box.id}" (line ${box.line}). Shorten the label`);
     }
     for (const t of titles) {
-      if (overlaps(a, t)) problems.error(a.edge.line, `[check 2] edge label "${a.edge.label}" overlaps the title of group "${t.group.id}" (line ${t.group.line}). Shorten the label or change the direction of group "${t.group.id}"`);
+      if (overlaps(a, t)) problems.error(a.edge.line, `[check 2] edge label "${labelOf(a.edge)}" overlaps the title of group "${t.group.id}" (line ${t.group.line}). Shorten the label or change the direction of group "${t.group.id}"`);
     }
   });
   titles.forEach((a, i) => {
@@ -40,4 +40,18 @@ export function checkNodes({ boxes, scene, family }, problems) {
       problems.error(a.line, `[check 6] internal: ${a.kind} "${a.id}" overlaps ${b.kind} "${b.id}". Please report this`);
     }
   });
+}
+
+// cost: time O(e·p·t), heap O(1), stack O(1)
+// vars: e = 선 수, p = 경로 점 수, t = 그룹 제목 수
+// basis: estimate
+// 13번: 선이 그룹 제목 줄(아이콘, 제목, 배지, 개수와 반복 알약)을 지나지 않는다. 그 그룹 경계에서 끝나는 선도 제목 줄 안으로 들어오지 못한다.
+export function checkTitleLines({ edges, titles }, problems) {
+  for (const e of edges) {
+    const segments = e.points.slice(1).map((q, i) => [e.points[i], q]);
+    for (const t of titles) {
+      const box = { x: t.x + THROUGH_INSET, y: t.y + THROUGH_INSET, w: t.w - THROUGH_INSET * 2, h: t.h - THROUGH_INSET * 2 };
+      if (segments.some(([p, q]) => segmentHits(p, q, box))) problems.error(e.line, `[check 13] edge ${e.from} -> ${e.to} passes through the title of group "${t.group.id}" (line ${t.group.line}). Change a group direction or widen the group with a longer title`);
+    }
+  }
 }

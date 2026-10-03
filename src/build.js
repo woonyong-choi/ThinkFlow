@@ -5,6 +5,7 @@ import { checkChartFigure, checkFigure } from './check.js';
 import { CHIP_GAP, sizeChip } from './chip.js';
 import { planHops } from './chip-plan.js';
 import { chipLines, chipObstacles } from './draw/boxes.js';
+import { attachIcons } from './icons/index.js';
 import { drawChart } from './chart/draw.js';
 import { LayoutError } from './layout/error.js';
 import { layoutGraph } from './layout/graph.js';
@@ -38,6 +39,7 @@ export async function buildFigure(source, { baseDir = '.', strict = false, noDep
   const figure = readFigure(source, problems);
   if (figure.kind === 'chart' && figure.chart.data) loadChartData(figure, baseDir, problems);
   checkGlyphs(figure, problems);
+  attachIcons(figure, baseDir, problems);
   if (figure.kind === 'chart') checkSkillRules(figure, { requireData, requireCi }, problems);
   problems.throwIfAny();
   const cards = collectCards(figure);
@@ -52,8 +54,8 @@ export async function buildFigure(source, { baseDir = '.', strict = false, noDep
   return finish({ figure, scene, timeline }, problems, { strict, noDeprecated });
 }
 
-// 선이 도형을 뚫거나 선 끝이 연결점을 벗어나거나 두 선이 붙는 그림 검사(3번, 4번, 5번). elkjs의 줄 바꿈(aspect)과 모델 순서 배치가 낸다.
-const LAYOUT_CHECKS = new Set(['check-3', 'check-4', 'check-5']);
+// 선이 도형을 뚫거나 선 끝이 연결점을 벗어나거나 두 선이 붙거나 그룹 제목 줄을 지나거나 선 번호 알약이 도형과 겹치는 그림 검사(2번, 3번, 4번, 5번, 13번). elkjs의 줄 바꿈(aspect)과 모델 순서 배치가 낸다.
+const LAYOUT_CHECKS = new Set(['check-2', 'check-3', 'check-4', 'check-5', 'check-13']);
 
 // cost: time O(2·(elk + check)), heap O(s + e), stack O(1)
 // vars: elk = 배치 시간, check = 그림 검사 시간, s = 도형 수, e = 선 수

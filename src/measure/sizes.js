@@ -1,5 +1,6 @@
 // 도형, 카드, 선 라벨 크기를 정한다. 여기서 정한 크기를 배치에 넘기고 그대로 그린다(docs/design/layout.md 도형 크기와 연결점).
 import { values } from '../tokens.js';
+import { BADGE_STYLE, DECOR, STACK_STEP, groupDecor, nodeDecor } from './decor.js';
 import { measure, wrap } from './fonts.js';
 import { planGridLinks } from './grid-links.js';
 import { layoutMiniGraph } from './minigraph.js';
@@ -58,7 +59,9 @@ export function sizeNode(node, contents = [], lineCounts = { out: 0, in: 0 }) {
   const labelLines = wrap(node.label, maxInner, STYLE.label);
   const subLines = node.sub ? wrap(node.sub, maxInner, STYLE.sub) : [];
   const textW = Math.max(...labelLines.map((l) => measure(l, STYLE.label.size, STYLE.label.face)), ...subLines.map((l) => measure(l, STYLE.sub.size)));
-  let w = Math.min(SIZE.node['max-width'], Math.max(SIZE.node['min-width'], textW + INNER_X * 2));
+  const decor = nodeDecor(node);
+  const padX = node.tile ? SIZE.node['tile-pad'] : INNER_X;
+  let w = Math.min(SIZE.node['max-width'], Math.max(node.tile ? SIZE.node['tile-width'] : SIZE.node['min-width'], textW + padX * 2, (decor?.w ?? 0) + padX * 2));
   if (contents.length) w = Math.max(w, SIZE.node['card-width']);
   const textH = labelLines.length * STYLE.label.line + subLines.length * STYLE.sub.line;
   if (node.shape === 'decision') {
@@ -66,9 +69,13 @@ export function sizeNode(node, contents = [], lineCounts = { out: 0, in: 0 }) {
     return { w: Math.max(w, (textW + INNER_X) * 2), h: (textH + INNER_Y) * 2, marginTop: 0, marginBottom: 0, labelLines, subLines };
   }
   const card = contents.length ? sizeCard(contents, w - CARD.margin * 2) : undefined;
-  const h = Math.max(SIZE.node['min-height'], INNER_Y * 2 + textH + (card ? card.h + CARD.margin : 0));
   const cap = node.shape === 'store' ? SIZE.node['store-cap'] : 0;
-  return { w, h, marginTop: cap, marginBottom: cap, labelLines, subLines, card };
+  // 윗줄(아이콘, 배지, 개수)은 이름 위에 놓는다. 원통은 뚜껑 곡선 아래에서 시작한다.
+  const head = decor ? { ...decor, x: (w - decor.w) / 2, y: INNER_Y + cap, room: cap + decor.h + (node.tile ? SIZE.icon['tile-gap'] : DECOR.rowGap) } : undefined;
+  const h = Math.max(SIZE.node['min-height'], INNER_Y * 2 + (head?.room ?? 0) + textH + (card ? card.h + CARD.margin : 0));
+  // 개수 요약 상자는 뒤 윤곽 두 겹이 오른쪽 아래로 비쳐 보이도록 그만큼 크고, 이름과 카드는 앞 상자(몸통) 안에 놓인다.
+  const stack = node.count === undefined ? 0 : STACK_STEP * 2;
+  return { w: w + stack, h: h + stack, stack, marginTop: cap, marginBottom: cap, labelLines, subLines, card, decor: head };
 }
 
 // cost: time O(r·n²), heap O(r·n), stack O(1)
@@ -194,15 +201,54 @@ function layoutCard(rows, width) {
   return { rows: laid, height: textH + CARD.gap * (laid.length - 1) + CARD.pad * 2 };
 }
 
-/** 선 라벨 알약 크기 */
-export function sizePill(label) {
-  return { w: measure(label, STYLE.pill.size, STYLE.pill.face) + SPACE['7'], h: SIZE.pill.height };
+// cost: time O(n), heap O(1), stack O(1)
+// vars: n = 글자 수
+// basis: estimate
+/**
+ * 선 라벨 알약 크기. 선 번호(no)가 있으면 왼쪽에 번호 원이 붙고, 라벨이 없으면 번호 원만 있다.
+ * 번호 원은 알약 높이에서 위아래 안쪽 간격을 뺀 지름이고, 두 자리 이상 번호는 숫자 폭만큼 넓어진다.
+ */
+export function sizePill(label, no) {
+  const h = SIZE.pill.height;
+  const textW = label === undefined ? 0 : measure(label, STYLE.pill.size, STYLE.pill.face);
+  if (no === undefined) return { w: textW + SPACE['7'], h };
+  const numW = numberBadgeWidth(no);
+  return { w: label === undefined ? numW + SPACE['1'] * 2 : SPACE['1'] + numW + SPACE['2'] + textW + SPACE['7'] / 2, h, numW, textW };
 }
+
+/** 선 번호 원 너비. 한 자리는 지름과 같은 원이고 두 자리 이상은 숫자 폭에 좌우 간격을 더한다. */
+export function numberBadgeWidth(no) {
+  return Math.max(SIZE.pill.height - SPACE['1'] * 2, measure(String(no), BADGE_STYLE.size, BADGE_STYLE.face) + SPACE['4']);
+}
+
+/**
+ * 번호만 있는 알약(라벨 없음)을 배치에 자리를 요구하지 않고 선 위에 얹는 선인가. 격자 칸에 이은 선은 끝 구간이 격자 안이라 얹을 자리를 고를 수 없어 배치가 자리를 준다.
+ * quiet 선은 선 옆에 두는 자리(besideLabel)를 쓴다.
+ */
+export const isOnLinePill = (edge) => edge.no !== undefined && edge.label === undefined && !edge.quiet && !edge.fromCell && !edge.toCell;
+
+/** 라벨이나 번호가 있어 알약을 그리는 선인가 */
+export const hasPill = (edge) => edge.label !== undefined || edge.no !== undefined;
 
 // cost: time O(g·n), heap O(1), stack O(1)
 // vars: g = 그룹 제목 글자 수, n = 1
 // basis: estimate
 /** 그룹 제목 줄 너비. 그룹이 제목보다 좁아지지 않게 배치에 넘긴다. */
-export function groupTitleWidth(label) {
-  return measure(label, STYLE.group.size, STYLE.group.face) + INNER_X * 2;
+export function groupTitleWidth(group) {
+  const head = groupHead(group);
+  return head.lead + head.w + INNER_X * 2;
+}
+
+// cost: time O(n), heap O(1), stack O(1)
+// vars: n = 그룹 제목 글자 수
+// basis: estimate
+/**
+ * 그룹 제목 줄의 한 덩어리: 제목 글, 배지, 개수 알약. 덩어리 왼쪽 끝이 제목 글 기본 자리(titleDx)이고 선이 가리면 덩어리째 비킨다.
+ * 아이콘이 있으면 왼쪽 모서리에 정사각 탭(너비 lead)이 붙고 덩어리는 그 오른쪽에서 시작한다. 탭은 비키지 않는다.
+ * @returns { w, textDx, decor, lead }. textDx는 덩어리 왼쪽에서 제목 글까지 거리, decor는 장식 자리(없으면 undefined), lead는 탭 너비(없으면 0)다
+ */
+export function groupHead(group) {
+  const titleW = measure(group.label, STYLE.group.size, STYLE.group.face);
+  const decor = groupDecor(group, titleW);
+  return { w: decor?.w ?? titleW, textDx: decor?.items.find((i) => i.kind === 'title').x ?? 0, decor, lead: group.iconData ? SIZE.group.title : 0 };
 }

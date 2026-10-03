@@ -17,7 +17,7 @@ html.embedded body {
 
 .fl-figure {
   position: relative;
-  max-width: var(--size-figure-canvas);
+  max-width: var(--figure-canvas, var(--size-figure-canvas));
   margin: 0 auto;
   overflow: clip;
   color: var(--color-fg);
@@ -45,7 +45,7 @@ html.embedded .fl-figure {
   display: block;
   width: auto;
   height: auto;
-  min-width: var(--size-figure-canvas);
+  min-width: var(--figure-canvas, var(--size-figure-canvas));
   margin: 0 auto;
 }
 
@@ -202,6 +202,7 @@ html.embedded .fl-figure {
 
 .fl .fl-node.on .fl-stroke {
   stroke: var(--color-state-active);
+  stroke-width: var(--border-strong);
 }
 
 .fl .fl-card.on {
@@ -238,7 +239,7 @@ html.embedded .fl-figure {
 .fl .fl-stroke,
 .fl .grid-cell,
 .fl .fl-pill rect {
-  transition: stroke var(--duration-fast), fill var(--duration-fast);
+  transition: stroke var(--duration-fast), stroke-width var(--duration-fast), fill var(--duration-fast);
 }
 
 .fl .fl-layer,
@@ -272,6 +273,7 @@ html.embedded .fl-figure {
 
 .fl .fl-group.on .fl-stroke {
   stroke: var(--color-state-active);
+  stroke-width: var(--border-strong);
 }
 
 .fl .fl-part.on .part-bg {

@@ -65,7 +65,7 @@ function cellRect(it, id) {
 // cost: time O(c), heap O(1), stack O(1)
 // vars: c = 테이블 열 수와 칸 수
 // basis: estimate
-// 도형별 연결점. 나가는 선은 오른쪽(세로 원통은 아래), 들어오는 선은 왼쪽(세로 원통은 위)이다. 격자 칸의 선은 그 칸의 테두리다. 묶음 배치한 테이블 열은 들어오는 선도 오른쪽이다. 그 밖의 도형과 그룹은 경계 어디나다.
+// 도형별 연결점. 나가는 선은 오른쪽(세로 그룹 안 원통은 아래나 오른쪽), 들어오는 선은 왼쪽(세로 그룹 안 원통은 위나 왼쪽)이다. 격자 칸의 선은 그 칸의 테두리다. 묶음 배치한 테이블 열은 들어오는 선도 오른쪽이다. 그 밖의 도형과 그룹은 경계 어디나다.
 function isPortPlace(p, it, { way, column, cell }) {
   const side = way === 'out' ? it.x + it.w : it.x;
   if (it.shape === 'grid' && cell) return onBorder(p, cellRect(it, cell));
@@ -76,7 +76,8 @@ function isPortPlace(p, it, { way, column, cell }) {
   if (it.shape === 'store') {
     const drawn = drawnBox(it);
     if (it.direction !== 'down') return onBorder(p, drawn);
-    return near(p.y, way === 'out' ? drawn.y + drawn.h : drawn.y) && onBorder(p, drawn);
+    // 세로 그룹 안 원통도 그룹 밖에서 오는 선은 선이 놓이는 방향의 옆면에 닿는다(layout.md 연결점).
+    return onBorder(p, drawn) && (near(p.y, way === 'out' ? drawn.y + drawn.h : drawn.y) || near(p.x, way === 'out' ? drawn.x + drawn.w : drawn.x));
   }
   return onBorder(p, it);
 }

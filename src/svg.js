@@ -1,5 +1,5 @@
 // 스크립트 없이 움직이는 SVG와 멈춘 SVG. 시간표의 박자 상태를 CSS keyframes와 SMIL로 옮긴다(docs/design/playback.md).
-import { fitCanvas } from './canvas.js';
+import { canvasOf, fitCanvas } from './canvas.js';
 import { CHART_FACES, chartText } from './chart/draw.js';
 import { createAnimator } from './animate/animator.js';
 import { drawScene } from './draw/figure.js';
@@ -29,7 +29,7 @@ export async function toSvg(result, { isStatic = false, name = '' } = {}) {
   const glyphs = createGlyphSet();
   const animator = isStatic || !timeline.segs.length ? staticAnimator() : createAnimator(timeline);
   const content = result.chart ? drawChartBody(result, { animator, glyphs, isStatic }) : drawFigureBody(result, animator, glyphs);
-  const { viewWidth: width, shownWidth, scale } = fitCanvas(content.width, 0);
+  const { viewWidth: width, shownWidth, scale } = fitCanvas(content.width, 0, canvasOf(figure));
   const captions = isStatic ? { svg: '', height: 0 } : drawCaptions(timeline, { animator, glyphs }, { width, top: content.height });
   const height = content.height + captions.height;
   const shownHeight = height * scale;

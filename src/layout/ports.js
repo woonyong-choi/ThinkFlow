@@ -23,7 +23,8 @@ export function addPort(container, way, edge) {
 // basis: estimate
 /**
  * 선 끝. 사람, 갈림길, 원통, 테이블 열은 연결점 제약을 둔 포트를 만들고, 그 아이디를 돌려준다. 나머지는 도형 아이디다.
- * @param end { way: 'out' | 'in', edge }
+ * 그룹 경계를 넘는 선은 그 선이 놓이는 가장 가까운 공통 그룹의 흐름 방향(`flow`)으로 닿는다. 도형이 든 그룹의 방향이 달라도 선이 그룹을 돌아 들어가지 않고 그룹의 가까운 면으로 들어간다.
+ * @param end { way: 'out' | 'in', edge, flow }. flow는 { direction, isCrossing }로, direction은 선이 놓이는 공통 그룹의 방향, isCrossing은 이 끝이 그 그룹 안쪽 그룹에 든 도형인지다
  */
 export function endpoint(id, end, nodes) {
   const node = nodes.get(id);
@@ -35,9 +36,9 @@ export function endpoint(id, end, nodes) {
 // cost: time O(c), heap O(1), stack O(1)
 // vars: c = 테이블 열 수
 // basis: estimate
-// 도형이 선 끝에 요구하는 연결점 { side, position? }. 요구가 없으면 undefined다.
+// 도형이 선 끝에 요구하는 연결점 { side, position? }. 요구가 없으면 undefined다. 위치가 없으면 면만 고정한다.
 function portSpec(node, end) {
-  const { way, edge } = end;
+  const { way, edge, flow } = end;
   const column = way === 'out' ? edge.fromColumn : edge.toColumn;
   if (node.shape === 'table' && column) return columnPort(node, way, column);
   if (node.shape === 'grid' && (way === 'out' ? edge.fromCell : edge.toCell)) return cellPort(node, end);
@@ -45,7 +46,9 @@ function portSpec(node, end) {
   // 사람과 원통은 바깥 여백(머리, 이름표, 뚜껑)까지 배치 사각형에 넣으므로, 선이 몸통에만 닿도록 모든 선에 연결점을 둔다.
   if (node.shape === 'person') return { side: way === 'out' ? 'EAST' : 'WEST' };
   if (node.shape === 'decision') return { side: way === 'out' ? 'EAST' : 'WEST', position: { x: way === 'out' ? node.size.w : 0, y: node.size.h / 2 } };
-  if (node.shape === 'store') return { side: storeSide(node.direction, way) };
+  if (node.shape === 'store') return { side: storeSide(way === 'in' ? flow.direction : node.direction, way) };
+  // 그룹 경계를 넘는 선은 도형 자신의 그룹 방향이 선이 놓이는 방향과 다를 때만 선이 놓이는 방향의 면에 닿는다(같으면 elkjs가 같은 면을 고른다).
+  if (flow.isCrossing && node.direction !== flow.direction) return { side: way === 'out' ? SIDE_OUT[flow.direction] : SIDE_IN[flow.direction] };
   return undefined;
 }
 

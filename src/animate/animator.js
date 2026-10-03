@@ -43,8 +43,11 @@ function decorateElement(kind, { id, i, extra, scene }, { segs, toggle, lit, car
   const c = tokens.color;
   switch (kind) {
     case 'node':
-    case 'group':
-      return toggle(segs.map((s) => litIds(s, scene.edges).has(id)), `stroke: ${c.state.active}`, `stroke: ${c.border}`);
+    case 'group': {
+      // 아이콘이 있는 그룹의 틀은 꺼졌을 때 아이콘 파랑이다(탭과 같은 색).
+      const off = kind === 'group' && scene.groups?.[i]?.iconData ? c.figure.icon : c.border;
+      return toggle(segs.map((s) => litIds(s, scene.edges).has(id)), `stroke: ${c.state.active}; stroke-width: ${tokens.border.strong}`, `stroke: ${off}; stroke-width: ${tokens.border.thin}`);
+    }
     case 'cell':
       return toggle(segs.map((s) => s.partsOn.includes(extra)), `fill: ${c['card-on']}; stroke: ${c.state.active}; stroke-width: ${tokens.border.edge}`, `fill: ${c.node}; stroke: ${c.border}; stroke-width: ${tokens.border.thin}`);
     case 'part':

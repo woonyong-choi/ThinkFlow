@@ -13,7 +13,7 @@ const INNER_X = SPACE['9'];
 export function checkFits({ scene, timeline }, problems) {
   const fail = (line, what, where) => problems.error(line, `[check 1] internal: ${what} does not fit in ${where}. Please report this`);
   for (const it of scene.items) checkItemFits(it, fail);
-  for (const g of scene.groups) if (!fits(groupTitleWidth(g.label), g.w)) fail(g.line ?? 1, `group title "${g.label}"`, `group "${g.id}"`);
+  for (const g of scene.groups) if (!fits(groupTitleWidth(g), g.w)) fail(g.line ?? 1, `group title "${g.label}"`, `group "${g.id}"`);
   for (const seg of timeline.segs) {
     for (const hop of seg.hops) {
       for (const l of hop.data ?? []) if (!fits(measure(l, STYLE.chip.size, STYLE.chip.face), values.size.chip['max-width'])) fail(hop.line ?? 1, `moving text "${l}"`, 'the text box');
@@ -47,7 +47,7 @@ function labelRoom(it) {
   if (it.shape === 'person') return it.w + (it.marginSide ?? 0) * 2;
   if (it.shape === 'decision') return it.w / 2 - INNER_X;
   if (it.shape === 'circle') return it.w - INNER_X;
-  return it.w - INNER_X * 2;
+  return it.w - (it.tile ? values.size.node['tile-pad'] : INNER_X) * 2;
 }
 
 function columnWidth(c) {

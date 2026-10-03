@@ -27,8 +27,10 @@
   --color-palette-blue-50: #edf5fb;
   --color-palette-blue-200: #a9cdea;
   --color-palette-blue-400: #79c0ff;
+  --color-palette-blue-450: #6f9cf5;
   --color-palette-blue-550: #218fe5;
   --color-palette-blue-600: #1072c2;
+  --color-palette-blue-700: #125de6;
   --color-palette-blue-800: #1d5d91;
   --color-palette-blue-850: #2b4254;
   --color-palette-blue-900: #1d2933;
@@ -47,6 +49,7 @@
   --color-state-active-fill: var(--color-palette-blue-600);
   --color-state-active-text: var(--color-palette-blue-600);
   --color-state-on-active: var(--color-palette-gray-0);
+  --color-figure-icon: var(--color-palette-blue-700);
   --color-ui-link: var(--color-palette-blue-600);
   --color-ui-focus: var(--color-palette-blue-550);
   --color-ui-progress: var(--color-palette-blue-550);
@@ -83,6 +86,10 @@
   --size-control-inner: 22px;
   --size-control-icon: 12px;
   --size-pill-height: 18px;
+  --size-icon-node: 20px;
+  --size-icon-group: 18px;
+  --size-icon-tile: 32px;
+  --size-icon-tile-gap: 6px;
   --size-tag-height: 14px;
   --size-packet-radius: 4.5px;
   --size-packet-halo: 10px;
@@ -97,8 +104,11 @@
   --size-node-state-dot: 14px;
   --size-node-table-row: 26px;
   --size-node-circle: 40px;
+  --size-node-tile-width: 80px;
+  --size-node-tile-pad: 8px;
   --size-grid-cell: 32px;
   --size-figure-canvas: 960px;
+  --size-figure-canvas-wide: 1440px;
   --size-chip-max-width: 210px;
   --size-player-caption-max: 720px;
   --size-player-embedded-chrome: 150px;
@@ -202,6 +212,7 @@
     --color-state-active-fill: var(--color-palette-blue-400);
     --color-state-active-text: var(--color-palette-blue-400);
     --color-state-on-active: var(--color-palette-ink-850);
+    --color-figure-icon: var(--color-palette-blue-450);
     --color-ui-link: var(--color-palette-blue-400);
     --color-ui-focus: var(--color-palette-blue-400);
     --color-ui-progress: var(--color-palette-blue-400);
@@ -230,6 +241,7 @@
   --color-state-active-fill: var(--color-palette-blue-400);
   --color-state-active-text: var(--color-palette-blue-400);
   --color-state-on-active: var(--color-palette-ink-850);
+  --color-figure-icon: var(--color-palette-blue-450);
   --color-ui-link: var(--color-palette-blue-400);
   --color-ui-focus: var(--color-palette-blue-400);
   --color-ui-progress: var(--color-palette-blue-400);
@@ -357,6 +369,7 @@
 
 .fl .fl-stroke {
   stroke: var(--color-border);
+  stroke-width: var(--border-thin);
 }
 
 .fl .fl-path {
@@ -421,6 +434,49 @@
 .fl .fl-edge.mark .fl-path {
   stroke: var(--color-fg);
 }
+
+/* 도형 윗줄과 그룹 제목 줄의 장식: 글자 배지, 아이콘 */
+.fl .badge {
+  font-size: var(--size-text-11);
+  font-weight: var(--weight-semibold);
+  text-anchor: middle;
+  fill: var(--color-fg);
+}
+
+.fl .badge-pill {
+  fill: var(--color-node);
+  stroke: var(--color-border);
+  stroke-width: var(--border-thin);
+}
+
+.fl .fl-icon {
+  color: var(--color-figure-icon);
+}
+
+/* 그룹 제목 줄 탭(NHN box_type): 틀 왼쪽 위 모서리의 정사각 면. 아이콘 색 파랑 면에 노드 면 색 아이콘이고, 아이콘이 있는 그룹의 틀도 같은 파랑이다. */
+.fl .group-tab {
+  fill: var(--color-figure-icon);
+}
+
+.fl .fl-icon.on-tab {
+  color: var(--color-node);
+}
+
+.fl .fl-group.tabbed:not(.on) .frame-box {
+  stroke: var(--color-figure-icon);
+}
+
+/* 선 번호 원. 라벨 알약과 달리 켜져도 색이 바뀌지 않아 정지 그림과 같은 순서로 읽힌다. */
+.fl .number-pill {
+  fill: var(--color-fg);
+}
+
+.fl .number {
+  font-size: var(--size-text-11);
+  font-weight: var(--weight-semibold);
+  text-anchor: middle;
+  fill: var(--color-bg);
+}
 /* 움직이는 SVG에만 있는 단계 이름과 설명 줄 */
 .fl .steplabel {
   font-family: var(--font-sans);
@@ -436,13 +492,13 @@
   fill: var(--color-muted);
 }
 
-@keyframes a0 { 0%,19.391% { stroke: var(--color-state-active) } 19.391%,30.224% { stroke: var(--color-state-active) } 30.225%,47.666% { stroke: var(--color-state-active) } 47.666% { stroke: var(--color-state-active) } 48.492%,60.069% { stroke: var(--color-border) } 60.069%,70.902% { stroke: var(--color-border) } 70.903%,100% { stroke: var(--color-border) } }
+@keyframes a0 { 0%,19.391% { stroke: var(--color-state-active); stroke-width: var(--border-strong) } 19.391%,30.224% { stroke: var(--color-state-active); stroke-width: var(--border-strong) } 30.225%,47.666% { stroke: var(--color-state-active); stroke-width: var(--border-strong) } 47.666% { stroke: var(--color-state-active); stroke-width: var(--border-strong) } 48.492%,60.069% { stroke: var(--color-border); stroke-width: var(--border-thin) } 60.069%,70.902% { stroke: var(--color-border); stroke-width: var(--border-thin) } 70.903%,100% { stroke: var(--color-border); stroke-width: var(--border-thin) } }
 .fl .a0 { animation: a0 24.212s infinite linear; }
-@keyframes a1 { 0%,19.391% { stroke: var(--color-state-active) } 19.391%,30.224% { stroke: var(--color-state-active) } 30.225%,47.666% { stroke: var(--color-state-active) } 47.666%,60.069% { stroke: var(--color-state-active) } 60.069%,70.902% { stroke: var(--color-state-active) } 70.903%,100% { stroke: var(--color-state-active) } }
+@keyframes a1 { 0%,19.391% { stroke: var(--color-state-active); stroke-width: var(--border-strong) } 19.391%,30.224% { stroke: var(--color-state-active); stroke-width: var(--border-strong) } 30.225%,47.666% { stroke: var(--color-state-active); stroke-width: var(--border-strong) } 47.666%,60.069% { stroke: var(--color-state-active); stroke-width: var(--border-strong) } 60.069%,70.902% { stroke: var(--color-state-active); stroke-width: var(--border-strong) } 70.903%,100% { stroke: var(--color-state-active); stroke-width: var(--border-strong) } }
 .fl .a1 { animation: a1 24.212s infinite linear; }
-@keyframes a2 { 0%,19.391% { stroke: var(--color-border) } 19.391% { stroke: var(--color-border) } 20.217%,30.224% { stroke: var(--color-state-active) } 30.225%,47.666% { stroke: var(--color-state-active) } 47.666%,60.069% { stroke: var(--color-state-active) } 60.069%,70.902% { stroke: var(--color-state-active) } 70.903%,100% { stroke: var(--color-state-active) } }
+@keyframes a2 { 0%,19.391% { stroke: var(--color-border); stroke-width: var(--border-thin) } 19.391% { stroke: var(--color-border); stroke-width: var(--border-thin) } 20.217%,30.224% { stroke: var(--color-state-active); stroke-width: var(--border-strong) } 30.225%,47.666% { stroke: var(--color-state-active); stroke-width: var(--border-strong) } 47.666%,60.069% { stroke: var(--color-state-active); stroke-width: var(--border-strong) } 60.069%,70.902% { stroke: var(--color-state-active); stroke-width: var(--border-strong) } 70.903%,100% { stroke: var(--color-state-active); stroke-width: var(--border-strong) } }
 .fl .a2 { animation: a2 24.212s infinite linear; }
-@keyframes a3 { 0%,19.391% { stroke: var(--color-border) } 19.391%,30.224% { stroke: var(--color-border) } 30.225%,47.666% { stroke: var(--color-border) } 47.666%,60.069% { stroke: var(--color-border) } 60.069%,70.902% { stroke: var(--color-border) } 70.903% { stroke: var(--color-border) } 71.729%,100% { stroke: var(--color-state-active) } }
+@keyframes a3 { 0%,19.391% { stroke: var(--color-border); stroke-width: var(--border-thin) } 19.391%,30.224% { stroke: var(--color-border); stroke-width: var(--border-thin) } 30.225%,47.666% { stroke: var(--color-border); stroke-width: var(--border-thin) } 47.666%,60.069% { stroke: var(--color-border); stroke-width: var(--border-thin) } 60.069%,70.902% { stroke: var(--color-border); stroke-width: var(--border-thin) } 70.903% { stroke: var(--color-border); stroke-width: var(--border-thin) } 71.729%,100% { stroke: var(--color-state-active); stroke-width: var(--border-strong) } }
 .fl .a3 { animation: a3 24.212s infinite linear; }
 @keyframes a4 { 0%,19.391% { stroke: var(--color-state-active); stroke-width: var(--border-strong); marker-end: url(#fl-arrow-on) } 19.391%,30.224% { stroke: var(--color-state-active); stroke-width: var(--border-strong); marker-end: url(#fl-arrow-on) } 30.225%,47.666% { stroke: var(--color-state-active); stroke-width: var(--border-strong); marker-end: url(#fl-arrow-on) } 47.666% { stroke: var(--color-state-active); stroke-width: var(--border-strong); marker-end: url(#fl-arrow-on) } 48.492%,60.069% { stroke: var(--color-muted); stroke-width: var(--border-edge); marker-end: url(#fl-arrow) } 60.069%,70.902% { stroke: var(--color-muted); stroke-width: var(--border-edge); marker-end: url(#fl-arrow) } 70.903%,100% { stroke: var(--color-muted); stroke-width: var(--border-edge); marker-end: url(#fl-arrow) } }
 .fl .a4 { animation: a4 24.212s infinite linear; }

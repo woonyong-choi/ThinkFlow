@@ -1,5 +1,6 @@
 // 파일을 다 읽은 뒤 이름, 선, 이동, 카드, 밝히기 대상을 확인한다. 이동마다 따라갈 선(edge 번호, 거꾸로 여부)을 정한다.
 import { checkChart } from './chart-rules.js';
+import { checkIcons } from './icons.js';
 import { unknownName } from './problems.js';
 
 const CARD_SHAPES = ['box', 'external', 'store', 'person', 'table'];
@@ -13,6 +14,7 @@ export function validateFigure(figure, problems) {
   if (figure.kind === 'data') buildForeignKeys(figure, problems);
   else checkEdges(figure, names, problems);
   if (figure.kind === 'state') checkStateMarks(figure, names, problems);
+  if (figure.kind === 'flow') checkIcons(figure, problems);
   checkNotEmpty(figure, problems);
   if (figure.kind === 'chart') checkChart(figure, problems);
   else checkTimeline(figure, names, problems);

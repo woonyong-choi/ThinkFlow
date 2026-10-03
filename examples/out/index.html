@@ -24,8 +24,10 @@
   --color-palette-blue-50: #edf5fb;
   --color-palette-blue-200: #a9cdea;
   --color-palette-blue-400: #79c0ff;
+  --color-palette-blue-450: #6f9cf5;
   --color-palette-blue-550: #218fe5;
   --color-palette-blue-600: #1072c2;
+  --color-palette-blue-700: #125de6;
   --color-palette-blue-800: #1d5d91;
   --color-palette-blue-850: #2b4254;
   --color-palette-blue-900: #1d2933;
@@ -44,6 +46,7 @@
   --color-state-active-fill: var(--color-palette-blue-600);
   --color-state-active-text: var(--color-palette-blue-600);
   --color-state-on-active: var(--color-palette-gray-0);
+  --color-figure-icon: var(--color-palette-blue-700);
   --color-ui-link: var(--color-palette-blue-600);
   --color-ui-focus: var(--color-palette-blue-550);
   --color-ui-progress: var(--color-palette-blue-550);
@@ -80,6 +83,10 @@
   --size-control-inner: 22px;
   --size-control-icon: 12px;
   --size-pill-height: 18px;
+  --size-icon-node: 20px;
+  --size-icon-group: 18px;
+  --size-icon-tile: 32px;
+  --size-icon-tile-gap: 6px;
   --size-tag-height: 14px;
   --size-packet-radius: 4.5px;
   --size-packet-halo: 10px;
@@ -94,8 +101,11 @@
   --size-node-state-dot: 14px;
   --size-node-table-row: 26px;
   --size-node-circle: 40px;
+  --size-node-tile-width: 80px;
+  --size-node-tile-pad: 8px;
   --size-grid-cell: 32px;
   --size-figure-canvas: 960px;
+  --size-figure-canvas-wide: 1440px;
   --size-chip-max-width: 210px;
   --size-player-caption-max: 720px;
   --size-player-embedded-chrome: 150px;
@@ -199,6 +209,7 @@
     --color-state-active-fill: var(--color-palette-blue-400);
     --color-state-active-text: var(--color-palette-blue-400);
     --color-state-on-active: var(--color-palette-ink-850);
+    --color-figure-icon: var(--color-palette-blue-450);
     --color-ui-link: var(--color-palette-blue-400);
     --color-ui-focus: var(--color-palette-blue-400);
     --color-ui-progress: var(--color-palette-blue-400);
@@ -227,6 +238,7 @@
   --color-state-active-fill: var(--color-palette-blue-400);
   --color-state-active-text: var(--color-palette-blue-400);
   --color-state-on-active: var(--color-palette-ink-850);
+  --color-figure-icon: var(--color-palette-blue-450);
   --color-ui-link: var(--color-palette-blue-400);
   --color-ui-focus: var(--color-palette-blue-400);
   --color-ui-progress: var(--color-palette-blue-400);
@@ -455,7 +467,7 @@ addEventListener('DOMContentLoaded', () => {
 <body>
 <div class="top">
 <h1>예제</h1>
-<p>그림 19개 · <a href="document.html">문서 안 모습 보기</a></p>
+<p>그림 21개 · <a href="document.html">문서 안 모습 보기</a></p>
 <div class="theme" role="group" aria-label="테마"><button type="button" data-mode="system" aria-pressed="false">시스템</button><button type="button" data-mode="light" aria-pressed="false">라이트</button><button type="button" data-mode="dark" aria-pressed="false">다크</button></div>
 </div>
 <main>
@@ -463,6 +475,8 @@ addEventListener('DOMContentLoaded', () => {
 <section><header><h2><span class="title">실행 시간 주소 변환은 가상 주소에 기준 주소를 더한다</span><code class="name">address-translation.muto</code><span class="kind">flow</span></h2><nav><a href="address-translation.html">열기</a><a href="address-translation.svg">SVG</a></nav></header><iframe src="address-translation.html" loading="lazy" allowfullscreen title="address-translation"></iframe></section>
 <section><header><h2><code class="name">bar.muto</code><span class="kind">bar</span></h2><nav><a href="bar.html">열기</a><a href="bar.svg">SVG</a></nav></header><iframe src="bar.html" loading="lazy" allowfullscreen title="bar"></iframe></section>
 <section><header><h2><code class="name">box.muto</code><span class="kind">box</span></h2><nav><a href="box.html">열기</a><a href="box.svg">SVG</a></nav></header><iframe src="box.html" loading="lazy" allowfullscreen title="box"></iframe></section>
+<section><header><h2><span class="title">클라우드 구성도</span><code class="name">cloud-architecture.muto</code><span class="kind">flow</span></h2><nav><a href="cloud-architecture.html">열기</a><a href="cloud-architecture.svg">SVG</a></nav></header><iframe src="cloud-architecture.html" loading="lazy" allowfullscreen title="cloud-architecture"></iframe></section>
+<section><header><h2><span class="title">배포 구성도</span><code class="name">deploy-pipeline.muto</code><span class="kind">flow</span></h2><nav><a href="deploy-pipeline.html">열기</a><a href="deploy-pipeline.svg">SVG</a></nav></header><iframe src="deploy-pipeline.html" loading="lazy" allowfullscreen title="deploy-pipeline"></iframe></section>
 <section><header><h2><code class="name">dumbbell.muto</code><span class="kind">dumbbell</span></h2><nav><a href="dumbbell.html">열기</a><a href="dumbbell.svg">SVG</a></nav></header><iframe src="dumbbell.html" loading="lazy" allowfullscreen title="dumbbell"></iframe></section>
 <section><header><h2><code class="name">heatmap.muto</code><span class="kind">heatmap</span></h2><nav><a href="heatmap.html">열기</a><a href="heatmap.svg">SVG</a></nav></header><iframe src="heatmap.html" loading="lazy" allowfullscreen title="heatmap"></iframe></section>
 <section><header><h2><code class="name">line.muto</code><span class="kind">line</span></h2><nav><a href="line.html">열기</a><a href="line.svg">SVG</a></nav></header><iframe src="line.html" loading="lazy" allowfullscreen title="line"></iframe></section>

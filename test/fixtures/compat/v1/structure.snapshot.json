@@ -1,4 +1,19 @@
 {
+  "all-architecture.muto": {
+    "kind": "flow",
+    "chartType": null,
+    "version": 1,
+    "deprecated": 0,
+    "shapes": 4,
+    "groups": 2,
+    "lines": 3,
+    "steps": 0,
+    "beats": 0,
+    "moves": 0,
+    "segments": 0,
+    "series": [],
+    "rows": 0
+  },
   "all-chart-bar-data.muto": {
     "kind": "chart",
     "chartType": "bar",
@@ -220,6 +235,21 @@
     "beats": 5,
     "moves": 2,
     "segments": 5,
+    "series": [],
+    "rows": 0
+  },
+  "all-width-standard.muto": {
+    "kind": "flow",
+    "chartType": null,
+    "version": 1,
+    "deprecated": 0,
+    "shapes": 2,
+    "groups": 0,
+    "lines": 1,
+    "steps": 0,
+    "beats": 0,
+    "moves": 0,
+    "segments": 0,
     "series": [],
     "rows": 0
   },

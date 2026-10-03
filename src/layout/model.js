@@ -26,7 +26,7 @@ export function buildModel(figure, sizes) {
   const edges = [...marks.filter((e) => e.isStart), ...figure.edges.map((e, i) => ({ ...e, index: i })), ...marks.filter((e) => !e.isStart)];
   const pieces = new Map();
   for (const edge of edges) pieces.set(edge.index, splitEdge(edge, nodes, containers));
-  const model = { containers, nodes, edges, pieces };
+  const model = { containers, nodes, edges, pieces, isSafe: figure.safeLayout === true };
   orderByFlow(model);
   return model;
 }
@@ -36,11 +36,16 @@ export function buildModel(figure, sizes) {
 // basis: estimate
 function buildContainers(figure) {
   const containers = new Map([[ROOT, { id: ROOT, direction: figure.direction, parent: undefined, children: [], edges: [], ports: [] }]]);
-  for (const g of figure.groups) containers.set(g.id, { id: g.id, label: g.label, line: g.line, direction: undefined, own: g.direction, parent: g.parent ?? ROOT, children: [], edges: [], ports: [] });
+  for (const g of figure.groups) containers.set(g.id, { ...decorOf(g), id: g.id, label: g.label, line: g.line, direction: undefined, own: g.direction, parent: g.parent ?? ROOT, children: [], edges: [], ports: [] });
   for (const g of figure.groups) containers.get(g.parent ?? ROOT).children.push(g.id);
   for (const c of containers.values()) c.direction = c.own ?? directionOf(c.parent, containers, figure);
   for (const c of containers.values()) c.parentDirection = c.parent ? containers.get(c.parent).direction : undefined;
   return containers;
+}
+
+// 그룹의 테두리 모양, 배지, 아이콘 선택 사항. 배치와 그리기가 그룹 이름으로 찾는 값이다.
+export function decorOf({ border, badge, icon, iconData }) {
+  return { border, badge, icon, iconData };
 }
 
 // cost: time O(d), heap O(1), stack O(1)
@@ -81,14 +86,15 @@ function splitEdge(edge, nodes, containers) {
   const down = chain(edge.to, nodes, containers);
   const common = up.find((c) => down.includes(c)) ?? ROOT;
   const pieces = [];
-  let from = endpoint(edge.from, { way: 'out', edge }, nodes);
+  const flowOf = (id) => ({ direction: containers.get(common).direction, isCrossing: nodes.get(id)?.parent !== common });
+  let from = endpoint(edge.from, { way: 'out', edge, flow: flowOf(edge.from) }, nodes);
   for (const g of up.slice(0, up.indexOf(common))) {
     const port = addPort(containers.get(g), 'out', edge);
     pieces.push({ container: g, from, to: port });
     from = port;
   }
   const inner = [];
-  let to = endpoint(edge.to, { way: 'in', edge }, nodes);
+  let to = endpoint(edge.to, { way: 'in', edge, flow: flowOf(edge.to) }, nodes);
   for (const g of down.slice(0, down.indexOf(common))) {
     const port = addPort(containers.get(g), 'in', edge);
     inner.unshift({ container: g, from: port, to });

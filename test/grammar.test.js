@@ -109,6 +109,18 @@ const MALFORMED = [
   { rule: '격자: gap은 밝히지 못함', source: `${GRID_OPEN}gap a "…" count=2\n}\nstep "s"\n  light g.a`, expect: /"g\.a" is a gap, which stands for omitted entries/ },
   { rule: '격자: 카드는 없음', source: `${GRID_OPEN}  item a "A"\n}\nstep "s"\n  show g "x"`, expect: /a grid has no card/ },
   { rule: '격자: flow에서만', source: 'state right\ngrid g "G" {\n  item a "A"\n}', expect: /"grid" is not allowed in a state figure/ },
+  // 설계 figure-syntax.md 번호, 배지, 아이콘, 복제 개수 절의 오류
+  { rule: '복제 개수는 2 이상', source: 'flow right\nbox a "A" count=1', expect: /count is a whole number of 2 or more/ },
+  { rule: '선 번호는 1 이상 정수', source: 'flow right\nbox a "A"\nbox b "B"\na -> b no=0', expect: /no is a whole number of 1 or more\. Found "0"/ },
+  { rule: '배지는 8자 이하', source: 'flow right\nbox a "A" badge="123456789"', expect: /badge is at most 8 characters/ },
+  { rule: '원은 배지와 아이콘이 없음', source: 'flow right\nbox a "A" shape=circle badge="X"', expect: /a circle takes a name only\. Remove the badge or icon/ },
+  { rule: '배지와 아이콘은 흐름 그림에서만', source: 'sequence\nbox a "A" badge="X"', expect: /^2: badge belongs to flow figures only/ },
+  { rule: '캔버스 폭은 standard나 wide', source: 'flow right\nwidth huge\nbox a "A"', expect: /^2: width is "standard" or "wide"/ },
+  { rule: '타일은 아이콘이 있어야 함', source: 'flow right\nbox a "A" shape=tile', expect: /^2: a tile is an icon card\. Add icon=name/ },
+  { rule: '그룹 테두리는 solid나 dashed', source: 'flow right\ngroup g "G" border=dotted {\nbox a "A"\n}', expect: /border is one of solid, dashed/ },
+  { rule: '아이콘: 모르는 이름은 가까운 이름을 제안', source: 'flow right\nbox a "A" icon=servr', expect: /^2: unknown icon "servr"\. Did you mean "server"\?/ },
+  { rule: '아이콘: 등록하지 않은 세트', source: 'flow right\nbox a "A" icon=nhn:lb', expect: /unknown icon set "nhn"\. .*Register it first: icons nhn/ },
+  { rule: '아이콘: 기본 세트 이름은 등록할 수 없음', source: 'flow right\nicons builtin "x"\nbox a "A"', expect: /"builtin" is the built-in icon set/ },
   // 설계 charts.md 줄 표: point 줄의 x는 가로값 키
   { rule: '차트: 선 차트 계열 이름 x', source: 'chart line\nseries x "X"\npoint x=1 x=2', expect: /cannot be named "x"/ },
 ];
@@ -153,6 +165,10 @@ const VALID = [
   { form: '격자 낱말을 데이터 열 이름으로', source: 'data right\ntable t "t" {\n  grid bigint pk\n  item varchar\n  gap varchar\n}\nstep "s"\n  light t.grid t.item' },
   { form: '격자 낱말을 칸 이름으로, 칸 이름이 격자마다 같음', source: 'flow right\ngrid grid "격자" cols=2 {\n  item item "A"\n  gap gap "…" count=2 col=1\n}\ngrid item "다른" {\n  item item "B"\n}\nstep "s"\n  light grid.item item.item' },
   { form: '그룹 안 격자의 rows와 cols 생략', source: 'flow right\ngroup view "화면" {\n  grid g "한 칸" {\n    item only "칸"\n  }\n}' },
+  // 설계 figure-syntax.md 번호, 배지, 아이콘, 복제 개수 절
+  { form: '번호, 배지, 아이콘, 복제 개수', source: 'flow right\nicons mine "x"\ngroup g "G" badge="B" icon=region {\nbox a "A" icon=server\n}\nbox b "B" count=3 badge="BB" icon=mine:chip\na -> b "x" no=1' },
+  { form: '타일과 점선 테두리 그룹', source: 'flow right\ngroup g "G" border=dashed icon=region {\nbox a "A" shape=tile icon=server count=3\n}\nbox b "B"\na -> b no=2' },
+  { form: '낱말 count, no를 이름으로', source: 'flow right\nbox count "L"\nbox no "N"\nbox width "W"\ncount -> no\nno -> width\n' },
   { form: '새 tone 이름', source: 'flow right\nbox a "A"\nstep "s"\n  show a "x" tag="t" tone=teal' },
 ];
 

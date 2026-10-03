@@ -2,6 +2,7 @@
 // 항목 목록은 check/items.js, 판정 함수는 check/ 아래 항목별 파일이다.
 import { CHECKS } from './check/items.js';
 import { createFamily, drawnBox, pillBox, titleBox } from './check/geometry.js';
+import { hasPill } from './measure/sizes.js';
 
 // cost: time O(e·p + s + g), heap O(e + s + g), stack O(1)
 // vars: e = 선 수, p = 경로 점 수, s = 도형 수, g = 그룹 수
@@ -15,7 +16,7 @@ function createContext(figure, scene, timeline) {
     timeline,
     edges,
     boxes: scene.items.map((it) => ({ ...drawnBox(it), id: it.id, line: it.line, it })),
-    pills: edges.filter((e) => e.label && e.labelAt).map((e) => ({ ...pillBox(e), edge: e })),
+    pills: edges.filter((e) => hasPill(e) && e.labelAt).map((e) => ({ ...pillBox(e), edge: e })),
     titles: scene.groups.filter((g) => g.label).map((g) => ({ ...titleBox(g), group: g })),
     family: createFamily(scene),
   };

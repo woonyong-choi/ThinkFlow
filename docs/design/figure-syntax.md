@@ -121,6 +121,7 @@ step "대화" "입력은 화면을 거쳐 엔진이 에이전트로 보낸다"
 | `title "글"` | 그림 제목. SVG `<title>`, 차트는 그림 안 제목, 그 밖 그림은 목록 쪽 머리 제목 | 파일 이름 |
 | `subtitle "글"` | 그림 아래 한 줄 설명 | 없음 |
 | `speed 3s` | 점이 기준 길이 `size.packet.hop-ref`의 선을 지나는 시간. 선 길이에 비례해 이동 시간이 정해져 모든 이동이 같은 속도로 보인다(아래 이동 시간). 차트에서는 계열이 자라는 시간([차트](charts.md)) | 토큰 `duration.hop`과 `size.packet.hop-ref`, 차트는 `duration.reveal` |
+| `width wide` | 캔버스 폭. `wide`는 `size.figure-canvas-wide`(1440)이고 `standard`는 표준 폭(960)이다. `flow`, `state`, `data`에서만. 구성도처럼 열이 많은 그림이 글자를 줄이지 않고 한 줄로 퍼지게 한다. [배치](layout.md) | 생략하면 표준 폭 |
 | `aspect 1.6` | 목표 가로세로 비율. `flow`, `state`, `data`에서만, 그룹이 있어도 된다. [배치](layout.md) | 없음(캔버스 폭보다 넓으면 도구가 자동으로 접는다) |
 
 ### 구조 그림 선언
@@ -128,15 +129,16 @@ step "대화" "입력은 화면을 거쳐 엔진이 에이전트로 보낸다"
 | 줄 | 뜻 |
 |---|---|
 | `person id "이름"` | 사람 |
-| `box id "이름" ["부제"] [shape=rect\|circle]` | 구성 요소, 모듈. `shape=circle`은 합류 연산(⊕)처럼 짧은 이름을 담는 작은 원이고 부제가 없다 |
+| `box id "이름" ["부제"] [shape=rect\|circle] [badge="글"] [icon=이름] [count=N]` | 구성 요소, 모듈. `shape=circle`은 합류 연산(⊕)처럼 짧은 이름을 담는 작은 원이고 부제가 없다 |
 | `external id "이름" ["부제"]` | 외부 프로그램, 외부 서비스. 점선 테두리 |
 | `store id "이름" ["부제"]` | 파일, 데이터베이스. 원통 |
 | `decision id "질문"` | 갈림길. 마름모 |
-| `group id "이름" [direction=right\|down] {`, `}` | 그룹. 두 줄 사이에 도형과 그룹을 둔다 |
+| `group id "이름" [direction=right\|down] [badge="글"] [icon=이름] {`, `}` | 그룹. 두 줄 사이에 도형과 그룹을 둔다. 제목 줄에 배지와 아이콘을 달 수 있다 |
+| `icons 이름 "폴더"` | 사용자 아이콘 세트 등록. 폴더의 `<이름>.svg`를 `icon=세트:이름`으로 쓴다 |
 | `grid id "제목" [rows=N] [cols=N] {`, `}` | 칸 격자. 두 줄 사이에 `item`과 `gap` 칸을 둔다. 도형 하나로 배치된다([칸 격자](grid.md)) |
-| `a -> b ["라벨"] [quiet] [dashed] [head=end\|both\|none]` | 선. 끝은 격자 칸 `격자.칸`도 된다 |
+| `a -> b ["라벨"] [quiet] [dashed] [head=end\|both\|none] [no=N]` | 선. 끝은 격자 칸 `격자.칸`도 된다 |
 
-- 도형 크기, 색, 굵기, 아이콘은 적지 않는다. 크기는 글과 카드 내용으로, 모양과 색은 토큰으로 정한다.
+- 도형 크기, 색, 굵기는 적지 않는다. 크기는 글과 카드 내용으로, 모양과 색은 토큰으로 정한다. 아이콘은 `icon=`으로 고르되 모양과 색은 정하지 않는다([배치](layout.md#아이콘)).
 - 선의 양 끝은 선언된 도형이나 그룹이다. 선은 도형 선언보다 앞에 와도 된다. 파일을 다 읽은 뒤 이름을 확인한다.
 - 같은 방향의 두 끝 사이 선은 하나다. `a -> b`가 둘이면 오류다. `a -> b`와 `b -> a`는 함께 둘 수 있다.
 - 거꾸로 적는 `<-`는 없다. 요청이 가는 쪽으로 적는다.
@@ -146,6 +148,16 @@ step "대화" "입력은 화면을 거쳐 엔진이 에이전트로 보낸다"
 - 그룹 안의 도형을 바깥에서 부를 때도 이름만 쓴다. 이름이 파일 전체에서 하나이기 때문이다.
 - `dashed` 선은 비동기 흐름이나 선택적 흐름이다. 점선 테두리 도형(`external`)과 뜻이 다르다.
 - `quiet` 선은 그 선을 처음 지나는 박자부터 그 단계 끝까지만 보인다. 시간 흐름이 없거나, 시간 흐름에서 한 번도 지나지 않는 `quiet` 선은 [그림 검사](figure-check.md) 11번 경고가 난다.
+
+#### 번호, 배지, 아이콘, 복제 개수
+
+- `no=N`(1 이상 정수)은 선 번호다. 라벨 알약 왼쪽에 번호 원이 붙고(라벨이 없으면 번호 원만), 정지 SVG와 문서에서도 순서가 읽힌다. 재생 단계 번호와 독립이고 같은 번호를 여러 선에 써도 된다.
+- `badge="글"`(8자 이하)은 도형 윗줄과 그룹 제목 줄에 글자 알약을 단다. 흑백에서도 구성 요소의 종류가 글자로 남는다. 도형과 그룹의 면, 테두리 색은 그대로이고 범주를 색으로 나누지 않는다. 원(`shape=circle`)은 배지와 아이콘이 오류다.
+- `shape=tile`(`box`만, `icon=` 필수)은 아이콘 카드다. 같은 흰 카드에 아이콘을 크게(`size.icon.tile`) 위에 놓고 이름을 아래에 두며, 최소 너비와 이름 양옆 간격이 작아(`size.node.tile-width`, `size.node.tile-pad`) 가로로 퍼진 구성도가 캔버스 폭 안에 든다.
+- 그룹 `border=dashed`는 경계 그룹의 점선 테두리다. 실선(기본)은 서브넷 같은 안쪽 구역, 점선은 VPC, 스케일링 그룹, 외부 묶음 같은 논리 경계에 쓴다. 그룹 아이콘은 틀 왼쪽 위 모서리에 딱 붙는 정사각 탭(`size.group.title`)이다. 탭 면은 `color.figure.icon`, 아이콘은 `color.node`(NHN box_type)이고, 아이콘이 있는 그룹의 틀도 같은 파랑이다. 그룹 면은 칠하지 않는다.
+- `icon=이름`은 기본 세트의 이름이다. 범용 개념(`server`, `db`)과 기술 브랜드(`git`, `postgresql`)가 한 표에 있다. 등록한 세트는 `icon=세트:이름`이다. 아이콘은 단색 파랑(`color.figure.icon`)이고 브랜드 고유색은 쓰지 않는다. 이름이 없거나 파일이 없으면 오류이고, 아이콘 없이 배지로 같은 뜻을 낸다.
+- `count=N`(2 이상, `box`만)은 같은 역할 복제 개수다. 상자 뒤에 윤곽 두 겹이 겹쳐 보이고 윗줄에 `(N)` 알약이 붙는다. 복제는 이름으로 가리킬 수 없고 선은 상자 하나에 닿는다.
+- `badge`, `icon`, `count`는 흐름 그림에서만 쓴다.
 
 ### 시간 흐름
 
@@ -215,7 +227,7 @@ step "대화" "입력은 화면을 거쳐 엔진이 에이전트로 보낸다"
 | `warning` | 품질 문제 | 씀 | `--strict` |
 | `deprecated` | 옛 형식이고 계속 동작한다 | 씀 | `--no-deprecated` |
 
-- 진단 하나의 모양은 `{ severity, code, line, column, message, fix? }`이고 모든 진단이 쓴다. `--json`은 여기에 `file`을 더하고, 옛 필드 `lines`, `check`, `level`도 함께 내(폐기, 다음 판까지) 진단마다 한 줄을 표준 출력에 쓴다. `code`는 `syntax`(문법), `check-1`~`check-12`([그림 검사](figure-check.md) 번호), `deprecated-statement`, `deprecated-option`, `deprecated-value`, `deprecated-kind`, `unsupported-version`, `invalid-version`, `version-required`, `layout`(배치 실패, [배치](layout.md#배치-실패)), `io`, `internal`이다. `column`은 줄 안 1부터 센 자리다. `fix`는 `{ line, column, length, text }`로, 그 줄의 `column`부터 `length`글자를 `text`로 바꾼다.
+- 진단 하나의 모양은 `{ severity, code, line, column, message, fix? }`이고 모든 진단이 쓴다. `--json`은 여기에 `file`을 더하고, 옛 필드 `lines`, `check`, `level`도 함께 내(폐기, 다음 판까지) 진단마다 한 줄을 표준 출력에 쓴다. `code`는 `syntax`(문법), `check-1`~`check-13`([그림 검사](figure-check.md) 번호), `deprecated-statement`, `deprecated-option`, `deprecated-value`, `deprecated-kind`, `unsupported-version`, `invalid-version`, `version-required`, `layout`(배치 실패, [배치](layout.md#배치-실패)), `io`, `internal`이다. `column`은 줄 안 1부터 센 자리다. `fix`는 `{ line, column, length, text }`로, 그 줄의 `column`부터 `length`글자를 `text`로 바꾼다.
 - `mutoscope migrate 원본... [--write]`는 진단의 `fix`를 그대로 적용한다. 기본은 바뀔 줄만 `-`, `+`로 보여 주고, `--write`일 때만 파일을 고친다. 원본에 오류가 있거나 고친 글에 오류나 폐기가 남으면 아무것도 쓰지 않는다. 새 폐기 항목은 표에 `replace`만 적으면 된다.
 
 - CLI 출력과 옵션도 같은 규칙이다. 명령과 옵션 이름, 종료 코드, `--json` 필드는 추가만 하고, 옛 `--json` 필드(`lines`, `check`, `level`)는 `src/diagnostics.js` 표에 deprecated로 표시해 다음 판까지 함께 낸다.
@@ -229,10 +241,10 @@ step "대화" "입력은 화면을 거쳐 엔진이 에이전트로 보낸다"
 |---|---|---|---|---|
 | 판 표기 | `mutoscope` | 모든 그림 | 판 1 |  |
 | 머리 | `title`, `subtitle`, `speed` | 모든 그림 | 판 1 |  |
-| 머리 | `aspect` | flow, state, data | 판 1 |  |
+| 머리 | `aspect`, `width` | flow, state, data | 판 1 |  |
 | 머리 | `x`, `y`, `scale`, `decimals` | chart | 판 1 |  |
 | 선언 | `person`, `box`, `external`, `store` | flow, sequence | 판 1 |  |
-| 선언 | `decision`, `grid`, `item`, `gap` | flow | 판 1 |  |
+| 선언 | `decision`, `grid`, `icons`, `item`, `gap` | flow | 판 1 |  |
 | 선언 | `state`, `start`, `final` | state | 판 1 |  |
 | 선언 | `group`, `a -> b` | flow, state | 판 1 |  |
 | 선언 | `table` | data | 판 1 |  |
@@ -247,12 +259,19 @@ step "대화" "입력은 화면을 거쳐 엔진이 에이전트로 보낸다"
 | 선택 사항 | 값 | 판 | 폐기 |
 |---|---|---|---|
 | `group.direction` | `right`, `down` | 판 1 |  |
+| `group.border` | `solid`, `dashed` | 판 1 |  |
+| `group.badge` | 글, 최대 8자 | 판 1 |  |
+| `group.icon` | 이름 또는 세트:이름 | 판 1 |  |
+| `node.badge` | 글, 최대 8자 | 판 1 |  |
+| `node.icon` | 이름 또는 세트:이름 | 판 1 |  |
+| `box.count` | 2 이상 정수 | 판 1 |  |
+| `edge.no` | 양의 정수 | 판 1 |  |
 | `hop.time` | 시간 | 판 1 |  |
 | `hop.dashed` | 값 없음(낱말만) | 판 1 |  |
 | `edge.quiet` | 값 없음(낱말만) | 판 1 |  |
 | `edge.dashed` | 값 없음(낱말만) | 판 1 |  |
 | `edge.head` | `end`, `both`, `none` | 판 1 |  |
-| `box.shape` | `rect`, `circle` | 판 1 |  |
+| `box.shape` | `rect`, `circle`, `tile` | 판 1 |  |
 | `show.tag` | 글 | 판 1 |  |
 | `show.tone` | `purple`, `green`, `teal`, `gray` | 판 1 |  |
 | `show.meta` | 글 | 판 1 |  |
@@ -282,7 +301,9 @@ step "대화" "입력은 화면을 거쳐 엔진이 에이전트로 보낸다"
 | `tone` | `show.tone` | `purple`, `green`, `teal`, `gray` | 없음 | `blue` → `teal`, `orange` → `purple` |
 | `role` | `series.role` | `main`, `compare` | 선언 순서대로 main, compare(`dumbbell`은 compare, main) | 없음 |
 | `head` | `edge.head` | `end`, `both`, `none` | `end` | 없음 |
-| `shape` | `box.shape` | `rect`, `circle` | `rect` | 없음 |
+| `shape` | `box.shape` | `rect`, `circle`, `tile` | `rect` | 없음 |
+| `width` | `width 값` | `standard`, `wide` | `standard` | 없음 |
+| `border` | `group.border` | `solid`, `dashed` | `solid` | 없음 |
 <!-- grammar-table:end -->
 
 ### 요구사항
@@ -294,6 +315,7 @@ step "대화" "입력은 화면을 거쳐 엔진이 에이전트로 보낸다"
 | 선언하지 않은 이름과 비슷한 이름을 함께 알린다. | `test/grammar.test.js`의 `parseFigure_unknown_name_suggests_the_nearest_declared_name`. `cdex`를 쓴 원본이 `codex`를 제안하는지 확인 |
 | 같은 방향 선 두 개, 자기 자신으로 가는 선, 그룹과 안 도형 사이 선을 막는다. | `test/grammar.test.js`의 `parseFigure_malformed_source_reports_the_line_and_the_rule`(선 행). 원본마다 오류 확인 |
 | 칸 선 끝, `head`, `shape`의 틀린 값(gap, 없는 칸, 같은 칸, 라벨 있는 두 칸 선, 값 목록 밖)을 줄 번호와 함께 알린다. | `test/grammar.test.js`의 `parseFigure_malformed_source_reports_the_line_and_the_rule`(격자, 선, 도형 행)과 `parseFigure_valid_forms_read_without_errors`(칸 선, 양끝 표식 행) |
+| 번호, 배지, 아이콘, 복제 개수의 틀린 값을 줄 번호와 함께 알린다. | `test/grammar.test.js`의 `parseFigure_malformed_source_reports_the_line_and_the_rule`(번호, 배지, 아이콘, 개수 행)과 `parseFigure_valid_forms_read_without_errors` |
 | 이동은 같은 방향 선을 먼저, 없으면 반대 방향 선을 거꾸로 따라간다. | `test/grammar.test.js`의 `parseFigure_hop_follows_the_same_direction_edge_first_then_the_reverse_one`. 두 경우의 이동 방향 확인 |
 | 카드는 도착 규칙대로 바뀐다. | `test/motion.test.js`의 `buildTimeline_card_changes_at_the_latest_arrival_and_the_source_card_at_beat_start`. `&`로 다른 시간에 도착하는 두 이동의 카드 바뀌는 시점 확인 |
 | 오류를 모두 모아 알리고 파일을 쓰지 않는다. | `test/grammar.test.js`의 `parseFigure_all_errors_are_reported_together`(오류 세 개 원본에서 메시지 세 줄), `test/cli.test.js`의 `main_render_with_an_error_writes_no_file_and_reports_the_line`(결과 파일 없음) |

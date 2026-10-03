@@ -1,7 +1,7 @@
 // 재생 화면 HTML 한 장과 목록 쪽. 스크립트, 스타일, 글꼴, 그림을 모두 안에 넣어 파일 하나로 열린다.
 import { readFileSync } from 'node:fs';
 import { chartMotionCss } from './chart/motion.js';
-import { fitCanvas } from './canvas.js';
+import { canvasOf, fitCanvas } from './canvas.js';
 import { createGlyphSet, embedFonts } from './measure/fonts.js';
 import { DEFS, STYLES } from './styles.js';
 import { escapeXml, plainText, roundCoord as r } from './text.js';
@@ -65,7 +65,7 @@ export async function toHtml(result, name) {
   const content = result.chart ? chartContent(result, glyphs) : figureContent(result, glyphs);
   addTimelineGlyphs(timeline, glyphs);
   const fonts = await embedFonts(glyphs.used);
-  const svg = playerSvg(content, plainText(figure.title ?? name));
+  const svg = playerSvg(content, plainText(figure.title ?? name), canvasOf(figure));
   return `<!doctype html>
 <html lang="ko">
 <head>
@@ -77,7 +77,7 @@ ${EMBED_SCRIPT}
 ${STYLES.tokens}${STYLES.control}${STYLES.player}${STYLES.figure}${STYLES.chart}${result.chart ? chartMotionCss(timeline.growMs, result.chart.dotAts) : ''}</style>
 </head>
 <body>
-<figure class="fl-figure${result.chart ? ' fl-chart-page' : ''}" tabindex="0">
+<figure class="fl-figure${result.chart ? ' fl-chart-page' : ''}" tabindex="0"${figure.width === 'wide' ? ` style="--figure-canvas: ${canvasOf(figure)}px"` : ''}>
 ${VIEW_BUTTONS}
 <div class="fl-canvas">${svg}</div>
 <figcaption class="fl-foot">
@@ -107,9 +107,9 @@ function addTimelineGlyphs(timeline, glyphs) {
 }
 
 // 재생기 SVG. 표시 폭은 SVG 파일과 같은 표준 캔버스 폭이다. 좁은 내용은 viewBox를 왼쪽으로 넓혀 가운데에 두고, 넓은 내용은 viewBox 그대로 표시 폭만 줄인다.
-function playerSvg(content, title) {
+function playerSvg(content, title, canvas) {
   const { height } = content;
-  const { viewWidth, shownWidth, shownHeight } = fitCanvas(content.width, height);
+  const { viewWidth, shownWidth, shownHeight } = fitCanvas(content.width, height, canvas);
   return (
     `<svg xmlns="http://www.w3.org/2000/svg" class="fl" width="${r(shownWidth)}" height="${r(shownHeight)}" style="aspect-ratio: ${r(viewWidth)} / ${r(height)}" viewBox="${r((content.width - viewWidth) / 2)} 0 ${r(viewWidth)} ${r(height)}" role="img">` +
     `<title>${escapeXml(title)}</title><defs>${DEFS}</defs>${content.svg}<g class="fl-packets"></g></svg>`

@@ -79,6 +79,7 @@
 | `state.active-text` | 지금 일어나는 것을 가리키는 글자(카드 표시 ✓) | `#1072c2` | `#79c0ff` | 그림 바탕, 노드, 카드 바탕, 문서 바탕 | 4.53 / 7.62 |
 | `ui.link` | 링크 글자 | `#1072c2` | `#79c0ff` | 그림 바탕, 노드, 카드 바탕, 문서 바탕 | 4.53 / 7.62 |
 | `ui.focus`, `ui.progress` | 초점 고리, 재생기 진행 고리 | `#218fe5` | `#79c0ff` | 그림 바탕, 그룹, 카드 바탕, 노드, 문서 바탕 | 3.00 / 7.62 |
+| `figure.icon` | 도형과 그룹의 아이콘(단색 파랑, NHN Cloud 아이콘 파랑 `#125DE6` 계열). 켜져도 바뀌지 않는다 | `#125de6` | `#6f9cf5` | 그림 바탕, 그룹, 카드 바탕, 노드, 문서 바탕 | 4.93 / 5.47 |
 | `ui.control-on` | 켜진 탭 알약 면. 켜짐 표시는 `border` 색 고리가 맡는다 | `#ffffff` | `#3c3e42` | 글자 `fg` | 4.5 이상 |
 | `data.main` | 차트에서 그림이 주장하는 계열(새 것, 개선) | `#218fe5` | `#79c0ff` | 그림 바탕, 그룹, 카드 바탕, 노드 | 3.00 / 7.62 |
 | `data.compare` | 비교 기준 계열(기존) | `#d96c1f` | `#f5a374` | 같음 | 3.01 / 7.32 |
@@ -88,7 +89,7 @@
 
 - 표 열의 PK, FK 표시는 항상 있는 스키마 표시라 파랑이 아니라 `color.muted`다.
 - 칸 격자의 칸([칸 격자](grid.md))은 새 색 역할이 없다. 칸 면 `node`와 윤곽 `border`, 글 `fg`, 생략 칸 면 `surface`와 글 `muted`, 밝힌 칸 면 `card-on`과 윤곽 `state.active`가 위 기준의 기존 짝이다.
-- 파랑은 "지금"(`state`)과 "주장하는 계열"(`data.main`)을 뜻하고, 조작부(`ui`)도 같은 파랑을 쓴다. 그 밖의 뜻으로는 쓰지 않는다. 카드 태그는 파랑과 주황을 쓰지 않는다. 태그 색상이 `state.active`, `data.compare`와 40도 이상 떨어진다는 것을 `test/contrast.test.js`의 `tagColors_keep_their_hue_away_from_the_active_blue_and_the_compare_orange`가 잰다.
+- 파랑은 "지금"(`state`)과 "주장하는 계열"(`data.main`)을 뜻하고, 조작부(`ui`)도 같은 파랑을 쓴다. 그 밖의 뜻으로는 쓰지 않는다. 한 가지 예외가 아이콘 색 `figure.icon`이다. 아이콘은 모든 그림에서 늘 파랑으로 칠해 구성 요소의 종류를 알리는 장식 단색이다(브랜드 고유색은 쓰지 않는다). 지금과 섞이지 않게 둘을 두 방법으로 가른다. 색상이 달라(라이트 `#125de6` 대 `#218fe5`, 다크 `#6f9cf5` 대 `#79c0ff`, `test/contrast.test.js`의 `palette_figure_icon_blue_differs_in_hue_from_the_active_blue_in_both_themes`) 아이콘은 짙고 보랏빛이다. 켜진 도형과 그룹은 테두리 색뿐 아니라 두께도 `border.thin`에서 `border.strong`으로 바뀌고 아이콘은 그대로다. 카드 태그는 파랑과 주황을 쓰지 않는다. 태그 색상이 `state.active`, `data.compare`와 40도 이상 떨어진다는 것을 `test/contrast.test.js`의 `tagColors_keep_their_hue_away_from_the_active_blue_and_the_compare_orange`가 잰다.
 - `data.main`, `data.compare`는 선언 순서가 아니라 계열의 `role`이 정한다([차트](charts.md)). 같은 계열 이름은 모든 예제에서 같은 역할이다. `test/chart.test.js`의 `examples_same_series_label_and_id_have_the_same_role_in_every_source`가 잰다.
 - 라이트 파랑은 이력서 저장소(woon-resume)의 `--manta-accent`에서 왔고 다크는 그대로다. 라이트 이력서 색은 회색 그림 바탕, 그룹 바탕, 카드 바탕 위에서 2.75~2.93이라 3에 못 미친다. 대비 규칙이 색 선택보다 우선이므로 그래픽 자리에는 같은 색상과 채도에서 3을 넘는 가장 밝은 `palette.blue.550`을 쓴다. 글자와 글자가 놓이는 면은 같은 색상에서 4.5를 넘는 가장 밝은 `palette.blue.600`이다.
 - 주황은 파랑에서 만든다. 파랑을 OKLCH로 바꿔 L(밝기)과 C(채도)는 그대로 두고 색상만 h 50(주황)으로 돌렸다. 두 기준 색은 토큰이 아니라 `test/helpers.js`의 상수(`RESUME_ACCENT`, `RESUME_ORANGE`)다. 같은 규칙으로 그래픽 자리에는 3을 넘는 가장 밝은 `palette.orange.550`을 쓴다. 파랑과 주황은 적록 색각 이상(protanopia, deuteranopia) 시뮬레이션에서도 OKLab 거리 0.1 이상으로 구분된다. 글자, 보조 글자는 스킬 값이다.
@@ -99,7 +100,7 @@
 ### 색표와 글꼴
 
 - 색의 정본은 이 도구의 `src/tokens.json`이다. 스킬의 색표 절은 토큰 이름 표로 바뀌고 값을 적지 않는다. 같은 값을 두 곳에 적어 어긋나는 일을 막기 위해서다.
-- 모든 그림의 SVG `width`는 같은 표준 캔버스 폭(`size.figure-canvas`, 960)이다. GitHub README는 이미지를 원래 크기보다 키우지 않고 본문 폭에 맞춰 줄이므로 모든 그림이 같은 폭으로 보인다. 가운데 정렬은 SVG 파일이 아니라 문서 쪽 몫이다. GitHub README는 `<img>` 하나만 두면 왼쪽에 붙으므로 `<p align="center"><img src="docs/assets/그림.svg" alt="설명"></p>` 형식으로 넣어야 가운데에 선다(Markdown 이미지 문법 `![]()`로는 정렬할 수 없다).
+- 모든 그림의 SVG `width`는 같은 표준 캔버스 폭(`size.figure-canvas`, 960)이다. 그림 머리 `width wide`를 쓴 그림만 넓은 폭(`size.figure-canvas-wide`)이고, 문서에서는 본문 폭에 맞춰 줄어든다. GitHub README는 이미지를 원래 크기보다 키우지 않고 본문 폭에 맞춰 줄이므로 모든 그림이 같은 폭으로 보인다. 가운데 정렬은 SVG 파일이 아니라 문서 쪽 몫이다. GitHub README는 `<img>` 하나만 두면 왼쪽에 붙으므로 `<p align="center"><img src="docs/assets/그림.svg" alt="설명"></p>` 형식으로 넣어야 가운데에 선다(Markdown 이미지 문법 `![]()`로는 정렬할 수 없다).
 - 글꼴은 이 도구가 Inter, Noto Sans KR, JetBrains Mono 파일을 함께 배포하고 그림에 잘라 넣는다([배치](layout.md)). 스킬의 글꼴 설치 줄은 지운다.
 
 ### 대비 기준

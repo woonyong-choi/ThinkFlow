@@ -1,6 +1,6 @@
 // 구조, 상태, 데이터 관계 그림을 elkjs로 배치한다. 그룹마다 따로 배치하고, 그룹 경계를 넘는 선은 경계마다 연결점을 거친다(docs/design/layout.md).
 import ELK from 'elkjs/lib/elk.bundled.js';
-import { displayRatio } from '../canvas.js';
+import { canvasOf, displayRatio } from '../canvas.js';
 import { values } from '../tokens.js';
 import { toElk } from './elk.js';
 import { LayoutError } from './error.js';
@@ -8,7 +8,6 @@ import { buildModel } from './model.js';
 import { isBodyShape, recordPortOrder } from './ports.js';
 import { readElk } from './read.js';
 
-const CANVAS = values.size['figure-canvas'];
 const ASPECT_MAX = values.scale['aspect-max'];
 // 알맞은 보이는 비율의 범위. 세로로 긴 쪽은 두 화면 모두 페이지 스크롤로 읽혀 한도(aspect-max)의 역수까지, 가로로 넓은 쪽은 데스크톱 가로 화면 비율(1400x900)까지다.
 const FIT_MIN = 1 / ASPECT_MAX;
@@ -47,8 +46,11 @@ export async function layoutGraph(figure, sizes) {
 // 배치 한 번. 안전 배치(safeLayout)는 자동 접기와 방향 돌리기를 하지 않는다.
 async function place(figure, sizes) {
   let best = await arrange(figure, sizes);
-  if (best.laid.width > CANVAS && figure.aspect === undefined && !figure.safeLayout) best = await fitCanvas(figure, sizes, best);
-  return readElk(best.laid, best.model);
+  if (best.laid.width > canvasOf(figure) && figure.aspect === undefined && !figure.safeLayout) best = await fitCanvas(figure, sizes, best);
+  const scene = readElk(best.laid, best.model);
+  // 제목이 선을 비킬 자리가 없는 그룹은 너비를 넓혀 한 번 더 배치한다(그림 검사 13번).
+  const blocked = scene.groups.filter((g) => g.isTitleBlocked).map((g) => g.id);
+  return blocked.length && !figure.wideGroups ? place({ ...figure, wideGroups: new Set(blocked) }, sizes) : scene;
 }
 
 // cost: time O(elk(s + e) + e·d), heap O(s + e·d), stack O(d)
@@ -65,15 +67,15 @@ async function arrange(figure, sizes) {
 }
 
 // 글자 크기를 지킨 채 표준 캔버스에 들어가고 보이는 비율도 한도 안인 배치. 높이가 캔버스 안이면 비율은 보지 않는다(그림 검사 9번과 같은 기준).
-function fitsCanvas({ width, height }) {
-  const ratio = displayRatio(width, height);
+function fitsCanvas({ width, height }, canvas) {
+  const ratio = displayRatio(width, height, canvas);
   const isBalanced = ratio <= ASPECT_MAX && ratio >= 1 / ASPECT_MAX;
-  return width <= CANVAS && (isBalanced || height <= CANVAS);
+  return width <= canvas && (isBalanced || height <= canvas);
 }
 
 // 알맞은 비율 범위에서 벗어난 정도(비율을 로그로 본 거리). 범위 안이면 0이다.
-function ratioMiss({ width, height }) {
-  const ratio = displayRatio(width, height);
+function ratioMiss({ width, height }, canvas) {
+  const ratio = displayRatio(width, height, canvas);
   return Math.max(0, Math.log(FIT_MIN / ratio), Math.log(ratio / FIT_MAX));
 }
 
@@ -95,13 +97,14 @@ function hasColumnEdges(figure) {
  * 캔버스에 드는 후보가 없으면 가장 좁은 배치를 쓰고, 표시 폭만 줄인다(docs/design/layout.md 그림 크기).
  */
 async function fitCanvas(figure, sizes, flat) {
+  const canvas = canvasOf(figure);
   let narrowest = flat;
   const fitting = [];
   const consider = (candidate) => {
     if (candidate.laid.width < narrowest.laid.width) narrowest = candidate;
-    if (!fitsCanvas(candidate.laid)) return false;
+    if (!fitsCanvas(candidate.laid, canvas)) return false;
     fitting.push(candidate);
-    return ratioMiss(candidate.laid) === 0;
+    return ratioMiss(candidate.laid, canvas) === 0;
   };
   const turned = await arrange({ ...figure, direction: TURNED[figure.direction] }, sizes);
   if (consider(turned)) return turned;
@@ -115,5 +118,5 @@ async function fitCanvas(figure, sizes, flat) {
     const folded = await arrange({ ...figure, aspect }, sizes);
     if (consider(folded)) return folded;
   }
-  return fitting.sort((a, b) => ratioMiss(a.laid) - ratioMiss(b.laid))[0] ?? narrowest;
+  return fitting.sort((a, b) => ratioMiss(a.laid, canvas) - ratioMiss(b.laid, canvas))[0] ?? narrowest;
 }

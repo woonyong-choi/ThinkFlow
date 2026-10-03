@@ -24,8 +24,10 @@
   --color-palette-blue-50: #edf5fb;
   --color-palette-blue-200: #a9cdea;
   --color-palette-blue-400: #79c0ff;
+  --color-palette-blue-450: #6f9cf5;
   --color-palette-blue-550: #218fe5;
   --color-palette-blue-600: #1072c2;
+  --color-palette-blue-700: #125de6;
   --color-palette-blue-800: #1d5d91;
   --color-palette-blue-850: #2b4254;
   --color-palette-blue-900: #1d2933;
@@ -44,6 +46,7 @@
   --color-state-active-fill: var(--color-palette-blue-600);
   --color-state-active-text: var(--color-palette-blue-600);
   --color-state-on-active: var(--color-palette-gray-0);
+  --color-figure-icon: var(--color-palette-blue-700);
   --color-ui-link: var(--color-palette-blue-600);
   --color-ui-focus: var(--color-palette-blue-550);
   --color-ui-progress: var(--color-palette-blue-550);
@@ -80,6 +83,10 @@
   --size-control-inner: 22px;
   --size-control-icon: 12px;
   --size-pill-height: 18px;
+  --size-icon-node: 20px;
+  --size-icon-group: 18px;
+  --size-icon-tile: 32px;
+  --size-icon-tile-gap: 6px;
   --size-tag-height: 14px;
   --size-packet-radius: 4.5px;
   --size-packet-halo: 10px;
@@ -94,8 +101,11 @@
   --size-node-state-dot: 14px;
   --size-node-table-row: 26px;
   --size-node-circle: 40px;
+  --size-node-tile-width: 80px;
+  --size-node-tile-pad: 8px;
   --size-grid-cell: 32px;
   --size-figure-canvas: 960px;
+  --size-figure-canvas-wide: 1440px;
   --size-chip-max-width: 210px;
   --size-player-caption-max: 720px;
   --size-player-embedded-chrome: 150px;
@@ -199,6 +209,7 @@
     --color-state-active-fill: var(--color-palette-blue-400);
     --color-state-active-text: var(--color-palette-blue-400);
     --color-state-on-active: var(--color-palette-ink-850);
+    --color-figure-icon: var(--color-palette-blue-450);
     --color-ui-link: var(--color-palette-blue-400);
     --color-ui-focus: var(--color-palette-blue-400);
     --color-ui-progress: var(--color-palette-blue-400);
@@ -227,6 +238,7 @@
   --color-state-active-fill: var(--color-palette-blue-400);
   --color-state-active-text: var(--color-palette-blue-400);
   --color-state-on-active: var(--color-palette-ink-850);
+  --color-figure-icon: var(--color-palette-blue-450);
   --color-ui-link: var(--color-palette-blue-400);
   --color-ui-focus: var(--color-palette-blue-400);
   --color-ui-progress: var(--color-palette-blue-400);
@@ -427,6 +439,10 @@ addEventListener('DOMContentLoaded', () => {
 <p class="figure"><img src="bar.svg" alt="장기 기억 정확도"></p>
 <h2><code class="name">box.muto</code><span class="kind">box</span></h2>
 <p class="figure"><img src="box.svg" alt="응답 지연 분포"></p>
+<h2><span class="title">클라우드 구성도</span><code class="name">cloud-architecture.muto</code><span class="kind">flow</span></h2>
+<p class="figure"><img src="cloud-architecture.svg" alt="클라우드 구성도"></p>
+<h2><span class="title">배포 구성도</span><code class="name">deploy-pipeline.muto</code><span class="kind">flow</span></h2>
+<p class="figure"><img src="deploy-pipeline.svg" alt="배포 구성도"></p>
 <h2><code class="name">dumbbell.muto</code><span class="kind">dumbbell</span></h2>
 <p class="figure"><img src="dumbbell.svg" alt="작업당 토큰"></p>
 <h2><code class="name">heatmap.muto</code><span class="kind">heatmap</span></h2>

@@ -1,10 +1,8 @@
 // 칸 격자(`grid id "글" rows=N cols=N {` ... `}`)를 읽는다. 칸은 `item`과 `gap` 줄이고, 칸 자리는 격자 안의 논리 인덱스다(docs/design/figure-kinds.md 칸 격자).
-import { checkId, currentGroup } from './declare.js';
-import { optionsOf } from './grammar.js';
+import { checkId, currentGroup } from './names.js';
 import { normalizeStatement } from './normalize.js';
+import { readOptions } from './options.js';
 import { ID_PATTERN } from './words.js';
-
-const INTEGER_PATTERN = /^\d+$/;
 
 // cost: time O(t), heap O(t), stack O(1)
 // vars: t = 문장 낱말 수
@@ -20,7 +18,7 @@ export function readGrid({ tokens, line }, ctx) {
   }
   if (label?.type !== 'text') ctx.problems.error(line, `write grid as: grid ${id.value} "name" rows=N cols=N {`);
   if (!isOpen) ctx.problems.error(line, 'end the grid line with "{" and put the cells on the next lines');
-  const numbers = readNumbers(rest.filter((t) => t.type !== 'open'), { scopes: ['grid'], what: 'a grid', line, ctx });
+  const numbers = readOptions(rest.filter((t) => t.type !== 'open'), { scopes: ['grid'], what: 'a grid', line, ctx });
   const grid = { id: id.value, shape: 'grid', label: label?.value ?? '', rows: numbers.rows ?? 1, cols: numbers.cols ?? 1, cells: [], parent: currentGroup(ctx), line };
   ctx.figure.nodes.push(grid);
   if (isOpen) ctx.grid = grid;
@@ -56,7 +54,7 @@ function readCell(word, { tokens, line }, ctx) {
     problems.error(line, `write ${word} as: ${form}`);
     return;
   }
-  const numbers = readNumbers(rest, { scopes: optionsScopes(word), what: `an ${word}`, line, ctx });
+  const numbers = readOptions(rest, { scopes: optionsScopes(word), what: `an ${word}`, line, ctx });
   if (word === 'gap' && numbers.count === undefined) problems.error(line, `a gap needs count=, the number of omitted entries: ${form}`);
   const known = grid.cells.find((c) => c.id === id.value);
   if (known) problems.error(line, `the name "${id.value}" is already used in grid "${grid.id}" (line ${known.line})`);
@@ -66,33 +64,6 @@ function readCell(word, { tokens, line }, ctx) {
 // gap은 item과 같은 자리 선택 사항을 쓴다(문법 표의 scopes).
 function optionsScopes(word) {
   return word === 'gap' ? ['gap', 'item'] : ['item'];
-}
-
-// cost: time O(t·s), heap O(t), stack O(1)
-// vars: t = 낱말 수, s = 범위 수
-// basis: estimate
-// `키=정수` 낱말들을 { 키: 숫자 }로. 문법 표의 min보다 작은 값, 정수가 아닌 값, 모르는 키, 같은 키 두 번은 오류다.
-function readNumbers(tokens, { scopes, what, line, ctx }) {
-  const found = {};
-  for (const t of tokens) {
-    const spec = t.type === 'option' ? scopes.map((s) => optionsOf(s)[t.key]).find(Boolean) : undefined;
-    if (!spec) {
-      ctx.problems.error(line, `${what} takes ${listKeys(scopes)}. Found "${t.key ?? t.value}"`);
-    } else if (t.key in found) {
-      ctx.problems.error(line, `"${t.key}" is written twice`);
-    } else if (t.valueType !== 'word' || !INTEGER_PATTERN.test(t.value) || !Number.isSafeInteger(Number(t.value)) || Number(t.value) < spec.min) {
-      ctx.problems.error(line, `${t.key} is a whole number of ${spec.min} or more. Found "${t.value}"`);
-    } else found[t.key] = Number(t.value);
-  }
-  return found;
-}
-
-// cost: time O(s·o), heap O(s·o), stack O(1)
-// vars: s = 범위 수, o = 범위의 선택 사항 수
-// basis: estimate
-// 오류 메시지에 적는 `키=` 목록
-function listKeys(scopes) {
-  return scopes.flatMap((s) => Object.keys(optionsOf(s)).map((key) => `${key}=`)).join(', ');
 }
 
 // cost: time O(c²), heap O(1), stack O(1)

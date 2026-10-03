@@ -46,13 +46,14 @@ const BROKEN_SCENES = [
   { code: 'check-4', source: 'flow right\nbox a "A"\ndecision d "확인"\nbox b "B"\na -> d\nd -> b', mutate: (scene) => { const d = at(scene, 'd'); scene.edges.find((e) => e.from === 'd').points[0] = { x: d.x + d.w, y: d.y }; }, expect: /^internal/ },
   { code: 'check-5', source: 'flow right\nbox a "A"\nbox b "B"\nbox c "C"\nbox d "D"\na -> b\nc -> d', mutate: (scene) => { scene.edges[0].points = [{ x: 0, y: 0 }, { x: 100, y: 0 }]; scene.edges[1].points = [{ x: 0, y: 4 }, { x: 100, y: 4 }]; }, expect: /./ },
   { code: 'check-6', source: GROUPED, mutate: (scene) => { const g = scene.groups[0]; Object.assign(at(scene, 'c'), { x: g.x + 2, y: g.y + 2 }); }, expect: /^internal: (node "c" overlaps group "g"|group "g" overlaps node "c")/ },
+  { code: 'check-13', source: GROUPED, mutate: (scene) => { const g = scene.groups[0]; const edge = scene.edges.find((e) => e.from === 'b'); edge.points = [{ x: g.x + g.titleDx + 4, y: g.y - 10 }, { x: g.x + g.titleDx + 4, y: g.y + 20 }]; }, expect: /passes through the title of group "g"/ },
   { code: 'check-12', source: NOTES, mutate: (scene) => { const [label] = scene.edges; Object.assign(scene.notes[0], { x: label.labelAt.x - scene.notes[0].w / 2, y: label.labelAt.y - scene.notes[0].h / 2 }); }, expect: /covers the label "요청 라벨"/ },
   { code: 'check-12', source: NOTES, mutate: (scene) => { const [label] = scene.edges; Object.assign(scene.notes[0], { x: label.labelAt.x - scene.notes[0].w / 2, y: label.labelAt.y - scene.notes[0].h / 2 }); }, expect: /covers the arrow of message a -> b/ },
   { code: 'check-12', source: NOTES, mutate: (scene) => { scene.notes[0].x = -50; }, expect: /leaves the figure/ },
   { code: 'check-12', source: NOTES, severity: 'warning', mutate: (scene) => { const other = scene.lifelines.find((l) => l.id === 'c'); Object.assign(scene.notes[0], { x: other.x - 10, y: other.y1 + 1 }); }, expect: /crosses the lifeline of "c"/ },
 ];
 
-// 근거: 설계 figure-check.md 요구사항 "검사 항목마다 실패하는 원본에서 그 항목 메시지를 낸다"(1, 2, 3, 4, 5, 6, 12번)
+// 근거: 설계 figure-check.md 요구사항 "검사 항목마다 실패하는 원본에서 그 항목 메시지를 낸다"(1, 2, 3, 4, 5, 6, 12, 13번)
 test('checkFigure_each_item_reports_its_code_for_a_scene_that_breaks_it', async () => {
   for (const { code, source, mutate, expect, severity = 'error' } of BROKEN_SCENES) {
     const found = (await recheck(source, mutate)).filter((d) => d.code === code);

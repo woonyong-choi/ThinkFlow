@@ -1,7 +1,9 @@
 // 원본 전체를 읽어 그림 모형(figure)으로 만든다. 줄을 머리, 선언, 시간 흐름 세 부분으로 나누고 문장마다 맡을 함수를 고른다.
 import { readChartDeclaration } from './chart.js';
-import { closeGroup, readColumn, readDeclaration, readEdge } from './declare.js';
+import { readColumn, readDeclaration, readEdge } from './declare.js';
+import { closeGroup } from './group.js';
 import { readGrid, readGridLine } from './grid.js';
+import { readIcons } from './icons.js';
 import { DECIMALS_MAX, DEFAULT_VERSION, KINDS, STATEMENTS, VALUES, VERSION, valueNames } from './grammar.js';
 import { tokenizeLine } from './lexer.js';
 import { normalizeKind, normalizeStatement } from './normalize.js';
@@ -96,10 +98,14 @@ function emptyFigure() {
     subtitle: undefined,
     speedMs: undefined,
     aspect: undefined,
+    // 캔버스 폭 선택: standard(생략과 같음)나 wide
+    width: undefined,
     nodes: [],
     // 이름 오류로 버린 선언의 이름. 그 이름을 가리키는 줄에 "모르는 이름" 오류를 덧붙이지 않기 위해 둔다.
     rejectedNames: new Set(),
     groups: [],
+    // `icons` 줄로 등록한 사용자 아이콘 세트 { name, path, line }
+    iconSets: [],
     edges: [],
     start: undefined,
     finals: [],
@@ -230,6 +236,7 @@ function readByPart({ word, section }, statement, ctx) {
     ctx.previous = word;
   } else if (word === 'edge') readEdge(statement, ctx);
   else if (word === 'grid') readGrid(statement, ctx);
+  else if (word === 'icons') readIcons(statement, ctx);
   else if (ctx.figure.kind === 'chart') readChartDeclaration(statement, ctx);
   else readDeclaration(statement, ctx);
 }
@@ -253,6 +260,9 @@ function readHeader({ tokens, line }, { figure, problems }) {
     const ratio = Number(value?.value);
     if (value?.type !== 'word' || !NUMBER_PATTERN.test(value.value) || !(ratio > 0)) problems.error(line, 'write aspect as a positive number such as 1.6');
     else figure.aspect = ratio;
+  } else if (key === 'width') {
+    if (!valueNames('width').includes(value?.value)) problems.error(line, `width is ${valueNames('width').map((v) => `"${v}"`).join(' or ')}`);
+    else figure.width = value.value;
   } else if (key === 'decimals') {
     const places = Number(value?.value);
     if (value?.type !== 'word' || !Number.isInteger(places) || places < 0 || places > DECIMALS_MAX) problems.error(line, `write decimals as a whole number from 0 to ${DECIMALS_MAX}, such as decimals 2`);

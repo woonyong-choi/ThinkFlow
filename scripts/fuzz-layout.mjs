@@ -40,6 +40,10 @@ const SHAPES = ['box', 'box', 'person', 'store', 'external', 'circle'];
 const CELL_END_CHANCE = 0.7;
 const HEAD_CHANCE = 0.25;
 const HEADS = ['both', 'none', 'end'];
+// 번호, 배지, 아이콘, 복제 개수 섞기(흐름 그림)
+const DECOR_CHANCE = 0.3;
+const NUMBER_CHANCE = 0.25;
+const ICONS = ['server', 'db', 'lb', 'user', 'region', 'cdn'];
 const ASPECTS = ['0.6', '1', '1.4', '1.6', '2.4'];
 const DIRECTIONS = ['right', 'down'];
 
@@ -93,9 +97,26 @@ function cellLine(id, { row, col, rows, cols }, rnd) {
   return `item ${id} "${rnd.pick(CELL_LABELS)}" ${place}`;
 }
 
-// 도형 선언 한 줄. circle은 box의 shape 선택 사항이다.
-function nodeLine(shape, id) {
-  return shape === 'circle' ? `box ${id} "${id}" shape=circle` : `${shape} ${id} "${id}"`;
+// 도형 선언 한 줄. circle은 box의 shape 선택 사항이다. 원은 배지와 아이콘을 받지 않는다.
+function nodeLine(shape, id, decor = '') {
+  if (shape === 'circle') return `box ${id} "${id}" shape=circle`;
+  const allowed = shape === 'person' ? '' : shape === 'box' ? decor : decor.replace(/ (count|shape)=\S+/g, '');
+  return `${shape} ${id} "${id}"${allowed}`;
+}
+
+// 흐름 그림 도형의 배지, 아이콘, 복제 개수 선택 사항. 사람은 받지 않고 상자만 개수를 받는다(nodeLine이 걸러낸다).
+function nodeDecor(rnd) {
+  if (rnd.next() >= DECOR_CHANCE) return '';
+  const badge = rnd.next() < 0.5 ? ` badge="${rnd.pick(['LB', 'DB', 'API', 'WEB'])}"` : '';
+  const icon = rnd.next() < 0.5 ? ` icon=${rnd.pick(ICONS)}` : '';
+  const count = rnd.next() < 0.2 ? ' count=3' : '';
+  const tile = icon && rnd.next() < 0.3 ? ' shape=tile' : '';
+  return `${tile}${badge}${icon}${count}`;
+}
+
+// 그룹 선택 사항: 배지와 아이콘
+function groupDecor(rnd) {
+  return rnd.next() < DECOR_CHANCE ? ` badge="G" icon=${rnd.pick(ICONS)}${rnd.next() < 0.5 ? ' border=dashed' : ''}` : '';
 }
 
 // cost: time O(n), heap O(n), stack O(1)
@@ -104,13 +125,13 @@ function nodeLine(shape, id) {
 // 도형 선언 줄들. 구조 그림은 가끔 칸 격자를 도형 하나로 섞는다. 도형 둘 이상을 묶은 그룹을 섞고, 가끔 첫 그룹을 바깥 그룹으로 한 번 더 감싼다.
 function declareNodes(ids, rnd, kind) {
   const shape = () => (kind === 'state' ? 'state' : rnd.pick(SHAPES));
-  const declare = (id) => (kind === 'flow' && rnd.next() < GRID_CHANCE ? declareGrid(id, rnd) : [nodeLine(shape(), id)]);
+  const declare = (id) => (kind === 'flow' && rnd.next() < GRID_CHANCE ? declareGrid(id, rnd) : [nodeLine(shape(), id, kind === 'flow' ? nodeDecor(rnd) : '')]);
   const parts = [];
   let groups = 0;
   for (let i = 0; i < ids.length; ) {
     const size = Math.min(ids.length - i, GROUP_MIN + rnd.int(GROUP_SPREAD));
     if (rnd.next() < GROUP_CHANCE && i + GROUP_MIN <= ids.length) {
-      parts.push(`group g${groups} "그룹${groups}" direction=${rnd.pick(DIRECTIONS)} {`, ...ids.slice(i, i + size).flatMap((m) => declare(m).map((line) => `  ${line}`)), '}');
+      parts.push(`group g${groups} "그룹${groups}" direction=${rnd.pick(DIRECTIONS)}${kind === 'flow' ? groupDecor(rnd) : ''} {`, ...ids.slice(i, i + size).flatMap((m) => declare(m).map((line) => `  ${line}`)), '}');
       groups++;
       i += size;
     } else {
@@ -163,7 +184,8 @@ function declareEdges(ids, rnd, { kind, cells }) {
     seen.add(`${from}>${to}`);
     const isLabeled = !isInner && (kind === 'state' || rnd.next() < LABEL_CHANCE);
     const head = rnd.next() < HEAD_CHANCE ? ` head=${rnd.pick(HEADS)}` : '';
-    lines.push(`${from} -> ${to}${isLabeled ? ` "l${e}"` : ''}${head}`);
+    const no = kind !== 'data' && rnd.next() < NUMBER_CHANCE ? ` no=${1 + rnd.int(9)}` : '';
+    lines.push(`${from} -> ${to}${isLabeled ? ` "l${e}"` : ''}${head}${no}`);
   }
   return lines;
 }

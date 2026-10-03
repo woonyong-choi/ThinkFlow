@@ -1,0 +1,31 @@
+mutoscope
+Copyright (c) 2026 choi woo-nyong
+
+This product includes third-party material.
+
+IBM Carbon icons
+  Source:    https://github.com/carbon-design-system/carbon (npm package @carbon/icons 11.89.0, svg/32)
+  Copyright: 2015 IBM Corp.
+  License:   Apache License 2.0 (full text in src/icons/LICENSE)
+  Files:     src/icons/carbon/*.svg (29 icons, listed by general concept name in src/icons/names.json)
+  Modified:  color only. The root svg element gets fill="currentColor" so the figure colors the icon with a color role token. The shapes are unchanged.
+  Not included: Carbon logo--* trademark logos and the kubernetes icon.
+
+Simple Icons (technology brand marks)
+  Source:    https://github.com/simple-icons/simple-icons (release 16.33.0, icons/*.svg)
+  License:   CC0 1.0 Universal for the library (full text in src/icons/simple-icons/LICENSE). Simple Icons states that this does not
+             mean every icon is CC0, so the icons that carry their own license are listed below.
+  Files:     src/icons/simple-icons/*.svg (32 icons, listed by brand name in src/icons/names.json)
+  Modified:  color only. The root svg element gets fill="currentColor" so the figure draws every mark in one text color role token,
+             never the brand color. The shapes are unchanged.
+  Per-icon licenses:
+    git    Git logo by Jason Long, CC BY 3.0 (https://creativecommons.org/licenses/by/3.0/). Source: https://git-scm.com/community/logos
+    kafka  Apache Kafka logo, copyright The Apache Software Foundation, Apache License 2.0 (full text in src/icons/LICENSE)
+  Not included: icons whose license is share-alike (Rust, Jenkins), icons removed from Simple Icons or that never existed there
+             (Java, OpenAI, Apache HTTP Server), and cloud provider service icons (AWS, Azure, Google Cloud).
+
+Trademarks
+  The names and marks of the technologies shown by these icons are trademarks of their respective owners. This repository shows them
+  only to identify the technology in a diagram. It does not imply affiliation with, sponsorship by, or endorsement from the owners.
+  Brand guideline links are in the `guidelines` field of the Simple Icons data file for each mark
+  (https://github.com/simple-icons/simple-icons/blob/16.33.0/data/simple-icons.json). Marks whose owner forbids this use are not included.

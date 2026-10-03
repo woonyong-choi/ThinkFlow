@@ -1,5 +1,5 @@
 // 배치 모형을 elkjs 그래프로 바꾼다. 선택 사항 값은 모두 토큰이다(docs/design/layout.md 간격과 결정성).
-import { groupTitleWidth, sizePill } from '../measure/sizes.js';
+import { groupTitleWidth, hasPill, isOnLinePill, sizePill } from '../measure/sizes.js';
 import { values } from '../tokens.js';
 import { ROOT } from './model.js';
 import { isBodyShape, outerBox, spreadBodyPorts } from './ports.js';
@@ -23,12 +23,13 @@ export function toElk(model, figure) {
 // cost: time O(e·k), heap O(e·k), stack O(1)
 // vars: e = 선 수, k = 선의 조각 수
 // basis: estimate
-function edgesByContainer({ containers, pieces, edges }) {
+function edgesByContainer({ containers, pieces, edges, isSafe }) {
   const byContainer = new Map([...containers.keys()].map((k) => [k, []]));
   for (const [index, list] of pieces) {
     const edge = edges.find((e) => e.index === index);
     list.forEach((p, k) => {
-      const labels = p.hasLabel && edge.label && !isBeside(edge, containers.get(p.container)) ? [{ id: `label::${index}`, text: edge.label, ...sizeOf(sizePill(edge.label)), layoutOptions: LABEL_OPTIONS }] : [];
+      // 번호만 있는 알약은 선을 다 그린 뒤 얹으므로(read.js) 자리를 요구하지 않는다. 안전 배치는 얹을 자리가 없을 때의 대비라 알약도 자리를 받는다.
+      const labels = p.hasLabel && (edge.label !== undefined || (hasPill(edge) && (isSafe || !isOnLinePill(edge)))) && !isBeside(edge, containers.get(p.container)) ? [{ id: `label::${index}`, text: edge.label ?? String(edge.no), ...sizeOf(sizePill(edge.label, edge.no)), layoutOptions: LABEL_OPTIONS }] : [];
       byContainer.get(p.container).push({ id: `${index}::${k}`, sources: [p.from], targets: [p.to], labels });
     });
   }
@@ -50,9 +51,10 @@ function alignOf(parent, ctx) {
 // vars: c = 자식 수, p = 연결점 수, d = 그룹 깊이
 // basis: estimate
 function containerToElk(c, ctx) {
+  const children = c.children.map((id) => (ctx.model.containers.has(id) ? containerToElk(ctx.model.containers.get(id), ctx) : nodeToElk(ctx.model.nodes.get(id), ctx)));
   return {
     id: c.id,
-    children: c.children.map((id) => (ctx.model.containers.has(id) ? containerToElk(ctx.model.containers.get(id), ctx) : nodeToElk(ctx.model.nodes.get(id), ctx))),
+    children,
     edges: ctx.byContainer.get(c.id),
     ports: c.ports.map((p) => ({ id: p.id, width: 0, height: 0, layoutOptions: { 'elk.port.side': p.side } })),
     layoutOptions: containerOptions(c, ctx),
@@ -73,8 +75,17 @@ function nodeToElk(n, ctx) {
     width: outer.w,
     height: outer.h,
     ports,
-    layoutOptions: { 'elk.portConstraints': ports.length ? (isFirstPass ? 'FIXED_SIDE' : 'FIXED_POS') : 'FREE', ...alignOf(n.parent, ctx) },
+    layoutOptions: { 'elk.portConstraints': portConstraint(ports, isFirstPass), ...alignOf(n.parent, ctx) },
   };
+}
+
+// cost: time O(p), heap O(1), stack O(1)
+// vars: p = 도형의 연결점 수
+// basis: estimate
+// 연결점 제약. 위치까지 정한 연결점이 있으면 위치 고정, 면만 정한 것이면 면 고정, 없으면 자유다.
+function portConstraint(ports, isFirstPass) {
+  if (!ports.length) return 'FREE';
+  return isFirstPass || ports.every((p) => p.x === undefined) ? 'FIXED_SIDE' : 'FIXED_POS';
 }
 
 function containerOptions(c, ctx) {
@@ -98,6 +109,12 @@ function containerOptions(c, ctx) {
     'elk.edgeLabels.placement': 'CENTER',
     'elk.edgeLabels.inline': 'true',
     'elk.portConstraints': c.ports.length ? 'FIXED_SIDE' : 'FREE',
+    // 그룹 경계 연결점은 면 가운데에 모아, 그룹 안 도형으로 가는 선이 그룹 모서리를 돌지 않게 한다.
+    'elk.portAlignment.default': 'CENTER',
+    'elk.portAlignment.north': 'CENTER',
+    'elk.portAlignment.south': 'CENTER',
+    'elk.portAlignment.east': 'CENTER',
+    'elk.portAlignment.west': 'CENTER',
     ...(c.id === ROOT ? rootOptions(ctx.figure) : groupOptions(c, ctx)),
   };
 }
@@ -117,9 +134,12 @@ function rootOptions(figure) {
 // basis: estimate
 function groupOptions(c, ctx) {
   return {
-    'elk.padding': `[top=${SIZE.group.title + SPACE['6']},left=${SPACE['12']},bottom=${SPACE['12']},right=${SPACE['12']}]`,
+    // 제목이 선을 비킬 자리가 없던 그룹은 오른쪽 안쪽 여백을 제목 덩어리만큼 넓혀, 선 오른쪽 끝 너머에 제목이 설 자리를 만든다.
+    'elk.padding': `[top=${SIZE.group.title + SPACE['6']},left=${SPACE['12']},bottom=${SPACE['12']},right=${SPACE['12'] + (ctx.figure.wideGroups?.has(c.id) ? groupTitleWidth(c) : 0)}]`,
+    // 그룹 안은 연결점에서 도형까지 선이 곧게 가도록 네트워크 심플렉스 배치로 놓는다(그룹 모서리로 도는 선을 줄인다). 선이 붙는 그림 검사에 걸리면 안전 배치가 기본 배치로 다시 놓는다.
+    ...(ctx.isSafe ? {} : { 'elk.layered.nodePlacement.strategy': 'NETWORK_SIMPLEX' }),
     'elk.nodeSize.constraints': 'MINIMUM_SIZE',
-    'elk.nodeSize.minimum': `(${groupTitleWidth(c.label)}, ${SIZE.group.title})`,
+    'elk.nodeSize.minimum': `(${minGroupWidth(c)}, ${SIZE.group.title})`,
     ...alignOf(c.parent, ctx),
   };
 }
@@ -141,4 +161,13 @@ function wrapOptions(aspect) {
 
 function sizeOf({ w, h }) {
   return { width: w, height: h };
+}
+
+// cost: time O(p), heap O(1), stack O(1)
+// vars: p = 그룹 연결점 수
+// basis: estimate
+// 그룹 최소 너비. 위 면으로 선이 들어오는 그룹은 제목 줄 위로 선이 내려오므로, 제목이 선 한쪽에 들어가도록 제목 덩어리의 두 배 너비로 시작한다(선은 대개 가운데로 들어온다).
+function minGroupWidth(c) {
+  const head = groupTitleWidth(c);
+  return c.ports.some((p) => p.side === 'NORTH') ? head * 2 : head;
 }

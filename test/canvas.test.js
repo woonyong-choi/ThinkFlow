@@ -3,11 +3,13 @@ import assert from 'node:assert/strict';
 import { readdirSync, readFileSync } from 'node:fs';
 import { test } from 'node:test';
 import { buildFigure } from '../src/build.js';
+import { canvasOf } from '../src/canvas.js';
 import { toHtml } from '../src/html.js';
 import { toSvg } from '../src/svg.js';
 import { values } from '../src/tokens.js';
 
 const CANVAS = values.size['figure-canvas'];
+const CANVAS_WIDE = values.size['figure-canvas-wide'];
 const EXAMPLES = new URL('../examples/', import.meta.url);
 
 // 루트 svg 태그의 너비, 높이, viewBox
@@ -39,9 +41,10 @@ test('toSvg_every_example_and_chart_type_is_canvas_wide_and_inside_its_viewbox',
   const files = readdirSync(EXAMPLES).filter((f) => f.endsWith('.muto'));
   assert.ok(files.length > 0);
   for (const file of files) {
-    const root = rootOf(await toSvg(await buildFigure(readFileSync(new URL(file, EXAMPLES), 'utf8'))));
+    const result = await buildFigure(readFileSync(new URL(file, EXAMPLES), 'utf8'));
+    const root = rootOf(await toSvg(result));
 
-    assert.equal(root.width, CANVAS, file);
+    assert.equal(root.width, canvasOf(result.figure), file);
   }
   for (const [type, source] of Object.entries(CHARTS)) {
     const result = await buildFigure(source);
@@ -74,4 +77,16 @@ test('toSvg_content_wider_than_the_canvas_keeps_the_view_and_shrinks_the_display
   assert.equal(root.width, CANVAS);
   assert.equal(root.viewWidth, result.scene.width);
   assert.ok(Math.abs(root.height - (root.viewHeight * CANVAS) / root.viewWidth) < 0.1);
+});
+
+// 근거: 설계 layout.md 그림 크기 "그림 머리 `width wide`는 캔버스를 넓은 폭으로 하고, 생략하면 표준 폭이다. 최소 글자 검사도 그 폭 기준이다"
+test('buildFigure_width_wide_keeps_a_row_between_standard_and_wide_canvas_and_sets_the_svg_and_player_width', async () => {
+  const row = (header) => `flow right\n${header}${Array.from({ length: 6 }, (_, i) => `box n${i} "아주 긴 이름의 상자 ${i}"`).join('\n')}\n${Array.from({ length: 5 }, (_, i) => `n${i} -> n${i + 1}`).join('\n')}`;
+  const standard = await buildFigure(row(''));
+  const wide = await buildFigure(row('width wide\n'), { strict: true });
+
+  assert.ok(standard.scene.width <= CANVAS && wide.scene.width > CANVAS && wide.scene.width <= CANVAS_WIDE, `${standard.scene.width} / ${wide.scene.width}`);
+  assert.equal(rootOf(await toSvg(wide, { isStatic: true })).width, CANVAS_WIDE);
+  assert.equal(rootOf(await toSvg(standard, { isStatic: true })).width, CANVAS);
+  assert.match(await toHtml(wide, 'a'), new RegExp(`--figure-canvas: ${CANVAS_WIDE}px`));
 });

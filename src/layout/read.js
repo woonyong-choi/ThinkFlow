@@ -1,12 +1,14 @@
 // elkjs 결과를 그림 좌표로 바꾼다. 그룹 경계 연결점에서 끊긴 선 조각은 이어 붙인다(docs/design/layout.md 선 그리기).
-import { sizePill } from '../measure/sizes.js';
+import { hasPill, isOnLinePill, sizePill } from '../measure/sizes.js';
 import { values } from '../tokens.js';
 import { LayoutError } from './error.js';
 import { withLeads } from './cell-ports.js';
 import { placeTitles } from './titles.js';
-import { ROOT } from './model.js';
+import { ROOT, decorOf } from './model.js';
 
 const SETTLE = values.space['4'];
+// 번호 알약을 얹을 구간 안 자리(구간 길이 비율). 가운데를 먼저 보고 양옆으로 간다.
+const RUN_FRACTIONS = [0.5, 0.35, 0.65, 0.2, 0.8];
 // 두 좌표가 같다고 보는 거리
 const TOUCH = 0.5;
 // 같은 면의 선 끝이 이보다 가까워지면 붙어 보인다(그림 검사 5번과 같은 값)
@@ -32,19 +34,31 @@ export function readElk(laid, model) {
     const near = (end) => (other) => other.at !== `${edge.index}:${end}`;
     const start = settleEnd(joined[i], freeRect(edge.from, rects), crowd.get(edge.from)?.filter(near('start')));
     const points = dropCollinear(settleEnd(start.reverse(), freeRect(edge.to, rects), crowd.get(edge.to)?.filter(near('end'))).reverse());
-    return { ...edge, points, labelAt: labels.get(`label::${edge.index}`) ?? (edge.quiet && edge.label ? besideLabel(points, edge.label, laid.width) : undefined) };
+    return { ...edge, points, labelAt: labels.get(`label::${edge.index}`) ?? (model.isSafe ? undefined : numberOnlyLabel(edge, points, items)) ?? (edge.quiet && hasPill(edge) ? besideLabel(points, sizePill(edge.label, edge.no), laid.width) : undefined) };
   });
   placeTitles(groups, edges);
   return { items, groups, edges, width: laid.width, height: laid.height };
 }
 
-// cost: time O(p), heap O(1), stack O(1)
+// cost: time O(p·f·s), heap O(p), stack O(1)
+// vars: p = 경로 구간 수, f = 후보 자리 수, s = 도형 수
+// basis: estimate
+// 번호만 있는 알약(라벨 없음)은 배치에 자리를 요구하지 않고 완성한 선의 구간 위에 얹는다. 긴 구간부터 가운데, 양옆 순으로 도형과 겹치지 않는 첫 자리를 쓴다. 없으면 가장 긴 구간 가운데를 쓰고 그림 검사 2번이 알려, 안전 배치(알약이 자리를 받는다)로 다시 그린다.
+// 선 사이 간격을 늘리지 않아 가로로 퍼진 구성도가 캔버스에 든다.
+function numberOnlyLabel(edge, points, items) {
+  if (!isOnLinePill(edge)) return undefined;
+  const { w, h } = sizePill(undefined, edge.no);
+  const runs = points.slice(1).map((p, i) => [points[i], p]).sort((r, s) => Math.hypot(s[1].x - s[0].x, s[1].y - s[0].y) - Math.hypot(r[1].x - r[0].x, r[1].y - r[0].y));
+  const spots = runs.flatMap(([a, b]) => RUN_FRACTIONS.map((f) => ({ x: a.x + (b.x - a.x) * f, y: a.y + (b.y - a.y) * f })));
+  return spots.find((c) => !items.some((it) => c.x + w / 2 > it.x && it.x + it.w > c.x - w / 2 && c.y + h / 2 > it.y && it.y + it.h > c.y - h / 2)) ?? spots[0];
+}
+
+// cost: time O(p), heap O(p), stack O(1)
 // vars: p = 경로 점 수
 // basis: estimate
 // 선 옆에 두는 라벨 자리(알약 가운데). 가장 긴 곧은 구간이 세로면 그 가운데 옆, 가로면 그 위 가운데다.
 // 세로선 옆은 그림 가장자리가 가까운 쪽에 둔다. 넓은 이동 글 상자가 알약을 비켜 반대쪽(넓은 쪽)에 들어갈 자리를 남기기 위해서다.
-function besideLabel(points, label, width) {
-  const { w, h } = sizePill(label);
+function besideLabel(points, { w, h }, width) {
   const runs = points.slice(1).map((p, i) => [points[i], p]);
   const [a, b] = runs.reduce((best, run) => (Math.hypot(run[1].x - run[0].x, run[1].y - run[0].y) > Math.hypot(best[1].x - best[0].x, best[1].y - best[0].y) ? run : best));
   const mid = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
@@ -76,7 +90,7 @@ function readNodes(laid, model) {
       const y = oy + node.y + child.y;
       if (model.containers.has(child.id)) {
         const c = model.containers.get(child.id);
-        groups.push({ id: child.id, label: c.label, line: c.line, parent: c.parent, x, y, w: child.width, h: child.height });
+        groups.push({ ...decorOf(c), id: child.id, label: c.label, line: c.line, parent: c.parent, x, y, w: child.width, h: child.height });
         offsets.set(child.id, { x, y });
       } else {
         const n = model.nodes.get(child.id);

@@ -21,7 +21,7 @@ const BORDER_FACES = [...FIGURE_FACES, 'surface', ...DOCUMENT_FACES];
 // 강조 글자는 그룹 바탕 위에 놓이지 않는다. 카드 표시는 내용이 찬 카드 바탕(card-on)에, 링크는 문서 면에 놓인다.
 const TEXT_FACES = ['bg', 'node', 'card-on', ...DOCUMENT_FACES];
 const TEXT_ROLES = ['state.active-text', 'ui.link'];
-const GRAPHIC_ROLES = ['state.active', 'ui.focus', 'ui.progress', 'data.main', 'data.compare'];
+const GRAPHIC_ROLES = ['state.active', 'ui.focus', 'ui.progress', 'data.main', 'data.compare', 'figure.icon'];
 const THEMES = ['light', 'dark'];
 const ORANGE_HUE = 50;
 const HUE_TOLERANCE = 1;
@@ -98,7 +98,7 @@ test('contrast_graphic_pairs_reach_3_in_both_themes', () => {
   for (const theme of THEMES) {
     expectAtLeast(theme, GRAPHIC, ALL_FACES.flatMap((face) => GRAPHIC_ROLES.map((role) => [role, face])));
     expectAtLeast(theme, GRAPHIC, BORDER_FACES.flatMap((face) => [['border', face]]));
-    expectAtLeast(theme, GRAPHIC, [['fg', 'bg']]);
+    expectAtLeast(theme, GRAPHIC, [['fg', 'bg'], ['node', 'figure.icon']]);
   }
 });
 
@@ -369,3 +369,15 @@ test('toSvg_heat_cell_text_keeps_contrast_4_5_on_the_cell_face_in_every_60fps_fr
   }
 });
 
+
+// 근거: 결정 docs-integration.md "파랑은 지금 일어나는 것에만 쓴다" 속 figure.icon 행: 아이콘 파랑은 켜진 도형(state.active)과 색상이 달라 아이콘이 지금으로 읽히지 않는다
+test('palette_figure_icon_blue_differs_in_hue_from_the_active_blue_in_both_themes', () => {
+  const ICON_HUE_GAP = 8;
+
+  for (const theme of THEMES) {
+    const [, , iconHue] = oklchOf(color(theme, 'figure.icon'));
+    const [, , activeHue] = oklchOf(color(theme, 'state.active'));
+
+    assert.ok(Math.abs(iconHue - activeHue) >= ICON_HUE_GAP, `${theme} icon ${iconHue.toFixed(1)} / active ${activeHue.toFixed(1)}`);
+  }
+});

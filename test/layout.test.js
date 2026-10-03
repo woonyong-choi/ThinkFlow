@@ -695,3 +695,40 @@ test('buildFigure_state_figures_light_the_edges_their_move_lines_name', async ()
   assert.deepEqual(built.scene.edges.map((e) => `${e.from}>${e.to}`), ['a>b', 'b>c', '__start>a', 'c>__final0']);
   assert.ok(checked >= 3, `상태 그림 ${checked}개`);
 });
+
+// 근거: 설계 figure-syntax.md 번호 절 "번호는 라벨 알약의 일부이고 라벨이 없으면 번호 원만 있다"
+test('sizePill_number_adds_a_badge_before_the_label_and_stands_alone_without_a_label', () => {
+  const plain = sizePill('요청');
+  const numbered = sizePill('요청', 1);
+  const alone = sizePill(undefined, 12);
+
+  assert.ok(numbered.w > plain.w);
+  assert.equal(alone.h, plain.h);
+  assert.ok(alone.w >= alone.h && alone.w < numbered.w);
+});
+
+// 근거: 설계 layout.md 연결점 "그룹 경계를 넘는 선은 선이 놓이는 공통 그룹의 흐름 방향 면에 닿는다"(세로 그룹 안 원통에 들어오는 선이 그룹 위로 돌던 deploy-pipeline 재현)
+test('buildFigure_edge_into_a_store_inside_a_down_group_touches_its_left_face_when_the_figure_flows_right', async () => {
+  const { scene } = await buildFigure('flow right\nbox a "A"\ngroup g "G" direction=down {\n  store b "B"\n}\na -> b', { strict: true });
+  const [b, edge] = [item(scene, 'b'), scene.edges[0]];
+
+  assert.ok(Math.abs(edge.points.at(-1).x - b.x) < 1, `ends at x ${edge.points.at(-1).x}, left face ${b.x}`);
+});
+
+// 근거: 설계 layout.md 연결점 같은 절(세로 그룹 안 상자에서 나가는 선이 아래 면으로 나가 그룹을 돌던 cdn -> lb 재현)
+test('buildFigure_edge_out_of_a_box_inside_a_down_group_leaves_its_right_face_when_the_figure_flows_right', async () => {
+  const { scene } = await buildFigure('flow right\ngroup g "G" direction=down {\n  box a "A"\n  box c "C"\n}\nbox b "B"\na -> c\na -> b', { strict: true });
+  const a = item(scene, 'a');
+  const toB = scene.edges.find((e) => e.to === 'b');
+
+  assert.ok(Math.abs(toB.points[0].x - (a.x + a.w)) < 1, `starts at x ${toB.points[0].x}, right face ${a.x + a.w}`);
+});
+
+// 근거: 설계 layout.md 그룹 제목 줄 "아이콘이 있는 그룹은 왼쪽 모서리 탭 너비만큼 제목이 오른쪽에서 시작한다"
+test('buildFigure_group_with_an_icon_starts_its_title_after_the_corner_tab', async () => {
+  const { scene } = await buildFigure('flow right\ngroup g "G" icon=region {\n  box a "A"\n}\ngroup h "H" {\n  box b "B"\n}', { strict: true });
+  const [tabbed, plain] = [scene.groups.find((g) => g.id === 'g'), scene.groups.find((g) => g.id === 'h')];
+
+  assert.ok(tabbed.titleDx >= TITLE_INSET + values.size.group.title);
+  assert.equal(plain.titleDx, TITLE_INSET);
+});

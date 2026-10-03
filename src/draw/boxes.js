@@ -1,6 +1,6 @@
 // 이동 글 상자가 피할 사각형. 글자(도형 이름과 부제, 테이블 머리와 열, 그룹 제목), 도형 테두리(사람 머리와 몸통, 원통 뚜껑 포함), 선 라벨 알약이다.
 import { measure } from '../measure/fonts.js';
-import { STYLE, sizePill } from '../measure/sizes.js';
+import { STYLE, groupHead, hasPill, sizePill } from '../measure/sizes.js';
 import { plainText } from '../text.js';
 import { values } from '../tokens.js';
 import { labelRows } from './figure.js';
@@ -39,7 +39,7 @@ function textBoxes(scene) {
       add({ x: row.cx - width / 2, center: row.center, width }, row.style, row.text);
     }
   }
-  for (const g of scene.groups) if (g.label) add({ x: g.x + g.titleDx, center: g.y + values.size.group.title / 2, width: measure(g.label, STYLE.group.size, STYLE.group.face) }, STYLE.group, g.label);
+  for (const g of scene.groups) if (g.label) add({ x: g.x + g.titleDx + groupHead(g).textDx, center: g.y + values.size.group.title / 2, width: measure(g.label, STYLE.group.size, STYLE.group.face) }, STYLE.group, g.label);
   return boxes;
 }
 
@@ -51,7 +51,18 @@ function textBoxes(scene) {
  * @returns { x, y, w, h, name }[]
  */
 export function chipObstacles(scene) {
-  return [...textBoxes(scene), ...shapeBoxes(scene), ...pillBoxes(scene)];
+  return [...textBoxes(scene), ...shapeBoxes(scene), ...pillBoxes(scene), ...decorBoxes(scene)];
+}
+
+// cost: time O(s + g), heap O(s + g), stack O(1)
+// vars: s = 도형 수, g = 그룹 수
+// basis: estimate
+// 도형 윗줄과 그룹 제목 줄의 아이콘과 알약(배지, 개수, 반복). 글자와 같이 가리면 읽을 수 없다.
+function decorBoxes(scene) {
+  const place = (decor, origin, name) => decor.items.filter((i) => i.kind !== 'title').map((i) => ({ x: origin.x + i.x, y: origin.y + i.y, w: i.w, h: i.h, name: plainText(i.text ?? name) }));
+  const nodes = scene.items.filter((it) => it.decor).flatMap((it) => place(it.decor, { x: it.x + it.decor.x, y: it.y + it.decor.y }, it.label));
+  const groups = scene.groups.flatMap((g) => (groupHead(g).decor ? place(groupHead(g).decor, { x: g.x + g.titleDx, y: g.y + (values.size.group.title - groupHead(g).decor.h) / 2 }, g.label) : []));
+  return [...nodes, ...groups];
 }
 
 // cost: time O(s), heap O(s), stack O(1)
@@ -81,10 +92,10 @@ function shapeBoxes(scene) {
 // 선 라벨 알약 사각형. 자기 선의 알약도 점이 지나므로 피한다.
 function pillBoxes(scene) {
   return scene.edges
-    .filter((e) => e.label && e.labelAt)
+    .filter((e) => hasPill(e) && e.labelAt)
     .map((e) => {
-      const { w, h } = sizePill(e.label);
-      return { x: e.labelAt.x - w / 2, y: e.labelAt.y - h / 2, w, h, name: plainText(e.label) };
+      const { w, h } = sizePill(e.label, e.no);
+      return { x: e.labelAt.x - w / 2, y: e.labelAt.y - h / 2, w, h, name: plainText(e.label ?? `${e.no}`) };
     });
 }
 

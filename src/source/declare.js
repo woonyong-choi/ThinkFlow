@@ -1,6 +1,10 @@
 // 구조, 순서, 상태, 데이터 관계 그림의 선언 문장을 읽는다. 이름 확인과 겹침 확인은 validate.js가 파일을 다 읽은 뒤 한다.
 import { STATEMENTS, flagNames, valueNames } from './grammar.js';
-import { COLUMN_PATTERN, FK_PATTERN, ID_PATTERN, TABLE_PATTERN } from './words.js';
+import { readGroup } from './group.js';
+import { checkId, rejectName } from './names.js';
+import { readNode } from './node.js';
+import { readOptions } from './options.js';
+import { COLUMN_PATTERN, FK_PATTERN, TABLE_PATTERN } from './words.js';
 
 // cost: time O(t), heap O(t), stack O(1)
 // vars: t = 문장 낱말 수
@@ -14,75 +18,6 @@ export function readDeclaration(statement, ctx) {
   else if (STATEMENTS[word]?.node) readNode(statement, ctx);
   else if (word === 'item' || word === 'gap') ctx.problems.error(statement.line, `"${word}" belongs inside a grid. Open one with: grid id "name" rows=N cols=N {`);
   else ctx.problems.error(statement.line, `unknown statement "${word}"`);
-}
-
-// cost: time O(t), heap O(1), stack O(1)
-// vars: t = 문장 낱말 수
-// basis: estimate
-// `box id "이름" ["부제"] [shape=circle]`. 사람, 갈림길, 상태는 부제가 없다. 모양(shape)은 box만 받고 원은 부제가 없다.
-function readNode({ tokens, line }, ctx) {
-  const [head, id, label, ...tail] = tokens;
-  const shape = head.value;
-  const takesSub = STATEMENTS[shape].node.hasSub;
-  if (!checkId(id, { line, ctx }, ID_PATTERN)) return rejectName(id, ctx);
-  if (label?.type !== 'text') {
-    ctx.problems.error(line, `write ${shape} as: ${shape} ${id.value} "${shape === 'decision' ? 'question' : 'name'}"`);
-    return;
-  }
-  const options = shape === 'box' ? tail.filter((t) => t.type === 'option' && t.key === 'shape') : [];
-  const [sub, ...rest] = tail.filter((t) => !options.includes(t));
-  if (sub && (sub.type !== 'text' || !takesSub)) ctx.problems.error(line, takesSub ? 'the subtitle must be quoted text' : `${shape} takes no subtitle`);
-  if (rest.length) ctx.problems.error(line, `${shape} takes no more words or options`);
-  const form = readShape(options, line, ctx);
-  if (form === 'circle' && sub) ctx.problems.error(line, 'a circle takes a name only. Remove the subtitle or shape=circle');
-  ctx.figure.nodes.push({ id: id.value, shape: form ?? shape, label: label.value, sub: sub?.type === 'text' ? sub.value : undefined, parent: currentGroup(ctx), line });
-}
-
-// cost: time O(t), heap O(1), stack O(1)
-// vars: t = 선택 사항 수
-// basis: estimate
-// `shape=` 선택 사항. 한 번만 쓰고 값은 값 목록 안이어야 한다. 모양 이름을 돌려준다(없으면 undefined).
-function readShape(options, line, ctx) {
-  let form;
-  for (const t of options) {
-    if (form !== undefined) ctx.problems.error(line, '"shape" is written twice');
-    else if (t.valueType !== 'word' || !valueNames('shape').includes(t.value)) ctx.problems.error(line, `shape is one of ${valueNames('shape').join(', ')}`);
-    else form = t.value;
-  }
-  return form === 'rect' ? undefined : form;
-}
-
-// cost: time O(t), heap O(1), stack O(1)
-// vars: t = 문장 낱말 수
-// basis: estimate
-// `group id "이름" [direction=down] {`
-function readGroup({ tokens, line }, ctx) {
-  const [, id, label, ...rest] = tokens;
-  if (!checkId(id, { line, ctx }, ID_PATTERN)) {
-    rejectName(id, ctx);
-    // 닫는 `}`가 짝을 찾도록 자리만 연다.
-    if (tokens.at(-1).type === 'open') ctx.groups.push({ isRejected: true, line });
-    return;
-  }
-  if (label?.type !== 'text') ctx.problems.error(line, `write group as: group ${id.value} "name" {`);
-  const openAt = rest.findIndex((t) => t.type === 'open');
-  if (openAt === -1) ctx.problems.error(line, 'end the group line with "{"');
-  else if (openAt < rest.length - 1) ctx.problems.error(line, 'end the group line with "{" and put the group contents on the next lines');
-  let direction;
-  for (const t of openAt === -1 ? rest : rest.slice(0, openAt)) {
-    if (t.type === 'option' && t.key === 'direction' && valueNames('direction').includes(t.value) && t.valueType === 'word') direction = t.value;
-    else ctx.problems.error(line, 'a group takes only direction=right or direction=down');
-  }
-  const group = { id: id.value, label: label?.value ?? '', direction, parent: currentGroup(ctx), line, hasError: openAt !== rest.length - 1 };
-  ctx.figure.groups.push(group);
-  ctx.groups.push(group);
-}
-
-/** `}`로 그룹이나 테이블을 닫는다. */
-export function closeGroup({ tokens, line }, ctx) {
-  if (tokens.length > 1) ctx.problems.error(line, 'put "}" on its own line');
-  if (!ctx.groups.length) ctx.problems.error(line, 'there is no open group to close');
-  else ctx.groups.pop();
 }
 
 // cost: time O(f), heap O(1), stack O(1)
@@ -169,7 +104,7 @@ export function readEdge({ tokens, line }, ctx) {
     ctx.problems.error(line, 'write an edge as: a -> b "label"');
     return;
   }
-  const edge = { from: from.value, to: to.value, label: undefined, quiet: false, dashed: false, head: undefined, line };
+  const edge = { from: from.value, to: to.value, label: undefined, quiet: false, dashed: false, head: undefined, no: undefined, line };
   for (const t of rest) readEdgeWord(t, edge, { line, ctx });
   if (ctx.figure.kind === 'state' && edge.label === undefined) ctx.problems.error(line, 'a transition needs an event label: a -> b "event"');
   ctx.figure.edges.push(edge);
@@ -177,7 +112,7 @@ export function readEdge({ tokens, line }, ctx) {
 
 // cost: time O(1), heap O(1), stack O(1)
 // basis: estimate
-// 선 줄의 낱말 하나: 글(라벨), quiet, dashed, head=. 같은 것을 두 번 쓰면 오류다.
+// 선 줄의 낱말 하나: 글(라벨), quiet, dashed, head=, no=. 같은 것을 두 번 쓰면 오류다.
 function readEdgeWord(t, edge, { line, ctx }) {
   if (t.type === 'text' && edge.label === undefined) edge.label = t.value;
   else if (t.type === 'word' && flagNames('edge').includes(t.value)) {
@@ -187,32 +122,9 @@ function readEdgeWord(t, edge, { line, ctx }) {
     if (edge.head !== undefined) ctx.problems.error(line, '"head" is written twice');
     else if (t.valueType !== 'word' || !valueNames('head').includes(t.value)) ctx.problems.error(line, `head is one of ${valueNames('head').join(', ')}`);
     else edge.head = t.value;
-  } else ctx.problems.error(line, `an edge takes a quoted label, quiet, dashed, and head=. Found "${t.value}"`);
+  } else if (t.type === 'option' && t.key === 'no') {
+    if (edge.no !== undefined) ctx.problems.error(line, '"no" is written twice');
+    else edge.no = readOptions([t], { scopes: ['edge'], what: 'an edge', line, ctx }).no;
+  } else ctx.problems.error(line, `an edge takes a quoted label, quiet, dashed, head=, and no=. Found "${t.value}"`);
 }
 
-// 버린 선언의 이름과, 그 선언이 있던 그룹을 적는다. 그 그룹은 비어 보여도 원인이 이름 오류라 빈 그룹 오류를 덧붙이지 않는다.
-function rejectName(token, ctx) {
-  if (token?.type === 'word') ctx.figure.rejectedNames.add(token.value);
-  const parent = currentGroup(ctx);
-  if (parent) ctx.figure.rejectedNames.add(`group:${parent}`);
-}
-
-// cost: time O(1), heap O(1), stack O(1)
-// basis: estimate
-// 이름 낱말 형식을 확인한다. 문장 종류는 첫 낱말 자리로 정해서 예약어도 이름이 된다.
-export function checkId(token, { line, ctx }, pattern) {
-  if (token?.type !== 'word') {
-    ctx.problems.error(line, 'write a name (id) after the statement word');
-    return false;
-  }
-  if (!pattern.test(token.value)) {
-    const joiner = pattern === TABLE_PATTERN ? '_' : '-';
-    ctx.problems.error(line, `"${token.value}" is not a valid name. Use lowercase letters and digits, joined by single "${joiner}", starting with a letter`);
-    return false;
-  }
-  return true;
-}
-
-export function currentGroup(ctx) {
-  return ctx.groups.at(-1)?.id;
-}
