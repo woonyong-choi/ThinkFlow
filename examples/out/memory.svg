@@ -41,13 +41,25 @@
   --color-palette-ink-900: #0b0b0b;
   --color-palette-ink-1000: #000000;
   --color-palette-purple-500: #8b5cf6;
+  --color-palette-purple-400: #9b90ff;
+  --color-palette-purple-600: #483c95;
   --color-palette-green-500: #10b981;
+  --color-palette-green-400: #b6da70;
+  --color-palette-green-700: #517000;
   --color-palette-slate-500: #8b949e;
+  --color-palette-slate-400: #b0a0a4;
+  --color-palette-slate-600: #57494d;
   --color-palette-teal-500: #11a6b0;
+  --color-palette-teal-400: #87f3f6;
+  --color-palette-teal-700: #008084;
   --color-state-active: var(--color-palette-blue-550);
   --color-state-active-fill: var(--color-palette-blue-600);
   --color-state-active-text: var(--color-palette-blue-600);
   --color-state-on-active: var(--color-palette-gray-0);
+  --color-flow-purple: var(--color-palette-purple-600);
+  --color-flow-green: var(--color-palette-green-700);
+  --color-flow-teal: var(--color-palette-teal-700);
+  --color-flow-gray: var(--color-palette-slate-600);
   --color-figure-icon: var(--color-palette-blue-700);
   --color-ui-link: var(--color-palette-blue-600);
   --color-ui-focus: var(--color-palette-blue-550);
@@ -93,6 +105,7 @@
   --size-packet-radius: 4.5px;
   --size-packet-halo: 10px;
   --size-packet-hop-ref: 300px;
+  --size-packet-chip-reach: 12px;
   --size-arrow-head: 5px;
   --size-arrow-head-lit: 4px;
   --size-node-card-width: 176px;
@@ -182,6 +195,7 @@
   --opacity-dim-ink: 0.82;
   --opacity-band: 0.22;
   --opacity-range: 0.4;
+  --opacity-chip-visible-min: 0.1;
   --z-raised: 2;
   --z-overlay: 10;
   --duration-fast: 200ms;
@@ -196,6 +210,10 @@
   --duration-step-end: 1600ms;
   --duration-chart-cycle: 7000ms;
   --duration-reveal: 900ms;
+  --duration-value-flash: 700ms;
+  --duration-chip-frame: 16.666666666666668ms;
+  --duration-flow-step: 12000ms;
+  --duration-cut-fade: 600ms;
   --easing-move: cubic-bezier(0.455, 0.03, 0.515, 0.955);
   --easing-reveal: cubic-bezier(0, 0, 0.58, 1);
   --scale-zoom-max: 6;
@@ -204,6 +222,7 @@
   --scale-fold-step: 0.75;
   --scale-aspect-max: 3;
   --scale-zoom-step: 1.25;
+  --scale-flow-dots-max: 80;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) {
@@ -211,6 +230,10 @@
     --color-state-active-fill: var(--color-palette-blue-400);
     --color-state-active-text: var(--color-palette-blue-400);
     --color-state-on-active: var(--color-palette-ink-850);
+    --color-flow-purple: var(--color-palette-purple-400);
+    --color-flow-green: var(--color-palette-green-400);
+    --color-flow-teal: var(--color-palette-teal-400);
+    --color-flow-gray: var(--color-palette-slate-400);
     --color-figure-icon: var(--color-palette-blue-450);
     --color-ui-link: var(--color-palette-blue-400);
     --color-ui-focus: var(--color-palette-blue-400);
@@ -240,6 +263,10 @@
   --color-state-active-fill: var(--color-palette-blue-400);
   --color-state-active-text: var(--color-palette-blue-400);
   --color-state-on-active: var(--color-palette-ink-850);
+  --color-flow-purple: var(--color-palette-purple-400);
+  --color-flow-green: var(--color-palette-green-400);
+  --color-flow-teal: var(--color-palette-teal-400);
+  --color-flow-gray: var(--color-palette-slate-400);
   --color-figure-icon: var(--color-palette-blue-450);
   --color-ui-link: var(--color-palette-blue-400);
   --color-ui-focus: var(--color-palette-blue-400);
@@ -326,6 +353,14 @@
   font-weight: var(--weight-semibold);
   text-anchor: end;
   fill: var(--color-state-active-text);
+}
+
+/* 값 카드 줄의 값 글자. 줄의 이름(row)은 카드 층이 그리고 값은 오른쪽 끝에 얹힌다. */
+.fl .value {
+  font-size: var(--size-text-11);
+  font-weight: var(--weight-semibold);
+  text-anchor: end;
+  fill: var(--color-fg);
 }
 
 .fl .mini {
@@ -564,6 +599,7 @@
 <g id="e-2" class="fl-edge"><path id="p-2" d="M 366.24 428.3333333333333 L 366.2 488.3" class="fl-path a20" marker-end="url(#fl-arrow)"/></g>
 <g id="e-3" class="fl-edge"><path id="p-3" d="M 366.24 612.3333333333334 L 366.2 650.3 Q 366.2 672.3, 388.2 672.3 L 538.2 672.3" class="fl-path a21" marker-end="url(#fl-arrow)"/></g>
 <g id="e-4" class="fl-edge quiet a23"><path id="p-4" d="M 84 78.66666666666666 L 92 78.7 Q 100 78.7, 100 86.7 L 100 690.3 Q 100 712.3, 122 712.3 L 538.2 712.3" class="fl-path a22" marker-end="url(#fl-arrow)"/><g class="fl-pill"><rect x="144" y="702.8" width="34.2" height="18" rx="9" class="pill a24"/><text x="161.1" y="715.8" class="edgelabel a25">질문</text></g></g>
+
 <g class="p0-0" opacity="0"><circle r="10" fill="var(--color-state-active)" opacity="0.2"/><circle r="4.5" fill="var(--color-state-active)"/><g><rect x="-72.7" y="-35" width="145.4" height="23" rx="8" fill="var(--color-state-active-fill)"/><text x="0" y="-20" class="chip">민지는 3월에 토스로 옮겼어</text><animateTransform attributeName="transform" type="translate" dur="38.94s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.00171;0.00342;0.00514;0.00685;0.00856;0.01027;0.01198;0.0137;0.01541;0.01712;0.01798;0.01883;0.01969;0.02054;0.0214;0.02226;0.02311;0.02397;0.02482;0.02568;0.02654;0.02739;0.02825;0.0291;0.02996;0.03082;0.03167;0.03253;0.03424;0.03595;0.03766;0.03938;0.04109;0.04366;0.04708;0.04879;0.04965;0.05051;0.05136;0.05222;0.05307;0.05393;0.05479;0.05564;0.05735;0.05907;0.06078;0.06249;0.0642;0.06506;0.08047;0.08132;0.08218;0.08303;0.08389;0.08475;0.0856;0.08646;0.08731;0.08903;0.09074;0.09245;0.09416;0.09587;0.09759;0.09851;1" values="94.7 68;94.2 68;93.4 68;92.4 68;91 68;89.3 68;87.2 68;84.8 68;82.1 68;78.9 68;75.4 68;73.5 68;71.5 68;69.4 68;67.1 68;64.8 68;62.4 68;59.8 68;57.2 68;54.4 68;51.6 68;48.6 68;45.5 68;42.3 68;39 68;35.6 68;32.1 68;28.4 68;24.7 68;16.9 68;8.8 68;0.3 68;-8.6 68;-17.7 68;-31.8 68;-51 68;-60.7 68;-65.5 67.8;-70.2 66.9;-74.6 65.1;-78.4 62.1;-81 58.3;-82.6 53.9;-83.4 49.4;-83.5 44.8;-83.5 35.9;-83.5 27.3;-83.5 19;-83.5 11.1;-83.5 3.5;-83.5 -0.1;54.7 -48.3;54.5 -50.1;54.1 -51.7;53.4 -53.1;52.4 -54.3;51.2 -55.1;50 -55.6;48.7 -55.8;47.6 -56;45.4 -56;43.6 -56;42 -56;40.8 -56;39.8 -56;39 -56;38.7 -56;38.7 -56"/></g><animate attributeName="opacity" dur="38.94s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.09851" values="1;0"/><animateMotion dur="38.94s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.09851;1" keySplines="0.455 0.03 0.515 0.955;0 0 1 1" keyPoints="0;1;1"><mpath href="#p-0" xlink:href="#p-0"/></animateMotion></g>
 <g class="p1-0" opacity="0"><circle r="10" fill="var(--color-state-active)" opacity="0.2"/><circle r="4.5" fill="var(--color-state-active)"/><animate attributeName="opacity" dur="38.94s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.12047;0.13973" values="0;1;0"/><animateMotion dur="38.94s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.12047;0.13973;1" keySplines="0 0 1 1;0.455 0.03 0.515 0.955;0 0 1 1" keyPoints="0;0;1;1"><mpath href="#p-1" xlink:href="#p-1"/></animateMotion></g>
 <g class="p2-0" opacity="0"><circle r="10" fill="var(--color-state-active)" opacity="0.2"/><circle r="4.5" fill="var(--color-state-active)"/><animate attributeName="opacity" dur="38.94s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.1577;0.17696" values="0;1;0"/><animateMotion dur="38.94s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.1577;0.17696;1" keySplines="0 0 1 1;0.455 0.03 0.515 0.955;0 0 1 1" keyPoints="0;0;1;1"><mpath href="#p-2" xlink:href="#p-2"/></animateMotion></g>

@@ -9,7 +9,7 @@ import { values } from './tokens.js';
 import { chartContent, figureContent } from './html/content.js';
 
 // 브라우저 스크립트 파일(src/player/). 한 스크립트로 이어 붙여 HTML에 넣는다.
-const PLAYER_FILES = ['view', 'play', 'controls', 'stage', 'curve'];
+const PLAYER_FILES = ['view', 'play', 'controls', 'stage', 'curve', 'values'];
 const PLAYER = PLAYER_FILES.map((name) => readFileSync(new URL(`./player/${name}.js`, import.meta.url), 'utf8')).join('\n');
 // iframe 안에서 열리면 틀을 빼고, 목록 쪽이 iframe 높이를 맞추도록 본문 높이를 알린다. 문서(html) 높이는 iframe 창보다 작아지지 않아 쓰지 않는다.
 // 목록 쪽의 라이트·다크 선택은 iframe의 prefers-color-scheme에 안정적으로 전해지지 않아, 목록 쪽이 보내는 테마 메시지로 이 문서의 data-theme을 바꾼다. 처음에는 목록 쪽에 현재 테마를 물어본다.

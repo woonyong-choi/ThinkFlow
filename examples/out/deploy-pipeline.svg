@@ -41,13 +41,25 @@
   --color-palette-ink-900: #0b0b0b;
   --color-palette-ink-1000: #000000;
   --color-palette-purple-500: #8b5cf6;
+  --color-palette-purple-400: #9b90ff;
+  --color-palette-purple-600: #483c95;
   --color-palette-green-500: #10b981;
+  --color-palette-green-400: #b6da70;
+  --color-palette-green-700: #517000;
   --color-palette-slate-500: #8b949e;
+  --color-palette-slate-400: #b0a0a4;
+  --color-palette-slate-600: #57494d;
   --color-palette-teal-500: #11a6b0;
+  --color-palette-teal-400: #87f3f6;
+  --color-palette-teal-700: #008084;
   --color-state-active: var(--color-palette-blue-550);
   --color-state-active-fill: var(--color-palette-blue-600);
   --color-state-active-text: var(--color-palette-blue-600);
   --color-state-on-active: var(--color-palette-gray-0);
+  --color-flow-purple: var(--color-palette-purple-600);
+  --color-flow-green: var(--color-palette-green-700);
+  --color-flow-teal: var(--color-palette-teal-700);
+  --color-flow-gray: var(--color-palette-slate-600);
   --color-figure-icon: var(--color-palette-blue-700);
   --color-ui-link: var(--color-palette-blue-600);
   --color-ui-focus: var(--color-palette-blue-550);
@@ -93,6 +105,7 @@
   --size-packet-radius: 4.5px;
   --size-packet-halo: 10px;
   --size-packet-hop-ref: 300px;
+  --size-packet-chip-reach: 12px;
   --size-arrow-head: 5px;
   --size-arrow-head-lit: 4px;
   --size-node-card-width: 176px;
@@ -182,6 +195,7 @@
   --opacity-dim-ink: 0.82;
   --opacity-band: 0.22;
   --opacity-range: 0.4;
+  --opacity-chip-visible-min: 0.1;
   --z-raised: 2;
   --z-overlay: 10;
   --duration-fast: 200ms;
@@ -196,6 +210,10 @@
   --duration-step-end: 1600ms;
   --duration-chart-cycle: 7000ms;
   --duration-reveal: 900ms;
+  --duration-value-flash: 700ms;
+  --duration-chip-frame: 16.666666666666668ms;
+  --duration-flow-step: 12000ms;
+  --duration-cut-fade: 600ms;
   --easing-move: cubic-bezier(0.455, 0.03, 0.515, 0.955);
   --easing-reveal: cubic-bezier(0, 0, 0.58, 1);
   --scale-zoom-max: 6;
@@ -204,6 +222,7 @@
   --scale-fold-step: 0.75;
   --scale-aspect-max: 3;
   --scale-zoom-step: 1.25;
+  --scale-flow-dots-max: 80;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) {
@@ -211,6 +230,10 @@
     --color-state-active-fill: var(--color-palette-blue-400);
     --color-state-active-text: var(--color-palette-blue-400);
     --color-state-on-active: var(--color-palette-ink-850);
+    --color-flow-purple: var(--color-palette-purple-400);
+    --color-flow-green: var(--color-palette-green-400);
+    --color-flow-teal: var(--color-palette-teal-400);
+    --color-flow-gray: var(--color-palette-slate-400);
     --color-figure-icon: var(--color-palette-blue-450);
     --color-ui-link: var(--color-palette-blue-400);
     --color-ui-focus: var(--color-palette-blue-400);
@@ -240,6 +263,10 @@
   --color-state-active-fill: var(--color-palette-blue-400);
   --color-state-active-text: var(--color-palette-blue-400);
   --color-state-on-active: var(--color-palette-ink-850);
+  --color-flow-purple: var(--color-palette-purple-400);
+  --color-flow-green: var(--color-palette-green-400);
+  --color-flow-teal: var(--color-palette-teal-400);
+  --color-flow-gray: var(--color-palette-slate-400);
   --color-figure-icon: var(--color-palette-blue-450);
   --color-ui-link: var(--color-palette-blue-400);
   --color-ui-focus: var(--color-palette-blue-400);
@@ -326,6 +353,14 @@
   font-weight: var(--weight-semibold);
   text-anchor: end;
   fill: var(--color-state-active-text);
+}
+
+/* 값 카드 줄의 값 글자. 줄의 이름(row)은 카드 층이 그리고 값은 오른쪽 끝에 얹힌다. */
+.fl .value {
+  font-size: var(--size-text-11);
+  font-weight: var(--weight-semibold);
+  text-anchor: end;
+  fill: var(--color-fg);
 }
 
 .fl .mini {
@@ -557,6 +592,7 @@
 <g id="e-5" class="fl-edge"><path id="p-5" d="M 509.20556640625 488 L 561.2 488 Q 583.2 488, 583.2 466 L 583.2 274 Q 583.2 252, 605.2 252 L 619.2 252 Q 641.2 252, 641.2 274 L 641.2 355 Q 641.2 363, 649.2 363 L 657.2 363" class="fl-path a13" marker-end="url(#fl-arrow)"/><g class="fl-pill"><rect x="575.7" y="362.5" width="15" height="15.0361328125" rx="7.51806640625" class="number-pill"/><text x="583.2" y="374" class="number">6</text></g></g>
 <g id="e-6" class="fl-edge"><path id="p-6" d="M 509.20556640625 510 L 619.2 510 Q 641.2 510, 641.2 532 L 641.2 602 Q 641.2 610, 649.2 610 L 657.2 610" class="fl-path a14" marker-end="url(#fl-arrow)"/><g class="fl-pill"><rect x="568" y="502.8" width="14.3" height="14.337890625" rx="7.1689453125" class="number-pill"/><text x="575.2" y="514" class="number">7</text></g></g>
 <g id="e-7" class="fl-edge"><path id="p-7" d="M 702.20556640625 650 L 702.2 710" class="fl-path a15" marker-end="url(#fl-arrow)"/></g>
+
 <g class="p0-0" opacity="0"><circle r="10" fill="var(--color-state-active)" opacity="0.2"/><circle r="4.5" fill="var(--color-state-active)"/><animate attributeName="opacity" dur="31.809s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.02358" values="1;0"/><animateMotion dur="31.809s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.02358;1" keySplines="0.455 0.03 0.515 0.955;0 0 1 1" keyPoints="0;1;1"><mpath href="#p-0" xlink:href="#p-0"/></animateMotion></g>
 <g class="p1-0" opacity="0"><circle r="10" fill="var(--color-state-active)" opacity="0.2"/><circle r="4.5" fill="var(--color-state-active)"/><animate attributeName="opacity" dur="31.809s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.19083;0.2144" values="0;1;0"/><animateMotion dur="31.809s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.19083;0.2144;1" keySplines="0 0 1 1;0.455 0.03 0.515 0.955;0 0 1 1" keyPoints="0;0;1;1"><mpath href="#p-1" xlink:href="#p-1"/></animateMotion></g>
 <g class="p2-0" opacity="0"><circle r="10" fill="var(--color-state-active)" opacity="0.2"/><circle r="4.5" fill="var(--color-state-active)"/><animate attributeName="opacity" dur="31.809s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.29583;0.38882" values="0;1;0"/><animateMotion dur="31.809s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.29583;0.38882;1" keySplines="0 0 1 1;0.455 0.03 0.515 0.955;0 0 1 1" keyPoints="0;0;1;1"><mpath href="#p-2" xlink:href="#p-2"/></animateMotion></g>

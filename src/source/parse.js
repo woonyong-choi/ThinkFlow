@@ -9,6 +9,7 @@ import { tokenizeLine } from './lexer.js';
 import { normalizeKind, normalizeStatement } from './normalize.js';
 import { createProblems } from './problems.js';
 import { readTimeline } from './steps.js';
+import { readOn, readValue } from './value.js';
 import { validateFigure } from './validate.js';
 import { parseTime } from './values.js';
 import { NUMBER_PATTERN } from './words.js';
@@ -86,7 +87,7 @@ function readVersion(statements, ctx) {
 /**
  * 비어 있는 그림 모형.
  * nodes: { id, shape, label, sub, parent, line, columns? }, groups: { id, label, direction, parent, line },
- * edges: { from, to, label, quiet, dashed, line, fromColumn?, toColumn? }, steps: { label, caption, line, beats }
+ * edges: { from, to, label, quiet, dashed, line, fromColumn?, toColumn? }, steps: { label, caption, line, beats, tracks, forMs }
  */
 function emptyFigure() {
   return {
@@ -107,6 +108,10 @@ function emptyFigure() {
     // `icons` 줄로 등록한 사용자 아이콘 세트 { name, path, line }
     iconSets: [],
     edges: [],
+    // `value` 줄로 선언한 값 { id, label, on, from, ref, line }
+    values: [],
+    // `on` 줄로 선언한 도착 값 바꾸기 { node, sets, line }
+    arrivals: [],
     start: undefined,
     finals: [],
     chart: { series: [], rules: [], missing: undefined, data: undefined, x: undefined, y: undefined, scale: VALUES.scale.default, scaleLine: undefined, zero: VALUES.zero.default, zeroLine: undefined, decimals: undefined, rows: [], links: [] },
@@ -237,6 +242,8 @@ function readByPart({ word, section }, statement, ctx) {
   } else if (word === 'edge') readEdge(statement, ctx);
   else if (word === 'grid') readGrid(statement, ctx);
   else if (word === 'icons') readIcons(statement, ctx);
+  else if (word === 'value') readValue(statement, ctx);
+  else if (word === 'on') readOn(statement, ctx);
   else if (ctx.figure.kind === 'chart') readChartDeclaration(statement, ctx);
   else readDeclaration(statement, ctx);
 }

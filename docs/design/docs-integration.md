@@ -84,9 +84,11 @@
 | `data.main` | 차트에서 그림이 주장하는 계열(새 것, 개선) | `#218fe5` | `#79c0ff` | 그림 바탕, 그룹, 카드 바탕, 노드 | 3.00 / 7.62 |
 | `data.compare` | 비교 기준 계열(기존) | `#d96c1f` | `#f5a374` | 같음 | 3.01 / 7.32 |
 | `data.grid`, `data.heat-low` | 격자와 축, 히트맵 값 0 칸(꾸밈) | `#c6cacf` / `#a9cdea` | `#3c3e42` / `#2b4254` | 그림 바탕 | 1.54, 1.55 / 1.60, 1.65 |
+| `flow.purple`, `flow.green`, `flow.teal`, `flow.gray` | 흐름 점과 이동 글 상자의 갈래색(`tone=`). 점, 글 상자 면과 테두리 | `#483c95`, `#517000`, `#008084`, `#57494d` | `#9b90ff`, `#b6da70`, `#87f3f6`, `#b0a0a4` | 그림 바탕, 그룹, 카드 바탕, 노드, 문서 바탕. 글 상자 글자는 `state.on-active` | 4.16 / 5.13 이상 |
 | `tag.purple`, `tag.green`, `tag.teal`, `tag.gray` | 카드 태그 범주색. 글자는 `fg`, 색은 옅은 띠(`opacity.tag`)로만 | `#8b5cf6`, `#10b981`, `#11a6b0`, `#8b949e` | 같음 | 노드, 카드 바탕 위 띠와 글자 `fg` | 8.46 이상 |
 | `border` | 노드, 그룹, 카드, 조작부 윤곽(그룹 테두리도 같은 색) | `#818b99` | `#72767a` | 그림 바탕, 그룹, 카드 바탕, 노드, 문서 바탕 | 3.02 / 3.01 |
 
+- `flow.*`는 점이 한눈에 갈리도록 이름끼리 OKLab 거리 0.10 이상이고 적록 색각 이상(protanopia, deuteranopia) 시뮬레이션에서도 같다. 파랑(지금)과 주황(비교)과도 OKLab 거리 0.10 이상이다. `test/contrast.test.js`의 `flow_tone_colors_stay_apart_from_each_other_for_normal_protan_and_deutan_sight_and_from_blue_and_orange_for_normal_sight`가 잰다. 이름은 카드 태그 `tone`과 같은 집합이고 이름을 늘리면 `flow.*` 색도 같은 기준으로 더한다.
 - 표 열의 PK, FK 표시는 항상 있는 스키마 표시라 파랑이 아니라 `color.muted`다.
 - 칸 격자의 칸([칸 격자](grid.md))은 새 색 역할이 없다. 칸 면 `node`와 윤곽 `border`, 글 `fg`, 생략 칸 면 `surface`와 글 `muted`, 밝힌 칸 면 `card-on`과 윤곽 `state.active`가 위 기준의 기존 짝이다.
 - 파랑은 "지금"(`state`)과 "주장하는 계열"(`data.main`)을 뜻하고, 조작부(`ui`)도 같은 파랑을 쓴다. 그 밖의 뜻으로는 쓰지 않는다. 한 가지 예외가 아이콘 색 `figure.icon`이다. 아이콘은 모든 그림에서 늘 파랑으로 칠해 구성 요소의 종류를 알리는 장식 단색이다(브랜드 고유색은 쓰지 않는다). 지금과 섞이지 않게 둘을 두 방법으로 가른다. 색상이 달라(라이트 `#125de6` 대 `#218fe5`, 다크 `#6f9cf5` 대 `#79c0ff`, `test/contrast.test.js`의 `palette_figure_icon_blue_differs_in_hue_from_the_active_blue_in_both_themes`) 아이콘은 짙고 보랏빛이다. 켜진 도형과 그룹은 테두리 색뿐 아니라 두께도 `border.thin`에서 `border.strong`으로 바뀌고 아이콘은 그대로다. 카드 태그는 파랑과 주황을 쓰지 않는다. 태그 색상이 `state.active`, `data.compare`와 40도 이상 떨어진다는 것을 `test/contrast.test.js`의 `tagColors_keep_their_hue_away_from_the_active_blue_and_the_compare_orange`가 잰다.
@@ -113,6 +115,7 @@
 | 강조 글자(`state.active-text`: 링크, 카드 표시 ✓)와 그림 바탕, 노드, 카드 바탕, 문서 바탕 | 4.5 이상 | 같음 |
 | 강조 그래픽(`state.active`: 밝힌 선, 점, 테두리, 진행 고리, 초점 고리)과 그림 바탕, 그룹 바탕, 카드 바탕, 노드, 문서 바탕 | 3 이상 | WCAG 그래픽 기준, 예외 없음. 라이트는 이력서 파랑과 같은 색상에서 3을 넘는 가장 밝은 `palette.blue.550`(가장 낮은 면 3.00)이다 |
 | `state.on-active` 글자와 `state.active-fill` 면 | 4.5 이상 | 같음 |
+| `state.on-active` 글자와 갈래색 면(`flow.*`) | 4.5 이상 | 같음. 갈래색 점은 모든 그림 면과 3 이상이다 |
 | 카드 태그 글자(`fg`)와 어느 톤 띠 | 4.5 이상 | 같음 |
 | 밝히지 않은 행(`ink.dim`, `opacity.dim-ink` 0.82)의 `fg`, `muted` 글자와 `bg` | 4.5 이상 | 같음. 흐린 `muted`는 라이트 4.68, 다크 4.81이다. 예전 0.65는 3.18, 3.51이라 규칙을 어겼다 |
 | 히트맵 칸 숫자와 그 칸 색 | 4.5 이상 | 칸마다 어두운 글자와 밝은 글자 중 대비가 큰 쪽을 빌드 때 고르고, 어느 강도에서나 4.5를 넘게 칸 색 범위를 정했다 |

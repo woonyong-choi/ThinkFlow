@@ -42,13 +42,25 @@
   --color-palette-ink-900: #0b0b0b;
   --color-palette-ink-1000: #000000;
   --color-palette-purple-500: #8b5cf6;
+  --color-palette-purple-400: #9b90ff;
+  --color-palette-purple-600: #483c95;
   --color-palette-green-500: #10b981;
+  --color-palette-green-400: #b6da70;
+  --color-palette-green-700: #517000;
   --color-palette-slate-500: #8b949e;
+  --color-palette-slate-400: #b0a0a4;
+  --color-palette-slate-600: #57494d;
   --color-palette-teal-500: #11a6b0;
+  --color-palette-teal-400: #87f3f6;
+  --color-palette-teal-700: #008084;
   --color-state-active: var(--color-palette-blue-550);
   --color-state-active-fill: var(--color-palette-blue-600);
   --color-state-active-text: var(--color-palette-blue-600);
   --color-state-on-active: var(--color-palette-gray-0);
+  --color-flow-purple: var(--color-palette-purple-600);
+  --color-flow-green: var(--color-palette-green-700);
+  --color-flow-teal: var(--color-palette-teal-700);
+  --color-flow-gray: var(--color-palette-slate-600);
   --color-figure-icon: var(--color-palette-blue-700);
   --color-ui-link: var(--color-palette-blue-600);
   --color-ui-focus: var(--color-palette-blue-550);
@@ -94,6 +106,7 @@
   --size-packet-radius: 4.5px;
   --size-packet-halo: 10px;
   --size-packet-hop-ref: 300px;
+  --size-packet-chip-reach: 12px;
   --size-arrow-head: 5px;
   --size-arrow-head-lit: 4px;
   --size-node-card-width: 176px;
@@ -183,6 +196,7 @@
   --opacity-dim-ink: 0.82;
   --opacity-band: 0.22;
   --opacity-range: 0.4;
+  --opacity-chip-visible-min: 0.1;
   --z-raised: 2;
   --z-overlay: 10;
   --duration-fast: 200ms;
@@ -197,6 +211,10 @@
   --duration-step-end: 1600ms;
   --duration-chart-cycle: 7000ms;
   --duration-reveal: 900ms;
+  --duration-value-flash: 700ms;
+  --duration-chip-frame: 16.666666666666668ms;
+  --duration-flow-step: 12000ms;
+  --duration-cut-fade: 600ms;
   --easing-move: cubic-bezier(0.455, 0.03, 0.515, 0.955);
   --easing-reveal: cubic-bezier(0, 0, 0.58, 1);
   --scale-zoom-max: 6;
@@ -205,6 +223,7 @@
   --scale-fold-step: 0.75;
   --scale-aspect-max: 3;
   --scale-zoom-step: 1.25;
+  --scale-flow-dots-max: 80;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) {
@@ -212,6 +231,10 @@
     --color-state-active-fill: var(--color-palette-blue-400);
     --color-state-active-text: var(--color-palette-blue-400);
     --color-state-on-active: var(--color-palette-ink-850);
+    --color-flow-purple: var(--color-palette-purple-400);
+    --color-flow-green: var(--color-palette-green-400);
+    --color-flow-teal: var(--color-palette-teal-400);
+    --color-flow-gray: var(--color-palette-slate-400);
     --color-figure-icon: var(--color-palette-blue-450);
     --color-ui-link: var(--color-palette-blue-400);
     --color-ui-focus: var(--color-palette-blue-400);
@@ -241,6 +264,10 @@
   --color-state-active-fill: var(--color-palette-blue-400);
   --color-state-active-text: var(--color-palette-blue-400);
   --color-state-on-active: var(--color-palette-ink-850);
+  --color-flow-purple: var(--color-palette-purple-400);
+  --color-flow-green: var(--color-palette-green-400);
+  --color-flow-teal: var(--color-palette-teal-400);
+  --color-flow-gray: var(--color-palette-slate-400);
   --color-figure-icon: var(--color-palette-blue-450);
   --color-ui-link: var(--color-palette-blue-400);
   --color-ui-focus: var(--color-palette-blue-400);
@@ -327,6 +354,14 @@
   font-weight: var(--weight-semibold);
   text-anchor: end;
   fill: var(--color-state-active-text);
+}
+
+/* 값 카드 줄의 값 글자. 줄의 이름(row)은 카드 층이 그리고 값은 오른쪽 끝에 얹힌다. */
+.fl .value {
+  font-size: var(--size-text-11);
+  font-weight: var(--weight-semibold);
+  text-anchor: end;
+  fill: var(--color-fg);
 }
 
 .fl .mini {
@@ -559,6 +594,7 @@
 <g id="e-4" class="fl-edge"><path id="p-4" d="M 319.85986328125 360 L 166 360" class="fl-path a16" stroke-dasharray="5 4" marker-end="url(#fl-arrow)"/><g class="fl-pill"><rect x="184.7" y="338" width="116.5" height="18" rx="9" class="pill a17"/><text x="242.9" y="351" class="edgelabel a18"><tspan class="code">access_token</tspan> 발급</text></g></g>
 <g id="e-5" class="fl-edge"><path id="p-5" d="M 166 404 L 545.6 404" class="fl-path a19" marker-end="url(#fl-arrow)"/><g class="fl-pill"><rect x="314" y="382" width="83.5" height="18" rx="9" class="pill a20"/><text x="355.8" y="395" class="edgelabel a21"><tspan class="code">GET /me</tspan> 호출</text></g></g>
 <g class="fl-note"><rect x="331.9" y="182" width="201.7" height="50" rx="6" class="note-box"/><text x="341.9" y="203" class="row"><tspan class="code">challenge = S256(verifier)</tspan>를</text><text x="341.9" y="218" class="row">저장한다</text></g>
+
 <g class="p0-0" opacity="0"><circle r="10" fill="var(--color-state-active)" opacity="0.2"/><circle r="4.5" fill="var(--color-state-active)"/><animate attributeName="opacity" dur="24.212s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.05679" values="1;0"/><animateMotion dur="24.212s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.05679;1" keySplines="0.455 0.03 0.515 0.955;0 0 1 1" keyPoints="0;1;1"><mpath href="#p-0" xlink:href="#p-0"/></animateMotion></g>
 <g class="p1-0" opacity="0"><circle r="10" fill="var(--color-state-active)" opacity="0.2"/><circle r="4.5" fill="var(--color-state-active)"/><animate attributeName="opacity" dur="24.212s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.19391;0.27334" values="0;1;0"/><animateMotion dur="24.212s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.19391;0.27334;1" keySplines="0 0 1 1;0.455 0.03 0.515 0.955;0 0 1 1" keyPoints="0;0;1;1"><mpath href="#p-1" xlink:href="#p-1"/></animateMotion></g>
 <g class="p2-0" opacity="0"><circle r="10" fill="var(--color-state-active)" opacity="0.2"/><circle r="4.5" fill="var(--color-state-active)"/><animate attributeName="opacity" dur="24.212s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.30225;0.38167" values="0;1;0"/><animateMotion dur="24.212s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.30225;0.38167;1" keySplines="0 0 1 1;0.455 0.03 0.515 0.955;0 0 1 1" keyPoints="0;0;1;1"><mpath href="#p-2" xlink:href="#p-2"/></animateMotion></g>

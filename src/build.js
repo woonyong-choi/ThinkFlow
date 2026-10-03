@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { checkChartFigure, checkFigure } from './check.js';
 import { CHIP_GAP, sizeChip } from './chip.js';
+import { planClashes } from './chip-clash.js';
 import { planHops } from './chip-plan.js';
 import { chipLines, chipObstacles } from './draw/boxes.js';
 import { attachIcons } from './icons/index.js';
@@ -132,10 +133,11 @@ function widenForChips(scene, timeline) {
 // cost: time O(h·(k·p + k·a)), heap O(a + h·k), stack O(1)
 // vars: h = 글 상자 있는 이동 수, k = 재는 지점 수(21), p = 경로 점 수, a = 글자 사각형 수
 // basis: estimate
-// 글 상자 자리를 경로 지점마다 미리 정해 이동에 담는다. 움직이는 SVG와 재생기는 이 계획을 그대로 걸어 같은 자리를 쓴다.
+// 글 상자 자리를 경로 지점마다 미리 정해 이동에 담고, 흐름에서 점끼리 글 상자가 겹치는 구간은 나중에 출발한 점의 글 상자를 숨긴다. 움직이는 SVG와 재생기는 이 계획을 그대로 걸어 같은 자리를 쓴다.
 function planChips(scene, timeline) {
   const avoid = [...chipObstacles(scene), ...chipLines(scene)];
   planHops(scene, timeline, avoid);
+  planClashes(scene, timeline);
 }
 
 // cost: time O(w), heap O(w), stack O(1)

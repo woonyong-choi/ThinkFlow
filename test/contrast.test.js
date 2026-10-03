@@ -21,7 +21,8 @@ const BORDER_FACES = [...FIGURE_FACES, 'surface', ...DOCUMENT_FACES];
 // 강조 글자는 그룹 바탕 위에 놓이지 않는다. 카드 표시는 내용이 찬 카드 바탕(card-on)에, 링크는 문서 면에 놓인다.
 const TEXT_FACES = ['bg', 'node', 'card-on', ...DOCUMENT_FACES];
 const TEXT_ROLES = ['state.active-text', 'ui.link'];
-const GRAPHIC_ROLES = ['state.active', 'ui.focus', 'ui.progress', 'data.main', 'data.compare', 'figure.icon'];
+const FLOW_ROLES = ['flow.purple', 'flow.green', 'flow.teal', 'flow.gray'];
+const GRAPHIC_ROLES = ['state.active', 'ui.focus', 'ui.progress', 'data.main', 'data.compare', 'figure.icon', ...FLOW_ROLES];
 const THEMES = ['light', 'dark'];
 const ORANGE_HUE = 50;
 const HUE_TOLERANCE = 1;
@@ -100,6 +101,11 @@ test('contrast_graphic_pairs_reach_3_in_both_themes', () => {
     expectAtLeast(theme, GRAPHIC, BORDER_FACES.flatMap((face) => [['border', face]]));
     expectAtLeast(theme, GRAPHIC, [['fg', 'bg'], ['node', 'figure.icon']]);
   }
+});
+
+// 근거: 규칙 docs-integration.md 대비 기준 표: 갈래색 점과 글 상자 면(flow.*)은 그 위 글자(on-active)와 4.5 이상
+test('contrast_flow_tone_faces_carry_the_chip_text_at_4_5_in_both_themes', () => {
+  for (const theme of THEMES) expectAtLeast(theme, TEXT, FLOW_ROLES.map((role) => ['state.on-active', role]));
 });
 
 // 근거: 규칙 docs-integration.md 대비 기준 표 "꾸밈 요소": 격자, 히트맵 값 0 칸, 신뢰구간 띠 1.5 이상, 문서용 판 테두리 1.3 이상
@@ -220,6 +226,21 @@ test('palette_blue_and_orange_stay_apart_for_protanopia_and_deuteranopia_in_both
       const distance = distanceOf(seenBy(matrix, color(theme, blue)), seenBy(matrix, color(theme, orange)));
 
       assert.ok(distance >= CVD_MIN_DISTANCE, `${theme} ${name}: ${distance.toFixed(3)}`);
+    }
+  }
+});
+
+// 근거: 규칙 docs-integration.md 갈래색: 흐름 점 색은 서로, 그리고 파랑(지금)과 주황(비교)과 OKLab 거리 0.1 이상이고 적록 색각 이상 눈에도 같다
+test('flow_tone_colors_stay_apart_from_each_other_for_normal_protan_and_deutan_sight_and_from_blue_and_orange_for_normal_sight', () => {
+  const NORMAL = [[1, 0, 0], [0, 1, 0], [0, 0, 1]];
+  for (const theme of THEMES) {
+    for (const [name, matrix] of Object.entries({ normal: NORMAL, ...CVD })) {
+      const pairs = FLOW_ROLES.flatMap((a, i) => [...FLOW_ROLES.slice(i + 1), ...(name === 'normal' ? ['state.active', 'data.compare'] : [])].map((b) => [a, b]));
+      for (const [a, b] of pairs) {
+        const distance = distanceOf(seenBy(matrix, color(theme, a)), seenBy(matrix, color(theme, b)));
+
+        assert.ok(distance >= CVD_MIN_DISTANCE, `${theme} ${name} ${a} vs ${b}: ${distance.toFixed(3)}`);
+      }
     }
   }
 });

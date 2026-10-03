@@ -41,13 +41,25 @@
   --color-palette-ink-900: #0b0b0b;
   --color-palette-ink-1000: #000000;
   --color-palette-purple-500: #8b5cf6;
+  --color-palette-purple-400: #9b90ff;
+  --color-palette-purple-600: #483c95;
   --color-palette-green-500: #10b981;
+  --color-palette-green-400: #b6da70;
+  --color-palette-green-700: #517000;
   --color-palette-slate-500: #8b949e;
+  --color-palette-slate-400: #b0a0a4;
+  --color-palette-slate-600: #57494d;
   --color-palette-teal-500: #11a6b0;
+  --color-palette-teal-400: #87f3f6;
+  --color-palette-teal-700: #008084;
   --color-state-active: var(--color-palette-blue-550);
   --color-state-active-fill: var(--color-palette-blue-600);
   --color-state-active-text: var(--color-palette-blue-600);
   --color-state-on-active: var(--color-palette-gray-0);
+  --color-flow-purple: var(--color-palette-purple-600);
+  --color-flow-green: var(--color-palette-green-700);
+  --color-flow-teal: var(--color-palette-teal-700);
+  --color-flow-gray: var(--color-palette-slate-600);
   --color-figure-icon: var(--color-palette-blue-700);
   --color-ui-link: var(--color-palette-blue-600);
   --color-ui-focus: var(--color-palette-blue-550);
@@ -93,6 +105,7 @@
   --size-packet-radius: 4.5px;
   --size-packet-halo: 10px;
   --size-packet-hop-ref: 300px;
+  --size-packet-chip-reach: 12px;
   --size-arrow-head: 5px;
   --size-arrow-head-lit: 4px;
   --size-node-card-width: 176px;
@@ -182,6 +195,7 @@
   --opacity-dim-ink: 0.82;
   --opacity-band: 0.22;
   --opacity-range: 0.4;
+  --opacity-chip-visible-min: 0.1;
   --z-raised: 2;
   --z-overlay: 10;
   --duration-fast: 200ms;
@@ -196,6 +210,10 @@
   --duration-step-end: 1600ms;
   --duration-chart-cycle: 7000ms;
   --duration-reveal: 900ms;
+  --duration-value-flash: 700ms;
+  --duration-chip-frame: 16.666666666666668ms;
+  --duration-flow-step: 12000ms;
+  --duration-cut-fade: 600ms;
   --easing-move: cubic-bezier(0.455, 0.03, 0.515, 0.955);
   --easing-reveal: cubic-bezier(0, 0, 0.58, 1);
   --scale-zoom-max: 6;
@@ -204,6 +222,7 @@
   --scale-fold-step: 0.75;
   --scale-aspect-max: 3;
   --scale-zoom-step: 1.25;
+  --scale-flow-dots-max: 80;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) {
@@ -211,6 +230,10 @@
     --color-state-active-fill: var(--color-palette-blue-400);
     --color-state-active-text: var(--color-palette-blue-400);
     --color-state-on-active: var(--color-palette-ink-850);
+    --color-flow-purple: var(--color-palette-purple-400);
+    --color-flow-green: var(--color-palette-green-400);
+    --color-flow-teal: var(--color-palette-teal-400);
+    --color-flow-gray: var(--color-palette-slate-400);
     --color-figure-icon: var(--color-palette-blue-450);
     --color-ui-link: var(--color-palette-blue-400);
     --color-ui-focus: var(--color-palette-blue-400);
@@ -240,6 +263,10 @@
   --color-state-active-fill: var(--color-palette-blue-400);
   --color-state-active-text: var(--color-palette-blue-400);
   --color-state-on-active: var(--color-palette-ink-850);
+  --color-flow-purple: var(--color-palette-purple-400);
+  --color-flow-green: var(--color-palette-green-400);
+  --color-flow-teal: var(--color-palette-teal-400);
+  --color-flow-gray: var(--color-palette-slate-400);
   --color-figure-icon: var(--color-palette-blue-450);
   --color-ui-link: var(--color-palette-blue-400);
   --color-ui-focus: var(--color-palette-blue-400);
@@ -326,6 +353,14 @@
   font-weight: var(--weight-semibold);
   text-anchor: end;
   fill: var(--color-state-active-text);
+}
+
+/* 값 카드 줄의 값 글자. 줄의 이름(row)은 카드 층이 그리고 값은 오른쪽 끝에 얹힌다. */
+.fl .value {
+  font-size: var(--size-text-11);
+  font-weight: var(--weight-semibold);
+  text-anchor: end;
+  fill: var(--color-fg);
 }
 
 .fl .mini {
@@ -508,6 +543,7 @@
 <g id="n-0" class="fl-node" data-id="payments"><rect x="28" y="28" width="221.2" height="104" rx="10" fill="var(--color-node)" class="fl-stroke a0"/><text x="138.6" y="45.7" class="label">payments</text><g class="fl-part" data-part="payments.id"><rect x="29" y="54" width="219.2" height="26" class="part-bg a1"/><line x1="28" x2="249.2" y1="54" y2="54" class="col-line"/><text x="46" y="71.7" class="cell">id<tspan class="key" dx="6">PK</tspan></text><text x="231.2" y="71.7" class="cell type">bigint</text></g><g class="fl-part" data-part="payments.order_id"><rect x="29" y="80" width="219.2" height="26" class="part-bg a2"/><line x1="28" x2="249.2" y1="80" y2="80" class="col-line"/><text x="46" y="97.7" class="cell">order_id<tspan class="key" dx="6">FK</tspan></text><text x="231.2" y="97.7" class="cell type">bigint</text></g><g class="fl-part" data-part="payments.amount"><rect x="29" y="106" width="219.2" height="26" class="part-bg a1"/><line x1="28" x2="249.2" y1="106" y2="106" class="col-line"/><text x="46" y="123.7" class="cell">amount</text><text x="231.2" y="123.7" class="cell type">numeric(10, 2)</text></g></g>
 <g id="n-1" class="fl-node" data-id="orders"><rect x="309.2" y="54" width="142.7" height="104" rx="10" fill="var(--color-node)" class="fl-stroke a0"/><text x="380.5" y="71.7" class="label">orders</text><g class="fl-part" data-part="orders.id"><rect x="310.2" y="80" width="140.7" height="26" class="part-bg a2"/><line x1="309.2" x2="451.9" y1="80" y2="80" class="col-line"/><text x="327.2" y="97.7" class="cell">id<tspan class="key" dx="6">PK</tspan></text><text x="433.9" y="97.7" class="cell type">bigint</text></g><g class="fl-part" data-part="orders.user_id"><rect x="310.2" y="106" width="140.7" height="26" class="part-bg a1"/><line x1="309.2" x2="451.9" y1="106" y2="106" class="col-line"/><text x="327.2" y="123.7" class="cell">user_id</text><text x="433.9" y="123.7" class="cell type">bigint</text></g><g class="fl-part" data-part="orders.status"><rect x="310.2" y="132" width="140.7" height="26" class="part-bg a1"/><line x1="309.2" x2="451.9" y1="132" y2="132" class="col-line"/><text x="327.2" y="149.7" class="cell">status</text><text x="433.9" y="149.7" class="cell type">varchar</text></g></g>
 <g id="e-0" class="fl-edge"><path id="p-0" d="M 249.1939453125 93 L 309.2 93" class="fl-path a3" marker-end="url(#fl-arrow)"/></g>
+
 <g class="p1-0" opacity="0"><circle r="10" fill="var(--color-state-active)" opacity="0.2"/><circle r="4.5" fill="var(--color-state-active)"/><g><rect x="-44.5" y="-35" width="89" height="23" rx="8" fill="var(--color-state-active-fill)"/><text x="0" y="-20" class="chip">order_id 1042</text><animateTransform attributeName="transform" type="translate" dur="7.79s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.60847;0.61275;0.61703;0.62131;0.62559;0.62987;0.63415;0.63843;0.6427;0.64698;0.65126;0.65982;0.6641;0.66838;0.67266;0.67694;0.68122;0.68549;0.68977;0.69405;0.69833;0.70261;0.70475;1" values="48.5 -31;48.5 -31;48.1 -31;47.4 -31;46.2 -31;44.5 -31;42.4 -31;39.6 -31;36.4 -31;32.6 -31;28.3 -31;23.6 -31;14 -31;9.4 -31;5.2 -31;1.4 -31;-1.8 -31;-4.5 -31;-6.8 -31;-8.5 -31;-9.9 -31;-10.8 -31;-11.4 -31;-11.5 -31;-11.5 -31"/></g><animate attributeName="opacity" dur="7.79s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.60847;0.70475" values="0;1;0"/><animateMotion dur="7.79s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.60847;0.70475;1" keySplines="0 0 1 1;0.455 0.03 0.515 0.955;0 0 1 1" keyPoints="0;0;1;1"><mpath href="#p-0" xlink:href="#p-0"/></animateMotion></g>
 </g>
 <text x="480" y="204" opacity="0" class="steplabel a4">결제</text>

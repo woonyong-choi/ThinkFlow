@@ -41,13 +41,25 @@
   --color-palette-ink-900: #0b0b0b;
   --color-palette-ink-1000: #000000;
   --color-palette-purple-500: #8b5cf6;
+  --color-palette-purple-400: #9b90ff;
+  --color-palette-purple-600: #483c95;
   --color-palette-green-500: #10b981;
+  --color-palette-green-400: #b6da70;
+  --color-palette-green-700: #517000;
   --color-palette-slate-500: #8b949e;
+  --color-palette-slate-400: #b0a0a4;
+  --color-palette-slate-600: #57494d;
   --color-palette-teal-500: #11a6b0;
+  --color-palette-teal-400: #87f3f6;
+  --color-palette-teal-700: #008084;
   --color-state-active: var(--color-palette-blue-550);
   --color-state-active-fill: var(--color-palette-blue-600);
   --color-state-active-text: var(--color-palette-blue-600);
   --color-state-on-active: var(--color-palette-gray-0);
+  --color-flow-purple: var(--color-palette-purple-600);
+  --color-flow-green: var(--color-palette-green-700);
+  --color-flow-teal: var(--color-palette-teal-700);
+  --color-flow-gray: var(--color-palette-slate-600);
   --color-figure-icon: var(--color-palette-blue-700);
   --color-ui-link: var(--color-palette-blue-600);
   --color-ui-focus: var(--color-palette-blue-550);
@@ -93,6 +105,7 @@
   --size-packet-radius: 4.5px;
   --size-packet-halo: 10px;
   --size-packet-hop-ref: 300px;
+  --size-packet-chip-reach: 12px;
   --size-arrow-head: 5px;
   --size-arrow-head-lit: 4px;
   --size-node-card-width: 176px;
@@ -182,6 +195,7 @@
   --opacity-dim-ink: 0.82;
   --opacity-band: 0.22;
   --opacity-range: 0.4;
+  --opacity-chip-visible-min: 0.1;
   --z-raised: 2;
   --z-overlay: 10;
   --duration-fast: 200ms;
@@ -196,6 +210,10 @@
   --duration-step-end: 1600ms;
   --duration-chart-cycle: 7000ms;
   --duration-reveal: 900ms;
+  --duration-value-flash: 700ms;
+  --duration-chip-frame: 16.666666666666668ms;
+  --duration-flow-step: 12000ms;
+  --duration-cut-fade: 600ms;
   --easing-move: cubic-bezier(0.455, 0.03, 0.515, 0.955);
   --easing-reveal: cubic-bezier(0, 0, 0.58, 1);
   --scale-zoom-max: 6;
@@ -204,6 +222,7 @@
   --scale-fold-step: 0.75;
   --scale-aspect-max: 3;
   --scale-zoom-step: 1.25;
+  --scale-flow-dots-max: 80;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) {
@@ -211,6 +230,10 @@
     --color-state-active-fill: var(--color-palette-blue-400);
     --color-state-active-text: var(--color-palette-blue-400);
     --color-state-on-active: var(--color-palette-ink-850);
+    --color-flow-purple: var(--color-palette-purple-400);
+    --color-flow-green: var(--color-palette-green-400);
+    --color-flow-teal: var(--color-palette-teal-400);
+    --color-flow-gray: var(--color-palette-slate-400);
     --color-figure-icon: var(--color-palette-blue-450);
     --color-ui-link: var(--color-palette-blue-400);
     --color-ui-focus: var(--color-palette-blue-400);
@@ -240,6 +263,10 @@
   --color-state-active-fill: var(--color-palette-blue-400);
   --color-state-active-text: var(--color-palette-blue-400);
   --color-state-on-active: var(--color-palette-ink-850);
+  --color-flow-purple: var(--color-palette-purple-400);
+  --color-flow-green: var(--color-palette-green-400);
+  --color-flow-teal: var(--color-palette-teal-400);
+  --color-flow-gray: var(--color-palette-slate-400);
   --color-figure-icon: var(--color-palette-blue-450);
   --color-ui-link: var(--color-palette-blue-400);
   --color-ui-focus: var(--color-palette-blue-400);
@@ -326,6 +353,14 @@
   font-weight: var(--weight-semibold);
   text-anchor: end;
   fill: var(--color-state-active-text);
+}
+
+/* 값 카드 줄의 값 글자. 줄의 이름(row)은 카드 층이 그리고 값은 오른쪽 끝에 얹힌다. */
+.fl .value {
+  font-size: var(--size-text-11);
+  font-weight: var(--weight-semibold);
+  text-anchor: end;
+  fill: var(--color-fg);
 }
 
 .fl .mini {
@@ -518,6 +553,7 @@
 <g id="n-0" class="fl-node" data-id="mmu"><rect x="28" y="86.5" width="100" height="57" rx="10" fill="var(--color-node)" class="fl-stroke a0"/><text x="78" y="112.2" class="label">MMU</text><text x="78" y="128" class="sub">주소 변환</text></g>
 <g id="n-1" class="fl-node" data-id="pte"><rect x="282.2" y="28" width="306" height="174" rx="10" fill="var(--color-node)" class="fl-stroke a0"/><text x="435.2" y="47.7" class="label">페이지 표 항목 (PTE)</text><rect x="529.2" y="124" width="47" height="33" class="grid-cell empty"/><rect x="529.2" y="157" width="47" height="33" class="grid-cell empty"/><g class="fl-part" data-part="pte.frame"><rect x="294.2" y="58" width="141" height="66" class="grid-cell a1"/><text x="364.7" y="95.7" class="item">프레임 번호</text></g><g class="fl-part" data-part="pte.valid"><rect x="435.2" y="58" width="47" height="33" class="grid-cell a2"/><text x="458.7" y="79.2" class="item">V</text></g><g class="fl-part" data-part="pte.dirty"><rect x="482.2" y="58" width="47" height="33" class="grid-cell a2"/><text x="505.7" y="79.2" class="item">D</text></g><g class="fl-part" data-part="pte.ref"><rect x="529.2" y="58" width="47" height="33" class="grid-cell a2"/><text x="552.7" y="79.2" class="item">R</text></g><g class="fl-part" data-part="pte.prot"><rect x="435.2" y="91" width="141" height="33" class="grid-cell a3"/><text x="505.7" y="112.2" class="item">권한 (읽기, 쓰기, 실행)</text></g><g class="fl-part" data-part="pte.note"><rect x="294.2" y="124" width="235" height="66" class="grid-cell a4"/><text x="411.7" y="143.7" class="item">참조 비트는 CPU가 접근할 때 켜고,</text><text x="411.7" y="161.7" class="item">운영체제가 주기적으로 지워 최근에 쓰지</text><text x="411.7" y="179.7" class="item">않은 페이지를 교체 후보로 고른다</text></g></g>
 <g id="e-0" class="fl-edge"><path id="p-0" d="M 128 115 L 282.2 115" class="fl-path a5" marker-end="url(#fl-arrow)"/><g class="fl-pill"><rect x="188" y="105.5" width="34.2" height="18" rx="9" class="pill a6"/><text x="205.1" y="118.5" class="edgelabel a7">조회</text></g></g>
+
 
 </g>
 <text x="480" y="248" opacity="0" class="steplabel a8">주소</text>

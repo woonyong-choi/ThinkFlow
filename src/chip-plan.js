@@ -6,6 +6,7 @@ import { dotAt, MOVE, NODE_MS } from './chip-motion.js';
 import { addSlides, SWITCH_COST } from './chip-slide.js';
 import { progressAt } from './easing.js';
 import { flattenRoute } from './route.js';
+import { values } from './tokens.js';
 
 export { CHIP_FRAME_MS, CHIP_VISIBLE_MIN, chipStateAt } from './chip-motion.js';
 export { CHIP_STEP_MAX } from './chip-slide.js';
@@ -18,6 +19,8 @@ const DETACH_COST_PER_PX = 2e4;
 const NEAR_COST = 300;
 const MARGIN_COST = 500;
 const ORDER_COST = 100;
+// 흐름(track)의 글 상자는 자기 점에서 이 거리(px, 상자 가장자리와 점 중심) 안에만 둔다. 이를 넘는 후보는 비용을 재지 않고 제외한다(점 옆 기본 자리는 늘 이 안이다)
+const ATTACH_MAX = values.size.packet['chip-reach'];
 
 // 이동에 맞춘 계획의 문제 목록. 그림 검사가 같은 계획을 다시 세우지 않고 쓴다. { scene, issues }
 const plannedIssues = new WeakMap();
@@ -34,12 +37,20 @@ export function planHops(scene, timeline, avoid) {
   for (const seg of timeline.segs) {
     for (const hop of seg.hops) {
       if (!hop.data) continue;
-      const key = `${hop.edge}\u0000${hop.ms}\u0000${hop.isBack}\u0000${hop.data.join('\u0000')}`;
-      if (!plans.has(key)) plans.set(key, planChip(scene, hop, avoid));
+      const key = `${hop.track === undefined ? hop.edge : `t${hop.track}`}\u0000${hop.ms}\u0000${hop.isBack}\u0000${hop.data.join('\u0000')}`;
+      if (!plans.has(key)) plans.set(key, planChip(scene, hop.track === undefined ? hop : { ...hop, route: timeline.tracks[hop.track].route }, avoid));
       hop.chipPath = plans.get(key).path;
-      plannedIssues.set(hop, { scene, issues: plans.get(key).issues });
+      plannedIssues.set(hop, { scene, issues: hop.track === undefined ? plans.get(key).issues : reportedOf(plans.get(key).issues, hop) });
     }
   }
+}
+
+// cost: time O(i·g), heap O(i), stack O(1)
+// vars: i = 지점별 문제 수, g = 도형 안을 지나는 구간 수
+// basis: estimate
+// 흐름 글 상자의 문제 가운데 그림 검사가 알릴 것. 글 상자는 가리는 곳에서 숨으므로(흐려짐) 가림은 알리지 않고, 그림 밖만 알린다. 점이 도형 안을 지나 보이지 않는 구간은 보지 않는다.
+function reportedOf(issues, hop) {
+  return issues.filter(({ at }) => !hop.gaps.some(([from, to]) => at > from && at < to)).map((issue) => ({ ...issue, hits: [] }));
 }
 
 // cost: time O(plan) 계획이 없을 때, O(1) 있을 때, heap O(n), stack O(1)
@@ -58,10 +69,12 @@ export function issuesOfHop(scene, hop, avoid) {
  * 이동 하나의 글 상자 계획. 계획 지점마다 후보를 재고, 자리 바꿈 횟수를 가장 적게 하는 후보 열을 동적 계획으로 고른다.
  * 바꿔야 하면 두 자리 사이를 시간에 선형으로 미끄러지고(중간 프레임이 모두 깨끗한 때만), 깨끗한 길이 없으면 바꾸지 않고 겹치는 구간만 흐리게 한다.
  * 움직이는 SVG와 재생기가 이 목록을 그대로 쓴다.
+ * 흐름(track) 이동은 이어 붙인 경로 hop.route를 따라가고, 지나는 선 모두(hop.edges)를 피할 대상에서 뺀다.
  * @returns { path, issues }. path는 이동 진행 비율 at(오름차순)마다 [at, dx, dy, opacity]이고, issues는 지점마다 { at, isOutside, hits }다
  */
 export function planChip(scene, hop, avoid) {
-  const ctx = { scene, hop, chip: sizeChip(hop.data), field: avoid.filter((o) => o.edge !== hop.edge), route: flattenRoute(scene.edges[hop.edge].points), dots: new Map(), frames: new Map() };
+  const own = hop.edges ?? [hop.edge];
+  const ctx = { scene, hop, chip: sizeChip(hop.data), field: avoid.filter((o) => !own.includes(o.edge)), route: hop.route ?? flattenRoute(scene.edges[hop.edge].points), dots: new Map(), frames: new Map(), isAttached: hop.track !== undefined };
   ctx.hard = ctx.field.filter((o) => !o.soft);
   ctx.hardIndex = gridOf(ctx.hard);
   ctx.index = gridOf(ctx.field);
@@ -119,7 +132,7 @@ function slotsAt(ctx, t, { descs, known }) {
     const c = known.get(key) ?? chipCandidateAt(point, ctx.chip, { scene: ctx.scene, avoid: ctx.field, desc, index: ctx.index });
     // c는 이 이동 계획만 쓰는 후보라 그대로 고쳐 쓴다.
     c.point = point;
-    c.cost = unaryCost(c, point);
+    c.cost = ctx.isAttached && !isWithinReach(c.box, point) ? Infinity : unaryCost(c, point);
     c.isClean = !c.isOutside && c.hits.length === 0;
     slots.set(key, c);
   });
@@ -128,10 +141,20 @@ function slotsAt(ctx, t, { descs, known }) {
 
 // cost: time O(1), heap O(1), stack O(1)
 // basis: estimate
+// 글 상자 사각형과 점 중심 사이 거리(px)
+function gapOf(box, point) {
+  return Math.hypot(Math.max(box.x - point.x, 0, point.x - box.x - box.w), Math.max(box.y - point.y, 0, point.y - box.y - box.h));
+}
+
+// 글 상자가 점에 붙어 있다고 볼 거리 안인지(흐름의 글 상자 후보 분류)
+const isWithinReach = (box, point) => gapOf(box, point) <= ATTACH_MAX;
+
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
 // 후보 하나의 한 지점 비용. 겹침이나 그림 밖은 흐려져야 하므로 가장 크다.
 function unaryCost({ rank: [, area, near, tight, crowded, order], box, isOutside, hits }, point) {
   const unclean = isOutside || hits.length ? UNCLEAN_COST + area : 0;
-  const gap = Math.hypot(Math.max(box.x - point.x, 0, point.x - box.x - box.w), Math.max(box.y - point.y, 0, point.y - box.y - box.h));
+  const gap = gapOf(box, point);
   return unclean + near * NEAR_COST + (tight + crowded) * MARGIN_COST + order * ORDER_COST + Math.max(0, gap - DETACH_GAP) * DETACH_COST_PER_PX;
 }
 

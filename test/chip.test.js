@@ -3,7 +3,9 @@ import assert from 'node:assert/strict';
 import { readdirSync, readFileSync } from 'node:fs';
 import { test } from 'node:test';
 import { buildFigure } from '../src/build.js';
+import { curveOf, progressAt } from '../src/easing.js';
 import { flattenRoute } from '../src/route.js';
+import { values } from '../src/tokens.js';
 import { CHIP_CLEAR, CHIP_GAP, CHIP_MARGIN, placeChip, sizeChip } from '../src/chip.js';
 import { CHIP_FRAME_MS, CHIP_STEP_MAX, CHIP_VISIBLE_MIN, chipStateAt, planChip } from '../src/chip-plan.js';
 import { chipObstacles } from '../src/draw/boxes.js';
@@ -120,23 +122,36 @@ async function chipFigures() {
   for (const { file, source } of [...sources, ...EDGE_SOURCES.map((source, i) => ({ file: `edge-${i}`, source }))]) {
     const result = await buildFigure(source, { baseDir: 'examples' });
     const hops = result.chart ? [] : result.timeline.segs.flatMap((seg) => seg.hops).filter((h) => h.data);
-    if (hops.length) figures.push({ file, scene: result.scene, hops });
+    if (hops.length) figures.push({ file, scene: result.scene, hops, tracks: result.timeline.tracks ?? [] });
   }
   return figures;
+}
+
+// cost: time O(g), heap O(1), stack O(1)
+// vars: g = 도형 안을 지나는 구간 수
+// basis: estimate
+// 흐름의 점이 도형 안을 지나는(보이지 않는) 중인지. t는 이동 시작 뒤 ms다.
+function isInside(hop, t) {
+  const progress = progressAt(curveOf('move'), Math.min(1, t / hop.ms));
+  return hop.gaps.some(([from, to]) => progress > from && progress < to);
 }
 
 // 근거: 설계 playback.md 요구사항 "60fps 프레임마다 보이는 동안 이름, 열, 그룹 제목, 알약을 가리지 않고 그림 안에 있다. 한 프레임에 CHIP_STEP_MAX 넘게 더 움직이지 않는다". 버그 #20, #4 증상 3
 test('buildFigure_every_example_and_demo_chip_stays_inside_clear_and_never_jumps_in_any_60fps_frame', async () => {
   let frames = 0;
-  for (const { file, scene, hops } of await chipFigures()) {
+  for (const { file, scene, hops, tracks } of await chipFigures()) {
     const names = chipObstacles(scene);
     for (const hop of hops) {
-      const move = { route: flattenRoute(scene.edges[hop.edge].points), hop, chip: sizeChip(hop.data) };
+      const move = { route: hop.track === undefined ? flattenRoute(scene.edges[hop.edge].points) : tracks[hop.track].route, hop, chip: sizeChip(hop.data) };
       let before;
       for (let t = 0; t <= hop.ms; t += CHIP_FRAME_MS) {
         const { box, point, opacity } = chipStateAt(move, hop.chipPath, t);
         const isVisible = opacity >= CHIP_VISIBLE_MIN;
         const hit = names.find((name) => overlaps(box, name));
+        if (hop.track !== undefined && !isInside(hop, t)) {
+          const gap = Math.hypot(Math.max(box.x - point.x, 0, point.x - box.x - box.w), Math.max(box.y - point.y, 0, point.y - box.y - box.h));
+          assert.ok(gap <= values.size.packet['chip-reach'] + 0.5, `${file}: ${Math.round(t)}ms에 흐름 글 상자가 점에서 ${gap.toFixed(1)}px 떨어진다`);
+        }
         assert.ok(!isVisible || !hit, `${file}: ${Math.round(t)}ms에 이동 글 상자가 ${hit?.name}을 가린다`);
         assert.ok(!isVisible || (box.x >= -0.5 && box.y >= -0.5 && box.x + box.w <= scene.width + 0.5 && box.y + box.h <= scene.height + 0.5), `${file}: ${Math.round(t)}ms에 판 밖`);
         const center = { x: box.x + box.w / 2, y: box.y + box.h / 2 };

@@ -63,6 +63,14 @@
   fill: var(--color-state-active-text);
 }
 
+/* 값 카드 줄의 값 글자. 줄의 이름(row)은 카드 층이 그리고 값은 오른쪽 끝에 얹힌다. */
+.fl .value {
+  font-size: var(--size-text-11);
+  font-weight: var(--weight-semibold);
+  text-anchor: end;
+  fill: var(--color-fg);
+}
+
 .fl .mini {
   font-size: var(--size-text-11);
   text-anchor: middle;

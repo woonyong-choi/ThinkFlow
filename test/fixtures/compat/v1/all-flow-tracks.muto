@@ -1,0 +1,25 @@
+flow right
+title "흐름과 값"
+box web "웹"
+box app "앱"
+box api "API"
+store db "DB"
+box view "화면"
+value stock "재고" on=db from=9
+value shown "화면 재고" on=view ref=stock
+value state "상태" on=api from=idle
+on db stock-1
+web -> api
+app -> api
+api -> db
+
+step "박자" "박자 단계에서도 값이 바뀐다"
+  web -> api "요청" tone=purple set="state=busy"
+  api -> db "저장" tone=gray set="state=idle"
+
+step "흐름" "흐름 단계" for=10s
+  track web -> api -> db "주문" at=0s every=3s time=4s tone=teal set="state=busy@api"
+  track web, app -> api "주문" every=2s tone=green set="stock=7"
+
+step "기본 길이" "for를 적지 않은 흐름 단계"
+  track web -> api -> db

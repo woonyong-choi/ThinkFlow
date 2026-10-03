@@ -31,6 +31,17 @@ export function timeAt(curve, progress) {
   return axis(x1, x2, (low + high) / 2);
 }
 
+const MOVE = curveOf('move');
+
+// cost: time O(STEPS), heap O(1), stack O(1)
+// vars: STEPS = 이분 탐색 횟수
+// basis: estimate
+/** 이동 곡선(`easing.move`)을 따르는 점이 경로 길이의 비율 fraction에 닿는 시각(이동 시작 뒤 ms). 처음(0 이하)은 0, 끝(1 이상)은 이동 시간 그대로다. */
+export function arrivalOffsetMs(fraction, durationMs) {
+  if (fraction <= 0) return 0;
+  return fraction >= 1 ? durationMs : timeAt(MOVE, fraction) * durationMs;
+}
+
 // cost: time O(1), heap O(1), stack O(1)
 // basis: estimate
 /** SVG keySplines 값 */

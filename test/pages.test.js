@@ -58,6 +58,36 @@ describe('pages', { skip: SKIP }, () => {
     }
   });
 
+  // 근거: 설계 playback.md 값 변화: 재생기는 시간표의 값 구간을 읽어 글자를 고른다. 일시정지에서 멈추고, 탭 이동은 그 단계 처음 값으로 돌아가며, 배속을 바꿔도 줄마다 값이 하나만 보인다
+  test('player_value_rows_follow_the_timeline_after_pause_tab_jump_and_rate_change', async () => {
+    const source = 'flow right\nbox a "A"\nbox b "B"\nvalue n "개수" on=b\non b n+1\na -> b\nstep "하나"\n  a -> b "x"\nstep "흐름" for=4s\n  track a -> b every=600ms time=300ms\n';
+    const result = await buildFigure(source);
+    const rowsOf = (si) => result.timeline.values.filter((row) => row.si === si);
+    // 화면에서 보이는 값 글자: 지금 단계의 값 줄마다 불투명도 1인 글자 요소의 글(다른 단계의 값 줄은 모두 숨어 있어 뺀다)
+    const shown = (page) => page.evaluate(() => [...new Set([...document.querySelectorAll('[data-v]')].map((el) => el.dataset.v))].map((v) => [...document.querySelectorAll(`[data-v="${v}"]`)].filter((el) => el.getAttribute('opacity') === '1').map((el) => el.dataset.t)).filter((texts) => texts.length));
+    await withPage(browser, await toHtml(result, 'values'), async (page) => {
+      await page.click('.fl-tabs button:nth-child(2)');
+      await page.waitForTimeout(1500);
+      const changed = await shown(page);
+      await page.click('.fl-pause');
+      const paused = await shown(page);
+      await page.waitForTimeout(500);
+      const still = await shown(page);
+      await page.click('.fl-rate');
+      const fast = await shown(page);
+      await page.click('.fl-tabs button:nth-child(1)');
+      const first = await shown(page);
+      await page.click('.fl-tabs button:nth-child(2)');
+      const second = await shown(page);
+
+      assert.notDeepEqual(changed, rowsOf(1).map((row) => [row.initial]), '흐름이 값을 바꾸기 전이면 이 시험이 아무것도 보이지 않는다');
+      assert.deepEqual(still, paused);
+      assert.deepEqual(fast.map((texts) => texts.length), [1]);
+      assert.deepEqual(first, rowsOf(0).map((row) => [row.initial]));
+      assert.deepEqual(second, rowsOf(1).map((row) => [row.initial]));
+    });
+  });
+
   // 근거: 설계 playback.md 요구사항 "조작 막대와 설명이 한 가운데 축", "탭 묶음과 둥근 단추의 높이가 같다", "탭은 segmented 방식", "진행 표시는 일시정지 단추 고리"(사용자 결정)
   test('player_controls_share_one_axis_and_height_and_the_ring_and_active_tab_show_state', async () => {
     const html = await toHtml(await buildFigure(readFileSync(new URL('../examples/memory.muto', import.meta.url), 'utf8'), { baseDir: 'examples' }), 'memory');

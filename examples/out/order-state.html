@@ -59,13 +59,25 @@
   --color-palette-ink-900: #0b0b0b;
   --color-palette-ink-1000: #000000;
   --color-palette-purple-500: #8b5cf6;
+  --color-palette-purple-400: #9b90ff;
+  --color-palette-purple-600: #483c95;
   --color-palette-green-500: #10b981;
+  --color-palette-green-400: #b6da70;
+  --color-palette-green-700: #517000;
   --color-palette-slate-500: #8b949e;
+  --color-palette-slate-400: #b0a0a4;
+  --color-palette-slate-600: #57494d;
   --color-palette-teal-500: #11a6b0;
+  --color-palette-teal-400: #87f3f6;
+  --color-palette-teal-700: #008084;
   --color-state-active: var(--color-palette-blue-550);
   --color-state-active-fill: var(--color-palette-blue-600);
   --color-state-active-text: var(--color-palette-blue-600);
   --color-state-on-active: var(--color-palette-gray-0);
+  --color-flow-purple: var(--color-palette-purple-600);
+  --color-flow-green: var(--color-palette-green-700);
+  --color-flow-teal: var(--color-palette-teal-700);
+  --color-flow-gray: var(--color-palette-slate-600);
   --color-figure-icon: var(--color-palette-blue-700);
   --color-ui-link: var(--color-palette-blue-600);
   --color-ui-focus: var(--color-palette-blue-550);
@@ -111,6 +123,7 @@
   --size-packet-radius: 4.5px;
   --size-packet-halo: 10px;
   --size-packet-hop-ref: 300px;
+  --size-packet-chip-reach: 12px;
   --size-arrow-head: 5px;
   --size-arrow-head-lit: 4px;
   --size-node-card-width: 176px;
@@ -200,6 +213,7 @@
   --opacity-dim-ink: 0.82;
   --opacity-band: 0.22;
   --opacity-range: 0.4;
+  --opacity-chip-visible-min: 0.1;
   --z-raised: 2;
   --z-overlay: 10;
   --duration-fast: 200ms;
@@ -214,6 +228,10 @@
   --duration-step-end: 1600ms;
   --duration-chart-cycle: 7000ms;
   --duration-reveal: 900ms;
+  --duration-value-flash: 700ms;
+  --duration-chip-frame: 16.666666666666668ms;
+  --duration-flow-step: 12000ms;
+  --duration-cut-fade: 600ms;
   --easing-move: cubic-bezier(0.455, 0.03, 0.515, 0.955);
   --easing-reveal: cubic-bezier(0, 0, 0.58, 1);
   --scale-zoom-max: 6;
@@ -222,6 +240,7 @@
   --scale-fold-step: 0.75;
   --scale-aspect-max: 3;
   --scale-zoom-step: 1.25;
+  --scale-flow-dots-max: 80;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) {
@@ -229,6 +248,10 @@
     --color-state-active-fill: var(--color-palette-blue-400);
     --color-state-active-text: var(--color-palette-blue-400);
     --color-state-on-active: var(--color-palette-ink-850);
+    --color-flow-purple: var(--color-palette-purple-400);
+    --color-flow-green: var(--color-palette-green-400);
+    --color-flow-teal: var(--color-palette-teal-400);
+    --color-flow-gray: var(--color-palette-slate-400);
     --color-figure-icon: var(--color-palette-blue-450);
     --color-ui-link: var(--color-palette-blue-400);
     --color-ui-focus: var(--color-palette-blue-400);
@@ -258,6 +281,10 @@
   --color-state-active-fill: var(--color-palette-blue-400);
   --color-state-active-text: var(--color-palette-blue-400);
   --color-state-on-active: var(--color-palette-ink-850);
+  --color-flow-purple: var(--color-palette-purple-400);
+  --color-flow-green: var(--color-palette-green-400);
+  --color-flow-teal: var(--color-palette-teal-400);
+  --color-flow-gray: var(--color-palette-slate-400);
   --color-figure-icon: var(--color-palette-blue-450);
   --color-ui-link: var(--color-palette-blue-400);
   --color-ui-focus: var(--color-palette-blue-400);
@@ -685,6 +712,14 @@ html.embedded .fl-figure {
   font-weight: var(--weight-semibold);
   text-anchor: end;
   fill: var(--color-state-active-text);
+}
+
+/* 값 카드 줄의 값 글자. 줄의 이름(row)은 카드 층이 그리고 값은 오른쪽 끝에 얹힌다. */
+.fl .value {
+  font-size: var(--size-text-11);
+  font-weight: var(--weight-semibold);
+  text-anchor: end;
+  fill: var(--color-fg);
 }
 
 .fl .mini {
@@ -1543,6 +1578,10 @@ function createStage(root, data) {
     groups: all('.fl-group'),
     edges: data.edgeEnds.map((_, j) => svg.querySelector(`#e-${j}`)),
     paths: data.edgeEnds.map((_, j) => svg.querySelector(`#p-${j}`)),
+    trackPaths: Array.from({ length: data.trackCount ?? 0 }, (_, k) => svg.querySelector(`#tp-${k}`)),
+    values: data.values ?? [],
+    valueEls: createValueEls(svg, data),
+    pendingOn: [],
     parts: all('.fl-part'),
     seriesEls: Array.from({ length: data.seriesCount }, (_, i) => all(`.cs-${i}`)),
     labelEls: all('.chart-label.shift'),
@@ -1575,7 +1614,18 @@ function drawSegmentState(stage, seg) {
   stage.parts.forEach((p) => p.classList.toggle('on', seg.partsOn.includes(p.dataset.part)));
   showCards(stage, seg.cardsBefore);
   stage.pendingCards = Object.entries(seg.cardsAt).map(([n, at]) => ({ n: Number(n), at }));
+  stage.pendingOn = pendingLights(stage, seg);
+  drawValueState(stage, seg, seg.t0);
   drawChartState(stage, seg);
+}
+
+// cost: time O(e + s), heap O(e + s), stack O(1)
+// vars: e = 처음 닿는 선 수, s = 처음 닿는 도형과 그룹 수
+// basis: estimate
+// 흐름 구간에서 점이 처음 닿는 시각에 켜질 선, 도형, 그룹. 구간 처음부터 켜진 것은 이미 켜져 있어 뺀다.
+function pendingLights(stage, seg) {
+  const timed = (at, els, on) => Object.entries(at ?? {}).filter(([i]) => !on.includes(Number(i))).map(([i, ms]) => ({ el: els[i], at: ms }));
+  return [...timed(seg.edgesAt, stage.edges, seg.edgesOn), ...timed(seg.nodesAt, stage.nodes, seg.nodesOn), ...timed(seg.groupsAt, stage.groups, seg.groupsOn)];
 }
 
 // cost: time O(k), heap O(1), stack O(1)
@@ -1630,6 +1680,12 @@ function advanceStage(stage, seg, elapsed) {
     showCards(stage, seg.cards, n);
     return false;
   });
+  stage.pendingOn = stage.pendingOn.filter(({ el, at }) => {
+    if (elapsed < at) return true;
+    el?.classList.add('on');
+    return false;
+  });
+  drawValueState(stage, seg, seg.t0 + elapsed);
 }
 
 // cost: time O(l), heap O(l), stack O(1)
@@ -1638,41 +1694,65 @@ function advanceStage(stage, seg, elapsed) {
 // 점과 글 상자. 글 상자 줄과 자리는 시간표가 움직이는 SVG와 같게 정해 넘긴다.
 function createPacket(hop, stage) {
   const { metrics } = stage;
-  const path = stage.paths[hop.edge];
+  const path = hop.track === undefined ? stage.paths[hop.edge] : stage.trackPaths[hop.track];
+  const color = hop.tone ? metrics.tones[hop.tone] : metrics.active;
   const g = document.createElementNS(SVG_NS, 'g');
   g.setAttribute('class', 'fl-packet');
-  g.innerHTML = `<circle r="${metrics.halo}" fill="${metrics.active}" opacity="${metrics.haloOpacity}"/><circle r="${metrics.packet}" fill="${metrics.active}"/>`;
+  g.innerHTML = `<circle r="${metrics.halo}" fill="${color}" opacity="${metrics.haloOpacity}"/><circle r="${metrics.packet}" fill="${color}"/>`;
   stage.packetLayer.appendChild(g);
-  const chip = hop.data ? createChip(hop.data, stage) : undefined;
+  const chip = hop.data ? createChip(hop.data, { stage, color: hop.tone ? color : undefined }) : undefined;
   if (chip) g.appendChild(chip.g);
   const length = path.getTotalLength();
   const slide = chipSlide(hop, metrics);
   return {
     remove: () => g.remove(),
-    move(t) {
-      const p = Math.min(1, t / hop.ms);
+    // cost: time O(g + l), heap O(1), stack O(1)
+    // vars: g = 도형 안을 지나는 구간 수, l = 글 상자 경로 지점 수
+    // basis: estimate
+    move(elapsed) {
+      const t = elapsed - (hop.at ?? 0);
+      const p = Math.min(1, Math.max(0, t / hop.ms));
       const eased = progressAt(metrics.move, p);
       const point = path.getPointAtLength(length * (hop.isBack ? 1 - eased : eased));
       g.setAttribute('transform', `translate(${point.x} ${point.y})`);
       if (chip) {
         const [dx, dy, opacity] = slide(p);
         chip.g.setAttribute('transform', `translate(${dx} ${dy})`);
-        chip.g.style.opacity = opacity;
+        chip.g.style.opacity = opacity * chipFadeAt(hop.chipFade, t);
       }
-      g.style.opacity = p >= 1 ? 0 : 1;
+      const isInside = (hop.gaps ?? []).some(([from, to]) => eased > from && eased < to);
+      g.style.opacity = isShown(hop, t, isInside) ? cutFade(hop, t, metrics) : 0;
     },
   };
+}
+
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+// 점이 보이는 때인지. 이동 시작 전, 도형 안(isInside), 끝에 닿은 뒤, 단계 끝에서 잘린 뒤(hop.cut)는 보이지 않는다.
+function isShown(hop, t, isInside) {
+  return t >= 0 && t < (hop.cut ?? hop.ms) && !isInside;
+}
+
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+// 단계 끝에서 잘리는 점(hop.cut)이 끝 앞 cutFadeMs 동안 서서히 사라지는 불투명도. 그 밖의 점은 1이다.
+function cutFade(hop, t, metrics) {
+  return hop.cut === undefined ? 1 : Math.min(1, (hop.cut - t) / metrics.cutFadeMs);
 }
 
 // cost: time O(l), heap O(l), stack O(1)
 // vars: l = 글 상자 줄 수
 // basis: estimate
-function createChip(lines, stage) {
+function createChip(lines, { stage, color }) {
   const { metrics } = stage;
   const chip = document.createElementNS(SVG_NS, 'g');
   const rect = document.createElementNS(SVG_NS, 'rect');
   rect.setAttribute('rx', metrics.chipRadius);
-  rect.setAttribute('fill', metrics.chipFill);
+  rect.setAttribute('fill', color ?? metrics.chipFill);
+  if (color) {
+    rect.setAttribute('stroke', color);
+    rect.setAttribute('stroke-width', metrics.chipStroke);
+  }
   chip.appendChild(rect);
   const texts = lines.map((line) => createChipLine(line, chip));
   stage.packetLayer.appendChild(chip);
@@ -1762,6 +1842,45 @@ function chipSlide(hop, metrics) {
     const ratio = times[k + 1] > times[k] ? (p - times[k]) / (times[k + 1] - times[k]) : 1;
     return [1, 2, 3].map((i) => path[k][i] + (path[k + 1][i] - path[k][i]) * ratio);
   };
+}
+
+// cost: time O(k), heap O(1), stack O(1)
+// vars: k = 키 수
+// basis: estimate
+// 이동 시작 뒤 t(ms)의 글 상자 숨김 불투명도. 시간표가 한 번 계산한 키 [시각, 값]을 시간에 선형으로 읽기만 한다(src/chip-clash.js의 fadeAt과 같은 값이다). 키가 없으면 1이다.
+function chipFadeAt(keys, t) {
+  if (!keys?.length) return 1;
+  const k = keys.findLastIndex(([at]) => at <= t);
+  if (k < 0) return keys[0][1];
+  if (k === keys.length - 1) return keys[k][1];
+  const [[a, va], [b, vb]] = [keys[k], keys[k + 1]];
+  return va + ((vb - va) * (t - a)) / (b - a);
+}
+
+// 브라우저에서 돈다(play.js와 한 스크립트로 이어 붙는다). 값 카드 줄의 값 글자와 밝힘 테두리를 시각에 맞춰 보인다.
+// 시간표의 변화 목록(values)을 읽기만 한다. 글자 요소는 값마다 하나씩 미리 그려져 있고, 지금 값과 같은 글자 요소만 보인다(움직이는 SVG의 SMIL 이산 불투명도와 같은 결과).
+
+// cost: time O(v), heap O(v), stack O(1)
+// vars: v = 값 줄 수
+// basis: estimate
+// 값 줄마다 그림 안의 글자 요소 목록과 밝힘 테두리 요소를 한 번 찾아 둔다.
+function createValueEls(svg, data) {
+  return (data.values ?? []).map((_, vi) => ({ texts: [...svg.querySelectorAll(`[data-v="${vi}"]`)], frame: svg.querySelector(`[data-vf="${vi}"]`) }));
+}
+
+// cost: time O(v·(c + n)), heap O(1), stack O(1)
+// vars: v = 값 줄 수, c = 값이 바뀌는 횟수, n = 값 글자 요소 수
+// basis: estimate
+// 그림 전체 시각 t(ms)의 값 줄을 그린다. 이 구간의 단계가 아닌 값 줄은 모두 숨기고, 단계의 값 줄은 t가 든 구간(periods)의 글을 보이고 밝힘 구간(flashes)에 들면 테두리를 밝힌다.
+// 구간은 시간표가 한 번 계산한 값이고 움직이는 SVG의 SMIL 이산 불투명도와 같다.
+function drawValueState(stage, seg, t) {
+  stage.valueEls.forEach(({ texts, frame }, vi) => {
+    const row = stage.values[vi];
+    const isHere = row.si === seg.si;
+    const text = (row.periods.find(([from, to]) => t >= from && t < to) ?? row.periods.at(-1))[2];
+    texts.forEach((el) => el.setAttribute('opacity', isHere && el.dataset.t === text ? 1 : 0));
+    frame?.setAttribute('opacity', isHere && row.flashes.some(([from, to]) => t >= from && t < to) ? 1 : 0);
+  });
 }
 
 figurePlay(document.querySelector('.fl-figure'), {"segs":[{"si":0,"t0":0,"t1":4695,"hops":[{"edge":0,"isBack":false,"ms":2554,"to":"paid","data":["39,000원"],"line":20,"chipPath":[[0,-4.9695865885416595,67.99999999143606,1],[0.0011157583901685707,-4.9695865885416595,67.77200159477314,1],[0.0027525767870061014,-4.9695865885416595,67.43752776297114,1],[0.004926706803607995,-4.9695865885416595,66.99325758682113,1],[0.0076548315376560715,-4.9695865885416595,66.43578197731316,1],[0.1711649642472594,0,101,1],[0.32279286717499356,0,101,1],[0.3446973025782052,0,100.94230330774823,1],[0.36708926205177544,0,100.43878945457044,1],[0.38989936444685447,0,99.16420713217121,1],[0.41305248308949893,0,96.8695213935768,1],[0.4364687140636336,0,93.42354584266366,1],[0.46006452380467433,0,89.15650470008507,1],[0.48375406117860525,0,84.47165331106788,1],[0.5545214413645148,0,70.03081977837445,1],[0.600618256476563,0,60.611217448522495,1],[0.6451512433313342,0,51.51117386171882,1],[0.6666729245289257,0,47.11334989365514,1],[0.687627134935245,0,42.83148511224246,1],[0.7079694842708494,0,38.67465039968033,1],[0.7276625574141476,0,34.65049130730796,1],[0.7466756682892708,0,30.765278347112968,1],[0.7649844989107955,0,27.02398075073515,1],[0.7825706473958696,0,23.43035883042532,1],[0.7994211221541827,0,19.987067338232123,1],[0.8155278062421838,0,16.69576492194284,1],[0.8308869072279725,0,13.55722654182918,1],[0.8454984287892133,0,10.571451446382866,1],[0.8593656538541932,0,7.737768789280494,1],[0.8724946621242622,0,5.054936220722766,1],[0.8848938884343607,0,2.5212301337605822,1],[0.896573720856531,0,0.13452778938540177,1],[0.9075461337038132,0,-2.1076176900610335,1],[0.917824373678868,0,-4.207913187276404,1],[0.9274226748450122,0,-6.169267346071706,1],[0.9363560136575201,0,-7.994740513515353,1],[0.944639900287874,0,-9.687502098319897,1],[0.9522901984633072,0,-11.250793756153712,1],[0.9593229708285722,0,-12.687897790264174,1],[0.965754353184329,0,-14.002111452861016,1],[0.9716004472110167,0,-15.19672502389551,1],[0.976877232445993,0,-16.27500382412694,1],[0.9816004930960583,0,-17.240173259709593,1],[0.9857857635847254,0,-18.095407695109998,1],[0.9894482800571087,0,-18.84382054342774,1],[0.9926029464172165,0,-19.488457326323612,1],[0.9974465267776292,0,-20.478213359074857,1],[1,0,-20.999999987153956,1]]}],"edgesOn":[0],"nodesOn":[1,2],"groupsOn":[],"partsOn":[],"cards":{},"cardsBefore":{},"cardsAt":{},"caption":"결제가 끝나면 출고되고 수령으로 끝난다","series":[],"growing":[],"lights":[]},{"si":0,"t0":4695,"t1":7309,"hops":[{"edge":1,"isBack":false,"ms":1914,"to":"shipped","line":21}],"edgesOn":[0,1],"nodesOn":[1,2,3],"groupsOn":[],"partsOn":[],"cards":{},"cardsBefore":{},"cardsAt":{},"caption":"결제가 끝나면 출고되고 수령으로 끝난다","series":[],"growing":[],"lights":[]},{"si":0,"t0":7309,"t1":11334,"hops":[{"edge":2,"isBack":false,"ms":1725,"to":"delivered","line":22}],"edgesOn":[0,1,2],"nodesOn":[1,2,3,4],"groupsOn":[],"partsOn":[],"cards":{},"cardsBefore":{},"cardsAt":{},"caption":"결제가 끝나면 출고되고 수령으로 끝난다","series":[],"growing":[],"lights":[]},{"si":1,"t0":11334,"t1":14878,"hops":[{"edge":0,"isBack":false,"ms":2554,"to":"paid","line":24}],"edgesOn":[0],"nodesOn":[1,2],"groupsOn":[],"partsOn":[],"cards":{},"cardsBefore":{},"cardsAt":{},"caption":"결제 뒤에도 출고 전이면 취소할 수 있다","series":[],"growing":[],"lights":[]},{"si":1,"t0":14878,"t1":19458,"hops":[{"edge":4,"isBack":false,"ms":2280,"to":"cancelled","data":["환불"],"line":25,"chipPath":[[0,0,67.99999999235598,1],[0.0012846003275350426,0,67.76569756495502,1],[0.0032254562033571564,0,67.41169854438101,1],[0.005845521688142251,0,66.93381627243707,1],[0.009168419461445965,0,66.32774213170842,1],[0.013218384760819107,0,65.58905577833377,1],[0.018020184709766053,0,64.71323985604147,1],[0.023599016862759285,0,63.69569850085469,1],[0.02998037295683269,0,62.531782191881405,1],[0.03718986616400738,0,61.21681925930727,1],[0.04525301951593375,0,59.74615447431347,1],[0.05419500091556395,0,58.11519738116033,1],[0.06404030107809183,0,56.31948103858764,1],[0.07481234829642001,0,54.35473228399513,1],[0.08653304891304245,0,52.2169555482713,1],[0.09922224996869557,0,49.902530865055155,1],[0.11289711534204437,0,47.408327658649455,1],[0.12757141041339518,0,44.73183521653459,1],[0.14325470504015855,0,41.87130806126805,1],[0.15995148915825283,0,38.82592725882324,1],[0.17766021956663605,0,35.595974278661174,1],[0.19637231783404585,0,32.18301376878213,1],[0.21607115423093082,0,28.590078879687894,1],[0.23673105465660824,0,24.821852394169866,1],[0.25831639220440744,0,20.884832419699308,1],[0.28078082578503305,0,16.787471258390667,1],[0.3040667620796583,0,12.54027354312791,1],[0.32810511550177124,0,8.155840018904883,1],[0.3528154368044677,0,3.6488440857224873,1],[0.4038771314228538,0,-5.663599267552286,1],[0.43001804859693227,0,-10.396617180432997,1],[0.4564133694044214,0,-15.007853069686064,1],[0.48294301993869604,0,-19.17821254061994,1],[0.5094851438659693,0,-22.427156519884193,1],[0.5359186387508311,0,-24.556887594293016,1],[0.5621256276803057,0,-25.656479549366736,1],[0.5879937441807027,0,-25.98547418201781,1],[0.6861216780532877,0,-26.014422777785626,1],[0.7089172301849583,0,-26.285525365027013,1],[0.8741342919268063,0,0,1],[1,0,0,1]]}],"edgesOn":[0,4],"nodesOn":[1,2,5],"groupsOn":[],"partsOn":[],"cards":{},"cardsBefore":{},"cardsAt":{},"caption":"결제 뒤에도 출고 전이면 취소할 수 있다","series":[],"growing":[],"lights":[]}],"steps":["정상 주문","취소"],"cardCounts":[0,0,0,0,0,0,0,0],"edgeEnds":[[1,2],[2,3],[3,4],[1,5],[2,5],[0,1],[4,6],[5,7]],"seriesCount":0,"rowCount":0,"metrics":{"active":"var(--color-state-active)","chipFill":"var(--color-state-active-fill)","halo":10,"haloOpacity":0.2,"packet":4.5,"chipRadius":8,"chipLine":15,"chipPadX":18,"chipPadY":8,"chipGap":12,"icon":12,"iconStroke":1.75,"pauseStroke":2.5,"zoomMax":6,"zoomStep":1.25,"move":[0.455,0.03,0.515,0.955]}});

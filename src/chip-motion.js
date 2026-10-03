@@ -1,14 +1,15 @@
 // 이동 하나의 글 상자를 시각마다 재는 도구. 계획(chip-plan.js)과 흐려짐(chip-fade.js), 테스트가 같은 점 위치와 보간을 쓴다.
 import { CHIP_GAP, isOutsideFigure, OVERLAP_SLACK, overlapArea } from './chip.js';
 import { curveOf, progressAt, timeAt } from './easing.js';
+import { values } from './tokens.js';
 import { pointAlong } from './route.js';
 
 // 점이 선을 지나는 곡선. 움직이는 SVG와 재생기와 같다
 export const MOVE = curveOf('move');
 /** 60fps 프레임 하나의 길이(ms). 글 상자 계획과 검증이 이 간격으로 잰다. */
-export const CHIP_FRAME_MS = 1000 / 60;
+export const CHIP_FRAME_MS = values.duration['chip-frame'];
 /** 글 상자가 이 불투명도 미만이면 보이지 않는 것으로 본다. 겹침 검사는 보이는 프레임만 센다. */
-export const CHIP_VISIBLE_MIN = 0.1;
+export const CHIP_VISIBLE_MIN = values.opacity['chip-visible-min'];
 // 계획 지점 사이의 프레임 수. 지점 사이 한 프레임은 보간으로 두고 마지막에 프레임마다 다시 잰다
 const PLAN_FRAMES = 2;
 /** 계획 지점 사이의 시간(ms) */

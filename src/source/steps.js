@@ -1,5 +1,7 @@
 // 시간 흐름 문장(step과 박자 줄)을 읽는다. 이름이 선언됐는지는 validate.js가 확인한다.
+import { readStepOptions, readTrack, checkMixedStep } from './flow.js';
 import { parseMiniGraph } from './minigraph.js';
+import { readMoveOptions } from './move-options.js';
 import { parseTime } from './values.js';
 import { flagNames, optionsOf, valueNames } from './grammar.js';
 import { NUMBER_PATTERN } from './words.js';
@@ -9,7 +11,8 @@ import { NUMBER_PATTERN } from './words.js';
 // basis: estimate
 /** 시간 흐름 문장 하나를 읽어 지금 단계에 더한다. word는 문장 첫 낱말이거나 이동 줄이면 'hop'이다. */
 export function readTimeline(word, statement, ctx) {
-  const handlers = { step: readStep, hop: readHops, show: readShow, clear: readClear, light: readLight, say: readSay, wait: readWait, note: readNote, reveal: readReveal };
+  const handlers = { step: readStep, hop: readHops, track: readTrack, show: readShow, clear: readClear, light: readLight, say: readSay, wait: readWait, note: readNote, reveal: readReveal };
+  if (word !== 'step') checkMixedStep(word, statement.line, ctx);
   handlers[word](statement, ctx);
 }
 
@@ -18,13 +21,17 @@ function emptyBeat(line) {
   return { line, hops: [], ops: [], light: [], chartLight: [], say: undefined, waitMs: 0, reveal: [], notes: [], isPause: false };
 }
 
-// `step "이름" ["설명"]`
+// cost: time O(t), heap O(t), stack O(1)
+// vars: t = 문장 낱말 수
+// basis: estimate
+// `step "이름" ["설명"] [for=12s]`
 function readStep({ tokens, line }, ctx) {
-  const [, label, caption, extra] = tokens;
+  const [, label, caption, extra] = tokens.filter((t) => t.type !== 'option');
   if (label?.type !== 'text' || (caption && caption.type !== 'text') || extra) {
-    ctx.problems.error(line, 'write a step as: step "name" ["caption"]');
+    ctx.problems.error(line, 'write a step as: step "name" ["caption"] [for=12s]');
   }
-  ctx.step = { label: label?.value ?? '', caption: caption?.type === 'text' ? caption.value : undefined, line, beats: [] };
+  const forMs = readStepOptions(tokens.filter((t) => t.type === 'option'), { line, ctx });
+  ctx.step = { label: label?.value ?? '', caption: caption?.type === 'text' ? caption.value : undefined, line, beats: [], tracks: [], forMs };
   ctx.figure.steps.push(ctx.step);
 }
 
@@ -47,28 +54,22 @@ function readHops({ tokens, line }, ctx) {
       ctx.problems.error(line, 'write a move as: a -> b ["text"] [time=2s]');
       continue;
     }
-    const hop = { from: from.value, to: to.value, data: undefined, timeMs: undefined, dashed: false, line };
-    for (const t of rest) readHopOption(t, hop, { isSequence, line, ctx });
+    const { timeMs, tone, sets } = readMoveOptions(rest.filter((t) => t.type === 'option'), { scope: 'hop', line, ctx });
+    const hop = { from: from.value, to: to.value, data: undefined, timeMs, dashed: false, tone, sets, line };
+    for (const t of rest.filter((w) => w.type !== 'option')) readHopWord(t, hop, { isSequence, line, ctx });
     if (isSequence && hop.data === undefined) ctx.problems.error(line, 'a sequence message needs text: a -> b "message"');
     beat.hops.push(hop);
   }
 }
 
-// 이동 줄의 글, time=, 순서 그림의 dashed
-function readHopOption(t, hop, { isSequence, line, ctx }) {
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+// 이동 줄의 글과 순서 그림의 dashed. 선택 사항(time=, tone=, set=)은 readMoveOptions가 읽는다.
+function readHopWord(t, hop, { isSequence, line, ctx }) {
   if (t.type === 'text' && hop.data === undefined) hop.data = t.value;
-  else if (t.type === 'option' && t.key === 'time' && t.valueType === 'word' && hop.timeMs === undefined) {
-    hop.timeMs = parseTime(t.value);
-    if (hop.timeMs === undefined) ctx.problems.error(line, `time is a positive time such as 900ms or 2s. Found "${t.value}"`);
-  } else if (isSequence && t.type === 'word' && t.value === 'dashed' && !hop.dashed) hop.dashed = true;
-  else if (isRepeated(t, hop)) ctx.problems.error(line, `${t.type === 'text' ? 'the move text' : t.type === 'option' ? 'time' : 'dashed'} is written twice in one move`);
-  else ctx.problems.error(line, `a move takes a quoted text and time=. Found "${t.value}"`);
-}
-
-function isRepeated(t, hop) {
-  if (t.type === 'text') return hop.data !== undefined;
-  if (t.type === 'option') return t.key === 'time' && hop.timeMs !== undefined;
-  return t.value === 'dashed' && hop.dashed;
+  else if (isSequence && t.type === 'word' && t.value === 'dashed' && !hop.dashed) hop.dashed = true;
+  else if ((t.type === 'text' && hop.data !== undefined) || (t.value === 'dashed' && hop.dashed)) ctx.problems.error(line, `${t.type === 'text' ? 'the move text' : 'dashed'} is written twice in one move`);
+  else ctx.problems.error(line, `a move takes a quoted text, time=, tone=, and set=. Found "${t.value}"`);
 }
 
 // cost: time O(t + g), heap O(g), stack O(1)

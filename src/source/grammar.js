@@ -22,6 +22,11 @@ const ICON = { ...V1, type: 'word', format: '이름 또는 세트:이름' };
 const PLURAL = { ...V1, type: 'number', format: '2 이상 정수', min: 2 };
 /** 도형 글자 배지의 글자 수 상한. 도형 윗줄에 이름 글과 함께 들어갈 만큼이다. */
 export const BADGE_MAX = 8;
+/** 값(`value`)이 보이는 글자 수 상한. 카드 오른쪽 끝에 들어갈 자리가 정해져 있어 `mark`와 같다. */
+export const VALUE_MAX = 8;
+
+/** 카드를 쓰는 도형(`show`, `value`가 놓이는 곳). 이름 순서는 오류 안내 글에 그대로 나온다. */
+export const CARD_SHAPES = ['box', 'external', 'store', 'person', 'table'];
 
 /** 그림 종류 문장. argument는 둘째 낱말이 읽는 값 목록 이름이다. */
 export const KINDS = table({
@@ -102,6 +107,8 @@ export const STATEMENTS = table({
   grid: { ...V1, section: 'declare', kinds: ['flow'] },
   icons: { ...V1, section: 'declare', kinds: ['flow'] },
   item: { ...V1, section: 'declare', kinds: ['flow'] },
+  value: { ...V1, section: 'declare', kinds: ['flow'] },
+  on: { ...V1, section: 'declare', kinds: ['flow'], display: 'on node id+N' },
   gap: { ...V1, section: 'declare', kinds: ['flow'], scopes: ['gap', 'item'] },
   start: { ...V1, section: 'declare', kinds: ['state'] },
   final: { ...V1, section: 'declare', kinds: ['state'] },
@@ -116,6 +123,7 @@ export const STATEMENTS = table({
   cell: { ...V1, section: 'declare', kinds: ['chart'] },
   link: { ...V1, section: 'declare', kinds: ['chart'] },
   hop: { ...V1, section: 'timeline', kinds: ['flow', 'sequence', 'state', 'data'], display: 'a -> b' },
+  track: { ...V1, section: 'timeline', kinds: ['flow'], display: 'track a, b -> c -> d' },
   step: { ...V1, section: 'timeline', kinds: ALL_KINDS },
   show: { ...V1, section: 'timeline', kinds: ['flow', 'data'], scopes: ['show', 'graph'] },
   clear: { ...V1, section: 'timeline', kinds: ['flow', 'data'] },
@@ -139,7 +147,18 @@ export const OPTIONS = table({
   'node.icon': ICON,
   'box.count': PLURAL,
   'edge.no': COUNT,
+  'step.for': { ...V1, type: 'word', format: '시간' },
   'hop.time': { ...V1, type: 'word', format: '시간' },
+  'hop.tone': { ...V1, type: 'word', values: 'tone' },
+  'hop.set': TEXT,
+  'track.at': { ...V1, type: 'word', format: '시간(0 가능)' },
+  'track.every': { ...V1, type: 'word', format: '시간' },
+  'track.time': { ...V1, type: 'word', format: '시간' },
+  'track.tone': { ...V1, type: 'word', values: 'tone' },
+  'track.set': TEXT,
+  'value.on': { ...V1, type: 'word', format: '도형 이름' },
+  'value.from': { ...V1, type: 'word', format: '숫자 또는 낱말' },
+  'value.ref': { ...V1, type: 'word', format: '값 이름' },
   'hop.dashed': FLAG,
   'edge.quiet': FLAG,
   'edge.dashed': FLAG,

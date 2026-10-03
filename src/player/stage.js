@@ -21,6 +21,10 @@ function createStage(root, data) {
     groups: all('.fl-group'),
     edges: data.edgeEnds.map((_, j) => svg.querySelector(`#e-${j}`)),
     paths: data.edgeEnds.map((_, j) => svg.querySelector(`#p-${j}`)),
+    trackPaths: Array.from({ length: data.trackCount ?? 0 }, (_, k) => svg.querySelector(`#tp-${k}`)),
+    values: data.values ?? [],
+    valueEls: createValueEls(svg, data),
+    pendingOn: [],
     parts: all('.fl-part'),
     seriesEls: Array.from({ length: data.seriesCount }, (_, i) => all(`.cs-${i}`)),
     labelEls: all('.chart-label.shift'),
@@ -53,7 +57,18 @@ function drawSegmentState(stage, seg) {
   stage.parts.forEach((p) => p.classList.toggle('on', seg.partsOn.includes(p.dataset.part)));
   showCards(stage, seg.cardsBefore);
   stage.pendingCards = Object.entries(seg.cardsAt).map(([n, at]) => ({ n: Number(n), at }));
+  stage.pendingOn = pendingLights(stage, seg);
+  drawValueState(stage, seg, seg.t0);
   drawChartState(stage, seg);
+}
+
+// cost: time O(e + s), heap O(e + s), stack O(1)
+// vars: e = 처음 닿는 선 수, s = 처음 닿는 도형과 그룹 수
+// basis: estimate
+// 흐름 구간에서 점이 처음 닿는 시각에 켜질 선, 도형, 그룹. 구간 처음부터 켜진 것은 이미 켜져 있어 뺀다.
+function pendingLights(stage, seg) {
+  const timed = (at, els, on) => Object.entries(at ?? {}).filter(([i]) => !on.includes(Number(i))).map(([i, ms]) => ({ el: els[i], at: ms }));
+  return [...timed(seg.edgesAt, stage.edges, seg.edgesOn), ...timed(seg.nodesAt, stage.nodes, seg.nodesOn), ...timed(seg.groupsAt, stage.groups, seg.groupsOn)];
 }
 
 // cost: time O(k), heap O(1), stack O(1)
@@ -108,6 +123,12 @@ function advanceStage(stage, seg, elapsed) {
     showCards(stage, seg.cards, n);
     return false;
   });
+  stage.pendingOn = stage.pendingOn.filter(({ el, at }) => {
+    if (elapsed < at) return true;
+    el?.classList.add('on');
+    return false;
+  });
+  drawValueState(stage, seg, seg.t0 + elapsed);
 }
 
 // cost: time O(l), heap O(l), stack O(1)
@@ -116,41 +137,65 @@ function advanceStage(stage, seg, elapsed) {
 // 점과 글 상자. 글 상자 줄과 자리는 시간표가 움직이는 SVG와 같게 정해 넘긴다.
 function createPacket(hop, stage) {
   const { metrics } = stage;
-  const path = stage.paths[hop.edge];
+  const path = hop.track === undefined ? stage.paths[hop.edge] : stage.trackPaths[hop.track];
+  const color = hop.tone ? metrics.tones[hop.tone] : metrics.active;
   const g = document.createElementNS(SVG_NS, 'g');
   g.setAttribute('class', 'fl-packet');
-  g.innerHTML = `<circle r="${metrics.halo}" fill="${metrics.active}" opacity="${metrics.haloOpacity}"/><circle r="${metrics.packet}" fill="${metrics.active}"/>`;
+  g.innerHTML = `<circle r="${metrics.halo}" fill="${color}" opacity="${metrics.haloOpacity}"/><circle r="${metrics.packet}" fill="${color}"/>`;
   stage.packetLayer.appendChild(g);
-  const chip = hop.data ? createChip(hop.data, stage) : undefined;
+  const chip = hop.data ? createChip(hop.data, { stage, color: hop.tone ? color : undefined }) : undefined;
   if (chip) g.appendChild(chip.g);
   const length = path.getTotalLength();
   const slide = chipSlide(hop, metrics);
   return {
     remove: () => g.remove(),
-    move(t) {
-      const p = Math.min(1, t / hop.ms);
+    // cost: time O(g + l), heap O(1), stack O(1)
+    // vars: g = 도형 안을 지나는 구간 수, l = 글 상자 경로 지점 수
+    // basis: estimate
+    move(elapsed) {
+      const t = elapsed - (hop.at ?? 0);
+      const p = Math.min(1, Math.max(0, t / hop.ms));
       const eased = progressAt(metrics.move, p);
       const point = path.getPointAtLength(length * (hop.isBack ? 1 - eased : eased));
       g.setAttribute('transform', `translate(${point.x} ${point.y})`);
       if (chip) {
         const [dx, dy, opacity] = slide(p);
         chip.g.setAttribute('transform', `translate(${dx} ${dy})`);
-        chip.g.style.opacity = opacity;
+        chip.g.style.opacity = opacity * chipFadeAt(hop.chipFade, t);
       }
-      g.style.opacity = p >= 1 ? 0 : 1;
+      const isInside = (hop.gaps ?? []).some(([from, to]) => eased > from && eased < to);
+      g.style.opacity = isShown(hop, t, isInside) ? cutFade(hop, t, metrics) : 0;
     },
   };
+}
+
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+// 점이 보이는 때인지. 이동 시작 전, 도형 안(isInside), 끝에 닿은 뒤, 단계 끝에서 잘린 뒤(hop.cut)는 보이지 않는다.
+function isShown(hop, t, isInside) {
+  return t >= 0 && t < (hop.cut ?? hop.ms) && !isInside;
+}
+
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+// 단계 끝에서 잘리는 점(hop.cut)이 끝 앞 cutFadeMs 동안 서서히 사라지는 불투명도. 그 밖의 점은 1이다.
+function cutFade(hop, t, metrics) {
+  return hop.cut === undefined ? 1 : Math.min(1, (hop.cut - t) / metrics.cutFadeMs);
 }
 
 // cost: time O(l), heap O(l), stack O(1)
 // vars: l = 글 상자 줄 수
 // basis: estimate
-function createChip(lines, stage) {
+function createChip(lines, { stage, color }) {
   const { metrics } = stage;
   const chip = document.createElementNS(SVG_NS, 'g');
   const rect = document.createElementNS(SVG_NS, 'rect');
   rect.setAttribute('rx', metrics.chipRadius);
-  rect.setAttribute('fill', metrics.chipFill);
+  rect.setAttribute('fill', color ?? metrics.chipFill);
+  if (color) {
+    rect.setAttribute('stroke', color);
+    rect.setAttribute('stroke-width', metrics.chipStroke);
+  }
   chip.appendChild(rect);
   const texts = lines.map((line) => createChipLine(line, chip));
   stage.packetLayer.appendChild(chip);

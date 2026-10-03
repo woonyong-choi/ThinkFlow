@@ -1,9 +1,10 @@
 // 파일을 다 읽은 뒤 이름, 선, 이동, 카드, 밝히기 대상을 확인한다. 이동마다 따라갈 선(edge 번호, 거꾸로 여부)을 정한다.
 import { checkChart } from './chart-rules.js';
+import { checkFlowStep } from './flow-check.js';
+import { CARD_SHAPES } from './grammar.js';
 import { checkIcons } from './icons.js';
 import { unknownName } from './problems.js';
-
-const CARD_SHAPES = ['box', 'external', 'store', 'person', 'table'];
+import { checkValues } from './value-check.js';
 
 // cost: time O(s·k + e² + h·e), heap O(k + e), stack O(1)
 // vars: s = 문장 수, k = 이름 수, e = 선 수, h = 이동 수
@@ -15,6 +16,7 @@ export function validateFigure(figure, problems) {
   else checkEdges(figure, names, problems);
   if (figure.kind === 'state') checkStateMarks(figure, names, problems);
   if (figure.kind === 'flow') checkIcons(figure, problems);
+  if (figure.kind === 'flow') checkValues(figure, names, problems);
   checkNotEmpty(figure, problems);
   if (figure.kind === 'chart') checkChart(figure, problems);
   else checkTimeline(figure, names, problems);
@@ -26,7 +28,7 @@ export function validateFigure(figure, problems) {
 // 도형, 그룹, 상태, 테이블, 계열 이름이 겹치지 않는지 보고 이름 → 선언을 돌려준다.
 function collectNames(figure, problems) {
   const names = new Map();
-  for (const item of [...figure.nodes, ...figure.groups.map((g) => ({ ...g, shape: 'group' })), ...figure.chart.series.map((s) => ({ ...s, shape: 'series' }))]) {
+  for (const item of [...figure.nodes, ...figure.groups.map((g) => ({ ...g, shape: 'group' })), ...figure.chart.series.map((s) => ({ ...s, shape: 'series' })), ...figure.values.map((v) => ({ ...v, shape: 'value' }))]) {
     const known = names.get(item.id);
     if (known) problems.error(item.line, `the name "${item.id}" is already used (line ${known.line})`);
     else names.set(item.id, item);
@@ -144,7 +146,8 @@ function checkStateMarks(figure, names, problems) {
 function checkTimeline(figure, names, problems) {
   const usedEdges = new Set();
   for (const step of figure.steps) {
-    if (!step.beats.length && !step.hasError) problems.error(step.line, `step "${step.label}" has no lines. Add a move, show, light, say, or wait`);
+    if (!step.beats.length && !step.tracks.length && !step.hasError) problems.error(step.line, `step "${step.label}" has no lines. Add a move, show, light, say, or wait`);
+    checkFlowStep(step, { figure, names, problems, resolveHop, usedEdges });
     for (const beat of step.beats) {
       for (const hop of beat.hops) resolveHop(hop, { figure, names, problems }, usedEdges);
       for (const op of beat.ops) checkCardTarget(op, { figure, names }, problems);

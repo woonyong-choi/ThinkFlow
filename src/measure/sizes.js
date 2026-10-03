@@ -182,7 +182,7 @@ function sizeCard(contents, width) {
 // basis: estimate
 /**
  * 카드 줄을 너비에 맞게 나눈다. 태그가 세 글자를 넘으면 글 위에 따로 선다.
- * @returns { rows: { row, isHeading, tagW, lines, graph? }[], height }
+ * @returns { rows: { row, isHeading, tagW, lines, graph?, top, height }[], height }. top은 카드 윗변에서 그 줄이 시작하는 거리, height는 그 줄이 차지한 높이다. 그리는 쪽과 값 글자 자리가 이 값을 그대로 쓴다.
  */
 function layoutCard(rows, width) {
   const inner = width - CARD.side * 2;
@@ -197,8 +197,13 @@ function layoutCard(rows, width) {
     const body = row.text + (row.meta !== undefined ? ` · ${row.meta}` : '');
     return { row, isHeading, tagW, lines: wrap(body, inner - tagW - markW, style) };
   });
-  const textH = laid.reduce((h, r) => h + (r.isHeading ? STYLE.row.line : 0) + r.lines.length * STYLE.row.line + (r.graph?.height ?? 0), 0);
-  return { rows: laid, height: textH + CARD.gap * (laid.length - 1) + CARD.pad * 2 };
+  let top = CARD.pad;
+  for (const r of laid) {
+    r.top = top;
+    r.height = (r.isHeading ? STYLE.row.line : 0) + r.lines.length * STYLE.row.line + (r.graph?.height ?? 0);
+    top += r.height + CARD.gap;
+  }
+  return { rows: laid, height: top - CARD.gap + CARD.pad };
 }
 
 // cost: time O(n), heap O(1), stack O(1)
