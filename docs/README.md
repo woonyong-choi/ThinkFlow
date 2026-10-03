@@ -12,6 +12,7 @@ mutoscope의 설계 문서다. 문서는 한국어로 쓴다. 처음이면 아�
 | [배치](design/layout.md) | 글 재기, 도형 크기와 연결점, 그룹 배치, 그림 비율 |
 | [그림 검사](design/figure-check.md) | 화면 오류 검사 항목과 메시지 |
 | [재생](design/playback.md) | 시간표, 박자 상태, HTML 재생기, 움직이는 SVG |
+| [마크다운과 배포](design/markdown.md) | `md` 명령, GitHub Action, 배포 워크플로, 패키지 |
 | [문서 스킬 연동](design/docs-integration.md) | 문서 스킬의 D2와 Vega-Lite를 대신하는 계약 |
 | [용어](glossary.md) | 이 프로젝트에서만 쓰는 말 |
 | [결정 기록](decisions/README.md) | 설계를 정한 이유와 버린 선택지 |

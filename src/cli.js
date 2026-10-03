@@ -1,14 +1,14 @@
 #!/usr/bin/env node
-// 사용: mutoscope render|check|gallery … 명령과 결과 파일은 docs/design/playback.md 결과 파일 절이다.
+// 사용: mutoscope render|check|gallery|migrate|md … 명령과 결과 파일은 docs/design/playback.md 결과 파일 절이다.
 // stdout에는 만든 파일 경로(또는 --json 메시지)만, stderr에는 오류와 경고만 쓴다.
-import { mkdirSync, readdirSync, readFileSync, realpathSync, writeFileSync } from 'node:fs';
+import { mkdirSync, readdirSync, readFileSync, realpathSync } from 'node:fs';
 import { basename, dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { buildFigure } from './build.js';
+import { buildReported, report, writeOutput } from './build-reported.js';
 import { toDocument, toGallery, toHtml } from './html.js';
-import { toJson } from './diagnostics.js';
 import { migrateSource, previewDiff } from './migrate.js';
-import { FigureError, makeDiagnostic } from './source/problems.js';
+import { runMd } from './md-run.js';
+import { makeDiagnostic } from './source/problems.js';
 import { toSvg } from './svg.js';
 
 const USAGE = [
@@ -17,14 +17,26 @@ const USAGE = [
   '  mutoscope check <file.muto ...> [--strict] [--no-deprecated] [--require-data] [--require-ci] [--json]',
   '  mutoscope gallery <dir> [--out dir] [--title "text"] [--strict] [--no-deprecated] [--require-data] [--require-ci]',
   '  mutoscope migrate <file.muto ...> [--write] [--json]',
+  '  mutoscope md <file.md ...> [--check] [--out-dir dir] [--static] [--strict] [--no-deprecated] [--require-data] [--require-ci] [--json]',
 ].join('\n');
 // gallery가 받는 옵션. --html은 gallery가 늘 HTML을 쓰므로 받기만 한다(옛 호출이 깨지지 않게).
 const GALLERY_FLAGS = ['html', 'strict', 'no-deprecated', 'require-data', 'require-ci'];
-const FLAGS = ['--html', '--static', '--strict', '--no-deprecated', '--require-data', '--require-ci', '--json', '--write'];
-// 진단 종류마다 글 출력의 머리말. 오류는 머리말이 없다.
+const FLAGS = ['--html', '--static', '--strict', '--no-deprecated', '--require-data', '--require-ci', '--json', '--write', '--check'];
+// md 명령이 받지 않는 옵션과 md 명령만 받는 옵션
+const MD_REFUSED = ['out', 'title', 'html', 'write'];
+const MD_ONLY = ['check', 'out-dir'];
 // 판 표기 줄(`mutoscope 1`). 목록 쪽 머리에서 종류 줄을 찾을 때 건너뛴다.
 const VERSION_LINE = /^\s*mutoscope\s/;
-const SEVERITY_LABEL = { error: '', warning: 'warning: ', deprecated: 'deprecated: ' };
+
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+// md 명령이 받지 않는 옵션을 쓰거나 다른 명령이 md 전용 옵션을 쓰면 그 오류 글이다. 없으면 undefined다.
+function misplacedOption({ command, flags, ...values }) {
+  const given = (name) => values[name] !== undefined || flags.has(name);
+  const refused = (command === 'md' ? MD_REFUSED : MD_ONLY).find(given);
+  if (refused) return `--${refused} is ${command === 'md' ? 'not for md' : 'only for md'}`;
+  return undefined;
+}
 
 // cost: time O(a), heap O(a), stack O(1)
 // vars: a = 인자 수
@@ -32,11 +44,11 @@ const SEVERITY_LABEL = { error: '', warning: 'warning: ', deprecated: 'deprecate
 // 명령 인자를 읽는다. 틀리면 { error }다.
 function parseArgs(argv) {
   const [command, ...rest] = argv;
-  if (!['render', 'check', 'gallery', 'migrate'].includes(command)) return { error: USAGE };
+  if (!['render', 'check', 'gallery', 'migrate', 'md'].includes(command)) return { error: USAGE };
   const args = { command, inputs: [], out: undefined, title: undefined, flags: new Set() };
   for (let i = 0; i < rest.length; i++) {
     const arg = rest[i];
-    if (arg === '--out' || arg === '--title') {
+    if (arg === '--out' || arg === '--title' || arg === '--out-dir') {
       const value = rest[++i];
       if (value === undefined || value.startsWith('--')) return { error: `${arg} needs a value` };
       args[arg.slice(2)] = value;
@@ -46,6 +58,8 @@ function parseArgs(argv) {
   }
   if (!args.inputs.length) return { error: USAGE };
   if (args.flags.has('write') && command !== 'migrate') return { error: `--write is only for migrate\n${USAGE}` };
+  const misplaced = misplacedOption(args);
+  if (misplaced) return { error: `${misplaced}\n${USAGE}` };
   const refused = command === 'gallery' ? [...args.flags].find((flag) => !GALLERY_FLAGS.includes(flag)) : undefined;
   if (refused) return { error: `--${refused} is not for gallery\n${USAGE}` };
   return args;
@@ -61,6 +75,7 @@ async function main(argv) {
     return 2;
   }
   if (args.command === 'gallery') return writeGallery(args);
+  if (args.command === 'md') return runMd(args);
   let failed = false;
   for (const input of args.inputs) failed = !(args.command === 'migrate' ? migrateFile(input, args) : await processFile(input, args)) || failed;
   return failed ? 1 : 0;
@@ -90,17 +105,7 @@ async function buildInput(input, args) {
     report(input, [makeDiagnostic({ severity: 'error', line: 0, message: `cannot read the file: ${error.code ?? error.message}` }, { code: 'io' })], json);
     return undefined;
   }
-  let result;
-  try {
-    result = await buildFigure(source, { baseDir: dirname(input), strict: args.flags.has('strict'), noDeprecated: args.flags.has('no-deprecated'), requireData: args.flags.has('require-data'), requireCi: args.flags.has('require-ci') });
-  } catch (error) {
-    // 원본 오류가 아닌 실패는 이 도구의 버그다. 스택 대신 한 줄로 알리고 다음 파일로 넘어간다.
-    const problems = error instanceof FigureError ? error.problems : [makeDiagnostic({ severity: 'error', line: 0, message: `internal error: ${error.message}. Please report this` }, { code: 'internal' })];
-    report(input, problems, json);
-    return undefined;
-  }
-  report(input, [...result.warnings, ...result.deprecations].sort((a, b) => a.line - b.line), json);
-  return result;
+  return buildReported(source, input, { flags: args.flags, baseDir: dirname(input) });
 }
 
 // cost: time O(out), heap O(out), stack O(1), io 3
@@ -188,26 +193,6 @@ function describe(source) {
   const [first, second] = source.split('\n').find((line) => line.trim() && !line.startsWith('#') && !VERSION_LINE.test(line))?.trim().split(/\s+/) ?? [];
   const isChart = first === 'chart';
   return { title, kind: isChart ? second : first, isChart };
-}
-
-// cost: time O(m), heap O(m), stack O(1), io m
-// vars: m = 메시지 수
-// basis: estimate
-// 진단(오류, 경고, 폐기). 기본은 `파일:줄: 메시지`, --json이면 진단마다 `toJson`(src/diagnostics.js)이 정한 한 줄을 stdout에 쓴다.
-function report(file, diagnostics, json) {
-  for (const d of diagnostics) {
-    if (json) process.stdout.write(`${JSON.stringify(toJson(file, d))}\n`);
-    // 줄 번호가 없는 문제(파일 읽기, 도구 버그)는 줄 0이고, 글로는 `파일: 메시지`로 쓴다.
-    else process.stderr.write(`${file}${d.line ? `:${d.line}` : ''}: ${SEVERITY_LABEL[d.severity]}${d.message}\n`);
-  }
-}
-
-// cost: time O(n), heap O(1), stack O(1), io 2
-// vars: n = 쓸 글자 수
-// basis: estimate
-function writeOutput(path, text, json) {
-  writeFileSync(path, text);
-  if (!json) process.stdout.write(`${path}\n`);
 }
 
 // npm이 만든 실행 파일은 심볼릭 링크라서, 실제 경로끼리 비교해야 직접 실행을 알아본다.

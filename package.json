@@ -1,9 +1,21 @@
 {
   "name": "mutoscope",
-  "version": "0.0.0",
-  "private": true,
-  "description": "문서 그림 문법으로 움직이는 구조 그림과 차트를 만든다",
+  "version": "0.1.0",
+  "description": "Turn .muto sources into animated documentation diagrams and charts as SVG, and keep the figures in Markdown documents up to date",
   "license": "MIT",
+  "keywords": [
+    "diagram",
+    "chart",
+    "svg",
+    "animation",
+    "documentation",
+    "markdown",
+    "architecture",
+    "sequence-diagram",
+    "state-machine",
+    "cli"
+  ],
+  "author": "choi woo-nyong",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/woonyong-choi/mutoscope.git"
@@ -13,6 +25,11 @@
     "url": "https://github.com/woonyong-choi/mutoscope/issues"
   },
   "type": "module",
+  "files": [
+    "src",
+    "LICENSE",
+    "NOTICE"
+  ],
   "bin": {
     "mutoscope": "src/cli.js"
   },

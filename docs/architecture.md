@@ -17,7 +17,7 @@
 
 | 구성 요소 | 하는 일 | 기술 | 위치 |
 |---|---|---|---|
-| `cli` | 원본을 읽고, 글을 재고, 배치하고, 그림을 검사하고, 시간표를 만들어 결과 파일을 쓰는 명령 | Node.js, elkjs | `src/`에서 `player/`, `svg.js`, `animate/`를 뺀 파일 |
+| `cli` | 원본을 읽고, 글을 재고, 배치하고, 그림을 검사하고, 시간표를 만들어 결과 파일을 쓰는 명령 | Node.js, elkjs | `src/`에서 `player/`, `svg.js`, `animate/`를 뺀 파일. 마크다운 문서 반영은 `md.js`, `md-run.js` |
 | `player` | HTML 안에서 시간표대로 상태를 바꾸고 점을 옮기는 재생기, 전체 화면과 확대 | 브라우저 JavaScript | `src/player/` |
 | `svg` | 시간표를 CSS keyframes와 SMIL로 바꾼 움직이는 SVG | SVG, CSS | `src/svg.js`, `src/animate/` |
 

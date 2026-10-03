@@ -7,7 +7,7 @@ A command that turns one `.muto` source into one animated documentation figure: 
 Design documents need figures that show which path a request takes, and charts that show a baseline before the improved value. Drawing diagrams in D2 and charts in Vega-Lite gives two looks in one document, and the D2 layout does not match a custom drawing style. mutoscope measures every shape with the same font files it embeds, lays out with elkjs, checks the result for overlaps, and plays steps in an HTML player or an animated SVG.
 
 > [!NOTE]
-> In development. There are no releases; build from source.
+> In development. There is no npm release yet; run it straight from GitHub or from a clone.
 
 ## How it works
 
@@ -44,11 +44,21 @@ step "Chat" "Input goes through the screen to the engine"
 
 Requirements: Node.js 20 or later.
 
+mutoscope is not on npm yet, so `npm install mutoscope` does not work. Run it straight from GitHub:
+
+```sh
+npx github:woonyong-choi/mutoscope render figure.muto
+```
+
+Or work from a clone:
+
 ```sh
 git clone https://github.com/woonyong-choi/mutoscope.git
 cd mutoscope
 npm install
 ```
+
+After the first npm release, `npm install --save-dev mutoscope` adds the `mutoscope` command to a project and `npx mutoscope` runs it. The examples below use `node src/cli.js` from a clone.
 
 ## Usage
 
@@ -90,6 +100,40 @@ npm run examples
 
 Open `examples/out/index.html` to see every example on one page.
 
+### Keep figures in a Markdown document
+
+Write the source in a `muto` code block. A name keeps the image file name stable when blocks move.
+
+````text
+```muto name=flow
+flow right
+box client "Client"
+box server "Server"
+client -> server "GET"
+```
+````
+
+```sh
+node src/cli.js md docs/guide.md
+```
+
+The command writes `docs/guide-flow.svg` next to the document and puts `![Client, Server](guide-flow.svg)<!-- muto -->` right below the block (the alt text is the figure `title`). Run it again and nothing changes. Renaming a block removes the old SVG, `--out-dir images` moves the SVG files, and `--check` writes nothing and exits with 1 when a document or SVG is out of date. Any error in any block stops the command before it writes. See [Markdown](docs/design/markdown.md) for the rules.
+
+### Check figures in CI
+
+The repository root has a composite GitHub Action. This step fails a pull request when a source has a warning or a Markdown figure is out of date:
+
+```yaml
+- uses: actions/checkout@v4
+- uses: woonyong-choi/mutoscope@main
+  with:
+    paths: "docs/**/*.muto docs/**/*.md README.md"
+    mode: check   # check (default) or render
+    strict: true  # also fail on warnings
+```
+
+`paths` are git globs of tracked files. `mode: render` writes the SVG files and image lines but does not commit them. The step fails when no file matches.
+
 ## Features
 
 - Figure syntax: one statement per line, quoted text, unique names, and line-numbered errors with suggestions.
@@ -100,6 +144,7 @@ Open `examples/out/index.html` to see every example on one page.
 - Layout: elkjs layout with per-group direction, using shape sizes measured with the embedded fonts.
 - Figure check: overlaps, edges through nodes, crowded edges, aspect ratio, and readability.
 - Playback: an HTML player and an animated SVG from the same timeline.
+- Markdown: `mutoscope md` renders the `muto` code blocks of a document and keeps the image lines below them up to date; a GitHub Action checks them in CI.
 
 ## Status
 
@@ -122,6 +167,7 @@ The design documents are written in Korean.
 - [Layout](docs/design/layout.md): text measurement, shape sizes and ports, group layout, and aspect ratio
 - [Figure check](docs/design/figure-check.md): screen error checks and messages
 - [Playback](docs/design/playback.md): timeline, beat state, the HTML player, and the animated SVG
+- [Markdown and release](docs/design/markdown.md): the `md` command, the GitHub Action, and publishing
 - [Docs skill integration](docs/design/docs-integration.md): replacing D2 and Vega-Lite in the docs skill
 
 All documents are listed in [docs/README.md](docs/README.md).

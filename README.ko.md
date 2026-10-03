@@ -7,7 +7,7 @@
 설계 문서에는 요청이 어떤 길로 가는지 보이는 그림과, 기준값 뒤에 개선 값을 보이는 차트가 필요합니다. 그림은 D2로, 차트는 Vega-Lite로 그리면 한 문서 안의 그림이 두 모양이 되고, D2 배치는 다른 그리기 모양과 맞지 않습니다. mutoscope는 그림에 넣는 글꼴 파일로 모든 도형을 재고, elkjs로 배치하고, 겹침을 검사한 뒤, HTML 재생기나 움직이는 SVG로 단계를 재생합니다.
 
 > [!NOTE]
-> 개발 중입니다. 배포판은 없으니 소스로 빌드하세요.
+> 개발 중입니다. 아직 npm 배포판이 없으니 GitHub에서 바로 실행하거나 복제해서 쓰세요.
 
 ## 작동 방식
 
@@ -44,11 +44,21 @@ step "Chat" "Input goes through the screen to the engine"
 
 요구 사항: Node.js 20 이상.
 
+아직 npm에 올라가 있지 않아 `npm install mutoscope`는 되지 않습니다. GitHub에서 바로 실행합니다.
+
+```sh
+npx github:woonyong-choi/mutoscope render figure.muto
+```
+
+복제해서 쓸 수도 있습니다.
+
 ```sh
 git clone https://github.com/woonyong-choi/mutoscope.git
 cd mutoscope
 npm install
 ```
+
+첫 npm 배포 뒤에는 `npm install --save-dev mutoscope`로 프로젝트에 `mutoscope` 명령을 더하고 `npx mutoscope`로 실행합니다. 아래 예시는 복제한 저장소에서 `node src/cli.js`로 실행합니다.
 
 ## 사용법
 
@@ -90,6 +100,40 @@ npm run examples
 
 `examples/out/index.html`을 열면 모든 예제를 한 쪽에서 봅니다.
 
+### 마크다운 문서에 그림 넣기
+
+원본을 `muto` 코드 블록으로 씁니다. 이름을 붙이면 블록 순서가 바뀌어도 이미지 파일 이름이 그대로입니다.
+
+````text
+```muto name=flow
+flow right
+box client "Client"
+box server "Server"
+client -> server "GET"
+```
+````
+
+```sh
+node src/cli.js md docs/guide.md
+```
+
+명령은 문서 옆에 `docs/guide-flow.svg`를 쓰고 블록 바로 아래에 `![Client, Server](guide-flow.svg)<!-- muto -->`를 넣습니다(대체 글은 그림의 `title`). 다시 돌려도 아무것도 바뀌지 않습니다. 블록 이름을 바꾸면 옛 SVG가 지워지고, `--out-dir images`는 SVG 위치를 바꾸며, `--check`는 쓰지 않고 문서나 SVG가 낡았으면 종료 코드 1로 끝납니다. 어느 블록이든 오류가 있으면 아무 파일도 쓰기 전에 멈춥니다. 규칙은 [마크다운](docs/design/markdown.md)에 있습니다.
+
+### CI에서 그림 검사하기
+
+저장소 루트에 composite GitHub Action이 있습니다. 아래 단계는 원본에 경고가 있거나 마크다운 그림이 낡았을 때 PR을 실패시킵니다.
+
+```yaml
+- uses: actions/checkout@v4
+- uses: woonyong-choi/mutoscope@main
+  with:
+    paths: "docs/**/*.muto docs/**/*.md README.md"
+    mode: check   # check(기본) 또는 render
+    strict: true  # 경고도 실패
+```
+
+`paths`는 추적 중인 파일에 쓰는 git 글롭입니다. `mode: render`는 SVG와 이미지 줄을 쓰지만 커밋하지는 않습니다. 맞는 파일이 하나도 없으면 단계가 실패합니다.
+
 ## 기능
 
 - 그림 문법: 한 줄에 문장 하나, 따옴표 글, 겹치지 않는 이름, 줄 번호와 제안이 붙은 오류.
@@ -100,6 +144,7 @@ npm run examples
 - 배치: 그룹마다 방향을 정하는 elkjs 배치. 도형 크기는 그림에 넣는 글꼴로 잽니다.
 - 그림 검사: 겹침, 도형을 지나는 선, 붙은 선, 비율, 읽힘.
 - 재생: 같은 시간표로 만드는 HTML 재생기와 움직이는 SVG.
+- 마크다운: `mutoscope md`가 문서의 `muto` 코드 블록을 그리고 블록 아래 이미지 줄을 맞춥니다. GitHub Action이 CI에서 이를 검사합니다.
 
 ## 상태
 
@@ -122,6 +167,7 @@ npm run examples
 - [배치](docs/design/layout.md): 글 재기, 도형 크기와 연결점, 그룹 배치, 그림 비율
 - [그림 검사](docs/design/figure-check.md): 화면 오류 검사 항목과 메시지
 - [재생](docs/design/playback.md): 시간표, 박자 상태, HTML 재생기, 움직이는 SVG
+- [마크다운과 배포](docs/design/markdown.md): `md` 명령, GitHub Action, 배포
 - [문서 스킬 연동](docs/design/docs-integration.md): 문서 스킬의 D2와 Vega-Lite를 대신하는 계약
 
 전체 문서는 [docs/README.md](docs/README.md)에 있습니다.

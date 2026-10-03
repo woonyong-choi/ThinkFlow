@@ -1,0 +1,56 @@
+name: release
+
+# v* 태그를 올리면 테스트 뒤 npm에 배포하고 GitHub Release를 만든다. 사전 조건: 저장소 secret NPM_TOKEN(npm automation 토큰).
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write # GitHub Release 생성
+  id-token: write # npm provenance
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: https://registry.npmjs.org
+          cache: npm
+      - name: Check the tag matches package.json
+        run: |
+          version="$(node -p "require('./package.json').version")"
+          if [ "$GITHUB_REF_NAME" != "v$version" ]; then
+            echo "::error::tag $GITHUB_REF_NAME does not match the package.json version v$version. Fix one of them and tag again."
+            exit 1
+          fi
+      - name: Check NPM_TOKEN
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          if [ -z "$NPM_TOKEN" ]; then
+            echo "::error::secrets.NPM_TOKEN is not set. Add an npm automation token under Settings > Secrets and variables > Actions, then run this workflow again."
+            exit 1
+          fi
+      - run: npm ci
+      - run: npm test
+      - run: npm run check
+      - run: node src/cli.js check examples/*.muto docs/assets/*.muto --strict
+      - name: Publish to npm
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          case "$GITHUB_REF_NAME" in
+            *-*) npm publish --provenance --access public --tag next ;;
+            *) npm publish --provenance --access public ;;
+          esac
+      - name: Create the GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          case "$GITHUB_REF_NAME" in
+            *-*) gh release create "$GITHUB_REF_NAME" --verify-tag --generate-notes --prerelease ;;
+            *) gh release create "$GITHUB_REF_NAME" --verify-tag --generate-notes ;;
+          esac
