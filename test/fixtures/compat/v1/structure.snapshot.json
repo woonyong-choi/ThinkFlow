@@ -79,6 +79,23 @@
     "series": [],
     "rows": 4
   },
+  "all-chart-difference.muto": {
+    "kind": "chart",
+    "chartType": "difference",
+    "version": 1,
+    "deprecated": 0,
+    "shapes": 0,
+    "groups": 0,
+    "lines": 0,
+    "steps": 0,
+    "beats": 0,
+    "moves": 0,
+    "segments": 0,
+    "series": [
+      "gap:main"
+    ],
+    "rows": 3
+  },
   "all-chart-dumbbell.muto": {
     "kind": "chart",
     "chartType": "dumbbell",
@@ -130,6 +147,23 @@
     ],
     "rows": 3
   },
+  "all-chart-row-rule.muto": {
+    "kind": "chart",
+    "chartType": "bar",
+    "version": 1,
+    "deprecated": 0,
+    "shapes": 0,
+    "groups": 0,
+    "lines": 0,
+    "steps": 0,
+    "beats": 0,
+    "moves": 0,
+    "segments": 0,
+    "series": [
+      "a:main"
+    ],
+    "rows": 2
+  },
   "all-chart-scatter.muto": {
     "kind": "chart",
     "chartType": "scatter",
@@ -147,6 +181,23 @@
       "base:compare"
     ],
     "rows": 2
+  },
+  "all-chart-zero-off.muto": {
+    "kind": "chart",
+    "chartType": "line",
+    "version": 1,
+    "deprecated": 0,
+    "shapes": 0,
+    "groups": 0,
+    "lines": 0,
+    "steps": 0,
+    "beats": 0,
+    "moves": 0,
+    "segments": 0,
+    "series": [
+      "a:main"
+    ],
+    "rows": 3
   },
   "all-data.muto": {
     "kind": "data",

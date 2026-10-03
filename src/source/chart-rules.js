@@ -24,6 +24,8 @@ export function checkChart(figure, problems) {
   if (checkSeriesRoles(figure, problems)) orderSeriesByRole(figure);
   if (chart.missing !== undefined && chartType !== 'bar') problems.error(figure.line, 'missing is only for bar charts');
   if (chartType === 'bar' && chart.scale === 'log') problems.error(figure.line, 'a bar chart starts at 0, so scale log is not allowed');
+  if (chartType === 'difference' && chart.scale === 'log') problems.error(chart.scaleLine ?? figure.line, 'a difference chart is centered on 0, so scale log is not allowed');
+  if (chart.zero === 'off' && chartType !== 'line') problems.error(chart.zeroLine, 'zero off is only for line charts. Other charts keep their value axis at 0');
   if (chartType === 'heatmap' && (chart.scaleLine !== undefined || chart.rules.length)) problems.error(chart.scaleLine ?? chart.rules[0].line, 'a heatmap has no value axis. Remove scale and rule');
   for (const rule of chart.rules) if (chart.scale === 'log' && rule.value <= 0) problems.error(rule.line, 'log scale needs values above 0');
   for (const rule of chart.rules) if (chartType === 'bar' && rule.value < 0) problems.error(rule.line, 'a bar chart starts at 0, so a rule cannot be negative');
@@ -69,7 +71,15 @@ function orderSeriesByRole(figure) {
 }
 
 // 값 축 종류. 히트맵은 값 축이 없다.
-const VALUE_AXES = { bar: ['x'], dumbbell: ['x'], box: ['x'], line: ['y'], scatter: ['x', 'y'] };
+const VALUE_AXES = { bar: ['x'], dumbbell: ['x'], box: ['x'], difference: ['x'], line: ['y'], scatter: ['x', 'y'] };
+
+// cost: time O(s), heap O(1), stack O(1)
+// vars: s = 계열 수
+// basis: estimate
+/** 막대 행이 `rule=값`으로 자기 기준을 적을 수 있는지. 계열 이름이나 키가 `rule`이면 옛 뜻(계열 값)이 우선이라 행 기준은 없다. */
+export function hasRowRule(chart, chartType) {
+  return chartType === 'bar' && !chart.series.some((s) => s.id === 'rule' || s.key === 'rule');
+}
 
 // cost: time O(a), heap O(1), stack O(1)
 // vars: a = 값 축 수(최대 2)
@@ -102,12 +112,17 @@ export function checkChartRows(figure, problems) {
     labels.set(key, row.line);
   }
   // 선 차트의 x는 값 축이 아니라 늘 linear다. 로그와 "모두 0" 검사에서 뺀다.
-  const isValue = (k) => k !== 'series' && !(chartType === 'line' && k === 'x');
+  const hasRule = hasRowRule(chart, chartType);
+  const isRowRule = (k) => hasRule && k === 'rule';
+  const isValue = (k) => k !== 'series' && !isRowRule(k) && !(chartType === 'line' && k === 'x');
   const numbers = chart.rows.flatMap((r) => Object.entries(r.values).filter(([k, v]) => isValue(k) && v !== null).map(([, v]) => v));
-  const valueAxis = chartType === 'scatter' || chartType === 'line' ? [] : numbers;
+  // 선, 산점도, 차이 차트는 위치로 값을 보이고 0이 가운데라 음수를 받는다.
+  const valueAxis = ['scatter', 'line', 'difference'].includes(chartType) ? [] : numbers;
   const huge = chart.rows.find((r) => Object.values(r.values).some((v) => typeof v === 'number' && Math.abs(v) >= MAX_VALUE));
   if (huge) problems.error(huge.line, 'values must be under 1e15 in absolute value');
-  if (valueAxis.some((v) => v < 0)) problems.error(chart.rows.find((r) => Object.values(r.values).some((v) => v < 0)).line, 'values cannot be negative');
+  if (valueAxis.some((v) => v < 0)) problems.error(chart.rows.find((r) => Object.entries(r.values).some(([k, v]) => isValue(k) && v < 0)).line, 'values cannot be negative');
+  const negativeRule = chart.rows.find((r) => hasRule && r.values.rule < 0);
+  if (negativeRule) problems.error(negativeRule.line, 'a bar chart starts at 0, so a row rule cannot be negative');
   if (chart.scale === 'log' && numbers.some((v) => v <= 0)) problems.error(chart.rows.find((r) => Object.entries(r.values).some(([k, v]) => isValue(k) && v !== null && v <= 0)).line, 'log scale needs values above 0');
   // 막대, 덤벨, 상자는 길이로 값을 보여서 모두 0이면 그릴 것이 없다. 선과 산점도는 위치로 보여서 0도 그린다.
   const hasLength = ['bar', 'dumbbell', 'box'].includes(chartType);
@@ -126,14 +141,15 @@ function checkRowKeys(row, figure, problems) {
   const ids = chart.series.map((s) => s.id);
   const keys = Object.keys(row.values);
   const allowed = {
-    bar: ids.flatMap(withInterval),
+    bar: [...ids.flatMap(withInterval), ...(hasRowRule(chart, chartType) ? ['rule'] : [])],
     dumbbell: ids.flatMap(withInterval),
+    difference: ids.flatMap(withInterval),
     box: BOX_KEYS,
     scatter: ['x', 'y', 'series'],
     line: ['x', ...ids.flatMap(withInterval)],
     heatmap: ['value'],
   }[chartType];
-  const required = { bar: ids, dumbbell: ids, box: BOX_KEYS, scatter: ['x', 'y', ...(ids.length ? ['series'] : [])], line: ['x', ...ids], heatmap: ['value'] }[chartType];
+  const required = { bar: ids, dumbbell: ids, difference: ids, box: BOX_KEYS, scatter: ['x', 'y', ...(ids.length ? ['series'] : [])], line: ['x', ...ids], heatmap: ['value'] }[chartType];
   for (const key of keys) if (!allowed.includes(key)) problems.error(row.line, `"${key}" is not a value of a ${chartType} chart. Use ${allowed.join(', ')}`);
   for (const key of required) if (!keys.includes(key)) problems.error(row.line, `the row needs ${key}=value`);
   for (const [key, value] of Object.entries(row.values)) {

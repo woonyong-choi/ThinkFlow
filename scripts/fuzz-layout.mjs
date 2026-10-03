@@ -1,11 +1,12 @@
 // 무작위 구조 그림을 만들어 배치와 검사가 올바른 입력을 오류로 돌려보내는지 센다.
-// 사용: node scripts/fuzz-layout.mjs [--count 1500] [--seed 1] [--kind flow|state|data] [--no-aspect] [--show] [--hang-dir 폴더]
+// 사용: node scripts/fuzz-layout.mjs [--count 1500] [--seed 1] [--kind flow|state|data|chart] [--no-aspect] [--show] [--hang-dir 폴더]
 // 출력: 실패 종류마다 `{건수} {메시지 앞부분}`, 마지막에 `kinds, failed, aspect` 합계. 실패가 있으면 종료 코드 1.
 // 같은 씨앗은 같은 그림을 만든다. --show는 실패한 원본을 모두 `---`로 나눠 쓴다.
 // 그림 하나가 FIGURE_TIME_LIMIT_MS를 넘으면 멈춘 것으로 보고 실패로 세며, 원본을 --hang-dir(기본 .local/fuzz-hang)에 파일로 남긴다.
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { Worker } from 'node:worker_threads';
+import { randomChart } from './lib/fuzz-chart.mjs';
 
 const LCG_MUL = 1664525;
 const LCG_ADD = 1013904223;
@@ -14,7 +15,7 @@ const KEY_LENGTH = 90;
 // 그림 하나를 만드는 데 허용하는 시간. 보통 수십 ms라 이를 넘으면 배치가 멈춘 것이다.
 const FIGURE_TIME_LIMIT_MS = 5000;
 const HANG_DIR = '.local/fuzz-hang';
-const KINDS = ['flow', 'state', 'data'];
+const KINDS = ['flow', 'state', 'data', 'chart'];
 const BUILD_WORKER = new URL('./lib/fuzz-build-worker.mjs', import.meta.url);
 const HANG_MESSAGE = `HANG over ${FIGURE_TIME_LIMIT_MS}ms`;
 const ASPECT_CHANCE = 0.4;
@@ -205,6 +206,7 @@ function declareTables(count, rnd) {
 // vars: n = 도형 수, m = 선 수
 // basis: estimate
 function randomSource(rnd, { kind, isAspectOff }) {
+  if (kind === 'chart') return randomChart(rnd);
   const ids = Array.from({ length: NODE_MIN + rnd.int(NODE_SPREAD) }, (_, i) => `n${i}`);
   const lines = [`${kind} ${rnd.pick(DIRECTIONS)}`];
   if (rnd.next() < ASPECT_CHANCE && !isAspectOff) lines.push(`aspect ${rnd.pick(ASPECTS)}`);

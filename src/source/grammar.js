@@ -46,6 +46,7 @@ const FLOW_SEQUENCE = ['flow', 'sequence'];
 export const VALUES = {
   direction: { default: 'right', items: table({ right: V1, down: V1 }) },
   scale: { default: 'linear', items: table({ linear: V1, log: V1 }) },
+  zero: { default: 'on', items: table({ on: V1, off: V1 }) },
   chartType: {
     items: table({
       bar: { ...V1, rowWord: 'row', seriesRange: [1, 2], isInterval: true },
@@ -53,6 +54,7 @@ export const VALUES = {
       box: { ...V1, rowWord: 'row', seriesRange: [0, 0], valueKeys: ['min', 'q1', 'median', 'q3', 'max'] },
       scatter: { ...V1, rowWord: 'point', seriesRange: [0, 2] },
       line: { ...V1, rowWord: 'point', seriesRange: [1, 2], isInterval: true },
+      difference: { ...V1, rowWord: 'row', seriesRange: [1, 1], isInterval: true },
       heatmap: { ...V1, rowWord: 'cell', seriesRange: [0, 0] },
     }),
   },
@@ -88,6 +90,7 @@ export const STATEMENTS = table({
   x: { ...V1, section: 'header', kinds: ['chart'] },
   y: { ...V1, section: 'header', kinds: ['chart'] },
   scale: { ...V1, section: 'header', kinds: ['chart'], positional: ['scale'] },
+  zero: { ...V1, section: 'header', kinds: ['chart'], positional: ['zero'] },
   decimals: { ...V1, section: 'header', kinds: ['chart'] },
   person: { ...V1, section: 'declare', kinds: FLOW_SEQUENCE, node: { hasSub: false }, scopes: ['node'] },
   box: { ...V1, section: 'declare', kinds: FLOW_SEQUENCE, node: { hasSub: true }, scopes: ['box', 'node'] },

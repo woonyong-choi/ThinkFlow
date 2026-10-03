@@ -1,0 +1,18 @@
+chart difference
+title "판단기 정확도 차이"
+subtitle "예시 데이터. 점은 새 판단기에서 기존 판단기를 뺀 값, 선은 95% 신뢰구간, 점선은 허용 하한 −5%p"
+x "정확도 차이(%p)"
+decimals 1
+
+series gap "정확도 차이" role=main
+rule -5 "허용 하한"
+
+row "단일 세션 사실" gap=3.2 gap.low=-0.4 gap.high=6.8
+row "여러 세션 종합" gap=-2.1 gap.low=-5.6 gap.high=1.4
+row "시간 추론" gap=0 gap.low=-3.1 gap.high=3.1
+row "지식 갱신" gap=-6.4 gap.low=-9.8 gap.high=-3.0
+
+step "차이" "점은 새 판단기가 기존 판단기보다 높으면 오른쪽, 낮으면 왼쪽에 놓인다"
+  reveal gap
+  light "지식 갱신"
+  say "지식 갱신만 허용 하한 아래로 내려가고 구간도 하한 쪽에 걸친다"

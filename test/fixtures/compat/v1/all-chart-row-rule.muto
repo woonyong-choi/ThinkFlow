@@ -1,0 +1,6 @@
+chart bar
+x "비율(%)"
+
+series a "A" role=main
+row "가" a=91.6 a.low=84.8 a.high=95.5 rule=80
+row "나" a=76.1 a.low=66.4 a.high=83.6 rule=90

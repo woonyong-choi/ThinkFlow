@@ -14,14 +14,14 @@ import { findMissingGlyph, wrap } from './measure/fonts.js';
 import { hasUnpairedBacktick } from './text.js';
 import { countLines } from './measure/line-counts.js';
 import { STYLE, sizeNode } from './measure/sizes.js';
-import { INTERVAL_TYPES, checkChartLightTargets, checkChartRows } from './source/chart-rules.js';
+import { INTERVAL_TYPES, checkChartLightTargets, checkChartRows, hasRowRule } from './source/chart-rules.js';
 import { readFigure } from './source/parse.js';
 import { createProblems, FigureError } from './source/problems.js';
 import { collectCards, buildTimeline } from './timeline.js';
 import { values } from './tokens.js';
 
 // 원소 키. 종류마다 행 이름이 들어 있는 키다.
-const LABEL_KEY = { bar: 'label', dumbbell: 'label', box: 'label', scatter: 'name' };
+const LABEL_KEY = { bar: 'label', dumbbell: 'label', difference: 'label', box: 'label', scatter: 'name' };
 
 // cost: time O(n + elk + b·(e + s)), heap O(n + s + e), stack O(d), io 1
 // vars: n = 원본 글자 수, elk = 배치 시간, b = 박자 수, e = 선 수, s = 도형 수, d = 그룹 깊이
@@ -173,7 +173,7 @@ function loadChartData(figure, baseDir, problems) {
     return;
   }
   const byKey = new Map(chart.series.map((s) => [s.key, s.id]));
-  chart.rows = records.map((record, index) => toRow(record, { chartType, byKey, line, index }, problems)).filter(Boolean);
+  chart.rows = records.map((record, index) => toRow(record, { chart, chartType, byKey, line, index }, problems)).filter(Boolean);
   // 원소를 하나라도 버렸으면 그 오류가 원인이라, 행 수와 행 값 규칙은 보지 않는다. 덧붙는 오류를 막기 위해서다.
   if (chart.rows.length < records.length) return;
   checkChartRows(figure, problems);
@@ -184,7 +184,7 @@ function loadChartData(figure, baseDir, problems) {
 // vars: k = 원소의 키 수
 // basis: estimate
 // 원소 하나를 행으로. 계열 키는 계열 이름으로 바꾸고, 빠진 키와 null은 빠진 값이다.
-function toRow(record, { chartType, byKey, line, index }, problems) {
+function toRow(record, { chart, chartType, byKey, line, index }, problems) {
   if (!record || typeof record !== 'object' || Array.isArray(record)) {
     problems.error(line, `data element ${index} must be an object`);
     return undefined;
@@ -204,7 +204,7 @@ function toRow(record, { chartType, byKey, line, index }, problems) {
     else if (chartType === 'heatmap' && (key === 'row' || key === 'col')) values[key] = value;
     else if (chartType === 'scatter' && key === 'series') values.series = byKey.get(String(value)) ?? String(value);
     else if (series) values[part ? `${series}.${part}` : series] = value;
-    else if (['x', 'y', 'min', 'q1', 'median', 'q3', 'max', 'value'].includes(key)) values[key] = value;
+    else if (['x', 'y', 'min', 'q1', 'median', 'q3', 'max', 'value'].includes(key) || (key === 'rule' && hasRowRule(chart, chartType))) values[key] = value;
     else problems.warn(line, `data key "${key}" is not used by a ${chartType} chart`);
   }
   for (const [key, value] of Object.entries(values)) {

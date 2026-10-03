@@ -11,7 +11,7 @@
 | `src/source/` | 원본 읽기: 낱말 나누기, 문장 해석, 이름과 규칙 확인 |
 | `src/measure/` | 글꼴 파일로 글 폭 재기, 도형과 카드 크기, 글꼴 조각 넣기 |
 | `src/layout/` | elkjs 배치(구조, 상태, 데이터 관계)와 순서 그림 격자 배치 |
-| `src/chart/` | 차트 눈금, 숫자 표기, 여섯 종류 그리기 |
+| `src/chart/` | 차트 눈금, 숫자 표기, 일곱 종류 그리기 |
 | `src/draw/` | 도형, 선, 카드 그리기 |
 | `src/timeline.js`, `src/chip.js`, `src/build.js` | 시간표, 글 상자 크기와 밀어 넣기, 단계 잇기 |
 | `src/check.js`, `src/check/` | 그림 검사. 항목 목록(`items.js`)과 항목별 판정 파일 |

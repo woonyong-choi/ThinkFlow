@@ -140,7 +140,7 @@ The repository root has a composite GitHub Action. This step fails a pull reques
 - Figure kinds: structure, sequence, state, and data relation diagrams.
 - Architecture diagrams: `no=` numbers edges so the order reads in still images, `badge=` adds a short letter badge that survives in black and white, `count=` stacks N replicas of one role, and `icon=` uses the bundled icons (IBM Carbon concepts and technology brand marks, drawn in one icon blue) or your own set registered with `icons name "folder"`.
 - Cell grids: bit fields, arrays, stacks, and matrices drawn cell by cell, with merged, empty, and omitted cells and lit cells. Lines start and end at a single cell (`a -> grid.cell`), turning through the gaps between rows so they never cover a neighbor cell. Edges also take arrowheads at both ends or none (`head=`), and a small circle (`shape=circle`) draws a join such as ⊕.
-- Charts: bar, dumbbell, box, scatter, line, and heatmap charts, with values from the source or a JSON file.
+- Charts: bar, dumbbell, box, scatter, line, heatmap, and difference charts, with values from the source or a JSON file.
 - Layout: elkjs layout with per-group direction, using shape sizes measured with the embedded fonts.
 - Figure check: overlaps, edges through nodes, crowded edges, aspect ratio, and readability.
 - Playback: an HTML player and an animated SVG from the same timeline.
@@ -163,7 +163,7 @@ The design documents are written in Korean.
 - [Figure syntax](docs/design/figure-syntax.md): line rules, file structure, flow figures, timeline, and errors
 - [Figure kinds](docs/design/figure-kinds.md): sequence, state, and data relation figures
 - [Cell grids](docs/design/grid.md): cell grid syntax, sizes, lighting a cell, and cell-to-cell lines
-- [Charts](docs/design/charts.md): six chart kinds, value sources, and revealing series
+- [Charts](docs/design/charts.md): seven chart kinds, value sources, and revealing series
 - [Layout](docs/design/layout.md): text measurement, shape sizes and ports, group layout, and aspect ratio
 - [Figure check](docs/design/figure-check.md): screen error checks and messages
 - [Playback](docs/design/playback.md): timeline, beat state, the HTML player, and the animated SVG

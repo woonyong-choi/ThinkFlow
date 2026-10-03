@@ -82,10 +82,10 @@ function valueBetween([a, b], key, { x, sx }) {
   return va + ((vb - va) * (x - xa)) / (xb - xa || 1);
 }
 
-// cost: time O(s·w·p), heap O(s·w), stack O(1)
+// cost: time O(s·w·p + p·s), heap O(s·w + p·s), stack O(1)
 // vars: s = 계열 수, w = 그림 너비를 샘플 간격으로 나눈 수, p = 점 수
 // basis: estimate
-// 선과 띠가 차지한 자리. 가로로 샘플 간격(space.2)마다 선 값과 신뢰구간 값이 닿는 세로 구간을 모은다. 기준선 라벨이 피할 때 쓴다.
+// 선, 띠, 점이 차지한 자리. 선과 띠는 가로로 샘플 간격(space.2)마다 선 값과 신뢰구간 값이 닿는 세로 구간을 모으고, 점은 반지름까지 모은다. 기준선 라벨이 피할 때 쓴다.
 function occupiedRects(ctx) {
   const { chart, points, sx, sy } = ctx;
   const step = SPACE['2'];
@@ -99,6 +99,7 @@ function occupiedRects(ctx) {
       }
     }
   }
+  for (const p of points) for (const s of chart.series) rects.push({ x0: sx.at(p.values.x) - DOT, x1: sx.at(p.values.x) + DOT, y0: sy.at(p.values[s.id]) - DOT, y1: sy.at(p.values[s.id]) + DOT });
   return rects;
 }
 

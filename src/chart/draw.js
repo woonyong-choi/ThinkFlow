@@ -1,6 +1,7 @@
 // 여섯 종류 차트를 SVG 조각으로 그린다. 계열 요소는 class `cs-{계열 번호}`, 행 요소는 `cr-{행 번호}`를 달아 재생이 드러내기와 밝히기를 건다.
 import { drawBars } from './bar.js';
 import { drawBoxes, MEDIAN_LABEL } from './box.js';
+import { drawDifferences } from './difference.js';
 import { drawDumbbells } from './dumbbell.js';
 import { drawHeatmap } from './heatmap.js';
 import { drawHeader } from './labels.js';
@@ -8,7 +9,7 @@ import { drawLine } from './line.js';
 import { PAD, WIDTH } from './metrics.js';
 import { drawScatter } from './scatter.js';
 
-const DRAWERS = { bar: drawBars, dumbbell: drawDumbbells, box: drawBoxes, scatter: drawScatter, line: drawLine, heatmap: drawHeatmap };
+const DRAWERS = { bar: drawBars, dumbbell: drawDumbbells, difference: drawDifferences, box: drawBoxes, scatter: drawScatter, line: drawLine, heatmap: drawHeatmap };
 
 // cost: time O(r·s + t), heap O(out), stack O(1)
 // vars: r = 행 수, s = 계열 수, t = 눈금 수, out = 만든 SVG 글자 수

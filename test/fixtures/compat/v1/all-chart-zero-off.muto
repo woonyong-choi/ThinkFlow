@@ -1,0 +1,9 @@
+chart line
+x "주차"
+y "점수(%)"
+zero off
+
+series a "A" role=main
+point x=1 a=71.2
+point x=2 a=72.8
+point x=3 a=75.1

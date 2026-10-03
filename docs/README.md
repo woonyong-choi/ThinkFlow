@@ -8,7 +8,7 @@ mutoscope의 설계 문서다. 문서는 한국어로 쓴다. 처음이면 아�
 | [그림 문법](design/figure-syntax.md) | 줄과 글자 규칙, 파일 구조, 구조 그림, 시간 흐름, 오류 |
 | [그림 종류](design/figure-kinds.md) | 순서 그림, 상태 그림, 데이터 관계 그림, 종류 사이 규칙 |
 | [칸 격자](design/grid.md) | 칸 단위 도형의 문법, 크기, 칸 밝히기, 칸 단위 선 |
-| [차트](design/charts.md) | 여섯 차트 종류, 값 출처, 계열 드러내기 |
+| [차트](design/charts.md) | 일곱 차트 종류, 값 출처, 계열 드러내기 |
 | [배치](design/layout.md) | 글 재기, 도형 크기와 연결점, 그룹 배치, 그림 비율 |
 | [그림 검사](design/figure-check.md) | 화면 오류 검사 항목과 메시지 |
 | [재생](design/playback.md) | 시간표, 박자 상태, HTML 재생기, 움직이는 SVG |

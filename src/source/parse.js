@@ -109,7 +109,7 @@ function emptyFigure() {
     edges: [],
     start: undefined,
     finals: [],
-    chart: { series: [], rules: [], missing: undefined, data: undefined, x: undefined, y: undefined, scale: VALUES.scale.default, scaleLine: undefined, decimals: undefined, rows: [], links: [] },
+    chart: { series: [], rules: [], missing: undefined, data: undefined, x: undefined, y: undefined, scale: VALUES.scale.default, scaleLine: undefined, zero: VALUES.zero.default, zeroLine: undefined, decimals: undefined, rows: [], links: [] },
     steps: [],
   };
 }
@@ -270,5 +270,8 @@ function readHeader({ tokens, line }, { figure, problems }) {
   } else if (key === 'scale') {
     if (!valueNames('scale').includes(value?.value)) problems.error(line, `scale is ${valueNames('scale').map((v) => `"${v}"`).join(' or ')}`);
     else Object.assign(figure.chart, { scale: value.value, scaleLine: line });
+  } else if (key === 'zero') {
+    if (!valueNames('zero').includes(value?.value)) problems.error(line, `zero is ${valueNames('zero').map((v) => `"${v}"`).join(' or ')}`);
+    else Object.assign(figure.chart, { zero: value.value, zeroLine: line });
   }
 }

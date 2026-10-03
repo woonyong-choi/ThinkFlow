@@ -242,7 +242,7 @@ step "대화" "입력은 화면을 거쳐 엔진이 에이전트로 보낸다"
 | 판 표기 | `mutoscope` | 모든 그림 | 판 1 |  |
 | 머리 | `title`, `subtitle`, `speed` | 모든 그림 | 판 1 |  |
 | 머리 | `aspect`, `width` | flow, state, data | 판 1 |  |
-| 머리 | `x`, `y`, `scale`, `decimals` | chart | 판 1 |  |
+| 머리 | `x`, `y`, `scale`, `zero`, `decimals` | chart | 판 1 |  |
 | 선언 | `person`, `box`, `external`, `store` | flow, sequence | 판 1 |  |
 | 선언 | `decision`, `grid`, `icons`, `item`, `gap` | flow | 판 1 |  |
 | 선언 | `state`, `start`, `final` | state | 판 1 |  |
@@ -297,7 +297,8 @@ step "대화" "입력은 화면을 거쳐 엔진이 에이전트로 보낸다"
 |---|---|---|---|---|
 | `direction` | `group.direction`, `flow 뒤`, `state 뒤`, `data 뒤` | `right`, `down` | `right` | 없음 |
 | `scale` | `scale 값` | `linear`, `log` | `linear` | 없음 |
-| `chartType` | `chart 뒤` | `bar`, `dumbbell`, `box`, `scatter`, `line`, `heatmap` | 없음 | 없음 |
+| `zero` | `zero 값` | `on`, `off` | `on` | 없음 |
+| `chartType` | `chart 뒤` | `bar`, `dumbbell`, `box`, `scatter`, `line`, `difference`, `heatmap` | 없음 | 없음 |
 | `tone` | `show.tone` | `purple`, `green`, `teal`, `gray` | 없음 | `blue` → `teal`, `orange` → `purple` |
 | `role` | `series.role` | `main`, `compare` | 선언 순서대로 main, compare(`dumbbell`은 compare, main) | 없음 |
 | `head` | `edge.head` | `end`, `both`, `none` | `end` | 없음 |
