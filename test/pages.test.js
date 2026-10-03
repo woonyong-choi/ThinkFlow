@@ -25,10 +25,10 @@ const BAR_FIGURE = 'chart bar\nx "정확도(%)"\nseries a "A"\nrow "항목" a=3\
 // cost: time O(page), heap O(page), stack O(1), io page
 // vars: page = 페이지 하나를 여는 비용
 // basis: estimate
-// HTML을 연 페이지로 body(page)를 돌린다. 끝나면 임시 폴더를 지운다.
+// HTML을 연 페이지로 body(page)를 돌린다. html이 문자열이면 page.html 하나고, 객체면 { 파일 이름: 내용 }이며 page.html을 연다(iframe 자식 문서를 같이 둘 때). 끝나면 임시 폴더를 지운다.
 function withPage(browser, html, body) {
   return withFolder(async (folder) => {
-    writeFileSync(join(folder, 'page.html'), html);
+    for (const [name, text] of Object.entries(typeof html === 'string' ? { 'page.html': html } : html)) writeFileSync(join(folder, name), text);
     const page = await browser.newPage({ viewport: { width: WIDTH, height: 900 }, colorScheme: 'dark' });
     await page.goto(`file://${join(folder, 'page.html')}`);
     await body(page);
@@ -110,15 +110,21 @@ describe('pages', { skip: SKIP }, () => {
     });
   });
 
-  // 근거: 설계 playback.md 요구사항 "목록 쪽 테마 단추가 목록과 iframe 그림을 함께 바꾼다"(루트 color-scheme과 고른 값 저장)
+  // 근거: 설계 playback.md 요구사항 "목록 쪽 테마 단추가 목록과 iframe 그림을 함께 바꾼다"(루트 color-scheme과 고른 값 저장), 감사 C9 "실제 자식 HTML 없이 루트만 확인했다"
   test('gallery_theme_buttons_set_the_root_color_scheme_and_remember_the_choice', async () => {
-    await withPage(browser, toGallery(FIGURES, '예제'), async (page) => {
+    const child = await toHtml(await buildFigure(CODE_FIGURE), 'call-registers');
+    await withPage(browser, { 'page.html': toGallery(FIGURES, '예제'), 'call-registers.html': child }, async (page) => {
+      await page.waitForFunction(() => document.querySelector('iframe').style.height !== '');
+      const frame = page.frames().find((f) => f !== page.mainFrame());
       const labels = await page.locator('.theme button').allTextContents();
       await page.click('.theme button[data-mode="light"]');
+      await frame.waitForFunction(() => document.documentElement.getAttribute('data-theme') === 'light');
 
       assert.deepEqual(labels, ['시스템', '라이트', '다크']);
       assert.equal(await page.evaluate(() => document.documentElement.style.colorScheme), 'light');
       assert.equal(await page.evaluate(() => localStorage.getItem('mutoscope-theme')), 'light');
+      assert.equal(await frame.evaluate(() => document.readyState), 'complete');
+      assert.ok(await frame.locator('svg').count() > 0, '자식 문서에 그림이 있다');
     });
   });
 });

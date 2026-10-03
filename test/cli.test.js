@@ -10,6 +10,9 @@ import { runCli as run, withFolder } from './helpers.js';
 const CLI = fileURLToPath(new URL('../src/cli.js', import.meta.url));
 const FLOW = 'flow right\nbox a "A"\nbox b "B"\na -> b\nstep "s"\n  a -> b "x"\n';
 const BAR = 'chart bar\nseries s "S"\nrow "r" s=1\n';
+// 한 번도 지나지 않는 quiet 선(경고 11번)이 있는 원본
+const QUIET = 'flow right\nbox a "A"\nbox b "B"\na -> b "보냄" quiet\nb -> a\nstep "s"\n  b -> a\n';
+const BAD = 'flow right\nbox a "A"\na -> zz\n';
 
 // 근거: 계약 package.json bin "mutoscope": 명령은 심볼릭 링크로 실행되어도 사용법을 낸다
 test('main_run_through_symlink_prints_usage', () => {
@@ -46,6 +49,43 @@ test('main_render_with_an_error_writes_no_file_and_reports_the_line', () => {
     assert.equal(result.status, 1);
     assert.match(result.stderr, /^bad\.muto:3: unknown node "zz"/m);
     assert.ok(!existsSync(join(folder, 'bad.svg')));
+  });
+});
+
+// 근거: 감사 C1 "gallery --strict가 strict를 버림", C2 "빈 입력을 그림 0개인 정상 gallery로 만듦", C3 "오류 파일만 건너뛰고 나머지를 씀"(AGENTS "오류가 있으면 결과 파일을 쓰지 않음"), 옵션은 gallery가 받는 것만(figure-check.md 명령)
+test('main_gallery_fails_without_writing_any_file_when_the_input_must_not_pass', () => {
+  const cases = [
+    { name: 'strict_warning', files: { 'q.muto': QUIET }, args: ['--strict'], status: 1, stderr: /q\.muto:4: .*quiet edge/ },
+    { name: 'error_next_to_a_good_file', files: { 'good.muto': FLOW, 'bad.muto': BAD }, args: [], status: 1, stderr: /bad\.muto:3: unknown node "zz"/ },
+    { name: 'no_muto_files', files: { 'note.txt': 'x' }, args: [], status: 1, stderr: /no \.muto files/ },
+    { name: 'static_is_not_a_gallery_option', files: { 'good.muto': FLOW }, args: ['--static'], status: 2, stderr: /--static is not for gallery/ },
+    { name: 'json_is_not_a_gallery_option', files: { 'good.muto': FLOW }, args: ['--json'], status: 2, stderr: /--json is not for gallery/ },
+  ];
+  for (const { name, files, args, status, stderr } of cases) {
+    withFolder((folder) => {
+      for (const [file, text] of Object.entries(files)) writeFileSync(join(folder, file), text);
+
+      const result = run(['gallery', '.', '--out', 'out', ...args], folder);
+
+      assert.equal(result.status, status, name);
+      assert.match(result.stderr, stderr, name);
+      assert.ok(!existsSync(join(folder, 'out')), `${name}: no result file`);
+    });
+  }
+});
+
+// 근거: 감사 C1 반대 사례 "경고만 있는 원본은 --strict 없이는 통과하고, --strict 뒤에 다른 옵션이 붙어도 gallery가 받는 옵션은 그대로 받는다"
+test('main_gallery_still_writes_the_files_for_a_warning_without_strict_and_accepts_its_options', () => {
+  withFolder((folder) => {
+    writeFileSync(join(folder, 'q.muto'), QUIET);
+
+    const plain = run(['gallery', '.', '--out', 'plain'], folder);
+    const flagged = run(['gallery', '.', '--out', 'flagged', '--html', '--no-deprecated'], folder);
+
+    for (const [result, out] of [[plain, 'plain'], [flagged, 'flagged']]) {
+      assert.equal(result.status, 0, result.stderr);
+      assert.ok(['q.svg', 'q.html', 'index.html', 'document.html'].every((file) => existsSync(join(folder, out, file))), out);
+    }
   });
 });
 

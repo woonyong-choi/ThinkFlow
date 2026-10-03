@@ -6,7 +6,7 @@ import { chipLines, chipObstacles } from '../draw/boxes.js';
 // cost: time O(h·(k·p + k·a)), heap O(a), stack O(1)
 // vars: h = 글 상자 있는 이동 수, k = 재는 지점 수(21), p = 경로 점 수, a = 글자 사각형 수
 // basis: estimate
-// 7번: 이동 경로의 5% 지점마다 정한 글 상자(점 위, 안 되면 아래)가 그림 안에 있고 도형 이름, 열, 그룹 제목, 도형 테두리, 선 라벨 알약을 가리지 않는다.
+// 7번: 이동의 계획 지점(2프레임 간격)마다 정한 글 상자(점 위, 안 되면 아래)가 그림 안에 있고 도형 이름, 열, 그룹 제목, 도형 테두리, 선 라벨 알약을 가리지 않는다.
 // 글 상자가 그림보다 넓거나 위아래 어디에도 들어가지 않으면 오류, 위아래 어디에 두어도 글자를 가리면 경고다.
 export function checkChips({ scene, timeline }, problems) {
   const avoid = [...chipObstacles(scene), ...chipLines(scene)];

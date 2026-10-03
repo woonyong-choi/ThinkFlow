@@ -75,7 +75,7 @@
 - 후보 순서는 아래와 같고, 한 점에서 위 순위로 견준 값이 후보의 비용이다. 1) 점 위. 2) 가리는 것을 조금 비켜 올린 자리(`CHIP_GAP × 4`까지). 3) 선 반대쪽인 점 아래, 그리고 그것을 조금 내린 자리. 4) 가리는 사각형 양 끝에 붙게 옆으로 비킨 자리. 점에서 글 상자 반 폭과 간격 안이면 먼저, 더 멀면 마지막이다. 5) 그래도 겹치면 그림 검사 7번이 경고한다.
 - 이동 전체의 자리는 지점마다 따로 고르지 않고 이동 하나를 통째로 푼다(`src/chip-plan.js`). 계획 지점(2프레임 간격)마다 이동 중 한 번이라도 깨끗했던 자리 종류(점 위, 점 아래, 어느 사각형을 비킨 줄, 어느 사각형 끝 옆)를 모두 다시 만들고, 자리 바꿈 횟수가 가장 적은 열을 동적 계획으로 고른다. 비용은 겹침(10^7), 자리 바꿈 한 번(10^6), 점에서 `CHIP_GAP × 6`보다 떨어진 px, 가까운 선, 판 끝 여백, 선택 순서 차례로 크다. 경로 전체에서 한 자리가 깨끗하면 바꿈 없이 그 자리를 쓰고, 그 자리가 점에서 떨어져 있어도(점이 따라잡는다) 바꿈보다 싸면 쓴다.
 - 자리를 바꿔야 하면 순간 이동하지 않는다. 두 자리 사이를 토큰 `duration.chip-slide`(300ms) 이상 시간에 선형으로 미끄러지고, 거리가 멀면 한 프레임에 `CHIP_STEP_MAX`(6px)를 넘지 않게 시간을 2배, 4배로 늘린다. 미끄러지는 중간 프레임이 하나라도 도형, 글자, 알약을 가리거나 그림 밖이면 그 미끄러짐은 쓰지 않는다.
-- 계획은 결과를 바꾸지 않는 방법으로 줄여 잰다. 같은 선, 글, 시간, 방향의 이동은 계획을 한 번만 세우고 그림 검사 7번도 그 계획을 쓴다. 겹침과 가까운 선은 격자 색인(`src/chip-grid.js`)으로 글 상자 둘레의 사각형만 재고, 지금 비용을 낮추지 못하는 미끄러짐은 가능한지 재지 않는다. 예제와 문서 그림, CS:APP 그림의 빌드 시간은 `npm run perf`(로컬, CI 아님)가 `scripts/perf-baseline.json` 기준의 1.6배를 넘으면 실패한다.
+- 계획은 결과를 바꾸지 않는 방법으로 줄여 잰다. 같은 선, 글, 시간, 방향의 이동은 계획을 한 번만 세우고 그림 검사 7번도 그 계획을 쓴다. 겹침과 가까운 선은 격자 색인(`src/chip-grid.js`)으로 글 상자 둘레의 사각형만 재고, 지금 비용을 낮추지 못하는 미끄러짐은 가능한지 재지 않는다. 예제와 문서 그림, CS:APP 그림의 빌드 시간은 `npm run perf`(로컬, CI 아님)가 `scripts/perf-baseline.json` 기준의 1.6배를 넘으면 실패한다. 기준 파일은 잰 그림 목록과 그림마다 내용 해시, 기준 코드의 커밋 해시를 함께 적고, 비교는 그 목록의 그림만 잰다. 그림 내용이 달라졌거나 없어졌으면 비교하지 않고 실패하며, 새 기준은 있는 파일을 덮어쓰지 않고 새 파일(`--write 파일`)로만 쓴다.
 - 미끄러질 길이 없으면 바꾸지 않고, 겹치는 구간에서 글 상자를 흐리게 한다(`chipPath`의 불투명도). 겹치는 지점과 그 이웃은 0이고 멀어질수록 토큰 `duration.chip-fade`(150ms)에 걸쳐 1이 된다. 계획 뒤에 60fps 프레임마다 다시 재서 지점 사이에 겹침이 남으면 그 둘레도 흐리게 한다. 흐려진 시간이 이동의 25% 이하면 그림 검사 7번은 알리지 않고, 넘으면 알린다(그림 밖은 늘 알린다).
 - 지점은 같은 직선 위에 놓이면 줄인다. 한 자리를 지키는 이동은 지점이 둘이다.
 - 점의 자리는 점이 실제로 따라가는 둥근 모서리 경로 기준으로 잰다(꺾은선 기준이면 모서리 뒤에서 점이 몇 px 앞서 글자에 닿는다). 지점 사이는 시간에 선형으로 잇는다(SVG의 `animateTransform`과 재생기가 같다).
@@ -124,7 +124,7 @@
 | `render 원본 --static` | 멈춘 SVG `{이름}.svg` |
 | `render 원본 --html` | `{이름}.svg`와 HTML 재생기 `{이름}.html`. `--static`과 함께 주면 SVG가 멈춘 SVG다 |
 | `migrate 원본` | 쓰지 않음. 옛 형식을 고칠 때 바뀔 줄을 표준 출력에 보인다. `--write`면 원본 파일을 고친다([그림 문법](figure-syntax.md#호환-규칙)) |
-| `gallery 폴더` | 폴더 안 원본마다 `{이름}.svg`와 `{이름}.html`, 목록 쪽 `index.html`, 문서 미리보기 `document.html`. 목록 쪽은 그림마다 HTML과 SVG를 잇는다 |
+| `gallery 폴더` | 폴더 안 원본마다 `{이름}.svg`와 `{이름}.html`, 목록 쪽 `index.html`, 문서 미리보기 `document.html`. 목록 쪽은 그림마다 HTML과 SVG를 잇는다. 원본이 하나도 없거나 하나라도 오류면 전체가 실패(종료 1)이고 아무 파일도 쓰지 않는다 |
 
 - 한 번의 실행은 `{이름}.svg`를 하나만 쓴다. 움직이는 SVG와 멈춘 SVG가 같은 이름을 다투지 않게 하기 위해서다.
 - HTML은 미리보기와 목록 쪽용이다. 문서 저장소에는 SVG만 넣는다([문서 스킬 연동](docs-integration.md)).
@@ -132,6 +132,7 @@
 ### 목록 쪽
 
 - `gallery` 명령은 HTML 결과를 iframe으로 모은 `index.html`을 쓴다.
+- `gallery`가 받는 선택 사항은 `--out`, `--title`, `--strict`, `--no-deprecated`, `--require-data`, `--require-ci`이고 `--html`은 받기만 한다(늘 HTML을 쓴다). 그 밖의 선택 사항(`--static`, `--json`)은 사용법 오류(종료 2)다. `--strict`는 폴더의 모든 원본에 걸리고, 경고가 있는 원본이 하나라도 있으면 전체가 실패한다.
 - iframe 높이는 그림 쪽이 알린 본문 높이에 맞추고, 카드는 줄에서 가장 긴 카드 높이로 늘이지 않는다.
 - 위쪽에 테마 단추 "시스템 / 라이트 / 다크"가 있다. 고르면 목록 쪽과 모든 iframe 그림이 그 모드로 바뀐다.
 - 시스템은 루트에 `color-scheme: light dark`를 걸어 OS 설정을 따른다. 라이트와 다크는 루트에 `color-scheme`을 그 값으로 걸고 목록 쪽 자체 색은 토큰 CSS의 `data-theme`로 바꾼다. iframe 안 문서는 Chrome에서 부모의 `color-scheme`을 `prefers-color-scheme`에 안정적으로 받지 못해(OS 다크에서 라이트를 골라도 어둡게 남음), 목록 쪽이 iframe에 `{ theme }` 메시지를 보내고 iframe 문서가 자기 루트의 `data-theme`과 `color-scheme`을 바꾼다. 새로 뜬 iframe은 `themeRequest`로 현재 테마를 받는다.
@@ -148,8 +149,9 @@
 | 요구사항 | 검증 계획 |
 |---|---|
 | 박자 상태가 앞 박자와 상관없이 완전하다. | 아무 박자를 골라 시간표만으로 그린 상태와 처음부터 재생한 상태 비교 |
-| 목록 쪽 테마 단추가 목록과 iframe 그림을 함께 바꾼다. | `test/pages.test.js`의 `gallery_theme_buttons_set_the_root_color_scheme_and_remember_the_choice`(Chrome이 있을 때). 시스템을 다크로 둔 브라우저에서 라이트 단추를 눌러 카드 전체가 그림과 같은 한 톤인 채 라이트로 바뀌는지 확인 |
+| 목록 쪽 테마 단추가 목록과 iframe 그림을 함께 바꾼다. | `test/pages.test.js`의 `gallery_theme_buttons_set_the_root_color_scheme_and_remember_the_choice`(Chrome이 있을 때). 시스템을 다크로 둔 브라우저에서 실제 자식 HTML을 iframe으로 연 목록 쪽의 라이트 단추를 눌러, 목록 루트와 자식 문서의 테마가 모두 라이트로 바뀌고 자식 문서가 로드를 마쳐 그림을 그렸는지 확인. 카드 전체가 그림과 같은 한 톤인지는 캡처로 본다 |
 | 재생기 안에는 그림 바탕 판이 없고, SVG 파일에만 있다. | `test/cli.test.js`의 `main_render_svg_keeps_the_rounded_plate_and_the_html_player_has_none` |
+| gallery가 통과하면 안 되는 입력(경고 있는 원본의 `--strict`, 오류 원본 섞임, 원본 없음, 받지 않는 선택 사항)에서 실패하고 파일을 쓰지 않는다. | `test/cli.test.js`의 `main_gallery_fails_without_writing_any_file_when_the_input_must_not_pass`. 반대로 경고만 있는 원본은 `--strict` 없이 통과한다(`main_gallery_still_writes_the_files_for_a_warning_without_strict_and_accepts_its_options`) |
 | gallery가 문서 미리보기를 쓴다. | `test/cli.test.js`의 `main_gallery_writes_the_index_and_the_document_preview_with_each_figure_and_a_card_head` |
 | 차트 계열은 단계가 바뀌어도 남고, 탭으로 건너뛰어도 보인다. | `test/motion.test.js`의 `buildTimeline_revealed_chart_series_stay_across_steps`. 둘째 탭 상태의 계열 목록 확인 |
 | HTML과 움직이는 SVG의 글 상자 줄이 같다. | 두 결과의 글 상자 줄 비교 |

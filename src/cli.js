@@ -15,9 +15,11 @@ const USAGE = [
   'usage:',
   '  mutoscope render <file.muto ...> [--out dir] [--html] [--static] [--strict] [--no-deprecated] [--require-data] [--require-ci] [--json]',
   '  mutoscope check <file.muto ...> [--strict] [--no-deprecated] [--require-data] [--require-ci] [--json]',
-  '  mutoscope gallery <dir> [--out dir] [--title "text"]',
+  '  mutoscope gallery <dir> [--out dir] [--title "text"] [--strict] [--no-deprecated] [--require-data] [--require-ci]',
   '  mutoscope migrate <file.muto ...> [--write] [--json]',
 ].join('\n');
+// gallery가 받는 옵션. --html은 gallery가 늘 HTML을 쓰므로 받기만 한다(옛 호출이 깨지지 않게).
+const GALLERY_FLAGS = ['html', 'strict', 'no-deprecated', 'require-data', 'require-ci'];
 const FLAGS = ['--html', '--static', '--strict', '--no-deprecated', '--require-data', '--require-ci', '--json', '--write'];
 // 진단 종류마다 글 출력의 머리말. 오류는 머리말이 없다.
 // 판 표기 줄(`mutoscope 1`). 목록 쪽 머리에서 종류 줄을 찾을 때 건너뛴다.
@@ -44,6 +46,8 @@ function parseArgs(argv) {
   }
   if (!args.inputs.length) return { error: USAGE };
   if (args.flags.has('write') && command !== 'migrate') return { error: `--write is only for migrate\n${USAGE}` };
+  const refused = command === 'gallery' ? [...args.flags].find((flag) => !GALLERY_FLAGS.includes(flag)) : undefined;
+  if (refused) return { error: `--${refused} is not for gallery\n${USAGE}` };
   return args;
 }
 
@@ -67,13 +71,24 @@ async function main(argv) {
 // basis: estimate
 // 원본 하나를 검사하고, render면 결과 파일을 쓴다. 오류가 있으면 아무 파일도 쓰지 않는다.
 async function processFile(input, args) {
+  const result = await buildInput(input, args);
+  if (!result) return false;
+  if (args.command !== 'check') await writeFigure(input, result, args);
+  return true;
+}
+
+// cost: time O(build), heap O(out), stack O(1), io 1
+// vars: build = 원본 하나를 만드는 비용, out = 결과 글자 수
+// basis: estimate
+// 원본 하나를 읽고 만들어 진단을 알린다. 파일은 쓰지 않는다. 오류가 있으면 undefined다.
+async function buildInput(input, args) {
   const json = args.flags.has('json');
   let source;
   try {
     source = readFileSync(input, 'utf8');
   } catch (error) {
     report(input, [makeDiagnostic({ severity: 'error', line: 0, message: `cannot read the file: ${error.code ?? error.message}` }, { code: 'io' })], json);
-    return false;
+    return undefined;
   }
   let result;
   try {
@@ -82,16 +97,23 @@ async function processFile(input, args) {
     // 원본 오류가 아닌 실패는 이 도구의 버그다. 스택 대신 한 줄로 알리고 다음 파일로 넘어간다.
     const problems = error instanceof FigureError ? error.problems : [makeDiagnostic({ severity: 'error', line: 0, message: `internal error: ${error.message}. Please report this` }, { code: 'internal' })];
     report(input, problems, json);
-    return false;
+    return undefined;
   }
   report(input, [...result.warnings, ...result.deprecations].sort((a, b) => a.line - b.line), json);
-  if (args.command === 'check') return true;
+  return result;
+}
+
+// cost: time O(out), heap O(out), stack O(1), io 3
+// vars: out = 결과 글자 수
+// basis: estimate
+// 만든 그림의 SVG(--html이면 HTML도)를 쓴다.
+async function writeFigure(input, result, args) {
+  const json = args.flags.has('json');
   const name = basename(input).replace(/\.muto$/, '');
   const folder = args.out ?? dirname(input);
   mkdirSync(folder, { recursive: true });
   writeOutput(join(folder, `${name}.svg`), await toSvg(result, { isStatic: args.flags.has('static'), name }), json);
   if (args.flags.has('html')) writeOutput(join(folder, `${name}.html`), await toHtml(result, name), json);
-  return true;
 }
 
 // cost: time O(n + s), heap O(n), stack O(1), io 2
@@ -122,10 +144,11 @@ function migrateFile(input, args) {
   return true;
 }
 
-// cost: time O(f·build), heap O(f), stack O(1), io 3f + 2
-// vars: f = 폴더 안 원본 수, build = 원본 하나를 만드는 비용
+// cost: time O(f·build), heap O(f·out), stack O(1), io 3f + 2
+// vars: f = 폴더 안 원본 수, build = 원본 하나를 만드는 비용, out = 그림 하나의 결과 글자 수
 // basis: estimate
 // 폴더 안 원본마다 SVG와 HTML을 쓰고 목록 쪽 index.html과 문서 미리보기 document.html을 쓴다.
+// 원본이 하나도 없거나 하나라도 오류면 전체가 실패라서 아무 파일도 쓰지 않는다(전부 만든 다음에 쓰려고 결과를 모아 둔다).
 async function writeGallery(args) {
   const folder = args.inputs[0];
   const out = args.out ?? join(folder, 'out');
@@ -137,18 +160,23 @@ async function writeGallery(args) {
     return 1;
   }
   const files = names.filter((f) => f.endsWith('.muto')).sort();
+  if (!files.length) {
+    process.stderr.write(`${folder}: no .muto files\n`);
+    return 1;
+  }
+  const galleryArgs = { ...args, command: 'render', out, flags: new Set([...args.flags, 'html']) };
+  const built = [];
+  for (const file of files) built.push({ file, input: join(folder, file), result: await buildInput(join(folder, file), galleryArgs) });
+  if (built.some(({ result }) => !result)) return 1;
   const figures = [];
-  let failed = false;
-  for (const file of files) {
-    const input = join(folder, file);
-    const ok = await processFile(input, { ...args, command: 'render', out, flags: new Set(['html']) });
-    failed = !ok || failed;
-    if (ok) figures.push({ name: file.replace(/\.muto$/, ''), ...describe(readFileSync(input, 'utf8')), href: relative(out, join(out, file.replace(/\.muto$/, ''))) });
+  for (const { file, input, result } of built) {
+    await writeFigure(input, result, galleryArgs);
+    figures.push({ name: file.replace(/\.muto$/, ''), ...describe(readFileSync(input, 'utf8')), href: relative(out, join(out, file.replace(/\.muto$/, ''))) });
   }
   const heading = args.title ?? basename(folder);
   writeOutput(join(out, 'index.html'), toGallery(figures, heading), false);
   writeOutput(join(out, 'document.html'), toDocument(figures, heading), false);
-  return failed ? 1 : 0;
+  return 0;
 }
 
 // cost: time O(n), heap O(n), stack O(1)

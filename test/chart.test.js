@@ -115,7 +115,7 @@ const REJECTED = [
   { rule: '소수 자릿수 범위("2")', source: 'chart heatmap\ndecimals "2"\ncell "a" "x" 1\n', expect: /whole number from 0 to 6/ },
   // 설계 charts.md 요구사항 "드러내지 않는 계열과 거꾸로 된 드러내기를 막는다"
   { rule: '덤벨은 compare를 먼저 드러냄', source: 'chart dumbbell\nx "값(%)"\nseries ours "O" role=main\nseries base "B" role=compare\nrow "r" ours=2 base=9\nstep "s"\n  reveal ours\n  reveal base\n', expect: /reveal "base" before "ours". The arrow starts from the compare series/ },
-  // 설계 charts.md 요구사항 "계열 역할이 빠지거나 겹치면 막는다"
+  // 설계 charts.md 요구사항 "계열 역할이 겹치거나 맞지 않으면 막고, 빠졌으면 선언 순서대로 받는다"
   { rule: 'main 둘', source: 'chart bar\nx "값(%)"\nseries a "A" role=main\nseries b "B" role=main\nrow "r" a=1 b=2\n', expect: /one role=main and one role=compare/ },
   { rule: 'compare 둘', source: 'chart bar\nx "값(%)"\nseries a "A" role=compare\nseries b "B" role=compare\nrow "r" a=1 b=2\n', expect: /one role=main and one role=compare/ },
   { rule: '모르는 역할', source: 'chart bar\nx "값(%)"\nseries a "A" role=other\nseries b "B" role=compare\nrow "r" a=1 b=2\n', expect: /role is one of main, compare. Found "other"/ },
@@ -177,7 +177,7 @@ const DUMBBELL_DATA = [
   'chart dumbbell\nseries a "A" key="before" role=compare\nseries b "B" key="after" role=main\ndata "summary.json" at "/tokens"',
 ];
 
-// 근거: 설계 charts.md 요구사항 "여섯 종류를 행 줄과 data JSON에서 같은 결과로 그린다", "신뢰구간을 세 종류가 같은 규칙으로 받고 행 줄과 data가 같은 결과를 낸다"
+// 근거: 설계 charts.md 요구사항 "여섯 종류를 행 줄과 data JSON에서 같은 결과로 그린다"(이 시험은 막대, 선, 덤벨만), "신뢰구간을 세 종류가 같은 규칙으로 받고 행 줄과 data가 같은 결과를 낸다"
 test('buildFigure_rows_from_data_match_inline_rows_for_bar_line_and_dumbbell', async () => {
   for (const [inline, fromData] of [BAR_DATA, LINE_DATA, DUMBBELL_DATA]) assert.equal(await bodyOf(fromData, { baseDir: FIXTURES }), await bodyOf(inline), inline.split('\n')[0]);
 });
@@ -219,7 +219,7 @@ test('buildFigure_chart_value_text_keeps_equal_decimal_places', async () => {
 
 const roleOf = (type, rows, a = '', b = '') => parseFigure(`chart ${type}\nx "값(%)"\nseries a "A"${a}\nseries b "B"${b}\n${rows}\n`).figure.chart.series.map((s) => [s.id, s.role]);
 
-// 근거: 설계 charts.md 요구사항 "계열 역할이 빠지거나 겹치면 막는다"와 계약 figure-syntax.md 호환 규칙 "role 생략은 선언 순서, 하나만 적으면 남은 역할"
+// 근거: 설계 charts.md 요구사항 "계열 역할이 겹치거나 맞지 않으면 막고, 빠졌으면 선언 순서대로 받는다"와 계약 figure-syntax.md 호환 규칙 "role 생략은 선언 순서, 하나만 적으면 남은 역할"
 test('parseFigure_series_roles_follow_the_written_role_then_the_declaration_order', () => {
   const read = parseFigure('chart bar\nx "값(%)"\nseries a "A" key="k" role=compare\nseries b "B" role=main\nrow "r" a=1 b=2\n').figure.chart;
 

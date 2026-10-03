@@ -66,23 +66,39 @@ test('compat_v1_old_forms_report_only_deprecated_never_errors_or_warnings', asyn
   }
 });
 
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+// 줄 첫 낱말이 선택 사항을 찾을 범위들. 선 줄은 첫 낱말이 이름이라 화살표로 가르고, 테이블 안 줄은 열이다.
+function scopesOf({ head, second, isTimeline, isInTable }) {
+  if (isInTable) return ['column'];
+  if (head.type === 'word' && second?.type === 'arrow') return [isTimeline ? 'hop' : 'edge'];
+  return STATEMENTS[head.value]?.scopes ?? [head.value];
+}
+
 // cost: time O(n), heap O(n), stack O(1)
 // vars: n = 고정 묶음 원본 글자 수
 // basis: estimate
-// 고정 묶음이 쓰는 낱말: 문장 낱말, 그림 종류, 선택 사항 키, 값 없는 낱말, 값.
+// 고정 묶음이 쓰는 낱말: 문장 낱말, 그림 종류, 선택 사항(`범위.이름`), 값 없는 낱말, 값.
+// 선택 사항은 쓴 줄의 범위로 센다. 이름만 세면 `grid.rows`가 `item.rows`까지 쓴 것으로 센다(감사 C5).
 function usedWords() {
-  const used = { heads: new Set(), keys: new Set(), words: new Set(), values: new Set() };
+  const used = { heads: new Set(), options: new Set(), words: new Set(), values: new Set() };
   for (const name of NAMES) {
     let isTimeline = false;
+    let isInTable = false;
     sourceOf(name).split('\n').forEach((text, i) => {
       const tokens = tokenizeLine(text, i + 1, createProblems());
       if (!tokens.length) return;
       const [head, second] = tokens;
+      if (head.type === 'close') isInTable = false;
+      const scopes = scopesOf({ head, second, isTimeline, isInTable });
+      if (head.value === 'table' && tokens.at(-1).type === 'open') isInTable = true;
       if (head.type === 'word' && second?.type === 'arrow') used.heads.add(isTimeline ? 'hop' : 'edge');
       else if (head.type === 'word') used.heads.add(head.value);
       if (head.value === 'step') isTimeline = true;
       for (const t of tokens) {
-        if (t.type === 'option') [used.keys.add(t.key), used.values.add(t.value)];
+        const optionName = t.type === 'option' ? t.key : t.type === 'word' ? t.value : undefined;
+        for (const scope of scopes) if (optionName !== undefined && `${scope}.${optionName}` in OPTIONS) used.options.add(`${scope}.${optionName}`);
+        if (t.type === 'option') used.values.add(t.value);
         else if (t.type === 'word') used.words.add(t.value);
       }
     });
@@ -96,10 +112,7 @@ test('compat_v1_covers_every_word_option_and_value_in_the_grammar_table', () => 
   const missing = [];
   for (const word of Object.keys(STATEMENTS)) if (!used.heads.has(word)) missing.push(`statement ${word}`);
   for (const kind of Object.keys(KINDS)) if (!used.heads.has(kind)) missing.push(`kind ${kind}`);
-  for (const key of Object.keys(OPTIONS)) {
-    const [, name] = key.split('.');
-    if (!used.keys.has(name) && !used.words.has(name)) missing.push(`option ${key}`);
-  }
+  for (const key of Object.keys(OPTIONS)) if (!used.options.has(key)) missing.push(`option ${key}`);
   for (const [list, { items }] of Object.entries(VALUES)) {
     for (const name of Object.keys(items)) if (!used.values.has(name) && !used.words.has(name)) missing.push(`value ${list}.${name}`);
   }

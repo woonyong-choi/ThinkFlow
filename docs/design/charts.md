@@ -190,10 +190,10 @@ rule 5 "채택 기준"
 | 요구사항 | 검증 계획 |
 |---|---|
 | 문서의 모든 예시 원본이 오류와 경고 없이 읽힌다. | `test/grammar.test.js`의 `docExamples_every_design_doc_example_builds_without_errors_or_warnings`. 예시 원본을 뽑아 strict로 읽는다. `data` 예시는 `test/fixtures/summary.json`으로 읽는다 |
-| 여섯 종류를 행 줄과 `data` JSON에서 같은 결과로 그린다. | `test/chart.test.js`의 `buildFigure_rows_from_data_match_inline_rows_for_bar_line_and_dumbbell`. 같은 값을 두 방식으로 적은 원본의 결과 비교(막대, 선, 덤벨) |
+| 여섯 종류를 행 줄과 `data` JSON에서 같은 결과로 그린다. | `test/chart.test.js`의 `buildFigure_rows_from_data_match_inline_rows_for_bar_line_and_dumbbell`. 같은 값을 두 방식으로 적은 원본의 결과 비교(막대, 선, 덤벨만). 테스트 없음: 산점도, 상자, 히트맵은 같은 `data` 읽기 경로를 쓰지만 같은 결과 비교는 아직 없다 |
 | 그릴 수 없는 값과 계열 수를 줄 번호와 함께 막는다. | `test/chart.test.js`의 `buildFigure_chart_rules_reject_values_that_cannot_be_drawn`. 음수, log 눈금, 모두 0, 덤벨 계열 수, 상자 값 없음, 소수 자릿수 범위 원본의 오류 확인. data 원소 오류는 `loadChartData_non_number_value_missing_name_and_pointer_without_slash_are_errors` |
 | 드러내지 않는 계열과 거꾸로 된 드러내기를 막는다. | 두 원본의 오류 확인. 거꾸로 드러내기는 `test/chart.test.js`의 `buildFigure_chart_rules_reject_values_that_cannot_be_drawn`(덤벨 행). 테스트 없음: 처음부터 대응 테스트를 두지 않았고 눈으로 확인한다(드러내지 않는 계열) |
-| 계열 역할이 빠지거나 겹치면 막는다. | `test/chart.test.js`의 `buildFigure_chart_rules_reject_values_that_cannot_be_drawn`(main 둘, compare 둘, 모르는 역할, main 없음 행), `parseFigure_series_roles_follow_the_written_role_then_the_declaration_order`(기본 역할과 정렬) |
+| 계열 역할이 겹치거나 맞지 않으면 막고, 빠졌으면 선언 순서대로 받는다. | `test/chart.test.js`의 `buildFigure_chart_rules_reject_values_that_cannot_be_drawn`(main 둘, compare 둘, 모르는 역할, main 없음 행), `parseFigure_series_roles_follow_the_written_role_then_the_declaration_order`(역할을 생략하면 선언 순서의 기본 역할과 정렬) |
 | 숫자와 비율 글자가 반올림 규칙을 따른다. | `test/chart.test.js`의 `formatNumber_and_formatChange_round_half_away_and_use_k_and_M`(`120000`, `1250`, `−74%` 경우), `buildFigure_chart_value_text_keeps_equal_decimal_places` |
 | 두 강제 선택 사항이 행 줄과 빠진 신뢰구간을 막는다. | `test/chart.test.js`의 `buildFigure_require_data_and_require_ci_reject_hand_rows_and_missing_intervals`. 선택 사항마다 원본 하나로 오류 확인. `--require-ci`는 막대, 덤벨, 선 |
 | 신뢰구간을 세 종류가 같은 규칙으로 받고 행 줄과 `data`가 같은 결과를 낸다. | `test/chart.test.js`의 `buildFigure_chart_rules_reject_values_that_cannot_be_drawn`(구간 순서와 짝 행), `buildFigure_rows_from_data_match_inline_rows_for_bar_line_and_dumbbell`(같은 값의 두 방식 비교) |
