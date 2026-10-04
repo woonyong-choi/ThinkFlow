@@ -26,7 +26,7 @@ step "다음 대화" "같은 사람이 다른 이름으로 나와도 한 개체�
   user -> extract "김민지가 결제팀을 맡았대"
   show extract "김민지 = 민지" tag="person"
   extract -> resolve
-  show resolve "김민지 → 민지" tag="merge" tone=teal
+  show resolve "김민지 → 민지" tag="merge" tone=purple
   resolve -> graph
   show graph graph "민지 -> 토스; 토스 -> 결제팀; 민지 -> 결제팀" lit="민지, 결제팀"
 step "질문" "질문이 오면 쓰지 않던 선이 나타난다"

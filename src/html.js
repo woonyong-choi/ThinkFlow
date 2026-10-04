@@ -2,6 +2,7 @@
 import { readFileSync } from 'node:fs';
 import { chartMotionCss } from './chart/motion.js';
 import { canvasOf, fitCanvas } from './canvas.js';
+import { LUCIDE_ICONS } from './icons/lucide/icons.js';
 import { createGlyphSet, embedFonts } from './measure/fonts.js';
 import { paintCss } from './draw/paint.js';
 import { DEFS, STYLES } from './styles.js';
@@ -11,7 +12,10 @@ import { chartContent, figureContent } from './html/content.js';
 
 // 브라우저 스크립트 파일(src/player/). 한 스크립트로 이어 붙여 HTML에 넣는다.
 const PLAYER_FILES = ['view', 'play', 'controls', 'stage', 'curve', 'values'];
-const PLAYER = PLAYER_FILES.map((name) => readFileSync(new URL(`./player/${name}.js`, import.meta.url), 'utf8')).join('\n');
+// 조작부 아이콘: Lucide(ISC) 24 격자 외곽선 아이콘의 도형(src/icons/lucide/icons.js)을 재생기 스크립트 앞에 상수로 붙인다. 선 굵기와 끝 모양은 그리는 쪽(view.js)이 정한다.
+const UI_ICONS = LUCIDE_ICONS;
+const UI_ICON_SCRIPT = `const UI_ICONS = ${JSON.stringify(UI_ICONS).replace(/</g, '\\u003c')};\n`;
+const PLAYER = UI_ICON_SCRIPT + PLAYER_FILES.map((name) => readFileSync(new URL(`./player/${name}.js`, import.meta.url), 'utf8')).join('\n');
 // iframe 안에서 열리면 틀을 빼고, 목록 쪽이 iframe 높이를 맞추도록 본문 높이를 알린다. 문서(html) 높이는 iframe 창보다 작아지지 않아 쓰지 않는다.
 // 목록 쪽의 라이트·다크 선택은 iframe의 prefers-color-scheme에 안정적으로 전해지지 않아, 목록 쪽이 보내는 테마 메시지로 이 문서의 data-theme을 바꾼다. 처음에는 목록 쪽에 현재 테마를 물어본다.
 const EMBED_SCRIPT = `<script>if (window.self !== window.top) {

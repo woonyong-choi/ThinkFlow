@@ -1,0 +1,15 @@
+flow right
+title "큐와 역압"
+subtitle "생산이 소비보다 빠르면 큐가 차고, 가득 차면 생산을 막아야 한다"
+
+box prod "생산자"
+store q "큐" "최대 5"
+box cons "소비자"
+value len "큐 길이" on=q from=0
+on q len+1
+prod -> q
+q -> cons
+
+step "큐가 차오른다" "1초마다 넣고 3초마다 꺼내면 길이가 늘어난다" for=12s
+  track prod -> q "작업" every=1s time=1s
+  track q -> cons "꺼냄" every=3s time=1s tone=purple set="len-1@q"

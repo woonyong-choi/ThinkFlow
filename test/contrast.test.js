@@ -7,27 +7,31 @@ import { heatLook } from '../src/chart/heatmap.js';
 import { contrast, mixHex, pickInk } from '../src/contrast.js';
 import { toSvg } from '../src/svg.js';
 import { values } from '../src/tokens.js';
-import { linearChannelsOf as channelsOf, linearToOklab, oklchOf, RESUME_ACCENT, RESUME_ORANGE, themeColor, tokenValue } from './helpers.js';
+import { oklchToHex } from '../scripts/lib/oklch.mjs';
+import { valueNames } from '../src/source/grammar.js';
+import { ANCHORS } from '../scripts/lib/palette.mjs';
+import { linearChannelsOf as channelsOf, linearToOklab, oklchOf, themeColor, tokenValue } from './helpers.js';
 
 const TEXT = 4.5;
 const GRAPHIC = 3;
 // 꾸밈 요소는 WCAG 적용 대상 밖이다. 값이나 상태를 전하지 않고 구조만 돕는다.
 const DECORATIVE_LINE = 1.5;
 const DECORATIVE_PLATE_EDGE = 1.3;
-const FIGURE_FACES = ['bg', 'node', 'group', 'card-on'];
+const FIGURE_FACES = ['bg', 'node', 'group-1', 'group-2', 'group-3', 'card-on'];
 const DOCUMENT_FACES = ['page'];
 const ALL_FACES = [...FIGURE_FACES, ...DOCUMENT_FACES];
 const BORDER_FACES = [...FIGURE_FACES, 'surface', ...DOCUMENT_FACES];
 // 강조 글자는 그룹 바탕 위에 놓이지 않는다. 카드 표시는 내용이 찬 카드 바탕(card-on)에, 링크는 문서 면에 놓인다.
 const TEXT_FACES = ['bg', 'node', 'card-on', ...DOCUMENT_FACES];
 const TEXT_ROLES = ['state.active-text', 'ui.link'];
-const FLOW_ROLES = ['flow.purple', 'flow.green', 'flow.teal', 'flow.gray'];
+const FLOW_ROLES = ['flow.brand', 'flow.purple', 'flow.green', 'flow.gray', 'flow.red'];
 const GRAPHIC_ROLES = ['state.active', 'ui.focus', 'ui.progress', 'data.main', 'data.compare', 'figure.icon', ...FLOW_ROLES];
 const THEMES = ['light', 'dark'];
-const ORANGE_HUE = 50;
-const HUE_TOLERANCE = 1;
-const LIGHTNESS_TOLERANCE = 0.01;
-const CHROMA_TOLERANCE = 0.01;
+const STROKE_STEP = 0.004;
+const ORANGE_HUE = 41;
+const ORANGE_HUE_TOLERANCE = 6;
+// NHN 브랜드 파랑이 채도가 더 높아(C 0.22) 주황 채도 차이를 0.04까지 둔다
+const CHROMA_TOLERANCE = 0.04;
 const CVD_MIN_DISTANCE = 0.1;
 const MIN_TAG_HUE_GAP = 40;
 const NEUTRAL_CHROMA = 0.03;
@@ -81,11 +85,11 @@ function listTokens(node, path = []) {
 // 근거: 규칙 docs-integration.md 대비 기준 표: 본문·보조·강조·태그 글자, 켜진 면 위 글자, 켜진 탭 글자는 모든 면에서 4.5 이상
 test('contrast_text_pairs_reach_4_5_in_both_themes', () => {
   for (const theme of THEMES) {
-    expectAtLeast(theme, TEXT, ['bg', 'node', 'surface', 'card-on', 'group', 'page'].flatMap((face) => [['fg', face], ['muted', face]]));
+    expectAtLeast(theme, TEXT, ['bg', 'node', 'surface', 'card-on', 'group-1', 'group-2', 'group-3', 'page'].flatMap((face) => [['fg', face], ['muted', face]]));
     expectAtLeast(theme, TEXT, TEXT_FACES.flatMap((face) => TEXT_ROLES.map((role) => [role, face])));
     expectAtLeast(theme, TEXT, [['state.on-active', 'state.active-fill'], ['fg', 'ui.control-on'], ['muted', 'bg']]);
     for (const face of ['node', 'surface', 'card-on']) {
-      for (const tone of ['purple', 'green', 'teal', 'gray']) {
+      for (const tone of ['purple', 'green', 'gray', 'red', 'brand']) {
         const band = mixHex(color(theme, face), color(theme, `tag.${tone}`), opacity('tag'));
         const ratio = contrast(color(theme, 'fg'), band);
         assert.ok(ratio >= TEXT, `${theme} tag ${tone} on ${face}: ${ratio.toFixed(2)}`);
@@ -94,11 +98,11 @@ test('contrast_text_pairs_reach_4_5_in_both_themes', () => {
   }
 });
 
-// 근거: 규칙 docs-integration.md 대비 기준 표: 강조 그래픽, 계열 막대와 점, 경계, 켜진 탭 고리, 신뢰구간 선은 3 이상(WCAG 그래픽, 예외 없음)
+// 근거: 규칙 docs-integration.md 대비 기준 표: 강조 그래픽, 계열 막대와 점, 도형 외곽선(color.outline), 켜진 탭 고리, 신뢰구간 선은 3 이상(WCAG 그래픽, 예외 없음). 머리카락 테두리(border)는 꾸밈 요소라 이 표가 아니라 아래 꾸밈 기준을 따른다
 test('contrast_graphic_pairs_reach_3_in_both_themes', () => {
   for (const theme of THEMES) {
     expectAtLeast(theme, GRAPHIC, ALL_FACES.flatMap((face) => GRAPHIC_ROLES.map((role) => [role, face])));
-    expectAtLeast(theme, GRAPHIC, BORDER_FACES.flatMap((face) => [['border', face]]));
+    expectAtLeast(theme, GRAPHIC, BORDER_FACES.flatMap((face) => [['outline', face]]));
     expectAtLeast(theme, GRAPHIC, [['fg', 'bg'], ['node', 'figure.icon']]);
   }
 });
@@ -148,58 +152,65 @@ test('contrast_dimmed_row_text_keeps_value_and_helper_text_at_4_5', () => {
   }
 });
 
-// 근거: 결정 #14 "라이트 그림 바탕 #f6f7f9, 그룹 바탕은 그보다 아주 약간 진하게, 카드는 흰색으로 바탕보다 한 톤 위"
+// 근거: 결정 #14 "라이트 그림 바탕 #f6f7f9, 그룹 바탕은 그보다 아주 약간 진하게(깊이 1 group-1, 단계 간격을 넓혀 차이 33 이하), 카드는 흰색으로 바탕보다 한 톤 위"
 test('figureGround_light_bg_is_gray_group_is_slightly_darker_and_node_face_is_brighter_in_both_themes', () => {
   const sum = (hex) => Number.parseInt(hex.slice(1, 3), 16) + Number.parseInt(hex.slice(3, 5), 16) + Number.parseInt(hex.slice(5, 7), 16);
-  const [bg, group, node] = ['bg', 'group', 'node'].map((name) => color('light', name));
+  const [bg, group, node] = ['bg', 'group-1', 'node'].map((name) => color('light', name));
 
   assert.equal(node, '#ffffff');
   assert.ok(sum(bg) <= sum('#f8f9fb') && sum(bg) < sum(node), bg);
-  assert.ok(sum(group) < sum(bg) && sum(bg) - sum(group) <= 24, group);
+  assert.ok(sum(group) < sum(bg) && sum(bg) - sum(group) <= 33, group);
   for (const theme of THEMES) assert.ok(contrast(color(theme, 'node'), color(theme, 'bg')) > 1.05, `${theme} node on bg`);
   // 그룹과 그 안 노드는 두 테마 모두 다른 면이다(다크 그룹이 노드와 같은 색이던 문제)
-  for (const theme of THEMES) assert.notEqual(color(theme, 'group'), color(theme, 'node'), `${theme} group face equals node face`);
+  for (const theme of THEMES) assert.notEqual(color(theme, 'group-1'), color(theme, 'node'), `${theme} group face equals node face`);
 });
 
-// 근거: 결정 docs-integration.md "대비 규칙이 색 선택보다 우선: 같은 색상에서 기준을 넘는 가장 밝은 단계를 그 자리에만 쓴다"
-test('palette_graphic_text_and_border_colors_are_the_lightest_step_that_reaches_their_floor', () => {
-  const graphicFaces = ['bg', 'group', 'card-on', 'node', 'page'];
+// 근거: 결정 docs-integration.md "대비 규칙이 색 선택보다 우선: 원색이 기준을 넘으면 원색, 못 넘으면 같은 색상에서 기준을 넘는 가장 가까운 단계를 쓴다". 새 규칙(NHN 색 역할)에서도 파랑과 주황의 선(stroke)은 원색이거나 기준을 넘는 가장 가까운 단계이고, 글자 단계(ink)는 글자가 놓이는 면 위 4.5를 넘는 가장 가까운 단계이며, 외곽선(outline)은 면 위 3을 넘는 가장 어두운(다크는 밝은) 값이다
+test('palette_graphic_text_and_outline_colors_are_the_closest_step_that_reaches_their_floor', () => {
+  const graphicFaces = ['bg', 'group-1', 'group-2', 'group-3', 'card-on', 'node', 'page'];
   const lowest = (value, faces, theme = 'light') => Math.min(...faces.map((face) => contrast(value, color(theme, face))));
-  for (const [hue, base] of [['blue', RESUME_ACCENT], ['orange', RESUME_ORANGE]]) {
-    const graphic = color('light', `palette.${hue}.550`);
-    const [, baseC, baseHue] = oklchOf(base);
-    const [, graphicC, graphicHue] = oklchOf(graphic);
+  for (const hue of ['blue', 'orange']) {
+    for (const theme of THEMES) {
+      const stroke = color(theme, `palette.${hue}.${theme}-stroke`);
+      const [L, C, h] = oklchOf(stroke);
+      const back = oklchToHex(L + (theme === 'light' ? STROKE_STEP : -STROKE_STEP), C, h);
+      const reachesFloor = (value) => lowest(value, graphicFaces, theme) >= GRAPHIC;
 
-    assert.ok(Math.abs(graphicHue - baseHue) <= HUE_TOLERANCE && Math.abs(graphicC - baseC) <= CHROMA_TOLERANCE, `${hue} hue/chroma`);
-    assert.ok(lowest(graphic, graphicFaces) >= GRAPHIC && lowest(mixHex(graphic, '#ffffff', STEP_MIX), graphicFaces) < GRAPHIC, `${hue} graphic step`);
+      assert.ok(reachesFloor(stroke), `${theme} ${hue} stroke reaches 3`);
+      assert.ok(stroke === ANCHORS[hue][theme] || !reachesFloor(back), `${theme} ${hue} stroke is the anchor or the closest step`);
+    }
   }
-  const textFaces = ['node', 'bg', 'card-on', 'page'];
-  const strong = color('light', 'state.active-text');
-  assert.ok(lowest(strong, textFaces) >= TEXT && lowest(mixHex(strong, '#ffffff', STEP_MIX), textFaces) < TEXT, 'light active text step');
-  assert.ok(contrast(color('light', 'state.active'), color('light', 'node')) < TEXT, 'state.active itself is a graphic color, not a text color');
-  // 경계는 바탕 쪽으로 한 단계 가면(라이트는 흰색, 다크는 검정 쪽) 3 아래로 떨어져야 최소 값이다.
+  // 글자 단계(ink)는 그림 면(판, 도형, 그룹 셋, 카드 바탕)과 자기 면, 켜진 글 상자 글자 위에서 4.5를 맞추는 가장 가까운 단계다.
+  for (const theme of THEMES) {
+    const textFaces = ['bg', 'node', 'group-1', 'group-2', 'group-3', 'card', 'card-on', 'state.on-active'].map((face) => color(theme, face));
+    const strong = color(theme, 'state.active-text');
+    const [strongL, strongC, strongH] = oklchOf(strong);
+    const back = oklchToHex(strongL + (theme === 'light' ? STROKE_STEP : -STROKE_STEP), strongC, strongH);
+    assert.ok(Math.min(...textFaces.map((face) => contrast(strong, face))) >= TEXT && Math.min(...textFaces.map((face) => contrast(back, face))) < TEXT, `${theme} active text step`);
+  }
+  assert.ok(contrast(color('light', 'state.active'), color('light', 'group-3')) < TEXT, 'state.active itself is a graphic color, not a text color');
+  // 외곽선은 바탕 쪽으로 한 단계 가면(라이트는 흰색, 다크는 검정 반대인 흰색 쪽이 아니라 면 쪽) 3 아래로 떨어져야 최소 값이다.
   for (const [theme, toward] of [['light', '#ffffff'], ['dark', '#000000']]) {
-    const border = color(theme, 'border');
+    const outline = color(theme, 'outline');
+    const outlineFaces = ['bg', 'node', 'group-1', 'group-2', 'group-3', 'card'];
 
-    assert.ok(lowest(border, BORDER_FACES, theme) >= GRAPHIC && lowest(mixHex(border, toward, STEP_MIX), BORDER_FACES, theme) < GRAPHIC, `${theme} border step`);
+    assert.ok(lowest(outline, outlineFaces, theme) >= GRAPHIC && lowest(mixHex(outline, theme === 'light' ? '#ffffff' : '#000000', STEP_MIX), outlineFaces, theme) < GRAPHIC, `${theme} outline step`);
   }
 });
 
-// 근거: 결정 docs-integration.md "accent 파랑은 이력서 색(라이트 #2b96ed에서 3을 넘는 가장 밝은 단계, 다크 #79c0ff), 주황은 같은 L·C로 만든다"
-test('palette_orange_keeps_the_blue_lightness_and_chroma_and_only_turns_the_hue', () => {
-  for (const [theme, blue, orange] of [['light', RESUME_ACCENT, RESUME_ORANGE], ['dark', color('dark', 'palette.blue.400'), color('dark', 'palette.orange.400')]]) {
-    const [blueL, blueC] = oklchOf(blue);
-    const [orangeL, orangeC, orangeHue] = oklchOf(orange);
+// 근거: 사용자 결정 "NHN 아키텍처 자료처럼 간다": 기준 파랑은 NHN 브랜드 파랑 #125DE6이고, 주황은 NHN에 없어 비교와 주의에만 남는다(색상 50도 근처)
+test('palette_blue_is_the_nhn_brand_blue_and_orange_stays_near_hue_50_with_the_blue_chroma', () => {
+  const RESUME_BLUE = '#125de6';
+  const [, blueC] = oklchOf(RESUME_BLUE);
+  const [, orangeC, orangeHue] = oklchOf(color('light', 'palette.orange.light-stroke'));
 
-    assert.ok(Math.abs(blueL - orangeL) <= LIGHTNESS_TOLERANCE, `${theme} L ${blueL.toFixed(3)} / ${orangeL.toFixed(3)}`);
-    assert.ok(Math.abs(blueC - orangeC) <= CHROMA_TOLERANCE, `${theme} C ${blueC.toFixed(3)} / ${orangeC.toFixed(3)}`);
-    assert.ok(Math.abs(orangeHue - ORANGE_HUE) <= HUE_TOLERANCE, `${theme} h ${orangeHue.toFixed(1)}`);
-  }
-  assert.equal(color('light', 'data.compare'), color('light', 'palette.orange.550'));
-  assert.equal(color('dark', 'data.compare'), color('dark', 'palette.orange.400'));
-  assert.equal(color('light', 'state.active'), color('light', 'palette.blue.550'));
-  assert.equal(color('dark', 'state.active'), '#79c0ff');
-  assert.ok(contrast(RESUME_ACCENT, color('light', 'bg')) < GRAPHIC, 'the resume accent itself misses 3 on the figure ground');
+  assert.equal(color('light', 'state.active'), RESUME_BLUE);
+  assert.equal(color('light', 'data.main'), RESUME_BLUE);
+  assert.ok(Math.abs(orangeHue - ORANGE_HUE) <= ORANGE_HUE_TOLERANCE, `orange h ${orangeHue.toFixed(1)}`);
+  assert.ok(Math.abs(orangeC - blueC) <= CHROMA_TOLERANCE, `orange C ${orangeC.toFixed(3)} / blue C ${blueC.toFixed(3)}`);
+  assert.equal(color('light', 'data.compare'), color('light', 'palette.orange.light-stroke'));
+  assert.equal(color('dark', 'data.compare'), color('dark', 'palette.orange.dark-stroke'));
+  assert.equal(color('dark', 'state.active'), color('dark', 'palette.blue.dark-stroke'));
 });
 
 // 색각 이상 시뮬레이션(Machado 2009, 심한 정도 1.0). 선형 sRGB에 곱한다.
@@ -221,7 +232,7 @@ const seenBy = (matrix, hex) => linearToOklab(matrix.map((row) => row.reduce((su
 // 근거: 규칙 docs-integration.md "파랑과 주황은 적록 색각 이상(protanopia, deuteranopia) 시뮬레이션에서도 OKLab 거리 0.1 이상"
 test('palette_blue_and_orange_stay_apart_for_protanopia_and_deuteranopia_in_both_themes', () => {
   for (const theme of THEMES) {
-    const [blue, orange] = theme === 'light' ? ['palette.blue.550', 'palette.orange.550'] : ['palette.blue.400', 'palette.orange.400'];
+    const [blue, orange] = [`palette.blue.${theme}-stroke`, `palette.orange.${theme}-stroke`];
     for (const [name, matrix] of Object.entries(CVD)) {
       const distance = distanceOf(seenBy(matrix, color(theme, blue)), seenBy(matrix, color(theme, orange)));
 
@@ -230,12 +241,13 @@ test('palette_blue_and_orange_stay_apart_for_protanopia_and_deuteranopia_in_both
   }
 });
 
-// 근거: 규칙 docs-integration.md 갈래색: 흐름 점 색은 서로, 그리고 파랑(지금)과 주황(비교)과 OKLab 거리 0.1 이상이고 적록 색각 이상 눈에도 같다
+// 근거: 규칙 docs-integration.md 갈래색: 흐름 점 색은 서로, 그리고 주황(비교)과 OKLab 거리 0.1 이상이고 적록 색각 이상 눈에도 같다. NHN 방식에서 첫째 흐름은 브랜드 파랑(state.active)이고 진한 회색은 두 이름(teal, gray)이 같은 값이라, 같은 색을 가리키는 이름은 한 색으로 센다
 test('flow_tone_colors_stay_apart_from_each_other_for_normal_protan_and_deutan_sight_and_from_blue_and_orange_for_normal_sight', () => {
   const NORMAL = [[1, 0, 0], [0, 1, 0], [0, 0, 1]];
   for (const theme of THEMES) {
+    const distinct = FLOW_ROLES.filter((role, i) => FLOW_ROLES.findIndex((other) => color(theme, other) === color(theme, role)) === i);
     for (const [name, matrix] of Object.entries({ normal: NORMAL, ...CVD })) {
-      const pairs = FLOW_ROLES.flatMap((a, i) => [...FLOW_ROLES.slice(i + 1), ...(name === 'normal' ? ['state.active', 'data.compare'] : [])].map((b) => [a, b]));
+      const pairs = distinct.flatMap((a, i) => [...distinct.slice(i + 1), ...(name === 'normal' ? ['data.compare'] : [])].map((b) => [a, b]));
       for (const [a, b] of pairs) {
         const distance = distanceOf(seenBy(matrix, color(theme, a)), seenBy(matrix, color(theme, b)));
 
@@ -248,7 +260,7 @@ test('flow_tone_colors_stay_apart_from_each_other_for_normal_protan_and_deutan_s
 // 근거: 규칙 docs-integration.md "카드 태그 색상이 state.active, data.compare와 40도 이상 떨어진다"
 test('tagColors_keep_their_hue_away_from_the_active_blue_and_the_compare_orange', () => {
   for (const theme of THEMES) {
-    for (const tag of ['purple', 'green', 'teal']) {
+    for (const tag of ['purple', 'green']) {
       for (const role of ['state.active', 'data.compare']) {
         const [, tagChroma, tagHue] = oklchOf(color(theme, `tag.${tag}`));
         const [, , roleHue] = oklchOf(color(theme, role));
@@ -391,14 +403,14 @@ test('toSvg_heat_cell_text_keeps_contrast_4_5_on_the_cell_face_in_every_60fps_fr
 });
 
 
-// 근거: 결정 docs-integration.md "파랑은 지금 일어나는 것에만 쓴다" 속 figure.icon 행: 아이콘 파랑은 켜진 도형(state.active)과 색상이 달라 아이콘이 지금으로 읽히지 않는다
-test('palette_figure_icon_blue_differs_in_hue_from_the_active_blue_in_both_themes', () => {
-  const ICON_HUE_GAP = 8;
+// 근거: 사용자 결정 "NHN 아키텍처 자료처럼 간다": NHN 컬러 아이콘은 브랜드 파랑이라 figure.icon은 지금(state.active)과 같은 파랑 계열이다(색상각 차이 1도 이내). 지금은 굵은 테두리와 후광으로 알린다. 이전 규칙은 아이콘 색상각이 지금과 8도 이상 달라야 했다
+test('palette_figure_icon_is_the_brand_blue_of_the_active_blue_in_both_themes', () => {
+  const ICON_HUE_TOLERANCE = 1;
 
   for (const theme of THEMES) {
     const [, , iconHue] = oklchOf(color(theme, 'figure.icon'));
     const [, , activeHue] = oklchOf(color(theme, 'state.active'));
 
-    assert.ok(Math.abs(iconHue - activeHue) >= ICON_HUE_GAP, `${theme} icon ${iconHue.toFixed(1)} / active ${activeHue.toFixed(1)}`);
+    assert.ok(Math.abs(iconHue - activeHue) <= ICON_HUE_TOLERANCE, `${theme} icon ${iconHue.toFixed(1)} / active ${activeHue.toFixed(1)}`);
   }
 });

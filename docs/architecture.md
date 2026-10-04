@@ -9,7 +9,7 @@
 | `.muto` 원본 | 파일 | 그림 종류, 도형, 선, 시간 흐름, 차트 값 |
 | 실험 결과 JSON | 파일 | 차트 `data` 줄이 읽는 값 |
 | elkjs | 외부 프로그램 | 도형 크기와 연결점 제약, 도형 좌표와 직교 경로 |
-| 글꼴 파일 | 파일 | Inter, Noto Sans KR, JetBrains Mono의 글자 너비 표와 글자 모양 |
+| 글꼴 파일 | 파일 | Pretendard, JetBrains Mono의 글자 너비 표와 글자 모양 |
 | repo-docs-figures 스킬 | 외부 프로그램 | `render_figures`가 부르는 `render` 명령과 그 종료 코드 |
 | 브라우저 | 외부 프로그램 | 만든 HTML과 SVG |
 
@@ -54,6 +54,6 @@
 | 영역 | 선택 | 고른 이유 |
 |---|---|---|
 | 층 배치와 직교 경로 | elkjs(ELK layered) | 도형 크기, 연결점, 선 라벨 크기를 받아 겹치지 않게 배치한다. [결정 기록](decisions/2026-10-01-own-syntax-and-layout.md) |
-| 글꼴 | Inter, Noto Sans KR, JetBrains Mono | 본문은 이력서와 같은 구성으로 라틴과 기호는 Inter, 한글은 Noto Sans KR이다. 차트 숫자는 Inter의 자리 폭 같은 숫자(`tnum`)다. 고정폭 JetBrains Mono는 코드(백틱 구간, 테이블 열 타입)에만 쓰고 그 안 한글은 Noto Sans KR로 이어 그린다. 굵기마다 정적 파일이 있는 `@expo-google-fonts/inter`, `@expo-google-fonts/noto-sans-kr` 패키지로 받는다. 가변 글꼴이나 조각 나뉜 패키지보다 fontkit 측정과 subset-font 자르기가 한 파일에서 끝나서 고른다. 모두 SIL Open Font License라 그림에 넣을 수 있다. |
+| 글꼴 | Pretendard, JetBrains Mono | 본문은 한글, 라틴, 기호, 숫자 모두 Pretendard 하나다. 참고 문서 페이지와 같은 글꼴이라 그림이 따로 놀지 않는다. 차트 숫자는 Pretendard의 자리 폭 같은 숫자(`tnum`)다. 고정폭 JetBrains Mono는 코드(백틱 구간, 테이블 열 타입)에만 쓰고 그 안 한글은 Pretendard로 이어 그린다. 굵기마다 정적 파일이 있는 `pretendard` 패키지로 받는다. 가변 글꼴이나 조각 나뉜 패키지보다 fontkit 측정과 subset-font 자르기가 한 파일에서 끝나서 고른다. 모두 SIL Open Font License라 그림에 넣을 수 있다. 글자 간격은 -0.3px다. |
 | 결과 형식 | SVG, HTML | SVG는 README와 설계 문서에 이미지로 들어가고, HTML은 미리보기와 목록 쪽에서 열린다. 둘 다 추가 프로그램이 필요 없다. |
 | 실행 환경 | Node.js 20 이상 | elkjs와 글꼴 처리를 브라우저 없이 돌린다. |

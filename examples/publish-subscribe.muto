@@ -1,0 +1,23 @@
+flow right
+title "발행과 구독"
+subtitle "이벤트 하나가 구독자 모두에게 퍼지고 각자 상태가 바뀐다"
+
+box pub "주문 서비스"
+box bus "이벤트 버스"
+box mail "메일"
+box stock "재고"
+box point "포인트"
+value sent "발송" on=mail
+value left "재고" on=stock from=10
+value pts "포인트" on=point
+on mail sent+1
+on stock left-1
+on point pts+10
+pub -> bus
+bus -> mail
+bus -> stock
+bus -> point
+
+step "이벤트 발행" "구독자는 서로 모르고 각자 일한다"
+  pub -> bus "주문 생성"
+  bus -> mail & bus -> stock & bus -> point

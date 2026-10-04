@@ -33,7 +33,7 @@ step "첫 질의: 캐시 없음" "리졸버가 루트, TLD, 권한 서버에 차
   show tld "NS: example.com 담당 서버" tag="위임"
   resolver -> auth "www.example.com?"
   show auth "A 203.0.113.10, TTL 3600" tag="답" tone=green
-  show resolver "www.example.com = 203.0.113.10" tag="저장" tone=teal
+  show resolver "www.example.com = 203.0.113.10" tag="저장" tone=purple
 step "두 번째 질의: 캐시 적중" "TTL 안에 같은 이름을 다시 물으면 계층 서버까지 가지 않는다"
   user -> browser "www.example.com"
   browser -> stub "이름 → IP?"

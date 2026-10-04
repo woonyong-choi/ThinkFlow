@@ -207,7 +207,8 @@ test('toSvg_moving_packets_match_the_timeline_at_every_example', async () => {
 
       const probes = [...Array.from({ length: Math.ceil(total / 25) }, (_, i) => i * 25), start, start + 1, shownEnd - 1, shownEnd + 1, total - 1];
       for (const t of probes) {
-        const progress = Math.min(1, Math.max(0, (t - start) / hop.ms));
+        // 단계 끝에서 잘린 점(cut)은 사라진 자리에 머문다(cutMotionKeys). 잘린 뒤의 자리는 잘린 순간의 진행으로 센다.
+        const progress = Math.min(1, Math.max(0, (Math.min(t, shownEnd) - start) / hop.ms));
         const expected = hop.isBack ? 1 - ease(MOVE, progress) : ease(MOVE, progress);
         const actual = pathFractionAt(motion, t / total);
         assert.ok(Math.abs(actual - expected) < TOLERANCE, `${name} hop ${k} t=${t}ms: 경로 비율 ${actual.toFixed(4)}, 기대 ${expected.toFixed(4)}`);

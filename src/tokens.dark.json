@@ -3,21 +3,27 @@
     "$type": "color",
     "state": {
       "active": {
-        "$value": "{color.palette.blue.400}"
+        "$value": "{color.palette.blue.dark-stroke}"
       },
       "active-fill": {
-        "$value": "{color.palette.blue.400}"
+        "$value": "{color.palette.blue.dark-stroke}"
       },
       "active-text": {
-        "$value": "{color.palette.blue.400}"
+        "$value": "{color.palette.blue.dark-ink}"
       },
       "on-active": {
         "$value": "{color.palette.ink.850}"
+      },
+      "glow": {
+        "$value": "{color.palette.blue.dark-fill}"
       }
     },
     "figure": {
       "icon": {
-        "$value": "{color.palette.blue.450}"
+        "$value": "{color.palette.blue.dark-icon}"
+      },
+      "icon-tile": {
+        "$value": "{color.palette.blue.dark-fill}"
       }
     },
     "paint": {
@@ -28,8 +34,14 @@
         "stroke": {
           "$value": "{color.palette.red.dark-stroke}"
         },
+        "outline": {
+          "$value": "{color.palette.red.dark-outline}"
+        },
         "ink": {
           "$value": "{color.palette.red.dark-ink}"
+        },
+        "dot": {
+          "$value": "{color.palette.red.dark-dot}"
         }
       },
       "amber": {
@@ -38,6 +50,9 @@
         },
         "stroke": {
           "$value": "{color.palette.amber.dark-stroke}"
+        },
+        "outline": {
+          "$value": "{color.palette.amber.dark-outline}"
         },
         "ink": {
           "$value": "{color.palette.amber.dark-ink}"
@@ -49,6 +64,9 @@
         },
         "stroke": {
           "$value": "{color.palette.green.dark-stroke}"
+        },
+        "outline": {
+          "$value": "{color.palette.green.dark-outline}"
         },
         "ink": {
           "$value": "{color.palette.green.dark-ink}"
@@ -64,6 +82,9 @@
         "stroke": {
           "$value": "{color.palette.teal.dark-stroke}"
         },
+        "outline": {
+          "$value": "{color.palette.teal.dark-outline}"
+        },
         "ink": {
           "$value": "{color.palette.teal.dark-ink}"
         },
@@ -78,6 +99,9 @@
         "stroke": {
           "$value": "{color.palette.navy.dark-stroke}"
         },
+        "outline": {
+          "$value": "{color.palette.navy.dark-outline}"
+        },
         "ink": {
           "$value": "{color.palette.navy.dark-ink}"
         }
@@ -89,11 +113,23 @@
         "stroke": {
           "$value": "{color.palette.purple.dark-stroke}"
         },
+        "outline": {
+          "$value": "{color.palette.purple.dark-outline}"
+        },
         "ink": {
           "$value": "{color.palette.purple.dark-ink}"
         },
         "dot": {
           "$value": "{color.palette.purple.dark-dot}"
+        },
+        "group-1": {
+          "$value": "{color.palette.purple.dark-tint-1}"
+        },
+        "group-2": {
+          "$value": "{color.palette.purple.dark-tint-2}"
+        },
+        "group-3": {
+          "$value": "{color.palette.purple.dark-tint-3}"
         }
       },
       "pink": {
@@ -103,8 +139,34 @@
         "stroke": {
           "$value": "{color.palette.pink.dark-stroke}"
         },
+        "outline": {
+          "$value": "{color.palette.pink.dark-outline}"
+        },
         "ink": {
           "$value": "{color.palette.pink.dark-ink}"
+        }
+      },
+      "sky": {
+        "fill": {
+          "$value": "{color.palette.sky.dark-fill}"
+        },
+        "stroke": {
+          "$value": "{color.palette.sky.dark-stroke}"
+        },
+        "outline": {
+          "$value": "{color.palette.sky.dark-outline}"
+        },
+        "ink": {
+          "$value": "{color.palette.sky.dark-ink}"
+        },
+        "group-1": {
+          "$value": "{color.palette.sky.dark-tint-1}"
+        },
+        "group-2": {
+          "$value": "{color.palette.sky.dark-tint-2}"
+        },
+        "group-3": {
+          "$value": "{color.palette.sky.dark-tint-3}"
         }
       },
       "gray": {
@@ -113,6 +175,9 @@
         },
         "stroke": {
           "$value": "{color.palette.slate.dark-stroke}"
+        },
+        "outline": {
+          "$value": "{color.palette.slate.dark-outline}"
         },
         "ink": {
           "$value": "{color.palette.slate.dark-ink}"
@@ -124,13 +189,13 @@
     },
     "ui": {
       "link": {
-        "$value": "{color.palette.blue.400}"
+        "$value": "{color.palette.blue.dark-ink}"
       },
       "focus": {
-        "$value": "{color.palette.blue.400}"
+        "$value": "{color.palette.blue.dark-stroke}"
       },
       "progress": {
-        "$value": "{color.palette.blue.400}"
+        "$value": "{color.palette.blue.dark-stroke}"
       },
       "control-on": {
         "$value": "{color.palette.neutral.750}"
@@ -138,16 +203,16 @@
     },
     "data": {
       "main": {
-        "$value": "{color.palette.blue.400}"
+        "$value": "{color.palette.blue.dark-stroke}"
       },
       "compare": {
-        "$value": "{color.palette.orange.400}"
+        "$value": "{color.palette.orange.dark-stroke}"
       },
       "heat-low": {
-        "$value": "{color.palette.blue.850}"
+        "$value": "{color.palette.blue.dark-heat-low}"
       },
       "heat-high": {
-        "$value": "{color.palette.blue.600}"
+        "$value": "{color.palette.blue.dark-heat-high}"
       },
       "heat-ink": {
         "$value": "{color.palette.gray.0}"
@@ -165,6 +230,9 @@
     "muted": {
       "$value": "{color.palette.neutral.400}"
     },
+    "group-title": {
+      "$value": "{color.palette.neutral.400}"
+    },
     "bg": {
       "$value": "{color.palette.neutral.900}"
     },
@@ -177,20 +245,32 @@
     "card": {
       "$value": "{color.palette.neutral.800}"
     },
+    "outline": {
+      "$value": "{color.palette.neutral.outline}"
+    },
     "border": {
-      "$value": "{color.palette.neutral.500}"
+      "$value": "{color.palette.neutral.750}"
     },
     "card-on": {
-      "$value": "{color.palette.blue.900}"
+      "$value": "{color.palette.blue.dark-fill}"
     },
     "page": {
       "$value": "{color.palette.neutral.950}"
     },
-    "group": {
-      "$value": "{color.palette.neutral.875}"
+    "group-1": {
+      "$value": "{color.palette.neutral.group-1}"
     },
     "plate-border": {
       "$value": "{color.palette.neutral.800}"
+    },
+    "line": {
+      "$value": "{color.palette.neutral.600}"
+    },
+    "group-2": {
+      "$value": "{color.palette.neutral.group-2}"
+    },
+    "group-3": {
+      "$value": "{color.palette.neutral.group-3}"
     }
   }
 }

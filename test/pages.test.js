@@ -17,6 +17,8 @@ const WIDTH = 1400;
 const GAP_TOLERANCE = 0.5;
 const AXIS_TOLERANCE = 1;
 const RING_WAIT_MS = 600;
+// 밝힌 격자 칸 테두리 안쪽 0.3만큼 들어간 점을 찍는다(테두리 굵기 절반 안, 이웃 칸 선과도 겹치는 자리)
+const GRID_RING_PROBE = 0.3;
 const SEMIBOLD = 600;
 const CAPTION = '단계 설명 글. 막대와 같은 가운데 축에 놓인다.';
 const CODE_FIGURE = 'flow right\nbox a "일반 `code` 글"\nbox b "B"\na -> b "보냄"\nstep "s"\n  a -> b';
@@ -155,6 +157,35 @@ describe('pages', { skip: SKIP }, () => {
       assert.equal(await page.evaluate(() => localStorage.getItem('mutoscope-theme')), 'light');
       assert.equal(await frame.evaluate(() => document.readyState), 'complete');
       assert.ok(await frame.locator('svg').count() > 0, '자식 문서에 그림이 있다');
+    });
+  });
+
+  // 근거: 버그 "격자 칸을 밝히면 파랑 테두리가 일부만 보인다"(pte-fields). 밝힌 칸 테두리의 네 변 어디에서도 맨 위에 보이는 것은 그 칸 자신의 테두리이고, 뒤에 그린 이웃 칸의 선이 아니다
+  test('grid_lit_cell_border_is_topmost_on_all_four_sides_over_neighbor_cell_lines', async () => {
+    const source = readFileSync(new URL('../examples/pte-fields.muto', import.meta.url), 'utf8');
+    const html = await toHtml(await buildFigure(source, { baseDir: 'examples' }), 'pte-fields');
+    await withPage(browser, html, async (page) => {
+      for (const tab of [0, 1]) {
+        await page.locator('.fl-tabs button').nth(tab).click();
+        await page.waitForTimeout(RING_WAIT_MS);
+        const wrong = await page.evaluate((inset) => {
+          const lit = [...document.querySelectorAll('.fl-part.on')].map((g) => g.dataset.part);
+          const out = [];
+          for (const key of new Set(lit)) {
+            const cell = document.querySelector(`.fl-part[data-part="${key}"] .grid-cell`).getBoundingClientRect();
+            const scale = cell.width / Number(document.querySelector(`.fl-part[data-part="${key}"] .grid-cell`).getAttribute('width'));
+            const pad = inset * scale;
+            const sides = { top: [cell.x + cell.width / 2, cell.y + pad], bottom: [cell.x + cell.width / 2, cell.bottom - pad], left: [cell.x + pad, cell.y + cell.height / 2], right: [cell.right - pad, cell.y + cell.height / 2] };
+            for (const [side, [x, y]] of Object.entries(sides)) {
+              const hit = document.elementFromPoint(x, y)?.closest('.fl-part')?.dataset.part;
+              if (hit !== key) out.push(`${key} ${side} -> ${hit}`);
+            }
+          }
+          return out;
+        }, GRID_RING_PROBE);
+
+        assert.deepEqual(wrong, [], `tab ${tab}`);
+      }
     });
   });
 });

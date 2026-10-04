@@ -24,7 +24,8 @@ const LINEAR = '0 0 1 1';
  */
 export function drawPacket(clock, { seg, hop, name }, glyphs) {
   const start = seg.t0 + (hop.at ?? 0);
-  const [from, to] = [clock.keyTime(start), clock.keyTime(start + hop.ms)];
+  // 단계 끝에서 잘리는 점(cut)은 끝에서 숨고, 나머지는 이동이 끝나면 숨는다.
+  const [from, to] = [clock.keyTime(start), clock.keyTime(start + (hop.cut ?? hop.ms))];
   const color = hop.tone ? tokens.color.flow[hop.tone] : tokens.color.state.active;
   const chip = hop.data ? drawChip(hop.data, { glyphs, color: hop.tone ? color : undefined }) + pushChip(clock, start, hop) : '';
   const chipMarkup = hop.chipFade ? `<g>${chipFadeAnimate(clock, start, hop.chipFade)}<g>${chip}</g></g>` : `<g>${chip}</g>`;

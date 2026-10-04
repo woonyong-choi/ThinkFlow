@@ -7,11 +7,6 @@ import { fileURLToPath } from 'node:url';
 import assert from 'node:assert/strict';
 import { parseFigure } from '../src/source/parse.js';
 
-// 이력서 저장소(woon-resume)의 `--manta-accent` 라이트 값. 라이트 그래픽 파랑(palette.blue.550)을 계산하는 기준이라 토큰이 아니라 테스트 상수다.
-export const RESUME_ACCENT = '#2b96ed';
-// RESUME_ACCENT와 같은 L·C에서 색상만 h 50(주황)으로 돌린 값. 라이트 그래픽 주황(palette.orange.550)의 기준이다.
-export const RESUME_ORANGE = '#dc6e22';
-
 const DOCS = new URL('../docs/design/', import.meta.url);
 
 // cost: time O(d), heap O(d), stack O(1), io f

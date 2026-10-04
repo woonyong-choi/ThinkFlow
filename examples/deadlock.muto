@@ -1,0 +1,20 @@
+flow right
+title "교착"
+subtitle "두 작업이 서로 상대가 쥔 잠금을 기다려 둘 다 멈춘다"
+
+box t1 "작업 1"
+box t2 "작업 2"
+box l1 "잠금 가"
+box l2 "잠금 나"
+t1 -> l1
+t1 -> l2
+t2 -> l2
+t2 -> l1
+
+step "각자 하나씩 쥔다" "작업 1은 가, 작업 2는 나를 쥔다"
+  t1 -> l1 "쥠" tone=brand & t2 -> l2 "쥠" tone=purple
+step "서로 상대 것을 요청" "상대가 풀어 주길 기다리며 둘 다 멈춘다"
+  t1 -> l2 "요청" tone=brand & t2 -> l1 "요청" tone=purple
+  show t1 "나를 기다림" tag="wait"
+  show t2 "가를 기다림" tag="wait"
+  say "누구도 풀지 못해 영원히 멈춘다"

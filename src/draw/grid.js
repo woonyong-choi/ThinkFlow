@@ -67,5 +67,21 @@ export function drawGrid(it, stroke, { decorate, glyphs }) {
     const key = `${it.id}.${cell.id}`;
     return `<g class="fl-part" data-part="${escapeXml(key)}"><rect ${boxOf(it, cell)} class="grid-cell ${decorate('cell', 0, key)}"/>${texts}</g>`;
   });
-  return frame + title.join('') + empties.join('') + cells.join('');
+  return frame + title.join('') + empties.join('') + cells.join('') + rings(it, decorate);
+}
+
+// cost: time O(c), heap O(c), stack O(1)
+// vars: c = 칸 수
+// basis: estimate
+// 밝힌 칸의 테두리 고리. 모든 칸을 그린 뒤 맨 위에 그려 뒤에 그린 이웃 칸의 선이 덮지 못하고, 굵기 절반만큼 칸 안쪽으로 들여 그려 틀 바깥으로 잘리지 않는다. 밝히기 전에는 보이지 않는다.
+function rings(it, decorate) {
+  const inset = values.border.edge / 2;
+  return it.cells
+    .filter((cell) => cell.kind !== 'gap')
+    .map((cell) => {
+      const key = `${it.id}.${cell.id}`;
+      const ring = { x: cell.x + inset, y: cell.y + inset, w: cell.w - inset * 2, h: cell.h - inset * 2 };
+      return `<g class="fl-part" data-part="${escapeXml(key)}"><rect ${boxOf(it, ring)} class="grid-ring ${decorate('ring', 0, key)}"/></g>`;
+    })
+    .join('');
 }

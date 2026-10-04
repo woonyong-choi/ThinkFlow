@@ -16,13 +16,13 @@ const PLAYER_METRICS = Object.freeze({
   haloOpacity: values.opacity.halo,
   packet: values.size.packet.radius,
   chipRadius: values.radius.lg,
+  pulseMs: values.duration.pulse,
   chipLine: STYLE.chip.line,
   chipPadX: values.space['9'],
   chipPadY: values.space['4'],
   chipGap: values.space['6'],
   icon: values.size.control.icon,
-  iconStroke: values.border.edge,
-  pauseStroke: values.border.strong,
+  iconStroke: values.size.control['icon-stroke'],
   zoomMax: values.scale['zoom-max'],
   zoomStep: values.scale['zoom-step'],
   move: curveOf('move'),
@@ -34,7 +34,7 @@ const FLOW_METRICS = Object.freeze({ tones: tokens.color.flow, chipStroke: value
 // cost: time O(s + e + b·(e + k)), heap O(b·(e + k)), stack O(1)
 // vars: s = 도형 수, e = 선 수, b = 박자 수, k = 카드 있는 도형 수
 // basis: estimate
-// 구조, 상태, 데이터, 순서 그림. 시간표의 id를 도형, 그룹 번호로 바꿔 넘긴다.
+// 구조, 상태, 데이터, 순서 그림. 시간표의 id를 도형, 그룹 번호로 바꿔 넘긴다. 흐름 단계(edgesAt가 있는 구간)는 값 카드가 있어도 도형을 켜 두지 않고 점이 닿는 순간의 후광(pulses)만 알린다.
 export function figureContent(result, glyphs) {
   const { scene, timeline } = result;
   const itemIndex = new Map(scene.items.map((it, i) => [it.id, i]));
@@ -48,8 +48,8 @@ export function figureContent(result, glyphs) {
       t1: seg.t1,
       hops: seg.hops,
       edgesOn: seg.edgesOn,
-      nodesOn: [...lit].filter((id) => itemIndex.has(id)).map((id) => itemIndex.get(id)),
-      groupsOn: [...lit].filter((id) => groupIndex.has(id)).map((id) => groupIndex.get(id)),
+      nodesOn: seg.edgesAt ? [] : [...lit].filter((id) => itemIndex.has(id)).map((id) => itemIndex.get(id)),
+      groupsOn: seg.edgesAt ? [] : [...lit].filter((id) => groupIndex.has(id)).map((id) => groupIndex.get(id)),
       partsOn: seg.partsOn,
       cards: toIndex(itemIndex, seg.cards),
       cardsBefore: toIndex(itemIndex, seg.cardsBefore),
@@ -83,7 +83,8 @@ export function figureContent(result, glyphs) {
 function timedLights(seg, { itemIndex, groupIndex }) {
   if (!seg.edgesAt) return {};
   const pick = (map) => Object.fromEntries(Object.entries(seg.nodesAt).filter(([id]) => map.has(id)).map(([id, at]) => [map.get(id), at]));
-  return { edgesAt: seg.edgesAt, nodesAt: pick(itemIndex), groupsAt: pick(groupIndex) };
+  const pulses = seg.pulses.filter(({ id }) => itemIndex.has(id)).map(({ id, at }) => ({ n: itemIndex.get(id), at })).sort((a, b) => a.at - b.at);
+  return { edgesAt: seg.edgesAt, nodesAt: pick(itemIndex), groupsAt: pick(groupIndex), pulses };
 }
 
 // cost: time O(r·c), heap O(r·c), stack O(1)

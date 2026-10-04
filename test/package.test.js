@@ -36,6 +36,6 @@ test('package_manifest_is_public_and_installs_the_fonts_but_not_the_test_tools',
   assert.equal(manifest.engines.node, '>=20');
   assert.equal(manifest.license, 'MIT');
   assert.ok(manifest.description && manifest.keywords.length && manifest.repository.url && manifest.homepage && manifest.bugs.url);
-  for (const font of ['@expo-google-fonts/inter', '@expo-google-fonts/noto-sans-kr', 'jetbrains-mono']) assert.ok(manifest.dependencies[font], font);
+  for (const font of ['pretendard', 'jetbrains-mono']) assert.ok(manifest.dependencies[font], font);
   assert.equal(manifest.dependencies['playwright-core'], undefined);
 });

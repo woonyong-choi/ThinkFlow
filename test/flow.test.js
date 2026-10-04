@@ -160,7 +160,7 @@ test('buildFigure_runs_beat_steps_and_flow_steps_of_one_figure_on_one_clock', as
   assert.ok(flow.edgesAt && !beat.edgesAt && !again.edgesAt);
 });
 
-// 근거: 설계 figure-syntax.md 흐름: 출발지를 쉼표로 이으면 출발지마다 흐름 하나로 펼치고 출발이 every 안에서 엇갈린다. 색은 출발지 이름마다 하나씩 받는다
+// 근거: 설계 figure-syntax.md 흐름: 출발지를 쉼표로 이으면 출발지마다 흐름 하나로 펼치고 출발이 every 안에서 엇갈린다. 색은 출발지 이름마다 하나씩, 브랜드 파랑(brand), 보라(purple) 순으로 받는다
 test('buildFigure_expands_sources_staggers_departures_and_gives_each_source_its_own_tone', async () => {
   const source = 'flow right\nbox a "A"\nbox b "B"\nbox c "C"\na -> c\nb -> c\nstep "s" for=4s\n  track a, b -> c every=2s\n';
   const { figure } = await buildFigure(source);
@@ -168,7 +168,7 @@ test('buildFigure_expands_sources_staggers_departures_and_gives_each_source_its_
 
   assert.deepEqual([first.atMs, second.atMs], [0, 1000]);
   assert.notEqual(first.tone, second.tone);
-  assert.deepEqual([first.tone, second.tone], valueNames('tone').slice(0, 2));
+  assert.deepEqual([first.tone, second.tone], ['brand', 'purple']);
 });
 
 // 근거: 설계 figure-syntax.md 값: 공백이 든 낱말과 경로에 두 번 나오는 @도형은 오류다. `=` 뒤는 언제나 글자다

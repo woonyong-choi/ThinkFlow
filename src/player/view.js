@@ -1,13 +1,7 @@
 // 브라우저에서 돈다(play.js와 한 스크립트로 이어 붙는다).
 // 전체 화면과, 전체 화면에서만 켜지는 확대·축소·끌어 옮기기를 맡는다. 문서 안에서는 그림을 그대로 보인다.
 
-const VIEW_ICONS = {
-  open: 'M2 6V2h4M14 6V2h-4M2 10v4h4M14 10v4h-4',
-  close: 'M6 2v4H2M10 2v4h4M6 14v-4H2M10 14v-4h4',
-  in: 'M8 3v10M3 8h10',
-  out: 'M3 8h10',
-  fit: 'M3 3h10v10H3z',
-};
+const ZOOM_ICONS = { in: 'zoom-in', out: 'zoom-out', fit: 'scan' };
 
 // cost: time O(1) 시작, 휠·끌기마다 O(1), heap O(1), stack O(1)
 // basis: estimate
@@ -45,7 +39,7 @@ function bindFull(viewer) {
 function bindZoom(viewer) {
   const { root, metrics, home } = viewer;
   root.querySelectorAll('.fl-zoom button').forEach((b) => {
-    b.innerHTML = drawViewIcon(metrics, VIEW_ICONS[b.dataset.zoom]);
+    b.innerHTML = drawUiIcon(metrics, ZOOM_ICONS[b.dataset.zoom]);
     b.addEventListener('click', () => (b.dataset.zoom === 'fit' ? setView(viewer, home) : zoomAt(viewer, b.dataset.zoom === 'in' ? metrics.zoomStep : 1 / metrics.zoomStep)));
   });
 }
@@ -73,7 +67,7 @@ function setFull(viewer, isFull) {
 function showFull(viewer, isFull) {
   const { root, fullButton, metrics, home } = viewer;
   root.classList.toggle('full', isFull);
-  fullButton.innerHTML = drawViewIcon(metrics, isFull ? VIEW_ICONS.close : VIEW_ICONS.open);
+  fullButton.innerHTML = drawUiIcon(metrics, isFull ? 'minimize-2' : 'maximize-2');
   const label = isFull ? '전체 화면 끝내기' : '전체 화면';
   fullButton.setAttribute('aria-label', label);
   fullButton.title = label;
@@ -140,6 +134,7 @@ function toSvgPoint(svg, e) {
   return { x: point.x, y: point.y };
 }
 
-function drawViewIcon(metrics, d) {
-  return `<svg width="${metrics.icon}" height="${metrics.icon}" viewBox="0 0 16 16"><path d="${d}" fill="none" stroke="currentColor" stroke-width="${metrics.iconStroke}" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+// 조작부 아이콘. Lucide 원본 24 격자 외곽선 아이콘(UI_ICONS, html.js가 이 스크립트 앞에 붙인다)을 단색 currentColor 선으로 그린다. 선 굵기는 metrics.iconStroke 한 곳이다(Obsidian 기본 아이콘과 같은 모양).
+function drawUiIcon(metrics, name) {
+  return `<svg width="${metrics.icon}" height="${metrics.icon}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${metrics.iconStroke}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${UI_ICONS[name]}</svg>`;
 }

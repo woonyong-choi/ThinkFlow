@@ -26,11 +26,11 @@ step "TLB 실패" "처음 접근하면 TLB에 태그가 없어서 페이지 테�
   show walk "VPN1 254, VPN2 232, VPN3 145, VPN4 325" tag="walk"
   walk -> cache "PPN 0xA1B2"
   show cache "PA = PPN 0xA1B2 + VPO 0x678" tag="pa" tone=green
-  show tlb "세트 5: 태그 0x7F3A1234, PPN 0xA1B2" tag="fill" tone=teal
+  show tlb "세트 5: 태그 0x7F3A1234, PPN 0xA1B2" tag="fill" tone=purple
 step "캐시와 메모리" "PA 0xA1B2678로 L1 캐시를 찾고, 없으면 DRAM에서 블록을 가져온다"
   show cache "PA를 CT, CI, CO로 나눔" tag="PA"
   cache -> mem "블록 요청 PA 0xA1B2678"
-  show mem "64바이트 블록을 L1에 돌려줌" tag="fill" tone=teal
+  show mem "64바이트 블록을 L1에 돌려줌" tag="fill" tone=purple
   say "블록이 L1에 들어오면 CPU는 바이트 1개를 받는다"
 step "다시 접근: TLB 적중" "같은 페이지를 다시 읽으면 TLB에서 바로 PPN을 얻는다"
   cpu -> mmu "VA 0x7F3A12345679"

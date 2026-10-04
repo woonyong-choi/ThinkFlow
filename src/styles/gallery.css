@@ -7,6 +7,7 @@ body {
   margin: 0;
   padding: var(--space-20) var(--space-16);
   font-family: var(--font-sans);
+  letter-spacing: var(--tracking-text);
   color: var(--color-fg);
   background: var(--color-page);
 }
@@ -77,6 +78,7 @@ h2 {
 /* 백틱으로 감싼 글은 코드 글꼴로 그린다. */
 code {
   font-family: var(--font-mono);
+  letter-spacing: normal;
 }
 
 /* 제목, 파일 이름, 종류 꼬리표는 기준선을 맞춰 한 줄에 놓고 사이를 간격 토큰으로 띄운다. 머리가 좁으면 칸 단위로 다음 줄로 넘긴다(말줄임 없음). */

@@ -1,4 +1,4 @@
-// 글꼴: 글 폭 재기와 글꼴 조각 넣기(docs/design/layout.md 글 재기). 본문은 Inter와 Noto Sans KR, 차트 숫자는 Inter tnum, JetBrains Mono는 코드에만 쓴다.
+// 글꼴: 글 폭 재기와 글꼴 조각 넣기(docs/design/layout.md 글 재기). 본문과 차트 숫자는 Pretendard(숫자는 tnum, 글자 간격 -0.3px), JetBrains Mono는 코드에만 쓴다.
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
@@ -9,8 +9,7 @@ import { values } from '../src/tokens.js';
 
 const require = createRequire(import.meta.url);
 
-const INTER = '@expo-google-fonts/inter/400Regular/Inter_400Regular.ttf';
-const NOTO = '@expo-google-fonts/noto-sans-kr/400Regular/NotoSansKR_400Regular.ttf';
+const PRETENDARD = 'pretendard/dist/public/static/Pretendard-Regular.otf';
 const NOTO_LATIN = '@expo-google-fonts/noto-sans/400Regular/NotoSans_400Regular.ttf';
 const NOTO_MATH = '@expo-google-fonts/noto-sans-math/400Regular/NotoSansMath_400Regular.ttf';
 const MONO = 'jetbrains-mono/fonts/webfonts/JetBrainsMono-Regular.woff2';
@@ -29,19 +28,21 @@ function assertNear(actual, expected, label = '') {
   assert.ok(Math.abs(actual - expected) < 1e-9, `${label} ${actual} != ${expected}`);
 }
 
+// 글자 사이 간격: 본문과 숫자는 글자마다 토큰 값(-0.3px)을 더하고 고정폭은 더하지 않는다.
+const track = (text) => [...text].length * values.tracking.text;
+
 const WIDTHS = [
-  { label: '라틴은 Inter', text: 'Hello, world', face: 'regular', expected: () => widthIn(INTER, 'Hello, world', 12) },
-  { label: '한글은 Noto Sans KR, 띄어쓰기는 Inter', text: '요청 처리', face: 'regular', expected: () => widthIn(NOTO, '요청', 12) + widthIn(INTER, ' ', 12) + widthIn(NOTO, '처리', 12) },
-  { label: '섞인 글은 구간별 글꼴의 합', text: 'API 요청', face: 'regular', expected: () => widthIn(INTER, 'API ', 12) + widthIn(NOTO, '요청', 12) },
-  { label: '고정폭 안의 한글은 Noto Sans KR', text: '요청', face: 'mono', expected: () => widthIn(NOTO, '요청', 12) },
-  { label: '고정폭 라틴은 글자당 0.6em', text: 'abc', face: 'mono', expected: () => 3 * 12 * 0.6 },
-  { label: '차트 숫자는 Inter tnum', text: '1.5k', face: 'num', expected: () => widthIn(INTER, '1.5k', 12, ['tnum']) },
-  { label: '백틱 구간은 이름이 무엇이든 고정폭이고 백틱은 재지 않는다', text: 'a `ab` b', face: 'regular', expected: () => widthIn(INTER, 'a ', 12) + widthIn(MONO, 'ab', 12) + widthIn(INTER, ' b', 12) },
-  { label: '위 첨자 T는 Noto Sans', text: 'ᵀ', face: 'regular', expected: () => widthIn(NOTO_LATIN, 'ᵀ', 12) },
-  { label: '합성 기호는 Noto Sans Math', text: '∘', face: 'regular', expected: () => widthIn(NOTO_MATH, '∘', 12) },
+  { label: '라틴은 Pretendard에 글자 간격을 더한다', text: 'Hello, world', face: 'regular', expected: () => widthIn(PRETENDARD, 'Hello, world', 12) + track('Hello, world') },
+  { label: '한글도 Pretendard 하나로 잰다', text: '요청 처리', face: 'regular', expected: () => widthIn(PRETENDARD, '요청 처리', 12) + track('요청 처리') },
+  { label: '고정폭 안의 한글은 Pretendard이고 간격을 더하지 않는다', text: '요청', face: 'mono', expected: () => widthIn(PRETENDARD, '요청', 12) },
+  { label: '고정폭 라틴은 글자당 0.6em이고 간격을 더하지 않는다', text: 'abc', face: 'mono', expected: () => 3 * 12 * 0.6 },
+  { label: '차트 숫자는 Pretendard tnum', text: '1.5k', face: 'num', expected: () => widthIn(PRETENDARD, '1.5k', 12, ['tnum']) + track('1.5k') },
+  { label: '백틱 구간은 이름이 무엇이든 고정폭이고 백틱은 재지 않는다', text: 'a `ab` b', face: 'regular', expected: () => widthIn(PRETENDARD, 'a ', 12) + track('a ') + widthIn(MONO, 'ab', 12) + widthIn(PRETENDARD, ' b', 12) + track(' b') },
+  { label: '위 첨자 T는 Noto Sans', text: 'ᵀ', face: 'regular', expected: () => widthIn(NOTO_LATIN, 'ᵀ', 12) + track('ᵀ') },
+  { label: '합성 기호는 Noto Sans Math', text: '∘', face: 'regular', expected: () => widthIn(NOTO_MATH, '∘', 12) + track('∘') },
 ];
 
-// 근거: 설계 layout.md 요구사항 "그린 글 폭이 잰 글 폭과 같다"(글 폭 = 구간별 글꼴 파일의 폭 합, 글꼴 순서 Inter, Noto Sans KR, Noto Sans, Noto Sans Math)
+// 근거: 설계 layout.md 요구사항 "그린 글 폭이 잰 글 폭과 같다"(글 폭 = 구간별 글꼴 파일의 폭 합, 글꼴 순서 Pretendard, Noto Sans, Noto Sans Math, 글자 간격 포함)
 test('measure_width_equals_the_sum_of_the_font_file_widths_of_each_run', () => {
   for (const { label, text, face, expected } of WIDTHS) assertNear(measure(text, 12, face), expected(), label);
   assert.notEqual(measure('Hello', 12, 'semibold'), measure('Hello', 12, 'regular'));
@@ -61,8 +62,8 @@ test('findMissingGlyph_follows_the_fallback_chain_and_a_glyph_in_no_font_still_t
 });
 
 const EMBEDS = [
-  { label: '고정폭 글 안의 한글은 FigMono와 FigSansKo를 모두 넣는다', text: 'ab 요청', face: 'mono', families: [/font-family:FigMono/, /font-family:FigSansKo/] },
-  { label: '본문 글은 같은 굵기로 Inter와 Noto 조각을 나눈다', text: 'API 요청', face: 'semibold', families: [/font-family:FigSans;font-weight:600/, /font-family:FigSansKo;font-weight:600/] },
+  { label: '고정폭 글 안의 한글은 FigMono와 FigSans를 모두 넣는다', text: 'ab 요청', face: 'mono', families: [/font-family:FigMono/, /font-family:FigSans;/] },
+  { label: '한글과 라틴은 같은 굵기의 FigSans 조각 하나다', text: 'API 요청', face: 'semibold', families: [/font-family:FigSans;font-weight:600/] },
   { label: '백틱 구간만 고정폭 조각을 쓴다', text: 'plain `x`', face: 'regular', families: [/font-family:FigMono/, /font-family:FigSans;/] },
   { label: '수학 기호는 Noto Sans(FigSansSym)와 Noto Sans Math(FigSansMath) 조각을 넣는다', text: 'Q Kᵀ √ ∘ ×', face: 'regular', families: [/font-family:FigSansSym;font-weight:400/, /font-family:FigSansMath;font-weight:400 900/] },
 ];
@@ -78,24 +79,8 @@ test('embedFonts_embeds_a_piece_for_every_family_the_text_needs', async () => {
   }
 });
 
-// 근거: 설계 layout.md 글 재기 "한글 조각이 든 굵기마다 같은 굵기 Inter 조각의 공백이 항상 들어간다"(한글만 있는 글이 시스템 글꼴로 그려지던 버그)
-test('embedFonts_hangul_only_text_still_embeds_a_space_glyph_in_the_same_weight_of_inter', async () => {
-  const glyphs = createGlyphSet();
-  glyphs.add('배송 중', 'medium');
-  glyphs.add('기억 그래프', 'semibold');
-
-  const css = await embedFonts(glyphs.used);
-  const faces = [...css.matchAll(/font-family:(\w+);font-weight:(\d+);src:url\(data:font\/woff2;base64,([^)]+)\)/g)].map((m) => ({ family: m[1], weight: Number(m[2]), font: fontkit.create(Buffer.from(m[3], 'base64')) }));
-
-  for (const weight of [500, 600]) {
-    const inter = faces.find((f) => f.family === 'FigSans' && f.weight === weight);
-    assert.ok(inter, `FigSans ${weight}`);
-    assert.ok(inter.font.hasGlyphForCodePoint(0x20), `FigSans ${weight} has U+0020`);
-  }
-});
-
 // 근거: 설계 layout.md 글 재기 "글꼴 조각은 tnum 대체 글리프를 포함해 자른다. 그래서 보는 쪽이 tabular-nums로 그린 폭과 잰 폭이 같다"
-test('embedFonts_num_text_keeps_the_tnum_glyphs_in_one_inter_piece', async () => {
+test('embedFonts_num_text_keeps_the_tnum_glyphs_in_one_pretendard_piece', async () => {
   const glyphs = createGlyphSet();
   glyphs.add('0123456789', 'num');
 
@@ -107,10 +92,10 @@ test('embedFonts_num_text_keeps_the_tnum_glyphs_in_one_inter_piece', async () =>
   assertNear(subset.layout('1', ['tnum']).advanceWidth, subset.layout('0', ['tnum']).advanceWidth);
 });
 
-// 근거: 설계 layout.md 글 재기 "토큰 font.sans 사슬(Inter, Noto Sans KR, 기호, 수학)과 font.mono 사슬은 넣은 조각 이름과 같은 순서다"
+// 근거: 설계 layout.md 글 재기 "토큰 font.sans 사슬(Pretendard, 기호, 수학)과 font.mono 사슬은 넣은 조각 이름과 같은 순서다"
 test('tokens_font_chains_list_every_embedded_family_in_order', () => {
-  assert.match(values.font.sans, /^FigSans, FigSansKo, FigSansSym, FigSansMath, /);
-  assert.match(values.font.mono, /^FigMono, FigSans, FigSansKo, FigSansSym, FigSansMath, /);
+  assert.match(values.font.sans, /^FigSans, FigSansSym, FigSansMath, /);
+  assert.match(values.font.mono, /^FigMono, FigSans, FigSansSym, FigSansMath, /);
 });
 
 // 근거: 계약 figure-syntax.md 글 안 백틱, 설계 layout.md "구간이 줄 사이에 걸치면 줄마다 구간을 닫고 다시 열어 각 줄이 짝이 맞는 글이 된다"

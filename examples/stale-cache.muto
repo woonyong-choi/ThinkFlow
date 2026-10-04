@@ -1,0 +1,21 @@
+flow right
+title "낡은 캐시 읽기"
+subtitle "DB는 바뀌었는데 캐시가 옛 값을 돌려주다가 무효화하면 맞춰진다"
+
+box app "앱"
+box cache "캐시"
+store db "DB"
+value dbv "DB 값" on=db from=5
+value cv "캐시 값" on=cache from=5
+value seen "읽은 값" on=app
+app -> cache
+cache -> db
+app -> db
+
+step "쓰고 읽기" "캐시를 건너뛴 쓰기 뒤에도 캐시는 5를 돌려준다"
+  app -> db "7 쓰기" set="dbv=7"
+  cache -> app "읽기" set="seen=5"
+  say "DB는 7인데 앱은 옛 값 5를 읽었다"
+  app -> cache "무효화" set="cv=7"
+  cache -> app "다시 읽기" set="seen=7"
+  say "무효화한 뒤에야 7이 보인다"

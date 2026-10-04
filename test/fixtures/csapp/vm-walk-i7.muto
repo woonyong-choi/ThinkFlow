@@ -42,4 +42,4 @@ step "PA 만들기" "4단계 PTE의 PPN에 VPO를 이어 붙이고 TLB에도 적
   show pa "PA = PPN 0xA1B2, PPO 0x678" tag="PA" tone=green
   show pa "0xA1B2678" tag="PA" tone=green mono
   pa -> tlb "태그 0x7F3A1234"
-  show tlb "TLBT 0x7F3A1234 → PPN 0xA1B2" tag="fill" tone=teal
+  show tlb "TLBT 0x7F3A1234 → PPN 0xA1B2" tag="fill" tone=purple

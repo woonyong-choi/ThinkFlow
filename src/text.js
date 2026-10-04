@@ -1,6 +1,6 @@
 // SVG에 넣을 글자와 좌표를 다듬는다. 글 폭은 measure/fonts.js가 글꼴 파일로 잰다.
 
-// 글자 크기 대비, 글자 세로 가운데에서 기준선까지의 거리. Inter 대문자와 Noto Sans KR 한글 높이에서 온 비율이라 토큰 대상이 아니다.
+// 글자 크기 대비, 글자 세로 가운데에서 기준선까지의 거리. Pretendard 대문자 높이(0.707em)의 절반에 한글 높이를 맞춘 비율이라 토큰 대상이 아니다.
 const CAP_CENTER = 0.36;
 
 // cost: time O(n), heap O(n), stack O(1)

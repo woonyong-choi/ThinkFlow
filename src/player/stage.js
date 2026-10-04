@@ -25,6 +25,7 @@ function createStage(root, data) {
     values: data.values ?? [],
     valueEls: createValueEls(svg, data),
     pendingOn: [],
+    pendingPulses: [],
     parts: all('.fl-part'),
     seriesEls: Array.from({ length: data.seriesCount }, (_, i) => all(`.cs-${i}`)),
     labelEls: all('.chart-label.shift'),
@@ -59,6 +60,7 @@ function highlightOnHover(stage) {
 // basis: estimate
 // 박자 seg의 상태를 그린다. 점이 도착하는 도형의 카드는 cardsAt 시각에 바뀐다.
 function drawSegmentState(stage, seg) {
+  stage.isFlow = Boolean(seg.pulses);
   stage.nodes.forEach((g, n) => g?.classList.toggle('on', seg.nodesOn.includes(n)));
   stage.groups.forEach((g, n) => g.classList.toggle('on', seg.groupsOn.includes(n)));
   stage.edges.forEach((e, j) => e?.classList.toggle('on', seg.edgesOn.includes(j)));
@@ -66,6 +68,7 @@ function drawSegmentState(stage, seg) {
   showCards(stage, seg.cardsBefore);
   stage.pendingCards = Object.entries(seg.cardsAt).map(([n, at]) => ({ n: Number(n), at }));
   stage.pendingOn = pendingLights(stage, seg);
+  stage.pendingPulses = [...(seg.pulses ?? [])];
   drawValueState(stage, seg, seg.t0);
   drawChartState(stage, seg);
 }
@@ -87,7 +90,7 @@ function showCards(stage, cards, only) {
     if (!count || (only !== undefined && only !== n)) return;
     const shown = cards[n];
     for (let k = 0; k < count; k++) stage.svg.querySelector(`#n-${n}-c${k}`).setAttribute('opacity', shown === k ? 1 : 0);
-    stage.nodes[n].querySelector('.fl-card').classList.toggle('on', shown !== undefined);
+    stage.nodes[n].querySelector('.fl-card').classList.toggle('on', shown !== undefined && !stage.isFlow);
   });
 }
 
@@ -136,7 +139,19 @@ function advanceStage(stage, seg, elapsed) {
     el?.classList.add('on');
     return false;
   });
+  stage.pendingPulses = stage.pendingPulses.filter(({ n, at }) => {
+    if (elapsed < at) return true;
+    if (elapsed - at < stage.metrics.pulseMs) pulseNode(stage, n);
+    return false;
+  });
   drawValueState(stage, seg, seg.t0 + elapsed);
+}
+
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+// 점이 닿은 도형의 후광을 한 번 깜빡인다. 도형은 켜지지 않고 테두리도 그대로다.
+function pulseNode(stage, n) {
+  stage.nodes[n]?.querySelector('.fl-halo')?.animate([{ opacity: 1 }, { opacity: 0 }], { duration: stage.metrics.pulseMs });
 }
 
 // cost: time O(l), heap O(l), stack O(1)

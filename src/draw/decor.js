@@ -21,7 +21,14 @@ export function drawDecor(decor, place, glyphs) {
 
 // 아이콘. 파일의 viewBox를 정사각 칸 안에 가운데로 맞춰 넣는다. 색은 class의 currentColor가 정한다.
 function drawIcon(item, { x, y, iconData }) {
-  return iconAt(iconData, { x: x + item.x, y: y + item.y, size: item.w });
+  return tileIcon(iconData, { x: x + item.x, y: y + item.y, size: item.w });
+}
+
+// 옅은 파랑 바탕 둥근 타일 위에 아이콘을 얹는다. 타일은 칸 전체이고 글자 모양은 칸의 ICON_SHARE만 쓴다.
+const ICON_SHARE = 0.62;
+function tileIcon(iconData, { x, y, size }) {
+  const inner = size * ICON_SHARE;
+  return `<rect x="${r(x)}" y="${r(y)}" width="${r(size)}" height="${r(size)}" rx="${r(size * 0.3)}" class="icon-tile"/>${iconAt(iconData, { x: x + (size - inner) / 2, y: y + (size - inner) / 2, size: inner, className: 'fl-icon in-tile' })}`;
 }
 
 // 정사각 칸(왼쪽 위 x, y, 한 변 size) 안에 아이콘을 가운데 맞춰 그린다.
@@ -37,16 +44,12 @@ function iconAt(iconData, { x, y, size, className = 'fl-icon' }) {
 // vars: out = 만든 SVG 글자 수
 // basis: estimate
 /**
- * 그룹 제목 줄 왼쪽 모서리의 정사각 탭(NHN box_type). 그룹 틀 왼쪽 위 모서리에 딱 붙고 모서리 곡률은 틀과 같다. 면은 figure.icon 파랑, 아이콘은 노드 면 색이다.
+ * 그룹 제목 줄 왼쪽의 아이콘 타일. 그룹 틀 안쪽 왼쪽 위에 둥근 타일로 놓는다.
  * @param g 그룹(x, y, iconData)
  */
 export function drawGroupTab(g) {
-  const size = values.size.group.title;
-  const radius = Math.min(values.radius['2xl'], size);
-  const [x, y] = [g.x, g.y];
-  const d = `M${r(x)} ${r(y + size)} V ${r(y + radius)} A ${radius} ${radius} 0 0 1 ${r(x + radius)} ${r(y)} H ${r(x + size)} V ${r(y + size)} Z`;
-  const inner = values.size.icon.group;
-  return `<path d="${d}" class="group-tab"/>${iconAt(g.iconData, { x: x + (size - inner) / 2, y: y + (size - inner) / 2, size: inner, className: 'fl-icon on-tab' })}`;
+  const size = values.size.group.title - values.space['4'];
+  return tileIcon(g.iconData, { x: g.x + values.space['4'], y: g.y + values.space['2'], size });
 }
 
 // 글자 알약. 배지와 복제 개수가 같은 모양이다.

@@ -1,11 +1,11 @@
 // 박자별 상태를 CSS keyframes class와 SMIL 점으로 바꾼다. 시계, 켜짐 keyframes, 점, 차트는 이 폴더의 파일이 나눠 맡는다.
 import { chartSeriesIds, litIds } from '../timeline.js';
-import { strokeOf } from '../draw/paint.js';
 import { tokens } from '../tokens.js';
 import { animateChart } from './chart.js';
 import { drawValues } from '../draw/values.js';
 import { createClock } from './clock.js';
 import { discreteWindows } from './discrete.js';
+import { paintOf } from '../draw/paint.js';
 import { drawPacket } from './packet.js';
 import { createWindows } from './windows.js';
 
@@ -24,7 +24,8 @@ export function createAnimator({ segs, total, growMs }) {
     segs,
     toggle: (states, on, off) => windows(states, { on, off }),
     lit: (j) => segs.map((s) => timed(s.edgesAt?.[j], s.edgesOn.includes(j))),
-    litNode: (id, scene) => segs.map((s) => timed(s.nodesAt?.[id], litIds(s, scene.edges).has(id))),
+    // 흐름 단계의 도형은 켜 두지 않는다(점이 닿을 때의 후광 깜빡임은 재생기만 그린다).
+    litNode: (id, scene) => segs.map((s) => (s.pulses ? false : timed(s.nodesAt?.[id], litIds(s, scene.edges).has(id)))),
     cardState: (n, test) => segs.map((s) => ({ before: test(s.cardsBefore[n]), after: test(s.cards[n]), at: s.cardsAt[n] ?? 0 })),
   };
   const decorate = (scene) => (kind, i, extra) => decorateElement(kind, { id: (kind.startsWith('group') ? scene?.groups[i] : scene?.items[i])?.id, i, extra, scene }, motion);
@@ -46,29 +47,35 @@ function arrowheads(head, marker) {
 // cost: time O(b), heap O(b), stack O(1)
 // vars: b = 박자 수
 // basis: estimate
-// 요소 종류별 켜짐과 꺼짐 스타일. target은 { id, i, extra, scene }(i는 요소 번호, extra는 열 이름이나 카드 층)다.
+// 요소 종류별 켜짐과 꺼짐 스타일. 강조 그룹은 평소 그 색의 진한 단계(ink) 1.5px 테두리이고, 색을 고른 도형은 그 색의 outline 단계 1px이다. target은 { id, i, extra, scene }(i는 요소 번호, extra는 열 이름이나 카드 층)다.
 function decorateElement(kind, { id, i, extra, scene }, { segs, toggle, lit, litNode, cardState }) {
   const c = tokens.color;
   switch (kind) {
     case 'node':
     case 'group': {
       // 아이콘이 있는 그룹의 틀은 꺼졌을 때 아이콘 파랑이다(탭과 같은 색).
-      const own = (kind === 'group' ? scene.groups : scene.items)?.[i]?.stroke;
-      const off = kind === 'group' && scene.groups?.[i]?.iconData ? c.figure.icon : c.border;
-      // 테두리 색을 고른 도형은 켜져도 그 색이다. 밝힘은 굵은 테두리와 후광(halo)이 알린다.
-      return toggle(litNode(id, scene), `stroke: ${own ? strokeOf(own) : c.state.active}; stroke-width: ${tokens.border.strong}`, `stroke: ${own ? strokeOf(own) : off}; stroke-width: ${tokens.border.thin}`);
+      const box = (kind === 'group' ? scene.groups : scene.items)?.[i];
+      // 켜지면 굵은 테두리와 옅은 후광이다. 색을 고른 도형은 그 색의 진한 선, 아니면 파랑이다. 꺼진 그룹은 테두리가 없다(점선 경계만 선 색).
+      const dashed = kind === 'group' ? box?.border === 'dashed' : box?.shape === 'external';
+      const paint = paintOf(box ?? {});
+      const plain = kind === 'group' ? (dashed ? c.line : 'none') : c.outline;
+      const off = paint ? `stroke: ${kind === 'group' ? c.paint[paint].ink : c.paint[paint].outline}; stroke-width: ${kind === 'group' ? tokens.border.tag : tokens.border.thin}` : `stroke: ${plain}; stroke-width: ${tokens.border.thin}`;
+      const on = paint ? c.paint[paint][kind === 'group' ? 'ink' : 'stroke'] : c.state.active;
+      return toggle(litNode(id, scene), `stroke: ${on}; stroke-width: ${tokens.border.strong}`, off);
     }
     case 'halo':
     case 'group-halo':
       return toggle(litNode(id, scene), 'opacity: 1', 'opacity: 0');
     case 'cell':
-      return toggle(segs.map((s) => s.partsOn.includes(extra)), `fill: ${c['card-on']}; stroke: ${c.state.active}; stroke-width: ${tokens.border.edge}`, `fill: ${c.node}; stroke: ${c.border}; stroke-width: ${tokens.border.thin}`);
+      return toggle(segs.map((s) => s.partsOn.includes(extra)), `fill: ${c['card-on']}`, `fill: ${c.node}`);
+    case 'ring':
+      return toggle(segs.map((s) => s.partsOn.includes(extra)), `stroke: ${c.state.active}; stroke-width: ${tokens.border.edge}`, 'stroke: none');
     case 'part':
       return toggle(segs.map((s) => s.partsOn.includes(extra)), `fill: ${c['card-on']}`, 'fill: transparent');
     case 'edge':
-      return toggle(lit(i), `stroke: ${c.state.active}; stroke-width: ${tokens.border.strong}${arrowheads(scene?.edges[i]?.head, 'fl-arrow-on')}`, `stroke: ${c.muted}; stroke-width: ${tokens.border.edge}${arrowheads(scene?.edges[i]?.head, 'fl-arrow')}`);
+      return toggle(lit(i), `stroke: ${c.state.active}; stroke-width: ${tokens.border.strong}${arrowheads(scene?.edges[i]?.head, 'fl-arrow-on')}`, `stroke: ${c.line}; stroke-width: ${tokens.border.edge}${arrowheads(scene?.edges[i]?.head, 'fl-arrow')}`);
     case 'pill':
-      return toggle(lit(i), `fill: ${c.state['active-fill']}; stroke: ${c.state['active-fill']}`, `fill: ${c.bg}; stroke: ${c.border}`);
+      return toggle(lit(i), `fill: ${c.state['active-fill']}; stroke: ${c.state['active-fill']}`, `fill: ${c.node}; stroke: ${c.border}`);
     case 'pilltext':
       return toggle(lit(i), `fill: ${c.state['on-active']}`, `fill: ${c.muted}`);
     case 'quiet':

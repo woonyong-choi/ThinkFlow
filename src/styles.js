@@ -23,7 +23,7 @@ export const STYLES = Object.freeze({
 
 /** 화살촉. 화살촉은 평소(`fl-arrow`), 밝힌 선(`fl-arrow-on`), 덤벨 main 계열(`fl-arrow-main`) 세 가지다. */
 export const DEFS =
-  drawArrowMarker('fl-arrow', tokens.color.muted, values.size.arrow.head) +
+  drawArrowMarker('fl-arrow', tokens.color.line, values.size.arrow.head) +
   drawArrowMarker('fl-arrow-on', tokens.color.state.active, values.size.arrow['head-lit']) +
   drawArrowMarker('fl-arrow-main', tokens.color.data.main, values.size.arrow['head-lit']);
 

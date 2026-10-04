@@ -1,0 +1,2201 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>잠금으로 막기</title>
+<script>if (window.self !== window.top) {
+  document.documentElement.classList.add('embedded');
+  addEventListener('message', (e) => {
+    if (e.source !== parent || !e.data || !('theme' in e.data)) return;
+    const root = document.documentElement;
+    if (e.data.theme === 'light' || e.data.theme === 'dark') {
+      root.setAttribute('data-theme', e.data.theme);
+      root.style.colorScheme = e.data.theme;
+    } else {
+      root.removeAttribute('data-theme');
+      root.style.colorScheme = '';
+    }
+  });
+  parent.postMessage({ themeRequest: true }, '*');
+  addEventListener('load', () => new ResizeObserver(() => parent.postMessage({ figureHeight: Math.ceil(document.body.getBoundingClientRect().height) }, '*')).observe(document.body));
+}</script>
+<style>@font-face{font-family:FigSans;font-weight:500;src:url(data:font/woff2;base64,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) format("woff2")}
+@font-face{font-family:FigSans;font-weight:400;src:url(data:font/woff2;base64,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) format("woff2")}
+@font-face{font-family:FigSans;font-weight:600;src:url(data:font/woff2;base64,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) format("woff2")}
+/* tokens.json: 생성물, 손으로 고치지 않음 */
+:root {
+  --color-palette-gray-0: #ffffff;
+  --color-palette-gray-25: #f8f8f8;
+  --color-palette-gray-outline: #787878;
+  --color-palette-gray-group-1: #ededed;
+  --color-palette-gray-group-2: #e1e1e1;
+  --color-palette-gray-group-3: #d6d6d6;
+  --color-palette-gray-40: #f0f0f0;
+  --color-palette-gray-100: #e7e7e7;
+  --color-palette-gray-200: #dadada;
+  --color-palette-gray-500: #8a8a8a;
+  --color-palette-gray-50: #f4f4f4;
+  --color-palette-gray-150: #e4e4e4;
+  --color-palette-gray-300: #b7b7b7;
+  --color-palette-neutral-group-1: #202020;
+  --color-palette-neutral-group-2: #2a2a2a;
+  --color-palette-neutral-group-3: #343434;
+  --color-palette-neutral-outline: #888888;
+  --color-palette-neutral-100: #f0f0f0;
+  --color-palette-neutral-400: #aaaaaa;
+  --color-palette-neutral-500: #757575;
+  --color-palette-neutral-750: #393939;
+  --color-palette-neutral-800: #363636;
+  --color-palette-neutral-850: #3e3e3e;
+  --color-palette-neutral-875: #1c1c1c;
+  --color-palette-neutral-900: #171717;
+  --color-palette-neutral-950: #121212;
+  --color-palette-neutral-600: #595959;
+  --color-palette-blue-light-fill: #edf4ff;
+  --color-palette-blue-light-stroke: #125de6;
+  --color-palette-blue-light-ink: #0151d9;
+  --color-palette-blue-light-heat-low: #b7cdf5;
+  --color-palette-blue-light-heat-high: #004dd2;
+  --color-palette-blue-light-icon: #125de6;
+  --color-palette-blue-dark-fill: #1c2a43;
+  --color-palette-blue-dark-stroke: #70a3ff;
+  --color-palette-blue-dark-ink: #78a9ff;
+  --color-palette-blue-dark-heat-low: #293751;
+  --color-palette-blue-dark-heat-high: #4474cc;
+  --color-palette-blue-dark-icon: #70a3ff;
+  --color-palette-blue-light-outline: #658dd5;
+  --color-palette-blue-dark-outline: #6789c4;
+  --color-palette-ink-200: #c9c9c9;
+  --color-palette-ink-600: #5d5d5d;
+  --color-palette-ink-700: #595959;
+  --color-palette-ink-850: #111111;
+  --color-palette-ink-900: #1f1f1f;
+  --color-palette-ink-1000: #000000;
+  --color-palette-red-light-fill: #ffefed;
+  --color-palette-red-light-stroke: #c70005;
+  --color-palette-red-light-ink: #be0004;
+  --color-palette-red-light-dot: #6c0001;
+  --color-palette-red-dark-fill: #40201c;
+  --color-palette-red-dark-stroke: #fc7182;
+  --color-palette-red-dark-ink: #ff8390;
+  --color-palette-red-dark-dot: #e25971;
+  --color-palette-red-light-outline: #cd7367;
+  --color-palette-red-dark-outline: #c56f73;
+  --color-palette-amber-light-fill: #fff0ea;
+  --color-palette-amber-light-stroke: #d44b00;
+  --color-palette-amber-light-ink: #a63900;
+  --color-palette-amber-dark-fill: #3f2116;
+  --color-palette-amber-dark-stroke: #fa7a49;
+  --color-palette-amber-dark-ink: #ff875a;
+  --color-palette-amber-light-outline: #c47a5f;
+  --color-palette-amber-dark-outline: #c37356;
+  --color-palette-green-light-fill: #eaf8e9;
+  --color-palette-green-light-stroke: #008c1a;
+  --color-palette-green-light-ink: #006d12;
+  --color-palette-green-light-dot: #006d12;
+  --color-palette-green-dark-fill: #1a301a;
+  --color-palette-green-dark-stroke: #58bf5a;
+  --color-palette-green-dark-ink: #58bf5a;
+  --color-palette-green-dark-dot: #62c963;
+  --color-palette-green-light-outline: #629a61;
+  --color-palette-green-dark-outline: #5a9659;
+  --color-palette-teal-light-fill: #eaf8e9;
+  --color-palette-teal-light-stroke: #008c1a;
+  --color-palette-teal-light-ink: #006d12;
+  --color-palette-teal-light-dot: #006d12;
+  --color-palette-teal-dark-fill: #1a301a;
+  --color-palette-teal-dark-stroke: #58bf5a;
+  --color-palette-teal-dark-ink: #58bf5a;
+  --color-palette-teal-dark-dot: #62c963;
+  --color-palette-teal-light-outline: #629a61;
+  --color-palette-teal-dark-outline: #5a9659;
+  --color-palette-navy-light-fill: #edf4ff;
+  --color-palette-navy-light-stroke: #125de6;
+  --color-palette-navy-light-ink: #0151d9;
+  --color-palette-navy-dark-fill: #1c2a43;
+  --color-palette-navy-dark-stroke: #70a3ff;
+  --color-palette-navy-dark-ink: #78a9ff;
+  --color-palette-navy-light-outline: #658dd5;
+  --color-palette-navy-dark-outline: #6789c4;
+  --color-palette-purple-light-fill: #f7f0ff;
+  --color-palette-purple-light-stroke: #8c6aaa;
+  --color-palette-purple-light-ink: #704f8c;
+  --color-palette-purple-light-dot: #704f8c;
+  --color-palette-purple-light-tint-1: #f1eaf9;
+  --color-palette-purple-light-tint-2: #e6ddf0;
+  --color-palette-purple-light-tint-3: #dcd1e8;
+  --color-palette-purple-dark-fill: #31233d;
+  --color-palette-purple-dark-stroke: #b693d6;
+  --color-palette-purple-dark-ink: #be9ade;
+  --color-palette-purple-dark-dot: #9c7abb;
+  --color-palette-purple-dark-tint-1: #231d28;
+  --color-palette-purple-dark-tint-2: #2e2635;
+  --color-palette-purple-dark-tint-3: #393042;
+  --color-palette-purple-light-outline: #9884ac;
+  --color-palette-purple-dark-outline: #977eae;
+  --color-palette-pink-light-fill: #f7f0ff;
+  --color-palette-pink-light-stroke: #8c6aaa;
+  --color-palette-pink-light-ink: #704f8c;
+  --color-palette-pink-dark-fill: #31233d;
+  --color-palette-pink-dark-stroke: #b693d6;
+  --color-palette-pink-dark-ink: #be9ade;
+  --color-palette-pink-light-outline: #9884ac;
+  --color-palette-pink-dark-outline: #977eae;
+  --color-palette-slate-light-fill: #e7e7e7;
+  --color-palette-slate-light-stroke: #5d5d5d;
+  --color-palette-slate-light-ink: #5d5d5d;
+  --color-palette-slate-light-dot: #747474;
+  --color-palette-slate-dark-fill: #363636;
+  --color-palette-slate-dark-stroke: #aaaaaa;
+  --color-palette-slate-dark-ink: #aaaaaa;
+  --color-palette-slate-dark-dot: #c7c7c7;
+  --color-palette-slate-light-outline: #848484;
+  --color-palette-slate-dark-outline: #888888;
+  --color-palette-orange-light-fill: #fff0ea;
+  --color-palette-orange-light-stroke: #d44b00;
+  --color-palette-orange-light-ink: #a63900;
+  --color-palette-orange-dark-fill: #3f2116;
+  --color-palette-orange-dark-stroke: #fa7a49;
+  --color-palette-orange-dark-ink: #ff875a;
+  --color-palette-orange-light-outline: #c47a5f;
+  --color-palette-orange-dark-outline: #c37356;
+  --color-palette-sky-light-fill: #e9f1fe;
+  --color-palette-sky-light-stroke: #125de6;
+  --color-palette-sky-light-ink: #0151d9;
+  --color-palette-sky-light-tint-1: #e5eefc;
+  --color-palette-sky-light-tint-2: #d7e2f4;
+  --color-palette-sky-light-tint-3: #cad7ed;
+  --color-palette-sky-dark-fill: #1c2a43;
+  --color-palette-sky-dark-stroke: #70a3ff;
+  --color-palette-sky-dark-ink: #78a9ff;
+  --color-palette-sky-dark-tint-1: #1a202b;
+  --color-palette-sky-dark-tint-2: #222a38;
+  --color-palette-sky-dark-tint-3: #2a3446;
+  --color-palette-sky-light-outline: #628ad3;
+  --color-palette-sky-dark-outline: #6789c4;
+  --color-state-active: var(--color-palette-blue-light-stroke);
+  --color-state-active-fill: var(--color-palette-blue-light-ink);
+  --color-state-active-text: var(--color-palette-blue-light-ink);
+  --color-state-on-active: var(--color-palette-gray-0);
+  --color-state-error: var(--color-paint-red-stroke);
+  --color-state-success: var(--color-paint-green-stroke);
+  --color-state-warning: var(--color-paint-amber-stroke);
+  --color-state-glow: var(--color-palette-blue-light-fill);
+  --color-flow-brand: var(--color-state-active);
+  --color-flow-purple: var(--color-paint-purple-dot);
+  --color-flow-green: var(--color-paint-green-dot);
+  --color-flow-gray: var(--color-paint-gray-dot);
+  --color-flow-red: var(--color-paint-red-dot);
+  --color-figure-icon: var(--color-palette-blue-light-icon);
+  --color-figure-icon-tile: var(--color-palette-blue-light-fill);
+  --color-paint-red-fill: var(--color-palette-red-light-fill);
+  --color-paint-red-stroke: var(--color-palette-red-light-stroke);
+  --color-paint-red-outline: var(--color-palette-red-light-outline);
+  --color-paint-red-ink: var(--color-palette-red-light-ink);
+  --color-paint-red-dot: var(--color-palette-red-light-dot);
+  --color-paint-amber-fill: var(--color-palette-amber-light-fill);
+  --color-paint-amber-stroke: var(--color-palette-amber-light-stroke);
+  --color-paint-amber-outline: var(--color-palette-amber-light-outline);
+  --color-paint-amber-ink: var(--color-palette-amber-light-ink);
+  --color-paint-green-fill: var(--color-palette-green-light-fill);
+  --color-paint-green-stroke: var(--color-palette-green-light-stroke);
+  --color-paint-green-outline: var(--color-palette-green-light-outline);
+  --color-paint-green-ink: var(--color-palette-green-light-ink);
+  --color-paint-green-dot: var(--color-palette-green-light-dot);
+  --color-paint-teal-fill: var(--color-palette-teal-light-fill);
+  --color-paint-teal-stroke: var(--color-palette-teal-light-stroke);
+  --color-paint-teal-outline: var(--color-palette-teal-light-outline);
+  --color-paint-teal-ink: var(--color-palette-teal-light-ink);
+  --color-paint-teal-dot: var(--color-palette-teal-light-dot);
+  --color-paint-navy-fill: var(--color-palette-navy-light-fill);
+  --color-paint-navy-stroke: var(--color-palette-navy-light-stroke);
+  --color-paint-navy-outline: var(--color-palette-navy-light-outline);
+  --color-paint-navy-ink: var(--color-palette-navy-light-ink);
+  --color-paint-purple-fill: var(--color-palette-purple-light-fill);
+  --color-paint-purple-stroke: var(--color-palette-purple-light-stroke);
+  --color-paint-purple-outline: var(--color-palette-purple-light-outline);
+  --color-paint-purple-ink: var(--color-palette-purple-light-ink);
+  --color-paint-purple-dot: var(--color-palette-purple-light-dot);
+  --color-paint-purple-group-1: var(--color-palette-purple-light-tint-1);
+  --color-paint-purple-group-2: var(--color-palette-purple-light-tint-2);
+  --color-paint-purple-group-3: var(--color-palette-purple-light-tint-3);
+  --color-paint-pink-fill: var(--color-palette-pink-light-fill);
+  --color-paint-pink-stroke: var(--color-palette-pink-light-stroke);
+  --color-paint-pink-outline: var(--color-palette-pink-light-outline);
+  --color-paint-pink-ink: var(--color-palette-pink-light-ink);
+  --color-paint-sky-fill: var(--color-palette-sky-light-fill);
+  --color-paint-sky-stroke: var(--color-palette-sky-light-stroke);
+  --color-paint-sky-outline: var(--color-palette-sky-light-outline);
+  --color-paint-sky-ink: var(--color-palette-sky-light-ink);
+  --color-paint-sky-group-1: var(--color-palette-sky-light-tint-1);
+  --color-paint-sky-group-2: var(--color-palette-sky-light-tint-2);
+  --color-paint-sky-group-3: var(--color-palette-sky-light-tint-3);
+  --color-paint-gray-fill: var(--color-palette-slate-light-fill);
+  --color-paint-gray-stroke: var(--color-palette-slate-light-stroke);
+  --color-paint-gray-outline: var(--color-palette-slate-light-outline);
+  --color-paint-gray-ink: var(--color-palette-slate-light-ink);
+  --color-paint-gray-dot: var(--color-palette-slate-light-dot);
+  --color-ui-link: var(--color-palette-blue-light-ink);
+  --color-ui-focus: var(--color-palette-blue-light-stroke);
+  --color-ui-progress: var(--color-palette-blue-light-stroke);
+  --color-ui-control-on: var(--color-palette-gray-0);
+  --color-data-main: var(--color-palette-blue-light-stroke);
+  --color-data-compare: var(--color-palette-orange-light-stroke);
+  --color-data-heat-low: var(--color-palette-blue-light-heat-low);
+  --color-data-heat-high: var(--color-palette-blue-light-heat-high);
+  --color-data-heat-ink: var(--color-palette-ink-1000);
+  --color-data-heat-ink-on: var(--color-palette-gray-0);
+  --color-data-grid: var(--color-palette-ink-200);
+  --color-fg: var(--color-palette-ink-900);
+  --color-muted: var(--color-palette-ink-600);
+  --color-group-title: var(--color-palette-ink-700);
+  --color-bg: var(--color-palette-gray-25);
+  --color-node: var(--color-palette-gray-0);
+  --color-surface: var(--color-palette-gray-40);
+  --color-card: var(--color-palette-gray-50);
+  --color-outline: var(--color-palette-gray-outline);
+  --color-border: var(--color-palette-gray-150);
+  --color-card-on: var(--color-palette-blue-light-fill);
+  --color-group-1: var(--color-palette-gray-group-1);
+  --color-plate-border: var(--color-palette-gray-200);
+  --color-page: var(--color-palette-gray-0);
+  --color-tag-purple: var(--color-paint-purple-stroke);
+  --color-tag-green: var(--color-paint-green-stroke);
+  --color-tag-gray: var(--color-paint-gray-stroke);
+  --color-tag-red: var(--color-paint-red-stroke);
+  --color-tag-brand: var(--color-state-active);
+  --color-line: var(--color-palette-gray-300);
+  --color-group-2: var(--color-palette-gray-group-2);
+  --color-group-3: var(--color-palette-gray-group-3);
+  --font-sans: FigSans, FigSansSym, FigSansMath, Pretendard, 'Pretendard Variable', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif;
+  --font-mono: FigMono, FigSans, FigSansSym, FigSansMath, ui-monospace, SFMono-Regular, Menlo, monospace;
+  --size-text-9: 9px;
+  --size-text-11: 11px;
+  --size-text-13: 13px;
+  --size-text-15: 15px;
+  --size-text-22: 22px;
+  --size-control-outer: 36px;
+  --size-control-inner: 28px;
+  --size-control-icon: 16px;
+  --size-control-icon-stroke: 1.75px;
+  --size-pill-height: 18px;
+  --size-icon-node: 20px;
+  --size-icon-group: 18px;
+  --size-icon-tile: 32px;
+  --size-icon-tile-gap: 6px;
+  --size-tag-height: 14px;
+  --size-packet-radius: 4.5px;
+  --size-packet-halo: 10px;
+  --size-packet-hop-ref: 300px;
+  --size-packet-chip-reach: 16px;
+  --size-arrow-head: 5px;
+  --size-arrow-head-lit: 4px;
+  --size-node-card-width: 176px;
+  --size-node-min-width: 100px;
+  --size-node-max-width: 210px;
+  --size-node-min-height: 46px;
+  --size-node-store-cap: 12px;
+  --size-node-state-dot: 14px;
+  --size-node-table-row: 26px;
+  --size-node-circle: 40px;
+  --size-node-tile-width: 80px;
+  --size-node-tile-pad: 8px;
+  --size-grid-cell: 32px;
+  --size-figure-canvas: 960px;
+  --size-figure-canvas-wide: 1440px;
+  --size-chip-max-width: 210px;
+  --size-player-caption-max: 720px;
+  --size-player-embedded-chrome: 150px;
+  --size-gallery-column: var(--size-figure-canvas);
+  --size-gallery-frame: 820px;
+  --size-document-column: var(--size-figure-canvas);
+  --size-chart-width: var(--size-figure-canvas);
+  --size-chart-label: 140px;
+  --size-chart-label-max: 240px;
+  --size-chart-bar: 12px;
+  --size-chart-row: 40px;
+  --size-chart-dot: 5px;
+  --size-chart-plot-h: 260px;
+  --size-chart-axis: 48px;
+  --size-chart-cell: 40px;
+  --size-chart-cap: 8px;
+  --size-chart-range: 6px;
+  --size-chart-arrow-min: 16px;
+  --size-person-width: 56px;
+  --size-person-head: 20px;
+  --size-person-shoulder: 14px;
+  --size-person-body: 22px;
+  --size-sequence-row: 44px;
+  --size-group-title: 28px;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --leading-normal: 1.5;
+  --leading-snug: 1.35;
+  --tracking-tag: 0.03em;
+  --tracking-frame: 0.04em;
+  --tracking-text: -0.3px;
+  --space-1: 2px;
+  --space-2: 4px;
+  --space-3: 6px;
+  --space-4: 8px;
+  --space-5: 10px;
+  --space-6: 12px;
+  --space-7: 14px;
+  --space-8: 16px;
+  --space-9: 18px;
+  --space-11: 22px;
+  --space-12: 24px;
+  --space-14: 28px;
+  --space-15: 30px;
+  --space-16: 32px;
+  --space-20: 40px;
+  --space-22: 44px;
+  --space-30: 60px;
+  --space-0-5: 1px;
+  --space-1-5: 3px;
+  --space-2-5: 5px;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 10px;
+  --radius-2xl: 14px;
+  --radius-route: 22px;
+  --radius-full: 999px;
+  --border-hair: 0.75px;
+  --border-thin: 1px;
+  --border-lifeline: 1.25px;
+  --border-tag: 1.5px;
+  --border-edge: 1.75px;
+  --border-strong: 2.5px;
+  --border-casing: 4.5px;
+  --border-halo: 8px;
+  --dash-line: 5;
+  --dash-gap: 4;
+  --dash-card: 3;
+  --opacity-tag: 0.15;
+  --opacity-halo: 0.2;
+  --opacity-dim: 0.3;
+  --opacity-dim-ink: 0.9;
+  --opacity-band: 0.22;
+  --opacity-range: 0.4;
+  --opacity-chip-visible-min: 0.1;
+  --distance-card-min: 0.015;
+  --distance-card-max: 0.04;
+  --distance-flow: 0.1;
+  --distance-neighbor: 0.06;
+  --distance-neighbor-cvd: 0.025;
+  --distance-fill: 0.015;
+  --distance-fill-dark-bg: 0.07;
+  --distance-fill-dark-node: 0.03;
+  --z-raised: 2;
+  --z-overlay: 10;
+  --duration-fast: 200ms;
+  --duration-hop: 3750ms;
+  --duration-caption-fade: 200ms;
+  --duration-hop-min: 500ms;
+  --duration-chip-slide: 300ms;
+  --duration-chip-fade: 150ms;
+  --duration-dwell: 700ms;
+  --duration-dwell-per-char: 45ms;
+  --duration-dwell-max: 3200ms;
+  --duration-step-end: 1600ms;
+  --duration-chart-cycle: 7000ms;
+  --duration-reveal: 900ms;
+  --duration-value-flash: 700ms;
+  --duration-pulse: 450ms;
+  --duration-chip-frame: 16.666666666666668ms;
+  --duration-flow-step: 12000ms;
+  --duration-cut-fade: 600ms;
+  --easing-move: cubic-bezier(0.455, 0.03, 0.515, 0.955);
+  --easing-reveal: cubic-bezier(0, 0, 0.58, 1);
+  --scale-zoom-max: 6;
+  --scale-aspect-fit-max: 1.6;
+  --scale-fold-aspect: var(--scale-aspect-fit-max);
+  --scale-fold-step: 0.75;
+  --scale-aspect-max: 3;
+  --scale-zoom-step: 1.25;
+  --scale-flow-dots-max: 80;
+  --scale-chip-visible-share: 0.6;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --color-state-active: var(--color-palette-blue-dark-stroke);
+    --color-state-active-fill: var(--color-palette-blue-dark-stroke);
+    --color-state-active-text: var(--color-palette-blue-dark-ink);
+    --color-state-on-active: var(--color-palette-ink-850);
+    --color-state-glow: var(--color-palette-blue-dark-fill);
+    --color-figure-icon: var(--color-palette-blue-dark-icon);
+    --color-figure-icon-tile: var(--color-palette-blue-dark-fill);
+    --color-paint-red-fill: var(--color-palette-red-dark-fill);
+    --color-paint-red-stroke: var(--color-palette-red-dark-stroke);
+    --color-paint-red-outline: var(--color-palette-red-dark-outline);
+    --color-paint-red-ink: var(--color-palette-red-dark-ink);
+    --color-paint-red-dot: var(--color-palette-red-dark-dot);
+    --color-paint-amber-fill: var(--color-palette-amber-dark-fill);
+    --color-paint-amber-stroke: var(--color-palette-amber-dark-stroke);
+    --color-paint-amber-outline: var(--color-palette-amber-dark-outline);
+    --color-paint-amber-ink: var(--color-palette-amber-dark-ink);
+    --color-paint-green-fill: var(--color-palette-green-dark-fill);
+    --color-paint-green-stroke: var(--color-palette-green-dark-stroke);
+    --color-paint-green-outline: var(--color-palette-green-dark-outline);
+    --color-paint-green-ink: var(--color-palette-green-dark-ink);
+    --color-paint-green-dot: var(--color-palette-green-dark-dot);
+    --color-paint-teal-fill: var(--color-palette-teal-dark-fill);
+    --color-paint-teal-stroke: var(--color-palette-teal-dark-stroke);
+    --color-paint-teal-outline: var(--color-palette-teal-dark-outline);
+    --color-paint-teal-ink: var(--color-palette-teal-dark-ink);
+    --color-paint-teal-dot: var(--color-palette-teal-dark-dot);
+    --color-paint-navy-fill: var(--color-palette-navy-dark-fill);
+    --color-paint-navy-stroke: var(--color-palette-navy-dark-stroke);
+    --color-paint-navy-outline: var(--color-palette-navy-dark-outline);
+    --color-paint-navy-ink: var(--color-palette-navy-dark-ink);
+    --color-paint-purple-fill: var(--color-palette-purple-dark-fill);
+    --color-paint-purple-stroke: var(--color-palette-purple-dark-stroke);
+    --color-paint-purple-outline: var(--color-palette-purple-dark-outline);
+    --color-paint-purple-ink: var(--color-palette-purple-dark-ink);
+    --color-paint-purple-dot: var(--color-palette-purple-dark-dot);
+    --color-paint-purple-group-1: var(--color-palette-purple-dark-tint-1);
+    --color-paint-purple-group-2: var(--color-palette-purple-dark-tint-2);
+    --color-paint-purple-group-3: var(--color-palette-purple-dark-tint-3);
+    --color-paint-pink-fill: var(--color-palette-pink-dark-fill);
+    --color-paint-pink-stroke: var(--color-palette-pink-dark-stroke);
+    --color-paint-pink-outline: var(--color-palette-pink-dark-outline);
+    --color-paint-pink-ink: var(--color-palette-pink-dark-ink);
+    --color-paint-sky-fill: var(--color-palette-sky-dark-fill);
+    --color-paint-sky-stroke: var(--color-palette-sky-dark-stroke);
+    --color-paint-sky-outline: var(--color-palette-sky-dark-outline);
+    --color-paint-sky-ink: var(--color-palette-sky-dark-ink);
+    --color-paint-sky-group-1: var(--color-palette-sky-dark-tint-1);
+    --color-paint-sky-group-2: var(--color-palette-sky-dark-tint-2);
+    --color-paint-sky-group-3: var(--color-palette-sky-dark-tint-3);
+    --color-paint-gray-fill: var(--color-palette-slate-dark-fill);
+    --color-paint-gray-stroke: var(--color-palette-slate-dark-stroke);
+    --color-paint-gray-outline: var(--color-palette-slate-dark-outline);
+    --color-paint-gray-ink: var(--color-palette-slate-dark-ink);
+    --color-paint-gray-dot: var(--color-palette-slate-dark-dot);
+    --color-ui-link: var(--color-palette-blue-dark-ink);
+    --color-ui-focus: var(--color-palette-blue-dark-stroke);
+    --color-ui-progress: var(--color-palette-blue-dark-stroke);
+    --color-ui-control-on: var(--color-palette-neutral-750);
+    --color-data-main: var(--color-palette-blue-dark-stroke);
+    --color-data-compare: var(--color-palette-orange-dark-stroke);
+    --color-data-heat-low: var(--color-palette-blue-dark-heat-low);
+    --color-data-heat-high: var(--color-palette-blue-dark-heat-high);
+    --color-data-heat-ink: var(--color-palette-gray-0);
+    --color-data-heat-ink-on: var(--color-palette-gray-0);
+    --color-data-grid: var(--color-palette-neutral-750);
+    --color-fg: var(--color-palette-neutral-100);
+    --color-muted: var(--color-palette-neutral-400);
+    --color-group-title: var(--color-palette-neutral-400);
+    --color-bg: var(--color-palette-neutral-900);
+    --color-node: var(--color-palette-neutral-850);
+    --color-surface: var(--color-palette-neutral-800);
+    --color-card: var(--color-palette-neutral-800);
+    --color-outline: var(--color-palette-neutral-outline);
+    --color-border: var(--color-palette-neutral-750);
+    --color-card-on: var(--color-palette-blue-dark-fill);
+    --color-page: var(--color-palette-neutral-950);
+    --color-group-1: var(--color-palette-neutral-group-1);
+    --color-plate-border: var(--color-palette-neutral-800);
+    --color-line: var(--color-palette-neutral-600);
+    --color-group-2: var(--color-palette-neutral-group-2);
+    --color-group-3: var(--color-palette-neutral-group-3);
+  }
+}
+[data-theme='dark'] {
+  --color-state-active: var(--color-palette-blue-dark-stroke);
+  --color-state-active-fill: var(--color-palette-blue-dark-stroke);
+  --color-state-active-text: var(--color-palette-blue-dark-ink);
+  --color-state-on-active: var(--color-palette-ink-850);
+  --color-state-glow: var(--color-palette-blue-dark-fill);
+  --color-figure-icon: var(--color-palette-blue-dark-icon);
+  --color-figure-icon-tile: var(--color-palette-blue-dark-fill);
+  --color-paint-red-fill: var(--color-palette-red-dark-fill);
+  --color-paint-red-stroke: var(--color-palette-red-dark-stroke);
+  --color-paint-red-outline: var(--color-palette-red-dark-outline);
+  --color-paint-red-ink: var(--color-palette-red-dark-ink);
+  --color-paint-red-dot: var(--color-palette-red-dark-dot);
+  --color-paint-amber-fill: var(--color-palette-amber-dark-fill);
+  --color-paint-amber-stroke: var(--color-palette-amber-dark-stroke);
+  --color-paint-amber-outline: var(--color-palette-amber-dark-outline);
+  --color-paint-amber-ink: var(--color-palette-amber-dark-ink);
+  --color-paint-green-fill: var(--color-palette-green-dark-fill);
+  --color-paint-green-stroke: var(--color-palette-green-dark-stroke);
+  --color-paint-green-outline: var(--color-palette-green-dark-outline);
+  --color-paint-green-ink: var(--color-palette-green-dark-ink);
+  --color-paint-green-dot: var(--color-palette-green-dark-dot);
+  --color-paint-teal-fill: var(--color-palette-teal-dark-fill);
+  --color-paint-teal-stroke: var(--color-palette-teal-dark-stroke);
+  --color-paint-teal-outline: var(--color-palette-teal-dark-outline);
+  --color-paint-teal-ink: var(--color-palette-teal-dark-ink);
+  --color-paint-teal-dot: var(--color-palette-teal-dark-dot);
+  --color-paint-navy-fill: var(--color-palette-navy-dark-fill);
+  --color-paint-navy-stroke: var(--color-palette-navy-dark-stroke);
+  --color-paint-navy-outline: var(--color-palette-navy-dark-outline);
+  --color-paint-navy-ink: var(--color-palette-navy-dark-ink);
+  --color-paint-purple-fill: var(--color-palette-purple-dark-fill);
+  --color-paint-purple-stroke: var(--color-palette-purple-dark-stroke);
+  --color-paint-purple-outline: var(--color-palette-purple-dark-outline);
+  --color-paint-purple-ink: var(--color-palette-purple-dark-ink);
+  --color-paint-purple-dot: var(--color-palette-purple-dark-dot);
+  --color-paint-purple-group-1: var(--color-palette-purple-dark-tint-1);
+  --color-paint-purple-group-2: var(--color-palette-purple-dark-tint-2);
+  --color-paint-purple-group-3: var(--color-palette-purple-dark-tint-3);
+  --color-paint-pink-fill: var(--color-palette-pink-dark-fill);
+  --color-paint-pink-stroke: var(--color-palette-pink-dark-stroke);
+  --color-paint-pink-outline: var(--color-palette-pink-dark-outline);
+  --color-paint-pink-ink: var(--color-palette-pink-dark-ink);
+  --color-paint-sky-fill: var(--color-palette-sky-dark-fill);
+  --color-paint-sky-stroke: var(--color-palette-sky-dark-stroke);
+  --color-paint-sky-outline: var(--color-palette-sky-dark-outline);
+  --color-paint-sky-ink: var(--color-palette-sky-dark-ink);
+  --color-paint-sky-group-1: var(--color-palette-sky-dark-tint-1);
+  --color-paint-sky-group-2: var(--color-palette-sky-dark-tint-2);
+  --color-paint-sky-group-3: var(--color-palette-sky-dark-tint-3);
+  --color-paint-gray-fill: var(--color-palette-slate-dark-fill);
+  --color-paint-gray-stroke: var(--color-palette-slate-dark-stroke);
+  --color-paint-gray-outline: var(--color-palette-slate-dark-outline);
+  --color-paint-gray-ink: var(--color-palette-slate-dark-ink);
+  --color-paint-gray-dot: var(--color-palette-slate-dark-dot);
+  --color-ui-link: var(--color-palette-blue-dark-ink);
+  --color-ui-focus: var(--color-palette-blue-dark-stroke);
+  --color-ui-progress: var(--color-palette-blue-dark-stroke);
+  --color-ui-control-on: var(--color-palette-neutral-750);
+  --color-data-main: var(--color-palette-blue-dark-stroke);
+  --color-data-compare: var(--color-palette-orange-dark-stroke);
+  --color-data-heat-low: var(--color-palette-blue-dark-heat-low);
+  --color-data-heat-high: var(--color-palette-blue-dark-heat-high);
+  --color-data-heat-ink: var(--color-palette-gray-0);
+  --color-data-heat-ink-on: var(--color-palette-gray-0);
+  --color-data-grid: var(--color-palette-neutral-750);
+  --color-fg: var(--color-palette-neutral-100);
+  --color-muted: var(--color-palette-neutral-400);
+  --color-group-title: var(--color-palette-neutral-400);
+  --color-bg: var(--color-palette-neutral-900);
+  --color-node: var(--color-palette-neutral-850);
+  --color-surface: var(--color-palette-neutral-800);
+  --color-card: var(--color-palette-neutral-800);
+  --color-outline: var(--color-palette-neutral-outline);
+  --color-border: var(--color-palette-neutral-750);
+  --color-card-on: var(--color-palette-blue-dark-fill);
+  --color-page: var(--color-palette-neutral-950);
+  --color-group-1: var(--color-palette-neutral-group-1);
+  --color-plate-border: var(--color-palette-neutral-800);
+  --color-line: var(--color-palette-neutral-600);
+  --color-group-2: var(--color-palette-neutral-group-2);
+  --color-group-3: var(--color-palette-neutral-group-3);
+}
+/* 조작 단추의 공통 모양과 상태. 재생기(원 단추, 탭), 목록 쪽과 문서 미리보기(테마 묶음)가 모두 이 파일 하나를 쓴다. */
+.fl-round:hover,
+.fl-tabs button:hover,
+.theme button:hover {
+  color: var(--color-fg);
+}
+
+.fl-round:focus-visible,
+.fl-tabs button:focus-visible,
+.theme button:focus-visible {
+  outline: var(--border-tag) solid var(--color-ui-focus);
+  outline-offset: var(--space-1);
+}
+
+/* 분할 조작(재생기 탭, 테마 묶음)과 둥근 단추는 한 모양이다. 바깥 높이 control, 안쪽 단추 높이 control-inner, 반지름 full. */
+.fl-tabs,
+.theme {
+  display: flex;
+  box-sizing: border-box;
+  min-height: var(--size-control-outer);
+  padding: var(--space-1-5);
+  background: var(--color-bg);
+  border: var(--border-thin) solid var(--color-border);
+  border-radius: var(--radius-full);
+}
+
+.fl-tabs button,
+.theme button {
+  min-height: var(--size-control-inner);
+  font: var(--size-text-13) var(--font-sans);
+  color: var(--color-muted);
+  cursor: pointer;
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-full);
+}
+
+.theme button {
+  padding: 0 var(--space-6);
+}
+
+/* segmented 방식: 켜진 항목은 꽉 찬 알약(ui.control-on)이다. 켜짐 표시는 묶음 바탕과 대비 3인 border 색 고리다. */
+.fl-tabs button.on,
+.theme button[aria-pressed='true'] {
+  font-weight: var(--weight-semibold);
+  color: var(--color-fg);
+  background: var(--color-ui-control-on);
+  box-shadow: 0 0 0 var(--border-thin) var(--color-border);
+}
+/* 재생기 틀과 조작 막대. iframe 안(html.embedded)에서는 테두리와 바깥 여백을 뺀다. */
+/* 그림 표시 폭 규칙: 문서 미리보기, 목록 카드, 재생기가 같다. 컨테이너 폭은 화면 폭에서 좌우 바깥 여백(space-16)을 뺀 값이고,
+   그림 폭은 min(표준 캔버스 폭, 컨테이너 폭)이다. 컨테이너 안쪽에는 좌우 여백과 레이아웃을 차지하는 테두리를 두지 않아 세 곳의 그림 폭이 같다. */
+body {
+  margin: 0;
+  padding: var(--space-12) var(--space-16);
+  font-family: var(--font-sans);
+  letter-spacing: var(--tracking-text);
+  color: var(--color-fg);
+  background: var(--color-page);
+}
+
+/* 목록 쪽 카드 안은 틀이 카드 너비를 다 채워 양옆이 비치지 않게 하고, 바탕은 재생기 쪽과 같은 색으로 둔다. */
+html.embedded body {
+  padding: 0;
+  background: var(--color-bg);
+}
+
+.fl-figure {
+  position: relative;
+  max-width: var(--figure-canvas, var(--size-figure-canvas));
+  margin: 0 auto;
+  overflow: clip;
+  color: var(--color-fg);
+  background: var(--color-bg);
+  border-radius: var(--radius-2xl);
+  box-shadow: 0 0 0 var(--border-thin) var(--color-plate-border);
+}
+
+html.embedded .fl-figure {
+  max-width: none;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+/* 카드 전체가 그림 판 한 덩어리다. 제목 줄, 그림 영역, 조작 줄이 모두 color.bg 한 톤이라 숫자 둘레 halo와 선 라벨 알약도 그대로 맞는다. */
+.fl-canvas {
+  padding: var(--space-6) 0;
+  background: var(--color-bg);
+  overflow: auto;
+}
+
+/* 그림은 표준 캔버스 폭 아래로 줄이지 않는다. 화면 높이에 맞춰 줄이지도 않는다. 세로로 긴 그림은 페이지가 길어지고(조작 막대는 화면 아래에 붙어 따라온다),
+   화면 폭이 캔버스 폭보다 좁으면 그림 영역이 가로로 스크롤된다. 줄이면 글자가 가장 작은 글 토큰(size.text.9)보다 작아져 읽히지 않기 때문이다. */
+.fl-canvas svg {
+  display: block;
+  width: auto;
+  height: auto;
+  min-width: var(--figure-canvas, var(--size-figure-canvas));
+  margin: 0 auto;
+}
+
+/* 조작 막대와 설명 줄은 한 가운데 축을 쓴다. 위아래 안쪽 여백이 같고, 막대와 설명 사이는 한 칸(space-6)이다. */
+.fl-foot {
+  position: sticky;
+  bottom: 0;
+  z-index: var(--z-raised);
+  display: grid;
+  gap: var(--space-6);
+  justify-items: center;
+  padding: var(--space-8);
+  background: var(--color-bg);
+  border-top: var(--border-thin) solid var(--color-plate-border);
+}
+
+/* 양쪽 칸 너비가 같아(1fr) 배속 글자가 바뀌어도 탭 묶음이 설명과 같은 축에 있다. */
+.fl-bar {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: var(--space-5);
+  align-items: center;
+}
+
+.fl-bar .fl-pause {
+  justify-self: end;
+}
+
+.fl-bar .fl-rate {
+  justify-self: start;
+}
+
+/* 현재 탭의 진행은 일시정지 단추 테두리 위를 12시에서 시계 방향으로 도는 진행(ui.progress) 고리다. 트랙은 단추 테두리 그대로다. */
+.fl-pause {
+  position: relative;
+}
+
+.fl-ring {
+  position: absolute;
+  inset: calc(-1 * var(--border-thin));
+  width: calc(100% + 2 * var(--border-thin));
+  height: calc(100% + 2 * var(--border-thin));
+  pointer-events: none;
+}
+
+.fl-ring-fill {
+  fill: none;
+  stroke: var(--color-ui-progress);
+}
+
+.fl-pause-icon {
+  display: grid;
+  place-items: center;
+}
+
+.fl-round {
+  display: grid;
+  place-items: center;
+  min-width: var(--size-control-outer);
+  height: var(--size-control-outer);
+  padding: 0 var(--space-2);
+  font: var(--size-text-13) var(--font-sans);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+  color: var(--color-muted);
+  background: var(--color-node);
+  border: var(--border-thin) solid var(--color-border);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+}
+
+.fl-tabs {
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  justify-content: center;
+}
+
+.fl-tabs button {
+  position: relative;
+  display: grid;
+  place-items: center;
+  padding: 0 var(--space-7);
+}
+
+/* 백틱으로 감싼 글. 코드 글꼴로 그린다. */
+.fl-code {
+  font-family: var(--font-mono);
+  letter-spacing: normal;
+}
+
+.fl-caption {
+  max-width: var(--size-player-caption-max);
+  min-height: calc(var(--size-text-13) * var(--leading-normal));
+  margin: 0;
+  font-size: var(--size-text-13);
+  line-height: var(--leading-normal);
+  text-align: center;
+  color: var(--color-muted);
+}
+
+.fl-full {
+  position: absolute;
+  top: var(--space-5);
+  right: var(--space-5);
+  z-index: var(--z-raised);
+}
+
+.fl-figure.full {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-overlay);
+  display: flex;
+  flex-direction: column;
+  max-width: none;
+  border-radius: 0;
+}
+
+.fl-figure.full .fl-canvas {
+  display: grid;
+  flex: 1;
+  place-items: center;
+}
+
+.fl-figure.full .fl-canvas svg {
+  width: 100%;
+  min-width: 0;
+  height: calc(100vh - var(--size-player-embedded-chrome));
+  max-height: none;
+  touch-action: none;
+  user-select: none;
+}
+
+.fl-figure.full.zoomed .fl-canvas svg {
+  cursor: grab;
+}
+
+.fl-figure.full.zoomed .fl-canvas svg:active {
+  cursor: grabbing;
+}
+
+/* 확대·축소는 전체 화면에서만 보인다. 문서 안에서는 그림을 그대로 보이는 편이 읽기 쉽다. */
+.fl-zoom {
+  position: absolute;
+  top: calc(var(--space-5) + var(--size-control-outer) + var(--space-3));
+  right: var(--space-5);
+  z-index: var(--z-raised);
+  display: none;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.fl-figure.full .fl-zoom {
+  display: flex;
+}
+
+.fl .fl-node.on .fl-halo {
+  opacity: 1;
+}
+
+.fl .fl-node.on .fl-stroke {
+  stroke: var(--color-state-active);
+  stroke-width: var(--border-strong);
+}
+
+.fl .fl-card.on {
+  fill: var(--color-card-on);
+  stroke: var(--color-state-active);
+}
+
+.fl .fl-edge.on .fl-path,
+.fl .fl-edge.hover .fl-path {
+  stroke: var(--color-state-active);
+  stroke-width: var(--border-strong);
+}
+
+.fl .fl-edge.on .fl-path[marker-end],
+.fl .fl-edge.hover .fl-path[marker-end] {
+  marker-end: url("#fl-arrow-on");
+}
+
+.fl .fl-edge.on .fl-path[marker-start],
+.fl .fl-edge.hover .fl-path[marker-start] {
+  marker-start: url("#fl-arrow-on");
+}
+
+.fl .fl-edge.on .fl-pill rect {
+  fill: var(--color-state-active-fill);
+  stroke: var(--color-state-active-fill);
+}
+
+.fl .fl-edge.on .fl-pill text {
+  fill: var(--color-state-on-active);
+}
+
+.fl .fl-path,
+.fl .fl-stroke,
+.fl .grid-cell,
+.fl .fl-pill rect {
+  transition: stroke var(--duration-fast), stroke-width var(--duration-fast), fill var(--duration-fast);
+}
+
+.fl .fl-layer,
+.fl .fl-edge.quiet {
+  transition: opacity var(--duration-fast);
+}
+
+/* 조용한 선은 지금 단계에서 쓰거나 마우스를 올린 도형에 닿을 때만 보인다. */
+.fl .fl-edge.quiet:not(.on, .hover) {
+  opacity: 0;
+}
+
+.fl .fl-node {
+  cursor: default;
+}
+
+.fl-packet {
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fl .fl-path,
+  .fl .fl-stroke,
+  .fl .grid-cell,
+  .fl .fl-pill rect,
+  .fl .fl-layer,
+  .fl .fl-edge.quiet {
+    transition: none;
+  }
+}
+
+.fl .fl-group.on .fl-stroke {
+  stroke: var(--color-state-active);
+  stroke-width: var(--border-strong);
+}
+
+.fl .fl-part.on .part-bg {
+  fill: var(--color-card-on);
+}
+
+.fl .fl-part.on .grid-cell {
+  fill: var(--color-card-on);
+}
+
+.fl .fl-part.on .grid-ring {
+  stroke: var(--color-state-active);
+  stroke-width: var(--border-edge);
+}
+
+/* hidden 속성이 display: grid 같은 규칙에 지지 않게 한다. 시간 흐름 없는 그림의 빈 조작 막대를 숨기기 위해서다. */
+[hidden] {
+  display: none !important;
+}
+/* 그림 안 글자와 모양. HTML 재생기와 움직이는 SVG가 같이 쓴다. */
+.fl text {
+  font-family: var(--font-sans);
+  letter-spacing: var(--tracking-text);
+}
+
+.fl .label {
+  font-size: var(--size-text-13);
+  font-weight: var(--weight-medium);
+  text-anchor: middle;
+  fill: var(--color-fg);
+}
+
+.fl .sub {
+  font-size: var(--size-text-11);
+  text-anchor: middle;
+  fill: var(--color-muted);
+}
+
+.fl .frame {
+  font-size: var(--size-text-11);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-frame);
+  fill: var(--color-group-title);
+}
+
+.fl .edgelabel {
+  font-size: var(--size-text-11);
+  text-anchor: middle;
+  fill: var(--color-muted);
+}
+
+.fl .row {
+  font-size: var(--size-text-11);
+  fill: var(--color-fg);
+}
+
+.fl .row.mono {
+  font-family: var(--font-mono);
+  letter-spacing: normal;
+  font-size: var(--size-text-11);
+}
+
+/* 백틱으로 감싼 글. 코드 글꼴로 그린다. */
+.fl .code {
+  font-family: var(--font-mono);
+  letter-spacing: normal;
+}
+
+.fl .muted {
+  fill: var(--color-muted);
+}
+
+.fl .tag {
+  font-size: var(--size-text-9);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-tag);
+  text-anchor: middle;
+  fill: var(--color-fg);
+}
+
+.fl .mark {
+  font-size: var(--size-text-11);
+  font-weight: var(--weight-semibold);
+  text-anchor: end;
+  fill: var(--color-state-active-text);
+}
+
+/* 값 카드 줄의 값 글자. 줄의 이름(row)은 카드 층이 그리고 값은 오른쪽 끝에 얹힌다. */
+.fl .value {
+  font-size: var(--size-text-11);
+  font-weight: var(--weight-semibold);
+  text-anchor: end;
+  fill: var(--color-fg);
+}
+
+.fl .mini {
+  font-size: var(--size-text-11);
+  text-anchor: middle;
+  fill: var(--color-fg);
+}
+
+.fl .mini.on {
+  fill: var(--color-state-on-active);
+}
+
+.fl .chip {
+  font-size: var(--size-text-11);
+  text-anchor: middle;
+  fill: var(--color-state-on-active);
+}
+
+.fl .cell {
+  font-size: var(--size-text-13);
+  fill: var(--color-fg);
+}
+
+.fl .item {
+  font-size: var(--size-text-13);
+  text-anchor: middle;
+  fill: var(--color-fg);
+}
+
+.fl .item.gap {
+  fill: var(--color-muted);
+}
+
+.fl .cell.type {
+  font-family: var(--font-mono);
+  letter-spacing: normal;
+  font-size: var(--size-text-11);
+  text-anchor: end;
+  fill: var(--color-muted);
+}
+
+.fl .fl-stroke {
+  stroke: var(--color-outline);
+  stroke-width: var(--border-thin);
+}
+
+.fl .fl-path {
+  fill: none;
+  stroke: var(--color-line);
+  stroke-width: var(--border-edge);
+}
+
+.fl .cell .key {
+  font-size: var(--size-text-9);
+  font-weight: var(--weight-semibold);
+  fill: var(--color-muted);
+}
+
+.fl .frame-box {
+  fill: var(--color-group-1);
+  stroke: none;
+}
+
+.fl .frame-box.d2 {
+  fill: var(--color-group-2);
+}
+
+.fl .frame-box.d3 {
+  fill: var(--color-group-3);
+}
+
+.fl .frame-box.dashed {
+  stroke: var(--color-line);
+}
+
+.fl .lifeline {
+  stroke: var(--color-line);
+  stroke-width: var(--border-lifeline);
+  stroke-dasharray: var(--dash-gap) var(--dash-gap);
+}
+
+.fl .note-box {
+  fill: var(--color-surface);
+  stroke: var(--color-line);
+  stroke-dasharray: var(--dash-card) var(--dash-card);
+}
+
+.fl .pill {
+  fill: var(--color-node);
+  stroke: var(--color-outline);
+}
+
+.fl .part-bg {
+  fill: transparent;
+}
+
+.fl .col-line {
+  stroke: var(--color-outline);
+  stroke-width: var(--border-hair);
+}
+
+.fl .grid-cell {
+  fill: var(--color-node);
+  stroke: var(--color-outline);
+  stroke-width: var(--border-thin);
+}
+
+.fl .grid-ring {
+  fill: none;
+  stroke: none;
+}
+
+.fl .grid-cell.gap {
+  fill: var(--color-surface);
+  stroke: var(--color-line);
+  stroke-dasharray: var(--dash-card) var(--dash-card);
+}
+
+.fl .grid-cell.empty {
+  fill: none;
+  stroke: var(--color-line);
+  stroke-dasharray: var(--dash-card) var(--dash-card);
+}
+
+.fl .fl-edge.mark .fl-path {
+  stroke: var(--color-fg);
+}
+
+/* 도형 윗줄과 그룹 제목 줄의 장식: 글자 배지, 아이콘 */
+.fl .badge {
+  font-size: var(--size-text-11);
+  font-weight: var(--weight-semibold);
+  text-anchor: middle;
+  fill: var(--color-fg);
+}
+
+.fl .badge-pill {
+  fill: var(--color-node);
+  stroke: var(--color-outline);
+  stroke-width: var(--border-thin);
+}
+
+.fl .fl-icon {
+  color: var(--color-figure-icon);
+}
+
+.fl .icon-tile {
+  fill: var(--color-figure-icon-tile);
+}
+
+.fl .fl-icon.in-tile {
+  color: var(--color-figure-icon);
+}
+
+/* 선 번호 원. 라벨 알약과 달리 켜져도 색이 바뀌지 않아 정지 그림과 같은 순서로 읽힌다. */
+.fl .number-pill {
+  fill: var(--color-fg);
+}
+
+.fl .number {
+  font-size: var(--size-text-11);
+  font-weight: var(--weight-semibold);
+  text-anchor: middle;
+  fill: var(--color-bg);
+}
+/* 차트 글자와 자라는 움직임. 차트 SVG 안에 들어가고, README 이미지에서도 보이게 되풀이한다. */
+.fl .chart-title {
+  font-size: var(--size-text-15);
+  font-weight: var(--weight-semibold);
+  fill: var(--color-fg);
+}
+
+.fl .chart-label {
+  font-size: var(--size-text-13);
+  font-weight: var(--weight-medium);
+  fill: var(--color-fg);
+}
+
+.fl .chart-value,
+.fl .chart-tick,
+.fl .chart-unit {
+  font-variant-numeric: tabular-nums;
+  font-size: var(--size-text-11);
+  fill: var(--color-muted);
+}
+
+.fl .chart-value {
+  fill: var(--color-fg);
+}
+
+/* 값 글자와 점 이름은 뒤의 격자와 기준선이 글자 둘레에서 끊기게 바탕색 테두리를 두른다. */
+.fl .chart-value,
+.fl .chart-name {
+  paint-order: stroke;
+  stroke: var(--color-bg);
+  stroke-width: var(--border-halo);
+  stroke-linejoin: round;
+}
+
+.fl .chart-tick {
+  text-anchor: middle;
+}
+
+.fl .chart-unit {
+  text-anchor: end;
+}
+
+.fl .chart-value.start {
+  text-anchor: start;
+}
+
+.fl .chart-value.end {
+  text-anchor: end;
+}
+
+/* 값 글자는 계열과 상관없이 글자색이다. 계열은 막대, 점, 띠 색으로만 전하고 강조 계열(ours, second)은 굵기로만 구분한다. */
+.fl .chart-value.ours,
+.fl .chart-value.second {
+  font-weight: var(--weight-semibold);
+}
+
+.fl .chart-name.end {
+  text-anchor: end;
+}
+
+.fl .chart-missing {
+  font-size: var(--size-text-11);
+  font-style: italic;
+  fill: var(--color-muted);
+}
+
+.fl .chart-ratio {
+  font-variant-numeric: tabular-nums;
+  font-size: var(--size-text-13);
+  font-weight: var(--weight-semibold);
+  text-anchor: end;
+  fill: var(--color-fg);
+}
+
+.fl .chart-legend,
+.fl .chart-sub,
+.fl .chart-name,
+.fl .chart-rule-label {
+  font-size: var(--size-text-11);
+  fill: var(--color-muted);
+}
+
+.fl .chart-tick.end,
+.fl .chart-rule-label.end {
+  text-anchor: end;
+}
+
+.fl .chart-unit.start {
+  text-anchor: start;
+}
+
+/* 칸 색은 변수로 계산해 다크 모드 heat-low를 따라간다. --s는 칸 강도(0~1)다. */
+.fl .chart-heat {
+  fill: color-mix(in srgb, var(--color-data-heat-high) calc(var(--s) * 100%), var(--color-data-heat-low));
+}
+
+.fl .chart-cell {
+  --ink: var(--color-data-heat-ink);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--size-text-11);
+  text-anchor: middle;
+  fill: var(--ink);
+}
+
+.fl .chart-cell.on {
+  --ink: var(--color-data-heat-ink-on);
+}
+
+/* 흐린 칸은 면이 바탕 쪽으로 옅어져 진한 칸의 밝은 글자가 묻힌다. 흐린 동안은 모든 칸이 어두운 글자(다크는 같은 밝은 글자)다. */
+.fl .chart-cell.dim {
+  fill: var(--color-data-heat-ink);
+}
+
+.fl .chart-axis,
+.fl .chart-grid {
+  stroke: var(--color-data-grid);
+  stroke-width: var(--border-thin);
+}
+
+.fl .chart-zero {
+  stroke: var(--color-muted);
+  stroke-width: var(--border-tag);
+}
+
+.fl .chart-break {
+  fill: none;
+  stroke: var(--color-muted);
+  stroke-width: var(--border-tag);
+}
+
+.fl .chart-rule {
+  stroke: var(--color-muted);
+  stroke-width: var(--border-thin);
+  stroke-dasharray: var(--dash-line) var(--dash-gap);
+}
+
+.fl .chart-whisker,
+.fl .chart-median {
+  stroke: var(--color-fg);
+  stroke-width: var(--border-tag);
+}
+
+.fl .chart-ci {
+  stroke: var(--color-fg);
+  stroke-width: var(--border-tag);
+}
+
+.fl .chart-ci-casing,
+.fl .chart-rule-casing {
+  stroke: var(--color-bg);
+  stroke-width: var(--border-casing);
+}
+
+.fl .chart-interval {
+  fill: none;
+  stroke: var(--color-muted);
+  stroke-width: var(--border-edge);
+}
+
+.fl .chart-band {
+  fill-opacity: var(--opacity-band);
+}
+
+.fl .chart-range {
+  stroke-linecap: round;
+  stroke-opacity: var(--opacity-range);
+}
+
+.fl .chart-after {
+  stroke: var(--color-bg);
+  stroke-width: var(--border-tag);
+}
+
+.fl .chart-box {
+  fill: var(--color-node);
+  stroke: var(--color-data-main);
+  stroke-width: var(--border-tag);
+}
+
+.fl .chart-before {
+  fill: var(--color-bg);
+  stroke: var(--color-data-compare);
+  stroke-width: var(--border-tag);
+}
+
+.fl .chart-arrow,
+.fl .chart-link {
+  stroke: var(--color-data-main);
+  stroke-width: var(--border-strong);
+}
+
+.fl .chart-link {
+  stroke: var(--color-muted);
+  stroke-width: var(--border-strong);
+  stroke-linecap: round;
+}
+
+.fl .chart-label.shift {
+  transform: translateY(var(--label-shift));
+  transition: transform var(--duration-fast);
+}
+
+/* pathLength 1인 선이 stroke-dashoffset으로 그려진다. 선 차트의 선, 덤벨 화살표, 산점도 link가 함께 쓴다. */
+.fl .draw {
+  stroke-dasharray: 1;
+}
+
+.fl .grow {
+  transform-box: fill-box;
+  transform-origin: left center;
+}
+
+.fl .hidden {
+  opacity: 0;
+}
+
+.fl .dim {
+  opacity: var(--opacity-dim);
+}
+
+/* 글자는 면보다 덜 흐려, 흐린 행에서도 글자가 바탕과 대비 4.5 이상이다(opacity.dim-ink). */
+.fl .ink.dim {
+  opacity: var(--opacity-dim-ink);
+}
+
+.fl .cs-0,
+.fl .cs-1,
+.fl [class*="cr-"] {
+  transition: opacity var(--duration-fast);
+}
+
+/* 면이 바탕 쪽으로 옅어지는 중간에는 밝은 글자와 어두운 글자 모두 대비 4.5에 못 미친다. 칸 면과 글자는 서서히 가지 않고 한꺼번에 바뀐다. */
+.fl .chart-heat-cell,
+.fl .chart-cell.ink {
+  transition: none;
+}
+</style>
+</head>
+<body>
+<figure class="fl-figure" tabindex="0">
+<button type="button" class="fl-round fl-full"></button><div class="fl-zoom"><button type="button" class="fl-round" data-zoom="in" aria-label="확대"></button><button type="button" class="fl-round" data-zoom="out" aria-label="축소"></button><button type="button" class="fl-round" data-zoom="fit" aria-label="전체 보기"></button></div>
+<div class="fl-canvas"><svg xmlns="http://www.w3.org/2000/svg" class="fl" width="960" height="241" style="aspect-ratio: 960 / 241" viewBox="-246 0 960 241" role="img"><title>잠금으로 막기</title><defs><marker id="fl-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-line)"/></marker><marker id="fl-arrow-on" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-state-active)"/></marker><marker id="fl-arrow-main" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-data-main)"/></marker></defs><g id="n-0" class="fl-node" data-id="a"><g class="fl-halo " fill="none" opacity="0"><rect x="104" y="39" width="100" height="46" rx="10" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="104" y="39" width="100" height="46" rx="10" fill="var(--color-node)" class="fl-stroke "/><text x="154" y="66.7" class="label">작업 A</text></g>
+<g id="n-1" class="fl-node" data-id="b"><g class="fl-halo " fill="none" opacity="0"><rect x="28" y="119" width="176" height="94" rx="10" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="28" y="119" width="176" height="94" rx="10" fill="var(--color-node)" class="fl-stroke "/><text x="116" y="144.7" class="label">작업 B</text><rect x="38" y="161" width="156" height="42" rx="6" fill="var(--color-card)" stroke="var(--color-outline)" stroke-dasharray="3 3" class="fl-card "/><g id="n-1-c0" opacity="0" class="fl-layer "><rect x="46" y="168" width="29.2" height="14" rx="4" fill="var(--color-tag-purple)" fill-opacity="0.15"/><text x="60.6" y="178.2" class="tag">WAIT</text><text x="46" y="193" class="row">대기 중</text></g></g>
+<g id="n-2" class="fl-node" data-id="lock"><g class="fl-halo " fill="none" opacity="0"><rect x="264" y="28" width="176" height="79" rx="10" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="264" y="28" width="176" height="79" rx="10" fill="var(--color-node)" class="fl-stroke "/><text x="352" y="53.7" class="label">잠금</text><rect x="274" y="70" width="156" height="27" rx="6" fill="var(--color-card)" stroke="var(--color-outline)" stroke-dasharray="3 3" class="fl-card "/><g id="n-2-c0" opacity="0" class="fl-layer "><text x="282" y="87" class="row">쥔 쪽</text></g></g>
+<g id="n-3" class="fl-node" data-id="db"><g class="fl-halo " fill="none" opacity="0"><path d="M264 151 a 50 12 0 0 1 100 0 v 46 a 50 12 0 0 1 -100 0 z" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><path d="M264 151 a 50 12 0 0 1 100 0 v 46 a 50 12 0 0 1 -100 0 z" fill="var(--color-node)" class="fl-stroke "/><path d="M264 151 a 50 12 0 0 0 100 0" fill="none" class="fl-stroke "/><text x="314" y="178.7" class="label">재고 DB</text></g>
+<g id="e-0" class="fl-edge"><path id="p-0" d="M 204 54.33333333333333 L 264 54.3" class="fl-path " marker-end="url(#fl-arrow)"/></g>
+<g id="e-1" class="fl-edge"><path id="p-1" d="M 204 150.33333333333331 L 212 150.3 Q 220 150.3, 220 142.3 L 220 102.7 Q 220 80.7, 242 80.7 L 264 80.7" class="fl-path " marker-end="url(#fl-arrow)"/></g>
+<g id="e-2" class="fl-edge"><path id="p-2" d="M 204 69.66666666666666 L 217 69.7 Q 230 69.7, 230 82.7 L 230 149.3 Q 230 166.3, 247 166.3 L 264 166.3" class="fl-path " marker-end="url(#fl-arrow)"/></g>
+<g id="e-3" class="fl-edge"><path id="p-3" d="M 204 181.66666666666666 L 264 181.7" class="fl-path " marker-end="url(#fl-arrow)"/></g><g class="fl-value"><rect x="278" y="74" width="148" height="19" rx="4" fill="none" stroke="var(--color-state-active)" stroke-width="1.75" opacity="0" data-vf="0"></rect><text x="422" y="87" class="value" opacity="0" data-v="0" data-t="none">none</text><text x="422" y="87" class="value" opacity="0" data-v="0" data-t="A">A</text></g>
+<g class="fl-value"><rect x="278" y="74" width="148" height="19" rx="4" fill="none" stroke="var(--color-state-active)" stroke-width="1.75" opacity="0" data-vf="1"></rect><text x="422" y="87" class="value" opacity="0" data-v="1" data-t="none">none</text><text x="422" y="87" class="value" opacity="0" data-v="1" data-t="B">B</text></g><g class="fl-packets"></g></svg></div>
+<figcaption class="fl-foot">
+<div class="fl-bar"><button type="button" class="fl-round fl-pause"><svg class="fl-ring" viewBox="0 0 36 36" aria-hidden="true"><circle class="fl-ring-fill" cx="18" cy="18" r="17.125" stroke-width="1.75" transform="rotate(-90 18 18)"/></svg><span class="fl-pause-icon"></span></button><div class="fl-tabs" role="tablist"></div><button type="button" class="fl-round fl-rate" aria-label="배속">1×</button></div>
+<p class="fl-caption" aria-live="polite"></p>
+</figcaption>
+</figure>
+<script>
+const UI_ICONS = {"maximize-2":"\u003cpath d=\"M15 3h6v6\"/>\u003cpath d=\"m21 3-7 7\"/>\u003cpath d=\"m3 21 7-7\"/>\u003cpath d=\"M9 21H3v-6\"/>","minimize-2":"\u003cpath d=\"m14 10 7-7\"/>\u003cpath d=\"M20 10h-6V4\"/>\u003cpath d=\"m3 21 7-7\"/>\u003cpath d=\"M4 14h6v6\"/>","zoom-in":"\u003ccircle cx=\"11\" cy=\"11\" r=\"8\"/>\u003cline x1=\"21\" x2=\"16.65\" y1=\"21\" y2=\"16.65\"/>\u003cline x1=\"11\" x2=\"11\" y1=\"8\" y2=\"14\"/>\u003cline x1=\"8\" x2=\"14\" y1=\"11\" y2=\"11\"/>","zoom-out":"\u003ccircle cx=\"11\" cy=\"11\" r=\"8\"/>\u003cline x1=\"21\" x2=\"16.65\" y1=\"21\" y2=\"16.65\"/>\u003cline x1=\"8\" x2=\"14\" y1=\"11\" y2=\"11\"/>","scan":"\u003cpath d=\"M3 7V5a2 2 0 0 1 2-2h2\"/>\u003cpath d=\"M17 3h2a2 2 0 0 1 2 2v2\"/>\u003cpath d=\"M21 17v2a2 2 0 0 1-2 2h-2\"/>\u003cpath d=\"M7 21H5a2 2 0 0 1-2-2v-2\"/>","play":"\u003cpath d=\"M5 5a2 2 0 0 1 3.008-1.728l11.997 6.998a2 2 0 0 1 .003 3.458l-12 7A2 2 0 0 1 5 19z\"/>","pause":"\u003crect x=\"14\" y=\"3\" width=\"5\" height=\"18\" rx=\"1\"/>\u003crect x=\"5\" y=\"3\" width=\"5\" height=\"18\" rx=\"1\"/>"};
+// 브라우저에서 돈다(play.js와 한 스크립트로 이어 붙는다).
+// 전체 화면과, 전체 화면에서만 켜지는 확대·축소·끌어 옮기기를 맡는다. 문서 안에서는 그림을 그대로 보인다.
+
+const ZOOM_ICONS = { in: 'zoom-in', out: 'zoom-out', fit: 'scan' };
+
+// cost: time O(1) 시작, 휠·끌기마다 O(1), heap O(1), stack O(1)
+// basis: estimate
+/**
+ * 그림 틀에 전체 화면 단추와 확대·축소를 붙인다.
+ * @param root `.fl-figure` 요소. 안에 `.fl-full`, `.fl-zoom` 단추와 `svg.fl`이 있다
+ * @param metrics { icon, iconStroke, zoomMax, zoomStep }
+ */
+function figureView(root, metrics) {
+  const svg = root.querySelector('svg.fl');
+  const base = svg.viewBox.baseVal;
+  const home = { x: base.x, y: base.y, w: base.width, h: base.height };
+  // 보는 상태 한 덩어리. view는 지금 viewBox, drag는 끄는 중인 손짓이다.
+  const viewer = { root, svg, metrics, home, view: { ...home }, drag: undefined, fullButton: root.querySelector('.fl-full') };
+  bindFull(viewer);
+  bindZoom(viewer);
+  bindPan(viewer);
+  showFull(viewer, false);
+}
+
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+function bindFull(viewer) {
+  const { root, fullButton } = viewer;
+  fullButton.addEventListener('click', () => setFull(viewer, !root.classList.contains('full')));
+  document.addEventListener('fullscreenchange', () => showFull(viewer, document.fullscreenElement === root));
+  root.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && !document.fullscreenElement) setFull(viewer, false);
+  });
+}
+
+// cost: time O(b), heap O(1), stack O(1)
+// vars: b = 확대·축소 단추 수
+// basis: estimate
+function bindZoom(viewer) {
+  const { root, metrics, home } = viewer;
+  root.querySelectorAll('.fl-zoom button').forEach((b) => {
+    b.innerHTML = drawUiIcon(metrics, ZOOM_ICONS[b.dataset.zoom]);
+    b.addEventListener('click', () => (b.dataset.zoom === 'fit' ? setView(viewer, home) : zoomAt(viewer, b.dataset.zoom === 'in' ? metrics.zoomStep : 1 / metrics.zoomStep)));
+  });
+}
+
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+function bindPan(viewer) {
+  const { svg } = viewer;
+  svg.addEventListener('wheel', (e) => onWheel(viewer, e), { passive: false });
+  svg.addEventListener('pointerdown', (e) => onPointerDown(viewer, e));
+  svg.addEventListener('pointermove', (e) => onPointerMove(viewer, e));
+  for (const type of ['pointerup', 'pointercancel', 'lostpointercapture']) svg.addEventListener(type, () => (viewer.drag = undefined));
+}
+
+// 브라우저 전체 화면을 먼저 쓰고, 막혀 있으면(iframe에 allowfullscreen이 없을 때 등) 창을 덮는 모양으로 대신한다.
+function setFull(viewer, isFull) {
+  const { root } = viewer;
+  const canUseApi = Boolean(root.requestFullscreen) && document.fullscreenEnabled;
+  if (!canUseApi) return showFull(viewer, isFull);
+  if (isFull) root.requestFullscreen().catch(() => showFull(viewer, true));
+  else if (document.fullscreenElement) document.exitFullscreen();
+  else showFull(viewer, false);
+}
+
+function showFull(viewer, isFull) {
+  const { root, fullButton, metrics, home } = viewer;
+  root.classList.toggle('full', isFull);
+  fullButton.innerHTML = drawUiIcon(metrics, isFull ? 'minimize-2' : 'maximize-2');
+  const label = isFull ? '전체 화면 끝내기' : '전체 화면';
+  fullButton.setAttribute('aria-label', label);
+  fullButton.title = label;
+  // 문서 안에서는 늘 전체 그림을 보인다.
+  if (!isFull) setView(viewer, home);
+}
+
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+// 휠을 굴린 자리를 중심으로 확대한다. 전체 화면이 아닐 때는 문서 스크롤에 맡긴다.
+function onWheel(viewer, e) {
+  if (!viewer.root.classList.contains('full')) return;
+  e.preventDefault();
+  // 가로로만 미는 손짓은 확대·축소가 아니다.
+  if (e.deltaY === 0) return;
+  const { zoomStep } = viewer.metrics;
+  zoomAt(viewer, e.deltaY < 0 ? zoomStep : 1 / zoomStep, toSvgPoint(viewer.svg, e));
+}
+
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+function onPointerDown(viewer, e) {
+  const { root, svg, view, home } = viewer;
+  const isMainButton = e.button === 0;
+  if (!root.classList.contains('full') || view.w >= home.w || !isMainButton) return;
+  // 끄는 동안 viewBox가 바뀌므로, 잡은 순간의 화면→그림 변환으로 거리를 잰다.
+  viewer.drag = { start: toSvgPoint(svg, e), matrix: svg.getScreenCTM().inverse(), view: { ...view } };
+  svg.setPointerCapture(e.pointerId);
+}
+
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+// 끈 거리만큼 그림을 반대로 옮긴다. 잡은 자리가 손가락 아래에 머문다.
+function onPointerMove(viewer, e) {
+  const { drag } = viewer;
+  if (!drag) return;
+  const now = new DOMPoint(e.clientX, e.clientY).matrixTransform(drag.matrix);
+  setView(viewer, { ...drag.view, x: drag.view.x - (now.x - drag.start.x), y: drag.view.y - (now.y - drag.start.y) });
+}
+
+// factor만큼 확대한다. 배율은 1배(전체)에서 metrics.zoomMax배 사이다.
+function zoomAt(viewer, factor, center = { x: viewer.view.x + viewer.view.w / 2, y: viewer.view.y + viewer.view.h / 2 }) {
+  const { view, home, metrics } = viewer;
+  const w = Math.min(home.w, Math.max(home.w / metrics.zoomMax, view.w / factor));
+  const k = w / view.w;
+  setView(viewer, { x: center.x - (center.x - view.x) * k, y: center.y - (center.y - view.y) * k, w, h: view.h * k });
+}
+
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+// 그림 밖으로 벗어나지 않게 자리를 막고 viewBox에 쓴다.
+function setView(viewer, next) {
+  const { home, svg, root } = viewer;
+  const x = Math.min(home.x + home.w - next.w, Math.max(home.x, next.x));
+  const y = Math.min(home.y + home.h - next.h, Math.max(home.y, next.y));
+  viewer.view = { ...next, x, y };
+  svg.setAttribute('viewBox', `${x} ${y} ${next.w} ${next.h}`);
+  root.classList.toggle('zoomed', next.w < home.w);
+}
+
+// 화면 좌표를 그림 좌표로 바꾼다. 그림 비율과 svg 상자 비율이 달라 생기는 여백까지 브라우저 변환 행렬이 반영한다.
+function toSvgPoint(svg, e) {
+  const point = new DOMPoint(e.clientX, e.clientY).matrixTransform(svg.getScreenCTM().inverse());
+  return { x: point.x, y: point.y };
+}
+
+// 조작부 아이콘. Lucide 원본 24 격자 외곽선 아이콘(UI_ICONS, html.js가 이 스크립트 앞에 붙인다)을 단색 currentColor 선으로 그린다. 선 굵기는 metrics.iconStroke 한 곳이다(Obsidian 기본 아이콘과 같은 모양).
+function drawUiIcon(metrics, name) {
+  return `<svg width="${metrics.icon}" height="${metrics.icon}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${metrics.iconStroke}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${UI_ICONS[name]}</svg>`;
+}
+
+// 브라우저에서 돈다. html.js가 HTML 안에 그대로 넣는다(src/player/ 파일을 이어 붙인다).
+// 시간표의 박자 상태를 그대로 그린다. 상태를 다시 계산하지 않는다(docs/architecture.md 불변 조건).
+// 이 파일은 재생기 본체다: 시작, 시계, 박자 이동, 설명 글. 역할별로 파일이 나뉜다: 단추와 탭과 진행 고리(controls.js), 그림 그리기(stage.js), 이동 곡선(curve.js), 전체 화면과 확대(view.js).
+
+const PLAYER_RATES = [1, 2, 0.5];
+// 설명 글이 바뀔 때 앞 글이 사라지고 뒤 글이 나타나는 각 시간(ms)을 담은 토큰 변수. 움직이는 SVG와 같은 토큰이다.
+const CAPTION_FADE_VAR = '--duration-caption-fade';
+
+// cost: time O(s + c) 시작, 프레임마다 O(h + k), heap O(s + c), stack O(1)
+// vars: s = 도형 수, c = 선 수, h = 한 박자의 이동 수, k = 카드 있는 도형 수
+// basis: estimate
+/**
+ * 재생기를 붙인다.
+ * @param root `.fl-figure` 요소
+ * @param data { segs, steps, cardCounts, edgeEnds, seriesCount, rowCount, metrics }
+ */
+function figurePlay(root, data) {
+  const player = createPlayer(root, data);
+  bindControls(root, player);
+  highlightOnHover(player.stage);
+  figureView(root, data.metrics);
+  centerCanvas(root);
+  setPlaying(player, player.clock.isPlaying);
+  if (data.segs.length) {
+    enterSegment(player, 0);
+    requestAnimationFrame(player.tick);
+  } else {
+    // 시간 흐름이 없는 그림은 조작 막대를 숨긴다. 차트는 SVG 이미지처럼 되풀이해 자란다.
+    root.querySelector('.fl-foot').hidden = true;
+    player.stage.svg.classList.add('chart-loop');
+  }
+}
+
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+// 화면이 표준 캔버스 폭보다 좁으면 그림 영역이 가로로 스크롤된다. 내용이 캔버스보다 좁은 그림은 내용이 캔버스 가운데에 있으므로 가운데에서 시작하고(viewBox 왼쪽이 음수),
+// 캔버스를 꽉 채우는 차트와 넓은 그림은 왼쪽 끝(이름과 축)에서 시작한다. 화면 크기가 바뀌어도 다시 맞춘다.
+function centerCanvas(root) {
+  const canvas = root.querySelector('.fl-canvas');
+  const isCentered = root.querySelector('svg.fl').viewBox.baseVal.x < 0;
+  const place = () => {
+    canvas.scrollLeft = isCentered ? (canvas.scrollWidth - canvas.clientWidth) / 2 : 0;
+  };
+  place();
+  addEventListener('resize', place);
+}
+
+// cost: time O(s + c), heap O(s + c), stack O(1)
+// vars: s = 도형 수, c = 선 수
+// basis: estimate
+// 재생기 상태 한 덩어리. 시계, 그림, 탭, 고리, 설명 줄이 이 객체 하나로 이어진다.
+function createPlayer(root, data) {
+  const pauseButton = root.querySelector('.fl-pause');
+  const player = {
+    data,
+    stage: createStage(root, data),
+    clock: createClock(),
+    stepSegs: data.steps.map((_, si) => data.segs.filter((s) => s.si === si)),
+    hasCaption: data.segs.some((s) => s.caption),
+    caption: root.querySelector('.fl-caption'),
+    captionText: undefined,
+    captionFade: undefined,
+    pause: { button: pauseButton, icon: pauseButton.querySelector('.fl-pause-icon') },
+    ring: createRing(pauseButton),
+    tabs: [],
+    tick: (now) => drawFrame(player, now),
+  };
+  player.tabs = createTabs(root.querySelector('.fl-tabs'), player);
+  return player;
+}
+
+// ---- 시계 ----
+
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+function createClock() {
+  return {
+    index: 0,
+    elapsed: 0,
+    before: performance.now(),
+    isPlaying: !matchMedia('(prefers-reduced-motion: reduce)').matches,
+    rate: PLAYER_RATES[0],
+  };
+}
+
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+function nextRate(rate) {
+  return PLAYER_RATES[(PLAYER_RATES.indexOf(rate) + 1) % PLAYER_RATES.length];
+}
+
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+// 박자 seg가 속한 탭(step) 전체 시간 중 지금까지 지난 비율(0~1).
+function tabProgress(player, seg) {
+  const steps = player.stepSegs[seg.si];
+  const start = steps[0].t0;
+  const end = steps.at(-1).t1;
+  return (seg.t0 - start + Math.min(player.clock.elapsed, seg.t1 - seg.t0)) / (end - start);
+}
+
+// cost: time O(h + k), heap O(1), stack O(1)
+// vars: h = 박자의 이동 수, k = 카드가 바뀌는 도형 수
+// basis: estimate
+// 프레임마다 시계를 흘리고, 점과 카드를 옮기고, 재생 단추 고리를 채운다.
+function drawFrame(player, now) {
+  const { clock, data } = player;
+  if (clock.isPlaying) clock.elapsed += (now - clock.before) * clock.rate;
+  clock.before = now;
+  const seg = data.segs[clock.index];
+  advanceStage(player.stage, seg, clock.elapsed);
+  player.ring.draw(tabProgress(player, seg));
+  if (clock.elapsed >= seg.t1 - seg.t0) enterSegment(player, (clock.index + 1) % data.segs.length);
+  requestAnimationFrame(player.tick);
+}
+
+// cost: time O(s + c + k + r), heap O(h), stack O(1)
+// vars: s = 도형 수, c = 선 수, k = 카드 내용 수 합, r = 차트 행 수, h = 이동 수
+// basis: estimate
+// 박자 i로 들어간다. 시계를 0으로 돌리고 그림, 설명, 탭, 고리를 그 박자 상태로 맞춘다.
+function enterSegment(player, i) {
+  const { clock, data } = player;
+  const seg = data.segs[i];
+  clock.index = i;
+  clock.elapsed = 0;
+  drawSegmentState(player.stage, seg);
+  showCaption(player, seg.caption);
+  markTabs(player.tabs, seg.si);
+  resetPackets(player.stage, seg);
+  player.ring.draw(tabProgress(player, seg));
+}
+
+// cost: time O(n), heap O(n), stack O(1)
+// vars: n = 설명 글자 수
+// basis: estimate
+// 설명 글을 바꾼다. 앞 글이 다 사라진 뒤 뒤 글이 나타난다(순차 페이드). 같은 글이면 그대로 두고, 첫 글과 움직임 줄이기 설정에서는 바로 바꾼다.
+function showCaption(player, text) {
+  const { caption } = player;
+  caption.hidden = !player.hasCaption;
+  if (text === player.captionText) return;
+  const isFirst = player.captionText === undefined;
+  player.captionText = text;
+  player.captionFade?.cancel();
+  const fadeMs = parseFloat(getComputedStyle(caption).getPropertyValue(CAPTION_FADE_VAR));
+  const fill = () => caption.replaceChildren(...richNodes(text, htmlCode));
+  if (isFirst || !fadeMs || matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    fill();
+    return;
+  }
+  const out = caption.animate([{ opacity: getComputedStyle(caption).opacity }, { opacity: 0 }], { duration: fadeMs, fill: 'forwards' });
+  player.captionFade = out;
+  out.finished.then(() => {
+    fill();
+    player.captionFade = caption.animate([{ opacity: 0 }, { opacity: 1 }], { duration: fadeMs });
+    out.cancel();
+  }, () => {});
+}
+
+// 브라우저에서 돈다(play.js와 한 스크립트로 이어 붙는다). 재생 단추와 배속, 진행 고리, 탭, 설명 글의 백틱 코드.
+
+// ---- 재생 단추와 배속 ----
+
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+function bindControls(root, player) {
+  const { clock, pause } = player;
+  const rateButton = root.querySelector('.fl-rate');
+  pause.button.addEventListener('click', () => setPlaying(player, !clock.isPlaying));
+  rateButton.addEventListener('click', () => {
+    clock.rate = nextRate(clock.rate);
+    rateButton.textContent = `${clock.rate}×`;
+  });
+  root.addEventListener('keydown', (e) => {
+    // 단추 위의 스페이스는 그 단추를 누르는 키다.
+    if (e.key !== ' ' || e.target.closest('button')) return;
+    setPlaying(player, !clock.isPlaying);
+    e.preventDefault();
+  });
+}
+
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+function setPlaying(player, value) {
+  const { clock, pause } = player;
+  clock.isPlaying = value;
+  pause.icon.innerHTML = playIconSvg(clock.isPlaying, player.data.metrics);
+  pause.button.setAttribute('aria-label', clock.isPlaying ? '일시정지' : '재생');
+}
+
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+// 재생 단추 아이콘. 재생 중이면 일시정지 모양, 멈췄으면 재생 모양이다.
+function playIconSvg(isPlaying, metrics) {
+  return drawUiIcon(metrics, isPlaying ? 'pause' : 'play');
+}
+
+// ---- 진행 고리 ----
+
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+// 고리 둘레는 마크업의 반지름에서 구한다. draw(0~1)로 12시에서 시계 방향으로 채운다.
+function createRing(button) {
+  const fill = button.querySelector('.fl-ring-fill');
+  const length = 2 * Math.PI * fill.r.baseVal.value;
+  fill.style.strokeDasharray = length;
+  return {
+    draw(progress) {
+      fill.style.strokeDashoffset = length * (1 - progress);
+    },
+  };
+}
+
+// ---- 탭 ----
+
+// cost: time O(s), heap O(s), stack O(1)
+// vars: s = 탭 수
+// basis: estimate
+function createTabs(container, player) {
+  const { data, stepSegs } = player;
+  const buttons = data.steps.map((label, si) => createTab(label, () => enterSegment(player, data.segs.indexOf(stepSegs[si][0]))));
+  container.append(...buttons);
+  return buttons;
+}
+
+// cost: time O(n), heap O(n), stack O(1)
+// vars: n = 글자 수
+// basis: estimate
+function createTab(label, onSelect) {
+  const button = document.createElement('button');
+  button.type = 'button';
+  button.setAttribute('role', 'tab');
+  button.append(...richNodes(label, htmlCode));
+  button.addEventListener('click', onSelect);
+  return button;
+}
+
+// cost: time O(s), heap O(1), stack O(1)
+// vars: s = 탭 수
+// basis: estimate
+function markTabs(buttons, current) {
+  buttons.forEach((button, si) => {
+    button.classList.toggle('on', si === current);
+    button.setAttribute('aria-selected', si === current);
+  });
+}
+
+// cost: time O(n), heap O(n), stack O(1)
+// vars: n = 글자 수
+// basis: estimate
+// 글을 백틱 기준으로 나눠 노드 목록으로 만든다. 홀수 번째 구간(백틱 안)은 makeCode가 만든 요소에 담는다.
+function richNodes(text, makeCode) {
+  return text
+    .split('`')
+    .map((part, i) => {
+      if (!part) return null;
+      if (i % 2 === 0) return document.createTextNode(part);
+      const code = makeCode();
+      code.textContent = part;
+      return code;
+    })
+    .filter(Boolean);
+}
+
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+function htmlCode() {
+  const code = document.createElement('code');
+  code.className = 'fl-code';
+  return code;
+}
+
+// 브라우저에서 돈다(play.js와 한 스크립트로 이어 붙는다). 그림(SVG) 조각을 찾아 박자 상태를 그리고 점과 글 상자를 옮긴다.
+
+const SVG_NS = 'http://www.w3.org/2000/svg';
+
+// ---- 그림 그리기 ----
+
+// cost: time O(s + c + r), heap O(s + c + r), stack O(1)
+// vars: s = 도형 수, c = 선 수, r = 차트 행 수
+// basis: estimate
+// 그림(SVG) 조각을 한 번 찾아 둔 묶음. 점, 카드 대기열 같은 그림 쪽 상태도 여기에 둔다.
+function createStage(root, data) {
+  const svg = root.querySelector('svg.fl');
+  const all = (selector) => [...svg.querySelectorAll(selector)];
+  return {
+    svg,
+    metrics: data.metrics,
+    edgeEnds: data.edgeEnds,
+    cardCounts: data.cardCounts,
+    packetLayer: svg.querySelector('.fl-packets'),
+    nodes: data.cardCounts.map((_, i) => svg.querySelector(`#n-${i}`)),
+    groups: all('.fl-group'),
+    edges: data.edgeEnds.map((_, j) => withLabel(svg.querySelector(`#e-${j}`), svg.querySelector(`#l-${j}`))),
+    paths: data.edgeEnds.map((_, j) => svg.querySelector(`#p-${j}`)),
+    trackPaths: Array.from({ length: data.trackCount ?? 0 }, (_, k) => svg.querySelector(`#tp-${k}`)),
+    values: data.values ?? [],
+    valueEls: createValueEls(svg, data),
+    pendingOn: [],
+    pendingPulses: [],
+    parts: all('.fl-part'),
+    seriesEls: Array.from({ length: data.seriesCount }, (_, i) => all(`.cs-${i}`)),
+    labelEls: all('.chart-label.shift'),
+    rowEls: Array.from({ length: data.rowCount }, (_, k) => all(`.cr-${k}`)),
+    packets: [],
+    pendingCards: [],
+  };
+}
+
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+// 선 묶음과 알약 묶음(점 층 위에 따로 그려진다)의 class를 함께 바꾸는 손잡이. 알약이 없으면 선만 바꾼다.
+function withLabel(edge, label) {
+  const both = (act) => (name, on) => [edge, label].forEach((el) => el && act(el.classList, name, on));
+  return { classList: { toggle: both((list, name, on) => list.toggle(name, on)), add: both((list, name) => list.add(name)), remove: both((list, name) => list.remove(name)) } };
+}
+
+// cost: time O(n·c), heap O(n·c), stack O(1)
+// vars: n = 도형 수, c = 선 수
+// basis: estimate
+// 도형에 마우스를 올리면 닿은 선을 밝힌다. 조용한 선도 그때 보인다.
+function highlightOnHover(stage) {
+  stage.nodes.forEach((g, i) => {
+    const touching = stage.edgeEnds.map((e, j) => (e[0] === i || e[1] === i ? stage.edges[j] : null)).filter(Boolean);
+    g?.addEventListener('mouseenter', () => touching.forEach((e) => e.classList.add('hover')));
+    g?.addEventListener('mouseleave', () => touching.forEach((e) => e.classList.remove('hover')));
+  });
+}
+
+// cost: time O(s + c + k + r), heap O(1), stack O(1)
+// vars: s = 도형 수, c = 선 수, k = 카드 내용 수 합, r = 차트 행 수
+// basis: estimate
+// 박자 seg의 상태를 그린다. 점이 도착하는 도형의 카드는 cardsAt 시각에 바뀐다.
+function drawSegmentState(stage, seg) {
+  stage.isFlow = Boolean(seg.pulses);
+  stage.nodes.forEach((g, n) => g?.classList.toggle('on', seg.nodesOn.includes(n)));
+  stage.groups.forEach((g, n) => g.classList.toggle('on', seg.groupsOn.includes(n)));
+  stage.edges.forEach((e, j) => e?.classList.toggle('on', seg.edgesOn.includes(j)));
+  stage.parts.forEach((p) => p.classList.toggle('on', seg.partsOn.includes(p.dataset.part)));
+  showCards(stage, seg.cardsBefore);
+  stage.pendingCards = Object.entries(seg.cardsAt).map(([n, at]) => ({ n: Number(n), at }));
+  stage.pendingOn = pendingLights(stage, seg);
+  stage.pendingPulses = [...(seg.pulses ?? [])];
+  drawValueState(stage, seg, seg.t0);
+  drawChartState(stage, seg);
+}
+
+// cost: time O(e + s), heap O(e + s), stack O(1)
+// vars: e = 처음 닿는 선 수, s = 처음 닿는 도형과 그룹 수
+// basis: estimate
+// 흐름 구간에서 점이 처음 닿는 시각에 켜질 선, 도형, 그룹. 구간 처음부터 켜진 것은 이미 켜져 있어 뺀다.
+function pendingLights(stage, seg) {
+  const timed = (at, els, on) => Object.entries(at ?? {}).filter(([i]) => !on.includes(Number(i))).map(([i, ms]) => ({ el: els[i], at: ms }));
+  return [...timed(seg.edgesAt, stage.edges, seg.edgesOn), ...timed(seg.nodesAt, stage.nodes, seg.nodesOn), ...timed(seg.groupsAt, stage.groups, seg.groupsOn)];
+}
+
+// cost: time O(k), heap O(1), stack O(1)
+// vars: k = 카드 있는 도형 수
+// basis: estimate
+function showCards(stage, cards, only) {
+  stage.cardCounts.forEach((count, n) => {
+    if (!count || (only !== undefined && only !== n)) return;
+    const shown = cards[n];
+    for (let k = 0; k < count; k++) stage.svg.querySelector(`#n-${n}-c${k}`).setAttribute('opacity', shown === k ? 1 : 0);
+    stage.nodes[n].querySelector('.fl-card').classList.toggle('on', shown !== undefined && !stage.isFlow);
+  });
+}
+
+// cost: time O(r + s), heap O(1), stack O(1)
+// vars: r = 차트 행 수, s = 계열 수
+// basis: estimate
+// 차트: 드러낸 계열을 보이고, 이 박자에 드러내는 계열은 자라는 움직임을 다시 건다. light가 있으면 나머지 행을 흐린다.
+function drawChartState(stage, seg) {
+  stage.seriesEls.forEach((els, s) => {
+    const isGrowing = seg.growing.includes(s);
+    for (const el of els) {
+      el.classList.toggle('hidden', !seg.series.includes(s));
+      el.classList.remove('play');
+      if (isGrowing) {
+        el.getBoundingClientRect();
+        el.classList.add('play');
+      }
+    }
+  });
+  stage.labelEls.forEach((el, k) => el.style.setProperty('--label-shift', `${seg.labelShifts[k] ?? 0}px`));
+  stage.rowEls.forEach((els, k) => els.forEach((el) => el.classList.toggle('dim', seg.lights.length > 0 && !seg.lights.includes(k))));
+}
+
+// cost: time O(h), heap O(h), stack O(1)
+// vars: h = 박자의 이동 수
+// basis: estimate
+function resetPackets(stage, seg) {
+  stage.packets.forEach((p) => p.remove());
+  stage.packets = seg.hops.map((hop) => createPacket(hop, stage));
+  stage.packets.forEach((packet) => packet.move(0));
+}
+
+// cost: time O(h + k), heap O(1), stack O(1)
+// vars: h = 박자의 이동 수, k = 카드가 바뀌는 도형 수
+// basis: estimate
+// 점을 옮기고, 도착한 도형의 카드를 바꾼다.
+function advanceStage(stage, seg, elapsed) {
+  stage.packets.forEach((packet) => packet.move(elapsed));
+  stage.pendingCards = stage.pendingCards.filter(({ n, at }) => {
+    if (elapsed < at) return true;
+    showCards(stage, seg.cards, n);
+    return false;
+  });
+  stage.pendingOn = stage.pendingOn.filter(({ el, at }) => {
+    if (elapsed < at) return true;
+    el?.classList.add('on');
+    return false;
+  });
+  stage.pendingPulses = stage.pendingPulses.filter(({ n, at }) => {
+    if (elapsed < at) return true;
+    if (elapsed - at < stage.metrics.pulseMs) pulseNode(stage, n);
+    return false;
+  });
+  drawValueState(stage, seg, seg.t0 + elapsed);
+}
+
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+// 점이 닿은 도형의 후광을 한 번 깜빡인다. 도형은 켜지지 않고 테두리도 그대로다.
+function pulseNode(stage, n) {
+  stage.nodes[n]?.querySelector('.fl-halo')?.animate([{ opacity: 1 }, { opacity: 0 }], { duration: stage.metrics.pulseMs });
+}
+
+// cost: time O(l), heap O(l), stack O(1)
+// vars: l = 글 상자 줄 수
+// basis: estimate
+// 점과 글 상자. 글 상자 줄과 자리는 시간표가 움직이는 SVG와 같게 정해 넘긴다.
+function createPacket(hop, stage) {
+  const { metrics } = stage;
+  const path = hop.track === undefined ? stage.paths[hop.edge] : stage.trackPaths[hop.track];
+  const color = hop.tone ? metrics.tones[hop.tone] : metrics.active;
+  const g = document.createElementNS(SVG_NS, 'g');
+  g.setAttribute('class', 'fl-packet');
+  g.innerHTML = `<circle r="${metrics.halo}" fill="${color}" opacity="${metrics.haloOpacity}"/><circle r="${metrics.packet}" fill="${color}"/>`;
+  stage.packetLayer.appendChild(g);
+  const chip = hop.data ? createChip(hop.data, { stage, color: hop.tone ? color : undefined }) : undefined;
+  if (chip) g.appendChild(chip.g);
+  const length = path.getTotalLength();
+  const slide = chipSlide(hop, metrics);
+  return {
+    remove: () => g.remove(),
+    // cost: time O(g + l), heap O(1), stack O(1)
+    // vars: g = 도형 안을 지나는 구간 수, l = 글 상자 경로 지점 수
+    // basis: estimate
+    move(elapsed) {
+      const t = elapsed - (hop.at ?? 0);
+      const p = Math.min(1, Math.max(0, t / hop.ms));
+      const eased = progressAt(metrics.move, p);
+      const point = path.getPointAtLength(length * (hop.isBack ? 1 - eased : eased));
+      g.setAttribute('transform', `translate(${point.x} ${point.y})`);
+      if (chip) {
+        const [dx, dy, opacity] = slide(p);
+        chip.g.setAttribute('transform', `translate(${dx} ${dy})`);
+        chip.g.style.opacity = opacity * chipFadeAt(hop.chipFade, t);
+      }
+      const isInside = (hop.gaps ?? []).some(([from, to]) => eased > from && eased < to);
+      g.style.opacity = isShown(hop, t, isInside) ? cutFade(hop, t, metrics) : 0;
+    },
+  };
+}
+
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+// 점이 보이는 때인지. 이동 시작 전, 도형 안(isInside), 끝에 닿은 뒤, 단계 끝에서 잘린 뒤(hop.cut)는 보이지 않는다.
+function isShown(hop, t, isInside) {
+  return t >= 0 && t < (hop.cut ?? hop.ms) && !isInside;
+}
+
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+// 단계 끝에서 잘리는 점(hop.cut)이 끝 앞 cutFadeMs 동안 서서히 사라지는 불투명도. 그 밖의 점은 1이다.
+function cutFade(hop, t, metrics) {
+  return hop.cut === undefined ? 1 : Math.min(1, (hop.cut - t) / metrics.cutFadeMs);
+}
+
+// cost: time O(l), heap O(l), stack O(1)
+// vars: l = 글 상자 줄 수
+// basis: estimate
+function createChip(lines, { stage, color }) {
+  const { metrics } = stage;
+  const chip = document.createElementNS(SVG_NS, 'g');
+  const rect = document.createElementNS(SVG_NS, 'rect');
+  rect.setAttribute('rx', metrics.chipRadius);
+  rect.setAttribute('fill', color ?? metrics.chipFill);
+  if (color) {
+    rect.setAttribute('stroke', color);
+    rect.setAttribute('stroke-width', metrics.chipStroke);
+  }
+  chip.appendChild(rect);
+  const texts = lines.map((line) => createChipLine(line, chip));
+  stage.packetLayer.appendChild(chip);
+  const w = Math.max(...texts.map((t) => t.getComputedTextLength())) + metrics.chipPadX;
+  const h = texts.length * metrics.chipLine + metrics.chipPadY;
+  const top = -h - metrics.chipGap;
+  rect.setAttribute('x', -w / 2);
+  rect.setAttribute('y', top);
+  rect.setAttribute('width', w);
+  rect.setAttribute('height', h);
+  texts.forEach((t, li) => t.setAttribute('y', top + metrics.chipLine * (li + 1)));
+  return { g: chip, w, h };
+}
+
+// cost: time O(n), heap O(n), stack O(1)
+// vars: n = 글자 수
+// basis: estimate
+function createChipLine(line, chip) {
+  const text = document.createElementNS(SVG_NS, 'text');
+  text.setAttribute('class', 'chip');
+  text.append(
+    ...richNodes(line, () => {
+      const code = document.createElementNS(SVG_NS, 'tspan');
+      code.setAttribute('class', 'code');
+      return code;
+    }),
+  );
+  chip.appendChild(text);
+  return text;
+}
+
+// 브라우저에서 돈다(play.js와 한 스크립트로 이어 붙는다). 점 이동 곡선(베지어)과 글 상자 미끄러짐.
+
+const BISECT_STEPS = 30;
+
+// ---- 이동 곡선 ----
+
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+// 베지어 곡선의 한 축 값. 매개변수 t의 제어점 a, b로 구한다.
+function bezierAxis(a, b, t) {
+  return 3 * a * t * (1 - t) ** 2 + 3 * b * t * t * (1 - t) + t ** 3;
+}
+
+// cost: time O(STEPS), heap O(1), stack O(1)
+// vars: STEPS = BISECT_STEPS
+// basis: estimate
+// 곡선의 한 축 값이 target이 되는 매개변수 t를 이분 탐색으로 구한다.
+function solveBezier(a, b, target) {
+  let [low, high] = [0, 1];
+  for (let i = 0; i < BISECT_STEPS; i++) {
+    const mid = (low + high) / 2;
+    if (bezierAxis(a, b, mid) < target) low = mid;
+    else high = mid;
+  }
+  return (low + high) / 2;
+}
+
+// cost: time O(STEPS), heap O(1), stack O(1)
+// vars: STEPS = BISECT_STEPS
+// basis: estimate
+// 시간 비율 p에서 이동 곡선의 진행 비율. easing.js의 timeAt과 같은 곡선을 반대 방향으로 푼다.
+function progressAt([x1, y1, x2, y2], p) {
+  return bezierAxis(y1, y2, solveBezier(x1, x2, p));
+}
+
+// cost: time O(STEPS), heap O(1), stack O(1)
+// vars: STEPS = BISECT_STEPS
+// basis: estimate
+// 진행 비율 f에 닿는 시간 비율. easing.js의 timeAt과 같다.
+function timeAtProgress([x1, y1, x2, y2], f) {
+  return bezierAxis(x1, x2, solveBezier(y1, y2, f));
+}
+
+// cost: time O(STEPS·k), 프레임마다 O(k), heap O(k), stack O(1)
+// vars: STEPS = BISECT_STEPS, k = 경로 지점 수
+// basis: estimate
+// 글 상자 옮김과 불투명도. 빌드 때 시간표에 담은 경로 지점별 [진행 비율, dx, dy, opacity]를 움직이는 SVG의 SMIL(지점이 점에 닿는 시각 사이를 선형)과 같게 시간 비율 p에서 보간한다. [dx, dy, opacity]를 돌려준다.
+function chipSlide(hop, metrics) {
+  const path = hop.chipPath ?? [];
+  const times = path.map(([at]) => timeAtProgress(metrics.move, at));
+  return (p) => {
+    if (!path.length) return [0, 0, 1];
+    const k = times.findLastIndex((time) => time <= p);
+    if (k < 0) return path[0].slice(1);
+    if (k === path.length - 1) return path[k].slice(1);
+    const ratio = times[k + 1] > times[k] ? (p - times[k]) / (times[k + 1] - times[k]) : 1;
+    return [1, 2, 3].map((i) => path[k][i] + (path[k + 1][i] - path[k][i]) * ratio);
+  };
+}
+
+// cost: time O(k), heap O(1), stack O(1)
+// vars: k = 키 수
+// basis: estimate
+// 이동 시작 뒤 t(ms)의 글 상자 숨김 불투명도. 시간표가 한 번 계산한 키 [시각, 값]을 시간에 선형으로 읽기만 한다(src/chip-clash.js의 fadeAt과 같은 값이다). 키가 없으면 1이다.
+function chipFadeAt(keys, t) {
+  if (!keys?.length) return 1;
+  const k = keys.findLastIndex(([at]) => at <= t);
+  if (k < 0) return keys[0][1];
+  if (k === keys.length - 1) return keys[k][1];
+  const [[a, va], [b, vb]] = [keys[k], keys[k + 1]];
+  return va + ((vb - va) * (t - a)) / (b - a);
+}
+
+// 브라우저에서 돈다(play.js와 한 스크립트로 이어 붙는다). 값 카드 줄의 값 글자와 밝힘 테두리를 시각에 맞춰 보인다.
+// 시간표의 변화 목록(values)을 읽기만 한다. 글자 요소는 값마다 하나씩 미리 그려져 있고, 지금 값과 같은 글자 요소만 보인다(움직이는 SVG의 SMIL 이산 불투명도와 같은 결과).
+
+// cost: time O(v), heap O(v), stack O(1)
+// vars: v = 값 줄 수
+// basis: estimate
+// 값 줄마다 그림 안의 글자 요소 목록과 밝힘 테두리 요소를 한 번 찾아 둔다.
+function createValueEls(svg, data) {
+  return (data.values ?? []).map((_, vi) => ({ texts: [...svg.querySelectorAll(`[data-v="${vi}"]`)], frame: svg.querySelector(`[data-vf="${vi}"]`) }));
+}
+
+// cost: time O(v·(c + n)), heap O(1), stack O(1)
+// vars: v = 값 줄 수, c = 값이 바뀌는 횟수, n = 값 글자 요소 수
+// basis: estimate
+// 그림 전체 시각 t(ms)의 값 줄을 그린다. 이 구간의 단계가 아닌 값 줄은 모두 숨기고, 단계의 값 줄은 t가 든 구간(periods)의 글을 보이고 밝힘 구간(flashes)에 들면 테두리를 밝힌다.
+// 구간은 시간표가 한 번 계산한 값이고 움직이는 SVG의 SMIL 이산 불투명도와 같다.
+function drawValueState(stage, seg, t) {
+  stage.valueEls.forEach(({ texts, frame }, vi) => {
+    const row = stage.values[vi];
+    const isHere = row.si === seg.si;
+    const text = (row.periods.find(([from, to]) => t >= from && t < to) ?? row.periods.at(-1))[2];
+    texts.forEach((el) => el.setAttribute('opacity', isHere && el.dataset.t === text ? 1 : 0));
+    frame?.setAttribute('opacity', isHere && row.flashes.some(([from, to]) => t >= from && t < to) ? 1 : 0);
+  });
+}
+
+figurePlay(document.querySelector('.fl-figure'), {"values":[{"si":0,"periods":[[0,750,"none"],[750,11756,"A"]],"flashes":[[750,1450]]},{"si":1,"periods":[[11756,14685,"none"],[14685,18435,"B"]],"flashes":[[14685,15385]]}],"segs":[{"si":0,"t0":0,"t1":4560,"hops":[{"edge":0,"isBack":false,"ms":750,"to":"lock","data":["잠금 요청"],"line":16,"chipPath":[[0,27.355957028735418,0,1],[0.005964783915087195,26.998069996344782,0,1],[0.018437560239978185,26.249703416851304,0,1],[0.03811187083526059,25.06924478113436,0,1],[0.06570096117429003,23.413899360792584,0,1],[0.10187787646557456,21.24328444331553,0,1],[0.1471694540672311,18.525789787216127,0,1],[0.20178945770550127,15.248589568919925,0,1],[0.2654118923904264,11.431243487824418,0,1],[0.336927964018532,7.140279190138074,0,1],[0.41429543374262523,2.4982310066924924,0,1],[0.5745912671782765,-7.119518999446598,0,1],[0.6510007925372481,-11.704090520984892,0,1],[0.7213290129396324,-15.923783745127935,0,1],[0.7839458953917328,-19.680796692253978,0,1],[0.8380716006702216,-22.92833900896329,0,1],[0.8835734692388322,-25.658451123079942,0,1],[0.9207356536169877,-27.888182185769267,0,1],[0.9500707149255626,-29.648285864283764,0,1],[0.9721901497987274,-30.975451956673623,0,1],[0.9877253322178113,-31.907562901818665,0,1],[0.9972839607967611,-32.48108061655569,0,1],[1,-32.644042964978155,0,1]]}],"edgesOn":[0],"nodesOn":[0,2],"groupsOn":[],"partsOn":[],"cards":{"2":0},"cardsBefore":{"2":0},"cardsAt":{},"caption":"B는 잠금이 풀릴 때까지 기다린다","series":[],"growing":[],"lights":[]},{"si":0,"t0":4560,"t1":6739,"hops":[{"edge":1,"isBack":false,"ms":1479,"to":"lock","data":["잠금 요청"],"line":17,"chipPath":[[0,32.64404296379027,0,1],[0.002252820680814447,32.377435415036956,0,1],[0.006094743642548947,31.922767322229987,0,1],[0.011611832879131201,31.269853542847414,0,1],[0.018893546875428616,30.408107212158967,0,1],[0.02803197002361328,29.326630705359804,0,1],[0.03912065394146927,28.014352760464504,0,1],[0.05225295257017453,26.46022550930553,0,1],[0.06751971642091154,24.653497349349067,0,1],[0.08500619158343103,22.59242299670842,0,1],[0.10478796290625685,20.354901511821936,0,1],[0.12692581571959544,18.292987616350445,0,1],[0.15145942148993694,17.010997410821375,0,1],[0.17839988836065934,16.64404296875,0,1],[0.5072264901750567,11.35595703125,23.71322876154656,1],[0.5479142486698382,11.112625540186684,28.518871080278856,1],[0.5879416879105648,10.204674388322303,33.1593427723608,1],[0.626917494573483,8.437115408463569,37.405667340471055,1],[0.6645008473595264,5.747950176028212,40.92863349970551,1],[0.7004101927510051,2.348590984566556,43.45623935778657,1],[0.7344262426558628,-1.339454984709107,45.04804869780189,1],[0.7663901235111394,-5.020374912900138,45.903024434101894,1],[0.7961980213906312,-8.526426347260553,46.26502311973691,1],[0.8237937780264961,-11.791113932076797,46.33333333333334,1],[0.849160683990859,-14.793132158393234,46.33333333333334,1],[0.8723133760857433,-17.53311171107424,46.33333333333334,1],[0.8932904330633347,-20.01561814956844,46.33333333333334,1],[0.9121479571308735,-22.247290827091007,46.33333333333334,1],[0.9289542348397338,-24.236211039489575,46.33333333333334,1],[0.9437854500098253,-25.991394676058633,46.33333333333334,1],[0.9567223297791106,-27.522395300006224,46.33333333333334,1],[0.9678475878562963,-28.839001573041855,46.33333333333334,1],[0.977244031419548,-29.951013218414175,46.33333333333334,1],[0.9849931904534776,-30.868078811323414,46.33333333333334,1],[0.9911743580924087,-31.599582209414507,46.33333333333334,1],[0.9958639522517595,-32.15456700575413,46.33333333333334,1],[1,-32.64404296131045,46.33333333333334,1]]}],"edgesOn":[0,1],"nodesOn":[0,2,1],"groupsOn":[],"partsOn":[],"cards":{"1":0,"2":0},"cardsBefore":{"2":0},"cardsAt":{"1":0},"caption":"B는 잠금이 풀릴 때까지 기다린다","series":[],"growing":[],"lights":[]},{"si":0,"t0":6739,"t1":9256,"hops":[{"edge":2,"isBack":false,"ms":1817,"to":"db","data":["쓰기"],"line":19,"chipPath":[[0,22.206835931408705,17,1],[0.0017159549205236063,21.95743238123839,17,1],[0.004474383553950197,21.556511644544173,17,1],[0.00832114789377566,20.9974079670653,17,1],[0.8429080732393364,2.99686680405199,0,1],[0.8623777243469501,0.2033164198950601,0,1],[0.8803925752158412,-2.4091559002417284,0,1],[0.896978364892745,-4.81959927922864,0,1],[0.9121675701962684,-7.0272574025144365,0,1],[0.9259976064742163,-9.037368617962073,0,1],[0.9385093285055639,-10.855870917907367,0,1],[0.949745810668577,-12.489024899872277,0,1],[0.9597513598270325,-13.943270295612308,0,1],[0.9685707419873278,-15.22511357045579,0,1],[0.9762485751198071,-16.34103967359556,0,1],[0.9828288725105427,-17.297445667062732,0,1],[0.9883546985695864,-18.100590699560428,0,1],[0.9928679197678592,-18.756559806663176,0,1],[0.9964090347280445,-19.27123921556739,0,1],[1,-19.793164053363114,0,1]]}],"edgesOn":[0,1,2],"nodesOn":[0,2,1,3],"groupsOn":[],"partsOn":[],"cards":{"1":0,"2":0},"cardsBefore":{"1":0,"2":0},"cardsAt":{},"caption":"B는 잠금이 풀릴 때까지 기다린다","series":[],"growing":[],"lights":[]},{"si":0,"t0":9256,"t1":11756,"hops":[],"edgesOn":[0,1,2],"nodesOn":[0,2,1,3],"groupsOn":[],"partsOn":[],"cards":{"1":0,"2":0},"cardsBefore":{"1":0,"2":0},"cardsAt":{},"caption":"A가 쓰는 동안 B는 들어가지 못한다","series":[],"growing":[],"lights":[]},{"si":1,"t0":11756,"t1":13206,"hops":[{"edge":0,"isBack":false,"ms":750,"to":"lock","data":["풀기"],"line":22,"chipPath":[[0,22.206835934985406,0,1],[0.336927964018532,17.577486221388085,0,1],[0.41429543374262523,12.935438037942504,0,1],[0.5745912671782765,3.3176880318034137,0,1],[0.6510007925372481,-1.2668834897348802,0,1],[0.7213290129396324,-5.486576713877923,0,1],[0.7839458953917328,-9.243589661003966,0,1],[0.8380716006702216,-12.49113197771328,0,1],[0.8835734692388322,-15.22124409182993,0,1],[0.9207356536169877,-17.450975154519256,0,1],[0.9500707149255626,-19.211078833033753,0,1],[0.9721901497987274,-20.538244925423612,0,1],[0.9877253322178113,-21.470355870568653,0,1],[0.9972839607967611,-22.043873585305676,0,1],[1,-22.206835933728144,0,1]]}],"edgesOn":[0],"nodesOn":[0,2],"groupsOn":[],"partsOn":[],"cards":{"2":0},"cardsBefore":{"2":0},"cardsAt":{},"caption":"","series":[],"growing":[],"lights":[]},{"si":1,"t0":13206,"t1":15385,"hops":[{"edge":1,"isBack":false,"ms":1479,"to":"lock","data":["다시 요청"],"line":23,"chipPath":[[0,32.64404296379027,0,1],[0.002252820680814447,32.377435415036956,0,1],[0.006094743642548947,31.922767322229987,0,1],[0.011611832879131201,31.269853542847414,0,1],[0.018893546875428616,30.408107212158967,0,1],[0.02803197002361328,29.326630705359804,0,1],[0.03912065394146927,28.014352760464504,0,1],[0.05225295257017453,26.46022550930553,0,1],[0.06751971642091154,24.653497349349067,0,1],[0.08500619158343103,22.59242299670842,0,1],[0.10478796290625685,20.354901511821936,0,1],[0.12692581571959544,18.292987616350445,0,1],[0.15145942148993694,17.010997410821375,0,1],[0.17839988836065934,16.64404296875,0,1],[0.5072264901750567,11.35595703125,23.71322876154656,1],[0.5479142486698382,11.112625540186684,28.518871080278856,1],[0.5879416879105648,10.204674388322303,33.1593427723608,1],[0.626917494573483,8.437115408463569,37.405667340471055,1],[0.6645008473595264,5.747950176028212,40.92863349970551,1],[0.7004101927510051,2.348590984566556,43.45623935778657,1],[0.7344262426558628,-1.339454984709107,45.04804869780189,1],[0.7663901235111394,-5.020374912900138,45.903024434101894,1],[0.7961980213906312,-8.526426347260553,46.26502311973691,1],[0.8237937780264961,-11.791113932076797,46.33333333333334,1],[0.849160683990859,-14.793132158393234,46.33333333333334,1],[0.8723133760857433,-17.53311171107424,46.33333333333334,1],[0.8932904330633347,-20.01561814956844,46.33333333333334,1],[0.9121479571308735,-22.247290827091007,46.33333333333334,1],[0.9289542348397338,-24.236211039489575,46.33333333333334,1],[0.9437854500098253,-25.991394676058633,46.33333333333334,1],[0.9567223297791106,-27.522395300006224,46.33333333333334,1],[0.9678475878562963,-28.839001573041855,46.33333333333334,1],[0.977244031419548,-29.951013218414175,46.33333333333334,1],[0.9849931904534776,-30.868078811323414,46.33333333333334,1],[0.9911743580924087,-31.599582209414507,46.33333333333334,1],[0.9958639522517595,-32.15456700575413,46.33333333333334,1],[1,-32.64404296131045,46.33333333333334,1]]}],"edgesOn":[0,1],"nodesOn":[0,2,1],"groupsOn":[],"partsOn":[],"cards":{"2":0},"cardsBefore":{"2":0},"cardsAt":{},"caption":"","series":[],"growing":[],"lights":[]},{"si":1,"t0":15385,"t1":18435,"hops":[{"edge":3,"isBack":false,"ms":750,"to":"db","data":["쓰기"],"line":24,"chipPath":[[0,22.206835934985406,47,1],[0.336927964018532,17.577486221388085,47,1],[0.41429543374262523,12.935438037942504,47,1],[0.5745912671782765,3.3176880318034137,47,1],[0.6510007925372481,-1.2668834897348802,47,1],[0.7213290129396324,-5.486576713877923,47,1],[0.7839458953917328,-9.243589661003966,47,1],[0.8380716006702216,-12.49113197771328,47,1],[0.8835734692388322,-15.22124409182993,47,1],[0.9207356536169877,-17.450975154519256,47,1],[0.9500707149255626,-19.211078833033753,47,1],[0.9721901497987274,-20.538244925423612,47,1],[0.9877253322178113,-21.470355870568653,47,1],[0.9972839607967611,-22.043873585305676,47,1],[1,-22.206835933728144,47,1]]}],"edgesOn":[0,1,3],"nodesOn":[0,2,1,3],"groupsOn":[],"partsOn":[],"cards":{"2":0},"cardsBefore":{"2":0},"cardsAt":{},"caption":"","series":[],"growing":[],"lights":[]}],"steps":["A가 잠금을 쥔다","풀리면 B가 들어간다"],"cardCounts":[0,1,1,0],"edgeEnds":[[0,2],[1,2],[0,3],[1,3]],"seriesCount":0,"rowCount":0,"metrics":{"active":"var(--color-state-active)","chipFill":"var(--color-state-active-fill)","halo":10,"haloOpacity":0.2,"packet":4.5,"chipRadius":8,"pulseMs":450,"chipLine":15,"chipPadX":18,"chipPadY":8,"chipGap":12,"icon":16,"iconStroke":1.75,"zoomMax":6,"zoomStep":1.25,"move":[0.455,0.03,0.515,0.955],"tones":{"brand":"var(--color-flow-brand)","purple":"var(--color-flow-purple)","green":"var(--color-flow-green)","gray":"var(--color-flow-gray)","red":"var(--color-flow-red)"},"chipStroke":1.75,"cutFadeMs":600}});
+</script>
+</body>
+</html>

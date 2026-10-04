@@ -17,7 +17,7 @@ const SNAPSHOT = JSON.parse(readFileSync(new URL('structure.snapshot.json', V1),
 
 // 한 번도 지나지 않는 quiet 선(경고 11번)이 있는 원본
 const QUIET_SOURCE = 'flow right\nbox a "A"\nbox b "B"\na -> b "보냄" quiet\nb -> a\nstep "s"\n  b -> a\n';
-// 폐기된 tone 값(blue, orange)을 쓴 원본
+// 폐기된 tone 값(blue는 brand로, orange와 teal은 purple로 읽힌다)을 쓴 원본
 const OLD_TONES = 'flow right\nbox a "A"\nstep "s"\n  show a "x" tag="t" tone=blue\n  show a "y" tag="u" tone=orange\n';
 
 const sourceOf = (name) => readFileSync(new URL(name, V1), 'utf8');
@@ -57,7 +57,7 @@ test('compat_v1_every_fixture_builds_without_errors_and_matches_the_structure_sn
 test('compat_v1_old_forms_report_only_deprecated_never_errors_or_warnings', async () => {
   const tones = await buildFigure(sourceOf('old-tone-blue-orange.muto'));
 
-  assert.deepEqual(tones.deprecations.map((d) => [d.severity, d.code, d.fix.text]), [['deprecated', 'deprecated-value', 'teal'], ['deprecated', 'deprecated-value', 'purple']]);
+  assert.deepEqual(tones.deprecations.map((d) => [d.severity, d.code, d.fix.text]), [['deprecated', 'deprecated-value', 'brand'], ['deprecated', 'deprecated-value', 'purple']]);
   assert.deepEqual(tones.warnings, []);
   for (const name of NAMES.filter((n) => n.startsWith('old-roles-omitted'))) {
     const { deprecations, warnings } = await buildFigure(sourceOf(name));
@@ -130,7 +130,7 @@ test('compat_cli_json_keeps_the_old_fields_with_old_values_next_to_the_new_ones'
     const [warning] = quiet.stdout.trim().split('\n').map((line) => JSON.parse(line));
 
     assert.deepEqual([first.line, first.lines, first.check, first.level], [7, [7], 'syntax', 'warning']);
-    assert.deepEqual([first.severity, first.code, first.column, first.fix.text], ['deprecated', 'deprecated-value', 30, 'teal']);
+    assert.deepEqual([first.severity, first.code, first.column, first.fix.text], ['deprecated', 'deprecated-value', 30, 'brand']);
     assert.deepEqual([warning.check, warning.level, warning.lines, warning.severity, warning.code, warning.line, warning.column], [11, 'warning', [4], 'warning', 'check-11', 4, 1]);
   });
 });
@@ -191,10 +191,10 @@ test('cli_migrate_previews_a_diff_and_write_fixes_the_file_so_check_reports_noth
     const checked = runCli(['check', 'old.muto', '--strict', '--no-deprecated'], folder);
 
     assert.equal(preview.status, 0, preview.stderr);
-    assert.match(preview.stdout, /^--- old\.muto\n\+\+\+ old\.muto \(migrated\)\n@@ line 4 @@\n-  show a "x" tag="t" tone=blue\n\+  show a "x" tag="t" tone=teal\n@@ line 5 @@/);
+    assert.match(preview.stdout, /^--- old\.muto\n\+\+\+ old\.muto \(migrated\)\n@@ line 4 @@\n-  show a "x" tag="t" tone=blue\n\+  show a "x" tag="t" tone=brand\n@@ line 5 @@/);
     assert.equal(untouched, OLD_TONES);
     assert.equal(written.status, 0, written.stderr);
-    assert.equal(readFileSync(join(folder, 'old.muto'), 'utf8'), OLD_TONES.replace('tone=blue', 'tone=teal').replace('tone=orange', 'tone=purple'));
+    assert.equal(readFileSync(join(folder, 'old.muto'), 'utf8'), OLD_TONES.replace('tone=blue', 'tone=brand').replace('tone=orange', 'tone=purple'));
     assert.deepEqual([checked.status, checked.stderr], [0, '']);
   });
 });

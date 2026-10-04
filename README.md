@@ -142,6 +142,7 @@ The repository root has a composite GitHub Action. This step fails a pull reques
 - Cell grids: bit fields, arrays, stacks, and matrices drawn cell by cell, with merged, empty, and omitted cells and lit cells. Lines start and end at a single cell (`a -> grid.cell`), turning through the gaps between rows so they never cover a neighbor cell. Edges also take arrowheads at both ends or none (`head=`), and a small circle (`shape=circle`) draws a join such as ⊕.
 - Charts: bar, dumbbell, box, scatter, line, heatmap, and difference charts, with values from the source or a JSON file.
 - Layout: elkjs layout with per-group direction, using shape sizes measured with the embedded fonts.
+- Colors and fonts: figures are mostly neutral gray, with groups one step darker per nesting depth. The brand blue `#125DE6` marks only what matters (the lit shape, flowing dots, the main chart series, the icons), and purple, red (errors), and green (healthy) are rare accents; orange is kept for comparison and warnings. A group can take a `sky` or `purple` accent with a tinted face. Every outline reaches contrast 3 and every text 4.5, in light and dark. Text uses the embedded Pretendard and JetBrains Mono files.
 - Figure check: overlaps, edges through nodes, crowded edges, aspect ratio, and readability.
 - Playback: an HTML player and an animated SVG from the same timeline.
 - Markdown: `mutoscope md` renders the `muto` code blocks of a document and keeps the image lines below them up to date; a GitHub Action checks them in CI.

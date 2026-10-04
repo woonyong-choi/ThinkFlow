@@ -1,6 +1,7 @@
 /* 그림 안 글자와 모양. HTML 재생기와 움직이는 SVG가 같이 쓴다. */
 .fl text {
   font-family: var(--font-sans);
+  letter-spacing: var(--tracking-text);
 }
 
 .fl .label {
@@ -20,7 +21,7 @@
   font-size: var(--size-text-11);
   font-weight: var(--weight-semibold);
   letter-spacing: var(--tracking-frame);
-  fill: var(--color-muted);
+  fill: var(--color-group-title);
 }
 
 .fl .edgelabel {
@@ -36,12 +37,14 @@
 
 .fl .row.mono {
   font-family: var(--font-mono);
+  letter-spacing: normal;
   font-size: var(--size-text-11);
 }
 
 /* 백틱으로 감싼 글. 코드 글꼴로 그린다. */
 .fl .code {
   font-family: var(--font-mono);
+  letter-spacing: normal;
 }
 
 .fl .muted {
@@ -104,19 +107,20 @@
 
 .fl .cell.type {
   font-family: var(--font-mono);
+  letter-spacing: normal;
   font-size: var(--size-text-11);
   text-anchor: end;
   fill: var(--color-muted);
 }
 
 .fl .fl-stroke {
-  stroke: var(--color-border);
+  stroke: var(--color-outline);
   stroke-width: var(--border-thin);
 }
 
 .fl .fl-path {
   fill: none;
-  stroke: var(--color-muted);
+  stroke: var(--color-line);
   stroke-width: var(--border-edge);
 }
 
@@ -127,25 +131,37 @@
 }
 
 .fl .frame-box {
-  fill: var(--color-group);
-  stroke: var(--color-border);
+  fill: var(--color-group-1);
+  stroke: none;
+}
+
+.fl .frame-box.d2 {
+  fill: var(--color-group-2);
+}
+
+.fl .frame-box.d3 {
+  fill: var(--color-group-3);
+}
+
+.fl .frame-box.dashed {
+  stroke: var(--color-line);
 }
 
 .fl .lifeline {
-  stroke: var(--color-border);
+  stroke: var(--color-line);
   stroke-width: var(--border-lifeline);
   stroke-dasharray: var(--dash-gap) var(--dash-gap);
 }
 
 .fl .note-box {
   fill: var(--color-surface);
-  stroke: var(--color-border);
+  stroke: var(--color-line);
   stroke-dasharray: var(--dash-card) var(--dash-card);
 }
 
 .fl .pill {
-  fill: var(--color-bg);
-  stroke: var(--color-border);
+  fill: var(--color-node);
+  stroke: var(--color-outline);
 }
 
 .fl .part-bg {
@@ -153,23 +169,30 @@
 }
 
 .fl .col-line {
-  stroke: var(--color-border);
+  stroke: var(--color-outline);
   stroke-width: var(--border-hair);
 }
 
 .fl .grid-cell {
   fill: var(--color-node);
-  stroke: var(--color-border);
+  stroke: var(--color-outline);
   stroke-width: var(--border-thin);
+}
+
+.fl .grid-ring {
+  fill: none;
+  stroke: none;
 }
 
 .fl .grid-cell.gap {
   fill: var(--color-surface);
+  stroke: var(--color-line);
   stroke-dasharray: var(--dash-card) var(--dash-card);
 }
 
 .fl .grid-cell.empty {
   fill: none;
+  stroke: var(--color-line);
   stroke-dasharray: var(--dash-card) var(--dash-card);
 }
 
@@ -187,7 +210,7 @@
 
 .fl .badge-pill {
   fill: var(--color-node);
-  stroke: var(--color-border);
+  stroke: var(--color-outline);
   stroke-width: var(--border-thin);
 }
 
@@ -195,17 +218,12 @@
   color: var(--color-figure-icon);
 }
 
-/* 그룹 제목 줄 탭(NHN box_type): 틀 왼쪽 위 모서리의 정사각 면. 아이콘 색 파랑 면에 노드 면 색 아이콘이고, 아이콘이 있는 그룹의 틀도 같은 파랑이다. */
-.fl .group-tab {
-  fill: var(--color-figure-icon);
+.fl .icon-tile {
+  fill: var(--color-figure-icon-tile);
 }
 
-.fl .fl-icon.on-tab {
-  color: var(--color-node);
-}
-
-.fl .fl-group.tabbed:not(.on) .frame-box {
-  stroke: var(--color-figure-icon);
+.fl .fl-icon.in-tile {
+  color: var(--color-figure-icon);
 }
 
 /* 선 번호 원. 라벨 알약과 달리 켜져도 색이 바뀌지 않아 정지 그림과 같은 순서로 읽힌다. */

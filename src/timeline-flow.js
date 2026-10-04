@@ -60,7 +60,7 @@ function departures(track, lengthMs) {
 // basis: estimate
 /**
  * 흐름 단계 하나의 구간. 구간 길이는 단계의 for=이고, 없으면 토큰 duration.flow-step이다.
- * 선과 도형은 점이 처음 닿는 시각에 켜진다(edgesAt, nodesAt).
+ * 선은 점이 처음 닿는 시각에 켜지고 단계 끝까지 남는다(edgesAt). 도형은 켜 두지 않고 점이 닿을 때마다 후광만 깜빡인다(pulses: { id, at }).
  * @param run 시간표를 지나며 이어지는 값 { figure, speed, t, tracks, ... }
  * @param deps { scene, cards, chips }
  * @returns { segs, moves }. segs는 구간 하나의 목록, moves는 값 바꾸기 식이 쓰는 이동 목록이다
@@ -72,11 +72,13 @@ export function flowSeg({ step, si }, run, { scene, cards, chips }) {
   const length = step.forMs ?? FLOW_STEP_MS;
   const hops = [];
   const edgesAt = {};
+  const pulses = [];
   plans.forEach((plan, i) => {
     const track = step.tracks[i];
     const starts = departures(track, length);
     // 단계 끝까지 도착하지 못하는 점은 끝에서 서서히 사라지고(cut은 그 점이 그려지는 시간), 그 점이 닿지 못한 도형의 값은 바뀌지 않는다.
     for (const at of starts) hops.push({ track: first + i, edges: plan.edges, gaps: plan.gaps, isBack: false, at, ms: plan.ms, ...(at + plan.ms > length ? { cut: length - at } : {}), to: plan.nodes.at(-1), data: track.data === undefined ? undefined : chips(track.data), ...(track.tone ? { tone: track.tone } : {}), line: track.line });
+    for (const at of starts) plan.nodes.slice(1).forEach((id, k) => pulses.push({ id, at: at + arrivalOffsetMs(plan.fracs[k + 1], plan.ms) }));
     if (starts.length) plan.legEdges.forEach((edge, k) => (edgesAt[edge] = Math.min(edgesAt[edge] ?? Infinity, starts[0] + arrivalOffsetMs(plan.fracs[k], plan.ms))));
   });
   const start = cards.starts.get(step) ?? {};
@@ -94,20 +96,8 @@ export function flowSeg({ step, si }, run, { scene, cards, chips }) {
     caption: step.caption ?? '',
     growing: run.hasReveal || si > 0 ? [] : run.seriesIds,
     lights: [],
-    extra: { edgesAt, nodesAt: nodesAtOf(edgesAt, scene.edges) },
+    extra: { edgesAt, nodesAt: {}, pulses: pulses.filter(({ at }) => at < length) },
   });
   const moves = hops.map((hop) => ({ ...plans[hop.track - first], start: seg.t0 + hop.at, sets: step.tracks[hop.track - first].sets }));
   return { segs: [seg], moves };
-}
-
-// cost: time O(e), heap O(e), stack O(1)
-// vars: e = 지나는 선 수
-// basis: estimate
-// 도형이 켜지는 시각: 그 도형에 닿은 선 가운데 가장 먼저 켜지는 선의 시각. 박자의 이동이 선의 양 끝을 켜는 규칙과 같다.
-function nodesAtOf(edgesAt, edges) {
-  const at = {};
-  for (const [edge, time] of Object.entries(edgesAt)) {
-    for (const id of [edges[edge].from, edges[edge].to].map((end) => end.split('.')[0])) at[id] = Math.min(at[id] ?? Infinity, time);
-  }
-  return at;
 }

@@ -1,7 +1,5 @@
 // 브라우저에서 돈다(play.js와 한 스크립트로 이어 붙는다). 재생 단추와 배속, 진행 고리, 탭, 설명 글의 백틱 코드.
 
-const ICON_VIEWBOX = '0 0 16 16';
-
 // ---- 재생 단추와 배속 ----
 
 // cost: time O(1), heap O(1), stack O(1)
@@ -33,12 +31,9 @@ function setPlaying(player, value) {
 
 // cost: time O(1), heap O(1), stack O(1)
 // basis: estimate
-// 재생 단추 아이콘. 재생 중이면 일시정지 모양, 멈췄으면 재생 모양이다. 도형은 16x16 좌표계다.
+// 재생 단추 아이콘. 재생 중이면 일시정지 모양, 멈췄으면 재생 모양이다.
 function playIconSvg(isPlaying, metrics) {
-  const shape = isPlaying
-    ? `<path d="M5 2.5v11M11 2.5v11" stroke="currentColor" stroke-width="${metrics.pauseStroke}" stroke-linecap="round"/>`
-    : '<path d="M4 2.5v11l9.5-5.5z" fill="currentColor"/>';
-  return `<svg width="${metrics.icon}" height="${metrics.icon}" viewBox="${ICON_VIEWBOX}">${shape}</svg>`;
+  return drawUiIcon(metrics, isPlaying ? 'pause' : 'play');
 }
 
 // ---- 진행 고리 ----

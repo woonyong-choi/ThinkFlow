@@ -61,7 +61,7 @@ const MALFORMED = [
   { rule: '값 형식: 빈 글(68ec356)', source: 'flow right\nbox a ""\nbox b "B" \nb -> a "  "', expect: /empty/i, count: 2 },
   { rule: '값 형식: 0인 시간', source: 'flow right\nspeed 0ms\nbox a "A"', expect: /speed as a time/ },
   { rule: '값 형식: 열 타입의 기호는 따옴표 글(#5)', source: 'data right\ntable t "T" {\n  name varchar(255)\n}', expect: /write a type with symbols as quoted text/ },
-  { rule: '값 형식: 모르는 tone', source: 'flow right\nbox a "A"\nstep "s"\n  show a "x" tag="t" tone=pink', expect: /tone is one of purple, green, teal, gray/ },
+  { rule: '값 형식: 모르는 tone', source: 'flow right\nbox a "A"\nstep "s"\n  show a "x" tag="t" tone=pink', expect: /tone is one of brand, purple, green, gray, red/ },
   { rule: '값 형식: tag 없는 tone', source: 'flow right\nbox a "A"\nstep "s"\n  show a "x" tone=teal', expect: /tone colors a tag/ },
   { rule: '값 형식: clear로 시작하는 카드', source: 'flow right\nbox a "A"\nstep "s"\n  clear a', expect: /cannot start with clear/ },
   { rule: '값 형식: 종류를 모르면 첫 줄 오류만(68ec356)', source: '# 설명\nflo right\nbox a "A\n', count: 1, expect: /./ },

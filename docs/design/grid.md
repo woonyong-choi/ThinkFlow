@@ -151,7 +151,7 @@ step "조회" "페이지 1은 표의 둘째 행을 거쳐 프레임 7로 간다"
 
 ### 그리기와 색
 
-- 틀과 칸은 `color.node` 면과 `color.border` 윤곽이고 글은 `color.fg`다. 생략 칸(`gap`)은 `color.surface` 면에 점선 윤곽과 `color.muted` 글이다. 빈 자리는 면 없이 점선 윤곽만 그린다.
+- 틀과 칸은 `color.node` 면과 `color.outline` 윤곽이고 글은 `color.fg`다. 생략 칸(`gap`)은 `color.surface` 면에 점선 윤곽과 `color.muted` 글이다. 빈 자리는 면 없이 점선 윤곽만 그린다.
 - 밝힌 칸은 `color.card-on` 면에 `color.state.active` 윤곽(굵기 `border.edge`)이다. 이웃 칸과 맞닿은 변을 이웃 칸의 평소 윤곽이 덮어도 파랑이 보이게 한 굵기이고, 도형 `light`의 파랑 윤곽과 같은 색이다. 칸을 밝히는 전환(`duration.fast`) 도중에는 면만 먼저 옅게 보이므로, 밝힌 칸은 전환이 끝난 뒤의 모습으로 판단한다. 파랑은 "지금 일어나는 것"만 뜻하므로 값의 크고 작음을 이 색으로 나타내지 않는다.
 - 이 짝들은 모두 [대비 기준](docs-integration.md#대비-기준)의 기존 짝(글자와 면, 경계와 면, 강조 그래픽과 면)이라 새 색 역할이 없다. 크기와 간격은 토큰 `size.grid.cell`과 기존 `space.*`뿐이다.
 

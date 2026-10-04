@@ -47,11 +47,12 @@
 
 ### 글 재기
 
-- 글꼴은 토큰이 정한 글꼴 파일이다. 본문은 이력서와 같게 라틴과 기호는 Inter, 한글은 Noto Sans KR이고, 고정폭은 JetBrains Mono다. 모두 SIL Open Font License라 그림 안에 넣을 수 있다. Inter와 Noto Sans KR 정적 파일(regular 400, medium 500, semibold 600)은 `@expo-google-fonts/inter`, `@expo-google-fonts/noto-sans-kr` 패키지(패키지 껍데기는 MIT, 글꼴은 OFL 1.1, 예약 글꼴 이름 없음)로 받는다. 굵기마다 정적 파일이라 측정과 자르기가 같은 파일을 쓴다. JetBrains Mono 파일은 `jetbrains-mono` npm 패키지(패키지 껍데기는 MIT, 글꼴은 JetBrains의 OFL 1.1)로 받는다.
-- 본문 글은 글자마다 Inter에 있으면 Inter, 없으면(한글) Noto Sans KR로 정하고, 글꼴이 바뀌는 구간마다 그 글꼴로 폭을 재서 더한다. 띄어쓰기는 Inter 것이다.
-- JetBrains Mono에는 한글이 없다. 고정폭 글(테이블 타입, 백틱 구간) 안의 한글은 Noto Sans KR로 그린다. 글자마다 고정폭 글꼴, Inter, Noto Sans KR 순서로 처음 있는 글꼴로 정하고 위와 같이 구간별로 폭을 더한다.
-- 그림에는 쓴 글꼴마다 조각이 들어간다. Inter 조각은 `FigSans`, Noto Sans KR 조각은 `FigSansKo`, 고정폭 조각은 `FigMono`이고 `font-family`는 본문 `FigSans, FigSansKo, ...`, 고정폭 `FigMono, FigSans, FigSansKo, ...` 대체 사슬이다. 브라우저가 글자마다 고르는 글꼴과 잰 글꼴이 같다.
-- 차트 숫자 폭은 Inter 파일의 `tnum` 기능을 적용해 잰다(`num`, `numSemibold` 글꼴). 글꼴 조각은 `tnum` 대체 글리프를 포함해 자른다. 그래서 보는 쪽이 `tabular-nums`로 그린 폭과 잰 폭이 같다.
+- 글꼴은 토큰이 정한 글꼴 파일이다. 본문은 한글, 라틴, 기호, 숫자 모두 Pretendard 하나이고(참고 문서 페이지와 같은 글꼴), 고정폭은 JetBrains Mono다. 모두 SIL Open Font License라 그림 안에 넣을 수 있다. Pretendard 정적 파일(regular 400, medium 500, semibold 600, OTF)은 `pretendard` npm 패키지(OFL 1.1, 예약 글꼴 이름 Pretendard)로 받는다. 그림에 넣는 조각은 `FigSans`라는 다른 이름으로 쓴다. 굵기마다 정적 파일이라 측정과 자르기가 같은 파일을 쓴다. JetBrains Mono 파일은 `jetbrains-mono` npm 패키지(패키지 껍데기는 MIT, 글꼴은 JetBrains의 OFL 1.1)로 받는다.
+- 글자 사이 간격은 토큰 `tracking.text`(-0.3px)다. 글자마다 더해지므로 글 폭은 글꼴 폭의 합에 글자 수 곱하기 -0.3px를 더해 잰다. 고정폭 글(백틱 구간, 테이블 타입)에는 간격을 주지 않는다. CSS `letter-spacing`도 같은 토큰이고 고정폭 글에는 `normal`이라 잰 폭과 그린 폭이 같다.
+- 본문 글은 글자마다 Pretendard에 있으면 Pretendard, 없으면(수학 기호) 뒤 글꼴로 정하고, 글꼴이 바뀌는 구간마다 그 글꼴로 폭을 재서 더한다. 띄어쓰기는 Pretendard 것이다.
+- JetBrains Mono에는 한글이 없다. 고정폭 글(테이블 타입, 백틱 구간) 안의 한글은 Pretendard로 그린다. 글자마다 고정폭 글꼴, Pretendard 순서로 처음 있는 글꼴로 정하고 위와 같이 구간별로 폭을 더한다.
+- 그림에는 쓴 글꼴마다 조각이 들어간다. Pretendard 조각은 `FigSans`, 고정폭 조각은 `FigMono`이고 `font-family`는 본문 `FigSans, FigSansSym, FigSansMath, ...`, 고정폭 `FigMono, FigSans, FigSansSym, FigSansMath, ...` 대체 사슬이다. 브라우저가 글자마다 고르는 글꼴과 잰 글꼴이 같다.
+- 차트 숫자 폭은 Pretendard 파일의 `tnum` 기능을 적용해 잰다(`num`, `numSemibold` 글꼴). 글꼴 조각은 `tnum` 대체 글리프를 포함해 자른다. 그래서 보는 쪽이 `tabular-nums`로 그린 폭과 잰 폭이 같다.
 - 글 안의 백틱 구간은 이름이 무엇이든 고정폭으로 잰다. 줄을 나눌 때 구간이 줄 사이에 걸치면 줄마다 구간을 닫고 다시 열어 각 줄이 짝이 맞는 글이 된다. 넘침 검사와 글꼴 없는 글자 검사도 구간별 글꼴을 따른다.
 - 글 폭은 글꼴 파일의 글자 너비 표로 잰다. 어림 비율을 쓰지 않는다.
 - 글자 크기는 토큰 `size.text`의 다섯 단계(9, 11, 13, 15, 22)뿐이다. 이웃 단계의 비율은 1.15 이상이라 위계가 크기로 읽히고(예전 11, 12, 13, 14, 15는 1px 간격이라 굵기와 색에만 기댔다), 기본값 16은 쓰지 않는다. 같은 위계는 같은 값이다. 역할마다 한 모양이고, 모양은 크기, 굵기, 색의 조합이다. 예제 쪽 전체의 글 모양은 24가지에서 19가지로, 크기는 7단계에서 5단계로, 굵기는 4가지(기본값 700 포함)에서 3가지로 줄었다.
@@ -71,20 +72,19 @@
 - 줄 높이는 글자 크기에 비율 토큰을 곱해 반올림한다. 짧은 줄(카드 줄, 도형 이름, 이동 글 상자)은 `leading.snug`(1.35), 설명 줄과 문단은 `leading.normal`(1.5)이다. 예전 픽셀 토큰(`size.line.*`)은 지웠다.
 - 값 글자(11)는 눈금과 같은 크기라 굵기(강조 값 600)와 색(`fg` 대 `muted`)으로 앞선다. 데이터 그림에서 가장 중요한 글이지만 크기 단계를 하나 더 늘리지 않았다.
 - 이동 글 상자는 12에서 11로 줄였다. 13으로 올리면 CS:APP 예제 둘에서 이동 글 상자가 도형 글을 가려 그림 검사 7번 경고가 새로 생겼다.
-- 그림에 넣는 글꼴 조각에는 한글 조각이 든 굵기마다 같은 굵기 Inter 조각의 공백이 항상 들어간다. 띄어쓰기는 Inter의 것인데 한글만 있는 글에는 조각에 공백이 없어 보는 쪽 시스템 글꼴로 그려지는 일이 있었기 때문이다.
 - 결과 SVG에는 그 그림에 쓰인 글자만 잘라 낸 글꼴을 넣는다. 보는 쪽에 글꼴이 없어도 잰 폭과 그려진 폭이 같게 하기 위해서다.
-- 수학 기호는 Inter에 없는 것만 뒤 글꼴이 그린다. 글자 순서는 Inter, Noto Sans KR, Noto Sans(`FigSansSym`, 위 첨자 `ᵀ`, `⁻¹`, 아래 첨자), Noto Sans Math(`FigSansMath`, `∘` 같은 연산자)다. `√`, `×`, `∑`, `≤`, `∞`는 Inter에 있고 `∈`는 Noto Sans KR 글리프(전각 폭)로 그려진다. 두 글꼴 모두 SIL OFL 1.1이고 `@expo-google-fonts/noto-sans`, `@expo-google-fonts/noto-sans-math` 패키지(껍데기 MIT, 글꼴 OFL)로 받는다. Noto Sans Math는 굵기별 파일이 없어 모든 굵기에 한 파일을 쓰고(`font-weight: 400 900`) 브라우저가 글자를 덧칠하지 않게 한다. `font-family` 사슬은 `FigSans, FigSansKo, FigSansSym, FigSansMath, ...`다.
+- 수학 기호는 Pretendard에 없는 것만 뒤 글꼴이 그린다. 글자 순서는 Pretendard, Noto Sans(`FigSansSym`, 위 첨자 `ᵀ`), Noto Sans Math(`FigSansMath`, `∈`, `∇`, `⊙`, `∘` 같은 연산자)다. `⁻¹`, `√`, `×`, `∑`, `≤`, `∞`는 Pretendard에 있다. 두 글꼴 모두 SIL OFL 1.1이고 `@expo-google-fonts/noto-sans`, `@expo-google-fonts/noto-sans-math` 패키지(껍데기 MIT, 글꼴 OFL)로 받는다. Noto Sans Math는 굵기별 파일이 없어 모든 굵기에 한 파일을 쓰고(`font-weight: 400 900`) 브라우저가 글자를 덧칠하지 않게 한다. `font-family` 사슬은 `FigSans, FigSansSym, FigSansMath, ...`다.
 - 글꼴 파일과 대체 글꼴 어디에도 없는 글자(그림 문자 등)는 오류다. 대신 그릴 글꼴의 폭을 알 수 없기 때문이다.
 
 ### 글꼴 자리
 
 | 자리 | 글꼴 |
 |---|---|
-| 일반 글 모두: 도형 이름, 부제, 그룹 제목, 카드 글, 선 라벨 알약, 순서 그림 메시지, 노트, 이동 글 상자, 단계 이름 줄과 탭, 설명, 차트 제목과 범례, 페이지 제목, 문단, 꼬리표 | 본문(영문, 숫자, 기호는 Inter, 한글은 Noto Sans KR) |
-| 차트 숫자: 눈금, 값, 바뀐 비율, 히트맵 칸 숫자, 배속 표시 | Inter에 `font-variant-numeric: tabular-nums`(자리 폭이 같은 숫자) |
-| 코드: 데이터 그림 테이블 열 타입, 카드 `mono` 줄, 모든 글 안에서 백틱으로 감싼 구간 | 고정폭(JetBrains Mono). 한글은 Noto Sans KR |
+| 일반 글 모두: 도형 이름, 부제, 그룹 제목, 카드 글, 선 라벨 알약, 순서 그림 메시지, 노트, 이동 글 상자, 단계 이름 줄과 탭, 설명, 차트 제목과 범례, 페이지 제목, 문단, 꼬리표 | 본문(한글, 영문, 숫자, 기호 모두 Pretendard) |
+| 차트 숫자: 눈금, 값, 바뀐 비율, 히트맵 칸 숫자, 배속 표시 | Pretendard에 `font-variant-numeric: tabular-nums`(자리 폭이 같은 숫자) |
+| 코드: 데이터 그림 테이블 열 타입, 카드 `mono` 줄, 모든 글 안에서 백틱으로 감싼 구간 | 고정폭(JetBrains Mono). 한글은 Pretendard |
 
-- 목록 쪽과 문서 미리보기 페이지에는 글꼴 조각이 없으므로 토큰 `font.sans` 사슬의 이름(`Inter`, `Inter Variable`, `Noto Sans KR`, `Noto Sans KR Variable`, 시스템 대체)으로 보는 쪽 글꼴을 쓴다. 페이지 글을 글꼴 조각으로 넣으면 문서 글이 바뀔 때마다 한글 조각을 다시 잘라야 해서 넣지 않는다. 재생기 HTML은 그림 조각을 함께 쓴다. 단계 탭, 단계 설명, 이동 글 상자 글이 그림 조각에 들어가 있고(`FigSans`, `FigSansKo`가 `font.sans` 사슬 맨 앞이다), 조각에 없는 글자(배속 표시의 `×` 같은 것)만 사슬의 다음 이름으로 그려진다. 재생기 쪽 글은 모두 같은 글 폭 규칙을 지키는 그림 글이기 때문이다. 글꼴이 없는 컴퓨터에서도 그림 글자와 재생기의 탭과 설명은 조각 덕분에 그대로다.
+- 목록 쪽과 문서 미리보기 페이지에는 글꼴 조각이 없으므로 토큰 `font.sans` 사슬의 이름(`Pretendard`, `Pretendard Variable`, 시스템 대체)으로 보는 쪽 글꼴을 쓴다. 페이지 글을 글꼴 조각으로 넣으면 문서 글이 바뀔 때마다 한글 조각을 다시 잘라야 해서 넣지 않는다. 재생기 HTML은 그림 조각을 함께 쓴다. 단계 탭, 단계 설명, 이동 글 상자 글이 그림 조각에 들어가 있고(`FigSans`가 `font.sans` 사슬 맨 앞이다), 조각에 없는 글자(배속 표시의 `×` 같은 것)만 사슬의 다음 이름으로 그려진다. 재생기 쪽 글은 모두 같은 글 폭 규칙을 지키는 그림 글이기 때문이다. 글꼴이 없는 컴퓨터에서도 그림 글자와 재생기의 탭과 설명은 조각 덕분에 그대로다.
 - 목록 쪽과 문서 미리보기의 카드 머리는 원본 파일 이름(`bar.muto`, 코드 글꼴)과 종류 꼬리표(`bar`, `flow`)다. 그림이 제목을 직접 그리는 차트는 그림 제목을 머리에서 되풀이하지 않는다. 제목을 그리지 않는 그림(흐름, 순서, 상태, 데이터)만 `title` 값을 파일 이름 앞에 제목으로 붙인다. 제목, 파일 이름, 꼬리표는 기준선을 맞춘 한 줄이고 사이는 `space.3`이다. 머리가 좁으면 칸 단위로 줄바꿈한다(말줄임 없음). 코드 글꼴은 파일 이름과 백틱 글에만 쓴다.
 
 ### 도형 크기와 연결점
@@ -138,7 +138,8 @@
   - 범용 개념(`server`, `lb`, `db`, `igw` …): IBM Carbon icons(Apache-2.0) 29개, `src/icons/carbon/`. 상표 로고(`logo--*`)와 쿠버네티스는 넣지 않는다.
   - 기술 브랜드(`git`, `postgresql`, `kubernetes` …): Simple Icons 16.33.0의 32개, `src/icons/simple-icons/`. 라이브러리는 CC0 1.0이지만 아이콘마다 라이선스가 따로 있을 수 있어, 공유 조건이 붙은 것(Rust, Jenkins)과 삭제됐거나 없는 것(Java, OpenAI, Apache HTTP Server), 공급자 서비스 아이콘(AWS, Azure, Google Cloud)은 넣지 않는다. 자기 라이선스가 있는 `git`(CC BY 3.0)과 `kafka`(Apache-2.0)는 `NOTICE`에 저작자를 적는다.
   - 파일은 루트 요소에 `fill="currentColor"`만 더했고 모양은 그대로다(`NOTICE`와 `LICENSE`에 "modified: color only"). 브랜드 고유색은 쓰지 않는다. 상표는 각 소유자의 것이고 이 저장소는 식별 목적으로만 표시한다(`NOTICE`).
-- 색은 `currentColor`가 정하고 그림은 `.fl-icon { color: color.figure.icon }`다(단색 파랑, 라이트 `#125de6`, 다크 `#6f9cf5`). 파일 안 색은 없고 브랜드 고유색도 쓰지 않는다. 켜진 도형은 `state.active` 파랑이 테두리 색과 두께(`border.strong`)로 나타나고 아이콘은 그대로여서, 두 파랑은 색상과 두께로 갈린다([문서 연동](docs-integration.md) 색 역할 표).
+- 색은 `currentColor`가 정하고 그림은 `.fl-icon { color: color.figure.icon }`다(단색 브랜드 파랑, 라이트 `#125de6`, 다크 `#70a3ff`). 파일 안 색은 없고 브랜드 고유색도 쓰지 않는다. 켜진 도형은 `state.active` 파랑이 테두리 색과 두께(`border.strong`)로 나타나고 아이콘은 그대로여서, 두 파랑은 색상과 두께로 갈린다([문서 연동](docs-integration.md) 색 역할 표).
+- 재생기 조작 아이콘(전체 화면 열기와 닫기, 확대, 축소, 맞춤, 재생, 일시정지)은 구성도 아이콘과 따로 Lucide(ISC, `src/icons/lucide/`)의 24 격자 외곽선 아이콘을 그대로 쓴다. Obsidian 기본 아이콘과 같은 묶음이라 사용자의 Obsidian 도구의 복사, 확대 아이콘과 한 모양으로 읽힌다. 대응은 `maximize-2`, `minimize-2`, `zoom-in`, `zoom-out`, `scan`, `play`, `pause`이고 색은 단추 글자색, 선 굵기는 `size.control.icon-stroke`(1.75), 끝은 둥글다.
 - 사용자 세트: `icons 이름 "폴더"`로 등록하고 `icon=이름:파일이름`으로 쓴다. 저장소에는 넣지 않는다(라이선스가 불명확한 세트를 사용자가 직접 쓰는 경우). 렌더 때 파일을 읽어 `g`, `path`, `circle`, `ellipse`, `rect`, `line`, `polyline`, `polygon`과 좌표, 변환, 칠하기 속성만 다시 쓰고(색은 모두 `currentColor`나 `none`) 나머지(script, image, style, use, 그라디언트 등)는 오류다. 64KB, 요소 600개 상한이다.
 
 ### 연결점 방향

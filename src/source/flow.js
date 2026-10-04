@@ -1,6 +1,5 @@
 // 흐름 단계 문장(`step ... for=시간`, `track a -> b -> c ...`)을 읽는다. 선이 있는지와 시간이 맞는지는 flow-check.js가 확인한다.
 import { readMoveOptions, readTime } from './move-options.js';
-import { valueNames } from './grammar.js';
 import { readOptions } from './options.js';
 import { parseTime } from './values.js';
 
@@ -49,13 +48,16 @@ export function readTrack({ tokens, line }, ctx) {
   });
 }
 
+// 이름 없이 자동으로 받는 흐름 색의 순서. 첫째 출발지는 브랜드 파랑, 둘째는 보라, 셋째부터는 진한 회색이다.
+const AUTO_TONES = ['brand', 'purple', 'gray'];
+
 // cost: time O(v), heap O(1), stack O(1)
 // vars: v = 점 색 수
 // basis: estimate
-// tone을 적지 않은 흐름의 색. 그림 전체에서 출발지 이름마다 문법 표의 점 색 순서대로 하나씩 받고, 같은 이름은 늘 같은 색이다.
+// tone을 적지 않은 흐름의 색. 그림 전체에서 출발지 이름마다 AUTO_TONES 순서(브랜드 파랑, 보라, 그다음은 모두 진한 회색)로 받고, 같은 이름은 늘 같은 색이다.
 function toneOfSource(source, ctx) {
   ctx.sourceTones ??= new Map();
-  if (!ctx.sourceTones.has(source)) ctx.sourceTones.set(source, valueNames('tone')[ctx.sourceTones.size % valueNames('tone').length]);
+  if (!ctx.sourceTones.has(source)) ctx.sourceTones.set(source, AUTO_TONES[Math.min(ctx.sourceTones.size, AUTO_TONES.length - 1)]);
   return ctx.sourceTones.get(source);
 }
 

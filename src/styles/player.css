@@ -5,6 +5,7 @@ body {
   margin: 0;
   padding: var(--space-12) var(--space-16);
   font-family: var(--font-sans);
+  letter-spacing: var(--tracking-text);
   color: var(--color-fg);
   background: var(--color-page);
 }
@@ -133,6 +134,7 @@ html.embedded .fl-figure {
 /* 백틱으로 감싼 글. 코드 글꼴로 그린다. */
 .fl-code {
   font-family: var(--font-mono);
+  letter-spacing: normal;
 }
 
 .fl-caption {
@@ -198,6 +200,10 @@ html.embedded .fl-figure {
 
 .fl-figure.full .fl-zoom {
   display: flex;
+}
+
+.fl .fl-node.on .fl-halo {
+  opacity: 1;
 }
 
 .fl .fl-node.on .fl-stroke {
@@ -282,6 +288,9 @@ html.embedded .fl-figure {
 
 .fl .fl-part.on .grid-cell {
   fill: var(--color-card-on);
+}
+
+.fl .fl-part.on .grid-ring {
   stroke: var(--color-state-active);
   stroke-width: var(--border-edge);
 }
