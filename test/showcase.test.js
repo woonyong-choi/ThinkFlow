@@ -59,7 +59,7 @@ test('readme_first_figure_after_the_logo_is_the_animated_cloud_architecture_in_b
     const [, second] = read(readme).split('<picture>').slice(0, 3);
     const hero = read(readme).split('<picture>')[2];
 
-    assert.ok(second.includes('daphnis-light.svg'));
+    assert.ok(second.includes('daphnis-lockup-light.svg'));
     assert.ok(hero.includes(`cloud-architecture-${lang}-dark.svg`) && hero.includes(`cloud-architecture-${lang}-light.svg`));
     assert.match(readFileSync(join(SHOWCASE_DIR, `cloud-architecture-${lang}-light.svg`), 'utf8'), /<animate|animation/);
   }

@@ -1,11 +1,9 @@
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="docs/assets/daphnis-dark.svg">
-    <img src="docs/assets/daphnis-light.svg" alt="daphnis" width="160">
+    <source media="(prefers-color-scheme: dark)" srcset="docs/assets/daphnis-lockup-dark.svg">
+    <img src="docs/assets/daphnis-lockup-light.svg" alt="daphnis" width="260">
   </picture>
 </p>
-
-# daphnis
 
 English | [한국어](README.ko.md)
 
