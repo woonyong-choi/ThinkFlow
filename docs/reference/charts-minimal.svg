@@ -1099,10 +1099,10 @@
 @keyframes chart-draw { from { stroke-dashoffset: 1; } }
 @keyframes chart-wipe { from { clip-path: inset(0 100% 0 0); } }
 @keyframes chart-fade { 0%, 50% { opacity: 0; } }
-@keyframes chart-grow-loop { 0% { transform: scaleX(0); animation-timing-function: var(--easing-reveal); } 12.86%, 100% { transform: none; } }
-@keyframes chart-draw-loop { 0% { stroke-dashoffset: 1; animation-timing-function: var(--easing-reveal); } 12.86%, 100% { stroke-dashoffset: 0; } }
-@keyframes chart-wipe-loop { 0% { clip-path: inset(0 100% 0 0); animation-timing-function: var(--easing-reveal); } 12.86%, 100% { clip-path: inset(0 0 0 0); } }
-@keyframes chart-fade-loop { 0%, 6.43% { opacity: 0; animation-timing-function: var(--easing-reveal); } 12.86%, 100% { opacity: 1; } }
+@keyframes chart-grow-loop { 0% { transform: scaleX(0); animation-timing-function: var(--easing-reveal); } 12.857%, 100% { transform: none; } }
+@keyframes chart-draw-loop { 0% { stroke-dashoffset: 1; animation-timing-function: var(--easing-reveal); } 12.857%, 100% { stroke-dashoffset: 0; } }
+@keyframes chart-wipe-loop { 0% { clip-path: inset(0 100% 0 0); animation-timing-function: var(--easing-reveal); } 12.857%, 100% { clip-path: inset(0 0 0 0); } }
+@keyframes chart-fade-loop { 0%, 6.429% { opacity: 0; animation-timing-function: var(--easing-reveal); } 12.857%, 100% { opacity: 1; } }
 
 @keyframes a0 { 0%,45.883% { opacity: 0 } 45.884% { opacity: 0 } 48.583%,68.96% { opacity: 1 } 68.961%,99.999% { opacity: 1 } }
 .fl .a0 { animation: a0 7.41s infinite linear; }
@@ -1155,7 +1155,7 @@
 <text x="28" y="43" class="chart-title">분기별 매출</text>
 <text x="28" y="62" class="chart-sub">예시 데이터. 점선은 목표 100</text>
 <rect x="28" y="76" width="12" height="12" rx="4" fill="var(--color-data-main)"/><text x="46" y="84" class="chart-legend">올해</text>
-<rect x="82.413671875" y="76" width="12" height="12" rx="4" fill="var(--color-data-compare)"/><text x="100.413671875" y="84" class="chart-legend">작년</text>
+<rect x="82.4" y="76" width="12" height="12" rx="4" fill="var(--color-data-compare)"/><text x="100.4" y="84" class="chart-legend">작년</text>
 <g class="cr-0 ink"><text x="28" y="126.7" class="chart-label shift">1분기</text></g>
 <g class="cr-0"><g class="cs-0"><rect x="168" y="108" width="462.6" height="12" rx="4" fill="var(--color-data-main)" class="grow"/></g></g>
 <g class="cr-0"><g class="cs-1"><rect x="168" y="124" width="402.3" height="12" rx="4" fill="var(--color-data-compare)" class="grow"/></g></g>

@@ -162,7 +162,7 @@ function drawPill(e, j, { decorate, glyphs }) {
   if (!hasPill(e) || !e.labelAt) return undefined;
   const { w, h, numW, textW } = sizePill(e.label, e.no);
   const { x, y } = e.labelAt;
-  const frame = e.label === undefined ? '' : `<rect x="${r(x - w / 2)}" y="${r(y - h / 2)}" width="${r(w)}" height="${h}" rx="${h / 2}" class="pill ${decorate('pill', j)}"/>`;
+  const frame = e.label === undefined ? '' : `<rect x="${r(x - w / 2)}" y="${r(y - h / 2)}" width="${r(w)}" height="${r(h)}" rx="${r(h / 2)}" class="pill ${decorate('pill', j)}"/>`;
   const number = e.no === undefined ? '' : drawNumber(e.no, { x: x - w / 2 + SPACE['1'], y, numW }, glyphs);
   const text = e.label === undefined ? '' : drawPillText(e.label, { x: e.no === undefined ? x : x - w / 2 + SPACE['1'] + numW + SPACE['2'] + textW / 2, y, cls: decorate('pilltext', j) }, glyphs);
   return `<g id="l-${j}" class="${edgeClass(e, j, decorate)}"><g class="fl-pill">${frame}${number}${text}</g></g>`;
@@ -185,7 +185,7 @@ function drawNumber(no, { x: left, y, numW }, glyphs) {
   glyphs.add(String(no), BADGE_STYLE.face);
   const h = numW;
   return (
-    `<rect x="${r(left)}" y="${r(y - h / 2)}" width="${r(numW)}" height="${h}" rx="${h / 2}" class="number-pill"/>` +
+    `<rect x="${r(left)}" y="${r(y - h / 2)}" width="${r(numW)}" height="${r(h)}" rx="${r(h / 2)}" class="number-pill"/>` +
     `<text x="${r(left + numW / 2)}" y="${r(centerBaseline(y, BADGE_STYLE.size))}" class="number">${no}</text>`
   );
 }

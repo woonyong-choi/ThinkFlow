@@ -1098,10 +1098,10 @@
 @keyframes chart-draw { from { stroke-dashoffset: 1; } }
 @keyframes chart-wipe { from { clip-path: inset(0 100% 0 0); } }
 @keyframes chart-fade { 0%, 50% { opacity: 0; } }
-@keyframes chart-grow-loop { 0% { transform: scaleX(0); animation-timing-function: var(--easing-reveal); } 12.86%, 100% { transform: none; } }
-@keyframes chart-draw-loop { 0% { stroke-dashoffset: 1; animation-timing-function: var(--easing-reveal); } 12.86%, 100% { stroke-dashoffset: 0; } }
-@keyframes chart-wipe-loop { 0% { clip-path: inset(0 100% 0 0); animation-timing-function: var(--easing-reveal); } 12.86%, 100% { clip-path: inset(0 0 0 0); } }
-@keyframes chart-fade-loop { 0%, 6.43% { opacity: 0; animation-timing-function: var(--easing-reveal); } 12.86%, 100% { opacity: 1; } }
+@keyframes chart-grow-loop { 0% { transform: scaleX(0); animation-timing-function: var(--easing-reveal); } 12.857%, 100% { transform: none; } }
+@keyframes chart-draw-loop { 0% { stroke-dashoffset: 1; animation-timing-function: var(--easing-reveal); } 12.857%, 100% { stroke-dashoffset: 0; } }
+@keyframes chart-wipe-loop { 0% { clip-path: inset(0 100% 0 0); animation-timing-function: var(--easing-reveal); } 12.857%, 100% { clip-path: inset(0 0 0 0); } }
+@keyframes chart-fade-loop { 0%, 6.429% { opacity: 0; animation-timing-function: var(--easing-reveal); } 12.857%, 100% { opacity: 1; } }
 
 @keyframes a0 { 0%,47.116% { opacity: 0 } 47.117% { opacity: 0 } 49.964%,99.999% { opacity: 1 } }
 .fl .a0 { animation: a0 7.025s infinite linear; }
@@ -1148,7 +1148,7 @@
 <text x="28" y="43" class="chart-title">수정 횟수와 비용</text>
 <text x="28" y="62" class="chart-sub">예시 데이터. 작업당 평균, 화살표는 기억 없음에서 기억 붙임</text>
 <rect x="28" y="76" width="12" height="12" rx="4" fill="var(--color-data-main)"/><text x="46" y="84" class="chart-legend">기억 붙임</text>
-<rect x="103.2880859375" y="76" width="12" height="12" rx="4" fill="var(--color-data-compare)"/><text x="121.2880859375" y="84" class="chart-legend">기억 없음</text>
+<rect x="103.3" y="76" width="12" height="12" rx="4" fill="var(--color-data-compare)"/><text x="121.3" y="84" class="chart-legend">기억 없음</text>
 <line x1="76" x2="924.3" y1="395" y2="395" class="chart-grid"/><text x="70" y="399" class="chart-tick end">0</text><line x1="76" x2="924.3" y1="308.3" y2="308.3" class="chart-grid"/><text x="70" y="312.3" class="chart-tick end">0.5</text><line x1="76" x2="924.3" y1="221.7" y2="221.7" class="chart-grid"/><text x="70" y="225.6" class="chart-tick end">1</text><line x1="76" x2="924.3" y1="135" y2="135" class="chart-grid"/><text x="70" y="139" class="chart-tick end">1.5</text><text x="76" y="412" class="chart-tick">0</text><text x="358.8" y="412" class="chart-tick">0.5</text><text x="641.5" y="412" class="chart-tick">1</text><text x="924.3" y="412" class="chart-tick">1.5</text><text x="924.3" y="429" class="chart-unit">작업당 비용(달러)</text><text x="28" y="119" class="chart-unit start">작업당 수정 횟수(회)</text>
 <g class="cr-0"><g class="cs-0"><line x1="548.8" y1="167" x2="297.2" y2="304" pathLength="1" class="chart-link draw" marker-end="url(#fl-arrow)"/></g></g>
 <g class="cr-2"><g class="cs-0"><line x1="746" y1="189.6" x2="560" y2="246.7" pathLength="1" class="chart-link draw" marker-end="url(#fl-arrow)"/></g></g>

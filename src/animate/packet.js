@@ -5,6 +5,7 @@ import { curveOf, keySpline, timeAt } from '../easing.js';
 import { discreteWindows } from './discrete.js';
 import { chipFadeAnimate, cutFadeAnimate, cutMotionKeys, visibleSpans } from './flow-packet.js';
 import { STYLE } from '../measure/sizes.js';
+import { ratio } from '../format.js';
 import { renderRich, roundCoord as r } from '../text.js';
 import { tokens, values } from '../tokens.js';
 
@@ -73,7 +74,7 @@ function moveMotion(clock, [from, to], { hop, start: departure }) {
   const last = keys.length - 1;
   const splines = keys.slice(0, last).map(([, , spline]) => spline);
   return (
-    `<animateMotion dur="${clock.duration}" repeatCount="indefinite" calcMode="spline" keyTimes="${keys.map(([at]) => at).join(';')}" keySplines="${splines.join(';')}" keyPoints="${keys.map(([, point]) => point).join(';')}">` +
+    `<animateMotion dur="${clock.duration}" repeatCount="indefinite" calcMode="spline" keyTimes="${keys.map(([at]) => at).join(';')}" keySplines="${splines.join(';')}" keyPoints="${keys.map(([, point]) => ratio(point)).join(';')}">` +
     `<mpath href="#${pathId}" xlink:href="#${pathId}"/></animateMotion>`
   );
 }
@@ -84,7 +85,7 @@ function moveMotion(clock, [from, to], { hop, start: departure }) {
 // 키 사이를 선형으로 잇는 이동(단계 끝에서 잘리는 점). 곡선 일부만 지나서 곡선 하나로 그릴 수 없다.
 function linearMotion(clock, pathId, keys) {
   return (
-    `<animateMotion dur="${clock.duration}" repeatCount="indefinite" calcMode="linear" keyTimes="${keys.map(([at]) => at).join(';')}" keyPoints="${keys.map(([, point]) => point).join(';')}">` +
+    `<animateMotion dur="${clock.duration}" repeatCount="indefinite" calcMode="linear" keyTimes="${keys.map(([at]) => at).join(';')}" keyPoints="${keys.map(([, point]) => ratio(point)).join(';')}">` +
     `<mpath href="#${pathId}" xlink:href="#${pathId}"/></animateMotion>`
   );
 }

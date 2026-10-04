@@ -1455,10 +1455,10 @@ html.embedded .fl-figure {
 @keyframes chart-draw { from { stroke-dashoffset: 1; } }
 @keyframes chart-wipe { from { clip-path: inset(0 100% 0 0); } }
 @keyframes chart-fade { 0%, 50% { opacity: 0; } }
-@keyframes chart-grow-loop { 0% { transform: scaleX(0); animation-timing-function: var(--easing-reveal); } 12.86%, 100% { transform: none; } }
-@keyframes chart-draw-loop { 0% { stroke-dashoffset: 1; animation-timing-function: var(--easing-reveal); } 12.86%, 100% { stroke-dashoffset: 0; } }
-@keyframes chart-wipe-loop { 0% { clip-path: inset(0 100% 0 0); animation-timing-function: var(--easing-reveal); } 12.86%, 100% { clip-path: inset(0 0 0 0); } }
-@keyframes chart-fade-loop { 0%, 6.43% { opacity: 0; animation-timing-function: var(--easing-reveal); } 12.86%, 100% { opacity: 1; } }
+@keyframes chart-grow-loop { 0% { transform: scaleX(0); animation-timing-function: var(--easing-reveal); } 12.857%, 100% { transform: none; } }
+@keyframes chart-draw-loop { 0% { stroke-dashoffset: 1; animation-timing-function: var(--easing-reveal); } 12.857%, 100% { stroke-dashoffset: 0; } }
+@keyframes chart-wipe-loop { 0% { clip-path: inset(0 100% 0 0); animation-timing-function: var(--easing-reveal); } 12.857%, 100% { clip-path: inset(0 0 0 0); } }
+@keyframes chart-fade-loop { 0%, 6.429% { opacity: 0; animation-timing-function: var(--easing-reveal); } 12.857%, 100% { opacity: 1; } }
 </style>
 </head>
 <body>
@@ -1467,7 +1467,7 @@ html.embedded .fl-figure {
 <div class="fl-canvas"><svg xmlns="http://www.w3.org/2000/svg" class="fl" width="960" height="359" style="aspect-ratio: 960 / 359" viewBox="0 0 960 359" role="img"><title>장기 기억 정확도</title><defs><marker id="fl-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-line)"/></marker><marker id="fl-arrow-on" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-state-active)"/></marker><marker id="fl-arrow-main" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-data-main)"/></marker></defs><text x="28" y="43" class="chart-title">장기 기억 정확도</text>
 <text x="28" y="62" class="chart-sub">예시 데이터. n=500, 점선은 채택 기준 80%</text>
 <rect x="28" y="76" width="12" height="12" rx="4" fill="var(--color-data-main)"/><text x="46" y="84" class="chart-legend">기억 붙임</text>
-<rect x="103.2880859375" y="76" width="12" height="12" rx="4" fill="var(--color-data-compare)"/><text x="121.2880859375" y="84" class="chart-legend">기억 없음</text>
+<rect x="103.3" y="76" width="12" height="12" rx="4" fill="var(--color-data-compare)"/><text x="121.3" y="84" class="chart-legend">기억 없음</text>
 <g class="cr-0 ink"><text x="28" y="126.7" class="chart-label shift">단일 세션 사실</text></g>
 <g class="cr-0"><g class="cs-0"><rect x="168" y="108" width="689.4" height="12" rx="4" fill="var(--color-data-main)" class="grow"/><line x1="838.6" x2="873.3" y1="114" y2="114" class="chart-ci-casing late"/><line x1="838.6" x2="873.3" y1="114" y2="114" class="chart-ci late"/></g></g>
 <g class="cr-0"><g class="cs-1"><rect x="168" y="124" width="454.1" height="12" rx="4" fill="var(--color-data-compare)" class="grow"/><line x1="588.9" x2="653.8" y1="130" y2="130" class="chart-ci-casing late"/><line x1="588.9" x2="653.8" y1="130" y2="130" class="chart-ci late"/></g></g>

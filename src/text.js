@@ -1,4 +1,5 @@
 // SVG에 넣을 글자와 좌표를 다듬는다. 글 폭은 measure/fonts.js가 글꼴 파일로 잰다.
+import { coord } from './format.js';
 
 // 글자 크기 대비, 글자 세로 가운데에서 기준선까지의 거리. Pretendard 대문자 높이(0.707em)의 절반에 한글 높이를 맞춘 비율이라 토큰 대상이 아니다.
 const CAP_CENTER = 0.36;
@@ -73,7 +74,5 @@ export function centerBaseline(center, fontSize) {
   return center + fontSize * CAP_CENTER;
 }
 
-/** 좌표를 소수 첫째 자리로 줄인다. SVG 파일 크기를 줄이기 위해서다. */
-export function roundCoord(value) {
-  return Math.round(value * 10) / 10;
-}
+/** 좌표를 소수 첫째 자리로 줄인다. SVG 파일 크기를 줄이고 실행 환경마다 다른 끝자리를 없애기 위해서다. */
+export const roundCoord = coord;

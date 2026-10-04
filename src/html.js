@@ -10,6 +10,7 @@ import { escapeXml, plainText, roundCoord as r } from './text.js';
 import { values } from './tokens.js';
 import { chartContent, figureContent } from './html/content.js';
 import { faviconLinks } from './html/favicon.js';
+import { roundedNumbers } from './format.js';
 
 // 브라우저 스크립트 파일(src/player/). 한 스크립트로 이어 붙여 HTML에 넣는다.
 const PLAYER_FILES = ['view', 'play', 'controls', 'stage', 'curve', 'values'];
@@ -94,7 +95,7 @@ ${VIEW_BUTTONS}
 </figure>
 <script>
 ${PLAYER}
-figurePlay(document.querySelector('.fl-figure'), ${JSON.stringify(content.data).replace(/</g, '\\u003c')});
+figurePlay(document.querySelector('.fl-figure'), ${JSON.stringify(content.data, roundedNumbers).replace(/</g, '\\u003c')});
 </script>
 </body>
 </html>

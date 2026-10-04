@@ -4,6 +4,7 @@ import { readdirSync, readFileSync } from 'node:fs';
 import { test } from 'node:test';
 import { buildFigure } from '../src/build.js';
 import { curveOf, progressAt } from '../src/easing.js';
+import { roundedNumbers } from '../src/format.js';
 import { flattenRoute } from '../src/route.js';
 import { values } from '../src/tokens.js';
 import { CHIP_CLEAR, CHIP_GAP, CHIP_MARGIN, placeChip, sizeChip } from '../src/chip.js';
@@ -269,7 +270,7 @@ test('toHtml_and_toSvg_share_the_chip_plan_from_the_timeline', async () => {
   const svg = await toSvg(result, { name: 'saturn' });
 
   assert.ok(hops.length > 0 && hops.every((hop) => hop.chipPath.length >= 2 && hop.chipPath.every((p) => p.length === 4)));
-  for (const hop of hops) assert.ok(html.includes(`"chipPath":${JSON.stringify(hop.chipPath)}`));
+  for (const hop of hops) assert.ok(html.includes(`"chipPath":${JSON.stringify(hop.chipPath, roundedNumbers)}`));
   assert.match(svg, /<animateTransform attributeName="transform"/);
 });
 

@@ -13,8 +13,6 @@ const read = (path) => readFileSync(join(ROOT, path), 'utf8');
 const showcaseRefs = (readme) => [...read(readme).matchAll(/docs\/assets\/showcase\/([\w-]+\.svg)/g)].map((m) => m[1]);
 const viewBoxOf = (svg) => /viewBox="0 0 (\d+) (\d+)"/.exec(svg).slice(1).join('x');
 // 따옴표 글을 지운 원본. 영어판과 한국어판은 이 모양이 같아야 한다.
-// 이징 곡선의 마지막 자리(16번째 숫자)가 운영체제마다 다르다(CI 확인). 소수 10자리까지만 비교한다.
-const roundedFloats = (svg) => svg.replace(/\d+\.\d{10,}/g, (n) => Number(n).toFixed(10));
 const skeletonOf = (source) => source.replace(/"[^"\n]*"/g, '""').replace(/`[^`\n]*`/g, '``');
 
 // 근거: 이슈 #61 "그림 원본과 생성 SVG를 함께 커밋": 커밋한 SVG는 원본에서 다시 만든 것과 같다
@@ -22,10 +20,10 @@ test('showcase_svgs_equal_the_rendering_of_their_sources', async () => {
   for (const file of sources) {
     const { light, dark } = await showcaseSvgs(join(SHOWCASE_DIR, file));
 
-    const committed = (theme) => roundedFloats(readFileSync(join(SHOWCASE_DIR, file.replace(/\.dap$/, `-${theme}.svg`)), 'utf8'));
+    const committed = (theme) => readFileSync(join(SHOWCASE_DIR, file.replace(/\.dap$/, `-${theme}.svg`)), 'utf8');
 
-    assert.equal(committed('light'), roundedFloats(light), `run npm run showcase: ${file}`);
-    assert.equal(committed('dark'), roundedFloats(dark), `run npm run showcase: ${file}`);
+    assert.equal(committed('light'), light, `run npm run showcase: ${file}`);
+    assert.equal(committed('dark'), dark, `run npm run showcase: ${file}`);
   }
 });
 

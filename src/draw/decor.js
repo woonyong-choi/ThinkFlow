@@ -56,5 +56,5 @@ export function drawGroupTab(g) {
 function drawPill(item, { x, y }, glyphs) {
   glyphs.add(item.text, BADGE_STYLE.face);
   const [left, top] = [x + item.x, y + item.y];
-  return `<g class="fl-badge"><rect x="${r(left)}" y="${r(top)}" width="${r(item.w)}" height="${item.h}" rx="${item.h / 2}" class="badge-pill"/><text x="${r(left + item.w / 2)}" y="${r(centerBaseline(top + item.h / 2, BADGE_STYLE.size))}" class="badge">${escapeXml(item.text)}</text></g>`;
+  return `<g class="fl-badge"><rect x="${r(left)}" y="${r(top)}" width="${r(item.w)}" height="${r(item.h)}" rx="${r(item.h / 2)}" class="badge-pill"/><text x="${r(left + item.w / 2)}" y="${r(centerBaseline(top + item.h / 2, BADGE_STYLE.size))}" class="badge">${escapeXml(item.text)}</text></g>`;
 }

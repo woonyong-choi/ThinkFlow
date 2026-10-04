@@ -1,6 +1,7 @@
 // 차트가 자라는 움직임 CSS. 자라는 시간이 원본의 speed라서 CSS 파일이 아닌 여기서 만든다.
 // 막대와 선과 띠는 자라는 시간 내내 자라고, 값 글자는 그 뒤 절반에 나타난다. 선 차트 점(`dot`)은 선이 닿는 시각에 나타난다.
 // 그 시각은 그리기 단계(line.js arrivals)가 자라는 시간 대비 비율로 계산해 요소의 `data-at`에 담았고, 여기서는 자라는 시간을 곱해 걸기만 한다. 움직이는 SVG(animate/chart.js)도 같은 규칙이다.
+import { percentText } from '../format.js';
 import { tokens, values } from '../tokens.js';
 
 // cost: time O(a), heap O(out), stack O(1)
@@ -47,5 +48,5 @@ ${dots.join('\n')}
 }
 
 function percent(ratio) {
-  return `${Math.min(100, Math.round(ratio * 10000) / 100)}%`;
+  return percentText(Math.min(1, ratio));
 }

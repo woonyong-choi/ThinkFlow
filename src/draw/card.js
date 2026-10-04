@@ -142,7 +142,7 @@ function drawMiniGraph(laid, x, y) {
     const fill = n.isLit ? tokens.color.state['active-fill'] : tokens.color.node;
     const stroke = n.isLit ? tokens.color.state['active-fill'] : tokens.color.outline;
     return (
-      `<rect x="${r(x + n.x)}" y="${r(y + n.y)}" width="${r(n.w)}" height="${n.h}" rx="${n.h / 2}" fill="${fill}" stroke="${stroke}" stroke-width="${values.border.thin}"/>` +
+      `<rect x="${r(x + n.x)}" y="${r(y + n.y)}" width="${r(n.w)}" height="${r(n.h)}" rx="${r(n.h / 2)}" fill="${fill}" stroke="${stroke}" stroke-width="${values.border.thin}"/>` +
       `<text x="${r(x + n.x + n.w / 2)}" y="${r(centerBaseline(y + n.y + n.h / 2, MINI_TEXT))}" class="mini${n.isLit ? ' on' : ''}">${renderRich(n.name)}</text>`
     );
   });

@@ -1,7 +1,7 @@
 // 움직이는 SVG의 한 바퀴 시계. 점, 켜짐 keyframes, 차트가 모두 이 시계의 길이와 비율 계산 하나를 쓴다.
 
-// keyTimes와 퍼센트를 자르는 소수 자릿수(10^5)
-const PRECISION = 100000;
+import { percentText, ratio } from '../format.js';
+
 const MS_PER_SECOND = 1000;
 
 // cost: time O(1), heap O(1), stack O(1)
@@ -14,7 +14,7 @@ const MS_PER_SECOND = 1000;
 export function createClock(total) {
   return {
     duration: `${Math.round(total) / MS_PER_SECOND}s`,
-    keyTime: (ms) => Math.round((ms / total) * PRECISION) / PRECISION,
-    percent: (ms) => `${Math.round((ms / total) * PRECISION) / (PRECISION / 100)}%`,
+    keyTime: (ms) => ratio(ms / total),
+    percent: (ms) => percentText(ms / total),
   };
 }

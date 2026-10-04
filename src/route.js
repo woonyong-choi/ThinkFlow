@@ -1,4 +1,5 @@
 // 경로 점을 SVG path로 바꾼다. 점은 옮기지 않고 꺾이는 모서리만 둥글게 한다.
+import { coord as roundCoord } from './format.js';
 import { values } from './tokens.js';
 
 // 둥근 모서리(곡선)를 직선 몇 개로 펴서 길이를 재는 칸 수
@@ -10,12 +11,12 @@ const CURVE_STEPS = 16;
 /** 꺾은선의 모서리를 radius로 둥글게 한 path d와 경로 길이 절반 지점. */
 export function routePolyline(points, radius) {
   const pts = dropRepeats(points);
-  let d = `M ${pts[0].x} ${pts[0].y}`;
+  let d = `M ${roundCoord(pts[0].x)} ${roundCoord(pts[0].y)}`;
   for (let i = 1; i < pts.length - 1; i++) {
     const { from, via, to } = cornerAt(pts, i, radius);
-    d += ` L ${roundTenth(from.x)} ${roundTenth(from.y)} Q ${roundTenth(via.x)} ${roundTenth(via.y)}, ${roundTenth(to.x)} ${roundTenth(to.y)}`;
+    d += ` L ${roundCoord(from.x)} ${roundCoord(from.y)} Q ${roundCoord(via.x)} ${roundCoord(via.y)}, ${roundCoord(to.x)} ${roundCoord(to.y)}`;
   }
-  d += ` L ${roundTenth(pts.at(-1).x)} ${roundTenth(pts.at(-1).y)}`;
+  d += ` L ${roundCoord(pts.at(-1).x)} ${roundCoord(pts.at(-1).y)}`;
   return { d, mid: pointAlong(pts, 0.5) };
 }
 
@@ -97,9 +98,4 @@ function distance(a, b) {
 function pointToward(from, to, length) {
   const total = distance(from, to) || 1;
   return { x: from.x + ((to.x - from.x) * length) / total, y: from.y + ((to.y - from.y) * length) / total };
-}
-
-// 좌표를 소수 첫째 자리로 줄인다.
-function roundTenth(value) {
-  return Math.round(value * 10) / 10;
 }

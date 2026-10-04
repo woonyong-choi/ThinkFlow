@@ -1098,10 +1098,10 @@
 @keyframes chart-draw { from { stroke-dashoffset: 1; } }
 @keyframes chart-wipe { from { clip-path: inset(0 100% 0 0); } }
 @keyframes chart-fade { 0%, 50% { opacity: 0; } }
-@keyframes chart-grow-loop { 0% { transform: scaleX(0); animation-timing-function: var(--easing-reveal); } 12.86%, 100% { transform: none; } }
-@keyframes chart-draw-loop { 0% { stroke-dashoffset: 1; animation-timing-function: var(--easing-reveal); } 12.86%, 100% { stroke-dashoffset: 0; } }
-@keyframes chart-wipe-loop { 0% { clip-path: inset(0 100% 0 0); animation-timing-function: var(--easing-reveal); } 12.86%, 100% { clip-path: inset(0 0 0 0); } }
-@keyframes chart-fade-loop { 0%, 6.43% { opacity: 0; animation-timing-function: var(--easing-reveal); } 12.86%, 100% { opacity: 1; } }
+@keyframes chart-grow-loop { 0% { transform: scaleX(0); animation-timing-function: var(--easing-reveal); } 12.857%, 100% { transform: none; } }
+@keyframes chart-draw-loop { 0% { stroke-dashoffset: 1; animation-timing-function: var(--easing-reveal); } 12.857%, 100% { stroke-dashoffset: 0; } }
+@keyframes chart-wipe-loop { 0% { clip-path: inset(0 100% 0 0); animation-timing-function: var(--easing-reveal); } 12.857%, 100% { clip-path: inset(0 0 0 0); } }
+@keyframes chart-fade-loop { 0%, 6.429% { opacity: 0; animation-timing-function: var(--easing-reveal); } 12.857%, 100% { opacity: 1; } }
 
 @keyframes a0 { 0%,45.442% { opacity: 0 } 45.443% { opacity: 0 } 47.89%,71.864% { opacity: 1 } 71.865%,99.999% { opacity: 1 } }
 .fl .a0 { animation: a0 8.175s infinite linear; }
@@ -1158,7 +1158,7 @@
 <text x="28" y="43" class="chart-title">장기 기억 정확도</text>
 <text x="28" y="62" class="chart-sub">예시 데이터. n=500, 점선은 채택 기준 80%</text>
 <rect x="28" y="76" width="12" height="12" rx="4" fill="var(--color-data-main)"/><text x="46" y="84" class="chart-legend">기억 붙임</text>
-<rect x="103.2880859375" y="76" width="12" height="12" rx="4" fill="var(--color-data-compare)"/><text x="121.2880859375" y="84" class="chart-legend">기억 없음</text>
+<rect x="103.3" y="76" width="12" height="12" rx="4" fill="var(--color-data-compare)"/><text x="121.3" y="84" class="chart-legend">기억 없음</text>
 <g class="cr-0 ink"><text x="28" y="126.7" class="chart-label shift">단일 세션 사실</text></g>
 <g class="cr-0"><g class="cs-0"><rect x="168" y="108" width="689.4" height="12" rx="4" fill="var(--color-data-main)" class="grow"/><line x1="838.6" x2="873.3" y1="114" y2="114" class="chart-ci-casing late"/><line x1="838.6" x2="873.3" y1="114" y2="114" class="chart-ci late"/></g></g>
 <g class="cr-0"><g class="cs-1"><rect x="168" y="124" width="454.1" height="12" rx="4" fill="var(--color-data-compare)" class="grow"/><line x1="588.9" x2="653.8" y1="130" y2="130" class="chart-ci-casing late"/><line x1="588.9" x2="653.8" y1="130" y2="130" class="chart-ci late"/></g></g>

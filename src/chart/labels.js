@@ -67,7 +67,7 @@ function legendOrder(series) {
 function drawLegend(chart, y) {
   let x = PAD;
   const items = legendOrder(chart.series).map(({ s, i }) => {
-    const item = `<rect x="${x}" y="${r(y + SPACE['2'])}" width="${BAR}" height="${BAR}" rx="${values.radius.sm}" fill="${seriesColor(chart, i)}"/>` + `<text x="${x + BAR + SPACE['3']}" y="${r(y + BAR)}" class="chart-legend">${renderRich(s.label)}</text>`;
+    const item = `<rect x="${r(x)}" y="${r(y + SPACE['2'])}" width="${BAR}" height="${BAR}" rx="${values.radius.sm}" fill="${seriesColor(chart, i)}"/>` + `<text x="${r(x + BAR + SPACE['3'])}" y="${r(y + BAR)}" class="chart-legend">${renderRich(s.label)}</text>`;
     x += BAR + SPACE['3'] + measure(s.label, TEXT['11']) + SPACE['9'];
     return item;
   });
