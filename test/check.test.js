@@ -71,6 +71,40 @@ test('buildFigure_moving_text_taller_than_a_short_figure_is_a_check_7_error', as
   assert.ok(messages.some((m) => m.startsWith('8: [check-7]')), messages.join('\n'));
 });
 
+const NARROW_FLOW = (text, tail = '') => `flow right\nbox a "A"\nbox b "B"\nbox c "C"\n${tail ? 'box d "D"\n' : ''}a -> b\nb -> c\n${tail}step "s" for=6s\n  track a -> b -> c "${text}" time=4s`;
+// cost: time O(s), heap O(1), stack O(1)
+// vars: s = 도형 수
+// basis: estimate
+// 가로로 이웃한 도형 사이 빈 폭 { 'a-b': px, ... }
+function gapsOf({ scene }) {
+  const at = (id) => scene.items.find((it) => it.id === id);
+  return Object.fromEntries([['a', 'b'], ['b', 'c'], ['c', 'd']].map(([from, to]) => [`${from}-${to}`, Math.round(at(to).x - at(from).x - at(from).w)]));
+}
+
+// 근거: 설계 figure-check.md 7번과 layout.md 이동 글 간격: 선 틈이 글 상자보다 좁아 흐름 글 상자가 이름을 가려 숨는 그림은(#55, #94) 그 흐름이 지나는 선의 간격만 늘려 다시 배치해 경고 없이 글이 보이고, 지나지 않는 선의 간격은 그대로다
+test('buildFigure_flow_chip_wider_than_the_gap_widens_only_the_edges_it_passes_and_keeps_the_text', async () => {
+  const plain = gapsOf(await buildFigure(NARROW_FLOW('x', 'c -> d\n').replace('"x" ', '')));
+  const result = await buildFigure(NARROW_FLOW('hello chip text', 'c -> d\n'));
+  const gaps = gapsOf(result);
+
+  assert.deepEqual(result.warnings.filter((w) => w.code === 'check-7'), []);
+  assert.ok(gaps['a-b'] > plain['a-b'] && gaps['b-c'] > plain['b-c'], JSON.stringify({ gaps, plain }));
+  assert.equal(gaps['c-d'], plain['c-d']);
+  assert.deepEqual(result.timeline.segs[0].hops.map((hop) => hop.data), [['hello chip text']]);
+});
+
+// 근거: 설계 figure-check.md 7번: 간격을 늘려도(토큰 `scale.chip-room-tries`번) 글 상자가 들어갈 자리가 없으면 경고를 남기고 글은 지우지 않으며 strict가 실패한다
+test('buildFigure_flow_chip_that_no_gap_can_hold_keeps_its_text_and_stays_a_check_7_warning', async () => {
+  const source = NARROW_FLOW('a very long moving text that wraps over several lines to cover names');
+  const { warnings, timeline } = await buildFigure(source);
+  const found = warnings.filter((w) => w.code === 'check-7').map(formatProblem);
+
+  assert.equal(found.length, 1, found.join('\n'));
+  assert.match(found[0], /^8: \[check-7\] moving text ".*" is hidden for .*% of the time it is on screen because it would cover "[ABC]"/);
+  assert.equal(timeline.segs[0].hops[0].data.length > 0, true);
+  await assert.rejects(buildFigure(source, { strict: true }), (error) => error.problems.some((p) => p.code === 'check-7'));
+});
+
 // 근거: 버그 #4 증상 3 "세로 그림에서 그림 폭보다 넓은 이동 글이 check 7로 막힘"
 test('buildFigure_narrow_figure_widens_for_the_moving_text', async () => {
   const { scene } = await buildFigure('flow down\nbox a "가"\nbox b "나"\na -> b\nstep "s"\n  a -> b "민지는 3월에 토스로 옮겼고 결제팀을 맡았다"');

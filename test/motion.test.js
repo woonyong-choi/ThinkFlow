@@ -3,6 +3,8 @@ import assert from 'node:assert/strict';
 import { readdirSync, readFileSync } from 'node:fs';
 import { test } from 'node:test';
 import { buildFigure } from '../src/build.js';
+import { sizeChip } from '../src/chip.js';
+import { chipStateAt } from '../src/chip-motion.js';
 import { curveOf, timeAt } from '../src/easing.js';
 import { flattenRoute, routeLength } from '../src/route.js';
 import { toSvg } from '../src/svg.js';
@@ -70,6 +72,17 @@ function pathFractionAt({ times, splines, points }, x) {
   const i = Math.min(times.length - 2, times.findLastIndex((time) => time <= x));
   const u = (x - times[i]) / (times[i + 1] - times[i]);
   return points[i] + (points[i + 1] - points[i]) * (splines ? ease(splines[i], u) : u);
+}
+
+// cost: time O(k), heap O(1), stack O(1)
+// vars: k = 키 수
+// basis: estimate
+// 글 상자 옮김(animateTransform translate, linear) 값 [dx, dy]를 한 바퀴 비율 x에서 푼다.
+function slideAt({ times, values: levels }, x) {
+  const i = Math.min(times.length - 2, times.findLastIndex((time) => time <= x));
+  const u = times[i + 1] > times[i] ? (x - times[i]) / (times[i + 1] - times[i]) : 1;
+  const [a, b] = [levels[i], levels[i + 1]].map((pair) => pair.split(' ').map(Number));
+  return a.map((v, k) => v + (b[k] - v) * u);
 }
 
 // SMIL calcMode=discrete 값을 한 바퀴 비율 x에서 푼다.
@@ -221,6 +234,47 @@ test('toSvg_moving_packets_match_the_timeline_at_every_example', async () => {
       const pathAt = svg.indexOf(`id="${href}"`);
       assert.ok(pathAt > groupStart && isInsideGroup(svg, groupStart, pathAt), `${name}: ${href} 경로가 이동한 그룹 밖에 있다`);
       assert.ok(isInsideGroup(svg, groupStart, m.index), `${name}: 점이 이동한 그룹 밖에 있다`);
+    }
+  }
+});
+
+const CUT_SOURCE = (forMs) => `flow right
+box a "Alpha service"
+box b "Beta service"
+box c "Gamma service"
+a -> b "request one"
+b -> c "request two"
+step "s" for=${forMs}ms
+  track a -> b -> c "x" time=4s
+step "next"
+  a -> b`;
+
+// 근거: 설계 playback.md 흐름 단계 "잘린 점의 글 상자도 같은 잘림 시각에 끝난다": 도형 바깥 이동 중, 도형 안 통과 중, 도형을 지난 뒤 단계가 끝나는 세 경우에 점과 글 상자의 보임 구간과 keyTimes가 잘림 시각에 끝나고 글 상자 자리는 잘리지 않은 계획과 같다
+test('toSvg_cut_flow_dot_and_its_chip_end_at_the_same_cut_time_and_keep_the_uncut_chip_offset', async () => {
+  for (const forMs of [1200, 2000, 3000]) {
+    const cut = await buildFigure(CUT_SOURCE(forMs));
+    const full = await buildFigure(CUT_SOURCE(forMs).replace(/for=\d+ms/, 'for=9000ms'));
+    const [hop] = cut.timeline.segs[0].hops;
+    const [reference] = full.timeline.segs[0].hops;
+    const { total } = cut.timeline;
+    const [packet] = packetsOf(await toSvg(cut));
+    const label = `단계 ${forMs}ms`;
+
+    assert.equal(hop.cut, forMs, label);
+    assert.equal(reference.cut, undefined, label);
+    assert.ok(packet.slide.times, `${label}: 글 상자가 움직인다`);
+    const end = hop.cut / total;
+    assert.ok(Math.abs(packet.slide.times.at(-2) - end) < 1e-5, `${label}: 글 상자 마지막 키 ${packet.slide.times.at(-2)}, 잘림 ${end}`);
+    assert.ok(packet.slide.times.every((time) => time <= end + 1e-5 || time === 1), label);
+    assert.ok(packet.motion.times.some((time) => Math.abs(time - end) < 1e-5), label);
+
+    const move = { route: full.timeline.tracks[0].route, hop: reference, chip: sizeChip(reference.data) };
+    for (let t = 0; t < hop.cut; t += 25) {
+      const expected = chipStateAt(move, reference.chipPath, t);
+      const [dx, dy] = slideAt(packet.slide, t / total);
+      const base = chipStateAt(move, [[0, 0, 0, 1]], t);
+
+      assert.ok(Math.abs(expected.box.x - base.box.x - dx) < 0.05 && Math.abs(expected.box.y - base.box.y - dy) < 0.05, `${label} t=${t}ms: 글 상자 옮김 ${dx},${dy}`);
     }
   }
 });

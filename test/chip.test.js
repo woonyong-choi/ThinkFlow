@@ -146,7 +146,8 @@ test('buildFigure_every_example_and_demo_chip_stays_inside_clear_and_never_jumps
     for (const hop of hops) {
       const move = { route: hop.track === undefined ? flattenRoute(scene.edges[hop.edge].points) : tracks[hop.track].route, hop, chip: sizeChip(hop.data) };
       let before;
-      for (let t = 0; t <= hop.ms; t += CHIP_FRAME_MS) {
+      // 단계 끝에서 잘린 점(hop.cut)은 그 뒤로 보이지 않고 글 상자 경로도 잘림 시각에서 끝나므로(#66) 보이는 시간까지만 잰다.
+      for (let t = 0; t <= (hop.cut ?? hop.ms); t += CHIP_FRAME_MS) {
         const { box, point, opacity } = chipStateAt(move, hop.chipPath, t);
         const isVisible = opacity >= CHIP_VISIBLE_MIN;
         const hit = names.find((name) => overlaps(box, name));

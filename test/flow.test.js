@@ -207,3 +207,17 @@ test('flowSeg_counts_departures_from_for_and_every_and_refuses_over_the_injected
   assert.doesNotThrow(() => flowSeg({ step, si: 0 }, run(), deps(10)));
   assert.throws(() => flowSeg({ step, si: 0 }, run(), deps(9)), (error) => error.problems[0].line === 3 && /10 dots, over the limit of 9/.test(error.problems[0].message));
 });
+
+// 근거: 설계 figure-syntax.md 값 바꾸기 식: 차트 숫자(charts.md 값 범위)와 같이 유한하지 않거나 절댓값이 1e15 이상인 식 숫자는 줄 오류다
+test('buildFigure_set_step_that_overflows_to_infinity_or_passes_1e15_is_a_line_error', async () => {
+  const nines = '9'.repeat(310);
+  for (const operand of [`n+${nines}`, `n-${nines}`, `n+1${'0'.repeat(15)}`]) {
+    const errors = await errorsOf(`${BASE}step "s"\n  a -> b "go" set="${operand}"\n`);
+
+    assert.deepEqual(errors.map((e) => e.line), [10], operand);
+    assert.match(errors[0].message, /values must be under 1e15/, operand);
+  }
+  const { timeline } = await buildFigure(`${BASE}step "s"\n  a -> b "go" set="n+999999"\n`);
+
+  assert.equal(JSON.stringify(timeline).includes('Infinity'), false);
+});

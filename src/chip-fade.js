@@ -90,12 +90,18 @@ function isStraight(points, from, to) {
   });
 }
 
-// cost: time O(r), heap O(r), stack O(1)
-// vars: r = 머무는 지점 수
+// cost: time O(r·g), heap O(r), stack O(1)
+// vars: r = 머무는 지점 수, g = 도형 안을 지나는 구간 수
 // basis: estimate
 // 그림 검사가 보는 지점별 문제. 겹침이 흐려짐으로 가려졌고 흐려진 시간이 이동의 FADE_SHARE_MAX 이하면 알리지 않는다(그림 밖은 흐려도 알린다).
+// 흐름의 점이 도형 안을 지나는 구간(hop.gaps)은 점이 보이지 않아 글 상자도 보이지 않으므로, 흐려진 시간과 이동 시간 모두에서 뺀다.
 export function issuesOf(points, hop) {
-  const fadedMs = points.filter((p) => !p.slot.isClean).length * NODE_MS;
-  const isTolerated = fadedMs <= hop.ms * FADE_SHARE_MAX;
-  return points.map((p) => ({ at: progressAt(MOVE, p.t / hop.ms), isOutside: p.slot.isOutside, hits: isTolerated ? [] : p.slot.hits }));
+  const issues = points.map((p) => {
+    const at = progressAt(MOVE, p.t / hop.ms);
+    return { at, isOutside: p.slot.isOutside, hits: p.slot.hits, isClean: p.slot.isClean, isInside: Boolean(hop.gaps?.some(([from, to]) => at > from && at < to)) };
+  });
+  const seen = issues.filter((issue) => !issue.isInside);
+  const unclean = seen.filter((issue) => !issue.isClean).length;
+  const isTolerated = unclean * NODE_MS <= (hop.gaps ? seen.length * NODE_MS : hop.ms) * FADE_SHARE_MAX;
+  return issues.map(({ at, isOutside, hits }) => ({ at, isOutside, hits: isTolerated ? [] : hits }));
 }

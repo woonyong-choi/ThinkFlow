@@ -532,7 +532,9 @@ export const tokens = freeze({
     "aspect-max": "var(--scale-aspect-max)",
     "zoom-step": "var(--scale-zoom-step)",
     "flow-dots-max": "var(--scale-flow-dots-max)",
-    "chip-visible-share": "var(--scale-chip-visible-share)"
+    "chip-visible-share": "var(--scale-chip-visible-share)",
+    "chip-room-tries": "var(--scale-chip-room-tries)",
+    "chip-room-step": "var(--scale-chip-room-step)"
   }
 });
 
@@ -1064,6 +1066,8 @@ export const values = freeze({
     "aspect-max": 3,
     "zoom-step": 1.25,
     "flow-dots-max": 80,
-    "chip-visible-share": 0.6
+    "chip-visible-share": 0.6,
+    "chip-room-tries": 4,
+    "chip-room-step": 16
   }
 });

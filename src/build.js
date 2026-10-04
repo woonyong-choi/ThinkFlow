@@ -5,6 +5,7 @@ import { checkChartFigure, checkFigure } from './check.js';
 import { CHIP_GAP, sizeChip } from './chip.js';
 import { planClashes } from './chip-clash.js';
 import { planHops } from './chip-plan.js';
+import { widenForHiddenChips } from './chip-room.js';
 import { chipLines, chipObstacles } from './draw/boxes.js';
 import { attachIcons } from './icons/index.js';
 import { drawChart } from './chart/draw.js';
@@ -67,8 +68,8 @@ const LAYOUT_CHECKS = new Set(['check-2', 'check-3', 'check-4', 'check-5', 'chec
  * @param inputs { sizes, cards, source }
  */
 async function placeScene(figure, inputs, problems) {
-  const first = await attemptScene(figure, inputs);
   const failures = (a) => a.local.errors.filter((d) => LAYOUT_CHECKS.has(d.code)).length;
+  const first = await widenForHiddenChips(figure, await attemptScene(figure, inputs), { attempt: (wider) => attemptScene(wider, inputs), failures });
   let chosen = first;
   if (figure.kind !== 'sequence' && failures(first) && !figure.safeLayout) {
     const second = await attemptScene({ ...figure, aspect: undefined, safeLayout: true }, inputs);

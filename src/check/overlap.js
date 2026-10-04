@@ -1,4 +1,4 @@
-// 2번과 6번: 글과 도형이 겹치지 않는다.
+// 2번과 6번: 글과 도형이 겹치지 않는다. 차트는 산점도 점 이름끼리 겹치지 않는 것만 본다.
 import { labelOf, overlaps, segmentHits, THROUGH_INSET } from './geometry.js';
 
 // cost: time O((l + t)² + (l + t)·s), heap O(1), stack O(1)
@@ -54,4 +54,12 @@ export function checkTitleLines({ edges, titles }, problems) {
       if (segments.some(([p, q]) => segmentHits(p, q, box))) problems.error(e.line, `[check 13] edge ${e.from} -> ${e.to} passes through the title of group "${t.group.id}" (line ${t.group.line}). Change a group direction or widen the group with a longer title`);
     }
   }
+}
+
+// cost: time O(c), heap O(1), stack O(1)
+// vars: c = 겹친 이름 쌍 수
+// basis: estimate
+// 2번(차트): 산점도 점 이름이 위아래와 좌우로 비켜 놓아도 다른 이름과 겹치면 오류다. 메시지는 나중에 적은 점의 줄에 붙는다.
+export function checkChartLabels(chart, problems) {
+  for (const { a, b, line } of chart.clashes) problems.error(line, `[check 2] point name "${b}" overlaps point name "${a}". Change a coordinate or rename a point so the names can be placed apart`);
 }

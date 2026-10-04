@@ -10,12 +10,15 @@ const ELK_DIRECTION = { right: 'RIGHT', down: 'DOWN' };
 // 라벨을 선 위 가운데에 얹는다. 라벨마다 주는 elkjs 선택 사항이다.
 const LABEL_OPTIONS = { 'elk.edgeLabels.inline': 'true', 'elk.edgeLabels.placement': 'CENTER' };
 
+// 글 상자 간격 요구(chipRoom)를 elkjs에 알리는 보이지 않는 라벨. 선 끝 쪽에 선 옆으로 두는 라벨은 층 사이 간격을 (기본 간격 + 라벨 크기 + 라벨 간격)으로 만든다.
+const ROOM_OPTIONS = { 'elk.edgeLabels.inline': 'false', 'elk.edgeLabels.placement': 'HEAD' };
+
 // cost: time O(s + e·d), heap O(s + e·d), stack O(d)
 // vars: s = 도형 수, e = 선 수, d = 그룹 깊이
 // basis: estimate
 /** 모형을 elkjs 그래프로 바꾼다. 그룹이 안쪽 그래프이고 선 조각은 그룹마다 모인다. */
 export function toElk(model, figure) {
-  const byContainer = edgesByContainer(model);
+  const byContainer = edgesByContainer(model, figure);
   const ctx = { model, figure, byContainer, alignRight: figure.aspect !== undefined && figure.groups.length > 0, isSafe: figure.safeLayout === true };
   return containerToElk(model.containers.get(ROOT), ctx);
 }
@@ -23,17 +26,27 @@ export function toElk(model, figure) {
 // cost: time O(e·k), heap O(e·k), stack O(1)
 // vars: e = 선 수, k = 선의 조각 수
 // basis: estimate
-function edgesByContainer({ containers, pieces, edges, isSafe }) {
+function edgesByContainer({ containers, pieces, edges, isSafe }, figure) {
   const byContainer = new Map([...containers.keys()].map((k) => [k, []]));
   for (const [index, list] of pieces) {
     const edge = edges.find((e) => e.index === index);
     list.forEach((p, k) => {
       // 번호만 있는 알약은 선을 다 그린 뒤 얹으므로(read.js) 자리를 요구하지 않는다. 안전 배치는 얹을 자리가 없을 때의 대비라 알약도 자리를 받는다.
       const labels = p.hasLabel && (edge.label !== undefined || (hasPill(edge) && (isSafe || !isOnLinePill(edge)))) && !isBeside(edge, containers.get(p.container)) ? [{ id: `label::${index}`, text: edge.label ?? String(edge.no), ...sizeOf(sizePill(edge.label, edge.no)), layoutOptions: LABEL_OPTIONS }] : [];
+      const room = figure.chipRoom?.get(index);
+      if (room !== undefined) labels.push(roomLabel(`room::${index}::${k}`, room, containers.get(p.container).direction));
       byContainer.get(p.container).push({ id: `${index}::${k}`, sources: [p.from], targets: [p.to], labels });
     });
   }
   return byContainer;
+}
+
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+// 층 사이 간격이 room(px)이 되게 하는 보이지 않는 라벨. 층이 놓이는 방향의 크기만 갖고(right는 너비, down은 높이) 다른 쪽은 1이다.
+function roomLabel(id, room, direction) {
+  const extent = Math.max(1, room - SPACE['30'] - SPACE['2']);
+  return { id, text: ' ', width: direction === 'down' ? 1 : extent, height: direction === 'down' ? extent : 1, layoutOptions: ROOM_OPTIONS };
 }
 
 // 세로로 쌓는 층의 quiet 선 라벨은 층 사이에 자리를 만들지 않고 선 옆에 둔다(read.js). 숨은 선 때문에 층 간격이 벌어져 보이지 않게 하려는 것이다.

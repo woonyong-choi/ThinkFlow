@@ -16,14 +16,14 @@ const DRAWERS = { bar: drawBars, dumbbell: drawDumbbells, difference: drawDiffer
 // basis: estimate
 /**
  * 차트 하나를 그린다.
- * @returns { body, width, height, rowKeys, fits, dotAts, dimsInkColor }. dimsInkColor는 흐린 행에서 글자 색도 바뀌는 종류(히트맵)이다. rowKeys[k]는 행 k의 light 이름이다. dotAts는 선 차트 점이 나타나는 시각(자라는 시간 대비 비율, `data-at`)의 오름차순 목록이다. fits는 칸에 들어가야 하는 글({ text, width, room, line, what })이다
+ * @returns { body, width, height, rowKeys, fits, dotAts, dimsInkColor }. dimsInkColor는 흐린 행에서 글자 색도 바뀌는 종류(히트맵)이다. rowKeys[k]는 행 k의 light 이름이다. dotAts는 선 차트 점이 나타나는 시각(자라는 시간 대비 비율, `data-at`)의 오름차순 목록이다. fits는 칸에 들어가야 하는 글({ text, width, room, line, what }), clashes는 비켜 놓지 못해 겹친 점 이름 쌍({ a, b, line })이다
  */
 export function drawChart(figure) {
   const header = drawHeader(figure);
   const plot = DRAWERS[figure.chartType](figure, header.bottom);
   // 계열이 없는 차트는 그림 전체를 계열 0으로 묶는다. 시간표가 차트 전체를 계열 하나로 보기 때문이다(timeline.js chartSeriesIds).
   const marks = figure.chart.series.length ? plot.svg : `<g class="cs-0">${plot.svg}</g>`;
-  return { body: `${header.svg}\n${marks}`, width: WIDTH, height: plot.bottom + PAD, rowKeys: plot.rowKeys, fits: plot.fits ?? [], dotAts: plot.dotAts ?? [], dimsInkColor: plot.dimsInkColor ?? false };
+  return { body: `${header.svg}\n${marks}`, width: WIDTH, height: plot.bottom + PAD, rowKeys: plot.rowKeys, fits: plot.fits ?? [], clashes: plot.clashes ?? [], dotAts: plot.dotAts ?? [], dimsInkColor: plot.dimsInkColor ?? false };
 }
 
 /** 차트 글자가 쓰는 글꼴. 숫자는 Pretendard의 자리 폭 같은 숫자(num)로 그린다. */

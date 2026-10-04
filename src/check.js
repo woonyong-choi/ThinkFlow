@@ -36,7 +36,7 @@ export function checkFigure({ figure, scene, timeline }, problems) {
 // cost: time O(c·r·n), heap O(r), stack O(1)
 // vars: c = 차트 판정 수, r = 항목 수, n = 이름 글자 수
 // basis: estimate
-/** 차트 검사. 차트에는 선과 도형이 없어 1번(항목 이름, 열 이름, 점 이름이 자기 칸에 들어간다)만 해당한다. */
+/** 차트 검사. 차트에는 선과 도형이 없어 1번(항목 이름, 열 이름, 점 이름이 자기 칸에 들어간다)과 2번(산점도 점 이름끼리 겹치지 않는다)만 해당한다. */
 export function checkChartFigure(chart, problems) {
   for (const { judgeChart } of CHECKS) judgeChart?.(chart, problems);
 }

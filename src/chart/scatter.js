@@ -1,11 +1,11 @@
 // 산점도: 같은 크기 점, 이름 글자, link 화살표. 계열이 있으면 계열 색이다. 신뢰구간은 받지 않는다.
-import { measure } from '../measure/fonts.js';
 import { centerBaseline, renderRich, roundCoord as r } from '../text.js';
 import { values } from '../tokens.js';
 import { drawRules } from './axis.js';
 import { inkGroup } from './labels.js';
 import { DOT, NAME_OFFSET, PAD, SIZE, SPACE, TEXT, seriesColor } from './metrics.js';
 import { plotFrame } from './plot-frame.js';
+import { NAME_STEP, placeNames } from './scatter-names.js';
 
 // 화살촉 삼각형의 반폭 비율(길이 대비)
 const HEAD_HALF_WIDTH = 0.4;
@@ -23,20 +23,6 @@ function arrowheadHits(end, dir, box) {
   const points = [[end.x, end.y], [bx + px, by + py], [bx - px, by - py], [bx, by], [(end.x + bx) / 2, (end.y + by) / 2]];
   const pad = SPACE['2'];
   return points.some(([x, y]) => x >= box.x0 - pad && x <= box.x1 + pad && y >= box.y0 - pad && y <= box.y1 + pad);
-}
-
-// cost: time O(p), heap O(p), stack O(1)
-// vars: p = 점 수
-// basis: estimate
-// 점 이름 자리: 점 오른쪽에 두고, 그림 오른쪽 끝을 넘으면 점 왼쪽으로 옮긴다. 화살촉이 이름을 피하게 하려고 이름 글자 상자를 먼저 구한다.
-function pointNames(chart, at, right) {
-  return chart.rows.map((p) => {
-    const { x, y } = at.get(p.label);
-    const nameW = measure(p.label, TEXT['11']);
-    const toLeft = x + NAME_OFFSET + nameW > right;
-    const width = measure(p.label, TEXT['11']);
-    return { p, nameW, toLeft, box: { x0: toLeft ? x - NAME_OFFSET - width : x + NAME_OFFSET, x1: toLeft ? x - NAME_OFFSET : x + NAME_OFFSET + width, y0: y - TEXT['11'] / 2, y1: y + TEXT['11'] / 2 } };
-  });
 }
 
 // cost: time O(p·n), heap O(1), stack O(1)
@@ -60,11 +46,11 @@ function linkArrow(ctx, link) {
 // cost: time O(1), heap O(1), stack O(1)
 // basis: estimate
 // 점 하나와 이름
-function pointMark(ctx, { p, toLeft }, k) {
+function pointMark(ctx, { p, toLeft, shift }, k) {
   const { chart, at } = ctx;
   const { x, y } = at.get(p.label);
   const i = Math.max(0, chart.series.findIndex((s) => s.id === p.values.series));
-  const name = `<text x="${r(toLeft ? x - NAME_OFFSET : x + NAME_OFFSET)}" y="${r(centerBaseline(y, TEXT['11']))}" class="chart-name late${toLeft ? ' end' : ''}">${renderRich(p.label)}</text>`;
+  const name = `<text x="${r(toLeft ? x - NAME_OFFSET : x + NAME_OFFSET)}" y="${r(centerBaseline(y + shift * NAME_STEP, TEXT['11']))}" class="chart-name late${toLeft ? ' end' : ''}">${renderRich(p.label)}</text>`;
   return `<g class="cr-${k}"><g class="cs-${i}"><circle cx="${r(x)}" cy="${r(y)}" r="${DOT}" fill="${seriesColor(chart, i)}" class="pop"/></g></g>${inkGroup(k, name, i)}`;
 }
 
@@ -75,7 +61,7 @@ export function drawScatter(figure, top) {
   const { chart } = figure;
   const { sx, sy, frame, right, bottom } = plotFrame(figure, top, { xs: chart.rows.map((p) => p.values.x), ys: chart.rows.map((p) => p.values.y) });
   const at = new Map(chart.rows.map((p) => [p.label, { x: sx.at(p.values.x), y: sy.at(p.values.y), p }]));
-  const names = pointNames(chart, at, right);
+  const { names, clashes } = placeNames(chart.rows.map((p) => ({ p, ...at.get(p.label) })), right);
   const ctx = { chart, at, names };
   const fits = names.map(({ p, nameW }) => {
     const { x } = at.get(p.label);
@@ -84,5 +70,5 @@ export function drawScatter(figure, top) {
   const parts = [frame, ...chart.links.map((link) => linkArrow(ctx, link)), ...names.map((name, k) => pointMark(ctx, name, k))];
   const occupied = [...names.map(({ box }) => ({ x0: box.x0, x1: box.x1, y0: box.y0, y1: box.y1 })), ...[...at.values()].map(({ x, y }) => ({ x0: x - DOT, x1: x + DOT, y0: y - DOT, y1: y + DOT }))];
   parts.push(drawRules(chart.rules, sy, { axis: 'y', from: sx.at(sx.ticks[0]), to: sx.at(sx.ticks.at(-1)), occupied }));
-  return { svg: parts.join('\n'), bottom, rowKeys: chart.rows.map((p) => p.label), fits };
+  return { svg: parts.join('\n'), bottom, rowKeys: chart.rows.map((p) => p.label), fits, clashes: clashes.map(([a, b]) => ({ a: a.label, b: b.label, line: b.line })) };
 }

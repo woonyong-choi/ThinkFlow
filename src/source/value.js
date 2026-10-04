@@ -1,5 +1,6 @@
 // 값 선언(`value id "이름" on=도형 [from=값 | ref=값]`)과 값 바꾸기 식(`set="id+1@도형, id=낱말"`)을 읽는다. 이름이 선언됐는지는 value-check.js가 확인한다.
 import { VALUE_MAX } from './grammar.js';
+import { MAX_VALUE, RANGE_MESSAGE } from './chart-rules.js';
 import { checkId } from './names.js';
 import { readOptions } from './options.js';
 import { ID_PATTERN, NUMBER_PATTERN } from './words.js';
@@ -80,7 +81,11 @@ function readExpression(raw, { ids, line, ctx }) {
   const op = body[id.length];
   const operand = body.slice(id.length + 1);
   const expression = { id, op, operand, at, line };
-  if (op !== '=') return SIGNED_STEP.test(operand) ? { ...expression, operand: String(Number(operand)) } : fail(`"${raw}" needs a number after ${op}`, { line, ctx });
+  if (op !== '=') {
+    if (!SIGNED_STEP.test(operand)) return fail(`"${raw}" needs a number after ${op}`, { line, ctx });
+    // 차트 숫자와 같은 기준. 무한대가 되는 글과 1e15 이상은 글자로 쓸 수 없다.
+    return Math.abs(Number(operand)) < MAX_VALUE ? { ...expression, operand: String(Number(operand)) } : fail(RANGE_MESSAGE, { line, ctx });
+  }
   if (operand === '') return fail(`"${raw}" needs a value after =`, { line, ctx });
   const literal = readLiteral(operand, { line, key: 'a set value', ctx });
   return literal === undefined ? undefined : { ...expression, operand: literal };

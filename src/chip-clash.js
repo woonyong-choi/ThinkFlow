@@ -35,6 +35,15 @@ function fadeKeysOf(spans) {
   return keys.filter(([at], i) => i === keys.length - 1 || keys[i + 1][0] > at);
 }
 
+// cost: time O(k), heap O(k), stack O(1)
+// vars: k = 키 수
+// basis: estimate
+// 단계 끝에서 잘리는 이동(hop.cut)의 숨김 키를 잘림 시각에서 끝낸다. 잘림 시각 앞의 키와 잘림 시각의 보간 값만 남는다. 점의 보임과 글 상자 옮김이 끝나는 시각과 같다.
+function cutKeys(keys, hop) {
+  if (hop.cut === undefined) return keys;
+  return [...keys.filter(([at]) => at < hop.cut), [hop.cut, fadeAt(keys, hop.cut)]];
+}
+
 // cost: time O(p), heap O(p), stack O(1)
 // vars: p = 경로 점 수
 // basis: estimate
@@ -108,7 +117,7 @@ export function planClashes(scene, timeline) {
   for (const seg of timeline.segs) {
     const hops = seg.hops.filter((hop) => hop.data).sort((a, b) => (a.at ?? 0) - (b.at ?? 0));
     if (hops.length < 2) continue;
-    for (const [hop, times] of clashTimes(seg, hops, world)) if (times.length) hop.chipFade = fadeKeysOf(spansOf(times));
+    for (const [hop, times] of clashTimes(seg, hops, world)) if (times.length) hop.chipFade = cutKeys(fadeKeysOf(spansOf(times)), hop);
   }
 }
 

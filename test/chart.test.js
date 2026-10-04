@@ -492,6 +492,39 @@ test('drawChart_scatter_arrowhead_stays_clear_of_every_point_name', async () => 
   }
 });
 
+// cost: time O(n), heap O(n), stack O(1)
+// vars: n = 점 수
+// basis: estimate
+// 점 이름 글자 상자 목록 { label, x0, x1, y0, y1 }. 점 오른쪽 이름과 왼쪽(end) 이름을 모두 읽는다.
+function nameBoxes(body) {
+  return [...body.matchAll(/<text x="([\d.-]+)" y="([\d.-]+)" class="chart-name late( end)?">(.*?)<\/text>/g)].map((m) => {
+    const width = measure(m[4], 11);
+    const [x, y] = [Number(m[1]), Number(m[2]) - 11 * 0.36];
+    return { label: m[4], x0: m[3] ? x - width : x, x1: m[3] ? x : x + width, y0: y - 5.5, y1: y + 5.5 };
+  });
+}
+const isOverlapping = (a, b) => a.x0 < b.x1 && b.x0 < a.x1 && a.y0 < b.y1 && b.y0 < a.y1;
+
+// 근거: 설계 charts.md 산점도 점 이름 "이름끼리 겹치면 비켜 놓는다": 같은 좌표와 가까운 좌표의 두 점도 이름이 따로 읽힌다(#36)
+test('drawScatter_names_of_points_at_the_same_or_near_coordinates_are_placed_apart', async () => {
+  const head = 'chart scatter\nx "a(ms)"\ny "b(ms)"\n';
+  for (const points of ['point "alpha" x=5 y=5\npoint "beta" x=5 y=5\npoint "far" x=1 y=1', 'point "alpha" x=5 y=5\npoint "beta" x=5.02 y=5.02\npoint "far" x=1 y=1']) {
+    const result = await buildFigure(`${head}${points}`, { strict: true });
+    const boxes = nameBoxes(result.chart.body);
+
+    assert.equal(boxes.length, 3);
+    for (const [i, a] of boxes.entries()) for (const b of boxes.slice(i + 1)) assert.ok(!isOverlapping(a, b), `${a.label}와 ${b.label} 이름이 겹친다: ${points}`);
+  }
+});
+
+// 근거: 설계 charts.md 산점도 점 이름: 비켜 놓을 자리가 없을 만큼 한 좌표에 점이 몰리면 이름이 겹쳐 읽을 수 없으므로 strict가 검사 2번 오류로 알린다(#36)
+test('buildFigure_scatter_names_that_cannot_be_placed_apart_are_a_check_2_error_with_the_point_line', async () => {
+  const points = Array.from({ length: 25 }, (_, i) => `point "name${i}" x=5 y=5`).join('\n');
+  const errors = await problemsOf(`chart scatter\nx "a(ms)"\ny "b(ms)"\n${points}`, { strict: true });
+
+  assert.ok(errors.some((e) => /^\d+: \[check-2\] point name "name\d+" overlaps point name "name\d+"/.test(e)), errors.join('\n'));
+});
+
 // 근거: 설계 charts.md "머리와 선언 줄": 종류를 모르면 종류에 기대는 검사를 하지 않고 헤더 오류 하나만 남긴다
 test('parseFigure_chart_header_failure_stops_before_any_type_dependent_check', () => {
   for (const source of ['chart', 'chart bogus', 'chart bogus\nseries s "S"\nrow "A" s=1\nrule 5 "R"']) {

@@ -56,5 +56,8 @@ function reportChip(hop, { scene, issues, path }, problems) {
     return;
   }
   const covered = issues.find((issue) => issue.hits.length);
-  if (covered) problems.warn(hop.line ?? 1, `[check 7] moving text "${text}" covers "${covered.hits[0]}" at ${percent(covered.at)}% of ${path}, wherever it is placed (above, below, lifted, or beside the dot). Shorten the moving text or move the edge away from the shape or label`);
+  if (covered && hop.track !== undefined) {
+    const hidden = Math.round((issues.filter((issue) => issue.hits.length).length / issues.length) * 100);
+    problems.warn(hop.line ?? 1, `[check 7] moving text "${text}" is hidden for ${hidden}% of the time it is on screen because it would cover "${covered.hits[0]}" at ${percent(covered.at)}% of ${path}. Shorten the moving text or lengthen the edge so the text fits between the shapes`);
+  } else if (covered) problems.warn(hop.line ?? 1, `[check 7] moving text "${text}" covers "${covered.hits[0]}" at ${percent(covered.at)}% of ${path}, wherever it is placed (above, below, lifted, or beside the dot). Shorten the moving text or move the edge away from the shape or label`);
 }

@@ -77,6 +77,20 @@ function offsetAt(path, ms, t) {
   return [1, 2, 3].map((i) => a[i] + (b[i] - a[i]) * ratio);
 }
 
+// cost: time O(k), heap O(k), stack O(1)
+// vars: k = 경로 지점 수
+// basis: estimate
+/**
+ * 단계 끝에서 잘리는 이동(hop.cut)의 글 상자 경로. 잘림 시각 앞의 지점만 남기고 잘림 시각의 보간 값을 마지막 지점으로 둔다. 움직이는 SVG와 재생기가 같은 시각에 끝나는 글 상자 키를 읽게 하는 한 곳이다.
+ * @param path planChip이 돌려준 [진행 비율, dx, dy, opacity] 목록
+ * @param { ms, cut } 이동 전체 시간과 그려지는 시간(ms)
+ */
+export function cutPath(path, { ms, cut }) {
+  if (path.length < 2) return path;
+  const kept = path.filter(([progress]) => timeAt(MOVE, progress) * ms < cut);
+  return [...kept, [progressAt(MOVE, cut / ms), ...offsetAt(path, ms, cut)]];
+}
+
 // cost: time O(m), heap O(1), stack O(1)
 // vars: m = 글 상자 둘레 칸에 걸린 도형, 글자, 알약 수
 // basis: estimate
