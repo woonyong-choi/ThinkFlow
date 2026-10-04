@@ -1,0 +1,115 @@
+name: design-tokens-update
+
+# design-tokens 새 버전을 알아채 의존성을 올리는 PR과 이슈를 연다.
+# - repository_dispatch(design-tokens-release): design-tokens 릴리스 워크플로가 보내는 알림. payload의 version을 목표 태그로 쓴다
+# - schedule: 하루 한 번 최신 태그를 확인한다. 알림이 빠졌을 때의 안전망이다
+# - workflow_dispatch: 수동 실행. version을 비우면 최신 태그를 쓴다
+# GITHUB_TOKEN으로 만든 PR은 다른 워크플로(ci.yml)를 자동 실행하지 않는다. 그래서 같은 job에서 시험을 돌려 결과를 PR 본문에 적는다.
+# 저장소 비밀 DESIGN_TOKENS_UPDATE_TOKEN(contents, pull-requests, issues 쓰기 권한이 있는 토큰)을 등록하면 그 토큰으로 PR을 만들어 ci.yml도 자동으로 돈다.
+# 이 워크플로가 PR을 만들려면 저장소 설정 Actions > General의 "Allow GitHub Actions to create and approve pull requests"가 켜져 있어야 한다.
+
+on:
+  repository_dispatch:
+    types: [design-tokens-release]
+  schedule:
+    - cron: '17 3 * * *'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'design-tokens 태그(예: v0.1.1). 비우면 최신 태그'
+        required: false
+        default: ''
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+concurrency:
+  group: design-tokens-update
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.DESIGN_TOKENS_UPDATE_TOKEN || secrets.GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.DESIGN_TOKENS_UPDATE_TOKEN || secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Compare the pinned tag with the latest design-tokens tag
+        id: detect
+        env:
+          REQUESTED: ${{ github.event.client_payload.version || inputs.version }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          node scripts/update-design-tokens.mjs detect > "$RUNNER_TEMP/detect.out"
+          cat "$RUNNER_TEMP/detect.out"
+          cat "$RUNNER_TEMP/detect.out" >> "$GITHUB_OUTPUT"
+
+      - name: Stop when an update pull request for this version is already open
+        id: open
+        if: steps.detect.outputs.update == 'true'
+        env:
+          LATEST: ${{ steps.detect.outputs.latest }}
+        run: |
+          count=$(gh pr list --state open --head "chore/design-tokens-$LATEST" --json number --jq length)
+          if [ "$count" != "0" ]; then
+            echo "an open pull request for $LATEST already exists, nothing to do"
+          fi
+          echo "duplicate=$([ "$count" != "0" ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+
+      - name: Update the dependency and regenerate tokens and figures
+        id: update
+        if: steps.detect.outputs.update == 'true' && steps.open.outputs.duplicate == 'false'
+        env:
+          LATEST: ${{ steps.detect.outputs.latest }}
+        run: |
+          # 브랜치는 이 워크플로만 만들므로 다시 실행하면 같은 이름을 덮어쓴다(push --force).
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch -c "chore/design-tokens-$LATEST"
+          npm install --save --ignore-scripts --no-audit --no-fund "github:woonyong-choi/design-tokens#$LATEST"
+          sed -i 's|git+ssh://git@github.com/|git+https://github.com/|' package-lock.json
+          npm ci --ignore-scripts --no-audit --no-fund
+          npm run palette
+          npm run tokens
+          npm run figures
+
+      - name: Run the tests and the checks
+        id: verify
+        if: steps.update.outcome == 'success'
+        run: |
+          result() { if "$@" >> "$RUNNER_TEMP/verify.log" 2>&1; then echo pass; else echo fail; fi; }
+          echo "test=$(result npm test)" >> "$GITHUB_OUTPUT"
+          echo "check=$(result npm run check)" >> "$GITHUB_OUTPUT"
+
+      - name: Commit, push, then open the issue and the pull request
+        if: steps.update.outcome == 'success'
+        env:
+          CURRENT: ${{ steps.detect.outputs.current }}
+          LATEST: ${{ steps.detect.outputs.latest }}
+          TEST: ${{ steps.verify.outputs.test }}
+          CHECK: ${{ steps.verify.outputs.check }}
+        run: |
+          branch="chore/design-tokens-$LATEST"
+          git add -A
+          git commit -m "chore(tokens): design-tokens $LATEST로 올리고 생성물을 다시 만든다"
+          git push --force origin "$branch"
+          issue=$(gh issue list --state open --search "design-tokens $LATEST in:title" --json number --jq '.[0].number // empty')
+          if [ -z "$issue" ]; then
+            node scripts/update-design-tokens.mjs body --kind issue --current "$CURRENT" --latest "$LATEST" > "$RUNNER_TEMP/issue.md"
+            url=$(gh issue create --title "design-tokens $LATEST로 올린다" --body-file "$RUNNER_TEMP/issue.md" --label build --label area:repo)
+            issue="${url##*/}"
+          fi
+          node scripts/update-design-tokens.mjs body --kind pr --current "$CURRENT" --latest "$LATEST" --issue "$issue" --test "$TEST" --check "$CHECK" --log "$RUNNER_TEMP/verify.log" > "$RUNNER_TEMP/pr.md"
+          draft=""
+          if [ "$TEST" != "pass" ] || [ "$CHECK" != "pass" ]; then draft="--draft"; fi
+          gh pr create --base main --head "$branch" --title "chore(tokens): design-tokens $LATEST로 올린다" --body-file "$RUNNER_TEMP/pr.md" $draft

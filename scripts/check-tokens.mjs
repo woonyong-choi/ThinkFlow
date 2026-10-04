@@ -8,6 +8,7 @@
 // 글자 판정(`\w`, `\b`)은 한글 같은 유니코드 글자도 낱말 글자로 본다.
 import { readFileSync } from 'node:fs';
 import { extname } from 'node:path';
+import { commonTokenPaths } from './lib/design-tokens.mjs';
 import { findHardcoded, findLineNumber, findScriptValues, findSegments, stripJsComments } from './lib/find-hardcoded.mjs';
 import { compareText, findTokensFile, iterFiles } from './lib/walk-files.mjs';
 import { ALLOW_MARK, GENERATED_MARK, REFERENCE_IN_VALUE, SCRIPT_EXTS, THEMED_TYPES } from './lib/tokens-patterns.mjs';
@@ -25,6 +26,7 @@ function main(argv) {
     console.error('tokens.json not found: every @media and @container number is reported, primitive references are not checked');
   }
   const info = loadTokenInfo(tokensPath);
+  if (tokensPath) mergeInfo(info, loadTokenInfo(commonTokenPaths().light));
   const results = [];
   for (const path of iterFiles(args.targets)) results.push(...checkFile(path, info));
   results.sort((a, b) => compareText(a.path, b.path) || a.line - b.line);
@@ -64,6 +66,15 @@ function exitWithUsage(message) {
   process.exit(2);
 }
 
+
+// cost: time O(p), heap O(p), stack O(1)
+// vars: p = 합칠 기본 토큰 수
+// basis: estimate
+/** 공통 토큰(design-tokens)의 기본 토큰 이름도 코드에서 쓰면 안 되는 목록에 더한다. */
+function mergeInfo(info, extra) {
+  for (const name of extra.primitiveNames) info.primitiveNames.add(name);
+  for (const path of extra.primitivePaths) info.primitivePaths.add(path);
+}
 
 // cost: time O(t), heap O(t), stack O(1), io 1
 // vars: t = 토큰 수

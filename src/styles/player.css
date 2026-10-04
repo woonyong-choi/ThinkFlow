@@ -4,7 +4,7 @@
 body {
   margin: 0;
   padding: var(--space-12) var(--space-16);
-  font-family: var(--font-sans);
+  font-family: var(--font-figure-sans);
   letter-spacing: var(--tracking-text);
   color: var(--color-fg);
   background: var(--color-page);
@@ -108,7 +108,7 @@ html.embedded .fl-figure {
   min-width: var(--size-control-outer);
   height: var(--size-control-outer);
   padding: 0 var(--space-2);
-  font: var(--size-text-13) var(--font-sans);
+  font: var(--size-text-13) var(--font-figure-sans);
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
   color: var(--color-muted);
@@ -133,7 +133,7 @@ html.embedded .fl-figure {
 
 /* 백틱으로 감싼 글. 코드 글꼴로 그린다. */
 .fl-code {
-  font-family: var(--font-mono);
+  font-family: var(--font-figure-mono);
   letter-spacing: normal;
 }
 

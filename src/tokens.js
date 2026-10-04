@@ -7,185 +7,130 @@ function freeze(node) {
 /** CSS에 넣을 토큰 참조. 값은 `var(--…)` 문자열이다. */
 export const tokens = freeze({
   "color": {
-    "palette": {
-      "gray": {
-        "0": "var(--color-palette-gray-0)",
-        "25": "var(--color-palette-gray-25)",
-        "outline": "var(--color-palette-gray-outline)",
-        "group-1": "var(--color-palette-gray-group-1)",
-        "group-2": "var(--color-palette-gray-group-2)",
-        "group-3": "var(--color-palette-gray-group-3)",
-        "40": "var(--color-palette-gray-40)",
-        "100": "var(--color-palette-gray-100)",
-        "200": "var(--color-palette-gray-200)",
-        "500": "var(--color-palette-gray-500)",
-        "50": "var(--color-palette-gray-50)",
-        "150": "var(--color-palette-gray-150)",
-        "300": "var(--color-palette-gray-300)"
-      },
-      "neutral": {
-        "group-1": "var(--color-palette-neutral-group-1)",
-        "group-2": "var(--color-palette-neutral-group-2)",
-        "group-3": "var(--color-palette-neutral-group-3)",
-        "outline": "var(--color-palette-neutral-outline)",
-        "100": "var(--color-palette-neutral-100)",
-        "400": "var(--color-palette-neutral-400)",
-        "500": "var(--color-palette-neutral-500)",
-        "750": "var(--color-palette-neutral-750)",
-        "800": "var(--color-palette-neutral-800)",
-        "850": "var(--color-palette-neutral-850)",
-        "875": "var(--color-palette-neutral-875)",
-        "900": "var(--color-palette-neutral-900)",
-        "950": "var(--color-palette-neutral-950)",
-        "600": "var(--color-palette-neutral-600)"
-      },
-      "blue": {
-        "light-fill": "var(--color-palette-blue-light-fill)",
-        "light-stroke": "var(--color-palette-blue-light-stroke)",
-        "light-ink": "var(--color-palette-blue-light-ink)",
-        "light-heat-low": "var(--color-palette-blue-light-heat-low)",
-        "light-heat-high": "var(--color-palette-blue-light-heat-high)",
-        "light-icon": "var(--color-palette-blue-light-icon)",
-        "dark-fill": "var(--color-palette-blue-dark-fill)",
-        "dark-stroke": "var(--color-palette-blue-dark-stroke)",
-        "dark-ink": "var(--color-palette-blue-dark-ink)",
-        "dark-heat-low": "var(--color-palette-blue-dark-heat-low)",
-        "dark-heat-high": "var(--color-palette-blue-dark-heat-high)",
-        "dark-icon": "var(--color-palette-blue-dark-icon)",
-        "light-outline": "var(--color-palette-blue-light-outline)",
-        "dark-outline": "var(--color-palette-blue-dark-outline)"
-      },
-      "ink": {
-        "200": "var(--color-palette-ink-200)",
-        "600": "var(--color-palette-ink-600)",
-        "700": "var(--color-palette-ink-700)",
-        "850": "var(--color-palette-ink-850)",
-        "900": "var(--color-palette-ink-900)",
-        "1000": "var(--color-palette-ink-1000)"
-      },
-      "red": {
-        "light-fill": "var(--color-palette-red-light-fill)",
-        "light-stroke": "var(--color-palette-red-light-stroke)",
-        "light-ink": "var(--color-palette-red-light-ink)",
-        "light-dot": "var(--color-palette-red-light-dot)",
-        "dark-fill": "var(--color-palette-red-dark-fill)",
-        "dark-stroke": "var(--color-palette-red-dark-stroke)",
-        "dark-ink": "var(--color-palette-red-dark-ink)",
-        "dark-dot": "var(--color-palette-red-dark-dot)",
-        "light-outline": "var(--color-palette-red-light-outline)",
-        "dark-outline": "var(--color-palette-red-dark-outline)"
-      },
-      "amber": {
-        "light-fill": "var(--color-palette-amber-light-fill)",
-        "light-stroke": "var(--color-palette-amber-light-stroke)",
-        "light-ink": "var(--color-palette-amber-light-ink)",
-        "dark-fill": "var(--color-palette-amber-dark-fill)",
-        "dark-stroke": "var(--color-palette-amber-dark-stroke)",
-        "dark-ink": "var(--color-palette-amber-dark-ink)",
-        "light-outline": "var(--color-palette-amber-light-outline)",
-        "dark-outline": "var(--color-palette-amber-dark-outline)"
-      },
-      "green": {
-        "light-fill": "var(--color-palette-green-light-fill)",
-        "light-stroke": "var(--color-palette-green-light-stroke)",
-        "light-ink": "var(--color-palette-green-light-ink)",
-        "light-dot": "var(--color-palette-green-light-dot)",
-        "dark-fill": "var(--color-palette-green-dark-fill)",
-        "dark-stroke": "var(--color-palette-green-dark-stroke)",
-        "dark-ink": "var(--color-palette-green-dark-ink)",
-        "dark-dot": "var(--color-palette-green-dark-dot)",
-        "light-outline": "var(--color-palette-green-light-outline)",
-        "dark-outline": "var(--color-palette-green-dark-outline)"
-      },
-      "teal": {
-        "light-fill": "var(--color-palette-teal-light-fill)",
-        "light-stroke": "var(--color-palette-teal-light-stroke)",
-        "light-ink": "var(--color-palette-teal-light-ink)",
-        "light-dot": "var(--color-palette-teal-light-dot)",
-        "dark-fill": "var(--color-palette-teal-dark-fill)",
-        "dark-stroke": "var(--color-palette-teal-dark-stroke)",
-        "dark-ink": "var(--color-palette-teal-dark-ink)",
-        "dark-dot": "var(--color-palette-teal-dark-dot)",
-        "light-outline": "var(--color-palette-teal-light-outline)",
-        "dark-outline": "var(--color-palette-teal-dark-outline)"
-      },
-      "navy": {
-        "light-fill": "var(--color-palette-navy-light-fill)",
-        "light-stroke": "var(--color-palette-navy-light-stroke)",
-        "light-ink": "var(--color-palette-navy-light-ink)",
-        "dark-fill": "var(--color-palette-navy-dark-fill)",
-        "dark-stroke": "var(--color-palette-navy-dark-stroke)",
-        "dark-ink": "var(--color-palette-navy-dark-ink)",
-        "light-outline": "var(--color-palette-navy-light-outline)",
-        "dark-outline": "var(--color-palette-navy-dark-outline)"
-      },
-      "purple": {
-        "light-fill": "var(--color-palette-purple-light-fill)",
-        "light-stroke": "var(--color-palette-purple-light-stroke)",
-        "light-ink": "var(--color-palette-purple-light-ink)",
-        "light-dot": "var(--color-palette-purple-light-dot)",
-        "light-tint-1": "var(--color-palette-purple-light-tint-1)",
-        "light-tint-2": "var(--color-palette-purple-light-tint-2)",
-        "light-tint-3": "var(--color-palette-purple-light-tint-3)",
-        "dark-fill": "var(--color-palette-purple-dark-fill)",
-        "dark-stroke": "var(--color-palette-purple-dark-stroke)",
-        "dark-ink": "var(--color-palette-purple-dark-ink)",
-        "dark-dot": "var(--color-palette-purple-dark-dot)",
-        "dark-tint-1": "var(--color-palette-purple-dark-tint-1)",
-        "dark-tint-2": "var(--color-palette-purple-dark-tint-2)",
-        "dark-tint-3": "var(--color-palette-purple-dark-tint-3)",
-        "light-outline": "var(--color-palette-purple-light-outline)",
-        "dark-outline": "var(--color-palette-purple-dark-outline)"
-      },
-      "pink": {
-        "light-fill": "var(--color-palette-pink-light-fill)",
-        "light-stroke": "var(--color-palette-pink-light-stroke)",
-        "light-ink": "var(--color-palette-pink-light-ink)",
-        "dark-fill": "var(--color-palette-pink-dark-fill)",
-        "dark-stroke": "var(--color-palette-pink-dark-stroke)",
-        "dark-ink": "var(--color-palette-pink-dark-ink)",
-        "light-outline": "var(--color-palette-pink-light-outline)",
-        "dark-outline": "var(--color-palette-pink-dark-outline)"
-      },
-      "slate": {
-        "light-fill": "var(--color-palette-slate-light-fill)",
-        "light-stroke": "var(--color-palette-slate-light-stroke)",
-        "light-ink": "var(--color-palette-slate-light-ink)",
-        "light-dot": "var(--color-palette-slate-light-dot)",
-        "dark-fill": "var(--color-palette-slate-dark-fill)",
-        "dark-stroke": "var(--color-palette-slate-dark-stroke)",
-        "dark-ink": "var(--color-palette-slate-dark-ink)",
-        "dark-dot": "var(--color-palette-slate-dark-dot)",
-        "light-outline": "var(--color-palette-slate-light-outline)",
-        "dark-outline": "var(--color-palette-slate-dark-outline)"
-      },
-      "orange": {
-        "light-fill": "var(--color-palette-orange-light-fill)",
-        "light-stroke": "var(--color-palette-orange-light-stroke)",
-        "light-ink": "var(--color-palette-orange-light-ink)",
-        "dark-fill": "var(--color-palette-orange-dark-fill)",
-        "dark-stroke": "var(--color-palette-orange-dark-stroke)",
-        "dark-ink": "var(--color-palette-orange-dark-ink)",
-        "light-outline": "var(--color-palette-orange-light-outline)",
-        "dark-outline": "var(--color-palette-orange-dark-outline)"
-      },
-      "sky": {
-        "light-fill": "var(--color-palette-sky-light-fill)",
-        "light-stroke": "var(--color-palette-sky-light-stroke)",
-        "light-ink": "var(--color-palette-sky-light-ink)",
-        "light-tint-1": "var(--color-palette-sky-light-tint-1)",
-        "light-tint-2": "var(--color-palette-sky-light-tint-2)",
-        "light-tint-3": "var(--color-palette-sky-light-tint-3)",
-        "dark-fill": "var(--color-palette-sky-dark-fill)",
-        "dark-stroke": "var(--color-palette-sky-dark-stroke)",
-        "dark-ink": "var(--color-palette-sky-dark-ink)",
-        "dark-tint-1": "var(--color-palette-sky-dark-tint-1)",
-        "dark-tint-2": "var(--color-palette-sky-dark-tint-2)",
-        "dark-tint-3": "var(--color-palette-sky-dark-tint-3)",
-        "light-outline": "var(--color-palette-sky-light-outline)",
-        "dark-outline": "var(--color-palette-sky-dark-outline)"
-      }
+    "gray": {
+      "0": "var(--color-gray-0)",
+      "27": "var(--color-gray-27)",
+      "43": "var(--color-gray-43)",
+      "59": "var(--color-gray-59)",
+      "71": "var(--color-gray-71)",
+      "106": "var(--color-gray-106)",
+      "118": "var(--color-gray-118)",
+      "145": "var(--color-gray-145)",
+      "161": "var(--color-gray-161)",
+      "212": "var(--color-gray-212)",
+      "220": "var(--color-gray-220)",
+      "282": "var(--color-gray-282)",
+      "333": "var(--color-gray-333)",
+      "467": "var(--color-gray-467)",
+      "529": "var(--color-gray-529)",
+      "545": "var(--color-gray-545)",
+      "635": "var(--color-gray-635)",
+      "651": "var(--color-gray-651)",
+      "757": "var(--color-gray-757)",
+      "776": "var(--color-gray-776)",
+      "788": "var(--color-gray-788)",
+      "796": "var(--color-gray-796)",
+      "835": "var(--color-gray-835)",
+      "875": "var(--color-gray-875)",
+      "878": "var(--color-gray-878)",
+      "910": "var(--color-gray-910)",
+      "929": "var(--color-gray-929)",
+      "933": "var(--color-gray-933)",
+      "1000": "var(--color-gray-1000)"
     },
+    "blue": {
+      "anchor": "var(--color-blue-anchor)",
+      "light-fill": "var(--color-blue-light-fill)",
+      "light-stroke": "var(--color-blue-light-stroke)",
+      "light-ink": "var(--color-blue-light-ink)",
+      "light-heat-low": "var(--color-blue-light-heat-low)",
+      "light-heat-high": "var(--color-blue-light-heat-high)",
+      "light-outline": "var(--color-blue-light-outline)",
+      "light-tint-1": "var(--color-blue-light-tint-1)",
+      "light-tint-2": "var(--color-blue-light-tint-2)",
+      "light-tint-3": "var(--color-blue-light-tint-3)",
+      "dark-fill": "var(--color-blue-dark-fill)",
+      "dark-stroke": "var(--color-blue-dark-stroke)",
+      "dark-ink": "var(--color-blue-dark-ink)",
+      "dark-heat-low": "var(--color-blue-dark-heat-low)",
+      "dark-heat-high": "var(--color-blue-dark-heat-high)",
+      "dark-outline": "var(--color-blue-dark-outline)",
+      "dark-tint-1": "var(--color-blue-dark-tint-1)",
+      "dark-tint-2": "var(--color-blue-dark-tint-2)",
+      "dark-tint-3": "var(--color-blue-dark-tint-3)"
+    },
+    "purple": {
+      "anchor": "var(--color-purple-anchor)",
+      "light-fill": "var(--color-purple-light-fill)",
+      "light-stroke": "var(--color-purple-light-stroke)",
+      "light-ink": "var(--color-purple-light-ink)",
+      "light-dot": "var(--color-purple-light-dot)",
+      "light-outline": "var(--color-purple-light-outline)",
+      "light-tint-1": "var(--color-purple-light-tint-1)",
+      "light-tint-2": "var(--color-purple-light-tint-2)",
+      "light-tint-3": "var(--color-purple-light-tint-3)",
+      "dark-fill": "var(--color-purple-dark-fill)",
+      "dark-stroke": "var(--color-purple-dark-stroke)",
+      "dark-ink": "var(--color-purple-dark-ink)",
+      "dark-dot": "var(--color-purple-dark-dot)",
+      "dark-outline": "var(--color-purple-dark-outline)",
+      "dark-tint-1": "var(--color-purple-dark-tint-1)",
+      "dark-tint-2": "var(--color-purple-dark-tint-2)",
+      "dark-tint-3": "var(--color-purple-dark-tint-3)"
+    },
+    "red": {
+      "anchor": "var(--color-red-anchor)",
+      "light-fill": "var(--color-red-light-fill)",
+      "light-stroke": "var(--color-red-light-stroke)",
+      "light-ink": "var(--color-red-light-ink)",
+      "light-dot": "var(--color-red-light-dot)",
+      "light-outline": "var(--color-red-light-outline)",
+      "dark-fill": "var(--color-red-dark-fill)",
+      "dark-stroke": "var(--color-red-dark-stroke)",
+      "dark-ink": "var(--color-red-dark-ink)",
+      "dark-dot": "var(--color-red-dark-dot)",
+      "dark-outline": "var(--color-red-dark-outline)"
+    },
+    "green": {
+      "anchor": "var(--color-green-anchor)",
+      "light-fill": "var(--color-green-light-fill)",
+      "light-stroke": "var(--color-green-light-stroke)",
+      "light-ink": "var(--color-green-light-ink)",
+      "light-dot": "var(--color-green-light-dot)",
+      "light-outline": "var(--color-green-light-outline)",
+      "dark-fill": "var(--color-green-dark-fill)",
+      "dark-stroke": "var(--color-green-dark-stroke)",
+      "dark-ink": "var(--color-green-dark-ink)",
+      "dark-dot": "var(--color-green-dark-dot)",
+      "dark-outline": "var(--color-green-dark-outline)"
+    },
+    "orange": {
+      "anchor": "var(--color-orange-anchor)",
+      "light-fill": "var(--color-orange-light-fill)",
+      "light-stroke": "var(--color-orange-light-stroke)",
+      "light-ink": "var(--color-orange-light-ink)",
+      "light-outline": "var(--color-orange-light-outline)",
+      "dark-fill": "var(--color-orange-dark-fill)",
+      "dark-stroke": "var(--color-orange-dark-stroke)",
+      "dark-ink": "var(--color-orange-dark-ink)",
+      "dark-outline": "var(--color-orange-dark-outline)"
+    },
+    "fg": "var(--color-fg)",
+    "muted": "var(--color-muted)",
+    "group-title": "var(--color-group-title)",
+    "bg": "var(--color-bg)",
+    "group-1": "var(--color-group-1)",
+    "group-2": "var(--color-group-2)",
+    "group-3": "var(--color-group-3)",
+    "node": "var(--color-node)",
+    "surface": "var(--color-surface)",
+    "card": "var(--color-card)",
+    "card-on": "var(--color-card-on)",
+    "page": "var(--color-page)",
+    "outline": "var(--color-outline)",
+    "border": "var(--color-border)",
+    "plate-border": "var(--color-plate-border)",
+    "line": "var(--color-line)",
     "state": {
       "active": "var(--color-state-active)",
       "active-fill": "var(--color-state-active-fill)",
@@ -202,6 +147,94 @@ export const tokens = freeze({
       "green": "var(--color-flow-green)",
       "gray": "var(--color-flow-gray)",
       "red": "var(--color-flow-red)"
+    },
+    "ui": {
+      "link": "var(--color-ui-link)",
+      "focus": "var(--color-ui-focus)",
+      "progress": "var(--color-ui-progress)",
+      "control-on": "var(--color-ui-control-on)"
+    },
+    "data": {
+      "main": "var(--color-data-main)",
+      "compare": "var(--color-data-compare)",
+      "heat-low": "var(--color-data-heat-low)",
+      "heat-high": "var(--color-data-heat-high)",
+      "heat-ink": "var(--color-data-heat-ink)",
+      "heat-ink-on": "var(--color-data-heat-ink-on)",
+      "grid": "var(--color-data-grid)"
+    },
+    "accent": "var(--color-accent)",
+    "palette": {
+      "amber": {
+        "light-fill": "var(--color-palette-amber-light-fill)",
+        "light-stroke": "var(--color-palette-amber-light-stroke)",
+        "light-ink": "var(--color-palette-amber-light-ink)",
+        "light-outline": "var(--color-palette-amber-light-outline)",
+        "dark-fill": "var(--color-palette-amber-dark-fill)",
+        "dark-stroke": "var(--color-palette-amber-dark-stroke)",
+        "dark-ink": "var(--color-palette-amber-dark-ink)",
+        "dark-outline": "var(--color-palette-amber-dark-outline)"
+      },
+      "teal": {
+        "light-fill": "var(--color-palette-teal-light-fill)",
+        "light-stroke": "var(--color-palette-teal-light-stroke)",
+        "light-ink": "var(--color-palette-teal-light-ink)",
+        "light-dot": "var(--color-palette-teal-light-dot)",
+        "light-outline": "var(--color-palette-teal-light-outline)",
+        "dark-fill": "var(--color-palette-teal-dark-fill)",
+        "dark-stroke": "var(--color-palette-teal-dark-stroke)",
+        "dark-ink": "var(--color-palette-teal-dark-ink)",
+        "dark-dot": "var(--color-palette-teal-dark-dot)",
+        "dark-outline": "var(--color-palette-teal-dark-outline)"
+      },
+      "navy": {
+        "light-fill": "var(--color-palette-navy-light-fill)",
+        "light-stroke": "var(--color-palette-navy-light-stroke)",
+        "light-ink": "var(--color-palette-navy-light-ink)",
+        "light-outline": "var(--color-palette-navy-light-outline)",
+        "dark-fill": "var(--color-palette-navy-dark-fill)",
+        "dark-stroke": "var(--color-palette-navy-dark-stroke)",
+        "dark-ink": "var(--color-palette-navy-dark-ink)",
+        "dark-outline": "var(--color-palette-navy-dark-outline)"
+      },
+      "pink": {
+        "light-fill": "var(--color-palette-pink-light-fill)",
+        "light-stroke": "var(--color-palette-pink-light-stroke)",
+        "light-ink": "var(--color-palette-pink-light-ink)",
+        "light-outline": "var(--color-palette-pink-light-outline)",
+        "dark-fill": "var(--color-palette-pink-dark-fill)",
+        "dark-stroke": "var(--color-palette-pink-dark-stroke)",
+        "dark-ink": "var(--color-palette-pink-dark-ink)",
+        "dark-outline": "var(--color-palette-pink-dark-outline)"
+      },
+      "sky": {
+        "light-fill": "var(--color-palette-sky-light-fill)",
+        "light-stroke": "var(--color-palette-sky-light-stroke)",
+        "light-ink": "var(--color-palette-sky-light-ink)",
+        "light-tint-1": "var(--color-palette-sky-light-tint-1)",
+        "light-tint-2": "var(--color-palette-sky-light-tint-2)",
+        "light-tint-3": "var(--color-palette-sky-light-tint-3)",
+        "light-outline": "var(--color-palette-sky-light-outline)",
+        "dark-fill": "var(--color-palette-sky-dark-fill)",
+        "dark-stroke": "var(--color-palette-sky-dark-stroke)",
+        "dark-ink": "var(--color-palette-sky-dark-ink)",
+        "dark-tint-1": "var(--color-palette-sky-dark-tint-1)",
+        "dark-tint-2": "var(--color-palette-sky-dark-tint-2)",
+        "dark-tint-3": "var(--color-palette-sky-dark-tint-3)",
+        "dark-outline": "var(--color-palette-sky-dark-outline)"
+      },
+      "slate": {
+        "light-fill": "var(--color-palette-slate-light-fill)",
+        "light-stroke": "var(--color-palette-slate-light-stroke)",
+        "light-ink": "var(--color-palette-slate-light-ink)",
+        "light-dot": "var(--color-palette-slate-light-dot)",
+        "dark-fill": "var(--color-palette-slate-dark-fill)",
+        "dark-stroke": "var(--color-palette-slate-dark-stroke)",
+        "dark-ink": "var(--color-palette-slate-dark-ink)",
+        "dark-dot": "var(--color-palette-slate-dark-dot)",
+        "light-outline": "var(--color-palette-slate-light-outline)",
+        "dark-outline": "var(--color-palette-slate-dark-outline)"
+      }
     },
     "figure": {
       "icon": "var(--color-figure-icon)",
@@ -274,48 +307,19 @@ export const tokens = freeze({
         "dot": "var(--color-paint-gray-dot)"
       }
     },
-    "ui": {
-      "link": "var(--color-ui-link)",
-      "focus": "var(--color-ui-focus)",
-      "progress": "var(--color-ui-progress)",
-      "control-on": "var(--color-ui-control-on)"
-    },
-    "data": {
-      "main": "var(--color-data-main)",
-      "compare": "var(--color-data-compare)",
-      "heat-low": "var(--color-data-heat-low)",
-      "heat-high": "var(--color-data-heat-high)",
-      "heat-ink": "var(--color-data-heat-ink)",
-      "heat-ink-on": "var(--color-data-heat-ink-on)",
-      "grid": "var(--color-data-grid)"
-    },
-    "fg": "var(--color-fg)",
-    "muted": "var(--color-muted)",
-    "group-title": "var(--color-group-title)",
-    "bg": "var(--color-bg)",
-    "node": "var(--color-node)",
-    "surface": "var(--color-surface)",
-    "card": "var(--color-card)",
-    "outline": "var(--color-outline)",
-    "border": "var(--color-border)",
-    "card-on": "var(--color-card-on)",
-    "group-1": "var(--color-group-1)",
-    "plate-border": "var(--color-plate-border)",
-    "page": "var(--color-page)",
     "tag": {
       "purple": "var(--color-tag-purple)",
       "green": "var(--color-tag-green)",
       "gray": "var(--color-tag-gray)",
       "red": "var(--color-tag-red)",
       "brand": "var(--color-tag-brand)"
-    },
-    "line": "var(--color-line)",
-    "group-2": "var(--color-group-2)",
-    "group-3": "var(--color-group-3)"
+    }
   },
   "font": {
     "sans": "var(--font-sans)",
-    "mono": "var(--font-mono)"
+    "mono": "var(--font-mono)",
+    "figure-sans": "var(--font-figure-sans)",
+    "figure-mono": "var(--font-figure-mono)"
   },
   "size": {
     "text": {
@@ -420,9 +424,9 @@ export const tokens = freeze({
     "snug": "var(--leading-snug)"
   },
   "tracking": {
+    "text": "var(--tracking-text)",
     "tag": "var(--tracking-tag)",
-    "frame": "var(--tracking-frame)",
-    "text": "var(--tracking-text)"
+    "frame": "var(--tracking-frame)"
   },
   "space": {
     "1": "var(--space-1)",
@@ -452,18 +456,45 @@ export const tokens = freeze({
     "lg": "var(--radius-lg)",
     "xl": "var(--radius-xl)",
     "2xl": "var(--radius-2xl)",
-    "route": "var(--radius-route)",
-    "full": "var(--radius-full)"
+    "full": "var(--radius-full)",
+    "route": "var(--radius-route)"
   },
   "border": {
     "hair": "var(--border-hair)",
     "thin": "var(--border-thin)",
+    "strong": "var(--border-strong)",
     "lifeline": "var(--border-lifeline)",
     "tag": "var(--border-tag)",
     "edge": "var(--border-edge)",
-    "strong": "var(--border-strong)",
     "casing": "var(--border-casing)",
     "halo": "var(--border-halo)"
+  },
+  "z": {
+    "raised": "var(--z-raised)",
+    "overlay": "var(--z-overlay)"
+  },
+  "duration": {
+    "fast": "var(--duration-fast)",
+    "hop": "var(--duration-hop)",
+    "caption-fade": "var(--duration-caption-fade)",
+    "hop-min": "var(--duration-hop-min)",
+    "chip-slide": "var(--duration-chip-slide)",
+    "chip-fade": "var(--duration-chip-fade)",
+    "dwell": "var(--duration-dwell)",
+    "dwell-per-char": "var(--duration-dwell-per-char)",
+    "dwell-max": "var(--duration-dwell-max)",
+    "step-end": "var(--duration-step-end)",
+    "chart-cycle": "var(--duration-chart-cycle)",
+    "reveal": "var(--duration-reveal)",
+    "value-flash": "var(--duration-value-flash)",
+    "pulse": "var(--duration-pulse)",
+    "chip-frame": "var(--duration-chip-frame)",
+    "flow-step": "var(--duration-flow-step)",
+    "cut-fade": "var(--duration-cut-fade)"
+  },
+  "easing": {
+    "move": "var(--easing-move)",
+    "reveal": "var(--easing-reveal)"
   },
   "dash": {
     "line": "var(--dash-line)",
@@ -493,33 +524,6 @@ export const tokens = freeze({
       "node": "var(--distance-fill-dark-node)"
     }
   },
-  "z": {
-    "raised": "var(--z-raised)",
-    "overlay": "var(--z-overlay)"
-  },
-  "duration": {
-    "fast": "var(--duration-fast)",
-    "hop": "var(--duration-hop)",
-    "caption-fade": "var(--duration-caption-fade)",
-    "hop-min": "var(--duration-hop-min)",
-    "chip-slide": "var(--duration-chip-slide)",
-    "chip-fade": "var(--duration-chip-fade)",
-    "dwell": "var(--duration-dwell)",
-    "dwell-per-char": "var(--duration-dwell-per-char)",
-    "dwell-max": "var(--duration-dwell-max)",
-    "step-end": "var(--duration-step-end)",
-    "chart-cycle": "var(--duration-chart-cycle)",
-    "reveal": "var(--duration-reveal)",
-    "value-flash": "var(--duration-value-flash)",
-    "pulse": "var(--duration-pulse)",
-    "chip-frame": "var(--duration-chip-frame)",
-    "flow-step": "var(--duration-flow-step)",
-    "cut-fade": "var(--duration-cut-fade)"
-  },
-  "easing": {
-    "move": "var(--easing-move)",
-    "reveal": "var(--easing-reveal)"
-  },
   "scale": {
     "zoom-max": "var(--scale-zoom-max)",
     "aspect-fit-max": "var(--scale-aspect-fit-max)",
@@ -535,185 +539,130 @@ export const tokens = freeze({
 /** 배치 계산에 쓸 밝은 테마의 실제 값. 크기는 px 숫자, 시간은 ms 숫자다. */
 export const values = freeze({
   "color": {
-    "palette": {
-      "gray": {
-        "0": "#ffffff",
-        "25": "#f8f8f8",
-        "outline": "#787878",
-        "group-1": "#ededed",
-        "group-2": "#e1e1e1",
-        "group-3": "#d6d6d6",
-        "40": "#f0f0f0",
-        "100": "#e7e7e7",
-        "200": "#dadada",
-        "500": "#8a8a8a",
-        "50": "#f4f4f4",
-        "150": "#e4e4e4",
-        "300": "#b7b7b7"
-      },
-      "neutral": {
-        "group-1": "#202020",
-        "group-2": "#2a2a2a",
-        "group-3": "#343434",
-        "outline": "#888888",
-        "100": "#f0f0f0",
-        "400": "#aaaaaa",
-        "500": "#757575",
-        "750": "#393939",
-        "800": "#363636",
-        "850": "#3e3e3e",
-        "875": "#1c1c1c",
-        "900": "#171717",
-        "950": "#121212",
-        "600": "#595959"
-      },
-      "blue": {
-        "light-fill": "#edf4ff",
-        "light-stroke": "#125de6",
-        "light-ink": "#0151d9",
-        "light-heat-low": "#b7cdf5",
-        "light-heat-high": "#004dd2",
-        "light-icon": "#125de6",
-        "dark-fill": "#1c2a43",
-        "dark-stroke": "#70a3ff",
-        "dark-ink": "#78a9ff",
-        "dark-heat-low": "#293751",
-        "dark-heat-high": "#4474cc",
-        "dark-icon": "#70a3ff",
-        "light-outline": "#658dd5",
-        "dark-outline": "#6789c4"
-      },
-      "ink": {
-        "200": "#c9c9c9",
-        "600": "#5d5d5d",
-        "700": "#595959",
-        "850": "#111111",
-        "900": "#1f1f1f",
-        "1000": "#000000"
-      },
-      "red": {
-        "light-fill": "#ffefed",
-        "light-stroke": "#c70005",
-        "light-ink": "#be0004",
-        "light-dot": "#6c0001",
-        "dark-fill": "#40201c",
-        "dark-stroke": "#fc7182",
-        "dark-ink": "#ff8390",
-        "dark-dot": "#e25971",
-        "light-outline": "#cd7367",
-        "dark-outline": "#c56f73"
-      },
-      "amber": {
-        "light-fill": "#fff0ea",
-        "light-stroke": "#d44b00",
-        "light-ink": "#a63900",
-        "dark-fill": "#3f2116",
-        "dark-stroke": "#fa7a49",
-        "dark-ink": "#ff875a",
-        "light-outline": "#c47a5f",
-        "dark-outline": "#c37356"
-      },
-      "green": {
-        "light-fill": "#eaf8e9",
-        "light-stroke": "#008c1a",
-        "light-ink": "#006d12",
-        "light-dot": "#006d12",
-        "dark-fill": "#1a301a",
-        "dark-stroke": "#58bf5a",
-        "dark-ink": "#58bf5a",
-        "dark-dot": "#62c963",
-        "light-outline": "#629a61",
-        "dark-outline": "#5a9659"
-      },
-      "teal": {
-        "light-fill": "#eaf8e9",
-        "light-stroke": "#008c1a",
-        "light-ink": "#006d12",
-        "light-dot": "#006d12",
-        "dark-fill": "#1a301a",
-        "dark-stroke": "#58bf5a",
-        "dark-ink": "#58bf5a",
-        "dark-dot": "#62c963",
-        "light-outline": "#629a61",
-        "dark-outline": "#5a9659"
-      },
-      "navy": {
-        "light-fill": "#edf4ff",
-        "light-stroke": "#125de6",
-        "light-ink": "#0151d9",
-        "dark-fill": "#1c2a43",
-        "dark-stroke": "#70a3ff",
-        "dark-ink": "#78a9ff",
-        "light-outline": "#658dd5",
-        "dark-outline": "#6789c4"
-      },
-      "purple": {
-        "light-fill": "#f7f0ff",
-        "light-stroke": "#8c6aaa",
-        "light-ink": "#704f8c",
-        "light-dot": "#704f8c",
-        "light-tint-1": "#f1eaf9",
-        "light-tint-2": "#e6ddf0",
-        "light-tint-3": "#dcd1e8",
-        "dark-fill": "#31233d",
-        "dark-stroke": "#b693d6",
-        "dark-ink": "#be9ade",
-        "dark-dot": "#9c7abb",
-        "dark-tint-1": "#231d28",
-        "dark-tint-2": "#2e2635",
-        "dark-tint-3": "#393042",
-        "light-outline": "#9884ac",
-        "dark-outline": "#977eae"
-      },
-      "pink": {
-        "light-fill": "#f7f0ff",
-        "light-stroke": "#8c6aaa",
-        "light-ink": "#704f8c",
-        "dark-fill": "#31233d",
-        "dark-stroke": "#b693d6",
-        "dark-ink": "#be9ade",
-        "light-outline": "#9884ac",
-        "dark-outline": "#977eae"
-      },
-      "slate": {
-        "light-fill": "#e7e7e7",
-        "light-stroke": "#5d5d5d",
-        "light-ink": "#5d5d5d",
-        "light-dot": "#747474",
-        "dark-fill": "#363636",
-        "dark-stroke": "#aaaaaa",
-        "dark-ink": "#aaaaaa",
-        "dark-dot": "#c7c7c7",
-        "light-outline": "#848484",
-        "dark-outline": "#888888"
-      },
-      "orange": {
-        "light-fill": "#fff0ea",
-        "light-stroke": "#d44b00",
-        "light-ink": "#a63900",
-        "dark-fill": "#3f2116",
-        "dark-stroke": "#fa7a49",
-        "dark-ink": "#ff875a",
-        "light-outline": "#c47a5f",
-        "dark-outline": "#c37356"
-      },
-      "sky": {
-        "light-fill": "#e9f1fe",
-        "light-stroke": "#125de6",
-        "light-ink": "#0151d9",
-        "light-tint-1": "#e5eefc",
-        "light-tint-2": "#d7e2f4",
-        "light-tint-3": "#cad7ed",
-        "dark-fill": "#1c2a43",
-        "dark-stroke": "#70a3ff",
-        "dark-ink": "#78a9ff",
-        "dark-tint-1": "#1a202b",
-        "dark-tint-2": "#222a38",
-        "dark-tint-3": "#2a3446",
-        "light-outline": "#628ad3",
-        "dark-outline": "#6789c4"
-      }
+    "gray": {
+      "0": "#ffffff",
+      "27": "#f8f8f8",
+      "43": "#f4f4f4",
+      "59": "#f0f0f0",
+      "71": "#ededed",
+      "106": "#e4e4e4",
+      "118": "#e1e1e1",
+      "145": "#dadada",
+      "161": "#d6d6d6",
+      "212": "#c9c9c9",
+      "220": "#c7c7c7",
+      "282": "#b7b7b7",
+      "333": "#aaaaaa",
+      "467": "#888888",
+      "529": "#787878",
+      "545": "#747474",
+      "635": "#5d5d5d",
+      "651": "#595959",
+      "757": "#3e3e3e",
+      "776": "#393939",
+      "788": "#363636",
+      "796": "#343434",
+      "835": "#2a2a2a",
+      "875": "#202020",
+      "878": "#1f1f1f",
+      "910": "#171717",
+      "929": "#121212",
+      "933": "#111111",
+      "1000": "#000000"
     },
+    "blue": {
+      "anchor": "#125de6",
+      "light-fill": "#edf4ff",
+      "light-stroke": "#125de6",
+      "light-ink": "#0151d9",
+      "light-heat-low": "#b7cdf5",
+      "light-heat-high": "#004dd2",
+      "light-outline": "#658dd5",
+      "light-tint-1": "#e5eefc",
+      "light-tint-2": "#d7e2f4",
+      "light-tint-3": "#cad7ed",
+      "dark-fill": "#1c2a43",
+      "dark-stroke": "#70a3ff",
+      "dark-ink": "#78a9ff",
+      "dark-heat-low": "#293751",
+      "dark-heat-high": "#4474cc",
+      "dark-outline": "#6789c4",
+      "dark-tint-1": "#1a202b",
+      "dark-tint-2": "#222a38",
+      "dark-tint-3": "#2a3446"
+    },
+    "purple": {
+      "anchor": "#b28fd1",
+      "light-fill": "#f7f0ff",
+      "light-stroke": "#8c6aaa",
+      "light-ink": "#704f8c",
+      "light-dot": "#704f8c",
+      "light-outline": "#9884ac",
+      "light-tint-1": "#f1eaf9",
+      "light-tint-2": "#e6ddf0",
+      "light-tint-3": "#dcd1e8",
+      "dark-fill": "#31233d",
+      "dark-stroke": "#b693d6",
+      "dark-ink": "#be9ade",
+      "dark-dot": "#9c7abb",
+      "dark-outline": "#977eae",
+      "dark-tint-1": "#231d28",
+      "dark-tint-2": "#2e2635",
+      "dark-tint-3": "#393042"
+    },
+    "red": {
+      "anchor": "#ef0f0f",
+      "light-fill": "#ffefed",
+      "light-stroke": "#c70005",
+      "light-ink": "#be0004",
+      "light-dot": "#6c0001",
+      "light-outline": "#cd7367",
+      "dark-fill": "#40201c",
+      "dark-stroke": "#fc7182",
+      "dark-ink": "#ff8390",
+      "dark-dot": "#e25971",
+      "dark-outline": "#c56f73"
+    },
+    "green": {
+      "anchor": "#09c72c",
+      "light-fill": "#eaf8e9",
+      "light-stroke": "#008c1a",
+      "light-ink": "#006d12",
+      "light-dot": "#006d12",
+      "light-outline": "#629a61",
+      "dark-fill": "#1a301a",
+      "dark-stroke": "#58bf5a",
+      "dark-ink": "#58bf5a",
+      "dark-dot": "#62c963",
+      "dark-outline": "#5a9659"
+    },
+    "orange": {
+      "anchor": "#e65200",
+      "light-fill": "#fff0ea",
+      "light-stroke": "#d44b00",
+      "light-ink": "#a63900",
+      "light-outline": "#c47a5f",
+      "dark-fill": "#3f2116",
+      "dark-stroke": "#fa7a49",
+      "dark-ink": "#ff875a",
+      "dark-outline": "#c37356"
+    },
+    "fg": "#1f1f1f",
+    "muted": "#5d5d5d",
+    "group-title": "#595959",
+    "bg": "#f8f8f8",
+    "group-1": "#ededed",
+    "group-2": "#e1e1e1",
+    "group-3": "#d6d6d6",
+    "node": "#ffffff",
+    "surface": "#f0f0f0",
+    "card": "#f4f4f4",
+    "card-on": "#edf4ff",
+    "page": "#ffffff",
+    "outline": "#787878",
+    "border": "#e4e4e4",
+    "plate-border": "#dadada",
+    "line": "#b7b7b7",
     "state": {
       "active": "#125de6",
       "active-fill": "#0151d9",
@@ -730,6 +679,94 @@ export const values = freeze({
       "green": "#006d12",
       "gray": "#747474",
       "red": "#6c0001"
+    },
+    "ui": {
+      "link": "#0151d9",
+      "focus": "#125de6",
+      "progress": "#125de6",
+      "control-on": "#ffffff"
+    },
+    "data": {
+      "main": "#125de6",
+      "compare": "#d44b00",
+      "heat-low": "#b7cdf5",
+      "heat-high": "#004dd2",
+      "heat-ink": "#000000",
+      "heat-ink-on": "#ffffff",
+      "grid": "#c9c9c9"
+    },
+    "accent": "#125de6",
+    "palette": {
+      "amber": {
+        "light-fill": "#fff0ea",
+        "light-stroke": "#d44b00",
+        "light-ink": "#a63900",
+        "light-outline": "#c47a5f",
+        "dark-fill": "#3f2116",
+        "dark-stroke": "#fa7a49",
+        "dark-ink": "#ff875a",
+        "dark-outline": "#c37356"
+      },
+      "teal": {
+        "light-fill": "#eaf8e9",
+        "light-stroke": "#008c1a",
+        "light-ink": "#006d12",
+        "light-dot": "#006d12",
+        "light-outline": "#629a61",
+        "dark-fill": "#1a301a",
+        "dark-stroke": "#58bf5a",
+        "dark-ink": "#58bf5a",
+        "dark-dot": "#62c963",
+        "dark-outline": "#5a9659"
+      },
+      "navy": {
+        "light-fill": "#edf4ff",
+        "light-stroke": "#125de6",
+        "light-ink": "#0151d9",
+        "light-outline": "#658dd5",
+        "dark-fill": "#1c2a43",
+        "dark-stroke": "#70a3ff",
+        "dark-ink": "#78a9ff",
+        "dark-outline": "#6789c4"
+      },
+      "pink": {
+        "light-fill": "#f7f0ff",
+        "light-stroke": "#8c6aaa",
+        "light-ink": "#704f8c",
+        "light-outline": "#9884ac",
+        "dark-fill": "#31233d",
+        "dark-stroke": "#b693d6",
+        "dark-ink": "#be9ade",
+        "dark-outline": "#977eae"
+      },
+      "sky": {
+        "light-fill": "#e9f1fe",
+        "light-stroke": "#125de6",
+        "light-ink": "#0151d9",
+        "light-tint-1": "#e5eefc",
+        "light-tint-2": "#d7e2f4",
+        "light-tint-3": "#cad7ed",
+        "light-outline": "#628ad3",
+        "dark-fill": "#1c2a43",
+        "dark-stroke": "#70a3ff",
+        "dark-ink": "#78a9ff",
+        "dark-tint-1": "#1a202b",
+        "dark-tint-2": "#222a38",
+        "dark-tint-3": "#2a3446",
+        "dark-outline": "#6789c4"
+      },
+      "slate": {
+        "light-fill": "#e7e7e7",
+        "light-stroke": "#5d5d5d",
+        "light-ink": "#5d5d5d",
+        "light-dot": "#747474",
+        "dark-fill": "#363636",
+        "dark-stroke": "#aaaaaa",
+        "dark-ink": "#aaaaaa",
+        "dark-dot": "#c7c7c7",
+        "light-outline": "#848484",
+        "dark-outline": "#888888"
+      }
     },
     "figure": {
       "icon": "#125de6",
@@ -802,48 +839,19 @@ export const values = freeze({
         "dot": "#747474"
       }
     },
-    "ui": {
-      "link": "#0151d9",
-      "focus": "#125de6",
-      "progress": "#125de6",
-      "control-on": "#ffffff"
-    },
-    "data": {
-      "main": "#125de6",
-      "compare": "#d44b00",
-      "heat-low": "#b7cdf5",
-      "heat-high": "#004dd2",
-      "heat-ink": "#000000",
-      "heat-ink-on": "#ffffff",
-      "grid": "#c9c9c9"
-    },
-    "fg": "#1f1f1f",
-    "muted": "#5d5d5d",
-    "group-title": "#595959",
-    "bg": "#f8f8f8",
-    "node": "#ffffff",
-    "surface": "#f0f0f0",
-    "card": "#f4f4f4",
-    "outline": "#787878",
-    "border": "#e4e4e4",
-    "card-on": "#edf4ff",
-    "group-1": "#ededed",
-    "plate-border": "#dadada",
-    "page": "#ffffff",
     "tag": {
       "purple": "#8c6aaa",
       "green": "#008c1a",
       "gray": "#5d5d5d",
       "red": "#c70005",
       "brand": "#125de6"
-    },
-    "line": "#b7b7b7",
-    "group-2": "#e1e1e1",
-    "group-3": "#d6d6d6"
+    }
   },
   "font": {
-    "sans": "FigSans, FigSansSym, FigSansMath, Pretendard, 'Pretendard Variable', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif",
-    "mono": "FigMono, FigSans, FigSansSym, FigSansMath, ui-monospace, SFMono-Regular, Menlo, monospace"
+    "sans": "Pretendard, 'Pretendard Variable', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif",
+    "mono": "'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace",
+    "figure-sans": "FigSans, FigSansSym, FigSansMath, Pretendard, 'Pretendard Variable', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif",
+    "figure-mono": "FigMono, FigSans, FigSansSym, FigSansMath, ui-monospace, SFMono-Regular, Menlo, monospace"
   },
   "size": {
     "text": {
@@ -948,9 +956,9 @@ export const values = freeze({
     "snug": 1.35
   },
   "tracking": {
+    "text": -0.3,
     "tag": 0.03,
-    "frame": 0.04,
-    "text": -0.3
+    "frame": 0.04
   },
   "space": {
     "1": 2,
@@ -980,18 +988,45 @@ export const values = freeze({
     "lg": 8,
     "xl": 10,
     "2xl": 14,
-    "route": 22,
-    "full": 999
+    "full": 999,
+    "route": 22
   },
   "border": {
     "hair": 0.75,
     "thin": 1,
+    "strong": 2.5,
     "lifeline": 1.25,
     "tag": 1.5,
     "edge": 1.75,
-    "strong": 2.5,
     "casing": 4.5,
     "halo": 8
+  },
+  "z": {
+    "raised": 2,
+    "overlay": 10
+  },
+  "duration": {
+    "fast": 200,
+    "hop": 3750,
+    "caption-fade": 200,
+    "hop-min": 500,
+    "chip-slide": 300,
+    "chip-fade": 150,
+    "dwell": 700,
+    "dwell-per-char": 45,
+    "dwell-max": 3200,
+    "step-end": 1600,
+    "chart-cycle": 7000,
+    "reveal": 900,
+    "value-flash": 700,
+    "pulse": 450,
+    "chip-frame": 16.666666666666668,
+    "flow-step": 12000,
+    "cut-fade": 600
+  },
+  "easing": {
+    "move": "cubic-bezier(0.455, 0.03, 0.515, 0.955)",
+    "reveal": "cubic-bezier(0, 0, 0.58, 1)"
   },
   "dash": {
     "line": 5,
@@ -1020,33 +1055,6 @@ export const values = freeze({
       "bg": 0.07,
       "node": 0.03
     }
-  },
-  "z": {
-    "raised": 2,
-    "overlay": 10
-  },
-  "duration": {
-    "fast": 200,
-    "hop": 3750,
-    "caption-fade": 200,
-    "hop-min": 500,
-    "chip-slide": 300,
-    "chip-fade": 150,
-    "dwell": 700,
-    "dwell-per-char": 45,
-    "dwell-max": 3200,
-    "step-end": 1600,
-    "chart-cycle": 7000,
-    "reveal": 900,
-    "value-flash": 700,
-    "pulse": 450,
-    "chip-frame": 16.666666666666668,
-    "flow-step": 12000,
-    "cut-fade": 600
-  },
-  "easing": {
-    "move": "cubic-bezier(0.455, 0.03, 0.515, 0.955)",
-    "reveal": "cubic-bezier(0, 0, 0.58, 1)"
   },
   "scale": {
     "zoom-max": 6,

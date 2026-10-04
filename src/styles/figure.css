@@ -1,6 +1,6 @@
 /* 그림 안 글자와 모양. HTML 재생기와 움직이는 SVG가 같이 쓴다. */
 .fl text {
-  font-family: var(--font-sans);
+  font-family: var(--font-figure-sans);
   letter-spacing: var(--tracking-text);
 }
 
@@ -36,14 +36,14 @@
 }
 
 .fl .row.mono {
-  font-family: var(--font-mono);
+  font-family: var(--font-figure-mono);
   letter-spacing: normal;
   font-size: var(--size-text-11);
 }
 
 /* 백틱으로 감싼 글. 코드 글꼴로 그린다. */
 .fl .code {
-  font-family: var(--font-mono);
+  font-family: var(--font-figure-mono);
   letter-spacing: normal;
 }
 
@@ -106,7 +106,7 @@
 }
 
 .fl .cell.type {
-  font-family: var(--font-mono);
+  font-family: var(--font-figure-mono);
   letter-spacing: normal;
   font-size: var(--size-text-11);
   text-anchor: end;

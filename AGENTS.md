@@ -17,10 +17,10 @@
 | `src/check.js`, `src/check/` | 그림 검사. 항목 목록(`items.js`)과 항목별 판정 파일 |
 | `src/svg.js`, `src/html.js`, `src/html/`, `src/href.js`, `src/cli.js` | 움직이는 SVG, HTML 재생기 문서와 목록, 파일 이름을 링크 주소로 바꾸기, 명령 |
 | `src/build-reported.js`, `src/md.js`, `src/md-run.js`, `src/md-write.js` | 원본 만들기와 진단 알림, 마크다운 블록 찾기와 이미지 줄 넣기(`md.js`는 파일을 다루지 않음), `md` 명령 실행, `md` 파일 쓰기(임시 파일과 rename, 실패 때 되돌리기) |
-| `action.yml`, `.github/workflows/` | GitHub Action(composite), CI, `v*` 태그 배포 |
+| `action.yml`, `.github/workflows/` | GitHub Action(composite), CI, `v*` 태그 배포, design-tokens 새 버전 감지(`design-tokens-update.yml`) |
 | `src/player/` | 브라우저에서 도는 재생기(`play.js`, `controls.js`, `stage.js`, `curve.js`)와 전체 화면·확대(`view.js`) |
 | `examples/` | 예제 원본, `out/` 결과 |
-| `scripts/` | 화면 확인 도구(`shoot.mjs`), 첫 화면과 갤러리 그림 생성(`build-showcase.mjs`), 토큰 생성(`build-tokens.mjs`), 팔레트 값 계산(`build-palette.mjs`), 하드코딩, 비용 주석, 수치 기준 검사(`check-tokens.mjs`, `check-cost-comments.mjs`, `check-size.mjs`), 배치 무작위 시험(`fuzz-layout.mjs`), 빌드 시간 기준 검사(`perf-chips.mjs`, 로컬 전용), 문서 표 생성(`build-grammar-doc.mjs`, `build-check-doc.mjs`) |
+| `scripts/` | 화면 확인 도구(`shoot.mjs`), 첫 화면과 갤러리 그림 생성(`build-showcase.mjs`), 토큰 생성과 낡음 검사(`build-tokens.mjs`), 팔레트 값 계산(`build-palette.mjs`), design-tokens 새 버전 판정과 PR 본문(`update-design-tokens.mjs`), 하드코딩, 비용 주석, 수치 기준 검사(`check-tokens.mjs`, `check-cost-comments.mjs`, `check-size.mjs`), 배치 무작위 시험(`fuzz-layout.mjs`), 빌드 시간 기준 검사(`perf-chips.mjs`, 로컬 전용), 문서 표 생성(`build-grammar-doc.mjs`, `build-check-doc.mjs`) |
 | `docs/` | 설계 문서, 그림 종류별 레퍼런스(`reference/`), README 그림(`assets/showcase/`) |
 
 ## 명령
@@ -29,6 +29,8 @@
 npm test
 npm run check
 ```
+
+`npm run check`는 토큰 생성물이 낡았거나 `src/tokens.json`이 design-tokens와 같은 이름을 다시 정의하면 실패한다. 토큰이나 design-tokens 버전을 바꾼 뒤에는 `npm run palette`, `npm run tokens`, `npm run figures` 순서로 생성물을 다시 만든다.
 
 ## 규칙
 
@@ -43,5 +45,6 @@ npm run check
 - elkjs 경로 점 수정 금지. 예외는 `docs/design/layout.md` 선 그리기 절의 선 끝 계단 펴기 하나
 - 오류가 있으면 결과 파일을 쓰지 않음
 - `src/player/`는 시간표를 읽기만 하고 상태를 다시 계산하지 않음
-- 화면 값은 `src/tokens.json` 토큰만 사용
+- 화면 값은 토큰만 사용. 공통 토큰(색 역할, 기본 색 단계, 간격, 반지름, 글자 크기)은 `@woonyong-choi/design-tokens`가 정본이고 `src/tokens.json`에는 그림 전용 토큰만 둔다. 같은 이름을 다시 정의하지 않는다
+- design-tokens 버전은 `package.json`의 태그로 고정하고, 올릴 때는 `design-tokens-update` 워크플로가 만드는 PR을 쓴다. 손으로 올리면 `npm run palette`, `npm run tokens`, `npm run figures`를 같은 PR에서 돌린다
 - `tokens.css`, `tokens.js` 직접 수정 금지

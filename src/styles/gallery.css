@@ -6,7 +6,7 @@
 body {
   margin: 0;
   padding: var(--space-20) var(--space-16);
-  font-family: var(--font-sans);
+  font-family: var(--font-figure-sans);
   letter-spacing: var(--tracking-text);
   color: var(--color-fg);
   background: var(--color-page);
@@ -72,12 +72,12 @@ h2 {
   align-items: baseline;
   min-width: 0;
   margin: 0;
-  font: var(--weight-semibold) var(--size-text-15) var(--font-sans);
+  font: var(--weight-semibold) var(--size-text-15) var(--font-figure-sans);
 }
 
 /* 백틱으로 감싼 글은 코드 글꼴로 그린다. */
 code {
-  font-family: var(--font-mono);
+  font-family: var(--font-figure-mono);
   letter-spacing: normal;
 }
 

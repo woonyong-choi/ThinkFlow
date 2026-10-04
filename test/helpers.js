@@ -5,6 +5,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import assert from 'node:assert/strict';
+import { commonTokenPaths } from '../scripts/lib/design-tokens.mjs';
 import { parseFigure } from '../src/source/parse.js';
 
 const DOCS = new URL('../docs/design/', import.meta.url);
@@ -47,9 +48,12 @@ function flatten(node, path, out) {
   return out;
 }
 
-const readTokens = (name) => JSON.parse(readFileSync(new URL(`../src/${name}`, import.meta.url), 'utf8'));
-const LIGHT = flatten(readTokens('tokens.json'), [], new Map());
-const DARK = new Map([...LIGHT, ...flatten(readTokens('tokens.dark.json'), [], new Map())]);
+const readJsonFile = (path) => JSON.parse(readFileSync(path, 'utf8'));
+const readTokens = (name) => readJsonFile(new URL(`../src/${name}`, import.meta.url));
+const COMMON = commonTokenPaths();
+// 공통 토큰(design-tokens)과 daphnis 정본을 합친 표. daphnis가 같은 이름을 다시 정의하면 빌드가 막으므로 겹침은 없다.
+const LIGHT = flatten(readTokens('tokens.json'), [], flatten(readJsonFile(COMMON.light), [], new Map()));
+const DARK = new Map([...LIGHT, ...flatten(readJsonFile(COMMON.dark), [], new Map()), ...flatten(readTokens('tokens.dark.json'), [], new Map())]);
 
 /** 라이트 정본의 토큰 값. 참조는 풀지 않는다. */
 export const tokenValue = (name) => LIGHT.get(name);

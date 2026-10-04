@@ -242,6 +242,8 @@ npm test
 npm run check
 ```
 
+공통 화면 값(색 역할, 간격, 글자 크기)은 [design-tokens](https://github.com/woonyong-choi/design-tokens) 패키지에서 받습니다. `npm install`이 GitHub에서 태그로 받아 오므로 `git`이 있어야 합니다. `src/tokens.json`에는 그림 전용 토큰만 있고, design-tokens에 새 태그가 나오면 워크플로가 PR을 엽니다.
+
 브랜치, 커밋, PR 규칙은 [CONTRIBUTING](.github/CONTRIBUTING.md)에 있습니다.
 
 ## 라이선스

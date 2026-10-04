@@ -6,6 +6,7 @@ import { test } from 'node:test';
 import * as fontkit from 'fontkit';
 import { createGlyphSet, embedFonts, findMissingGlyph, measure, wrap } from '../src/measure/fonts.js';
 import { values } from '../src/tokens.js';
+import { tokenValue } from './helpers.js';
 
 const require = createRequire(import.meta.url);
 
@@ -92,10 +93,18 @@ test('embedFonts_num_text_keeps_the_tnum_glyphs_in_one_pretendard_piece', async 
   assertNear(subset.layout('1', ['tnum']).advanceWidth, subset.layout('0', ['tnum']).advanceWidth);
 });
 
-// 근거: 설계 layout.md 글 재기 "토큰 font.sans 사슬(Pretendard, 기호, 수학)과 font.mono 사슬은 넣은 조각 이름과 같은 순서다"
+// 근거: 설계 layout.md 글 재기 "토큰 font.figure-sans 사슬(Pretendard, 기호, 수학)과 font.figure-mono 사슬은 넣은 조각 이름과 같은 순서다"
 test('tokens_font_chains_list_every_embedded_family_in_order', () => {
-  assert.match(values.font.sans, /^FigSans, FigSansSym, FigSansMath, /);
-  assert.match(values.font.mono, /^FigMono, FigSans, FigSansSym, FigSansMath, /);
+  assert.match(values.font['figure-sans'], /^FigSans, FigSansSym, FigSansMath, /);
+  assert.match(values.font['figure-mono'], /^FigMono, FigSans, FigSansSym, FigSansMath, /);
+});
+
+// 근거: 계약 design-tokens 연결: 내장 글꼴 사슬의 뒷부분(대체 글꼴)은 design-tokens의 font.sans, font.mono와 같다. mono는 FigMono가 대신하는 JetBrains Mono 이름만 뺀다
+test('tokens_font_chains_end_with_the_design_tokens_chains', () => {
+  const common = (name) => tokenValue(`font.${name}`);
+  const chain = (name) => tokenValue(`font.figure-${name}`);
+  assert.deepEqual(chain('sans').slice(-common('sans').length), common('sans'));
+  assert.deepEqual(chain('mono').slice(-common('mono').filter((family) => family !== 'JetBrains Mono').length), common('mono').filter((family) => family !== 'JetBrains Mono'));
 });
 
 // 근거: 계약 figure-syntax.md 글 안 백틱, 설계 layout.md "구간이 줄 사이에 걸치면 줄마다 구간을 닫고 다시 열어 각 줄이 짝이 맞는 글이 된다"

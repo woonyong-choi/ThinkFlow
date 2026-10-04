@@ -9,7 +9,7 @@ import { toSvg } from '../src/svg.js';
 import { values } from '../src/tokens.js';
 import { oklchToHex } from '../scripts/lib/oklch.mjs';
 import { valueNames } from '../src/source/grammar.js';
-import { ANCHORS } from '../scripts/lib/palette.mjs';
+import { darkOf } from '../scripts/lib/palette.mjs';
 import { linearChannelsOf as channelsOf, linearToOklab, oklchOf, themeColor, tokenValue } from './helpers.js';
 
 const TEXT = 4.5;
@@ -45,6 +45,8 @@ const STEP_MIX = 0.01;
 const MIN_STEP_RATIO = 1.15;
 
 const color = themeColor;
+// 색의 원색은 design-tokens가 정한 값이다. 다크 원색은 같은 규칙(darkOf)으로 얻는다.
+const ANCHORS = Object.fromEntries(['blue', 'orange'].map((hue) => [hue, { light: tokenValue(`color.${hue}.anchor`), dark: darkOf(tokenValue(`color.${hue}.anchor`)) }]));
 const opacity = (name) => tokenValue(`opacity.${name}`);
 
 // cost: time O(p), heap O(1), stack O(1)
@@ -171,7 +173,7 @@ test('palette_graphic_text_and_outline_colors_are_the_closest_step_that_reaches_
   const lowest = (value, faces, theme = 'light') => Math.min(...faces.map((face) => contrast(value, color(theme, face))));
   for (const hue of ['blue', 'orange']) {
     for (const theme of THEMES) {
-      const stroke = color(theme, `palette.${hue}.${theme}-stroke`);
+      const stroke = color(theme, `${hue}.${theme}-stroke`);
       const [L, C, h] = oklchOf(stroke);
       const back = oklchToHex(L + (theme === 'light' ? STROKE_STEP : -STROKE_STEP), C, h);
       const reachesFloor = (value) => lowest(value, graphicFaces, theme) >= GRAPHIC;
@@ -202,15 +204,15 @@ test('palette_graphic_text_and_outline_colors_are_the_closest_step_that_reaches_
 test('palette_blue_is_the_nhn_brand_blue_and_orange_stays_near_hue_50_with_the_blue_chroma', () => {
   const RESUME_BLUE = '#125de6';
   const [, blueC] = oklchOf(RESUME_BLUE);
-  const [, orangeC, orangeHue] = oklchOf(color('light', 'palette.orange.light-stroke'));
+  const [, orangeC, orangeHue] = oklchOf(color('light', 'orange.light-stroke'));
 
   assert.equal(color('light', 'state.active'), RESUME_BLUE);
   assert.equal(color('light', 'data.main'), RESUME_BLUE);
   assert.ok(Math.abs(orangeHue - ORANGE_HUE) <= ORANGE_HUE_TOLERANCE, `orange h ${orangeHue.toFixed(1)}`);
   assert.ok(Math.abs(orangeC - blueC) <= CHROMA_TOLERANCE, `orange C ${orangeC.toFixed(3)} / blue C ${blueC.toFixed(3)}`);
-  assert.equal(color('light', 'data.compare'), color('light', 'palette.orange.light-stroke'));
-  assert.equal(color('dark', 'data.compare'), color('dark', 'palette.orange.dark-stroke'));
-  assert.equal(color('dark', 'state.active'), color('dark', 'palette.blue.dark-stroke'));
+  assert.equal(color('light', 'data.compare'), color('light', 'orange.light-stroke'));
+  assert.equal(color('dark', 'data.compare'), color('dark', 'orange.dark-stroke'));
+  assert.equal(color('dark', 'state.active'), color('dark', 'blue.dark-stroke'));
 });
 
 // 색각 이상 시뮬레이션(Machado 2009, 심한 정도 1.0). 선형 sRGB에 곱한다.
@@ -232,7 +234,7 @@ const seenBy = (matrix, hex) => linearToOklab(matrix.map((row) => row.reduce((su
 // 근거: 규칙 docs-integration.md "파랑과 주황은 적록 색각 이상(protanopia, deuteranopia) 시뮬레이션에서도 OKLab 거리 0.1 이상"
 test('palette_blue_and_orange_stay_apart_for_protanopia_and_deuteranopia_in_both_themes', () => {
   for (const theme of THEMES) {
-    const [blue, orange] = [`palette.blue.${theme}-stroke`, `palette.orange.${theme}-stroke`];
+    const [blue, orange] = [`blue.${theme}-stroke`, `orange.${theme}-stroke`];
     for (const [name, matrix] of Object.entries(CVD)) {
       const distance = distanceOf(seenBy(matrix, color(theme, blue)), seenBy(matrix, color(theme, orange)));
 

@@ -4,6 +4,7 @@ import { test } from 'node:test';
 import { tintOf } from '../src/draw/paint.js';
 import { buildFigure } from '../src/build.js';
 import { contrast, mixHex } from '../src/contrast.js';
+import { readCommonTokens } from '../scripts/lib/design-tokens.mjs';
 import { generatePalette } from '../scripts/lib/palette.mjs';
 import { VISION, closestDistance, distanceOf, seenBy } from '../scripts/lib/color-vision.mjs';
 import { readJson } from '../scripts/lib/read-json.mjs';
@@ -74,12 +75,14 @@ test('card_default_face_sits_within_the_oklab_range_from_the_node_face', () => {
   }
 });
 
-// 근거: 값의 출처 재현. 팔레트 값은 scripts/build-palette.mjs가 같은 정본에서 다시 만든 값과 같다
+// 근거: 값의 출처 재현. daphnis가 값을 갖는 팔레트 단계(sky, slate의 면과 외곽선)는 scripts/build-palette.mjs가 같은 정본에서 다시 만든 값과 같다
 test('palette_values_in_tokens_equal_the_regenerated_ones', () => {
   const light = readJson(new URL('../src/tokens.json', import.meta.url).pathname);
   const dark = readJson(new URL('../src/tokens.dark.json', import.meta.url).pathname);
   const layer = light.get('color').get('palette');
-  for (const [name, steps] of Object.entries(generatePalette(light, dark))) for (const [step, hex] of Object.entries(steps)) assert.equal(layer.get(name).get(step).get('$value'), hex, `${name}.${step}`);
+  const palette = generatePalette(readCommonTokens(), { light, dark });
+  assert.deepEqual(Object.keys(palette.sky).length + Object.keys(palette.slate).length, 7);
+  for (const [name, steps] of Object.entries(palette)) for (const [step, hex] of Object.entries(steps)) assert.equal(layer.get(name).get(step).get('$value'), hex, `${name}.${step}`);
 });
 
 // 근거: 값은 팔레트 이름뿐이고 hex와 없는 이름은 오류. 파랑과 주황은 고를 수 없다

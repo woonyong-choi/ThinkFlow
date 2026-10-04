@@ -10,6 +10,7 @@
 | 실험 결과 JSON | 파일 | 차트 `data` 줄이 읽는 값 |
 | elkjs | 외부 프로그램 | 도형 크기와 연결점 제약, 도형 좌표와 직교 경로 |
 | 글꼴 파일 | 파일 | Pretendard, JetBrains Mono의 글자 너비 표와 글자 모양 |
+| design-tokens 패키지 | 외부 패키지 | 공통 의미·기본 토큰(색 역할과 색 단계, 간격, 반지름, 글자 크기, 글꼴 대체 목록)의 정본 두 파일 |
 | repo-docs-figures 스킬 | 외부 프로그램 | `render_figures`가 부르는 `render` 명령과 그 종료 코드 |
 | 브라우저 | 외부 프로그램 | 만든 HTML과 SVG |
 
@@ -31,6 +32,16 @@
 4. `cli`가 시간표를 만들고(점 이동 시간이 선 길이에 비례해 배치 뒤에 만든다), 모든 선과 가장 큰 카드가 보이는 상태에서 화면 오류를 검사한다([그림 검사](design/figure-check.md)).
 5. 오류가 없으면 `cli`가 같은 장면과 시간표로 HTML, 움직이는 SVG, 멈춘 SVG 가운데 요청한 것을 쓴다.
 
+### 토큰 만들기
+
+1. 공통 토큰은 설치된 `@woonyong-choi/design-tokens`의 정본(`source`, `source-dark`)에서 읽는다. 버전은 `package.json`의 태그(`github:woonyong-choi/design-tokens#v0.1.0`)가 정한다.
+2. `scripts/build-tokens.mjs`가 그 정본과 `src/tokens.json`, `src/tokens.dark.json`을 합쳐 `src/tokens.css`, `src/tokens.js`를 만든다. `src/` 정본에는 그림 전용 구성 요소 토큰(`color.figure`, `color.paint`, `color.tag`, `color.palette`의 `amber`, `teal`, `navy`, `pink`, `sky`, `slate`, 그림과 재생기와 차트의 `size`, `duration`, `opacity`, `distance` 같은 값, 내장 글꼴 사슬 `font.figure-sans`, `font.figure-mono`)만 있다.
+3. `src/` 정본이 공통 토큰과 같은 이름을 다시 정의하면 `npm run check`(`build-tokens.mjs --check`)가 실패한다. 생성물이 낡았을 때도 같다.
+4. `npm run palette`가 이 저장소가 값을 갖는 팔레트 단계(`sky`와 `slate`의 면과 외곽선)를 공통 토큰의 면 위 대비 규칙으로 다시 계산해 `src/tokens.json`에 쓴다. 나머지 팔레트 단계는 공통 토큰을 가리키는 별칭이다.
+5. design-tokens에 새 태그가 나오면 `design-tokens-update` 워크플로가 의존성을 올리고 1~4와 `npm run figures`로 생성물을 다시 만든 PR과 이슈를 연다. 알림(`repository_dispatch`)과 매일 한 번의 정기 확인, 수동 실행을 받는다. 같은 버전의 PR이 열려 있으면 새로 만들지 않는다.
+
+`GITHUB_TOKEN`으로 만든 PR은 다른 워크플로를 자동 실행하지 않아 `ci.yml`이 돌지 않는다. 그래서 워크플로가 같은 job에서 `npm test`와 `npm run check`를 돌려 결과를 PR 본문에 적고, 실패하면 초안 PR로 연다. 저장소 비밀 `DESIGN_TOKENS_UPDATE_TOKEN`(쓰기 권한 토큰)을 등록하면 그 토큰으로 PR을 만들어 `ci.yml`도 자동으로 돈다. 등록하지 않았다면 PR을 닫았다가 다시 열면 `ci.yml`이 돈다. 워크플로가 PR을 만들려면 저장소 설정(Actions > General)의 "Allow GitHub Actions to create and approve pull requests"가 켜져 있어야 한다. 정기 확인은 저장소에 60일 동안 활동이 없으면 GitHub가 멈춘다.
+
 ### 재생하기
 
 1. 브라우저가 HTML을 열면 `player`가 첫 단계의 첫 박자 상태를 그린다.
@@ -46,7 +57,7 @@
 - 같은 원본과 같은 버전은 바이트까지 같은 결과를 낸다. 다시 변환해도 git 차이가 없게 하기 위해서다.
 - `player`와 `svg`는 시간표를 읽기만 하고 상태를 다시 계산하지 않는다. HTML과 SVG가 다르게 움직이는 일을 막기 위해서다.
 - 점 이동 곡선, 글 상자 밀어 넣기, 차트 자라기는 HTML과 SVG가 같은 토큰과 같은 규칙을 쓴다. 규칙은 `src/easing.js`, `src/chip.js`, `src/chart/motion.js`에 있고, 브라우저 코드(`player/`)는 불러올 수 없어 같은 계산을 따로 둔다. 글 상자 자리는 예외로, 빌드 때 시간표에 담은 계획을 재생기가 보간만 한다.
-- 크기, 간격, 색, 시간 값은 `src/tokens.json` 토큰만 쓴다. `src/tokens.css`, `src/tokens.js`는 생성물이라 손으로 고치지 않는다.
+- 크기, 간격, 색, 시간 값은 토큰만 쓴다. 공통 토큰은 design-tokens가, 그림 전용 토큰은 `src/tokens.json`이 정본이고 같은 이름을 두 곳에 두지 않는다. `src/tokens.css`, `src/tokens.js`는 둘을 합친 생성물이라 손으로 고치지 않는다.
 - 변환 중 네트워크에 접근하지 않는다. 글꼴과 배치 엔진을 모두 함께 배포한다.
 
 ## 기술 선택
@@ -56,4 +67,5 @@
 | 층 배치와 직교 경로 | elkjs(ELK layered) | 도형 크기, 연결점, 선 라벨 크기를 받아 겹치지 않게 배치한다. [결정 기록](decisions/2026-10-01-own-syntax-and-layout.md) |
 | 글꼴 | Pretendard, JetBrains Mono | 본문은 한글, 라틴, 기호, 숫자 모두 Pretendard 하나다. 참고 문서 페이지와 같은 글꼴이라 그림이 따로 놀지 않는다. 차트 숫자는 Pretendard의 자리 폭 같은 숫자(`tnum`)다. 고정폭 JetBrains Mono는 코드(백틱 구간, 테이블 열 타입)에만 쓰고 그 안 한글은 Pretendard로 이어 그린다. 굵기마다 정적 파일이 있는 `pretendard` 패키지로 받는다. 가변 글꼴이나 조각 나뉜 패키지보다 fontkit 측정과 subset-font 자르기가 한 파일에서 끝나서 고른다. 모두 SIL Open Font License라 그림에 넣을 수 있다. 글자 간격은 -0.3px다. |
 | 결과 형식 | SVG, HTML | SVG는 README와 설계 문서에 이미지로 들어가고, HTML은 미리보기와 목록 쪽에서 열린다. 둘 다 추가 프로그램이 필요 없다. |
+| 공통 토큰 | `@woonyong-choi/design-tokens`(Git 태그로 설치) | 색 역할, 색 단계, 간격, 반지름, 글자 크기를 여러 프로젝트가 같은 값으로 쓰려고 별도 패키지가 정본을 갖는다. 이 저장소는 그림 전용 값만 두고 같은 이름을 다시 정의하지 못한다. npm 배포 전이라 태그로 설치하고, 배포되면 버전 범위로 바꾼다. |
 | 실행 환경 | Node.js 20 이상 | elkjs와 글꼴 처리를 브라우저 없이 돌린다. |

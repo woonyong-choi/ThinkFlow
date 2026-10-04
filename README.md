@@ -242,6 +242,8 @@ npm test
 npm run check
 ```
 
+Shared design values (color roles, spacing, text sizes) come from the [design-tokens](https://github.com/woonyong-choi/design-tokens) package, which `npm install` fetches from GitHub by tag, so `git` must be available. Only figure-specific tokens live in `src/tokens.json`. A workflow opens a pull request when design-tokens publishes a new tag.
+
 See [CONTRIBUTING](.github/CONTRIBUTING.md) for branches, commits, and pull requests.
 
 ## License
