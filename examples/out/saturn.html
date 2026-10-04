@@ -877,6 +877,11 @@ html.embedded .fl-figure {
   stroke-width: var(--border-strong);
 }
 
+/* 내용이 없는 카드는 틀도 보이지 않는다(그리는 쪽이 opacity 0). 흐름 그림은 내용이 있어도 켜진 색은 아니라 filled가 따로 있다. */
+.fl .fl-card.filled {
+  opacity: 1;
+}
+
 .fl .fl-card.on {
   fill: var(--color-card-on);
   stroke: var(--color-state-active);
@@ -1424,6 +1429,11 @@ html.embedded .fl-figure {
   opacity: var(--opacity-dim);
 }
 
+/* 면이 흐려지면 바탕과 대비가 3에 못 미치므로(막대 라이트 1.5) 같은 모양의 테두리가 이때만 보인다. 테두리는 흐림 투명도를 받지 않는다. */
+.fl .rim.dim {
+  opacity: 1;
+}
+
 /* 글자는 면보다 덜 흐려, 흐린 행에서도 글자가 바탕과 대비 4.5 이상이다(opacity.dim-ink). */
 .fl .ink.dim {
   opacity: var(--opacity-dim-ink);
@@ -1448,7 +1458,7 @@ html.embedded .fl-figure {
 <div class="fl-canvas"><svg xmlns="http://www.w3.org/2000/svg" class="fl" width="960" height="630.7" style="aspect-ratio: 960 / 630.7" viewBox="-1.4 0 960 630.7" role="img"><title>Saturn 구성</title><defs><marker id="fl-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-line)"/></marker><marker id="fl-arrow-on" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-state-active)"/></marker><marker id="fl-arrow-main" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-data-main)"/></marker></defs><g id="g-0" class="fl-group" data-id="system"><rect x="236.4" y="28.7" width="372" height="574" rx="14" class="frame-box fl-stroke "/><text x="254.4" y="46.6" class="frame">Saturn</text></g>
 <g id="n-0" class="fl-node" data-id="user"><g class="fl-halo " fill="none" opacity="0"><circle cx="56" cy="38" r="10" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/><path d="M28 86 V 64 A 28 14 0 0 1 84 64 V 86 Z" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><circle cx="56" cy="38" r="10" fill="var(--color-node)" class="fl-stroke "/><path d="M28 86 V 64 A 28 14 0 0 1 84 64 V 86 Z" fill="var(--color-node)" class="fl-stroke "/><text x="56" y="105.7" class="label">개발자</text></g>
 <g id="n-1" class="fl-node" data-id="cli"><g class="fl-halo " fill="none" opacity="0"><rect x="276.4" y="196.7" width="100" height="46" rx="10" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="276.4" y="196.7" width="100" height="46" rx="10" fill="var(--color-node)" class="fl-stroke "/><text x="326.4" y="224.3" class="label">명령</text></g>
-<g id="n-2" class="fl-node" data-id="tui"><g class="fl-halo " fill="none" opacity="0"><rect x="408.4" y="148.7" width="176" height="94" rx="10" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="408.4" y="148.7" width="176" height="94" rx="10" fill="var(--color-node)" class="fl-stroke "/><text x="496.4" y="174.3" class="label">화면</text><text x="496.4" y="190.1" class="sub">하나의 대화</text><rect x="418.4" y="205.7" width="156" height="27" rx="6" fill="var(--color-card)" stroke="var(--color-outline)" stroke-dasharray="3 3" class="fl-card "/><g id="n-2-c0" opacity="0" class="fl-layer "><rect x="426.4" y="212.7" width="25.9" height="14" rx="4" fill="var(--color-tag-purple)" fill-opacity="0.15"/><text x="439.3" y="222.9" class="tag">YOU</text><text x="457.3" y="222.7" class="row">이 테스트 왜 깨져?</text></g></g>
+<g id="n-2" class="fl-node" data-id="tui"><g class="fl-halo " fill="none" opacity="0"><rect x="408.4" y="148.7" width="176" height="94" rx="10" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="408.4" y="148.7" width="176" height="94" rx="10" fill="var(--color-node)" class="fl-stroke "/><text x="496.4" y="174.3" class="label">화면</text><text x="496.4" y="190.1" class="sub">하나의 대화</text><rect x="418.4" y="205.7" width="156" height="27" rx="6" fill="var(--color-card)" stroke="var(--color-outline)" stroke-dasharray="3 3" opacity="0" class="fl-card "/><g id="n-2-c0" opacity="0" class="fl-layer "><rect x="426.4" y="212.7" width="25.9" height="14" rx="4" fill="var(--color-tag-purple)" fill-opacity="0.15"/><text x="439.3" y="222.9" class="tag">YOU</text><text x="457.3" y="222.7" class="row">이 테스트 왜 깨져?</text></g></g>
 <g id="n-3" class="fl-node" data-id="engine"><g class="fl-halo " fill="none" opacity="0"><rect x="293.4" y="380.7" width="100" height="57" rx="10" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="293.4" y="380.7" width="100" height="57" rx="10" fill="var(--color-node)" class="fl-stroke "/><text x="343.4" y="406.3" class="label">엔진</text><text x="343.4" y="422.1" class="sub">사용자당 하나</text></g>
 <g id="n-4" class="fl-node" data-id="db"><g class="fl-halo " fill="none" opacity="0"><path d="M293.4 509.7 a 50 12 0 0 1 100 0 v 57 a 50 12 0 0 1 -100 0 z" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><path d="M293.4 509.7 a 50 12 0 0 1 100 0 v 57 a 50 12 0 0 1 -100 0 z" fill="var(--color-node)" class="fl-stroke "/><path d="M293.4 509.7 a 50 12 0 0 0 100 0" fill="none" class="fl-stroke "/><text x="343.4" y="535.3" class="label">기록 저장소</text><text x="343.4" y="551.1" class="sub">sqlite</text></g>
 <g id="n-5" class="fl-node" data-id="codex"><g class="fl-halo " fill="none" opacity="0"><rect x="829.3" y="515.2" width="100" height="46" rx="10" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="829.3" y="515.2" width="100" height="46" rx="10" fill="var(--color-node)" class="fl-stroke ext " stroke-dasharray="5 4"/><text x="879.3" y="542.8" class="label">Codex CLI</text></g>
@@ -1641,13 +1651,16 @@ function figurePlay(root, data) {
 
 // cost: time O(1), heap O(1), stack O(1)
 // basis: estimate
-// 화면이 표준 캔버스 폭보다 좁으면 그림 영역이 가로로 스크롤된다. 내용이 캔버스보다 좁은 그림은 내용이 캔버스 가운데에 있으므로 가운데에서 시작하고(viewBox 왼쪽이 음수),
-// 캔버스를 꽉 채우는 차트와 넓은 그림은 왼쪽 끝(이름과 축)에서 시작한다. 화면 크기가 바뀌어도 다시 맞춘다.
+// 화면이 캔버스 폭보다 좁으면 그림 영역이 가로로 스크롤된다. 내용이 캔버스보다 좁은 그림은 내용이 캔버스 가운데에 있다(viewBox 왼쪽이 음수, 왼쪽 빈 판의 폭이 그 크기).
+// 시작 위치는 화면 가운데이되 그림의 왼쪽 끝을 넘지 않는다. 그림이 화면에 들어오면 가운데에 있고, 그림이 화면보다 넓으면 왼쪽 끝(이름과 축)부터 보인다.
+// 캔버스를 꽉 채우는 차트와 넓은 그림은 viewBox 왼쪽이 0이라 왼쪽 끝에서 시작한다. 화면 크기가 바뀌어도 다시 맞춘다.
 function centerCanvas(root) {
   const canvas = root.querySelector('.fl-canvas');
-  const isCentered = root.querySelector('svg.fl').viewBox.baseVal.x < 0;
+  const svg = root.querySelector('svg.fl');
   const place = () => {
-    canvas.scrollLeft = isCentered ? (canvas.scrollWidth - canvas.clientWidth) / 2 : 0;
+    const { x, width } = svg.viewBox.baseVal;
+    const leftMargin = Math.max(0, -x) * (svg.getBoundingClientRect().width / width);
+    canvas.scrollLeft = Math.min((canvas.scrollWidth - canvas.clientWidth) / 2, leftMargin);
   };
   place();
   addEventListener('resize', place);
@@ -1972,7 +1985,9 @@ function showCards(stage, cards, only) {
     if (!count || (only !== undefined && only !== n)) return;
     const shown = cards[n];
     for (let k = 0; k < count; k++) stage.svg.querySelector(`#n-${n}-c${k}`).setAttribute('opacity', shown === k ? 1 : 0);
-    stage.nodes[n].querySelector('.fl-card').classList.toggle('on', shown !== undefined && !stage.isFlow);
+    const frame = stage.nodes[n].querySelector('.fl-card');
+    frame.classList.toggle('on', shown !== undefined && !stage.isFlow);
+    frame.classList.toggle('filled', shown !== undefined);
   });
 }
 

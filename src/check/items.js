@@ -28,6 +28,6 @@ export const CHECKS = [
   { number: 10, code: 'check-10', severity: ['warning'], stage: 'scene', judge: checkReadable, title: '문서 폭에서 읽힘', criterion: '그림을 캔버스 폭(표준 `size.figure-canvas`, `width wide`면 `size.figure-canvas-wide`)으로 줄였을 때 가장 작은 글이 가장 작은 글 토큰(`size.text`의 최솟값, 9px) 미만. 내용이 캔버스보다 넓으면 줄이는 비율이 곧 글자 비율이다' },
   { number: 11, code: 'check-11', severity: ['warning'], stage: 'source', title: '쓰지 않는 조용한 선', criterion: '시간 흐름에서 한 번도 지나지 않는 `quiet` 선' },
   { number: 12, code: 'check-12', severity: ['error', 'warning'], stage: 'scene', judge: checkNotes, title: '순서 그림 메모가 겹치지 않는다', criterion: '메모가 그림 안에 있고 같은 행 메시지의 화살표와 라벨을 가리지 않으면 통과한다(오류). 다른 참여자의 생명선에 걸치면 경고' },
-  { number: 13, code: 'check-13', severity: ['error'], stage: 'scene', judge: checkTitleLines, title: '선이 그룹 제목 줄을 지나지 않는다', criterion: '경로 선분이 그룹 제목 줄(제목 글, 아이콘, 배지을 감싼 사각형) 안쪽을 지나지 않음' },
+  { number: 13, code: 'check-13', severity: ['error'], stage: 'scene', judge: checkTitleLines, title: '선이 그룹 제목 줄을 지나지 않는다', criterion: '경로 선분이 그룹 제목 줄(제목 글, 아이콘, 배지를 감싼 사각형) 안쪽을 지나지 않음' },
   { number: 14, code: 'check-14', severity: ['error', 'warning'], stage: 'scene', judge: checkFlow, kinds: ['flow'], title: '흐름이 점을 그리고 점 수와 값 글자가 상한 안에 있다', criterion: '흐름마다 점이 하나 이상 그려지면 통과한다(단계 끝까지 도착하지 못하면 오류). 한 그림의 점이 토큰 `scale.flow-dots-max` 이하이고(초과하면 경고). 출발 수를 `for`와 `every`에서 미리 세어 그림 전체가 `scale.flow-dots-max`의 열 배를 넘으면 시간표를 만들기 전에 오류다. 값이 바뀌어 간 글자가 8자 이하다(초과하면 오류)' },
 ];

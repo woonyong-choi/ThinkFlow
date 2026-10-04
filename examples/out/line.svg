@@ -1066,6 +1066,11 @@
   opacity: var(--opacity-dim);
 }
 
+/* 면이 흐려지면 바탕과 대비가 3에 못 미치므로(막대 라이트 1.5) 같은 모양의 테두리가 이때만 보인다. 테두리는 흐림 투명도를 받지 않는다. */
+.fl .rim.dim {
+  opacity: 1;
+}
+
 /* 글자는 면보다 덜 흐려, 흐린 행에서도 글자가 바탕과 대비 4.5 이상이다(opacity.dim-ink). */
 .fl .ink.dim {
   opacity: var(--opacity-dim-ink);

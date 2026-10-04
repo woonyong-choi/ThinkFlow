@@ -875,6 +875,11 @@ html.embedded .fl-figure {
   stroke-width: var(--border-strong);
 }
 
+/* 내용이 없는 카드는 틀도 보이지 않는다(그리는 쪽이 opacity 0). 흐름 그림은 내용이 있어도 켜진 색은 아니라 filled가 따로 있다. */
+.fl .fl-card.filled {
+  opacity: 1;
+}
+
 .fl .fl-card.on {
   fill: var(--color-card-on);
   stroke: var(--color-state-active);
@@ -1422,6 +1427,11 @@ html.embedded .fl-figure {
   opacity: var(--opacity-dim);
 }
 
+/* 면이 흐려지면 바탕과 대비가 3에 못 미치므로(막대 라이트 1.5) 같은 모양의 테두리가 이때만 보인다. 테두리는 흐림 투명도를 받지 않는다. */
+.fl .rim.dim {
+  opacity: 1;
+}
+
 /* 글자는 면보다 덜 흐려, 흐린 행에서도 글자가 바탕과 대비 4.5 이상이다(opacity.dim-ink). */
 .fl .ink.dim {
   opacity: var(--opacity-dim-ink);
@@ -1629,13 +1639,16 @@ function figurePlay(root, data) {
 
 // cost: time O(1), heap O(1), stack O(1)
 // basis: estimate
-// 화면이 표준 캔버스 폭보다 좁으면 그림 영역이 가로로 스크롤된다. 내용이 캔버스보다 좁은 그림은 내용이 캔버스 가운데에 있으므로 가운데에서 시작하고(viewBox 왼쪽이 음수),
-// 캔버스를 꽉 채우는 차트와 넓은 그림은 왼쪽 끝(이름과 축)에서 시작한다. 화면 크기가 바뀌어도 다시 맞춘다.
+// 화면이 캔버스 폭보다 좁으면 그림 영역이 가로로 스크롤된다. 내용이 캔버스보다 좁은 그림은 내용이 캔버스 가운데에 있다(viewBox 왼쪽이 음수, 왼쪽 빈 판의 폭이 그 크기).
+// 시작 위치는 화면 가운데이되 그림의 왼쪽 끝을 넘지 않는다. 그림이 화면에 들어오면 가운데에 있고, 그림이 화면보다 넓으면 왼쪽 끝(이름과 축)부터 보인다.
+// 캔버스를 꽉 채우는 차트와 넓은 그림은 viewBox 왼쪽이 0이라 왼쪽 끝에서 시작한다. 화면 크기가 바뀌어도 다시 맞춘다.
 function centerCanvas(root) {
   const canvas = root.querySelector('.fl-canvas');
-  const isCentered = root.querySelector('svg.fl').viewBox.baseVal.x < 0;
+  const svg = root.querySelector('svg.fl');
   const place = () => {
-    canvas.scrollLeft = isCentered ? (canvas.scrollWidth - canvas.clientWidth) / 2 : 0;
+    const { x, width } = svg.viewBox.baseVal;
+    const leftMargin = Math.max(0, -x) * (svg.getBoundingClientRect().width / width);
+    canvas.scrollLeft = Math.min((canvas.scrollWidth - canvas.clientWidth) / 2, leftMargin);
   };
   place();
   addEventListener('resize', place);
@@ -1960,7 +1973,9 @@ function showCards(stage, cards, only) {
     if (!count || (only !== undefined && only !== n)) return;
     const shown = cards[n];
     for (let k = 0; k < count; k++) stage.svg.querySelector(`#n-${n}-c${k}`).setAttribute('opacity', shown === k ? 1 : 0);
-    stage.nodes[n].querySelector('.fl-card').classList.toggle('on', shown !== undefined && !stage.isFlow);
+    const frame = stage.nodes[n].querySelector('.fl-card');
+    frame.classList.toggle('on', shown !== undefined && !stage.isFlow);
+    frame.classList.toggle('filled', shown !== undefined);
   });
 }
 

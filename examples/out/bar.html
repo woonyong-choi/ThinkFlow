@@ -876,6 +876,11 @@ html.embedded .fl-figure {
   stroke-width: var(--border-strong);
 }
 
+/* 내용이 없는 카드는 틀도 보이지 않는다(그리는 쪽이 opacity 0). 흐름 그림은 내용이 있어도 켜진 색은 아니라 filled가 따로 있다. */
+.fl .fl-card.filled {
+  opacity: 1;
+}
+
 .fl .fl-card.on {
   fill: var(--color-card-on);
   stroke: var(--color-state-active);
@@ -1423,6 +1428,11 @@ html.embedded .fl-figure {
   opacity: var(--opacity-dim);
 }
 
+/* 면이 흐려지면 바탕과 대비가 3에 못 미치므로(막대 라이트 1.5) 같은 모양의 테두리가 이때만 보인다. 테두리는 흐림 투명도를 받지 않는다. */
+.fl .rim.dim {
+  opacity: 1;
+}
+
 /* 글자는 면보다 덜 흐려, 흐린 행에서도 글자가 바탕과 대비 4.5 이상이다(opacity.dim-ink). */
 .fl .ink.dim {
   opacity: var(--opacity-dim-ink);
@@ -1469,17 +1479,17 @@ html.embedded .fl-figure {
 <rect x="28" y="76" width="12" height="12" rx="4" fill="var(--color-data-main)"/><text x="46" y="84" class="chart-legend">기억 붙임</text>
 <rect x="103.3" y="76" width="12" height="12" rx="4" fill="var(--color-data-compare)"/><text x="121.3" y="84" class="chart-legend">기억 없음</text>
 <g class="cr-0 ink"><text x="28" y="126.7" class="chart-label shift">단일 세션 사실</text></g>
-<g class="cr-0"><g class="cs-0"><rect x="168" y="108" width="689.4" height="12" rx="4" fill="var(--color-data-main)" class="grow"/><line x1="838.6" x2="873.3" y1="114" y2="114" class="chart-ci-casing late"/><line x1="838.6" x2="873.3" y1="114" y2="114" class="chart-ci late"/></g></g>
-<g class="cr-0"><g class="cs-1"><rect x="168" y="124" width="454.1" height="12" rx="4" fill="var(--color-data-compare)" class="grow"/><line x1="588.9" x2="653.8" y1="130" y2="130" class="chart-ci-casing late"/><line x1="588.9" x2="653.8" y1="130" y2="130" class="chart-ci late"/></g></g>
+<g class="cr-0"><g class="cs-0"><rect x="168" y="108" width="689.4" height="12" rx="4" fill="var(--color-data-main)" class="grow"/><line x1="838.6" x2="873.3" y1="114" y2="114" class="chart-ci-casing late"/><line x1="838.6" x2="873.3" y1="114" y2="114" class="chart-ci late"/></g></g><g class="cr-0 rim" opacity="0"><g class="cs-0"><rect x="168" y="108" width="689.4" height="12" rx="4" fill="none" stroke="var(--color-data-main)" stroke-width="1.5" class="grow"/></g></g>
+<g class="cr-0"><g class="cs-1"><rect x="168" y="124" width="454.1" height="12" rx="4" fill="var(--color-data-compare)" class="grow"/><line x1="588.9" x2="653.8" y1="130" y2="130" class="chart-ci-casing late"/><line x1="588.9" x2="653.8" y1="130" y2="130" class="chart-ci late"/></g></g><g class="cr-0 rim" opacity="0"><g class="cs-1"><rect x="168" y="124" width="454.1" height="12" rx="4" fill="none" stroke="var(--color-data-compare)" stroke-width="1.5" class="grow"/></g></g>
 <g class="cr-1 ink"><text x="28" y="176.7" class="chart-label shift">여러 세션 종합</text></g>
-<g class="cr-1"><g class="cs-0"><rect x="168" y="158" width="601.2" height="12" rx="4" fill="var(--color-data-main)" class="grow"/><line x1="741.3" x2="794.1" y1="164" y2="164" class="chart-ci-casing late"/><line x1="741.3" x2="794.1" y1="164" y2="164" class="chart-ci late"/></g></g>
-<g class="cr-1"><g class="cs-1"><rect x="168" y="174" width="332.7" height="12" rx="4" fill="var(--color-data-compare)" class="grow"/><line x1="467.5" x2="534.6" y1="180" y2="180" class="chart-ci-casing late"/><line x1="467.5" x2="534.6" y1="180" y2="180" class="chart-ci late"/></g></g>
+<g class="cr-1"><g class="cs-0"><rect x="168" y="158" width="601.2" height="12" rx="4" fill="var(--color-data-main)" class="grow"/><line x1="741.3" x2="794.1" y1="164" y2="164" class="chart-ci-casing late"/><line x1="741.3" x2="794.1" y1="164" y2="164" class="chart-ci late"/></g></g><g class="cr-1 rim" opacity="0"><g class="cs-0"><rect x="168" y="158" width="601.2" height="12" rx="4" fill="none" stroke="var(--color-data-main)" stroke-width="1.5" class="grow"/></g></g>
+<g class="cr-1"><g class="cs-1"><rect x="168" y="174" width="332.7" height="12" rx="4" fill="var(--color-data-compare)" class="grow"/><line x1="467.5" x2="534.6" y1="180" y2="180" class="chart-ci-casing late"/><line x1="467.5" x2="534.6" y1="180" y2="180" class="chart-ci late"/></g></g><g class="cr-1 rim" opacity="0"><g class="cs-1"><rect x="168" y="174" width="332.7" height="12" rx="4" fill="none" stroke="var(--color-data-compare)" stroke-width="1.5" class="grow"/></g></g>
 <g class="cr-2 ink"><text x="28" y="218.7" class="chart-label shift">시간 추론</text></g>
-<g class="cr-2"><g class="cs-0"><rect x="168" y="208" width="641.2" height="12" rx="4" fill="var(--color-data-main)" class="grow"/><line x1="783.5" x2="831.8" y1="214" y2="214" class="chart-ci-casing late"/><line x1="783.5" x2="831.8" y1="214" y2="214" class="chart-ci late"/></g></g>
+<g class="cr-2"><g class="cs-0"><rect x="168" y="208" width="641.2" height="12" rx="4" fill="var(--color-data-main)" class="grow"/><line x1="783.5" x2="831.8" y1="214" y2="214" class="chart-ci-casing late"/><line x1="783.5" x2="831.8" y1="214" y2="214" class="chart-ci late"/></g></g><g class="cr-2 rim" opacity="0"><g class="cs-0"><rect x="168" y="208" width="641.2" height="12" rx="4" fill="none" stroke="var(--color-data-main)" stroke-width="1.5" class="grow"/></g></g>
 <g class="cr-2 ink"><g class="cs-1"><text x="168" y="234" class="chart-missing">비교 없음</text></g></g>
 <g class="cr-3 ink"><text x="28" y="276.7" class="chart-label shift">지식 갱신</text></g>
-<g class="cr-3"><g class="cs-0"><rect x="168" y="258" width="667.6" height="12" rx="4" fill="var(--color-data-main)" class="grow"/><line x1="812.2" x2="855.2" y1="264" y2="264" class="chart-ci-casing late"/><line x1="812.2" x2="855.2" y1="264" y2="264" class="chart-ci late"/></g></g>
-<g class="cr-3"><g class="cs-1"><rect x="168" y="274" width="530.3" height="12" rx="4" fill="var(--color-data-compare)" class="grow"/><line x1="666.6" x2="727.7" y1="280" y2="280" class="chart-ci-casing late"/><line x1="666.6" x2="727.7" y1="280" y2="280" class="chart-ci late"/></g></g>
+<g class="cr-3"><g class="cs-0"><rect x="168" y="258" width="667.6" height="12" rx="4" fill="var(--color-data-main)" class="grow"/><line x1="812.2" x2="855.2" y1="264" y2="264" class="chart-ci-casing late"/><line x1="812.2" x2="855.2" y1="264" y2="264" class="chart-ci late"/></g></g><g class="cr-3 rim" opacity="0"><g class="cs-0"><rect x="168" y="258" width="667.6" height="12" rx="4" fill="none" stroke="var(--color-data-main)" stroke-width="1.5" class="grow"/></g></g>
+<g class="cr-3"><g class="cs-1"><rect x="168" y="274" width="530.3" height="12" rx="4" fill="var(--color-data-compare)" class="grow"/><line x1="666.6" x2="727.7" y1="280" y2="280" class="chart-ci-casing late"/><line x1="666.6" x2="727.7" y1="280" y2="280" class="chart-ci late"/></g></g><g class="cr-3 rim" opacity="0"><g class="cs-1"><rect x="168" y="274" width="530.3" height="12" rx="4" fill="none" stroke="var(--color-data-compare)" stroke-width="1.5" class="grow"/></g></g>
 <line x1="771.5" x2="771.5" y1="102" y2="286" class="chart-rule"/><text x="775.5" y="100" class="chart-rule-label">채택 기준</text>
 <g class="cr-0 ink"><g class="cs-0"><text x="879.3" y="118" class="chart-value ours late">91.4</text></g></g>
 <g class="cr-0 ink"><g class="cs-1"><text x="659.8" y="134" class="chart-value late">60.2</text></g></g>
@@ -1672,13 +1682,16 @@ function figurePlay(root, data) {
 
 // cost: time O(1), heap O(1), stack O(1)
 // basis: estimate
-// 화면이 표준 캔버스 폭보다 좁으면 그림 영역이 가로로 스크롤된다. 내용이 캔버스보다 좁은 그림은 내용이 캔버스 가운데에 있으므로 가운데에서 시작하고(viewBox 왼쪽이 음수),
-// 캔버스를 꽉 채우는 차트와 넓은 그림은 왼쪽 끝(이름과 축)에서 시작한다. 화면 크기가 바뀌어도 다시 맞춘다.
+// 화면이 캔버스 폭보다 좁으면 그림 영역이 가로로 스크롤된다. 내용이 캔버스보다 좁은 그림은 내용이 캔버스 가운데에 있다(viewBox 왼쪽이 음수, 왼쪽 빈 판의 폭이 그 크기).
+// 시작 위치는 화면 가운데이되 그림의 왼쪽 끝을 넘지 않는다. 그림이 화면에 들어오면 가운데에 있고, 그림이 화면보다 넓으면 왼쪽 끝(이름과 축)부터 보인다.
+// 캔버스를 꽉 채우는 차트와 넓은 그림은 viewBox 왼쪽이 0이라 왼쪽 끝에서 시작한다. 화면 크기가 바뀌어도 다시 맞춘다.
 function centerCanvas(root) {
   const canvas = root.querySelector('.fl-canvas');
-  const isCentered = root.querySelector('svg.fl').viewBox.baseVal.x < 0;
+  const svg = root.querySelector('svg.fl');
   const place = () => {
-    canvas.scrollLeft = isCentered ? (canvas.scrollWidth - canvas.clientWidth) / 2 : 0;
+    const { x, width } = svg.viewBox.baseVal;
+    const leftMargin = Math.max(0, -x) * (svg.getBoundingClientRect().width / width);
+    canvas.scrollLeft = Math.min((canvas.scrollWidth - canvas.clientWidth) / 2, leftMargin);
   };
   place();
   addEventListener('resize', place);
@@ -2003,7 +2016,9 @@ function showCards(stage, cards, only) {
     if (!count || (only !== undefined && only !== n)) return;
     const shown = cards[n];
     for (let k = 0; k < count; k++) stage.svg.querySelector(`#n-${n}-c${k}`).setAttribute('opacity', shown === k ? 1 : 0);
-    stage.nodes[n].querySelector('.fl-card').classList.toggle('on', shown !== undefined && !stage.isFlow);
+    const frame = stage.nodes[n].querySelector('.fl-card');
+    frame.classList.toggle('on', shown !== undefined && !stage.isFlow);
+    frame.classList.toggle('filled', shown !== undefined);
   });
 }
 

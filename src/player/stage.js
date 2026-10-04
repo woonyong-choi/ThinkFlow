@@ -90,7 +90,9 @@ function showCards(stage, cards, only) {
     if (!count || (only !== undefined && only !== n)) return;
     const shown = cards[n];
     for (let k = 0; k < count; k++) stage.svg.querySelector(`#n-${n}-c${k}`).setAttribute('opacity', shown === k ? 1 : 0);
-    stage.nodes[n].querySelector('.fl-card').classList.toggle('on', shown !== undefined && !stage.isFlow);
+    const frame = stage.nodes[n].querySelector('.fl-card');
+    frame.classList.toggle('on', shown !== undefined && !stage.isFlow);
+    frame.classList.toggle('filled', shown !== undefined);
   });
 }
 

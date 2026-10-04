@@ -879,6 +879,11 @@ html.embedded .fl-figure {
   stroke-width: var(--border-strong);
 }
 
+/* 내용이 없는 카드는 틀도 보이지 않는다(그리는 쪽이 opacity 0). 흐름 그림은 내용이 있어도 켜진 색은 아니라 filled가 따로 있다. */
+.fl .fl-card.filled {
+  opacity: 1;
+}
+
 .fl .fl-card.on {
   fill: var(--color-card-on);
   stroke: var(--color-state-active);
@@ -1426,6 +1431,11 @@ html.embedded .fl-figure {
   opacity: var(--opacity-dim);
 }
 
+/* 면이 흐려지면 바탕과 대비가 3에 못 미치므로(막대 라이트 1.5) 같은 모양의 테두리가 이때만 보인다. 테두리는 흐림 투명도를 받지 않는다. */
+.fl .rim.dim {
+  opacity: 1;
+}
+
 /* 글자는 면보다 덜 흐려, 흐린 행에서도 글자가 바탕과 대비 4.5 이상이다(opacity.dim-ink). */
 .fl .ink.dim {
   opacity: var(--opacity-dim-ink);
@@ -1475,15 +1485,15 @@ html.embedded .fl-figure {
 <text x="28" y="127.7" class="chart-label">Codex</text>
 <text x="28" y="167.7" class="chart-label">Claude</text>
 <text x="28" y="207.7" class="chart-label">둘 다</text>
-<g class="cr-0 chart-heat-cell"><rect x="168" y="103" width="253.3" height="38" rx="4" class="chart-heat" style="--s:1" fill="#004dd2"/></g><text x="295.7" y="127" class="cr-0 ink chart-cell on">182</text>
-<g class="cr-1 chart-heat-cell"><rect x="423.3" y="103" width="253.3" height="38" rx="4" class="chart-heat" style="--s:0.077" fill="#a9c3f2"/></g><text x="551" y="127" class="cr-1 ink chart-cell">14</text>
-<g class="cr-2 chart-heat-cell"><rect x="678.7" y="103" width="253.3" height="38" rx="4" class="chart-heat" style="--s:0.022" fill="#b3caf4"/></g><text x="806.3" y="127" class="cr-2 ink chart-cell">4</text>
-<g class="cr-3 chart-heat-cell"><rect x="168" y="143" width="253.3" height="38" rx="4" class="chart-heat" style="--s:0.049" fill="#aec7f3"/></g><text x="295.7" y="167" class="cr-3 ink chart-cell">9</text>
-<g class="cr-4 chart-heat-cell"><rect x="423.3" y="143" width="253.3" height="38" rx="4" class="chart-heat" style="--s:0.94" fill="#0b55d4"/></g><text x="551" y="167" class="cr-4 ink chart-cell on">171</text>
-<g class="cr-5 chart-heat-cell"><rect x="678.7" y="143" width="253.3" height="38" rx="4" class="chart-heat" style="--s:0.033" fill="#b1c9f4"/></g><text x="806.3" y="167" class="cr-5 ink chart-cell">6</text>
-<g class="cr-6 chart-heat-cell"><rect x="168" y="183" width="253.3" height="38" rx="4" class="chart-heat" style="--s:0.016" fill="#b4cbf4"/></g><text x="295.7" y="207" class="cr-6 ink chart-cell">3</text>
-<g class="cr-7 chart-heat-cell"><rect x="423.3" y="183" width="253.3" height="38" rx="4" class="chart-heat" style="--s:0.027" fill="#b2caf4"/></g><text x="551" y="207" class="cr-7 ink chart-cell">5</text>
-<g class="cr-8 chart-heat-cell"><rect x="678.7" y="183" width="253.3" height="38" rx="4" class="chart-heat" style="--s:0.582" fill="#4c83e1"/></g><text x="806.3" y="207" class="cr-8 ink chart-cell">106</text></g><g class="fl-packets"></g></svg></div>
+<g class="cr-0 chart-heat-cell"><rect x="168" y="103" width="253.3" height="38" rx="4" class="chart-heat" style="--s:1" fill="#004dd2"/></g><g class="cr-0 rim" opacity="0"><rect x="168" y="103" width="253.3" height="38" rx="4" fill="none" stroke="var(--color-data-heat-high)" stroke-width="1.5"/></g><text x="295.7" y="127" class="cr-0 ink chart-cell on">182</text>
+<g class="cr-1 chart-heat-cell"><rect x="423.3" y="103" width="253.3" height="38" rx="4" class="chart-heat" style="--s:0.077" fill="#a9c3f2"/></g><g class="cr-1 rim" opacity="0"><rect x="423.3" y="103" width="253.3" height="38" rx="4" fill="none" stroke="var(--color-data-heat-high)" stroke-width="1.5"/></g><text x="551" y="127" class="cr-1 ink chart-cell">14</text>
+<g class="cr-2 chart-heat-cell"><rect x="678.7" y="103" width="253.3" height="38" rx="4" class="chart-heat" style="--s:0.022" fill="#b3caf4"/></g><g class="cr-2 rim" opacity="0"><rect x="678.7" y="103" width="253.3" height="38" rx="4" fill="none" stroke="var(--color-data-heat-high)" stroke-width="1.5"/></g><text x="806.3" y="127" class="cr-2 ink chart-cell">4</text>
+<g class="cr-3 chart-heat-cell"><rect x="168" y="143" width="253.3" height="38" rx="4" class="chart-heat" style="--s:0.049" fill="#aec7f3"/></g><g class="cr-3 rim" opacity="0"><rect x="168" y="143" width="253.3" height="38" rx="4" fill="none" stroke="var(--color-data-heat-high)" stroke-width="1.5"/></g><text x="295.7" y="167" class="cr-3 ink chart-cell">9</text>
+<g class="cr-4 chart-heat-cell"><rect x="423.3" y="143" width="253.3" height="38" rx="4" class="chart-heat" style="--s:0.94" fill="#0b55d4"/></g><g class="cr-4 rim" opacity="0"><rect x="423.3" y="143" width="253.3" height="38" rx="4" fill="none" stroke="var(--color-data-heat-high)" stroke-width="1.5"/></g><text x="551" y="167" class="cr-4 ink chart-cell on">171</text>
+<g class="cr-5 chart-heat-cell"><rect x="678.7" y="143" width="253.3" height="38" rx="4" class="chart-heat" style="--s:0.033" fill="#b1c9f4"/></g><g class="cr-5 rim" opacity="0"><rect x="678.7" y="143" width="253.3" height="38" rx="4" fill="none" stroke="var(--color-data-heat-high)" stroke-width="1.5"/></g><text x="806.3" y="167" class="cr-5 ink chart-cell">6</text>
+<g class="cr-6 chart-heat-cell"><rect x="168" y="183" width="253.3" height="38" rx="4" class="chart-heat" style="--s:0.016" fill="#b4cbf4"/></g><g class="cr-6 rim" opacity="0"><rect x="168" y="183" width="253.3" height="38" rx="4" fill="none" stroke="var(--color-data-heat-high)" stroke-width="1.5"/></g><text x="295.7" y="207" class="cr-6 ink chart-cell">3</text>
+<g class="cr-7 chart-heat-cell"><rect x="423.3" y="183" width="253.3" height="38" rx="4" class="chart-heat" style="--s:0.027" fill="#b2caf4"/></g><g class="cr-7 rim" opacity="0"><rect x="423.3" y="183" width="253.3" height="38" rx="4" fill="none" stroke="var(--color-data-heat-high)" stroke-width="1.5"/></g><text x="551" y="207" class="cr-7 ink chart-cell">5</text>
+<g class="cr-8 chart-heat-cell"><rect x="678.7" y="183" width="253.3" height="38" rx="4" class="chart-heat" style="--s:0.582" fill="#4c83e1"/></g><g class="cr-8 rim" opacity="0"><rect x="678.7" y="183" width="253.3" height="38" rx="4" fill="none" stroke="var(--color-data-heat-high)" stroke-width="1.5"/></g><text x="806.3" y="207" class="cr-8 ink chart-cell">106</text></g><g class="fl-packets"></g></svg></div>
 <figcaption class="fl-foot">
 <div class="fl-bar"><button type="button" class="fl-round fl-pause"><svg class="fl-ring" viewBox="0 0 36 36" aria-hidden="true"><circle class="fl-ring-fill" cx="18" cy="18" r="17.125" stroke-width="1.75" transform="rotate(-90 18 18)"/></svg><span class="fl-pause-icon"></span></button><div class="fl-tabs" role="tablist"></div><button type="button" class="fl-round fl-rate" aria-label="배속">1×</button></div>
 <p class="fl-caption" aria-live="polite"></p>
@@ -1667,13 +1677,16 @@ function figurePlay(root, data) {
 
 // cost: time O(1), heap O(1), stack O(1)
 // basis: estimate
-// 화면이 표준 캔버스 폭보다 좁으면 그림 영역이 가로로 스크롤된다. 내용이 캔버스보다 좁은 그림은 내용이 캔버스 가운데에 있으므로 가운데에서 시작하고(viewBox 왼쪽이 음수),
-// 캔버스를 꽉 채우는 차트와 넓은 그림은 왼쪽 끝(이름과 축)에서 시작한다. 화면 크기가 바뀌어도 다시 맞춘다.
+// 화면이 캔버스 폭보다 좁으면 그림 영역이 가로로 스크롤된다. 내용이 캔버스보다 좁은 그림은 내용이 캔버스 가운데에 있다(viewBox 왼쪽이 음수, 왼쪽 빈 판의 폭이 그 크기).
+// 시작 위치는 화면 가운데이되 그림의 왼쪽 끝을 넘지 않는다. 그림이 화면에 들어오면 가운데에 있고, 그림이 화면보다 넓으면 왼쪽 끝(이름과 축)부터 보인다.
+// 캔버스를 꽉 채우는 차트와 넓은 그림은 viewBox 왼쪽이 0이라 왼쪽 끝에서 시작한다. 화면 크기가 바뀌어도 다시 맞춘다.
 function centerCanvas(root) {
   const canvas = root.querySelector('.fl-canvas');
-  const isCentered = root.querySelector('svg.fl').viewBox.baseVal.x < 0;
+  const svg = root.querySelector('svg.fl');
   const place = () => {
-    canvas.scrollLeft = isCentered ? (canvas.scrollWidth - canvas.clientWidth) / 2 : 0;
+    const { x, width } = svg.viewBox.baseVal;
+    const leftMargin = Math.max(0, -x) * (svg.getBoundingClientRect().width / width);
+    canvas.scrollLeft = Math.min((canvas.scrollWidth - canvas.clientWidth) / 2, leftMargin);
   };
   place();
   addEventListener('resize', place);
@@ -1998,7 +2011,9 @@ function showCards(stage, cards, only) {
     if (!count || (only !== undefined && only !== n)) return;
     const shown = cards[n];
     for (let k = 0; k < count; k++) stage.svg.querySelector(`#n-${n}-c${k}`).setAttribute('opacity', shown === k ? 1 : 0);
-    stage.nodes[n].querySelector('.fl-card').classList.toggle('on', shown !== undefined && !stage.isFlow);
+    const frame = stage.nodes[n].querySelector('.fl-card');
+    frame.classList.toggle('on', shown !== undefined && !stage.isFlow);
+    frame.classList.toggle('filled', shown !== undefined);
   });
 }
 

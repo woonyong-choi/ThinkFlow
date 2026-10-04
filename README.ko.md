@@ -91,7 +91,7 @@ npm install
    npx github:woonyong-choi/daphnis md guide.md
    ```
 
-   명령은 문서 옆에 `guide-request.svg`를 쓰고 블록 바로 아래에 `![Client, Server](guide-request.svg)<!-- dap -->`를 넣습니다. 다시 돌려도 아무것도 바뀌지 않습니다.
+   명령은 문서 옆에 `guide-request.svg`를 쓰고 블록 바로 아래에 `![request](guide-request.svg)<!-- dap -->`를 넣습니다. 대체 글은 블록의 `title`이고, `title`이 없으면 이름입니다. 다시 돌려도 아무것도 바뀌지 않습니다.
 
 4. CI에서 그림을 최신으로 지킵니다. 아래 GitHub Action 단계는 원본에 경고가 있거나 마크다운 그림이 낡았을 때 PR을 실패시킵니다.
 
@@ -164,7 +164,7 @@ examples/memory.svg
 examples/memory.html
 ```
 
-SVG는 스크립트 없이 움직입니다. HTML에는 단계 탭, 일시정지, 배속, 전체 화면, 확대가 더해집니다. `--static`은 멈춘 SVG를 씁니다.
+SVG는 스크립트 없이 움직입니다. HTML에는 단계 탭, 일시정지, 배속, 전체 화면, 확대가 더해집니다. `--static`은 멈춘 SVG를 씁니다. 모든 선과 도형을 한꺼번에 보이고, 카드는 비우고, 점은 그리지 않고, 차트는 다 자란 모습이라 한 단계가 아니라 그림 전체의 구조가 읽힙니다.
 
 ### 그림 검사하기
 
@@ -193,7 +193,7 @@ npm run examples
 
 ### 마크다운 문서에 그림 넣기
 
-`dap` 블록 이름을 바꾸면 옛 SVG가 지워지고, `--out-dir images`는 SVG 위치를 바꾸며, `--check`는 쓰지 않고 문서나 SVG가 낡았으면 종료 코드 1로 끝납니다. 어느 블록이든 오류가 있으면 아무 파일도 쓰기 전에 멈춥니다. 규칙은 [마크다운](docs/design/markdown.md)에, 첫 실행과 GitHub Action은 [빠른 시작](#빠른-시작)에 있습니다.
+`dap` 블록 이름을 바꾸면 옛 SVG가 지워지고, `--out-dir images`는 SVG를 그 폴더에 쓰고 이미지 줄이 그곳을 가리키게 하며(이미 문서 옆에 있던 SVG는 그대로 남으므로 직접 지웁니다), `--check`는 쓰지 않고 문서나 SVG가 낡았으면 종료 코드 1로 끝납니다. 어느 블록이든 오류가 있으면 아무 파일도 쓰기 전에 멈춥니다. 규칙은 [마크다운](docs/design/markdown.md)에, 첫 실행과 GitHub Action은 [빠른 시작](#빠른-시작)에 있습니다.
 
 ## 기능
 

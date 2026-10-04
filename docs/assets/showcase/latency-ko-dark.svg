@@ -1066,6 +1066,11 @@
   opacity: var(--opacity-dim);
 }
 
+/* 면이 흐려지면 바탕과 대비가 3에 못 미치므로(막대 라이트 1.5) 같은 모양의 테두리가 이때만 보인다. 테두리는 흐림 투명도를 받지 않는다. */
+.fl .rim.dim {
+  opacity: 1;
+}
+
 /* 글자는 면보다 덜 흐려, 흐린 행에서도 글자가 바탕과 대비 4.5 이상이다(opacity.dim-ink). */
 .fl .ink.dim {
   opacity: var(--opacity-dim-ink);
@@ -1129,22 +1134,30 @@
 .fl .a2 { animation: a2 8.445s infinite linear; }
 @keyframes a3 { 0%,41.858% { opacity: 1 } 41.859%,72.764% { opacity: 1 } 72.765%,99.999% { opacity: 1 } }
 .fl .a3 { animation: a3 8.445s infinite linear; }
+@keyframes a4 { 0%,41.858% { opacity: 0 } 41.859%,72.764% { opacity: 0 } 72.765%,99.999% { opacity: 0 } }
+.fl .a4 { animation: a4 8.445s infinite linear; }
 .fl .cr-0 { animation: a2 8.445s infinite linear; }
 .fl .cr-0.ink { animation: a3 8.445s infinite linear; }
-@keyframes a4 { 0%,41.858% { opacity: 1 } 41.859%,72.764% { opacity: 1 } 72.765% { opacity: 1 } 75.133%,99.999% { opacity: 0.3 } }
-.fl .a4 { animation: a4 8.445s infinite linear; }
-@keyframes a5 { 0%,41.858% { opacity: 1 } 41.859%,72.764% { opacity: 1 } 72.765% { opacity: 1 } 75.133%,99.999% { opacity: 0.9 } }
+.fl .cr-0.rim { animation: a4 8.445s infinite linear; }
+@keyframes a5 { 0%,41.858% { opacity: 1 } 41.859%,72.764% { opacity: 1 } 72.765% { opacity: 1 } 75.133%,99.999% { opacity: 0.3 } }
 .fl .a5 { animation: a5 8.445s infinite linear; }
-.fl .cr-1 { animation: a4 8.445s infinite linear; }
-.fl .cr-1.ink { animation: a5 8.445s infinite linear; }
-.fl .cr-2 { animation: a4 8.445s infinite linear; }
-.fl .cr-2.ink { animation: a5 8.445s infinite linear; }
-.fl .cr-3 { animation: a4 8.445s infinite linear; }
-.fl .cr-3.ink { animation: a5 8.445s infinite linear; }
-@keyframes a6 { 0%,41.858% { opacity: 1 } 41.859% { opacity: 1 } 44.227%,72.764% { opacity: 0 } 72.765%,99.999% { opacity: 0 } }
+@keyframes a6 { 0%,41.858% { opacity: 1 } 41.859%,72.764% { opacity: 1 } 72.765% { opacity: 1 } 75.133%,99.999% { opacity: 0.9 } }
 .fl .a6 { animation: a6 8.445s infinite linear; }
-@keyframes a7 { 0%,44.226% { opacity: 0 } 44.227% { opacity: 0 } 46.596%,72.764% { opacity: 1 } 72.765%,99.999% { opacity: 1 } }
+@keyframes a7 { 0%,41.858% { opacity: 0 } 41.859%,72.764% { opacity: 0 } 72.765% { opacity: 0 } 75.133%,99.999% { opacity: 1 } }
 .fl .a7 { animation: a7 8.445s infinite linear; }
+.fl .cr-1 { animation: a5 8.445s infinite linear; }
+.fl .cr-1.ink { animation: a6 8.445s infinite linear; }
+.fl .cr-1.rim { animation: a7 8.445s infinite linear; }
+.fl .cr-2 { animation: a5 8.445s infinite linear; }
+.fl .cr-2.ink { animation: a6 8.445s infinite linear; }
+.fl .cr-2.rim { animation: a7 8.445s infinite linear; }
+.fl .cr-3 { animation: a5 8.445s infinite linear; }
+.fl .cr-3.ink { animation: a6 8.445s infinite linear; }
+.fl .cr-3.rim { animation: a7 8.445s infinite linear; }
+@keyframes a8 { 0%,41.858% { opacity: 1 } 41.859% { opacity: 1 } 44.227%,72.764% { opacity: 0 } 72.765%,99.999% { opacity: 0 } }
+.fl .a8 { animation: a8 8.445s infinite linear; }
+@keyframes a9 { 0%,44.226% { opacity: 0 } 44.227% { opacity: 0 } 46.596%,72.764% { opacity: 1 } 72.765%,99.999% { opacity: 1 } }
+.fl .a9 { animation: a9 8.445s infinite linear; }
 </style>
 <defs><marker id="fl-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-line)"/></marker><marker id="fl-arrow-on" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-state-active)"/></marker><marker id="fl-arrow-main" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-data-main)"/></marker></defs>
 <rect x="0.5" y="0.5" width="959" height="416" rx="10" fill="var(--color-bg)" stroke="var(--color-plate-border)" stroke-width="1"/>
@@ -1160,8 +1173,8 @@
 
 <line x1="168" x2="926.1" y1="276" y2="276" class="chart-axis"/><text x="168" y="293" class="chart-tick">0</text><text x="319.6" y="293" class="chart-tick">200</text><text x="471.2" y="293" class="chart-tick">400</text><text x="622.8" y="293" class="chart-tick">600</text><text x="774.5" y="293" class="chart-tick">800</text><text x="926.1" y="293" class="chart-tick">1k</text><text x="926.1" y="310" class="chart-unit">지연(ms)</text>
 </g>
-<text x="480" y="359" opacity="0" class="steplabel a6">넣기 전</text>
-<text x="480" y="359" opacity="0" class="steplabel a7">넣은 뒤</text>
-<g opacity="0" class="a6"><text x="480" y="385" class="caption">캐시가 없으면 검색과 피드 요청이 느립니다</text></g>
-<g opacity="0" class="a7"><text x="480" y="385" class="caption">캐시를 넣으면 모든 엔드포인트가 빨라지고 검색이 가장 많이 줄어듭니다</text></g>
+<text x="480" y="359" opacity="0" class="steplabel a8">넣기 전</text>
+<text x="480" y="359" opacity="0" class="steplabel a9">넣은 뒤</text>
+<g opacity="0" class="a8"><text x="480" y="385" class="caption">캐시가 없으면 검색과 피드 요청이 느립니다</text></g>
+<g opacity="0" class="a9"><text x="480" y="385" class="caption">캐시를 넣으면 모든 엔드포인트가 빨라지고 검색이 가장 많이 줄어듭니다</text></g>
 </svg>

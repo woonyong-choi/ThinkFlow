@@ -91,7 +91,7 @@ After the first npm release, `npm install --save-dev daphnis` adds the `daphnis`
    npx github:woonyong-choi/daphnis md guide.md
    ```
 
-   The command writes `guide-request.svg` next to the document and puts `![Client, Server](guide-request.svg)<!-- dap -->` right below the block. Run it again and nothing changes.
+   The command writes `guide-request.svg` next to the document and puts `![request](guide-request.svg)<!-- dap -->` right below the block. The alt text is the block's `title`, or its name when there is no title. Run it again and nothing changes.
 
 4. Keep them current in CI. This GitHub Action step fails a pull request when a source has a warning or a Markdown figure is out of date:
 
@@ -164,7 +164,7 @@ examples/memory.svg
 examples/memory.html
 ```
 
-The SVG animates without scripts. The HTML adds step tabs, pause, speed, fullscreen, and zoom. `--static` writes a still SVG.
+The SVG animates without scripts. The HTML adds step tabs, pause, speed, fullscreen, and zoom. `--static` writes a still SVG that shows every line and shape at once with empty cards, no dots, and charts fully grown, so it reads as the structure of the whole figure rather than one step.
 
 ### Check a figure
 
@@ -193,7 +193,7 @@ Open `examples/out/index.html` to see every example on one page.
 
 ### Keep figures in a Markdown document
 
-Renaming a `dap` block removes the old SVG, `--out-dir images` moves the SVG files, and `--check` writes nothing and exits with 1 when a document or SVG is out of date. Any error in any block stops the command before it writes. See [Markdown](docs/design/markdown.md) for the rules, and [Quick start](#quick-start) for the first run and the GitHub Action.
+Renaming a `dap` block removes the old SVG, `--out-dir images` writes the SVG files into that folder and points the image lines there (SVG files already next to the document stay, so delete them by hand), and `--check` writes nothing and exits with 1 when a document or SVG is out of date. Any error in any block stops the command before it writes. See [Markdown](docs/design/markdown.md) for the rules, and [Quick start](#quick-start) for the first run and the GitHub Action.
 
 ## Features
 

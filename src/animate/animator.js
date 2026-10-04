@@ -81,7 +81,7 @@ function decorateElement(kind, { id, i, extra, scene }, { segs, toggle, lit, lit
     case 'quiet':
       return toggle(lit(i), 'opacity: 1', 'opacity: 0');
     case 'card':
-      return toggle(cardState(id, (v) => v !== undefined), `stroke: ${c.state.active}; fill: ${c['card-on']}`, `stroke: ${c.border}; fill: ${c.card}`);
+      return toggle(cardState(id, (v) => v !== undefined), `opacity: 1; stroke: ${c.state.active}; fill: ${c['card-on']}`, `opacity: 0; stroke: ${c.border}; fill: ${c.card}`);
     case 'layer':
       return toggle(cardState(id, (v) => v === extra), 'opacity: 1', 'opacity: 0');
     default:

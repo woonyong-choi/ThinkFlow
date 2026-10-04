@@ -1067,6 +1067,11 @@
   opacity: var(--opacity-dim);
 }
 
+/* 면이 흐려지면 바탕과 대비가 3에 못 미치므로(막대 라이트 1.5) 같은 모양의 테두리가 이때만 보인다. 테두리는 흐림 투명도를 받지 않는다. */
+.fl .rim.dim {
+  opacity: 1;
+}
+
 /* 글자는 면보다 덜 흐려, 흐린 행에서도 글자가 바탕과 대비 4.5 이상이다(opacity.dim-ink). */
 .fl .ink.dim {
   opacity: var(--opacity-dim-ink);
@@ -1134,20 +1139,27 @@
 .fl .a2 { animation: a2 7.41s infinite linear; }
 @keyframes a3 { 0%,45.883% { opacity: 1 } 45.884%,68.96% { opacity: 1 } 68.961% { opacity: 1 } 71.66%,99.999% { opacity: 0.9 } }
 .fl .a3 { animation: a3 7.41s infinite linear; }
+@keyframes a4 { 0%,45.883% { opacity: 0 } 45.884%,68.96% { opacity: 0 } 68.961% { opacity: 0 } 71.66%,99.999% { opacity: 1 } }
+.fl .a4 { animation: a4 7.41s infinite linear; }
 .fl .cr-0 { animation: a2 7.41s infinite linear; }
 .fl .cr-0.ink { animation: a3 7.41s infinite linear; }
-@keyframes a4 { 0%,45.883% { opacity: 1 } 45.884%,68.96% { opacity: 1 } 68.961%,99.999% { opacity: 1 } }
-.fl .a4 { animation: a4 7.41s infinite linear; }
+.fl .cr-0.rim { animation: a4 7.41s infinite linear; }
 @keyframes a5 { 0%,45.883% { opacity: 1 } 45.884%,68.96% { opacity: 1 } 68.961%,99.999% { opacity: 1 } }
 .fl .a5 { animation: a5 7.41s infinite linear; }
-.fl .cr-1 { animation: a4 7.41s infinite linear; }
-.fl .cr-1.ink { animation: a5 7.41s infinite linear; }
+@keyframes a6 { 0%,45.883% { opacity: 1 } 45.884%,68.96% { opacity: 1 } 68.961%,99.999% { opacity: 1 } }
+.fl .a6 { animation: a6 7.41s infinite linear; }
+@keyframes a7 { 0%,45.883% { opacity: 0 } 45.884%,68.96% { opacity: 0 } 68.961%,99.999% { opacity: 0 } }
+.fl .a7 { animation: a7 7.41s infinite linear; }
+.fl .cr-1 { animation: a5 7.41s infinite linear; }
+.fl .cr-1.ink { animation: a6 7.41s infinite linear; }
+.fl .cr-1.rim { animation: a7 7.41s infinite linear; }
 .fl .cr-2 { animation: a2 7.41s infinite linear; }
 .fl .cr-2.ink { animation: a3 7.41s infinite linear; }
-@keyframes a6 { 0%,45.883% { opacity: 1 } 45.884% { opacity: 1 } 48.583%,68.96% { opacity: 0 } 68.961%,99.999% { opacity: 0 } }
-.fl .a6 { animation: a6 7.41s infinite linear; }
-@keyframes a7 { 0%,48.582% { opacity: 0 } 48.583% { opacity: 0 } 51.282%,68.96% { opacity: 1 } 68.961%,99.999% { opacity: 1 } }
-.fl .a7 { animation: a7 7.41s infinite linear; }
+.fl .cr-2.rim { animation: a4 7.41s infinite linear; }
+@keyframes a8 { 0%,45.883% { opacity: 1 } 45.884% { opacity: 1 } 48.583%,68.96% { opacity: 0 } 68.961%,99.999% { opacity: 0 } }
+.fl .a8 { animation: a8 7.41s infinite linear; }
+@keyframes a9 { 0%,48.582% { opacity: 0 } 48.583% { opacity: 0 } 51.282%,68.96% { opacity: 1 } 68.961%,99.999% { opacity: 1 } }
+.fl .a9 { animation: a9 7.41s infinite linear; }
 </style>
 <defs><marker id="fl-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-line)"/></marker><marker id="fl-arrow-on" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-state-active)"/></marker><marker id="fl-arrow-main" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-data-main)"/></marker></defs>
 <rect x="0.5" y="0.5" width="959" height="384" rx="10" fill="var(--color-bg)" stroke="var(--color-plate-border)" stroke-width="1"/>
@@ -1157,14 +1169,14 @@
 <rect x="28" y="76" width="12" height="12" rx="4" fill="var(--color-data-main)"/><text x="46" y="84" class="chart-legend">올해</text>
 <rect x="82.4" y="76" width="12" height="12" rx="4" fill="var(--color-data-compare)"/><text x="100.4" y="84" class="chart-legend">작년</text>
 <g class="cr-0 ink"><text x="28" y="126.7" class="chart-label shift">1분기</text></g>
-<g class="cr-0"><g class="cs-0"><rect x="168" y="108" width="462.6" height="12" rx="4" fill="var(--color-data-main)" class="grow"/></g></g>
-<g class="cr-0"><g class="cs-1"><rect x="168" y="124" width="402.3" height="12" rx="4" fill="var(--color-data-compare)" class="grow"/></g></g>
+<g class="cr-0"><g class="cs-0"><rect x="168" y="108" width="462.6" height="12" rx="4" fill="var(--color-data-main)" class="grow"/></g></g><g class="cr-0 rim" opacity="0"><g class="cs-0"><rect x="168" y="108" width="462.6" height="12" rx="4" fill="none" stroke="var(--color-data-main)" stroke-width="1.5" class="grow"/></g></g>
+<g class="cr-0"><g class="cs-1"><rect x="168" y="124" width="402.3" height="12" rx="4" fill="var(--color-data-compare)" class="grow"/></g></g><g class="cr-0 rim" opacity="0"><g class="cs-1"><rect x="168" y="124" width="402.3" height="12" rx="4" fill="none" stroke="var(--color-data-compare)" stroke-width="1.5" class="grow"/></g></g>
 <g class="cr-1 ink"><text x="28" y="176.7" class="chart-label shift">2분기</text></g>
-<g class="cr-1"><g class="cs-0"><rect x="168" y="158" width="543.1" height="12" rx="4" fill="var(--color-data-main)" class="grow"/></g></g>
-<g class="cr-1"><g class="cs-1"><rect x="168" y="174" width="477.7" height="12" rx="4" fill="var(--color-data-compare)" class="grow"/></g></g>
+<g class="cr-1"><g class="cs-0"><rect x="168" y="158" width="543.1" height="12" rx="4" fill="var(--color-data-main)" class="grow"/></g></g><g class="cr-1 rim" opacity="0"><g class="cs-0"><rect x="168" y="158" width="543.1" height="12" rx="4" fill="none" stroke="var(--color-data-main)" stroke-width="1.5" class="grow"/></g></g>
+<g class="cr-1"><g class="cs-1"><rect x="168" y="174" width="477.7" height="12" rx="4" fill="var(--color-data-compare)" class="grow"/></g></g><g class="cr-1 rim" opacity="0"><g class="cs-1"><rect x="168" y="174" width="477.7" height="12" rx="4" fill="none" stroke="var(--color-data-compare)" stroke-width="1.5" class="grow"/></g></g>
 <g class="cr-2 ink"><text x="28" y="226.7" class="chart-label shift">3분기</text></g>
-<g class="cr-2"><g class="cs-0"><rect x="168" y="208" width="608.5" height="12" rx="4" fill="var(--color-data-main)" class="grow"/></g></g>
-<g class="cr-2"><g class="cs-1"><rect x="168" y="224" width="497.8" height="12" rx="4" fill="var(--color-data-compare)" class="grow"/></g></g>
+<g class="cr-2"><g class="cs-0"><rect x="168" y="208" width="608.5" height="12" rx="4" fill="var(--color-data-main)" class="grow"/></g></g><g class="cr-2 rim" opacity="0"><g class="cs-0"><rect x="168" y="208" width="608.5" height="12" rx="4" fill="none" stroke="var(--color-data-main)" stroke-width="1.5" class="grow"/></g></g>
+<g class="cr-2"><g class="cs-1"><rect x="168" y="224" width="497.8" height="12" rx="4" fill="var(--color-data-compare)" class="grow"/></g></g><g class="cr-2 rim" opacity="0"><g class="cs-1"><rect x="168" y="224" width="497.8" height="12" rx="4" fill="none" stroke="var(--color-data-compare)" stroke-width="1.5" class="grow"/></g></g>
 <line x1="670.9" x2="670.9" y1="102" y2="236" class="chart-rule"/><text x="674.9" y="100" class="chart-rule-label">목표</text>
 <g class="cr-0 ink"><g class="cs-0"><text x="636.6" y="118" class="chart-value ours late">92</text></g></g>
 <g class="cr-0 ink"><g class="cs-1"><text x="576.3" y="134" class="chart-value late">80</text></g></g>
@@ -1174,8 +1186,8 @@
 <g class="cr-2 ink"><g class="cs-1"><text x="671.8" y="234" class="chart-value late">99</text></g></g>
 <line x1="168" x2="922.3" y1="244" y2="244" class="chart-axis"/><text x="168" y="261" class="chart-tick">0</text><text x="419.4" y="261" class="chart-tick">50</text><text x="670.9" y="261" class="chart-tick">100</text><text x="922.3" y="261" class="chart-tick">150</text><text x="922.3" y="278" class="chart-unit">매출(백만 원)</text>
 </g>
-<text x="480" y="327" opacity="0" class="steplabel a6">작년</text>
-<text x="480" y="327" opacity="0" class="steplabel a7">올해</text>
-<g opacity="0" class="a6"><text x="480" y="353" class="caption">작년 매출은 모두 목표에 못 미칩니다</text></g>
-<g opacity="0" class="a7"><text x="480" y="353" class="caption">올해는 2분기부터 목표를 넘습니다</text></g>
+<text x="480" y="327" opacity="0" class="steplabel a8">작년</text>
+<text x="480" y="327" opacity="0" class="steplabel a9">올해</text>
+<g opacity="0" class="a8"><text x="480" y="353" class="caption">작년 매출은 모두 목표에 못 미칩니다</text></g>
+<g opacity="0" class="a9"><text x="480" y="353" class="caption">올해는 2분기부터 목표를 넘습니다</text></g>
 </svg>

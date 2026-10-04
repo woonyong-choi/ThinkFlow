@@ -211,6 +211,11 @@ html.embedded .fl-figure {
   stroke-width: var(--border-strong);
 }
 
+/* 내용이 없는 카드는 틀도 보이지 않는다(그리는 쪽이 opacity 0). 흐름 그림은 내용이 있어도 켜진 색은 아니라 filled가 따로 있다. */
+.fl .fl-card.filled {
+  opacity: 1;
+}
+
 .fl .fl-card.on {
   fill: var(--color-card-on);
   stroke: var(--color-state-active);

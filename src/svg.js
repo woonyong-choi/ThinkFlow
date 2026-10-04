@@ -13,6 +13,8 @@ import { chartMotionCss } from './chart/motion.js';
 import { tokens, values } from './tokens.js';
 
 const SPACE = values.space;
+// 흐린 행에서만 보이는 테두리 묶음(chart/rim.js)
+const RIM_GROUP = /<g class="cr-\d+ rim" opacity="0">(?:<g class="cs-\d+">)?<rect [^>]*\/>(?:<\/g>)?<\/g>/g;
 const CAPTION = { size: values.size.text['13'], face: 'regular' };
 const CAPTION_LINE = lineHeight(CAPTION.size, values.leading.normal);
 const STEP_LABEL = { size: values.size.text['15'], face: 'semibold' };
@@ -74,7 +76,9 @@ function drawChartBody(result, { animator, glyphs, isStatic }) {
   for (const face of CHART_FACES) glyphs.add(chartText(figure), face);
   const isLoop = !isStatic && !timeline.segs.length;
   if (!isStatic && timeline.segs.length) animator.chart(figure, chart);
-  return { svg: chart.body, width: chart.width, height: chart.height, className: isLoop ? ' chart-loop' : '' };
+  // 정지 SVG는 흐린 행이 없어 흐림 테두리 묶음도 필요 없다
+  const svg = isStatic ? chart.body.replace(RIM_GROUP, '') : chart.body;
+  return { svg, width: chart.width, height: chart.height, className: isLoop ? ' chart-loop' : '' };
 }
 
 // cost: time O(c·n), heap O(out), stack O(1)

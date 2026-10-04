@@ -1069,6 +1069,11 @@
   opacity: var(--opacity-dim);
 }
 
+/* 면이 흐려지면 바탕과 대비가 3에 못 미치므로(막대 라이트 1.5) 같은 모양의 테두리가 이때만 보인다. 테두리는 흐림 투명도를 받지 않는다. */
+.fl .rim.dim {
+  opacity: 1;
+}
+
 /* 글자는 면보다 덜 흐려, 흐린 행에서도 글자가 바탕과 대비 4.5 이상이다(opacity.dim-ink). */
 .fl .ink.dim {
   opacity: var(--opacity-dim-ink);
@@ -1121,34 +1126,47 @@
 .fl .a1 { animation: a1 4.64s infinite linear; }
 @keyframes a2 { 0%,34.481% { opacity: 0.9; fill: var(--color-data-heat-ink) } 34.483%,99.998% { opacity: 0.9; fill: var(--color-data-heat-ink) } }
 .fl .a2 { animation: a2 4.64s infinite linear; }
-.fl .cr-0 { animation: a1 4.64s infinite linear; }
-.fl .cr-0.ink { animation: a2 4.64s infinite linear; }
 @keyframes a3 { 0%,34.481% { opacity: 1 } 34.483%,99.998% { opacity: 1 } }
 .fl .a3 { animation: a3 4.64s infinite linear; }
-@keyframes a4 { 0%,34.481% { opacity: 1; fill: var(--ink) } 34.483%,99.998% { opacity: 1; fill: var(--ink) } }
+.fl .cr-0 { animation: a1 4.64s infinite linear; }
+.fl .cr-0.ink { animation: a2 4.64s infinite linear; }
+.fl .cr-0.rim { animation: a3 4.64s infinite linear; }
+@keyframes a4 { 0%,34.481% { opacity: 1 } 34.483%,99.998% { opacity: 1 } }
 .fl .a4 { animation: a4 4.64s infinite linear; }
-.fl .cr-1 { animation: a3 4.64s infinite linear; }
-.fl .cr-1.ink { animation: a4 4.64s infinite linear; }
+@keyframes a5 { 0%,34.481% { opacity: 1; fill: var(--ink) } 34.483%,99.998% { opacity: 1; fill: var(--ink) } }
+.fl .a5 { animation: a5 4.64s infinite linear; }
+@keyframes a6 { 0%,34.481% { opacity: 0 } 34.483%,99.998% { opacity: 0 } }
+.fl .a6 { animation: a6 4.64s infinite linear; }
+.fl .cr-1 { animation: a4 4.64s infinite linear; }
+.fl .cr-1.ink { animation: a5 4.64s infinite linear; }
+.fl .cr-1.rim { animation: a6 4.64s infinite linear; }
 .fl .cr-2 { animation: a1 4.64s infinite linear; }
 .fl .cr-2.ink { animation: a2 4.64s infinite linear; }
+.fl .cr-2.rim { animation: a3 4.64s infinite linear; }
 .fl .cr-3 { animation: a1 4.64s infinite linear; }
 .fl .cr-3.ink { animation: a2 4.64s infinite linear; }
+.fl .cr-3.rim { animation: a3 4.64s infinite linear; }
 .fl .cr-4 { animation: a1 4.64s infinite linear; }
 .fl .cr-4.ink { animation: a2 4.64s infinite linear; }
+.fl .cr-4.rim { animation: a3 4.64s infinite linear; }
 .fl .cr-5 { animation: a1 4.64s infinite linear; }
 .fl .cr-5.ink { animation: a2 4.64s infinite linear; }
+.fl .cr-5.rim { animation: a3 4.64s infinite linear; }
 .fl .cr-6 { animation: a1 4.64s infinite linear; }
 .fl .cr-6.ink { animation: a2 4.64s infinite linear; }
+.fl .cr-6.rim { animation: a3 4.64s infinite linear; }
 .fl .cr-7 { animation: a1 4.64s infinite linear; }
 .fl .cr-7.ink { animation: a2 4.64s infinite linear; }
+.fl .cr-7.rim { animation: a3 4.64s infinite linear; }
 .fl .cr-8 { animation: a1 4.64s infinite linear; }
 .fl .cr-8.ink { animation: a2 4.64s infinite linear; }
-@keyframes a5 { 0%,34.481% { opacity: 1 } 34.483%,99.998% { opacity: 1 } }
-.fl .a5 { animation: a5 4.64s infinite linear; }
-@keyframes a6 { 0%,34.481% { opacity: 1 } 34.483% { opacity: 1 } 38.793%,99.998% { opacity: 0 } }
-.fl .a6 { animation: a6 4.64s infinite linear; }
-@keyframes a7 { 0%,38.791% { opacity: 0 } 38.793% { opacity: 0 } 43.103%,99.998% { opacity: 1 } }
+.fl .cr-8.rim { animation: a3 4.64s infinite linear; }
+@keyframes a7 { 0%,34.481% { opacity: 1 } 34.483%,99.998% { opacity: 1 } }
 .fl .a7 { animation: a7 4.64s infinite linear; }
+@keyframes a8 { 0%,34.481% { opacity: 1 } 34.483% { opacity: 1 } 38.793%,99.998% { opacity: 0 } }
+.fl .a8 { animation: a8 4.64s infinite linear; }
+@keyframes a9 { 0%,38.791% { opacity: 0 } 38.793% { opacity: 0 } 43.103%,99.998% { opacity: 1 } }
+.fl .a9 { animation: a9 4.64s infinite linear; }
 </style>
 <defs><marker id="fl-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-line)"/></marker><marker id="fl-arrow-on" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-state-active)"/></marker><marker id="fl-arrow-main" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-data-main)"/></marker></defs>
 <rect x="0.5" y="0.5" width="959" height="326" rx="10" fill="var(--color-bg)" stroke="var(--color-plate-border)" stroke-width="1"/>
@@ -1161,17 +1179,17 @@
 <text x="28" y="127.7" class="chart-label">Codex</text>
 <text x="28" y="167.7" class="chart-label">Claude</text>
 <text x="28" y="207.7" class="chart-label">둘 다</text>
-<g class="cr-0 chart-heat-cell"><rect x="168" y="103" width="253.3" height="38" rx="4" class="chart-heat" style="--s:1" fill="#004dd2"/></g><text x="295.7" y="127" class="cr-0 ink chart-cell on">182</text>
-<g class="cr-1 chart-heat-cell"><rect x="423.3" y="103" width="253.3" height="38" rx="4" class="chart-heat" style="--s:0.077" fill="#a9c3f2"/></g><text x="551" y="127" class="cr-1 ink chart-cell">14</text>
-<g class="cr-2 chart-heat-cell"><rect x="678.7" y="103" width="253.3" height="38" rx="4" class="chart-heat" style="--s:0.022" fill="#b3caf4"/></g><text x="806.3" y="127" class="cr-2 ink chart-cell">4</text>
-<g class="cr-3 chart-heat-cell"><rect x="168" y="143" width="253.3" height="38" rx="4" class="chart-heat" style="--s:0.049" fill="#aec7f3"/></g><text x="295.7" y="167" class="cr-3 ink chart-cell">9</text>
-<g class="cr-4 chart-heat-cell"><rect x="423.3" y="143" width="253.3" height="38" rx="4" class="chart-heat" style="--s:0.94" fill="#0b55d4"/></g><text x="551" y="167" class="cr-4 ink chart-cell on">171</text>
-<g class="cr-5 chart-heat-cell"><rect x="678.7" y="143" width="253.3" height="38" rx="4" class="chart-heat" style="--s:0.033" fill="#b1c9f4"/></g><text x="806.3" y="167" class="cr-5 ink chart-cell">6</text>
-<g class="cr-6 chart-heat-cell"><rect x="168" y="183" width="253.3" height="38" rx="4" class="chart-heat" style="--s:0.016" fill="#b4cbf4"/></g><text x="295.7" y="207" class="cr-6 ink chart-cell">3</text>
-<g class="cr-7 chart-heat-cell"><rect x="423.3" y="183" width="253.3" height="38" rx="4" class="chart-heat" style="--s:0.027" fill="#b2caf4"/></g><text x="551" y="207" class="cr-7 ink chart-cell">5</text>
-<g class="cr-8 chart-heat-cell"><rect x="678.7" y="183" width="253.3" height="38" rx="4" class="chart-heat" style="--s:0.582" fill="#4c83e1"/></g><text x="806.3" y="207" class="cr-8 ink chart-cell">106</text></g>
+<g class="cr-0 chart-heat-cell"><rect x="168" y="103" width="253.3" height="38" rx="4" class="chart-heat" style="--s:1" fill="#004dd2"/></g><g class="cr-0 rim" opacity="0"><rect x="168" y="103" width="253.3" height="38" rx="4" fill="none" stroke="var(--color-data-heat-high)" stroke-width="1.5"/></g><text x="295.7" y="127" class="cr-0 ink chart-cell on">182</text>
+<g class="cr-1 chart-heat-cell"><rect x="423.3" y="103" width="253.3" height="38" rx="4" class="chart-heat" style="--s:0.077" fill="#a9c3f2"/></g><g class="cr-1 rim" opacity="0"><rect x="423.3" y="103" width="253.3" height="38" rx="4" fill="none" stroke="var(--color-data-heat-high)" stroke-width="1.5"/></g><text x="551" y="127" class="cr-1 ink chart-cell">14</text>
+<g class="cr-2 chart-heat-cell"><rect x="678.7" y="103" width="253.3" height="38" rx="4" class="chart-heat" style="--s:0.022" fill="#b3caf4"/></g><g class="cr-2 rim" opacity="0"><rect x="678.7" y="103" width="253.3" height="38" rx="4" fill="none" stroke="var(--color-data-heat-high)" stroke-width="1.5"/></g><text x="806.3" y="127" class="cr-2 ink chart-cell">4</text>
+<g class="cr-3 chart-heat-cell"><rect x="168" y="143" width="253.3" height="38" rx="4" class="chart-heat" style="--s:0.049" fill="#aec7f3"/></g><g class="cr-3 rim" opacity="0"><rect x="168" y="143" width="253.3" height="38" rx="4" fill="none" stroke="var(--color-data-heat-high)" stroke-width="1.5"/></g><text x="295.7" y="167" class="cr-3 ink chart-cell">9</text>
+<g class="cr-4 chart-heat-cell"><rect x="423.3" y="143" width="253.3" height="38" rx="4" class="chart-heat" style="--s:0.94" fill="#0b55d4"/></g><g class="cr-4 rim" opacity="0"><rect x="423.3" y="143" width="253.3" height="38" rx="4" fill="none" stroke="var(--color-data-heat-high)" stroke-width="1.5"/></g><text x="551" y="167" class="cr-4 ink chart-cell on">171</text>
+<g class="cr-5 chart-heat-cell"><rect x="678.7" y="143" width="253.3" height="38" rx="4" class="chart-heat" style="--s:0.033" fill="#b1c9f4"/></g><g class="cr-5 rim" opacity="0"><rect x="678.7" y="143" width="253.3" height="38" rx="4" fill="none" stroke="var(--color-data-heat-high)" stroke-width="1.5"/></g><text x="806.3" y="167" class="cr-5 ink chart-cell">6</text>
+<g class="cr-6 chart-heat-cell"><rect x="168" y="183" width="253.3" height="38" rx="4" class="chart-heat" style="--s:0.016" fill="#b4cbf4"/></g><g class="cr-6 rim" opacity="0"><rect x="168" y="183" width="253.3" height="38" rx="4" fill="none" stroke="var(--color-data-heat-high)" stroke-width="1.5"/></g><text x="295.7" y="207" class="cr-6 ink chart-cell">3</text>
+<g class="cr-7 chart-heat-cell"><rect x="423.3" y="183" width="253.3" height="38" rx="4" class="chart-heat" style="--s:0.027" fill="#b2caf4"/></g><g class="cr-7 rim" opacity="0"><rect x="423.3" y="183" width="253.3" height="38" rx="4" fill="none" stroke="var(--color-data-heat-high)" stroke-width="1.5"/></g><text x="551" y="207" class="cr-7 ink chart-cell">5</text>
+<g class="cr-8 chart-heat-cell"><rect x="678.7" y="183" width="253.3" height="38" rx="4" class="chart-heat" style="--s:0.582" fill="#4c83e1"/></g><g class="cr-8 rim" opacity="0"><rect x="678.7" y="183" width="253.3" height="38" rx="4" fill="none" stroke="var(--color-data-heat-high)" stroke-width="1.5"/></g><text x="806.3" y="207" class="cr-8 ink chart-cell">106</text></g>
 </g>
-<text x="480" y="269" opacity="0" class="steplabel a5">읽기</text>
-<g opacity="0" class="a6"><text x="480" y="295" class="caption">대각선이 맞힌 수다</text></g>
-<g opacity="0" class="a7"><text x="480" y="295" class="caption">Codex를 Claude로 고른 14건이 가장 많은 실수다</text></g>
+<text x="480" y="269" opacity="0" class="steplabel a7">읽기</text>
+<g opacity="0" class="a8"><text x="480" y="295" class="caption">대각선이 맞힌 수다</text></g>
+<g opacity="0" class="a9"><text x="480" y="295" class="caption">Codex를 Claude로 고른 14건이 가장 많은 실수다</text></g>
 </svg>

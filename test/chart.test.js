@@ -340,7 +340,7 @@ test('drawBars_row_rule_is_drawn_only_beside_its_own_row_and_widens_the_axis', a
   const source = `chart bar\nx "비율(%)"\nseries a "A"\nrule 50 "공통"\n${rows.map(([name, v, rule]) => `row "${name}" a=${v} rule=${rule}`).join('\n')}`;
   const body = await bodyOf(source);
   const lines = [...body.matchAll(/<line x1="([\d.]+)" x2="[\d.]+" y1="([\d.]+)" y2="([\d.]+)" class="chart-rule"\/>/g)].map((m) => m.slice(1).map(Number));
-  const bars = [...body.matchAll(/<rect x="[\d.]+" y="([\d.]+)" width="[\d.]+" height="12"[^>]*class="grow"/g)].map((m) => Number(m[1]));
+  const bars = [...body.matchAll(/<rect x="[\d.]+" y="([\d.]+)" width="[\d.]+" height="12"(?![^>]*fill="none")[^>]*class="grow"/g)].map((m) => Number(m[1]));
   const [first, second, shared] = lines;
   const rowOf = (line) => bars.findIndex((top) => top > line[1] && top < line[2]);
 
@@ -433,7 +433,7 @@ test('buildTimeline_bar_label_shift_follows_the_visible_bars_and_is_zero_when_al
 // 근거: 설계 playback.md 요구사항 "값이 없는 슬롯이 있는 행은 막대가 보이는 동안 이름이 그 막대에 맞는다"
 test('drawChart_bar_label_of_a_row_with_a_missing_series_is_centered_on_its_only_bar', async () => {
   const body = await bodyOf(MISSING_BAR);
-  const bars = [...body.matchAll(/<rect x="[\d.]+" y="([\d.]+)" width="[\d.]+" height="12"[^>]*class="grow"/g)].map((m) => Number(m[1]) + 6);
+  const bars = [...body.matchAll(/<rect x="[\d.]+" y="([\d.]+)" width="[\d.]+" height="12"(?![^>]*fill="none")[^>]*class="grow"/g)].map((m) => Number(m[1]) + 6);
   const labels = [...body.matchAll(/<text x="28" y="([\d.]+)" class="chart-label shift">/g)].map((m) => Number(m[1]) - 13 * 0.36);
 
   assert.equal(bars.length, 3);

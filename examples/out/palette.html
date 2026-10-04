@@ -876,6 +876,11 @@ html.embedded .fl-figure {
   stroke-width: var(--border-strong);
 }
 
+/* 내용이 없는 카드는 틀도 보이지 않는다(그리는 쪽이 opacity 0). 흐름 그림은 내용이 있어도 켜진 색은 아니라 filled가 따로 있다. */
+.fl .fl-card.filled {
+  opacity: 1;
+}
+
 .fl .fl-card.on {
   fill: var(--color-card-on);
   stroke: var(--color-state-active);
@@ -1496,6 +1501,11 @@ html.embedded .fl-figure {
   opacity: var(--opacity-dim);
 }
 
+/* 면이 흐려지면 바탕과 대비가 3에 못 미치므로(막대 라이트 1.5) 같은 모양의 테두리가 이때만 보인다. 테두리는 흐림 투명도를 받지 않는다. */
+.fl .rim.dim {
+  opacity: 1;
+}
+
 /* 글자는 면보다 덜 흐려, 흐린 행에서도 글자가 바탕과 대비 4.5 이상이다(opacity.dim-ink). */
 .fl .ink.dim {
   opacity: var(--opacity-dim-ink);
@@ -1525,7 +1535,7 @@ html.embedded .fl-figure {
 <g id="n-5" class="fl-node" data-id="purple"><g class="fl-halo  ph-purple" fill="none" opacity="0"><rect x="516.6" y="118" width="148.8" height="57" rx="10" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="516.6" y="118" width="148.8" height="57" rx="10" fill="var(--color-paint-purple-fill)" class="fl-stroke ps-purple "/><text x="591" y="143.7" class="label">purple</text><text x="591" y="159.5" class="sub">fill=purple stroke=purple</text></g>
 <g id="n-6" class="fl-node" data-id="pink"><g class="fl-halo  ph-pink" fill="none" opacity="0"><rect x="104" y="226.5" width="128.9" height="57" rx="10" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="104" y="226.5" width="128.9" height="57" rx="10" fill="var(--color-paint-pink-fill)" class="fl-stroke ps-pink "/><text x="168.5" y="252.2" class="label">pink</text><text x="168.5" y="268" class="sub">fill=pink stroke=pink</text></g>
 <g id="n-7" class="fl-node" data-id="gray"><g class="fl-halo  ph-gray" fill="none" opacity="0"><rect x="302.4" y="226.5" width="131.2" height="57" rx="10" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="302.4" y="226.5" width="131.2" height="57" rx="10" fill="var(--color-paint-gray-fill)" class="fl-stroke ps-gray "/><text x="368" y="252.2" class="label">gray</text><text x="368" y="268" class="sub">fill=gray stroke=gray</text></g>
-<g id="n-8" class="fl-node" data-id="card"><g class="fl-halo " fill="none" opacity="0"><rect x="503" y="208" width="176" height="94" rx="10" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="503" y="208" width="176" height="94" rx="10" fill="var(--color-node)" class="fl-stroke "/><text x="591" y="233.7" class="label">카드 바탕</text><text x="591" y="249.5" class="sub">show card=teal</text><rect x="513" y="265" width="156" height="27" rx="6" fill="var(--color-card)" stroke="var(--color-outline)" stroke-dasharray="3 3" class="fl-card "/><g id="n-8-c0" opacity="0" class="fl-layer "><rect x="513.5" y="265.5" width="155" height="26" rx="5.5" fill="var(--color-paint-teal-fill)"/><rect x="521" y="272" width="19.9" height="14" rx="4" fill="var(--color-tag-purple)" fill-opacity="0.15"/><text x="531" y="282.2" class="tag">OK</text><text x="546" y="282" class="row">내용이 있는 카드</text></g></g>
+<g id="n-8" class="fl-node" data-id="card"><g class="fl-halo " fill="none" opacity="0"><rect x="503" y="208" width="176" height="94" rx="10" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="503" y="208" width="176" height="94" rx="10" fill="var(--color-node)" class="fl-stroke "/><text x="591" y="233.7" class="label">카드 바탕</text><text x="591" y="249.5" class="sub">show card=teal</text><rect x="513" y="265" width="156" height="27" rx="6" fill="var(--color-card)" stroke="var(--color-outline)" stroke-dasharray="3 3" opacity="0" class="fl-card "/><g id="n-8-c0" opacity="0" class="fl-layer "><rect x="513.5" y="265.5" width="155" height="26" rx="5.5" fill="var(--color-paint-teal-fill)"/><rect x="521" y="272" width="19.9" height="14" rx="4" fill="var(--color-tag-purple)" fill-opacity="0.15"/><text x="531" y="282.2" class="tag">OK</text><text x="546" y="282" class="row">내용이 있는 카드</text></g></g>
 <g id="e-0" class="fl-edge"><path id="p-0" d="M 232.9 56.5 L 292.9 56.5" class="fl-path " marker-end="url(#fl-arrow)"/></g>
 <g id="e-1" class="fl-edge"><path id="p-1" d="M 443 56.5 L 519.1 56.5" class="fl-path " marker-end="url(#fl-arrow)"/></g>
 <g id="e-2" class="fl-edge"><path id="p-2" d="M 662.9 56.5 L 733 56.5 Q 755 56.5, 755 78.5 L 755 79 Q 755 101, 733 101 L 50 101 Q 28 101, 28 123 L 28 124.5 Q 28 146.5, 50 146.5 L 106.5 146.5" class="fl-path " marker-end="url(#fl-arrow)"/></g>
@@ -1717,13 +1727,16 @@ function figurePlay(root, data) {
 
 // cost: time O(1), heap O(1), stack O(1)
 // basis: estimate
-// 화면이 표준 캔버스 폭보다 좁으면 그림 영역이 가로로 스크롤된다. 내용이 캔버스보다 좁은 그림은 내용이 캔버스 가운데에 있으므로 가운데에서 시작하고(viewBox 왼쪽이 음수),
-// 캔버스를 꽉 채우는 차트와 넓은 그림은 왼쪽 끝(이름과 축)에서 시작한다. 화면 크기가 바뀌어도 다시 맞춘다.
+// 화면이 캔버스 폭보다 좁으면 그림 영역이 가로로 스크롤된다. 내용이 캔버스보다 좁은 그림은 내용이 캔버스 가운데에 있다(viewBox 왼쪽이 음수, 왼쪽 빈 판의 폭이 그 크기).
+// 시작 위치는 화면 가운데이되 그림의 왼쪽 끝을 넘지 않는다. 그림이 화면에 들어오면 가운데에 있고, 그림이 화면보다 넓으면 왼쪽 끝(이름과 축)부터 보인다.
+// 캔버스를 꽉 채우는 차트와 넓은 그림은 viewBox 왼쪽이 0이라 왼쪽 끝에서 시작한다. 화면 크기가 바뀌어도 다시 맞춘다.
 function centerCanvas(root) {
   const canvas = root.querySelector('.fl-canvas');
-  const isCentered = root.querySelector('svg.fl').viewBox.baseVal.x < 0;
+  const svg = root.querySelector('svg.fl');
   const place = () => {
-    canvas.scrollLeft = isCentered ? (canvas.scrollWidth - canvas.clientWidth) / 2 : 0;
+    const { x, width } = svg.viewBox.baseVal;
+    const leftMargin = Math.max(0, -x) * (svg.getBoundingClientRect().width / width);
+    canvas.scrollLeft = Math.min((canvas.scrollWidth - canvas.clientWidth) / 2, leftMargin);
   };
   place();
   addEventListener('resize', place);
@@ -2048,7 +2061,9 @@ function showCards(stage, cards, only) {
     if (!count || (only !== undefined && only !== n)) return;
     const shown = cards[n];
     for (let k = 0; k < count; k++) stage.svg.querySelector(`#n-${n}-c${k}`).setAttribute('opacity', shown === k ? 1 : 0);
-    stage.nodes[n].querySelector('.fl-card').classList.toggle('on', shown !== undefined && !stage.isFlow);
+    const frame = stage.nodes[n].querySelector('.fl-card');
+    frame.classList.toggle('on', shown !== undefined && !stage.isFlow);
+    frame.classList.toggle('filled', shown !== undefined);
   });
 }
 

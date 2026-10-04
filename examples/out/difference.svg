@@ -1066,6 +1066,11 @@
   opacity: var(--opacity-dim);
 }
 
+/* 면이 흐려지면 바탕과 대비가 3에 못 미치므로(막대 라이트 1.5) 같은 모양의 테두리가 이때만 보인다. 테두리는 흐림 투명도를 받지 않는다. */
+.fl .rim.dim {
+  opacity: 1;
+}
+
 /* 글자는 면보다 덜 흐려, 흐린 행에서도 글자가 바탕과 대비 4.5 이상이다(opacity.dim-ink). */
 .fl .ink.dim {
   opacity: var(--opacity-dim-ink);
@@ -1118,24 +1123,32 @@
 .fl .a1 { animation: a1 6.53s infinite linear; }
 @keyframes a2 { 0%,40.657% { opacity: 1 } 40.658% { opacity: 1 } 43.721%,51.377% { opacity: 0.9 } 51.378%,99.998% { opacity: 0.9 } }
 .fl .a2 { animation: a2 6.53s infinite linear; }
+@keyframes a3 { 0%,40.657% { opacity: 0 } 40.658% { opacity: 0 } 43.721%,51.377% { opacity: 1 } 51.378%,99.998% { opacity: 1 } }
+.fl .a3 { animation: a3 6.53s infinite linear; }
 .fl .cr-0 { animation: a1 6.53s infinite linear; }
 .fl .cr-0.ink { animation: a2 6.53s infinite linear; }
+.fl .cr-0.rim { animation: a3 6.53s infinite linear; }
 .fl .cr-1 { animation: a1 6.53s infinite linear; }
 .fl .cr-1.ink { animation: a2 6.53s infinite linear; }
+.fl .cr-1.rim { animation: a3 6.53s infinite linear; }
 .fl .cr-2 { animation: a1 6.53s infinite linear; }
 .fl .cr-2.ink { animation: a2 6.53s infinite linear; }
-@keyframes a3 { 0%,40.657% { opacity: 1 } 40.658%,51.377% { opacity: 1 } 51.378%,99.998% { opacity: 1 } }
-.fl .a3 { animation: a3 6.53s infinite linear; }
+.fl .cr-2.rim { animation: a3 6.53s infinite linear; }
 @keyframes a4 { 0%,40.657% { opacity: 1 } 40.658%,51.377% { opacity: 1 } 51.378%,99.998% { opacity: 1 } }
 .fl .a4 { animation: a4 6.53s infinite linear; }
-.fl .cr-3 { animation: a3 6.53s infinite linear; }
-.fl .cr-3.ink { animation: a4 6.53s infinite linear; }
 @keyframes a5 { 0%,40.657% { opacity: 1 } 40.658%,51.377% { opacity: 1 } 51.378%,99.998% { opacity: 1 } }
 .fl .a5 { animation: a5 6.53s infinite linear; }
-@keyframes a6 { 0%,40.657% { opacity: 1 } 40.658%,51.377% { opacity: 1 } 51.378% { opacity: 1 } 54.441%,99.998% { opacity: 0 } }
+@keyframes a6 { 0%,40.657% { opacity: 0 } 40.658%,51.377% { opacity: 0 } 51.378%,99.998% { opacity: 0 } }
 .fl .a6 { animation: a6 6.53s infinite linear; }
-@keyframes a7 { 0%,40.657% { opacity: 0 } 40.658%,54.44% { opacity: 0 } 54.441% { opacity: 0 } 57.504%,99.998% { opacity: 1 } }
+.fl .cr-3 { animation: a4 6.53s infinite linear; }
+.fl .cr-3.ink { animation: a5 6.53s infinite linear; }
+.fl .cr-3.rim { animation: a6 6.53s infinite linear; }
+@keyframes a7 { 0%,40.657% { opacity: 1 } 40.658%,51.377% { opacity: 1 } 51.378%,99.998% { opacity: 1 } }
 .fl .a7 { animation: a7 6.53s infinite linear; }
+@keyframes a8 { 0%,40.657% { opacity: 1 } 40.658%,51.377% { opacity: 1 } 51.378% { opacity: 1 } 54.441%,99.998% { opacity: 0 } }
+.fl .a8 { animation: a8 6.53s infinite linear; }
+@keyframes a9 { 0%,40.657% { opacity: 0 } 40.658%,54.44% { opacity: 0 } 54.441% { opacity: 0 } 57.504%,99.998% { opacity: 1 } }
+.fl .a9 { animation: a9 6.53s infinite linear; }
 </style>
 <defs><marker id="fl-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-line)"/></marker><marker id="fl-arrow-on" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-state-active)"/></marker><marker id="fl-arrow-main" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-data-main)"/></marker></defs>
 <rect x="0.5" y="0.5" width="959" height="416" rx="10" fill="var(--color-bg)" stroke="var(--color-plate-border)" stroke-width="1"/>
@@ -1151,7 +1164,7 @@
 <line x1="357.4" x2="357.4" y1="102" y2="268" class="chart-rule"/><text x="361.4" y="100" class="chart-rule-label">허용 하한</text>
 <line x1="168" x2="925.5" y1="276" y2="276" class="chart-axis"/><text x="168" y="293" class="chart-tick">-10</text><text x="357.4" y="293" class="chart-tick">-5</text><text x="546.8" y="293" class="chart-tick">0</text><text x="736.2" y="293" class="chart-tick">5</text><text x="925.5" y="293" class="chart-tick">10</text><text x="925.5" y="310" class="chart-unit">정확도 차이(%p)</text>
 </g>
-<text x="480" y="359" opacity="0" class="steplabel a5">차이</text>
-<g opacity="0" class="a6"><text x="480" y="385" class="caption">점은 새 판단기가 기존 판단기보다 높으면 오른쪽, 낮으면 왼쪽에 놓인다</text></g>
-<g opacity="0" class="a7"><text x="480" y="385" class="caption">지식 갱신만 허용 하한 아래로 내려가고 구간도 하한 쪽에 걸친다</text></g>
+<text x="480" y="359" opacity="0" class="steplabel a7">차이</text>
+<g opacity="0" class="a8"><text x="480" y="385" class="caption">점은 새 판단기가 기존 판단기보다 높으면 오른쪽, 낮으면 왼쪽에 놓인다</text></g>
+<g opacity="0" class="a9"><text x="480" y="385" class="caption">지식 갱신만 허용 하한 아래로 내려가고 구간도 하한 쪽에 걸친다</text></g>
 </svg>

@@ -876,6 +876,11 @@ html.embedded .fl-figure {
   stroke-width: var(--border-strong);
 }
 
+/* 내용이 없는 카드는 틀도 보이지 않는다(그리는 쪽이 opacity 0). 흐름 그림은 내용이 있어도 켜진 색은 아니라 filled가 따로 있다. */
+.fl .fl-card.filled {
+  opacity: 1;
+}
+
 .fl .fl-card.on {
   fill: var(--color-card-on);
   stroke: var(--color-state-active);
@@ -1460,6 +1465,11 @@ html.embedded .fl-figure {
   opacity: var(--opacity-dim);
 }
 
+/* 면이 흐려지면 바탕과 대비가 3에 못 미치므로(막대 라이트 1.5) 같은 모양의 테두리가 이때만 보인다. 테두리는 흐림 투명도를 받지 않는다. */
+.fl .rim.dim {
+  opacity: 1;
+}
+
 /* 글자는 면보다 덜 흐려, 흐린 행에서도 글자가 바탕과 대비 4.5 이상이다(opacity.dim-ink). */
 .fl .ink.dim {
   opacity: var(--opacity-dim-ink);
@@ -1484,9 +1494,9 @@ html.embedded .fl-figure {
 <div class="fl-canvas"><svg xmlns="http://www.w3.org/2000/svg" class="fl" width="1440" height="275" style="aspect-ratio: 1440 / 275" viewBox="-45.8 0 1440 275" role="img"><title>서비스 상태 구성도</title><defs><marker id="fl-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-line)"/></marker><marker id="fl-arrow-on" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-state-active)"/></marker><marker id="fl-arrow-main" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-data-main)"/></marker></defs><g id="n-0" class="fl-node" data-id="user"><g class="fl-halo " fill="none" opacity="0"><circle cx="56" cy="59.5" r="10" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/><path d="M28 107.5 V 85.5 A 28 14 0 0 1 84 85.5 V 107.5 Z" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><circle cx="56" cy="59.5" r="10" fill="var(--color-node)" class="fl-stroke "/><path d="M28 107.5 V 85.5 A 28 14 0 0 1 84 85.5 V 107.5 Z" fill="var(--color-node)" class="fl-stroke "/><text x="56" y="127.2" class="label">사용자</text></g>
 <g id="n-1" class="fl-node" data-id="gateway"><g class="fl-halo  ph-green" fill="none" opacity="0"><rect x="249.4" y="68" width="100" height="57" rx="10" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="249.4" y="68" width="100" height="57" rx="10" fill="var(--color-paint-green-fill)" class="fl-stroke ps-green "/><text x="299.4" y="93.7" class="label">게이트웨이</text><text x="299.4" y="109.5" class="sub">라우팅</text></g>
 <g id="n-2" class="fl-node" data-id="orders"><g class="fl-halo  ph-green" fill="none" opacity="0"><rect x="515.5" y="58.5" width="100" height="57" rx="10" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="515.5" y="58.5" width="100" height="57" rx="10" fill="var(--color-paint-green-fill)" class="fl-stroke ps-green "/><text x="565.5" y="84.2" class="label">주문</text><text x="565.5" y="100" class="sub">주문 접수</text></g>
-<g id="n-3" class="fl-node" data-id="payments"><g class="fl-halo  ph-red" fill="none" opacity="0"><rect x="802.6" y="40" width="176" height="94" rx="10" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="802.6" y="40" width="176" height="94" rx="10" fill="var(--color-paint-red-fill)" class="fl-stroke ps-red "/><text x="890.6" y="65.7" class="label">결제</text><text x="890.6" y="81.5" class="sub">승인 오류 중</text><rect x="812.6" y="97" width="156" height="27" rx="6" fill="var(--color-card)" stroke="var(--color-outline)" stroke-dasharray="3 3" class="fl-card "/><g id="n-3-c0" opacity="0" class="fl-layer "><rect x="813.1" y="97.5" width="155" height="26" rx="5.5" fill="var(--color-paint-red-fill)"/><rect x="820.6" y="104" width="23.6" height="14" rx="4" fill="var(--color-tag-gray)" fill-opacity="0.15"/><text x="832.4" y="114.2" class="tag">ERR</text><text x="849.1" y="114" class="row">승인 실패</text></g></g>
+<g id="n-3" class="fl-node" data-id="payments"><g class="fl-halo  ph-red" fill="none" opacity="0"><rect x="802.6" y="40" width="176" height="94" rx="10" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="802.6" y="40" width="176" height="94" rx="10" fill="var(--color-paint-red-fill)" class="fl-stroke ps-red "/><text x="890.6" y="65.7" class="label">결제</text><text x="890.6" y="81.5" class="sub">승인 오류 중</text><rect x="812.6" y="97" width="156" height="27" rx="6" fill="var(--color-card)" stroke="var(--color-outline)" stroke-dasharray="3 3" opacity="0" class="fl-card "/><g id="n-3-c0" opacity="0" class="fl-layer "><rect x="813.1" y="97.5" width="155" height="26" rx="5.5" fill="var(--color-paint-red-fill)"/><rect x="820.6" y="104" width="23.6" height="14" rx="4" fill="var(--color-tag-gray)" fill-opacity="0.15"/><text x="832.4" y="114.2" class="tag">ERR</text><text x="849.1" y="114" class="row">승인 실패</text></g></g>
 <g id="n-4" class="fl-node" data-id="search"><g class="fl-halo  ph-amber" fill="none" opacity="0"><rect x="515.5" y="178" width="100" height="57" rx="10" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="515.5" y="178" width="100" height="57" rx="10" fill="var(--color-paint-amber-fill)" class="fl-stroke ps-amber "/><text x="565.5" y="203.7" class="label">검색</text><text x="565.5" y="219.5" class="sub">응답 지연</text></g>
-<g id="n-5" class="fl-node" data-id="ledger"><g class="fl-halo  ph-green" fill="none" opacity="0"><path d="M1144.5 40 a 88 12 0 0 1 176 0 v 94 a 88 12 0 0 1 -176 0 z" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><path d="M1144.5 40 a 88 12 0 0 1 176 0 v 94 a 88 12 0 0 1 -176 0 z" fill="var(--color-paint-green-fill)" class="fl-stroke ps-green "/><path d="M1144.5 40 a 88 12 0 0 0 176 0" fill="none" class="fl-stroke ps-green "/><text x="1232.5" y="65.7" class="label">원장</text><text x="1232.5" y="81.5" class="sub">데이터베이스</text><rect x="1154.5" y="97" width="156" height="27" rx="6" fill="var(--color-card)" stroke="var(--color-outline)" stroke-dasharray="3 3" class="fl-card "/><g id="n-5-c0" opacity="0" class="fl-layer "><rect x="1155" y="97.5" width="155" height="26" rx="5.5" fill="var(--color-paint-amber-fill)"/><text x="1162.5" y="114" class="row">접수만 기록</text></g></g>
+<g id="n-5" class="fl-node" data-id="ledger"><g class="fl-halo  ph-green" fill="none" opacity="0"><path d="M1144.5 40 a 88 12 0 0 1 176 0 v 94 a 88 12 0 0 1 -176 0 z" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><path d="M1144.5 40 a 88 12 0 0 1 176 0 v 94 a 88 12 0 0 1 -176 0 z" fill="var(--color-paint-green-fill)" class="fl-stroke ps-green "/><path d="M1144.5 40 a 88 12 0 0 0 176 0" fill="none" class="fl-stroke ps-green "/><text x="1232.5" y="65.7" class="label">원장</text><text x="1232.5" y="81.5" class="sub">데이터베이스</text><rect x="1154.5" y="97" width="156" height="27" rx="6" fill="var(--color-card)" stroke="var(--color-outline)" stroke-dasharray="3 3" opacity="0" class="fl-card "/><g id="n-5-c0" opacity="0" class="fl-layer "><rect x="1155" y="97.5" width="155" height="26" rx="5.5" fill="var(--color-paint-amber-fill)"/><text x="1162.5" y="114" class="row">접수만 기록</text></g></g>
 <g id="n-6" class="fl-node" data-id="cache"><g class="fl-halo  ph-gray" fill="none" opacity="0"><path d="M802.6 178 a 50 12 0 0 1 100 0 v 57 a 50 12 0 0 1 -100 0 z" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><path d="M802.6 178 a 50 12 0 0 1 100 0 v 57 a 50 12 0 0 1 -100 0 z" fill="var(--color-paint-gray-fill)" class="fl-stroke ps-gray "/><path d="M802.6 178 a 50 12 0 0 0 100 0" fill="none" class="fl-stroke ps-gray "/><text x="852.6" y="203.7" class="label">캐시</text><text x="852.6" y="219.5" class="sub">중지</text></g>
 <g id="e-0" class="fl-edge"><path id="p-0" d="M 84 96.5 L 249.4 96.5" class="fl-path " marker-end="url(#fl-arrow)"/></g>
 <g id="e-1" class="fl-edge"><path id="p-1" d="M 349.4 87 L 515.5 87" class="fl-path " marker-end="url(#fl-arrow)"/></g>
@@ -1677,13 +1687,16 @@ function figurePlay(root, data) {
 
 // cost: time O(1), heap O(1), stack O(1)
 // basis: estimate
-// 화면이 표준 캔버스 폭보다 좁으면 그림 영역이 가로로 스크롤된다. 내용이 캔버스보다 좁은 그림은 내용이 캔버스 가운데에 있으므로 가운데에서 시작하고(viewBox 왼쪽이 음수),
-// 캔버스를 꽉 채우는 차트와 넓은 그림은 왼쪽 끝(이름과 축)에서 시작한다. 화면 크기가 바뀌어도 다시 맞춘다.
+// 화면이 캔버스 폭보다 좁으면 그림 영역이 가로로 스크롤된다. 내용이 캔버스보다 좁은 그림은 내용이 캔버스 가운데에 있다(viewBox 왼쪽이 음수, 왼쪽 빈 판의 폭이 그 크기).
+// 시작 위치는 화면 가운데이되 그림의 왼쪽 끝을 넘지 않는다. 그림이 화면에 들어오면 가운데에 있고, 그림이 화면보다 넓으면 왼쪽 끝(이름과 축)부터 보인다.
+// 캔버스를 꽉 채우는 차트와 넓은 그림은 viewBox 왼쪽이 0이라 왼쪽 끝에서 시작한다. 화면 크기가 바뀌어도 다시 맞춘다.
 function centerCanvas(root) {
   const canvas = root.querySelector('.fl-canvas');
-  const isCentered = root.querySelector('svg.fl').viewBox.baseVal.x < 0;
+  const svg = root.querySelector('svg.fl');
   const place = () => {
-    canvas.scrollLeft = isCentered ? (canvas.scrollWidth - canvas.clientWidth) / 2 : 0;
+    const { x, width } = svg.viewBox.baseVal;
+    const leftMargin = Math.max(0, -x) * (svg.getBoundingClientRect().width / width);
+    canvas.scrollLeft = Math.min((canvas.scrollWidth - canvas.clientWidth) / 2, leftMargin);
   };
   place();
   addEventListener('resize', place);
@@ -2008,7 +2021,9 @@ function showCards(stage, cards, only) {
     if (!count || (only !== undefined && only !== n)) return;
     const shown = cards[n];
     for (let k = 0; k < count; k++) stage.svg.querySelector(`#n-${n}-c${k}`).setAttribute('opacity', shown === k ? 1 : 0);
-    stage.nodes[n].querySelector('.fl-card').classList.toggle('on', shown !== undefined && !stage.isFlow);
+    const frame = stage.nodes[n].querySelector('.fl-card');
+    frame.classList.toggle('on', shown !== undefined && !stage.isFlow);
+    frame.classList.toggle('filled', shown !== undefined);
   });
 }
 

@@ -2,9 +2,10 @@
 import { mixHex, pickInk } from '../contrast.js';
 import { measure } from '../measure/fonts.js';
 import { centerBaseline, renderRich, roundCoord as r } from '../text.js';
-import { values } from '../tokens.js';
+import { tokens, values } from '../tokens.js';
 import { labelColumn, labelFit, labelText } from './labels.js';
 import { PAD, RIGHT, SIZE, SPACE, TEXT } from './metrics.js';
+import { rimRect } from './rim.js';
 import { valueFormat } from './scale.js';
 
 // 칸 색. 값 0은 핵심 1 옅게, 최댓값은 핵심 1 진하게이고 그 사이는 sRGB 보간이다(문서 스킬 색표).
@@ -34,8 +35,10 @@ function heatCell(grid, c, k) {
   const { rows, cols, plotX, cellW, cellH, top, max, format } = grid;
   const [x, y] = [plotX + cols.indexOf(c.col) * cellW, top + rows.indexOf(c.row) * cellH];
   const { strength, fill, isOn } = heatLook(max ? c.values.value / max : 0, LIGHT_HEAT);
+  const face = { x, y, w: cellW - SPACE['1'], h: cellH - SPACE['1'], radius: values.radius.sm };
   return (
-    `<g class="cr-${k} chart-heat-cell"><rect x="${r(x)}" y="${r(y)}" width="${r(cellW - SPACE['1'])}" height="${r(cellH - SPACE['1'])}" rx="${values.radius.sm}" class="chart-heat" style="--s:${strength}" fill="${fill}"/></g>` +
+    `<g class="cr-${k} chart-heat-cell"><rect x="${r(face.x)}" y="${r(face.y)}" width="${r(face.w)}" height="${r(face.h)}" rx="${face.radius}" class="chart-heat" style="--s:${strength}" fill="${fill}"/></g>` +
+    rimRect({ k }, face, { color: tokens.color.data['heat-high'] }) +
     `<text x="${r(x + cellW / 2)}" y="${r(centerBaseline(y + cellH / 2, TEXT['11']))}" class="cr-${k} ink chart-cell${isOn ? ' on' : ''}">${format(c.values.value)}</text>`
   );
 }

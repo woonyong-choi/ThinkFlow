@@ -6,6 +6,7 @@ import { finishRowChart, rowValueScale } from './axis.js';
 import { inkGroup, labelText, valueText } from './labels.js';
 import { BAR, SPACE, TEXT, seriesColor } from './metrics.js';
 import { formatNumber, valueFormat } from './scale.js';
+import { rimRect } from './rim.js';
 import { presentSlots, slotMiddle } from './slots.js';
 import { hasRowRule } from '../source/chart-rules.js';
 
@@ -93,9 +94,11 @@ function barMark(ctx, row, at) {
   const [low, high] = [row.values[`${s.id}.low`], row.values[`${s.id}.high`]];
   const reach = high !== undefined ? scale.at(high) : end;
   const ci = high !== undefined ? confidenceLine({ x1: scale.at(low), x2: reach, cy }) : '';
-  const rect = `<rect x="${r(plotX)}" y="${r(by)}" width="${r(Math.max(SPACE['1'], end - plotX))}" height="${BAR}" rx="${values.radius.sm}" fill="${seriesColor(chart, i)}" class="grow"/>`;
+  const face = { x: plotX, y: by, w: Math.max(SPACE['1'], end - plotX), h: BAR, radius: values.radius.sm };
+  const rect = `<rect x="${r(face.x)}" y="${r(face.y)}" width="${r(face.w)}" height="${face.h}" rx="${face.radius}" fill="${seriesColor(chart, i)}" class="grow"/>`;
+  const rim = rimRect({ k, i }, face, { color: seriesColor(chart, i), isGrow: true });
   const text = valueText({ x: Math.max(end, reach) + SPACE['3'], cy }, formats[i](v), `chart-value${i === 0 ? ' ours' : ''} late`);
-  return { mark: `<g class="cr-${k}"><g class="cs-${i}">${rect}${ci}</g></g>`, value: inkGroup(k, text, i) };
+  return { mark: `<g class="cr-${k}"><g class="cs-${i}">${rect}${ci}</g></g>${rim}`, value: inkGroup(k, text, i) };
 }
 
 // cost: time O(1), heap O(1), stack O(1)
