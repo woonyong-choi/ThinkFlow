@@ -10,6 +10,12 @@ const BOX_KEYS = CHART_TYPES.box.valueKeys;
 export const MAX_VALUE = 1e15;
 /** 값이 범위를 넘을 때의 오류 글. 행 값, 기준선, 무한대가 되는 글이 같은 글을 쓴다. */
 export const RANGE_MESSAGE = `values must be under ${MAX_VALUE.toExponential(0).replace('+', '')} in absolute value`;
+// 0이 아닌 값의 절댓값 하한. 가장 작은 정규 수(2^-1022)다. 이보다 작은 비정규화 수는 간격 계산이 0으로 떨어지고 유효 자릿수도 줄어 그릴 수 없다.
+export const MIN_VALUE = 2 ** -1022;
+/** 0이 아닌 값이 하한보다 작을 때의 오류 글. */
+export const TINY_MESSAGE = `nonzero values must be at least ${MIN_VALUE} in absolute value`;
+/** 0이 아니고 절댓값이 하한보다 작은 숫자인지. */
+export const isTiny = (number) => number !== 0 && Math.abs(number) < MIN_VALUE;
 // 종류마다 고정 원소 키. 계열 키와 겹치면 JSON에서 둘을 가를 수 없다.
 const FIXED_KEYS = ['label', 'name', 'x', 'y', 'series', 'row', 'col', 'value'];
 
@@ -30,6 +36,7 @@ export function checkChart(figure, problems) {
   if (chart.zero === 'off' && chartType !== 'line') problems.error(chart.zeroLine, 'zero off is only for line charts. Other charts keep their value axis at 0');
   if (chartType === 'heatmap' && (chart.scaleLine !== undefined || chart.rules.length)) problems.error(chart.scaleLine ?? chart.rules[0].line, 'a heatmap has no value axis. Remove scale and rule');
   for (const rule of chart.rules) if (Math.abs(rule.value) >= MAX_VALUE) problems.error(rule.line, RANGE_MESSAGE);
+  for (const rule of chart.rules) if (isTiny(rule.value)) problems.error(rule.line, TINY_MESSAGE);
   for (const rule of chart.rules) if (chart.scale === 'log' && rule.value <= 0) problems.error(rule.line, 'log scale needs values above 0');
   for (const rule of chart.rules) if (chartType === 'bar' && rule.value < 0) problems.error(rule.line, 'a bar chart starts at 0, so a rule cannot be negative');
   for (const s of chart.series) if (FIXED_KEYS.includes(s.key)) problems.error(s.line, `series key "${s.key}" is a fixed data key. Set key="..." to another name`);
@@ -123,6 +130,7 @@ export function checkChartRows(figure, problems) {
   const valueAxis = ['scatter', 'line', 'difference'].includes(chartType) ? [] : numbers;
   const huge = chart.rows.find((r) => Object.values(r.values).some((v) => typeof v === 'number' && Math.abs(v) >= MAX_VALUE));
   if (huge) problems.error(huge.line, RANGE_MESSAGE);
+  for (const row of chart.rows) if (Object.values(row.values).some((v) => typeof v === 'number' && isTiny(v))) problems.error(row.line, TINY_MESSAGE);
   if (valueAxis.some((v) => v < 0)) problems.error(chart.rows.find((r) => Object.entries(r.values).some(([k, v]) => isValue(k) && v < 0)).line, 'values cannot be negative');
   const negativeRule = chart.rows.find((r) => hasRule && r.values.rule < 0);
   if (negativeRule) problems.error(negativeRule.line, 'a bar chart starts at 0, so a row rule cannot be negative');

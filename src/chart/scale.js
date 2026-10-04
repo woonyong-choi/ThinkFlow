@@ -63,11 +63,41 @@ export function valueFormat(list, decimals) {
   return (value) => (Math.abs(value) >= 1000 || isErased(value) ? formatNumber(value) : roundHalfAway(value, places).toFixed(places));
 }
 
-/** 덤벨 바뀐 비율 글자. 줄면 −, 늘면 +. 첫 값이 0이면 빈 글이다. */
+/** 덤벨 바뀐 비율 글자. 줄면 −, 늘면 +. 첫 값이 0이거나 비율이 숫자 범위를 넘으면(0에 가장 가까운 정규 수에서 1로 간 값) 빈 글이다. */
 export function formatChange(before, after) {
-  if (before === 0) return '';
-  const change = roundHalfAway(((after - before) * 100) / before);
+  const ratio = ((after - before) * 100) / before;
+  if (before === 0 || !Number.isFinite(ratio)) return '';
+  const change = roundHalfAway(ratio);
   return `${change < 0 ? '−' : '+'}${Math.abs(change)}%`;
+}
+
+/** 값이 너무 가까워 눈금이 겹치는 축. build.js가 줄 번호가 있는 입력 진단으로 바꾼다. */
+export class AxisError extends Error {
+  constructor({ min, max }) {
+    super(`values are too close to tell apart on an axis (${min} to ${max}). Move them further apart`);
+    this.min = min;
+    this.max = max;
+  }
+}
+
+// 간격을 키워 가며 다시 해 보는 횟수. 처음 간격에서 눈금이 겹치면(값이 서로 이웃한 이진 부동소수점 수일 때) 한 단계씩 큰 간격으로 구분되는 축을 찾는다.
+const STEP_TRIES = 8;
+
+// cost: time O(t), heap O(t), stack O(1)
+// vars: t = 눈금 수
+// basis: estimate
+// 눈금이 쓸 만한 축인지: 모두 유한하고, 엄격히 늘고, 눈금 글자가 서로 다르고, 값 범위를 덮는다.
+function isUsable({ ticks, labels, at }, { min, max }) {
+  const [bottom, top] = [ticks[0], ticks.at(-1)];
+  return (
+    ticks.every(Number.isFinite) &&
+    ticks.every((t, i) => i === 0 || t > ticks[i - 1]) &&
+    new Set(labels).size === labels.length &&
+    bottom <= min &&
+    max <= top &&
+    Number.isFinite(at(min)) &&
+    Number.isFinite(at(max))
+  );
 }
 
 // cost: time O(t), heap O(t), stack O(1)
@@ -76,35 +106,73 @@ export function formatChange(before, after) {
 /**
  * 값 → 좌표 함수와 눈금. log는 10의 거듭제곱마다, linear는 1, 2, 5 단위로 다섯 칸 안팎이다.
  * linear는 0과 가장 작은 값 가운데 작은 쪽에서 시작한다. 값 축이 아닌 축(선 차트 가로축)은 fromZero=false로 가장 작은 값에서 시작한다.
+ * 눈금이 겹치거나 유한하지 않으면 간격을 키워 구분되는 축을 찾고, 그래도 없으면 AxisError를 던진다. 값을 합치지 않는다.
  * @param range { min, max, start, length, fromZero }. 값 범위와, 좌표에서 축이 놓이는 시작과 길이
  * @returns { at, ticks, origin, start, length }
+ * @throws AxisError 값이 너무 가까워 구분되는 축을 만들 수 없을 때
  */
 export function makeScale(kind, { min, max, start, length, fromZero = true }) {
   const axis = { start, length };
   if (kind === 'log') {
-    const lo = Math.floor(Math.log10(min));
-    const hi = Math.max(lo + 1, Math.ceil(Math.log10(max)));
+    const [lo, hi] = logBounds(min, max);
     const ticks = Array.from({ length: hi - lo + 1 }, (_, k) => 10 ** (lo + k));
-    return { ...axis, at: (v) => start + ((Math.log10(v) - lo) / (hi - lo)) * length, ticks, labels: tickLabels(ticks), origin: 10 ** lo };
+    const scale = { ...axis, at: (v) => start + ((Math.log10(v) - lo) / (hi - lo)) * length, ticks, labels: tickLabels(ticks), origin: 10 ** lo };
+    if (!isUsable(scale, { min, max })) throw new AxisError({ min, max });
+    return scale;
   }
   const low = fromZero ? Math.min(0, min) : min;
-  const step = niceStep((max - low) / 5 || 1);
+  const span = max - low;
+  let step = niceStep(span / 5 || span || 1);
+  for (let tries = 0; tries < STEP_TRIES; tries++, step = nextStep(step)) {
+    const scale = linearScale(step, { low, max, ...axis });
+    if (isUsable(scale, { min, max })) return scale;
+  }
+  throw new AxisError({ min, max });
+}
+
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+// 로그 축의 아래, 위 지수. Math.log10이 10의 거듭제곱 가까이에서 반올림해 값이 축 밖에 놓이는 일(`999999999999999`의 log10이 15)을 십진 글로 만든 거듭제곱과 견주어 바로잡는다.
+function logBounds(min, max) {
+  const pow = (exponent) => Number(`1e${exponent}`);
+  let lo = Math.floor(Math.log10(min));
+  if (pow(lo) > min) lo--;
+  else if (pow(lo + 1) <= min) lo++;
+  let hi = Math.max(lo + 1, Math.ceil(Math.log10(max)));
+  if (pow(hi) < max) hi++;
+  else if (hi - 1 > lo && pow(hi - 1) >= max) hi--;
+  return [lo, hi];
+}
+
+// cost: time O(t), heap O(t), stack O(1)
+// vars: t = 눈금 수
+// basis: estimate
+// 간격 하나로 만든 linear 축.
+function linearScale(step, { low, max, start, length }) {
   // 눈금은 간격의 정수배다. 값 자체를 반올림하지 않고 정수배를 십진 글자로 이어 만들어, 간격이 아무리 작아도 눈금이 서로 다르다.
   const first = Math.floor(inSteps(low, step));
   const last = Math.max(first + 1, Math.ceil(inSteps(max, step)));
   const tickAt = (k) => Number(`${k * step.mantissa}e${step.exponent}`);
   const ticks = Array.from({ length: last - first + 1 }, (_, k) => tickAt(first + k));
   const [bottom, top] = [ticks[0], ticks.at(-1)];
-  return { ...axis, at: (v) => start + ((v - bottom) / (top - bottom)) * length, ticks, labels: tickLabels(ticks), origin: Math.max(bottom, Math.min(0, top)) };
+  return { start, length, at: (v) => start + ((v - bottom) / (top - bottom)) * length, ticks, labels: tickLabels(ticks), origin: Math.max(bottom, Math.min(0, top)) };
 }
 
 // cost: time O(1), heap O(1), stack O(1), alloc 1
 // basis: estimate
 // 1, 2, 5, 10 × 10ⁿ 가운데 raw 이상인 가장 작은 간격. 간격은 { mantissa, exponent }로 들고 다닌다(값은 mantissa × 10^exponent).
+// 10ⁿ을 숫자로 만들지 않고 raw를 십진 자리로 옮겨 견주므로 raw가 1e-308 아래여도 맞는 mantissa를 찾는다.
 function niceStep(raw) {
   const exponent = Math.floor(Math.log10(raw));
-  const mantissa = [1, 2, 5, 10].find((m) => m * Number(`1e${exponent}`) >= raw);
+  const mantissa = [1, 2, 5, 10].find((m) => m >= shiftDecimal(raw, -exponent));
   return { mantissa, exponent };
+}
+
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+// 한 단계 큰 간격(1 → 2 → 5 → 10).
+function nextStep({ mantissa, exponent }) {
+  return mantissa === 1 ? { mantissa: 2, exponent } : mantissa === 2 ? { mantissa: 5, exponent } : { mantissa: 1, exponent: exponent + 1 };
 }
 
 // cost: time O(1), heap O(1), stack O(1)

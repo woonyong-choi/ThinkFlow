@@ -8,7 +8,7 @@ import { planHops } from './chip-plan.js';
 import { widenForHiddenChips } from './chip-room.js';
 import { chipLines, chipObstacles } from './draw/boxes.js';
 import { attachIcons } from './icons/index.js';
-import { drawChart } from './chart/draw.js';
+import { drawChecked } from './chart/guard.js';
 import { LayoutError } from './layout/error.js';
 import { layoutGraph } from './layout/graph.js';
 import { layoutSequence } from './layout/sequence.js';
@@ -47,7 +47,7 @@ export async function buildFigure(source, { baseDir = '.', strict = false, noDep
   const cards = collectCards(figure);
   if (figure.kind === 'chart') {
     const timeline = buildTimeline(figure, { cards, chips: wrapChip });
-    const chart = drawChart(figure);
+    const chart = drawChecked(figure, problems);
     checkChartFigure(chart, problems);
     return finish({ figure, chart, timeline }, problems, { strict, noDeprecated });
   }
