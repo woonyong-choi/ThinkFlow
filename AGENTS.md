@@ -15,7 +15,7 @@
 | `src/draw/` | 도형, 선, 카드 그리기 |
 | `src/timeline.js`, `src/chip.js`, `src/build.js` | 시간표, 글 상자 크기와 밀어 넣기, 단계 잇기 |
 | `src/check.js`, `src/check/` | 그림 검사. 항목 목록(`items.js`)과 항목별 판정 파일 |
-| `src/svg.js`, `src/html.js`, `src/html/`, `src/cli.js` | 움직이는 SVG, HTML 재생기 문서와 목록, 명령 |
+| `src/svg.js`, `src/html.js`, `src/html/`, `src/href.js`, `src/cli.js` | 움직이는 SVG, HTML 재생기 문서와 목록, 파일 이름을 링크 주소로 바꾸기, 명령 |
 | `src/build-reported.js`, `src/md.js`, `src/md-run.js` | 원본 만들기와 진단 알림, 마크다운 블록 찾기와 이미지 줄 넣기(`md.js`는 파일을 다루지 않음), `md` 명령 실행 |
 | `action.yml`, `.github/workflows/` | GitHub Action(composite), CI, `v*` 태그 배포 |
 | `src/player/` | 브라우저에서 도는 재생기(`play.js`, `controls.js`, `stage.js`, `curve.js`)와 전체 화면·확대(`view.js`) |

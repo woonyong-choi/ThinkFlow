@@ -1,5 +1,5 @@
 // 그룹 선언(`group id "이름" [direction=down] [border=dashed] [badge="LB"] [icon=server] [fill=red] [stroke=red] {`)과 닫는 `}`를 읽는다.
-import { checkId, currentGroup, rejectName } from './names.js';
+import { checkId, parentFor, rejectName } from './names.js';
 import { readOptions } from './options.js';
 import { ID_PATTERN } from './words.js';
 
@@ -25,7 +25,7 @@ export function readGroup({ tokens, line }, ctx) {
   const found = readOptions(openAt === -1 ? rest : rest.slice(0, openAt), { scopes: ['group'], what: 'a group', line, ctx });
   checkGroupOptions(found, line, ctx);
   const { direction, border, badge, icon, fill, stroke } = found;
-  const group = { id: id.value, label: label?.value ?? '', direction, border, badge, icon, fill, stroke, parent: currentGroup(ctx), line, hasError: openAt !== rest.length - 1 };
+  const group = { id: id.value, label: label?.value ?? '', direction, border, badge, icon, fill, stroke, parent: parentFor(id, ctx), line, hasError: openAt !== rest.length - 1 };
   ctx.figure.groups.push(group);
   ctx.groups.push(group);
 }

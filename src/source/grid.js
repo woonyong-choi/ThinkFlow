@@ -1,5 +1,5 @@
 // 칸 격자(`grid id "글" rows=N cols=N {` ... `}`)를 읽는다. 칸은 `item`과 `gap` 줄이고, 칸 자리는 격자 안의 논리 인덱스다(docs/design/figure-kinds.md 칸 격자).
-import { checkId, currentGroup } from './names.js';
+import { checkId, parentFor } from './names.js';
 import { normalizeStatement } from './normalize.js';
 import { readOptions } from './options.js';
 import { ID_PATTERN } from './words.js';
@@ -19,7 +19,7 @@ export function readGrid({ tokens, line }, ctx) {
   if (label?.type !== 'text') ctx.problems.error(line, `write grid as: grid ${id.value} "name" rows=N cols=N {`);
   if (!isOpen) ctx.problems.error(line, 'end the grid line with "{" and put the cells on the next lines');
   const numbers = readOptions(rest.filter((t) => t.type !== 'open'), { scopes: ['grid'], what: 'a grid', line, ctx });
-  const grid = { id: id.value, shape: 'grid', label: label?.value ?? '', rows: numbers.rows ?? 1, cols: numbers.cols ?? 1, cells: [], parent: currentGroup(ctx), line };
+  const grid = { id: id.value, shape: 'grid', label: label?.value ?? '', rows: numbers.rows ?? 1, cols: numbers.cols ?? 1, cells: [], parent: parentFor(id, ctx), line };
   ctx.figure.nodes.push(grid);
   if (isOpen) ctx.grid = grid;
 }

@@ -152,11 +152,11 @@ test('main_gallery_writes_the_index_and_the_document_preview_with_each_figure_an
     const page = (name) => readFileSync(join(folder, 'out', `${name}.html`), 'utf8');
 
     assert.equal(result.status, 0, result.stderr);
-    assert.match(page('index'), /src="a\.html"/);
-    assert.match(page('index'), /src="b\.html"/);
+    assert.match(page('index'), /src="\.\/a\.html"/);
+    assert.match(page('index'), /src="\.\/b\.html"/);
     assert.match(page('index'), /href="document\.html"/);
-    assert.match(page('document'), /<img src="a\.svg"/);
-    assert.match(page('document'), /<img src="b\.svg"/);
+    assert.match(page('document'), /<img src="\.\/a\.svg"/);
+    assert.match(page('document'), /<img src="\.\/b\.svg"/);
     for (const name of ['index', 'document']) {
       assert.match(page(name), /<h2><span class="title">흐름 제목<\/span><code class="name">a\.dap<\/code><span class="kind">flow<\/span><\/h2>/);
       assert.match(page(name), /<h2><code class="name">b\.dap<\/code><span class="kind">bar<\/span><\/h2>/);
@@ -200,5 +200,85 @@ test('cli_old_extension_is_read_with_only_a_deprecation_notice', () => {
     assert.ok(readFileSync(join(folder, 'b.svg'), 'utf8').replace('<title>b</title>', '<title>a</title>') === readFileSync(join(folder, 'a.svg'), 'utf8'), '같은 원본이면 이름 말고는 같은 SVG');
     assert.equal(gallery.status, 0, gallery.stderr);
     assert.match(readFileSync(join(folder, 'out/index.html'), 'utf8'), /<code class="name">b\.muto<\/code>/);
+  });
+});
+
+const CHECK_TIMEOUT_MS = 5000;
+const nestedGroups = (inner, outer = 'g') => `flow right\ngroup ${outer} "G" {\ngroup ${inner} "H" {\nbox a "A"\n}\n}\nbox b "B"\na -> b\n`;
+
+// 근거: 이슈 #71 "중첩 그룹에 같은 이름을 쓰면 파서가 멈춘다". 제한 시간 안에 syntax 오류와 중복 선언 줄을 돌려주고, 이름만 바꾼 대조군은 통과한다
+test('check_nested_group_with_the_same_name_returns_a_syntax_error_with_the_declaration_line_in_time', () => {
+  withFolder((folder) => {
+    writeFileSync(join(folder, 'duplicate.dap'), nestedGroups('g'));
+    writeFileSync(join(folder, 'control.dap'), nestedGroups('h'));
+
+    const duplicate = spawnSync(process.execPath, [CLI, 'check', 'duplicate.dap', '--json'], { cwd: folder, encoding: 'utf8', timeout: CHECK_TIMEOUT_MS });
+    const control = spawnSync(process.execPath, [CLI, 'check', 'control.dap', '--json'], { cwd: folder, encoding: 'utf8', timeout: CHECK_TIMEOUT_MS });
+
+    assert.equal(duplicate.error, undefined, '제한 시간 안에 끝난다');
+    assert.equal(duplicate.status, 1);
+    const found = duplicate.stdout.trim().split('\n').map((line) => JSON.parse(line));
+    assert.equal(found.length, 1, '중복 하나만 알린다');
+    assert.equal(found[0].code, 'syntax');
+    assert.equal(found[0].line, 3);
+    assert.match(found[0].message, /the name "g" is already used \(line 2\)/);
+    assert.equal(control.status, 0, control.stderr);
+  });
+});
+
+// 근거: 이슈 #71 "부모 관계에 순환이 생기는 경로". 바깥 그룹 이름을 더 깊은 곳에서 다시 선언해도, 같은 이름의 형제나 도형을 써도 유한 시간에 중복 오류가 된다
+test('check_duplicate_names_end_in_a_duplicate_error_for_every_nesting_shape', () => {
+  const cases = [
+    { name: 'two_levels_down', source: 'flow right\ngroup g "G" {\ngroup h "H" {\ngroup g "I" {\nbox a "A"\n}\n}\n}\nbox b "B"\na -> b\n', line: 4, first: 2 },
+    { name: 'siblings', source: 'flow right\ngroup g "G" {\nbox a "A"\n}\ngroup g "H" {\nbox c "C"\n}\na -> c\n', line: 5, first: 2 },
+    { name: 'node_inside_group_of_same_name', source: 'flow right\ngroup g "G" {\nbox g "A"\n}\nbox b "B"\ng -> b\n', line: 2, first: 3 },
+  ];
+  withFolder((folder) => {
+    for (const { name, source, line, first } of cases) {
+      writeFileSync(join(folder, `${name}.dap`), source);
+
+      const result = spawnSync(process.execPath, [CLI, 'check', `${name}.dap`, '--json'], { cwd: folder, encoding: 'utf8', timeout: CHECK_TIMEOUT_MS });
+
+      assert.equal(result.error, undefined, `${name}: 제한 시간 안에 끝난다`);
+      assert.equal(result.status, 1, name);
+      const messages = result.stdout.trim().split('\n').map((entry) => JSON.parse(entry));
+      assert.deepEqual(messages.map((m) => [m.line, m.code]), [[line, 'syntax']], name);
+      assert.match(messages[0].message, new RegExp(`already used \\(line ${first}\\)`), name);
+    }
+  });
+});
+
+// 근거: 이슈 #71 "순환 방문도 방어한다". 부모가 순환인 모형이 검증에 들어와도 멈추지 않고 순환을 알리는 예외로 끝난다
+test('validateFigure_stops_with_a_cycle_error_instead_of_looping_on_a_parent_cycle', () => {
+  const script = `
+    import { validateFigure } from ${JSON.stringify(new URL('../src/source/validate.js', import.meta.url).href)};
+    import { createProblems } from ${JSON.stringify(new URL('../src/source/problems.js', import.meta.url).href)};
+    const figure = { kind: 'flow', nodes: [{ id: 'a', parent: 'g', line: 4 }, { id: 'b', line: 7 }], groups: [{ id: 'g', parent: 'g', line: 2 }], edges: [{ from: 'a', to: 'b', line: 8 }], values: [], steps: [], rejectedNames: new Set(), chart: { series: [] } };
+    try { validateFigure(figure, createProblems()); console.log('returned'); } catch (error) { console.log(error.message); }
+  `;
+
+  const result = spawnSync(process.execPath, ['--input-type=module', '-e', script], { encoding: 'utf8', timeout: CHECK_TIMEOUT_MS });
+
+  assert.equal(result.error, undefined, '제한 시간 안에 끝난다');
+  assert.match(result.stdout, /parent cycle/);
+});
+
+// 근거: 이슈 #69 "갤러리 파일명이 URL 스킴으로 해석된다". 목록과 문서 미리보기가 파일명을 href와 src에 경로 조각 인코딩과 `./` 접두로만 쓴다
+test('gallery_links_a_scheme_like_file_name_only_as_an_encoded_explicit_relative_path', () => {
+  withFolder((folder) => {
+    writeFileSync(join(folder, 'javascript:parent.__daphnisAudit=1;void(0).dap'), FLOW);
+    writeFileSync(join(folder, 'javascript:parent.__daphnisAudit=2;void(0).muto'), FLOW);
+
+    const result = run(['gallery', '.', '--out', 'out'], folder);
+
+    assert.equal(result.status, 0, result.stderr);
+    for (const page of ['index.html', 'document.html']) {
+      const html = readFileSync(join(folder, 'out', page), 'utf8');
+      const links = [...html.matchAll(/\b(?:href|src)="([^"]*)"/g)].map((m) => m[1]).filter((url) => !url.startsWith('data:') && !['index.html', 'document.html'].includes(url));
+      assert.ok(links.length > 0, page);
+      assert.deepEqual(links.filter((url) => !url.startsWith('./')), [], `${page}: 모든 파일 링크는 ./로 시작한다`);
+      assert.ok(!/(?:href|src)="javascript/i.test(html), `${page}: 스킴으로 시작하는 링크가 없다`);
+      assert.ok(html.includes('./javascript%3Aparent.__daphnisAudit%3D1%3Bvoid%280%29') && html.includes('./javascript%3Aparent.__daphnisAudit%3D2%3Bvoid%280%29'), `${page}: 경로 조각은 퍼센트 인코딩이다`);
+    }
   });
 });

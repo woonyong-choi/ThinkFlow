@@ -3,17 +3,20 @@
 import assert from 'node:assert/strict';
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { after, before, describe, test } from 'node:test';
 import { chromium } from 'playwright-core';
 import { buildFigure } from '../src/build.js';
 import { toDocument, toGallery, toHtml } from '../src/html.js';
 import { values } from '../src/tokens.js';
-import { withFolder } from './helpers.js';
+import { runCli, withFolder } from './helpers.js';
 
 const CHROME = [process.env.CHROME_PATH, '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome', '/usr/bin/google-chrome', '/usr/bin/chromium', '/usr/bin/chromium-browser'].find((path) => path && existsSync(path));
 const SKIP = CHROME ? false : 'Chrome이 없다';
 const FIGURES = [{ name: 'call-registers', title: '호출 중 레지스터 값의 변화', kind: 'flow', isChart: false, href: 'call-registers' }];
 const WIDTH = 1400;
+const AUDIT_WAIT_MS = 500;
+const FIGURE = 'flow right\nbox a "A"\n';
 const GAP_TOLERANCE = 0.5;
 const AXIS_TOLERANCE = 1;
 const RING_WAIT_MS = 600;
@@ -185,6 +188,40 @@ describe('pages', { skip: SKIP }, () => {
         }, GRID_RING_PROBE);
 
         assert.deepEqual(wrong, [], `tab ${tab}`);
+      }
+    });
+  });
+  // 근거: 이슈 #69 "목록을 열기만 해도 파일명의 스크립트가 실행된다"와 "`#`, `?`, 공백, 한글 이름도 해당 출력 파일을 연다". 실제 Chrome에서 목록과 문서 미리보기를 열어 본다
+  test('gallery_opened_in_chrome_runs_no_script_from_a_file_name_and_opens_the_file_of_every_odd_name', async () => {
+    const names = ['javascript:parent.__daphnisAudit=1;void(0)', 'data:text;<img src=x onerror=parent.__daphnisAudit=1>', 'x" onload="parent.__daphnisAudit=1', 'a#b', 'q?x', 'sp ace', '한글 그림', "q'uote", 'p(a)r'];
+    await withFolder(async (folder) => {
+      for (const name of names) writeFileSync(join(folder, `${name}.dap`), FIGURE);
+      const made = runCli(['gallery', '.', '--out', 'out'], folder);
+      assert.equal(made.status, 0, made.stderr);
+
+      for (const listing of ['index.html', 'document.html']) {
+        const page = await browser.newPage();
+        const errors = [];
+        page.on('pageerror', (e) => errors.push(e.message));
+        await page.goto(`file://${join(folder, 'out', listing)}`);
+        await page.waitForTimeout(AUDIT_WAIT_MS);
+        const audited = await page.evaluate(() => window.__daphnisAudit);
+        assert.equal(audited, undefined, `${listing}: 파일명이 부모 창에서 실행되지 않는다`);
+        assert.deepEqual(errors, [], listing);
+        const targets = await page.evaluate(() => [...document.querySelectorAll('a[href$=".html"], a[href$=".svg"], iframe[src], img[src]')].map((el) => el.href || el.src));
+        assert.ok(targets.every((url) => url.startsWith('file://')), `${listing}: 모든 링크는 같은 폴더의 파일이다`);
+        await page.close();
+      }
+
+      for (const name of names) {
+        const page = await browser.newPage();
+        await page.goto(`file://${join(folder, 'out', 'index.html')}`);
+        const link = page.locator('section', { has: page.locator(`h2 code.name:text-is(${JSON.stringify(`${name}.dap`)})`) }).locator('nav a', { hasText: '열기' });
+        const href = await link.evaluate((a) => a.href);
+        assert.equal(fileURLToPath(href), join(folder, 'out', `${name}.html`), `${name}: 열기 링크는 그 이름의 HTML을 가리킨다`);
+        await page.goto(href);
+        assert.ok((await page.locator('svg').count()) > 0, `${name}: 그림이 열린다`);
+        await page.close();
       }
     });
   });

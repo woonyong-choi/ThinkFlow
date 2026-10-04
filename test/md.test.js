@@ -1,6 +1,6 @@
 // md 명령: 문서 안 ```dap 블록의 SVG와 이미지 줄(docs/design/markdown.md). 멱등, 이름 안정, 오류 시 미기록, --check 종료 코드는 그 문서의 요구사항 표다.
 import assert from 'node:assert/strict';
-import { existsSync, readFileSync, statSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { test } from 'node:test';
 import { runCli as run, withFolder } from './helpers.js';
@@ -207,5 +207,75 @@ test('md_reads_the_old_fence_and_old_image_mark_and_rewrites_the_mark_with_a_dep
     assert.match(markdown, /!\[Request path\]\(doc-flow\.svg\)<!-- dap -->/);
     assert.doesNotMatch(markdown, /<!-- muto -->/);
     assert.equal(markdown.match(/doc-flow\.svg/g).length, 1);
+  });
+});
+
+const SVG_NAMES = ['readme-one.svg', 'readme-two.svg'];
+// cost: time O(1), heap O(1), stack O(1), io 4
+// basis: estimate
+// 같은 이름의 문서 둘(a/readme.md, b/readme.md)을 만들고 서로 다른 블록 이름을 준다. 출력 폴더는 out이다.
+const twinDocs = (folder, names = ['one', 'two']) => {
+  for (const [i, dir] of ['a', 'b'].entries()) {
+    mkdirSync(join(folder, dir), { recursive: true });
+    put(folder, `${dir}/readme.md`, doc(block(`name=${names[i]}`, FLOW)));
+  }
+};
+
+// 근거: 이슈 #70 "동명 문서가 출력 폴더를 공유하면 다른 문서의 SVG를 지운다". 문서를 따로따로 돌려도 서로의 SVG와 이미지 줄이 남는다
+test('md_same_named_documents_sharing_an_out_dir_keep_each_others_svg_when_run_one_after_another', () => {
+  withFolder((folder) => {
+    twinDocs(folder);
+
+    const first = run(['md', 'a/readme.md', '--out-dir', 'out'], folder);
+    const second = run(['md', 'b/readme.md', '--out-dir', 'out'], folder);
+    const again = run(['md', 'a/readme.md', '--out-dir', 'out'], folder);
+
+    assert.equal(first.status, 0, first.stderr);
+    assert.equal(second.status, 0, second.stderr);
+    assert.doesNotMatch(second.stdout, /removed/);
+    assert.equal(again.stdout, '', '멱등: 다시 돌려도 쓰거나 지운 것이 없다');
+    for (const name of SVG_NAMES) assert.ok(existsSync(join(folder, 'out', name)), name);
+    assert.match(read(folder, 'a/readme.md'), /\(\.\.\/out\/readme-one\.svg\)/);
+    assert.match(read(folder, 'b/readme.md'), /\(\.\.\/out\/readme-two\.svg\)/);
+  });
+});
+
+// 근거: 이슈 #70 "한 번에 두 문서를 넘기는 경우, 입력 순서 반전, 멱등 재실행". 소유 표시는 문서 경로 기준이라 이름이 바뀌면 자기 SVG만 지운다
+test('md_same_named_documents_given_together_in_either_order_keep_both_svgs_and_only_remove_their_own_stale_one', () => {
+  withFolder((folder) => {
+    twinDocs(folder);
+
+    for (const order of [['a/readme.md', 'b/readme.md'], ['b/readme.md', 'a/readme.md'], ['a/readme.md', 'b/readme.md']]) {
+      const result = run(['md', ...order, '--out-dir', 'out'], folder);
+      assert.equal(result.status, 0, result.stderr);
+      assert.doesNotMatch(result.stdout, /removed/);
+      for (const name of SVG_NAMES) assert.ok(existsSync(join(folder, 'out', name)), `${order.join(' ')}: ${name}`);
+    }
+    assert.equal(run(['md', 'a/readme.md', 'b/readme.md', '--out-dir', 'out', '--check'], folder).status, 0);
+
+    put(folder, 'a/readme.md', read(folder, 'a/readme.md').replace('name=one', 'name=three'));
+    const renamed = run(['md', 'b/readme.md', 'a/readme.md', '--out-dir', 'out'], folder);
+
+    assert.equal(renamed.status, 0, renamed.stderr);
+    assert.ok(!existsSync(join(folder, 'out/readme-one.svg')), '자기 문서의 낡은 SVG는 지운다');
+    assert.ok(existsSync(join(folder, 'out/readme-two.svg')) && existsSync(join(folder, 'out/readme-three.svg')));
+  });
+});
+
+// 근거: 이슈 #70 "어떤 파일도 한 실행의 쓰기 대상과 삭제 대상에 동시에 들어가지 않는다". 한 문서의 낡은 SVG를 다른 문서가 이번에 쓰면 지우지 않는다
+test('md_never_removes_a_file_that_another_document_writes_in_the_same_run', () => {
+  withFolder((folder) => {
+    twinDocs(folder, ['x', 'y']);
+    run(['md', 'a/readme.md', '--out-dir', 'out'], folder);
+    put(folder, 'b/readme.md', read(folder, 'b/readme.md').replace('name=y', 'name=x'));
+    put(folder, 'a/readme.md', read(folder, 'a/readme.md').replace('name=x', 'name=z'));
+
+    const result = run(['md', 'a/readme.md', 'b/readme.md', '--out-dir', 'out'], folder);
+
+    assert.equal(result.status, 0, result.stderr);
+    assert.ok(existsSync(join(folder, 'out/readme-x.svg')), 'b가 쓴 파일이 남는다');
+    assert.ok(existsSync(join(folder, 'out/readme-z.svg')));
+    assert.match(read(folder, 'out/readme-x.svg'), /<!-- daphnis md \.\.\/b\/readme\.md -->/);
+    assert.equal(run(['md', 'a/readme.md', 'b/readme.md', '--out-dir', 'out', '--check'], folder).status, 0);
   });
 });

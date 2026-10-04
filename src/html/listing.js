@@ -1,6 +1,7 @@
 // 여러 그림을 한 쪽에서 보는 목록과 문서 안 모습 미리보기.
 import { STYLES } from '../styles.js';
 import { escapeXml, plainText, renderRichHtml } from '../text.js';
+import { hrefAttr } from '../href.js';
 import { faviconLinks } from './favicon.js';
 import { THEME_BUTTONS, THEME_SCRIPT } from './theme.js';
 
@@ -18,14 +19,14 @@ function cardHead({ name, ext = '.dap', title, kind, isChart }) {
 // basis: estimate
 /**
  * 여러 그림을 한 쪽에서 보는 목록. 그림마다 재생 화면을 iframe으로 넣는다.
- * @param figures { name, ext?, title, kind, isChart, href }[]. href는 목록 쪽에서 본 확장자 뺀 상대 경로다.
+ * @param figures { name, ext?, title, kind, isChart, href }[]. href는 목록 쪽에서 본 확장자 뺀 상대 경로 원본 글자다(인코딩은 여기서 한다).
  */
 export function toGallery(figures, heading) {
   const cards = figures
     .map(
       (f) =>
-        `<section><header>${cardHead(f)}<nav><a href="${escapeXml(f.href)}.html">열기</a><a href="${escapeXml(f.href)}.svg">SVG</a></nav></header>` +
-        `<iframe src="${escapeXml(f.href)}.html" loading="lazy" allowfullscreen title="${escapeXml(f.name)}"></iframe></section>`,
+        `<section><header>${cardHead(f)}<nav><a href="${hrefAttr(`${f.href}.html`)}">열기</a><a href="${hrefAttr(`${f.href}.svg`)}">SVG</a></nav></header>` +
+        `<iframe src="${hrefAttr(`${f.href}.html`)}" loading="lazy" allowfullscreen title="${escapeXml(f.name)}"></iframe></section>`,
     )
     .join('\n');
   return `<!doctype html>
@@ -66,11 +67,11 @@ addEventListener('message', (e) => {
 // basis: estimate
 /**
  * 문서(README) 안 모습 미리보기. 그림마다 움직이는 SVG를 img로 넣는다(GitHub README와 같은 방식).
- * @param figures { name, ext?, title, kind, isChart, href }[]. href는 이 쪽에서 본 확장자 뺀 상대 경로다.
+ * @param figures { name, ext?, title, kind, isChart, href }[]. href는 이 쪽에서 본 확장자 뺀 상대 경로 원본 글자다(인코딩은 여기서 한다).
  */
 export function toDocument(figures, heading) {
   const sections = figures
-    .map((f) => `${cardHead(f)}\n<p class="figure"><img src="${escapeXml(f.href)}.svg" alt="${escapeXml(plainText(f.title || f.name))}"></p>`)
+    .map((f) => `${cardHead(f)}\n<p class="figure"><img src="${hrefAttr(`${f.href}.svg`)}" alt="${escapeXml(plainText(f.title || f.name))}"></p>`)
     .join('\n');
   return `<!doctype html>
 <html lang="ko">

@@ -27,3 +27,11 @@ export function checkId(token, { line, ctx }, pattern) {
 export function currentGroup(ctx) {
   return ctx.groups.at(-1)?.id;
 }
+
+// cost: time O(d), heap O(1), stack O(1)
+// vars: d = 열린 그룹 깊이
+// basis: estimate
+// 새 선언의 부모 그룹. 열린 그룹과 이름이 같은 선언은 중복 오류가 날 선언이라 부모를 두지 않는다(자기나 조상을 부모로 삼으면 부모 사슬이 순환한다).
+export function parentFor(id, ctx) {
+  return ctx.groups.some((g) => g.id === id.value) ? undefined : currentGroup(ctx);
+}

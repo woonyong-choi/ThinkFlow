@@ -1,4 +1,5 @@
 // 그림 원본을 배치 모형으로 바꾼다. 그룹 나무, 도형, 선 조각을 만든다. 선 하나는 넘는 경계마다 조각 하나가 더해진다(docs/design/layout.md).
+import { walkUp } from '../source/ancestry.js';
 import { values } from '../tokens.js';
 import { orderByFlow } from './order.js';
 import { isInnerEdge } from './cell-ports.js';
@@ -48,13 +49,13 @@ export function decorOf({ border, badge, icon, iconData, fill, stroke }) {
   return { border, badge, icon, iconData, fill, stroke };
 }
 
-// cost: time O(d), heap O(1), stack O(1)
+// cost: time O(d), heap O(d), stack O(1)
 // vars: d = 그룹 깊이
 // basis: estimate
 function directionOf(parent, containers, figure) {
-  if (!parent) return figure.direction;
-  const c = containers.get(parent);
-  return c.own ?? directionOf(c.parent, containers, figure);
+  const chain = walkUp(parent, (id) => containers.get(id).parent, containers.size);
+  const owner = chain.find((id) => containers.get(id).own);
+  return owner ? containers.get(owner).own : figure.direction;
 }
 
 // cost: time O(f), heap O(f), stack O(1)

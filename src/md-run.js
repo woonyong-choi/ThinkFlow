@@ -3,23 +3,27 @@
 import { existsSync, mkdirSync, readdirSync, readFileSync, unlinkSync } from 'node:fs';
 import { basename, dirname, extname, join, relative, sep } from 'node:path';
 import { buildReported, report, writeOutput } from './build-reported.js';
+import { fileHref } from './href.js';
 import { applyImages, findBlocks } from './md.js';
 import { makeDiagnostic } from './source/problems.js';
 import { toSvg } from './svg.js';
 import { plainText } from './text.js';
 
-// cost: time O(1), heap O(1), stack O(1)
+// cost: time O(n), heap O(n), stack O(1)
+// vars: n = 경로 글자 수
 // basis: estimate
-// 이 문서에서 만든 SVG라는 표시. 이름이 바뀌어 안 쓰는 SVG를 찾아 지울 때 문서 이름까지 맞는 파일만 지운다.
-const svgMark = (file) => `<!-- daphnis md ${basename(file)} -->`;
+// 문서를 가리키는 이름. SVG 폴더에서 문서까지의 상대 경로(구분자 `/`)다. 같은 SVG 폴더를 쓰는 문서끼리는 경로가 늘 달라 소유를 가르고, 실행 위치와 무관하다. 문서가 SVG 폴더 안에 있으면 파일 이름만이라 옛 표시와 같다. XML 주석에 `--`가 들 수 없어 `-`가 이어지면 앞의 `-`를 인코딩한다.
+const ownerOf = (file, outDir) => relative(outDir, file).split(sep).join('/').replace(/-(?=-)/g, '%2D');
+// 이 문서에서 만든 SVG라는 표시. 이름이 바뀌어 안 쓰는 SVG를 찾아 지울 때 이 표시가 든 파일만 지운다.
+const svgMark = (file, outDir) => `<!-- daphnis md ${ownerOf(file, outDir)} -->`;
 // 옛 이름의 표시. 옛 표시가 든 SVG도 이 문서가 만든 것으로 보고 안 쓰게 되면 지운다.
-const legacySvgMark = (file) => `<!-- mutoscope md ${basename(file)} -->`;
+const legacySvgMark = (file, outDir) => `<!-- mutoscope md ${ownerOf(file, outDir)} -->`;
 const problem = (message, code = 'md') => makeDiagnostic({ severity: 'error', line: 0, message }, { code });
 
 // cost: time O(1), heap O(1), stack O(1)
 // basis: estimate
 // 문서에 쓸 이미지 주소. 문서 폴더 기준 상대 경로, 구분자는 `/`, 이미지 문법을 깨는 글자는 퍼센트 인코딩이다.
-const hrefOf = (file, svg) => relative(dirname(file), svg).split(sep).map((part) => encodeURIComponent(part).replace(/[()]/g, (c) => `%${c.charCodeAt(0).toString(16)}`)).join('/');
+const hrefOf = (file, svg) => fileHref(relative(dirname(file), svg).split(sep), { explicit: false });
 
 // cost: time O(b), heap O(b), stack O(1)
 // vars: b = 블록 수
@@ -63,26 +67,24 @@ async function buildTargets(file, targets, args) {
 // vars: out = SVG 글자 수
 // basis: estimate
 // SVG 글에 문서 표시를 넣는다(여는 태그 줄 다음 줄).
-async function svgText(file, { result, svg }, args) {
+async function svgText(file, { result, svg }, { args, outDir }) {
   const text = await toSvg(result, { isStatic: args.flags.has('static'), name: basename(svg, '.svg') });
   const cut = text.indexOf('\n') + 1;
-  return `${text.slice(0, cut)}${svgMark(file)}\n${text.slice(cut)}`;
+  return `${text.slice(0, cut)}${svgMark(file, outDir)}\n${text.slice(cut)}`;
 }
 
 // cost: time O(n), heap O(n), stack O(1), io n
 // vars: n = 폴더 안 파일 수
 // basis: estimate
-// 이 문서가 예전에 만들었지만 지금은 안 쓰는 SVG. `{문서}-*.svg` 중 이 문서의 표시가 든 파일만이다.
+// 이 문서가 예전에 만들었지만 지금은 안 쓰는 SVG. `{문서}-*.svg` 중 앞 줄에 이 문서의 표시가 든 파일만이다. 표시는 SVG 폴더 기준 문서 경로라 다른 폴더의 같은 이름 문서가 만든 파일은 소유로 보지 않는다.
 function staleSvgs(file, outDir, keep) {
+  const marks = [svgMark(file, outDir), legacySvgMark(file, outDir)];
   const prefix = `${basename(file, extname(file))}-`;
   if (!existsSync(outDir)) return [];
   return readdirSync(outDir)
     .filter((name) => name.startsWith(prefix) && name.endsWith('.svg') && !keep.has(join(outDir, name)))
     .map((name) => join(outDir, name))
-    .filter((path) => {
-      const text = readFileSync(path, 'utf8');
-      return text.includes(svgMark(file)) || text.includes(legacySvgMark(file));
-    });
+    .filter((path) => readFileSync(path, 'utf8').split('\n', 3).some((line) => marks.includes(line.trimEnd())));
 }
 
 // cost: time O(b·build + n), heap O(b·out), stack O(1), io 2b + n
@@ -111,7 +113,7 @@ async function planDocument(file, args, claimed) {
   if (!built) return undefined;
   const images = built.map(({ label, svg, result }) => ({ alt: plainText(result.figure.title ?? label), href: hrefOf(file, svg) }));
   const files = [{ path: file, text: applyImages(lines, found, images).join(eol) }];
-  for (const item of built) files.push({ path: item.svg, text: await svgText(file, item, args) });
+  for (const item of built) files.push({ path: item.svg, text: await svgText(file, item, { args, outDir }) });
   return { files, stale: staleSvgs(file, outDir, new Set(built.map((item) => item.svg))) };
 }
 
@@ -120,6 +122,17 @@ async function planDocument(file, args, claimed) {
 // basis: estimate
 // 디스크와 다른 파일만 남긴다. 같은 결과를 다시 만들면 아무것도 쓰지 않는다(멱등).
 const changedFiles = (files) => files.filter(({ path, text }) => !existsSync(path) || readFileSync(path, 'utf8') !== text);
+
+// cost: time O(f), heap O(f), stack O(1), io f
+// vars: f = 문서 전체가 쓰거나 지울 파일 수
+// basis: estimate
+// 이번 실행의 쓰기와 삭제 계획. 문서마다 따로 정한 낡은 SVG 목록을 합친 뒤, 어느 문서든 이번에 쓰는 파일은 뺀다. 쓰는 파일과 지우는 파일이 겹치지 않는다.
+function outputPlan(plans) {
+  const files = plans.flatMap((plan) => plan.files);
+  const written = new Set(files.map(({ path }) => path));
+  const removes = [...new Set(plans.flatMap((plan) => plan.stale))].filter((path) => !written.has(path));
+  return { writes: changedFiles(files), removes };
+}
 
 // cost: time O(d·b·build), heap O(d·b·out), stack O(1), io d·(2b + n)
 // vars: d = 문서 수, b = 문서 안 블록 수, build = 블록 하나를 만드는 비용, out = SVG 글자 수, n = 폴더 안 파일 수
@@ -134,8 +147,7 @@ export async function runMd(args) {
   const plans = [];
   for (const input of args.inputs) plans.push(await planDocument(input, args, claimed));
   if (plans.includes(undefined)) return 1;
-  const writes = changedFiles(plans.flatMap((plan) => plan.files));
-  const removes = plans.flatMap((plan) => plan.stale);
+  const { writes, removes } = outputPlan(plans);
   if (args.flags.has('check')) {
     for (const { path } of writes) report(path, [problem('is out of date. Run daphnis md to update it', 'md-outdated')], json);
     for (const path of removes) report(path, [problem('is a stale figure. Run daphnis md to remove it', 'md-outdated')], json);

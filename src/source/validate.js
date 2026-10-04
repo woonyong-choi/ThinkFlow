@@ -1,4 +1,5 @@
 // 파일을 다 읽은 뒤 이름, 선, 이동, 카드, 밝히기 대상을 확인한다. 이동마다 따라갈 선(edge 번호, 거꾸로 여부)을 정한다.
+import { walkUp } from './ancestry.js';
 import { checkChart } from './chart-rules.js';
 import { checkFlowStep } from './flow-check.js';
 import { CARD_SHAPES } from './grammar.js';
@@ -11,7 +12,10 @@ import { checkValues } from './value-check.js';
 // basis: estimate
 /** 그림 모형의 서로 가리키는 이름과 종류별 규칙을 확인한다. 이동에는 edge, isBack을 채운다. */
 export function validateFigure(figure, problems) {
+  const before = problems.errors.length;
   const names = collectNames(figure, problems);
+  // 이름이 겹치면 이름으로 찾는 부모와 선 끝이 모호해서, 이름에 기대는 확인을 하지 않고 중복 오류만 알린다.
+  if (problems.errors.length > before) return;
   if (figure.kind === 'data') buildForeignKeys(figure, problems);
   else checkEdges(figure, names, problems);
   if (figure.kind === 'state') checkStateMarks(figure, names, problems);
@@ -42,13 +46,10 @@ function collectNames(figure, problems) {
 // 선 끝 이름, 자기 자신, 그룹과 하위 도형 사이, 같은 방향 중복을 확인한다.
 function checkEdges(figure, names, problems) {
   const groupOf = new Map([...figure.nodes, ...figure.groups].map((n) => [n.id, n.parent]));
-  // cost: time O(d), heap O(1), stack O(1)
+  // cost: time O(d), heap O(d), stack O(1)
   // vars: d = 그룹 깊이
   // basis: estimate
-  const isInside = (id, groupId) => {
-    for (let p = groupOf.get(id); p; p = groupOf.get(p)) if (p === groupId) return true;
-    return false;
-  };
+  const isInside = (id, groupId) => walkUp(groupOf.get(id), (p) => groupOf.get(p), groupOf.size).includes(groupId);
   const seen = new Map();
   figure.edges.forEach((edge) => {
     splitCellEnds(edge, names, problems);

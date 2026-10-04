@@ -2,6 +2,7 @@
 import { BADGE_STYLE, bodyOf } from '../measure/decor.js';
 import { CARD, STYLE, groupHead, hasPill, sizePill } from '../measure/sizes.js';
 import { routePolyline } from '../route.js';
+import { walkUp } from '../source/ancestry.js';
 import { centerBaseline, escapeXml, renderRich, roundCoord as r } from '../text.js';
 import { tokens, values } from '../tokens.js';
 import { cardGlyphs, createTones, drawCard } from './card.js';
@@ -78,14 +79,13 @@ function drawItem(it, i, paint) {
   return `${open}${halo}${shape}${decor}${HAS_OWN_LABELS.has(it.shape) ? '' : drawLabels(it)}${card}</g>`;
 }
 
-// cost: time O(g), heap O(1), stack O(1)
+// cost: time O(g²), heap O(g), stack O(1)
 // vars: g = 그룹 수
 // basis: estimate
 // 그룹이 안긴 깊이. 바깥 그룹이 0이고 안으로 들어갈수록 1씩 늘며, 면은 깊이 0(group-1), 1(group-2), 2 이상(group-3) 셋 중 하나다.
 function depthOf(group, scene) {
-  let depth = 0;
-  for (let up = scene.groups.find((g) => g.id === group.parent); up; up = scene.groups.find((g) => g.id === up.parent)) depth += 1;
-  return depth;
+  const parentOf = (g) => scene.groups.find((up) => up.id === g.parent);
+  return walkUp(parentOf(group), parentOf, scene.groups.length).length;
 }
 
 // cost: time O(l), heap O(out), stack O(1)
