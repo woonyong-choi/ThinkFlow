@@ -3,7 +3,7 @@ import { measure } from '../measure/fonts.js';
 import { centerBaseline, renderRich, roundCoord as r } from '../text.js';
 import { axisEnd, axisLabels, fitLength, tickReach } from './axis.js';
 import { DOT, PAD, SIZE, SPACE, TEXT, WIDTH } from './metrics.js';
-import { formatNumber, makeScale } from './scale.js';
+import { makeScale } from './scale.js';
 
 // 세로축 제목은 그림 영역 위 한 줄에 둔다. 맨 위 눈금 글자와 겹치지 않게 그만큼 내린다.
 const Y_TITLE_H = TEXT['11'] + SPACE['8'];
@@ -36,11 +36,11 @@ function breakMark(y, left) {
 // 세로 눈금: 격자선과 왼쪽 눈금 글자. 잘린 끝 격자선은 지그재그 뒤에서 시작한다.
 function yGrid(sy, { left, plotW, cut }) {
   return sy.ticks
-    .map((t) => {
+    .map((t, i) => {
       const isCut = t === cut;
       const from = isCut ? left + BREAK_STEPS * BREAK_STEP : left;
       const line = `<line x1="${r(from)}" x2="${r(left + plotW)}" y1="${r(sy.at(t))}" y2="${r(sy.at(t))}" class="chart-grid"/>`;
-      return `${line}${isCut ? breakMark(sy.at(t), left) : ''}<text x="${r(left - SPACE['3'])}" y="${r(centerBaseline(sy.at(t), TEXT['11']))}" class="chart-tick end">${formatNumber(t)}</text>`;
+      return `${line}${isCut ? breakMark(sy.at(t), left) : ''}<text x="${r(left - SPACE['3'])}" y="${r(centerBaseline(sy.at(t), TEXT['11']))}" class="chart-tick end">${sy.labels[i]}</text>`;
     })
     .join('');
 }
@@ -73,7 +73,7 @@ export function plotFrame(figure, top, { xs, ys }) {
   const yScale = makeScale(chart.scale, { min: Math.min(...ruledYs), max: Math.max(...ruledYs), start: 0, length: plotH, fromZero: chart.zero !== 'off' });
   const sy = { ...yScale, at: (v) => plotTop + plotH - yScale.at(v) };
   // 내용의 왼쪽 끝은 제목, 범례, 세로축 제목이 있으면 PAD, 없으면 세로축 눈금 글자의 왼쪽 끝이다. 오른쪽 끝은 그만큼 남긴다.
-  const tickW = Math.max(...yScale.ticks.map((t) => measure(formatNumber(t), TEXT['11'], 'num')));
+  const tickW = Math.max(...yScale.labels.map((label) => measure(label, TEXT['11'], 'num')));
   const hasHeader = Boolean(figure.title || figure.subtitle || chart.series.length || chart.y);
   const right = WIDTH - Math.min(hasHeader ? PAD : Infinity, left - SPACE['3'] - tickW);
   const unitX = makeScale(xKind, { ...xRange, start: 0, length: 1 });

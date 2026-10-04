@@ -152,7 +152,6 @@ function migrateFile(input, args) {
     return false;
   }
   noteLegacyExtension(input, json);
-  noteLegacyExtension(input, json);
   const result = migrateSource(source);
   if (result.errors) {
     report(input, result.errors, json);

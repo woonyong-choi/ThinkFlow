@@ -7,7 +7,9 @@ const CHART_TYPES = VALUES.chartType.items;
 export const INTERVAL_TYPES = Object.keys(CHART_TYPES).filter((type) => CHART_TYPES[type].isInterval);
 const BOX_KEYS = CHART_TYPES.box.valueKeys;
 // 값의 절댓값 상한. 이보다 크면 십진 반올림이 12자리 정밀도를 넘어 눈금과 글자를 정확히 쓸 수 없다.
-const MAX_VALUE = 1e15;
+export const MAX_VALUE = 1e15;
+/** 값이 범위를 넘을 때의 오류 글. 행 값, 기준선, 무한대가 되는 글이 같은 글을 쓴다. */
+export const RANGE_MESSAGE = `values must be under ${MAX_VALUE.toExponential(0).replace('+', '')} in absolute value`;
 // 종류마다 고정 원소 키. 계열 키와 겹치면 JSON에서 둘을 가를 수 없다.
 const FIXED_KEYS = ['label', 'name', 'x', 'y', 'series', 'row', 'col', 'value'];
 
@@ -27,6 +29,7 @@ export function checkChart(figure, problems) {
   if (chartType === 'difference' && chart.scale === 'log') problems.error(chart.scaleLine ?? figure.line, 'a difference chart is centered on 0, so scale log is not allowed');
   if (chart.zero === 'off' && chartType !== 'line') problems.error(chart.zeroLine, 'zero off is only for line charts. Other charts keep their value axis at 0');
   if (chartType === 'heatmap' && (chart.scaleLine !== undefined || chart.rules.length)) problems.error(chart.scaleLine ?? chart.rules[0].line, 'a heatmap has no value axis. Remove scale and rule');
+  for (const rule of chart.rules) if (Math.abs(rule.value) >= MAX_VALUE) problems.error(rule.line, RANGE_MESSAGE);
   for (const rule of chart.rules) if (chart.scale === 'log' && rule.value <= 0) problems.error(rule.line, 'log scale needs values above 0');
   for (const rule of chart.rules) if (chartType === 'bar' && rule.value < 0) problems.error(rule.line, 'a bar chart starts at 0, so a rule cannot be negative');
   for (const s of chart.series) if (FIXED_KEYS.includes(s.key)) problems.error(s.line, `series key "${s.key}" is a fixed data key. Set key="..." to another name`);
@@ -119,14 +122,15 @@ export function checkChartRows(figure, problems) {
   // 선, 산점도, 차이 차트는 위치로 값을 보이고 0이 가운데라 음수를 받는다.
   const valueAxis = ['scatter', 'line', 'difference'].includes(chartType) ? [] : numbers;
   const huge = chart.rows.find((r) => Object.values(r.values).some((v) => typeof v === 'number' && Math.abs(v) >= MAX_VALUE));
-  if (huge) problems.error(huge.line, 'values must be under 1e15 in absolute value');
+  if (huge) problems.error(huge.line, RANGE_MESSAGE);
   if (valueAxis.some((v) => v < 0)) problems.error(chart.rows.find((r) => Object.entries(r.values).some(([k, v]) => isValue(k) && v < 0)).line, 'values cannot be negative');
   const negativeRule = chart.rows.find((r) => hasRule && r.values.rule < 0);
   if (negativeRule) problems.error(negativeRule.line, 'a bar chart starts at 0, so a row rule cannot be negative');
   if (chart.scale === 'log' && numbers.some((v) => v <= 0)) problems.error(chart.rows.find((r) => Object.entries(r.values).some(([k, v]) => isValue(k) && v !== null && v <= 0)).line, 'log scale needs values above 0');
-  // 막대, 덤벨, 상자는 길이로 값을 보여서 모두 0이면 그릴 것이 없다. 선과 산점도는 위치로 보여서 0도 그린다.
+  // 막대, 덤벨, 상자는 길이로 값을 보여서 숫자가 없거나 모두 0이면 그릴 것이 없다. 선과 산점도는 위치로 보여서 0도 그린다.
   const hasLength = ['bar', 'dumbbell', 'box'].includes(chartType);
-  if (hasLength && numbers.length && numbers.every((v) => v === 0)) problems.error(chart.rows[0].line, 'all values are 0, so lengths cannot be set');
+  if (hasLength && !numbers.length) problems.error(chart.rows[0].line, 'every value is missing, so a chart needs at least one number to draw');
+  else if (hasLength && numbers.every((v) => v === 0)) problems.error(chart.rows[0].line, 'all values are 0, so lengths cannot be set');
   for (const link of chart.links) {
     for (const name of [link.from, link.to]) if (!labels.has(name)) problems.error(link.line, unknownName('point', name, [...labels.keys()]));
   }

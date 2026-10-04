@@ -114,6 +114,21 @@ function drawChartState(stage, seg) {
   stage.rowEls.forEach((els, k) => els.forEach((el) => el.classList.toggle('dim', seg.lights.length > 0 && !seg.lights.includes(k))));
 }
 
+// cost: time O(a), heap O(a), stack O(1)
+// vars: a = 차트 움직임 수
+// basis: estimate
+// 차트 움직임(막대, 선, 값 글자, 점의 CSS 애니메이션)을 박자 시계에 맞춘다. CSS 애니메이션은 브라우저 시계를 따로 따르므로
+// 정지면 멈추고 재개하면 잇고, 배속이면 재생 속도를 같게 한다. 모델 상태는 다시 계산하지 않는다(상태는 시간표가 정한다).
+// 이미 끝난 움직임은 건드리지 않는다. play()는 끝난 움직임을 처음부터 다시 돌리기 때문이다.
+function syncChartMotion(stage, clock) {
+  for (const animation of stage.svg.getAnimations({ subtree: true })) {
+    if (!animation.animationName?.startsWith('chart-')) continue;
+    animation.playbackRate = clock.rate;
+    if (!clock.isPlaying && animation.playState === 'running') animation.pause();
+    else if (clock.isPlaying && animation.playState === 'paused') animation.play();
+  }
+}
+
 // cost: time O(h), heap O(h), stack O(1)
 // vars: h = 박자의 이동 수
 // basis: estimate

@@ -127,6 +127,7 @@ function enterSegment(player, i) {
   showCaption(player, seg.caption);
   markTabs(player.tabs, seg.si);
   resetPackets(player.stage, seg);
+  syncChartMotion(player.stage, clock);
   player.ring.draw(tabProgress(player, seg));
 }
 

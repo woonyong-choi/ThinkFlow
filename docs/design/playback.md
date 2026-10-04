@@ -98,6 +98,7 @@
 - 점의 자리는 점이 실제로 따라가는 둥근 모서리 경로 기준으로 잰다(꺾은선 기준이면 모서리 뒤에서 점이 몇 px 앞서 글자에 닿는다). 지점 사이는 시간에 선형으로 잇는다(SVG의 `animateTransform`과 재생기가 같다).
 - 도형에 마우스를 올리면 닿은 선을 밝힌다. 조용한 선도 그때 보인다.
 - 스페이스는 일시정지다. 단추에 초점이 있으면 그 단추를 누르는 키다.
+- 차트의 막대, 선, 값 글자, 점은 CSS 애니메이션이라 브라우저 시계를 따로 따른다. 그래서 재생기는 박자 시계가 바뀔 때마다(일시정지와 재개, 배속, 단계 이동으로 움직임을 다시 걸 때) 차트 움직임(`getAnimations`의 이름이 `chart-`로 시작하는 것)에 같은 상태를 건다. 정지면 `pause()`, 재개면 `play()`, 배속이면 `playbackRate`를 박자 시계의 배속과 같게 둔다. 이미 끝난 움직임에는 `play()`를 부르지 않는다(처음부터 다시 돌기 때문이다). 단계 이동으로 새로 거는 움직임도 지금의 정지와 배속을 따라 처음(0ms)부터 시작한다. 재생기는 모델 상태를 다시 계산하지 않고 시간표가 정한 상태에 시계만 맞춘다.
 - 전체 화면은 브라우저 전체 화면을 쓰고, 쓸 수 없으면 창을 덮는 모양으로 대신한다. `Esc`로 닫는다.
 - 확대, 축소, 끌어 옮기기는 전체 화면에서만 켠다. 문서 안에서는 그림 전체가 보이는 편이 읽기 쉽기 때문이다. 배율은 1배에서 토큰 `scale.zoom-max`배 사이이고, 화면 좌표는 브라우저 변환 행렬로 그림 좌표로 바꾼다.
 - `prefers-reduced-motion`이 켜져 있으면 멈춘 채로 시작하고 차트는 다 자란 상태로 그린다.
@@ -188,6 +189,7 @@
 | 멈춘 SVG는 모든 선과 계열을 보이고 움직임이 없다. | `test/motion.test.js`의 `toSvg_static_output_has_no_motion_and_shows_every_series`. 결과에 `@keyframes`와 `animateMotion`이 없는지, 단계가 있는 차트는 모든 계열이 숨김 없이 있는지 확인 |
 | 막대 차트 행 이름이 보이는 막대와 세로로 맞는다. | `test/chart.test.js`의 `buildTimeline_bar_label_shift_follows_the_visible_bars_and_is_zero_when_all_are_shown`, `drawChart_bar_label_of_a_row_with_a_missing_series_is_centered_on_its_only_bar` |
 | 조작 막대의 탭 묶음과 설명이 한 가운데 축에 있고, 탭 묶음 높이가 둥근 단추 높이와 같다. | `test/pages.test.js`의 `player_controls_share_one_axis_and_height_and_the_ring_and_active_tab_show_state`(Chrome이 있을 때). `getBoundingClientRect`로 가운데 축 차이 1px 이하, 높이 차이 1px 이하 확인 |
+| 일시정지 동안 차트 움직임이 멈추고, 배속이 차트 움직임의 재생 속도와 박자 시계에 같은 비율로 걸리며, 단계 이동으로 다시 거는 움직임도 지금의 정지와 배속을 따른다. | `test/chart-player.test.js`(Chrome이 있을 때). 실제 Chrome에서 `getAnimations()`의 `currentTime`, `playState`, `playbackRate`와 진행 고리 값을 정지 전후, 배속마다, 탭 이동 뒤에 잰다 |
 | 현재 탭의 진행은 일시정지 단추 둘레의 고리로 보이고 시간에 따라 채워진다. | `test/pages.test.js`의 `player_controls_share_one_axis_and_height_and_the_ring_and_active_tab_show_state`(Chrome이 있을 때). 고리가 단추를 감싸고 `stroke-dashoffset`이 줄어드는지 확인 |
 | 탭은 segmented 방식이라 켜진 탭만 채운 알약 면과 굵은 글을 갖는다. | `test/pages.test.js`의 `player_controls_share_one_axis_and_height_and_the_ring_and_active_tab_show_state`(Chrome이 있을 때). 켜진 탭과 나머지 탭의 계산된 글 굵기, 면, 글 색 비교 |
 

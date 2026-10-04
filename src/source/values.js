@@ -6,10 +6,16 @@ export function parseTime(text, isZeroOk = false) {
   const m = TIME_PATTERN.exec(text ?? '');
   if (!m) return undefined;
   const ms = Number(m[1]) * (m[2] === 's' ? 1000 : 1);
-  return ms > 0 || (isZeroOk && ms === 0) ? ms : undefined;
+  return Number.isFinite(ms) && (ms > 0 || (isZeroOk && ms === 0)) ? ms : undefined;
 }
 
-/** 십진수 글을 숫자로. `-`와 소수점만 받는다. 아니면 undefined. */
+/** 십진수 글을 숫자로. `-`와 소수점만 받는다. 모양이 틀리거나 Number로 바꾸면 무한대가 되는 글(309자리가 넘는 정수)이면 undefined. */
 export function parseNumber(text) {
-  return NUMBER_PATTERN.test(text ?? '') ? Number(text) : undefined;
+  const number = NUMBER_PATTERN.test(text ?? '') ? Number(text) : undefined;
+  return Number.isFinite(number) ? number : undefined;
+}
+
+/** 숫자 모양은 맞지만 Number로 바꾸면 무한대가 되는 글인지. 모양이 틀린 글과 다른 오류 메시지를 내기 위해 가른다. */
+export function isOverflowNumber(text) {
+  return NUMBER_PATTERN.test(text ?? '') && !Number.isFinite(Number(text));
 }

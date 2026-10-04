@@ -16,7 +16,7 @@ export function readOptions(tokens, { scopes, what, line, ctx }) {
   for (const t of tokens) {
     const spec = t.type === 'option' ? scopes.map((s) => optionsOf(s)[t.key]).find(Boolean) : undefined;
     if (!spec) ctx.problems.error(line, `${what} takes ${listKeys(scopes)}. Found "${t.key ?? t.value}"`);
-    else if (t.key in found) ctx.problems.error(line, `"${t.key}" is written twice`);
+    else if (Object.hasOwn(found, t.key)) ctx.problems.error(line, `"${t.key}" is written twice`);
     else {
       const value = readValue(t, spec, { line, ctx });
       if (value !== undefined) found[t.key] = value;

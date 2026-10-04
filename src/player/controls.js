@@ -11,6 +11,7 @@ function bindControls(root, player) {
   rateButton.addEventListener('click', () => {
     clock.rate = nextRate(clock.rate);
     rateButton.textContent = `${clock.rate}×`;
+    syncChartMotion(player.stage, clock);
   });
   root.addEventListener('keydown', (e) => {
     // 단추 위의 스페이스는 그 단추를 누르는 키다.
@@ -27,6 +28,7 @@ function setPlaying(player, value) {
   clock.isPlaying = value;
   pause.icon.innerHTML = playIconSvg(clock.isPlaying, player.data.metrics);
   pause.button.setAttribute('aria-label', clock.isPlaying ? '일시정지' : '재생');
+  syncChartMotion(player.stage, clock);
 }
 
 // cost: time O(1), heap O(1), stack O(1)

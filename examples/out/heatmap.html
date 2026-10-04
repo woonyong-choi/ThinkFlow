@@ -1735,6 +1735,7 @@ function enterSegment(player, i) {
   showCaption(player, seg.caption);
   markTabs(player.tabs, seg.si);
   resetPackets(player.stage, seg);
+  syncChartMotion(player.stage, clock);
   player.ring.draw(tabProgress(player, seg));
 }
 
@@ -1777,6 +1778,7 @@ function bindControls(root, player) {
   rateButton.addEventListener('click', () => {
     clock.rate = nextRate(clock.rate);
     rateButton.textContent = `${clock.rate}×`;
+    syncChartMotion(player.stage, clock);
   });
   root.addEventListener('keydown', (e) => {
     // 단추 위의 스페이스는 그 단추를 누르는 키다.
@@ -1793,6 +1795,7 @@ function setPlaying(player, value) {
   clock.isPlaying = value;
   pause.icon.innerHTML = playIconSvg(clock.isPlaying, player.data.metrics);
   pause.button.setAttribute('aria-label', clock.isPlaying ? '일시정지' : '재생');
+  syncChartMotion(player.stage, clock);
 }
 
 // cost: time O(1), heap O(1), stack O(1)
@@ -1991,6 +1994,21 @@ function drawChartState(stage, seg) {
   });
   stage.labelEls.forEach((el, k) => el.style.setProperty('--label-shift', `${seg.labelShifts[k] ?? 0}px`));
   stage.rowEls.forEach((els, k) => els.forEach((el) => el.classList.toggle('dim', seg.lights.length > 0 && !seg.lights.includes(k))));
+}
+
+// cost: time O(a), heap O(a), stack O(1)
+// vars: a = 차트 움직임 수
+// basis: estimate
+// 차트 움직임(막대, 선, 값 글자, 점의 CSS 애니메이션)을 박자 시계에 맞춘다. CSS 애니메이션은 브라우저 시계를 따로 따르므로
+// 정지면 멈추고 재개하면 잇고, 배속이면 재생 속도를 같게 한다. 모델 상태는 다시 계산하지 않는다(상태는 시간표가 정한다).
+// 이미 끝난 움직임은 건드리지 않는다. play()는 끝난 움직임을 처음부터 다시 돌리기 때문이다.
+function syncChartMotion(stage, clock) {
+  for (const animation of stage.svg.getAnimations({ subtree: true })) {
+    if (!animation.animationName?.startsWith('chart-')) continue;
+    animation.playbackRate = clock.rate;
+    if (!clock.isPlaying && animation.playState === 'running') animation.pause();
+    else if (clock.isPlaying && animation.playState === 'paused') animation.play();
+  }
 }
 
 // cost: time O(h), heap O(h), stack O(1)

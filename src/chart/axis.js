@@ -3,7 +3,7 @@ import { measure } from '../measure/fonts.js';
 import { renderRich, roundCoord as r } from '../text.js';
 import { labelColumn, labelFit } from './labels.js';
 import { PAD, RIGHT, SPACE, TEXT } from './metrics.js';
-import { formatNumber, makeScale } from './scale.js';
+import { makeScale } from './scale.js';
 
 // cost: time O(n), heap O(n), stack O(1)
 // vars: n = 요소 수
@@ -23,7 +23,7 @@ export function fitLength(unit, items, { start, right = RIGHT }) {
 // basis: estimate
 // 값 축 눈금 글자는 눈금 가운데에 놓여 양쪽으로 절반씩 나온다.
 export function tickReach(unit) {
-  return unit.ticks.map((value) => ({ value, extra: measure(formatNumber(value), TEXT['11'], 'num') / 2 }));
+  return unit.ticks.map((value, i) => ({ value, extra: measure(unit.labels[i], TEXT['11'], 'num') / 2 }));
 }
 
 // cost: time O(r), heap O(r), stack O(1)
@@ -45,7 +45,7 @@ const LINE_DROP = SPACE['1-5'];
 // basis: estimate
 /** 값 축 아래 글자: 눈금 글자와 오른쪽 끝에 맞춘 축 제목. y는 축선(눈금 0 줄)의 세로 자리다. */
 export function axisLabels(scale, y, title) {
-  const ticks = scale.ticks.map((t) => `<text x="${r(scale.at(t))}" y="${r(y + TICK_BASE)}" class="chart-tick">${formatNumber(t)}</text>`).join('');
+  const ticks = scale.ticks.map((t, i) => `<text x="${r(scale.at(t))}" y="${r(y + TICK_BASE)}" class="chart-tick">${scale.labels[i]}</text>`).join('');
   const label = title ? `<text x="${r(scale.start + scale.length)}" y="${r(y + TITLE_BASE)}" class="chart-unit">${renderRich(title)}</text>` : '';
   return ticks + label;
 }

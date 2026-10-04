@@ -5,9 +5,11 @@ import { join } from 'node:path';
 import { test } from 'node:test';
 import { buildFigure } from '../src/build.js';
 import { curveOf, timeAt } from '../src/easing.js';
-import { formatChange, formatNumber, makeScale } from '../src/chart/scale.js';
+import { formatChange, formatNumber, makeScale, valueFormat } from '../src/chart/scale.js';
 import { measure } from '../src/measure/fonts.js';
 import { parseFigure } from '../src/source/parse.js';
+import { parseTime } from '../src/source/values.js';
+import { toSvg } from '../src/svg.js';
 import { tokens, values } from '../src/tokens.js';
 import { formatProblem, withFolder } from './helpers.js';
 
@@ -488,4 +490,142 @@ test('drawChart_scatter_arrowhead_stays_clear_of_every_point_name', async () => 
       for (const box of names) assert.ok(!(px >= box.x0 && px <= box.x1 && py >= box.y0 && py <= box.y1), `arrowhead point ${px.toFixed(1)},${py.toFixed(1)} is inside a name box`);
     }
   }
+});
+
+// 근거: 설계 charts.md "머리와 선언 줄": 종류를 모르면 종류에 기대는 검사를 하지 않고 헤더 오류 하나만 남긴다
+test('parseFigure_chart_header_failure_stops_before_any_type_dependent_check', () => {
+  for (const source of ['chart', 'chart bogus', 'chart bogus\nseries s "S"\nrow "A" s=1\nrule 5 "R"']) {
+    const error = (() => {
+      try {
+        parseFigure(source);
+      } catch (e) {
+        return e;
+      }
+    })();
+
+    assert.deepEqual(error.problems.map((p) => p.line), [1], source);
+    assert.ok(error.problems.every((p) => p.code !== 'internal'), source);
+  }
+});
+
+// 근거: 설계 charts.md "머리와 선언 줄": 이름 문법에 맞고 실제 중복이 없는 계열 이름은 상속 속성 이름이어도 받는다
+test('buildFigure_series_named_like_an_inherited_property_reads_once_and_real_duplicates_still_fail', async () => {
+  // 이름 문법(소문자, 숫자, -)에 맞는 Object.prototype 속성은 constructor 하나다. 대소문자를 가리는 valueOf 따위는 문법에서 이미 걸러진다.
+  for (const name of ['constructor']) {
+    const source = `chart bar\nx "Value(ms)"\nseries ${name} "S"\nrow "A" ${name}=1\n`;
+
+    assert.deepEqual(await problemsOf(source), [], name);
+    assert.ok((await bodyOf(source)).includes('class="grow"'), name);
+  }
+  const twice = await problemsOf('chart bar\nx "Value(ms)"\nseries constructor "S"\nrow "A" constructor=1 constructor=2\n');
+  const optionTwice = await problemsOf('chart bar\nx "Value(ms)"\nseries a "S" key="k" key="j"\nrow "A" a=1\n');
+  const unknownWord = await problemsOf('chart bar\nx "Value(ms)"\nseries a "S"\nconstructor 1\nrow "A" a=1\n');
+
+  assert.match(twice.join('\n'), /"constructor" is written twice/);
+  assert.equal(optionTwice.length > 0, true);
+  assert.match(unknownWord.join('\n'), /unknown chart statement "constructor"/);
+});
+
+const NINES = '9'.repeat(310);
+const HEAD = 'chart line\nx "Time(s)"\ny "Value(ms)"\nseries s "S"\n';
+// 입력 종류마다 Number 변환이 Infinity가 되는 글(310자리)과 유한하지만 1e15 이상인 글
+const NUMBER_INPUTS = [
+  { input: 'rule 선언, 310자리', source: `${HEAD}rule ${NINES} "Limit"\npoint x=0 s=1\npoint x=1 s=2`, line: 5 },
+  { input: 'rule 선언, 1e15', source: `${HEAD}rule 1${'0'.repeat(15)} "Limit"\npoint x=0 s=1\npoint x=1 s=2`, line: 5 },
+  { input: 'rule 선언, 음수 310자리', source: `${HEAD}rule -${NINES} "Limit"\npoint x=0 s=1\npoint x=1 s=2`, line: 5 },
+  { input: '선 차트 point 값', source: `${HEAD}point x=0 s=${NINES}\npoint x=1 s=2`, line: 5 },
+  { input: '선 차트 point x', source: `${HEAD}point x=${NINES} s=1\npoint x=1 s=2`, line: 5 },
+  { input: '막대 행 값', source: `chart bar\nx "v(ms)"\nseries s "S"\nrow "A" s=${NINES}`, line: 4 },
+  { input: '막대 행 기준 rule=', source: `chart bar\nx "v(ms)"\nseries s "S"\nrow "A" s=1 rule=${NINES}`, line: 4 },
+  { input: '히트맵 cell', source: `chart heatmap\ncell "a" "b" ${NINES}`, line: 2 },
+  { input: '산점도 point', source: `chart scatter\nx "a(ms)"\ny "b(ms)"\npoint "p" x=1 y=${NINES}`, line: 4 },
+];
+
+// 근거: 설계 charts.md 값 범위 "값의 절댓값은 1e15 미만": rule과 행 숫자가 같은 유한성·범위 검사를 받고 성공한 SVG에는 비유한 좌표가 없다
+test('buildFigure_chart_numbers_that_overflow_or_pass_1e15_are_line_errors_for_every_input_kind', async () => {
+  for (const { input, source, line } of NUMBER_INPUTS) {
+    const errors = await problemsOf(source, { strict: true });
+
+    assert.equal(errors.length > 0, true, `${input}: 오류 없음`);
+    assert.ok(errors.every((e) => e.startsWith(`${line}:`)), `${input}: ${errors.join(' | ')}`);
+    assert.doesNotMatch(errors.join('\n'), /internal/, input);
+  }
+  const result = await buildFigure(`${HEAD}rule 999999999999999 "Limit"\npoint x=0 s=1\npoint x=1 s=2`, { strict: true });
+  const svg = await toSvg(result, { isStatic: true });
+
+  assert.doesNotMatch(svg, /NaN|Infinity/);
+});
+
+// 근거: 설계 playback.md·figure-syntax.md 시간 값과 aspect: 유한하지 않은 시간과 비율은 구문 오류다
+test('parseFigure_time_and_ratio_that_overflow_to_infinity_are_syntax_errors', () => {
+  assert.equal(parseTime(`${NINES}ms`), undefined);
+  assert.equal(parseTime(`${NINES}s`, true), undefined);
+  assert.equal(parseTime('900ms'), 900);
+  assert.throws(() => parseFigure(`chart bar\nspeed ${NINES}s\nseries a "A"\nrow "r" a=1`), (e) => e.problems[0].line === 2);
+  assert.throws(() => parseFigure(`flow right\naspect ${NINES}\nbox a "A"`), (e) => e.problems[0].line === 2);
+});
+
+// 근거: 설계 charts.md 값 축 "막대, 덤벨, 상자에서 값이 모두 0이면 오류": 숫자가 하나도 없는 막대도 길이로 보일 것이 없어 오류다. 일부 누락과 값 0은 그린다
+test('buildFigure_bar_with_every_value_missing_is_an_error_and_partial_missing_or_zero_still_draw_finite_coordinates', async () => {
+  const head = 'chart bar\nx "Value(ms)"\nseries s "S"\n';
+  const allMissing = await problemsOf(`${head}row "A" s=-`, { strict: true });
+  const withRule = await problemsOf(`${head}rule 5 "R"\nrow "A" s=-\nrow "B" s=-`, { strict: true });
+  const fromData = await problemsOf('chart bar\nx "Value(ms)"\nseries s "S"\ndata "nulls.json"', { strict: true, baseDir: FIXTURES });
+
+  assert.match(allMissing.join('\n'), /^4: .*at least one number/);
+  assert.match(withRule.join('\n'), /^5: .*at least one number/);
+  assert.match(fromData.join('\n'), /at least one number/);
+  for (const rows of ['row "A" s=-\nrow "B" s=3', 'row "A" s=0\nrow "B" s=3', 'row "A" s=0\nrow "B" s=-\nrow "C" s=2']) {
+    const result = await buildFigure(`${head}${rows}`, { strict: true });
+    const svg = await toSvg(result, { isStatic: true });
+
+    assert.deepEqual(result.warnings, [], rows);
+    assert.doesNotMatch(svg, /NaN|Infinity/, rows);
+  }
+});
+
+// 근거: 설계 charts.md 눈금 "정밀도는 축 간격에 맞춘다": 값 범위가 작아도 눈금은 서로 다른 값이고 순서대로 늘어난다
+test('makeScale_linear_ticks_stay_distinct_and_exact_for_tiny_large_negative_and_zero_adjacent_ranges', () => {
+  const cases = [
+    { name: '1e-12 단위', range: { min: 1e-12, max: 2e-12 }, first: 0, last: 2e-12, count: 5 },
+    { name: '0 주변 음양', range: { min: -1e-12, max: 1e-12 }, first: -1e-12, last: 1e-12 },
+    { name: '이진 오차(0.1 + 0.2)', range: { min: 0.1, max: 0.3 }, first: 0, last: 0.3 },
+    { name: '큰 값에서 0 시작', range: { min: 1e14, max: 3e14 }, first: 0, last: 3e14 },
+    { name: '음수만', range: { min: -3e-9, max: -1e-9 }, first: -3e-9, last: -1e-9 },
+    { name: '값이 0 하나', range: { min: 0, max: 0 }, first: 0, last: 1 },
+    { name: '0 시작 해제, 큰 값의 작은 차이', range: { min: 1e14, max: 1e14 + 5, fromZero: false }, first: 1e14, last: 1e14 + 5 },
+    { name: '0 시작 해제, 작은 값의 작은 차이', range: { min: 1.5e-12, max: 1.9e-12, fromZero: false }, first: 1.5e-12, last: 1.9e-12 },
+  ];
+  for (const { name, range, first, last, count } of cases) {
+    const { ticks, labels, at } = makeScale('linear', { ...range, start: 0, length: 100 });
+
+    assert.equal(ticks[0], first, `${name}: 첫 눈금 ${ticks}`);
+    assert.equal(ticks.at(-1), last, `${name}: 끝 눈금 ${ticks}`);
+    if (count) assert.equal(ticks.length, count, name);
+    assert.ok(ticks.every((t, i) => i === 0 || t > ticks[i - 1]), `${name}: 눈금이 늘어나지 않음 ${ticks}`);
+    assert.equal(new Set(labels).size, labels.length, `${name}: 눈금 글자가 겹침 ${labels}`);
+    assert.ok(ticks.every((t) => Number.isFinite(at(t))) && at(ticks.at(-1)) > at(ticks[0]), name);
+  }
+});
+
+// 근거: 이슈 #75 재현. 설계 charts.md 눈금: 작은 값의 선 차트에서 y축 눈금 글자가 모두 달라야 한다
+test('buildFigure_line_chart_of_tiny_values_draws_distinct_y_ticks_and_distinct_grid_lines', async () => {
+  const source = 'chart line\nx "Time(s)"\ny "Value(s)"\nseries s "S"\npoint x=0 s=0.000000000001\npoint x=1 s=0.000000000002';
+  const body = await bodyOf(source, { strict: true });
+  const labels = [...body.matchAll(/class="chart-tick end">([^<]*)</g)].map((m) => m[1]);
+  const ys = [...body.matchAll(/y1="([^"]*)"[^>]*class="chart-grid"/g)].map((m) => m[1]);
+
+  assert.ok(labels.length >= 3, labels.join());
+  assert.equal(new Set(labels).size, labels.length, `y 눈금 글자 ${labels}`);
+  assert.equal(new Set(ys).size, ys.length, `격자 y ${ys}`);
+  assert.deepEqual(labels.slice(0, 3), ['0', '5e-13', '1e-12']);
+});
+
+// 근거: 설계 charts.md 값 글자 "1000 미만은 가장 짧은 십진 표기": 소수 자릿수가 모자라 0으로 지워지는 작은 값은 지수 표기로 쓴다
+test('valueFormat_tiny_nonzero_values_use_exponent_notation_instead_of_rounding_to_zero', () => {
+  const format = valueFormat([1e-12, 2e-12]);
+
+  assert.deepEqual([format(1e-12), format(2e-12), format(0)], ['1e-12', '2e-12', '0']);
+  assert.equal(valueFormat([0.5, 1.25])(0.5), '0.50');
+  assert.equal(valueFormat([1e-12], 2)(1e-12), '0.00');
 });

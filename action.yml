@@ -3,7 +3,7 @@ description: Check or render .dap figures and the dap code blocks in Markdown do
 author: choi woo-nyong
 inputs:
   paths:
-    description: Space-separated glob patterns of tracked .dap and .md files. A pattern is a git glob (`**/*.md`, `docs/*.dap`).
+    description: Space-separated glob patterns of tracked .dap, old .muto, and .md files. A pattern is a git glob (`**/*.md`, `docs/*.dap`).
     required: false
     default: '**/*.dap **/*.md'
   mode:
@@ -36,12 +36,14 @@ runs:
         case "$STRICT" in true) strict_flag=--strict ;; false) strict_flag= ;; *) echo "::error::strict must be true or false, not '$STRICT'"; exit 1 ;; esac
         dap_files=()
         md_files=()
-        while IFS= read -r file; do
+        # 경로는 NUL로 받는다. 줄 단위 출력은 Git이 한글 이름을 따옴표와 escape로 감싸고(core.quotepath), 공백과 줄바꿈이 든 이름을 가른다.
+        # .muto는 옛 확장자지만 CLI가 읽으므로 사용자가 고른 파일을 조용히 빼지 않고 .dap와 같이 검사한다.
+        while IFS= read -r -d '' file; do
           case "$file" in
-            *.dap) dap_files+=("$file") ;;
+            *.dap|*.muto) dap_files+=("$file") ;;
             *.md) md_files+=("$file") ;;
           esac
-        done < <(for pattern in $PATHS; do git ls-files -- ":(glob)$pattern"; done | sort -u)
+        done < <(for pattern in $PATHS; do git ls-files -z -- ":(glob)$pattern"; done | sort -zu)
         if [ "${#dap_files[@]}" -eq 0 ] && [ "${#md_files[@]}" -eq 0 ]; then
           echo "::error::no tracked .dap or .md file matches '$PATHS'"
           exit 1

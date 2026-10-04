@@ -2,9 +2,8 @@
 import { readStepOptions, readTrack, checkMixedStep } from './flow.js';
 import { parseMiniGraph } from './minigraph.js';
 import { readMoveOptions } from './move-options.js';
-import { parseTime } from './values.js';
+import { parseNumber, parseTime } from './values.js';
 import { flagNames, optionsOf, valueNames } from './grammar.js';
-import { NUMBER_PATTERN } from './words.js';
 
 // cost: time O(t), heap O(t), stack O(1)
 // vars: t = 문장 낱말 수
@@ -171,9 +170,9 @@ function readLight({ tokens, line }, ctx) {
     }
     return;
   }
-  const isX = args.length === 1 && args[0].type === 'option' && args[0].key === 'x' && NUMBER_PATTERN.test(args[0].value);
+  const isX = args.length === 1 && args[0].type === 'option' && args[0].key === 'x' && parseNumber(args[0].value) !== undefined;
   const isTexts = args.length <= 2 && args.every((t) => t.type === 'text');
-  if (isX) beat.chartLight.push({ x: Number(args[0].value), line });
+  if (isX) beat.chartLight.push({ x: parseNumber(args[0].value), line });
   else if (isTexts) beat.chartLight.push({ names: args.map((t) => t.value), line });
   else ctx.problems.error(line, 'in a chart, write light "item", light x=value, or light "row" "column"');
 }

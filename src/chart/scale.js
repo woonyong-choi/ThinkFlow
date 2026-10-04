@@ -27,12 +27,25 @@ export function formatNumber(value) {
   return `${roundHalfAway(value / 1e6, 1)}M`;
 }
 
+// cost: time O(t), heap O(t), stack O(1)
+// vars: t = 눈금 수
+// basis: estimate
+/**
+ * 눈금 글자 목록(눈금과 같은 순서). 기본은 formatNumber다. k, M의 소수 한 자리 반올림 때문에 서로 다른 눈금이 같은 글자가 되면(큰 값 위의 작은 간격)
+ * 눈금마다 15자리 유효숫자의 십진 표기로 쓴다. 눈금이 15자리로도 가려지지 않는 범위는 값의 절댓값 1e15 미만 제한(source/chart-rules.js)이 막는다.
+ */
+export function tickLabels(ticks) {
+  const labels = ticks.map(formatNumber);
+  if (new Set(labels).size === labels.length) return labels;
+  return ticks.map((t) => String(Number(t.toPrecision(15))));
+}
+
 // cost: time O(n), heap O(n), stack O(1)
 // vars: n = 값 수
 // basis: estimate
 /** 값 목록에 쓰인 가장 긴 소수 자릿수(상한 DECIMALS_MAX). 1000 이상 값은 k, M 표기라 세지 않는다. */
 export function decimalPlaces(list) {
-  const places = list.filter((v) => Math.abs(v) < 1000).map((v) => (String(Number(v.toPrecision(12))).split('.')[1] ?? '').length);
+  const places = list.filter((v) => Math.abs(v) < 1000).map((v) => (String(Number(v.toPrecision(12))).split('e')[0].split('.')[1] ?? '').length);
   return Math.min(DECIMALS_MAX, Math.max(0, ...places));
 }
 
@@ -45,7 +58,9 @@ export function decimalPlaces(list) {
  */
 export function valueFormat(list, decimals) {
   const places = decimals ?? decimalPlaces(list);
-  return (value) => (Math.abs(value) >= 1000 ? formatNumber(value) : roundHalfAway(value, places).toFixed(places));
+  // 소수 자릿수가 모자라 0으로 지워지는 0이 아닌 값은(머리 줄 decimals가 없을 때) 0으로 쓰지 않고 지수 표기로 쓴다.
+  const isErased = (value) => decimals === undefined && value !== 0 && roundHalfAway(value, places) === 0;
+  return (value) => (Math.abs(value) >= 1000 || isErased(value) ? formatNumber(value) : roundHalfAway(value, places).toFixed(places));
 }
 
 /** 덤벨 바뀐 비율 글자. 줄면 −, 늘면 +. 첫 값이 0이면 빈 글이다. */
@@ -70,21 +85,31 @@ export function makeScale(kind, { min, max, start, length, fromZero = true }) {
     const lo = Math.floor(Math.log10(min));
     const hi = Math.max(lo + 1, Math.ceil(Math.log10(max)));
     const ticks = Array.from({ length: hi - lo + 1 }, (_, k) => 10 ** (lo + k));
-    return { ...axis, at: (v) => start + ((Math.log10(v) - lo) / (hi - lo)) * length, ticks, origin: 10 ** lo };
+    return { ...axis, at: (v) => start + ((Math.log10(v) - lo) / (hi - lo)) * length, ticks, labels: tickLabels(ticks), origin: 10 ** lo };
   }
   const low = fromZero ? Math.min(0, min) : min;
   const step = niceStep((max - low) / 5 || 1);
-  const bottom = Math.floor(low / step) * step;
-  const top = Math.max(bottom + step, Math.ceil(max / step) * step);
-  const count = Math.round((top - bottom) / step);
-  const ticks = Array.from({ length: count + 1 }, (_, k) => roundHalfAway(bottom + k * step, 10));
-  return { ...axis, at: (v) => start + ((v - bottom) / (top - bottom)) * length, ticks, origin: Math.max(bottom, Math.min(0, top)) };
+  // 눈금은 간격의 정수배다. 값 자체를 반올림하지 않고 정수배를 십진 글자로 이어 만들어, 간격이 아무리 작아도 눈금이 서로 다르다.
+  const first = Math.floor(inSteps(low, step));
+  const last = Math.max(first + 1, Math.ceil(inSteps(max, step)));
+  const tickAt = (k) => Number(`${k * step.mantissa}e${step.exponent}`);
+  const ticks = Array.from({ length: last - first + 1 }, (_, k) => tickAt(first + k));
+  const [bottom, top] = [ticks[0], ticks.at(-1)];
+  return { ...axis, at: (v) => start + ((v - bottom) / (top - bottom)) * length, ticks, labels: tickLabels(ticks), origin: Math.max(bottom, Math.min(0, top)) };
 }
 
 // cost: time O(1), heap O(1), stack O(1), alloc 1
 // basis: estimate
-// 1, 2, 5 × 10ⁿ 가운데 raw 이상인 가장 작은 값
+// 1, 2, 5, 10 × 10ⁿ 가운데 raw 이상인 가장 작은 간격. 간격은 { mantissa, exponent }로 들고 다닌다(값은 mantissa × 10^exponent).
 function niceStep(raw) {
-  const base = 10 ** Math.floor(Math.log10(raw));
-  return [1, 2, 5, 10].map((m) => m * base).find((s) => s >= raw);
+  const exponent = Math.floor(Math.log10(raw));
+  const mantissa = [1, 2, 5, 10].find((m) => m * Number(`1e${exponent}`) >= raw);
+  return { mantissa, exponent };
+}
+
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+// 값이 간격의 몇 배인지. 십진 자리를 글자로 옮겨 나눠서 0.3 ÷ 0.1이 2.9999999999999996이 되는 이진 오차를 피한다.
+function inSteps(value, { mantissa, exponent }) {
+  return shiftDecimal(value, -exponent) / mantissa;
 }
