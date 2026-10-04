@@ -410,6 +410,25 @@ test('main_render_of_the_endless_departure_source_ends_with_a_time_limit_diagnos
   });
 });
 
+// 근거: 이슈 #110 완료 조건 "60초, 600초, 3600초 이동의 최대 메모리 차이가 정해진 한도 안". 시간 상한 안의 가장 긴 글 상자 이동(3595초, 3600초는 자동 체류가 더해져 상한을 넘는다)까지 모두 힙 300MB 안에서 끝난다.
+// 수정 전에는 600초에서 힙이 모자라 죽었다. 자식 프로세스에 힙 제한과 제한 시간을 둬서 되돌아와도 시험이 멈추거나 메모리를 다 쓰지 않는다
+for (const seconds of [60, 600, 3595]) {
+  test(`main_check_and_render_of_a_${seconds}s_chip_move_finish_inside_a_300MB_heap`, () => {
+    const source = `flow right\nbox a "A"\nbox b "B"\na -> b\nstep "Long"\n  a -> b "요청" time=${seconds}s\n`;
+    withFolder((folder) => {
+      writeFileSync(join(folder, 'long.dap'), source);
+
+      const options = { cwd: folder, encoding: 'utf8', timeout: 30000 };
+      const check = spawnSync(process.execPath, ['--max-old-space-size=300', CLI, 'check', 'long.dap'], options);
+      const render = spawnSync(process.execPath, ['--max-old-space-size=300', CLI, 'render', 'long.dap', '--html'], options);
+
+      assert.equal(check.status, 0, `${check.signal} ${check.stderr.slice(-300)}`);
+      assert.equal(render.status, 0, `${render.signal} ${render.stderr.slice(-300)}`);
+      assert.ok(existsSync(join(folder, 'long.svg')) && existsSync(join(folder, 'long.html')));
+    });
+  });
+}
+
 // 근거: 이슈 #103 완료 조건 "정밀도 원본은 내부 오류가 아니라 6번 줄의 시간 정밀도 입력 진단". 원본 그대로 힙 200MB와 제한 시간에서 실행한다
 test('main_render_of_the_precision_source_reports_a_time_precision_diagnostic_on_line_6_and_no_file', () => {
   const source = 'flow right\nbox a "A"\nbox b "B"\na -> b\nstep "T" for=3599999.0000000005ms\n  track a -> b time=1ms at=3599999ms every=0.000000000001ms\n';

@@ -19,6 +19,9 @@ const DETACH_COST_PER_PX = 2e4;
 const NEAR_COST = 300;
 const MARGIN_COST = 500;
 const ORDER_COST = 100;
+// 계획을 세울 때 이동 시간의 상한(ms). 이보다 긴 이동은 이 시간짜리 이동으로 계획을 세운다. 계획 지점과 후보는 이 시간에 비례해 늘므로 상한이 없으면 메모리가 이동 시간에 비례한다.
+// 계획 경로는 이동 진행 비율로 담고 점의 위치도 진행 비율의 함수라서, 같은 계획이 긴 이동에도 그대로 맞는다. 예제 가운데 가장 긴 이동(13.4초)보다 길어 기존 그림은 바뀌지 않는다.
+export const PLAN_MAX_MS = 20000;
 // 글 상자(흐름과 박자 이동 모두)는 자기 점에서 이 거리(px, 상자 가장자리와 점 중심) 안에만 둔다. 이를 넘는 후보는 비용을 재지 않고 제외한다(점 옆 기본 자리는 늘 이 안이다)
 const ATTACH_MAX = values.size.packet['chip-reach'];
 // 박자 이동의 글 상자가 보여야 하는 비율의 하한. 못 넘으면 도형 이름을 가리는 자리도 쓴다(선 라벨 알약은 가리지 않는다)
@@ -67,16 +70,17 @@ export function issuesOfHop(scene, hop, avoid) {
 }
 
 // cost: time O(n·k·m + L·n·b²·s·m), heap O(n·k), stack O(1)
-// vars: n = 계획 지점 수, k = 자리 종류 수, m = 글 상자 둘레 칸에 걸린 사각형 수, L = 미끄러짐 배수 수(3), b = BEAM, s = 미끄러짐 프레임 수
+// vars: n = 계획 지점 수(이동 시간이 PLAN_MAX_MS를 넘으면 PLAN_MAX_MS로 센다), k = 자리 종류 수, m = 글 상자 둘레 칸에 걸린 사각형 수, L = 미끄러짐 배수 수(3), b = BEAM, s = 미끄러짐 프레임 수
 // basis: measured npm run perf
 /**
- * 이동 하나의 글 상자 계획. 계획 지점마다 후보를 재고, 자리 바꿈 횟수를 가장 적게 하는 후보 열을 동적 계획으로 고른다.
+ * 이동 하나의 글 상자 계획. 이동 시간이 PLAN_MAX_MS를 넘으면 그 시간짜리 이동으로 세운다(path는 진행 비율이라 그대로 쓴다). 계획 지점마다 후보를 재고, 자리 바꿈 횟수를 가장 적게 하는 후보 열을 동적 계획으로 고른다.
  * 바꿔야 하면 두 자리 사이를 시간에 선형으로 미끄러지고(중간 프레임이 모두 깨끗한 때만), 깨끗한 길이 없으면 바꾸지 않고 겹치는 구간만 흐리게 한다.
  * 움직이는 SVG와 재생기가 이 목록을 그대로 쓴다.
  * 흐름(track) 이동은 이어 붙인 경로 hop.route를 따라가고, 지나는 선 모두(hop.edges)를 피할 대상에서 뺀다.
  * @returns { path, issues }. path는 이동 진행 비율 at(오름차순)마다 [at, dx, dy, opacity]이고, issues는 지점마다 { at, isOutside, hits }다
  */
-export function planChip(scene, hop, avoid) {
+export function planChip(scene, realHop, avoid) {
+  const hop = realHop.ms > PLAN_MAX_MS ? { ...realHop, ms: PLAN_MAX_MS } : realHop;
   const plan = planWith(scene, hop, { avoid, isRelaxed: false });
   if (hop.track !== undefined) return plan;
   const move = { route: hop.route ?? flattenRoute(scene.edges[hop.edge].points), hop, chip: sizeChip(hop.data) };
