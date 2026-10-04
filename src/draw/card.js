@@ -4,6 +4,7 @@ import { MINI_TEXT } from '../measure/minigraph.js';
 import { CARD, STYLE } from '../measure/sizes.js';
 import { centerBaseline, plainText, renderRich, roundCoord as r } from '../text.js';
 import { tokens, values } from '../tokens.js';
+import { fillOf } from './paint.js';
 
 const SPACE = values.space;
 const RADIUS = values.radius;
@@ -37,12 +38,23 @@ export function createTones(tagOrder = []) {
  */
 export function drawCard(card, { box, i }, { toneOf, decorate }) {
   const layers = card.layouts
-    .map((layout, k) => `<g id="n-${i}-c${k}" opacity="0" class="fl-layer ${decorate('layer', i, k)}">${drawRows(layout, box, toneOf)}</g>`)
+    .map((layout, k) => `<g id="n-${i}-c${k}" opacity="0" class="fl-layer ${decorate('layer', i, k)}">${drawFace(layout, box)}${drawRows(layout, box, toneOf)}</g>`)
     .join('');
   return (
-    `<rect x="${r(box.x)}" y="${r(box.y)}" width="${r(box.w)}" height="${r(box.h)}" rx="${RADIUS.md}" fill="${tokens.color.surface}" stroke="${tokens.color.border}" stroke-dasharray="${values.dash.card} ${values.dash.card}" class="fl-card ${decorate('card', i)}"/>` +
+    `<rect x="${r(box.x)}" y="${r(box.y)}" width="${r(box.w)}" height="${r(box.h)}" rx="${RADIUS.md}" fill="${tokens.color.card}" stroke="${tokens.color.border}" stroke-dasharray="${values.dash.card} ${values.dash.card}" class="fl-card ${decorate('card', i)}"/>` +
     layers
   );
+}
+
+// cost: time O(r), heap O(1), stack O(1)
+// vars: r = 줄 수
+// basis: estimate
+// 내용이 고른 카드 바탕(`card=`). 그 내용의 줄 가운데 처음 고른 색이 이 내용의 바탕이다. 카드 틀의 테두리가 가려지지 않게 테두리 안쪽만 칠한다. 고르지 않았으면 빈 글이다.
+function drawFace(layout, box) {
+  const name = layout.rows.find(({ row }) => row.card)?.row.card;
+  if (!name) return '';
+  const inset = values.border.thin / 2;
+  return `<rect x="${r(box.x + inset)}" y="${r(box.y + inset)}" width="${r(box.w - inset * 2)}" height="${r(box.h - inset * 2)}" rx="${RADIUS.md - inset}" fill="${fillOf(name)}"/>`;
 }
 
 /** 카드의 줄 하나가 차지한 자리: 맨 위 y와 높이. 값 글자(draw/values.js)가 줄 오른쪽 끝에 얹힐 자리를 찾는 데 쓴다. 자리는 layoutCard가 정한 그대로다. */

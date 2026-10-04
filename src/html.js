@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs';
 import { chartMotionCss } from './chart/motion.js';
 import { canvasOf, fitCanvas } from './canvas.js';
 import { createGlyphSet, embedFonts } from './measure/fonts.js';
+import { paintCss } from './draw/paint.js';
 import { DEFS, STYLES } from './styles.js';
 import { escapeXml, plainText, roundCoord as r } from './text.js';
 import { values } from './tokens.js';
@@ -74,7 +75,7 @@ export async function toHtml(result, name) {
 <title>${escapeXml(plainText(figure.title ?? name))}</title>
 ${EMBED_SCRIPT}
 <style>${fonts}
-${STYLES.tokens}${STYLES.control}${STYLES.player}${STYLES.figure}${STYLES.chart}${result.chart ? chartMotionCss(timeline.growMs, result.chart.dotAts) : ''}</style>
+${STYLES.tokens}${STYLES.control}${STYLES.player}${STYLES.figure}${paintCss(result.scene)}${STYLES.chart}${result.chart ? chartMotionCss(timeline.growMs, result.chart.dotAts) : ''}</style>
 </head>
 <body>
 <figure class="fl-figure${result.chart ? ' fl-chart-page' : ''}" tabindex="0"${figure.width === 'wide' ? ` style="--figure-canvas: ${canvasOf(figure)}px"` : ''}>

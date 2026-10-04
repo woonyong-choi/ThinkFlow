@@ -1,5 +1,5 @@
 // 선택 사항(`키=값`) 낱말을 문법 표(grammar.js의 OPTIONS)의 항목대로 읽는다. 값 종류는 정수(min), 낱말(값 목록), 글(maxLength)이고, 값 없는 낱말(flag)은 읽지 않는다.
-import { optionsOf, valueNames } from './grammar.js';
+import { VALUES, optionsOf, valueNames } from './grammar.js';
 
 const INTEGER_PATTERN = /^\d+$/;
 
@@ -41,7 +41,8 @@ function readValue(token, spec, { line, ctx }) {
   }
   if (!spec.values) return token.valueType === 'word' ? token.value : bad(`${token.key} is a ${spec.format}, not quoted text`);
   const isListed = token.valueType === 'word' && valueNames(spec.values).includes(token.value);
-  return isListed ? token.value : bad(`${token.key} is one of ${valueNames(spec.values).join(', ')}`);
+  const hint = VALUES[spec.values].hint;
+  return isListed ? token.value : bad(`${token.key} is one of ${valueNames(spec.values).join(', ')}${hint ? `. ${hint}` : ''}`);
 }
 
 // cost: time O(s·o), heap O(s·o), stack O(1)

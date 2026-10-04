@@ -38,27 +38,102 @@
   --color-palette-ink-850: #0d1117;
   --color-palette-ink-900: #0b0b0b;
   --color-palette-ink-1000: #000000;
-  --color-palette-purple-500: #8b5cf6;
-  --color-palette-purple-400: #9b90ff;
-  --color-palette-purple-600: #483c95;
-  --color-palette-green-500: #10b981;
-  --color-palette-green-400: #b6da70;
-  --color-palette-green-700: #517000;
-  --color-palette-slate-500: #8b949e;
-  --color-palette-slate-400: #b0a0a4;
-  --color-palette-slate-600: #57494d;
-  --color-palette-teal-500: #11a6b0;
-  --color-palette-teal-400: #87f3f6;
-  --color-palette-teal-700: #008084;
+  --color-palette-red-light-fill: #ffebea;
+  --color-palette-red-light-stroke: #e0606a;
+  --color-palette-red-light-ink: #be414e;
+  --color-palette-red-dark-fill: #402627;
+  --color-palette-red-dark-stroke: #fa9a9d;
+  --color-palette-red-dark-ink: #fa9a9d;
+  --color-palette-amber-light-fill: #f9efda;
+  --color-palette-amber-light-stroke: #ad8300;
+  --color-palette-amber-light-ink: #8a6800;
+  --color-palette-amber-dark-fill: #362c15;
+  --color-palette-amber-dark-stroke: #dab45c;
+  --color-palette-amber-dark-ink: #dab45c;
+  --color-palette-green-light-fill: #dff7ea;
+  --color-palette-green-light-stroke: #009d6e;
+  --color-palette-green-light-ink: #007c55;
+  --color-palette-green-light-dot: #00835b;
+  --color-palette-green-dark-fill: #173226;
+  --color-palette-green-dark-stroke: #6cd0a4;
+  --color-palette-green-dark-ink: #6cd0a4;
+  --color-palette-green-dark-dot: #6dd2a5;
+  --color-palette-teal-light-fill: #daf7f7;
+  --color-palette-teal-light-stroke: #00999d;
+  --color-palette-teal-light-ink: #00797c;
+  --color-palette-teal-light-dot: #006568;
+  --color-palette-teal-dark-fill: #0f3233;
+  --color-palette-teal-dark-stroke: #47d0d4;
+  --color-palette-teal-dark-ink: #47d0d4;
+  --color-palette-teal-dark-dot: #6ff2f6;
+  --color-palette-navy-light-fill: #edefff;
+  --color-palette-navy-light-stroke: #7e7eeb;
+  --color-palette-navy-light-ink: #6360ca;
+  --color-palette-navy-dark-fill: #2a2b42;
+  --color-palette-navy-dark-stroke: #acb1ff;
+  --color-palette-navy-dark-ink: #acb1ff;
+  --color-palette-purple-light-fill: #f7ebff;
+  --color-palette-purple-light-stroke: #b16fd4;
+  --color-palette-purple-light-ink: #9250b3;
+  --color-palette-purple-light-dot: #9453b6;
+  --color-palette-purple-dark-fill: #35283d;
+  --color-palette-purple-dark-stroke: #d3a3ee;
+  --color-palette-purple-dark-ink: #d3a3ee;
+  --color-palette-purple-dark-dot: #d4a4ef;
+  --color-palette-pink-light-fill: #ffeaf5;
+  --color-palette-pink-light-stroke: #d263a7;
+  --color-palette-pink-light-ink: #b04488;
+  --color-palette-pink-dark-fill: #3d2633;
+  --color-palette-pink-dark-stroke: #ee9bca;
+  --color-palette-pink-dark-ink: #ee9bca;
+  --color-palette-slate-light-fill: #edf0f4;
+  --color-palette-slate-light-stroke: #818b96;
+  --color-palette-slate-light-ink: #646e78;
+  --color-palette-slate-light-dot: #303942;
+  --color-palette-slate-dark-fill: #2a2d30;
+  --color-palette-slate-dark-stroke: #afbbc6;
+  --color-palette-slate-dark-ink: #afbbc6;
+  --color-palette-slate-dark-dot: #929da7;
   --color-state-active: var(--color-palette-blue-550);
   --color-state-active-fill: var(--color-palette-blue-600);
   --color-state-active-text: var(--color-palette-blue-600);
   --color-state-on-active: var(--color-palette-gray-0);
-  --color-flow-purple: var(--color-palette-purple-600);
-  --color-flow-green: var(--color-palette-green-700);
-  --color-flow-teal: var(--color-palette-teal-700);
-  --color-flow-gray: var(--color-palette-slate-600);
+  --color-state-error: var(--color-paint-red-stroke);
+  --color-state-success: var(--color-paint-green-stroke);
+  --color-state-warning: var(--color-paint-amber-stroke);
+  --color-flow-purple: var(--color-paint-purple-dot);
+  --color-flow-green: var(--color-paint-green-dot);
+  --color-flow-teal: var(--color-paint-teal-dot);
+  --color-flow-gray: var(--color-paint-gray-dot);
   --color-figure-icon: var(--color-palette-blue-700);
+  --color-paint-red-fill: var(--color-palette-red-light-fill);
+  --color-paint-red-stroke: var(--color-palette-red-light-stroke);
+  --color-paint-red-ink: var(--color-palette-red-light-ink);
+  --color-paint-amber-fill: var(--color-palette-amber-light-fill);
+  --color-paint-amber-stroke: var(--color-palette-amber-light-stroke);
+  --color-paint-amber-ink: var(--color-palette-amber-light-ink);
+  --color-paint-green-fill: var(--color-palette-green-light-fill);
+  --color-paint-green-stroke: var(--color-palette-green-light-stroke);
+  --color-paint-green-ink: var(--color-palette-green-light-ink);
+  --color-paint-green-dot: var(--color-palette-green-light-dot);
+  --color-paint-teal-fill: var(--color-palette-teal-light-fill);
+  --color-paint-teal-stroke: var(--color-palette-teal-light-stroke);
+  --color-paint-teal-ink: var(--color-palette-teal-light-ink);
+  --color-paint-teal-dot: var(--color-palette-teal-light-dot);
+  --color-paint-navy-fill: var(--color-palette-navy-light-fill);
+  --color-paint-navy-stroke: var(--color-palette-navy-light-stroke);
+  --color-paint-navy-ink: var(--color-palette-navy-light-ink);
+  --color-paint-purple-fill: var(--color-palette-purple-light-fill);
+  --color-paint-purple-stroke: var(--color-palette-purple-light-stroke);
+  --color-paint-purple-ink: var(--color-palette-purple-light-ink);
+  --color-paint-purple-dot: var(--color-palette-purple-light-dot);
+  --color-paint-pink-fill: var(--color-palette-pink-light-fill);
+  --color-paint-pink-stroke: var(--color-palette-pink-light-stroke);
+  --color-paint-pink-ink: var(--color-palette-pink-light-ink);
+  --color-paint-gray-fill: var(--color-palette-slate-light-fill);
+  --color-paint-gray-stroke: var(--color-palette-slate-light-stroke);
+  --color-paint-gray-ink: var(--color-palette-slate-light-ink);
+  --color-paint-gray-dot: var(--color-palette-slate-light-dot);
   --color-ui-link: var(--color-palette-blue-600);
   --color-ui-focus: var(--color-palette-blue-550);
   --color-ui-progress: var(--color-palette-blue-550);
@@ -75,15 +150,16 @@
   --color-bg: var(--color-palette-gray-25);
   --color-node: var(--color-palette-gray-0);
   --color-surface: var(--color-palette-gray-40);
+  --color-card: var(--color-palette-gray-25);
   --color-border: var(--color-palette-gray-500);
   --color-card-on: var(--color-palette-blue-50);
   --color-group: var(--color-palette-gray-40);
   --color-plate-border: var(--color-palette-gray-200);
   --color-page: var(--color-palette-gray-0);
-  --color-tag-purple: var(--color-palette-purple-500);
-  --color-tag-green: var(--color-palette-green-500);
-  --color-tag-teal: var(--color-palette-teal-500);
-  --color-tag-gray: var(--color-palette-slate-500);
+  --color-tag-purple: var(--color-paint-purple-stroke);
+  --color-tag-green: var(--color-paint-green-stroke);
+  --color-tag-teal: var(--color-paint-teal-stroke);
+  --color-tag-gray: var(--color-paint-gray-stroke);
   --font-sans: FigSans, FigSansKo, FigSansSym, FigSansMath, Inter, 'Inter Variable', 'Noto Sans KR', 'Noto Sans KR Variable', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif;
   --font-mono: FigMono, FigSans, FigSansKo, FigSansSym, FigSansMath, ui-monospace, SFMono-Regular, Menlo, monospace;
   --size-text-9: 9px;
@@ -194,6 +270,12 @@
   --opacity-band: 0.22;
   --opacity-range: 0.4;
   --opacity-chip-visible-min: 0.1;
+  --distance-card-min: 0.015;
+  --distance-card-max: 0.04;
+  --distance-flow: 0.1;
+  --distance-neighbor: 0.06;
+  --distance-neighbor-cvd: 0.025;
+  --distance-fill: 0.015;
   --z-raised: 2;
   --z-overlay: 10;
   --duration-fast: 200ms;
@@ -228,11 +310,35 @@
     --color-state-active-fill: var(--color-palette-blue-400);
     --color-state-active-text: var(--color-palette-blue-400);
     --color-state-on-active: var(--color-palette-ink-850);
-    --color-flow-purple: var(--color-palette-purple-400);
-    --color-flow-green: var(--color-palette-green-400);
-    --color-flow-teal: var(--color-palette-teal-400);
-    --color-flow-gray: var(--color-palette-slate-400);
     --color-figure-icon: var(--color-palette-blue-450);
+    --color-paint-red-fill: var(--color-palette-red-dark-fill);
+    --color-paint-red-stroke: var(--color-palette-red-dark-stroke);
+    --color-paint-red-ink: var(--color-palette-red-dark-ink);
+    --color-paint-amber-fill: var(--color-palette-amber-dark-fill);
+    --color-paint-amber-stroke: var(--color-palette-amber-dark-stroke);
+    --color-paint-amber-ink: var(--color-palette-amber-dark-ink);
+    --color-paint-green-fill: var(--color-palette-green-dark-fill);
+    --color-paint-green-stroke: var(--color-palette-green-dark-stroke);
+    --color-paint-green-ink: var(--color-palette-green-dark-ink);
+    --color-paint-green-dot: var(--color-palette-green-dark-dot);
+    --color-paint-teal-fill: var(--color-palette-teal-dark-fill);
+    --color-paint-teal-stroke: var(--color-palette-teal-dark-stroke);
+    --color-paint-teal-ink: var(--color-palette-teal-dark-ink);
+    --color-paint-teal-dot: var(--color-palette-teal-dark-dot);
+    --color-paint-navy-fill: var(--color-palette-navy-dark-fill);
+    --color-paint-navy-stroke: var(--color-palette-navy-dark-stroke);
+    --color-paint-navy-ink: var(--color-palette-navy-dark-ink);
+    --color-paint-purple-fill: var(--color-palette-purple-dark-fill);
+    --color-paint-purple-stroke: var(--color-palette-purple-dark-stroke);
+    --color-paint-purple-ink: var(--color-palette-purple-dark-ink);
+    --color-paint-purple-dot: var(--color-palette-purple-dark-dot);
+    --color-paint-pink-fill: var(--color-palette-pink-dark-fill);
+    --color-paint-pink-stroke: var(--color-palette-pink-dark-stroke);
+    --color-paint-pink-ink: var(--color-palette-pink-dark-ink);
+    --color-paint-gray-fill: var(--color-palette-slate-dark-fill);
+    --color-paint-gray-stroke: var(--color-palette-slate-dark-stroke);
+    --color-paint-gray-ink: var(--color-palette-slate-dark-ink);
+    --color-paint-gray-dot: var(--color-palette-slate-dark-dot);
     --color-ui-link: var(--color-palette-blue-400);
     --color-ui-focus: var(--color-palette-blue-400);
     --color-ui-progress: var(--color-palette-blue-400);
@@ -249,6 +355,7 @@
     --color-bg: var(--color-palette-neutral-900);
     --color-node: var(--color-palette-neutral-850);
     --color-surface: var(--color-palette-neutral-800);
+    --color-card: var(--color-palette-neutral-800);
     --color-border: var(--color-palette-neutral-500);
     --color-card-on: var(--color-palette-blue-900);
     --color-page: var(--color-palette-neutral-950);
@@ -261,11 +368,35 @@
   --color-state-active-fill: var(--color-palette-blue-400);
   --color-state-active-text: var(--color-palette-blue-400);
   --color-state-on-active: var(--color-palette-ink-850);
-  --color-flow-purple: var(--color-palette-purple-400);
-  --color-flow-green: var(--color-palette-green-400);
-  --color-flow-teal: var(--color-palette-teal-400);
-  --color-flow-gray: var(--color-palette-slate-400);
   --color-figure-icon: var(--color-palette-blue-450);
+  --color-paint-red-fill: var(--color-palette-red-dark-fill);
+  --color-paint-red-stroke: var(--color-palette-red-dark-stroke);
+  --color-paint-red-ink: var(--color-palette-red-dark-ink);
+  --color-paint-amber-fill: var(--color-palette-amber-dark-fill);
+  --color-paint-amber-stroke: var(--color-palette-amber-dark-stroke);
+  --color-paint-amber-ink: var(--color-palette-amber-dark-ink);
+  --color-paint-green-fill: var(--color-palette-green-dark-fill);
+  --color-paint-green-stroke: var(--color-palette-green-dark-stroke);
+  --color-paint-green-ink: var(--color-palette-green-dark-ink);
+  --color-paint-green-dot: var(--color-palette-green-dark-dot);
+  --color-paint-teal-fill: var(--color-palette-teal-dark-fill);
+  --color-paint-teal-stroke: var(--color-palette-teal-dark-stroke);
+  --color-paint-teal-ink: var(--color-palette-teal-dark-ink);
+  --color-paint-teal-dot: var(--color-palette-teal-dark-dot);
+  --color-paint-navy-fill: var(--color-palette-navy-dark-fill);
+  --color-paint-navy-stroke: var(--color-palette-navy-dark-stroke);
+  --color-paint-navy-ink: var(--color-palette-navy-dark-ink);
+  --color-paint-purple-fill: var(--color-palette-purple-dark-fill);
+  --color-paint-purple-stroke: var(--color-palette-purple-dark-stroke);
+  --color-paint-purple-ink: var(--color-palette-purple-dark-ink);
+  --color-paint-purple-dot: var(--color-palette-purple-dark-dot);
+  --color-paint-pink-fill: var(--color-palette-pink-dark-fill);
+  --color-paint-pink-stroke: var(--color-palette-pink-dark-stroke);
+  --color-paint-pink-ink: var(--color-palette-pink-dark-ink);
+  --color-paint-gray-fill: var(--color-palette-slate-dark-fill);
+  --color-paint-gray-stroke: var(--color-palette-slate-dark-stroke);
+  --color-paint-gray-ink: var(--color-palette-slate-dark-ink);
+  --color-paint-gray-dot: var(--color-palette-slate-dark-dot);
   --color-ui-link: var(--color-palette-blue-400);
   --color-ui-focus: var(--color-palette-blue-400);
   --color-ui-progress: var(--color-palette-blue-400);
@@ -282,6 +413,7 @@
   --color-bg: var(--color-palette-neutral-900);
   --color-node: var(--color-palette-neutral-850);
   --color-surface: var(--color-palette-neutral-800);
+  --color-card: var(--color-palette-neutral-800);
   --color-border: var(--color-palette-neutral-500);
   --color-card-on: var(--color-palette-blue-900);
   --color-page: var(--color-palette-neutral-950);
@@ -494,7 +626,7 @@ addEventListener('DOMContentLoaded', () => {
 <body>
 <div class="top">
 <h1>예제</h1>
-<p>그림 23개 · <a href="document.html">문서 안 모습 보기</a></p>
+<p>그림 25개 · <a href="document.html">문서 안 모습 보기</a></p>
 <div class="theme" role="group" aria-label="테마"><button type="button" data-mode="system" aria-pressed="false">시스템</button><button type="button" data-mode="light" aria-pressed="false">라이트</button><button type="button" data-mode="dark" aria-pressed="false">다크</button></div>
 </div>
 <main>
@@ -515,11 +647,13 @@ addEventListener('DOMContentLoaded', () => {
 <section><header><h2><span class="title">주문 상태</span><code class="name">order-state.muto</code><span class="kind">state</span></h2><nav><a href="order-state.html">열기</a><a href="order-state.svg">SVG</a></nav></header><iframe src="order-state.html" loading="lazy" allowfullscreen title="order-state"></iframe></section>
 <section><header><h2><code class="name">orders.muto</code><span class="kind">data</span></h2><nav><a href="orders.html">열기</a><a href="orders.svg">SVG</a></nav></header><iframe src="orders.html" loading="lazy" allowfullscreen title="orders"></iframe></section>
 <section><header><h2><span class="title">가상 페이지가 페이지 표를 거쳐 물리 프레임으로 간다</span><code class="name">page-mapping.muto</code><span class="kind">flow</span></h2><nav><a href="page-mapping.html">열기</a><a href="page-mapping.svg">SVG</a></nav></header><iframe src="page-mapping.html" loading="lazy" allowfullscreen title="page-mapping"></iframe></section>
+<section><header><h2><span class="title">색 팔레트</span><code class="name">palette.muto</code><span class="kind">flow</span></h2><nav><a href="palette.html">열기</a><a href="palette.svg">SVG</a></nav></header><iframe src="palette.html" loading="lazy" allowfullscreen title="palette"></iframe></section>
 <section><header><h2><span class="title">파일 권한 비트를 소유자, 그룹, 기타로 읽기</span><code class="name">permission-matrix.muto</code><span class="kind">flow</span></h2><nav><a href="permission-matrix.html">열기</a><a href="permission-matrix.svg">SVG</a></nav></header><iframe src="permission-matrix.html" loading="lazy" allowfullscreen title="permission-matrix"></iframe></section>
 <section><header><h2><span class="title">프로세스마다 페이지 표가 있어 같은 페이지 번호가 다른 프레임으로 간다</span><code class="name">process-page-tables.muto</code><span class="kind">flow</span></h2><nav><a href="process-page-tables.html">열기</a><a href="process-page-tables.svg">SVG</a></nav></header><iframe src="process-page-tables.html" loading="lazy" allowfullscreen title="process-page-tables"></iframe></section>
 <section><header><h2><span class="title">페이지 표 항목의 필드</span><code class="name">pte-fields.muto</code><span class="kind">flow</span></h2><nav><a href="pte-fields.html">열기</a><a href="pte-fields.svg">SVG</a></nav></header><iframe src="pte-fields.html" loading="lazy" allowfullscreen title="pte-fields"></iframe></section>
 <section><header><h2><span class="title">Saturn 구성</span><code class="name">saturn.muto</code><span class="kind">flow</span></h2><nav><a href="saturn.html">열기</a><a href="saturn.svg">SVG</a></nav></header><iframe src="saturn.html" loading="lazy" allowfullscreen title="saturn"></iframe></section>
 <section><header><h2><code class="name">scatter.muto</code><span class="kind">scatter</span></h2><nav><a href="scatter.html">열기</a><a href="scatter.svg">SVG</a></nav></header><iframe src="scatter.html" loading="lazy" allowfullscreen title="scatter"></iframe></section>
+<section><header><h2><span class="title">서비스 상태 구성도</span><code class="name">service-status.muto</code><span class="kind">flow</span></h2><nav><a href="service-status.html">열기</a><a href="service-status.svg">SVG</a></nav></header><iframe src="service-status.html" loading="lazy" allowfullscreen title="service-status"></iframe></section>
 <section><header><h2><span class="title">함수를 호출하면 스택에 쌓이는 것</span><code class="name">stack-frame.muto</code><span class="kind">flow</span></h2><nav><a href="stack-frame.html">열기</a><a href="stack-frame.svg">SVG</a></nav></header><iframe src="stack-frame.html" loading="lazy" allowfullscreen title="stack-frame"></iframe></section>
 </main>
 <script>

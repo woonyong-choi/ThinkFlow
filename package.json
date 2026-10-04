@@ -39,6 +39,7 @@
     "fuzz": "node scripts/fuzz-layout.mjs",
     "perf": "node scripts/perf-chips.mjs",
     "checkdoc": "node scripts/build-check-doc.mjs",
+    "palette": "node scripts/build-palette.mjs",
     "tokens": "node scripts/build-tokens.mjs src/tokens.json --out src",
     "check": "node scripts/check-tokens.mjs src && node scripts/check-cost-comments.mjs src test && node scripts/check-size.mjs src scripts",
     "examples": "node src/cli.js gallery examples --out examples/out --title \"예제\"",

@@ -1,5 +1,6 @@
 // 박자별 상태를 CSS keyframes class와 SMIL 점으로 바꾼다. 시계, 켜짐 keyframes, 점, 차트는 이 폴더의 파일이 나눠 맡는다.
 import { chartSeriesIds, litIds } from '../timeline.js';
+import { strokeOf } from '../draw/paint.js';
 import { tokens } from '../tokens.js';
 import { animateChart } from './chart.js';
 import { drawValues } from '../draw/values.js';
@@ -26,7 +27,7 @@ export function createAnimator({ segs, total, growMs }) {
     litNode: (id, scene) => segs.map((s) => timed(s.nodesAt?.[id], litIds(s, scene.edges).has(id))),
     cardState: (n, test) => segs.map((s) => ({ before: test(s.cardsBefore[n]), after: test(s.cards[n]), at: s.cardsAt[n] ?? 0 })),
   };
-  const decorate = (scene) => (kind, i, extra) => decorateElement(kind, { id: (kind === 'group' ? scene?.groups[i] : scene?.items[i])?.id, i, extra, scene }, motion);
+  const decorate = (scene) => (kind, i, extra) => decorateElement(kind, { id: (kind.startsWith('group') ? scene?.groups[i] : scene?.items[i])?.id, i, extra, scene }, motion);
   const chart = (figure, drawn) => animateChart({ clock, segs, growMs, css, windows, fadeFrames }, chartSeriesIds(figure), drawn);
   const packet = (move, glyphs) => drawPacket(clock, move, glyphs);
   const valueRows = (scene, timeline, glyphs) => drawValues(scene, timeline, { glyphs, windows: (spans) => discreteWindows(clock, spans) });
@@ -52,9 +53,14 @@ function decorateElement(kind, { id, i, extra, scene }, { segs, toggle, lit, lit
     case 'node':
     case 'group': {
       // 아이콘이 있는 그룹의 틀은 꺼졌을 때 아이콘 파랑이다(탭과 같은 색).
+      const own = (kind === 'group' ? scene.groups : scene.items)?.[i]?.stroke;
       const off = kind === 'group' && scene.groups?.[i]?.iconData ? c.figure.icon : c.border;
-      return toggle(litNode(id, scene), `stroke: ${c.state.active}; stroke-width: ${tokens.border.strong}`, `stroke: ${off}; stroke-width: ${tokens.border.thin}`);
+      // 테두리 색을 고른 도형은 켜져도 그 색이다. 밝힘은 굵은 테두리와 후광(halo)이 알린다.
+      return toggle(litNode(id, scene), `stroke: ${own ? strokeOf(own) : c.state.active}; stroke-width: ${tokens.border.strong}`, `stroke: ${own ? strokeOf(own) : off}; stroke-width: ${tokens.border.thin}`);
     }
+    case 'halo':
+    case 'group-halo':
+      return toggle(litNode(id, scene), 'opacity: 1', 'opacity: 0');
     case 'cell':
       return toggle(segs.map((s) => s.partsOn.includes(extra)), `fill: ${c['card-on']}; stroke: ${c.state.active}; stroke-width: ${tokens.border.edge}`, `fill: ${c.node}; stroke: ${c.border}; stroke-width: ${tokens.border.thin}`);
     case 'part':
@@ -68,7 +74,7 @@ function decorateElement(kind, { id, i, extra, scene }, { segs, toggle, lit, lit
     case 'quiet':
       return toggle(lit(i), 'opacity: 1', 'opacity: 0');
     case 'card':
-      return toggle(cardState(id, (v) => v !== undefined), `stroke: ${c.state.active}; fill: ${c['card-on']}`, `stroke: ${c.border}; fill: ${c.surface}`);
+      return toggle(cardState(id, (v) => v !== undefined), `stroke: ${c.state.active}; fill: ${c['card-on']}`, `stroke: ${c.border}; fill: ${c.card}`);
     case 'layer':
       return toggle(cardState(id, (v) => v === extra), 'opacity: 1', 'opacity: 0');
     default:

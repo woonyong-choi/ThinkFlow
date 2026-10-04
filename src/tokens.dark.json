@@ -15,23 +15,111 @@
         "$value": "{color.palette.ink.850}"
       }
     },
-    "flow": {
-      "purple": {
-        "$value": "{color.palette.purple.400}"
-      },
-      "green": {
-        "$value": "{color.palette.green.400}"
-      },
-      "teal": {
-        "$value": "{color.palette.teal.400}"
-      },
-      "gray": {
-        "$value": "{color.palette.slate.400}"
-      }
-    },
     "figure": {
       "icon": {
         "$value": "{color.palette.blue.450}"
+      }
+    },
+    "paint": {
+      "red": {
+        "fill": {
+          "$value": "{color.palette.red.dark-fill}"
+        },
+        "stroke": {
+          "$value": "{color.palette.red.dark-stroke}"
+        },
+        "ink": {
+          "$value": "{color.palette.red.dark-ink}"
+        }
+      },
+      "amber": {
+        "fill": {
+          "$value": "{color.palette.amber.dark-fill}"
+        },
+        "stroke": {
+          "$value": "{color.palette.amber.dark-stroke}"
+        },
+        "ink": {
+          "$value": "{color.palette.amber.dark-ink}"
+        }
+      },
+      "green": {
+        "fill": {
+          "$value": "{color.palette.green.dark-fill}"
+        },
+        "stroke": {
+          "$value": "{color.palette.green.dark-stroke}"
+        },
+        "ink": {
+          "$value": "{color.palette.green.dark-ink}"
+        },
+        "dot": {
+          "$value": "{color.palette.green.dark-dot}"
+        }
+      },
+      "teal": {
+        "fill": {
+          "$value": "{color.palette.teal.dark-fill}"
+        },
+        "stroke": {
+          "$value": "{color.palette.teal.dark-stroke}"
+        },
+        "ink": {
+          "$value": "{color.palette.teal.dark-ink}"
+        },
+        "dot": {
+          "$value": "{color.palette.teal.dark-dot}"
+        }
+      },
+      "navy": {
+        "fill": {
+          "$value": "{color.palette.navy.dark-fill}"
+        },
+        "stroke": {
+          "$value": "{color.palette.navy.dark-stroke}"
+        },
+        "ink": {
+          "$value": "{color.palette.navy.dark-ink}"
+        }
+      },
+      "purple": {
+        "fill": {
+          "$value": "{color.palette.purple.dark-fill}"
+        },
+        "stroke": {
+          "$value": "{color.palette.purple.dark-stroke}"
+        },
+        "ink": {
+          "$value": "{color.palette.purple.dark-ink}"
+        },
+        "dot": {
+          "$value": "{color.palette.purple.dark-dot}"
+        }
+      },
+      "pink": {
+        "fill": {
+          "$value": "{color.palette.pink.dark-fill}"
+        },
+        "stroke": {
+          "$value": "{color.palette.pink.dark-stroke}"
+        },
+        "ink": {
+          "$value": "{color.palette.pink.dark-ink}"
+        }
+      },
+      "gray": {
+        "fill": {
+          "$value": "{color.palette.slate.dark-fill}"
+        },
+        "stroke": {
+          "$value": "{color.palette.slate.dark-stroke}"
+        },
+        "ink": {
+          "$value": "{color.palette.slate.dark-ink}"
+        },
+        "dot": {
+          "$value": "{color.palette.slate.dark-dot}"
+        }
       }
     },
     "ui": {
@@ -84,6 +172,9 @@
       "$value": "{color.palette.neutral.850}"
     },
     "surface": {
+      "$value": "{color.palette.neutral.800}"
+    },
+    "card": {
       "$value": "{color.palette.neutral.800}"
     },
     "border": {

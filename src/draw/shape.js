@@ -4,6 +4,7 @@ import { STYLE } from '../measure/sizes.js';
 import { centerBaseline, escapeXml, renderRich, roundCoord as r } from '../text.js';
 import { tokens, values } from '../tokens.js';
 import { drawGrid } from './grid.js';
+import { fillOf } from './paint.js';
 
 const SPACE = values.space;
 const SIZE = values.size;
@@ -27,13 +28,20 @@ const geometry = {
   },
 };
 
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+/** 도형 윤곽 조각(닫지 않은 글). 후광이 같은 윤곽을 다시 그린다. 상자, 외부 도형, 타일은 앞 상자(몸통)다. */
+export function outlineOf(it) {
+  return (geometry[it.shape] ?? geometry.rect)(it);
+}
+
 // cost: time O(c), heap O(out), stack O(1)
 // vars: c = 테이블 열 수, out = 만든 SVG 글자 수
 // basis: estimate
 export function drawShape(it, stroke, paint) {
   const { x, y, w, h } = it;
   const cx = x + w / 2;
-  const fill = `fill="${tokens.color.node}"`;
+  const fill = `fill="${it.fill ? fillOf(it.fill) : tokens.color.node}"`;
   switch (it.shape) {
     case 'store':
       return `${geometry.store(it)[0]} ${fill} ${stroke}/><path d="M${r(x)} ${r(y)} a ${r(w / 2)} ${it.marginTop} 0 0 0 ${r(w)} 0" fill="none" ${stroke}/>`;

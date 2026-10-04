@@ -6,7 +6,8 @@ import { centerBaseline, escapeXml, renderRich, roundCoord as r } from '../text.
 import { tokens, values } from '../tokens.js';
 import { cardGlyphs, createTones, drawCard } from './card.js';
 import { drawDecor, drawGroupTab } from './decor.js';
-import { drawShape } from './shape.js';
+import { drawHalo, fillOf } from './paint.js';
+import { drawShape, outlineOf } from './shape.js';
 
 const SPACE = values.space;
 const SIZE = values.size;
@@ -27,7 +28,7 @@ const HAS_OWN_LABELS = new Set(['table', 'grid']);
  * @param glyphs 쓴 글자를 모으는 그릇(createGlyphSet)
  */
 export function drawScene(scene, decorate, glyphs) {
-  const paint = { toneOf: createTones(scene.tagOrder), decorate, glyphs };
+  const paint = { toneOf: createTones(scene.tagOrder), decorate, glyphs, scene };
   const parts = [];
   scene.groups.forEach((g, j) => parts.push(drawGroup(g, j, paint)));
   for (const line of scene.lifelines ?? []) parts.push(`<line x1="${r(line.x)}" x2="${r(line.x)}" y1="${r(line.y1)}" y2="${r(line.y2)}" class="lifeline"/>`);
@@ -37,14 +38,17 @@ export function drawScene(scene, decorate, glyphs) {
   return parts.join('\n');
 }
 
-// 그리는 데 함께 쓰는 것: toneOf(카드 태그 색), decorate(움직이는 SVG의 class), glyphs(쓴 글자 모음)
-function drawGroup(g, j, { decorate, glyphs }) {
+// 그리는 데 함께 쓰는 것: toneOf(카드 태그 색), decorate(움직이는 SVG의 class), glyphs(쓴 글자 모음), scene(후광이 바깥 바탕을 찾는 데 쓴다)
+function drawGroup(g, j, { decorate, glyphs, scene }) {
   glyphs.add(g.label, 'semibold');
   const head = groupHead(g);
   const left = g.x + g.titleDx;
   const decor = head.decor ? drawDecor(head.decor, { x: left, y: g.y + (SIZE.group.title - head.decor.h) / 2, iconData: g.iconData }, glyphs) : '';
+  const colors = `${g.stroke ? ` ps-${g.stroke}` : ''}${g.fill ? ` pf-${g.fill}` : ''}`;
+  const frame = `<rect x="${r(g.x)}" y="${r(g.y)}" width="${r(g.w)}" height="${r(g.h)}" rx="${RADIUS['2xl']}"`;
+  const halo = g.stroke ? drawHalo([frame], groundOf(g, scene), { name: g.stroke, cls: decorate('group-halo', j) }) : '';
   return (
-    `<g id="g-${j}" class="fl-group${g.iconData ? ' tabbed' : ''}" data-id="${escapeXml(g.id)}"><rect x="${r(g.x)}" y="${r(g.y)}" width="${r(g.w)}" height="${r(g.h)}" rx="${RADIUS['2xl']}" class="frame-box fl-stroke ${decorate('group', j)}"${g.border === 'dashed' ? ` stroke-dasharray="${GROUP_DASH}"` : ''}/>` +
+    `<g id="g-${j}" class="fl-group${g.iconData ? ' tabbed' : ''}" data-id="${escapeXml(g.id)}">${halo}<rect x="${r(g.x)}" y="${r(g.y)}" width="${r(g.w)}" height="${r(g.h)}" rx="${RADIUS['2xl']}" class="frame-box fl-stroke${colors} ${decorate('group', j)}"${g.border === 'dashed' ? ` stroke-dasharray="${GROUP_DASH}"` : ''}/>` +
     `${g.iconData ? drawGroupTab(g) : ''}<text x="${r(left + head.textDx)}" y="${r(centerBaseline(g.y + SIZE.group.title / 2, STYLE.group.size))}" class="frame">${renderRich(g.label)}</text>${decor}</g>`
   );
 }
@@ -54,8 +58,9 @@ function drawGroup(g, j, { decorate, glyphs }) {
 // basis: estimate
 // 도형 하나: 윤곽, 이름, 부제, 카드. 사람과 원통의 머리, 어깨, 뚜껑은 배치 사각형 바깥 여백에 그린다.
 function drawItem(it, i, paint) {
-  const { decorate, glyphs } = paint;
-  const stroke = `class="fl-stroke ${decorate('node', i)}"`;
+  const { decorate, glyphs, scene } = paint;
+  const stroke = `class="fl-stroke${it.stroke ? ` ps-${it.stroke}` : ''} ${decorate('node', i)}"`;
+  const halo = it.stroke ? drawHalo(outlineOf(it), groundOf(it, scene), { name: it.stroke, cls: decorate('halo', i) }) : '';
   const open = `<g id="n-${i}" class="fl-node" data-id="${escapeXml(it.id)}">`;
   for (const l of it.labelLines ?? []) glyphs.add(l, 'medium');
   for (const l of it.subLines ?? []) glyphs.add(l, 'regular');
@@ -63,7 +68,17 @@ function drawItem(it, i, paint) {
   const shape = drawShape(it, stroke, paint);
   const decor = it.decor ? drawDecor(it.decor, { x: it.x + it.decor.x, y: it.y + it.decor.y, iconData: it.iconData }, glyphs) : '';
   const card = it.card ? drawCard(it.card, { box: cardBox(it), i }, paint) : '';
-  return `${open}${shape}${decor}${HAS_OWN_LABELS.has(it.shape) ? '' : drawLabels(it)}${card}</g>`;
+  return `${open}${halo}${shape}${decor}${HAS_OWN_LABELS.has(it.shape) ? '' : drawLabels(it)}${card}</g>`;
+}
+
+// cost: time O(g), heap O(1), stack O(1)
+// vars: g = 그룹 수
+// basis: estimate
+// 도형이나 그룹이 놓인 바탕 색. 그룹 안이면 그 그룹의 면(고른 색이 있으면 그 색), 아니면 그림 바탕이다. 후광의 틈이 이 색이다.
+function groundOf(box, scene) {
+  const parent = scene.groups.find((g) => g.id === box.parent);
+  if (!parent) return tokens.color.bg;
+  return parent.fill ? fillOf(parent.fill) : tokens.color.group;
 }
 
 // cost: time O(l), heap O(out), stack O(1)

@@ -20,6 +20,8 @@ const INDEX = { ...V1, type: 'number', format: '0 이상 정수', min: 0 };
 const ICON = { ...V1, type: 'word', format: '이름 또는 세트:이름' };
 /** 같은 역할 복제 개수. 하나는 겹칠 것이 없어 2부터 받는다. */
 const PLURAL = { ...V1, type: 'number', format: '2 이상 정수', min: 2 };
+/** 도형 면, 테두리와 카드 바탕 색. 값은 `paint` 목록의 이름뿐이다. */
+const PAINT = { ...V1, type: 'word', values: 'paint' };
 /** 도형 글자 배지의 글자 수 상한. 도형 윗줄에 이름 글과 함께 들어갈 만큼이다. */
 export const BADGE_MAX = 8;
 /** 값(`value`)이 보이는 글자 수 상한. 카드 오른쪽 끝에 들어갈 자리가 정해져 있어 `mark`와 같다. */
@@ -44,7 +46,7 @@ const ALL_KINDS = Object.keys(KINDS);
 const FLOW_SEQUENCE = ['flow', 'sequence'];
 
 /**
- * 값 목록. items의 항목마다 { since, deprecated? }를 둘 수 있다.
+ * 값 목록. items의 항목마다 { since, deprecated? }를 둘 수 있다. hint는 값이 목록 밖일 때 오류 메시지에 덧붙이는 이유다.
  * 차트 종류의 firstRole은 계열을 보이는 순서에서 먼저 오는 역할이다(기본 main). role을 생략한 계열은 선언 순서대로 이 순서의 역할을 받는다.
  * deprecated: { since, replace, note? }는 옛 이름이다. 문장 낱말, 선택 사항 키, 값, 그림 종류 어디에 있든 같다. 계속 읽고, replace로 바꿔 읽고, 폐기 진단과 고칠 글(fix)을 낸다.
  */
@@ -74,6 +76,10 @@ export const VALUES = {
     }),
   },
   role: { items: table({ main: V1, compare: V1 }) },
+  paint: {
+    hint: 'Colors are names, not hex, so the contrast rules hold. Blue marks the active state and orange marks compare, so they are not choices',
+    items: table({ red: V1, amber: V1, green: V1, teal: V1, navy: V1, purple: V1, pink: V1, gray: V1 }),
+  },
   head: { default: 'end', items: table({ end: V1, both: V1, none: V1 }) },
   shape: { default: 'rect', items: table({ rect: V1, circle: V1, tile: V1 }) },
   width: { default: 'standard', items: table({ standard: V1, wide: V1 }) },
@@ -143,8 +149,12 @@ export const OPTIONS = table({
   'group.border': { ...V1, type: 'word', values: 'border' },
   'group.badge': { ...TEXT, maxLength: BADGE_MAX },
   'group.icon': ICON,
+  'group.fill': PAINT,
+  'group.stroke': PAINT,
   'node.badge': { ...TEXT, maxLength: BADGE_MAX },
   'node.icon': ICON,
+  'node.fill': PAINT,
+  'node.stroke': PAINT,
   'box.count': PLURAL,
   'edge.no': COUNT,
   'step.for': { ...V1, type: 'word', format: '시간' },
@@ -166,6 +176,7 @@ export const OPTIONS = table({
   'box.shape': { ...V1, type: 'word', values: 'shape' },
   'show.tag': TEXT,
   'show.tone': { ...V1, type: 'word', values: 'tone' },
+  'show.card': PAINT,
   'show.meta': TEXT,
   'show.mark': { ...TEXT, maxLength: 8 },
   'show.mono': FLAG,

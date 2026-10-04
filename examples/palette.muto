@@ -1,0 +1,31 @@
+flow right
+title "색 팔레트"
+subtitle "fill과 stroke로 고르는 여덟 색과 카드 바탕(card). 밝히면 테두리가 굵어지고 후광이 생긴다"
+aspect 1.8
+
+box red "red" "fill=red stroke=red" fill=red stroke=red
+box amber "amber" "fill=amber stroke=amber" fill=amber stroke=amber
+box green "green" "fill=green stroke=green" fill=green stroke=green
+box teal "teal" "fill=teal stroke=teal" fill=teal stroke=teal
+box navy "navy" "fill=navy stroke=navy" fill=navy stroke=navy
+box purple "purple" "fill=purple stroke=purple" fill=purple stroke=purple
+box pink "pink" "fill=pink stroke=pink" fill=pink stroke=pink
+box gray "gray" "fill=gray stroke=gray" fill=gray stroke=gray
+box card "카드 바탕" "show card=teal"
+
+red -> amber
+amber -> green
+green -> teal
+teal -> navy
+navy -> purple
+purple -> pink
+pink -> gray
+gray -> card
+
+step "색 고르기" "도형 하나가 면, 테두리, 카드 바탕에 팔레트 이름을 쓴다"
+  light red
+step "밝힘" "밝혀도 테두리 색은 그대로이고 굵기와 후광이 달라진다"
+  light navy
+step "카드 바탕" "show 줄의 card=가 카드 바탕을 칠한다"
+  show card "내용이 있는 카드" tag="ok" card=teal
+  light card

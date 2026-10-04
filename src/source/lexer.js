@@ -42,7 +42,7 @@ export function tokenizeLine(text, line, problems) {
       } else if (text[i] === '"') {
         problems.error(line, `put a space before the quote after "${word}"`, { column: start + 1 });
       } else {
-        pushWord(tokens, { word, line, column: start + 1 }, problems);
+        pushWord(tokens, { word, line, column: start + 1, isHash: text[i] === '#' }, problems);
       }
     }
   }
@@ -53,7 +53,7 @@ export function tokenizeLine(text, line, problems) {
 // vars: n = 낱말 글자 수
 // basis: estimate
 // 기호 낱말, 선택 사항, 일반 낱말을 가른다. 기호가 다른 글자에 붙어 있으면 오류다.
-function pushWord(tokens, { word, line, column }, problems) {
+function pushWord(tokens, { word, line, column, isHash }, problems) {
   const place = { column, length: word.length };
   if (Object.hasOwn(SYMBOLS, word)) {
     tokens.push({ type: SYMBOLS[word], value: word, ...place });
@@ -65,6 +65,11 @@ function pushWord(tokens, { word, line, column }, problems) {
     return;
   }
   const eq = word.indexOf('=');
+  if (eq === word.length - 1 && isHash) {
+    // `fill=#ff0000`처럼 값이 `#`로 시작하면 `#`부터 주석이라 값이 비어 읽힌다. 색은 이름만 받는다.
+    problems.error(line, `${word.slice(0, -1)} takes a value, and "#" starts a comment. Quote text values, and write a color as a name such as red, not hex`, { column });
+    return;
+  }
   if (eq === 0 || eq === word.length - 1) {
     problems.error(line, `write options as key=value without spaces around "=". Found "${word}"`, { column });
     return;

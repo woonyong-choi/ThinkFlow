@@ -50,32 +50,87 @@ export const tokens = freeze({
         "900": "var(--color-palette-ink-900)",
         "1000": "var(--color-palette-ink-1000)"
       },
-      "purple": {
-        "500": "var(--color-palette-purple-500)",
-        "400": "var(--color-palette-purple-400)",
-        "600": "var(--color-palette-purple-600)"
+      "red": {
+        "light-fill": "var(--color-palette-red-light-fill)",
+        "light-stroke": "var(--color-palette-red-light-stroke)",
+        "light-ink": "var(--color-palette-red-light-ink)",
+        "dark-fill": "var(--color-palette-red-dark-fill)",
+        "dark-stroke": "var(--color-palette-red-dark-stroke)",
+        "dark-ink": "var(--color-palette-red-dark-ink)"
+      },
+      "amber": {
+        "light-fill": "var(--color-palette-amber-light-fill)",
+        "light-stroke": "var(--color-palette-amber-light-stroke)",
+        "light-ink": "var(--color-palette-amber-light-ink)",
+        "dark-fill": "var(--color-palette-amber-dark-fill)",
+        "dark-stroke": "var(--color-palette-amber-dark-stroke)",
+        "dark-ink": "var(--color-palette-amber-dark-ink)"
       },
       "green": {
-        "500": "var(--color-palette-green-500)",
-        "400": "var(--color-palette-green-400)",
-        "700": "var(--color-palette-green-700)"
-      },
-      "slate": {
-        "500": "var(--color-palette-slate-500)",
-        "400": "var(--color-palette-slate-400)",
-        "600": "var(--color-palette-slate-600)"
+        "light-fill": "var(--color-palette-green-light-fill)",
+        "light-stroke": "var(--color-palette-green-light-stroke)",
+        "light-ink": "var(--color-palette-green-light-ink)",
+        "light-dot": "var(--color-palette-green-light-dot)",
+        "dark-fill": "var(--color-palette-green-dark-fill)",
+        "dark-stroke": "var(--color-palette-green-dark-stroke)",
+        "dark-ink": "var(--color-palette-green-dark-ink)",
+        "dark-dot": "var(--color-palette-green-dark-dot)"
       },
       "teal": {
-        "500": "var(--color-palette-teal-500)",
-        "400": "var(--color-palette-teal-400)",
-        "700": "var(--color-palette-teal-700)"
+        "light-fill": "var(--color-palette-teal-light-fill)",
+        "light-stroke": "var(--color-palette-teal-light-stroke)",
+        "light-ink": "var(--color-palette-teal-light-ink)",
+        "light-dot": "var(--color-palette-teal-light-dot)",
+        "dark-fill": "var(--color-palette-teal-dark-fill)",
+        "dark-stroke": "var(--color-palette-teal-dark-stroke)",
+        "dark-ink": "var(--color-palette-teal-dark-ink)",
+        "dark-dot": "var(--color-palette-teal-dark-dot)"
+      },
+      "navy": {
+        "light-fill": "var(--color-palette-navy-light-fill)",
+        "light-stroke": "var(--color-palette-navy-light-stroke)",
+        "light-ink": "var(--color-palette-navy-light-ink)",
+        "dark-fill": "var(--color-palette-navy-dark-fill)",
+        "dark-stroke": "var(--color-palette-navy-dark-stroke)",
+        "dark-ink": "var(--color-palette-navy-dark-ink)"
+      },
+      "purple": {
+        "light-fill": "var(--color-palette-purple-light-fill)",
+        "light-stroke": "var(--color-palette-purple-light-stroke)",
+        "light-ink": "var(--color-palette-purple-light-ink)",
+        "light-dot": "var(--color-palette-purple-light-dot)",
+        "dark-fill": "var(--color-palette-purple-dark-fill)",
+        "dark-stroke": "var(--color-palette-purple-dark-stroke)",
+        "dark-ink": "var(--color-palette-purple-dark-ink)",
+        "dark-dot": "var(--color-palette-purple-dark-dot)"
+      },
+      "pink": {
+        "light-fill": "var(--color-palette-pink-light-fill)",
+        "light-stroke": "var(--color-palette-pink-light-stroke)",
+        "light-ink": "var(--color-palette-pink-light-ink)",
+        "dark-fill": "var(--color-palette-pink-dark-fill)",
+        "dark-stroke": "var(--color-palette-pink-dark-stroke)",
+        "dark-ink": "var(--color-palette-pink-dark-ink)"
+      },
+      "slate": {
+        "light-fill": "var(--color-palette-slate-light-fill)",
+        "light-stroke": "var(--color-palette-slate-light-stroke)",
+        "light-ink": "var(--color-palette-slate-light-ink)",
+        "light-dot": "var(--color-palette-slate-light-dot)",
+        "dark-fill": "var(--color-palette-slate-dark-fill)",
+        "dark-stroke": "var(--color-palette-slate-dark-stroke)",
+        "dark-ink": "var(--color-palette-slate-dark-ink)",
+        "dark-dot": "var(--color-palette-slate-dark-dot)"
       }
     },
     "state": {
       "active": "var(--color-state-active)",
       "active-fill": "var(--color-state-active-fill)",
       "active-text": "var(--color-state-active-text)",
-      "on-active": "var(--color-state-on-active)"
+      "on-active": "var(--color-state-on-active)",
+      "error": "var(--color-state-error)",
+      "success": "var(--color-state-success)",
+      "warning": "var(--color-state-warning)"
     },
     "flow": {
       "purple": "var(--color-flow-purple)",
@@ -85,6 +140,52 @@ export const tokens = freeze({
     },
     "figure": {
       "icon": "var(--color-figure-icon)"
+    },
+    "paint": {
+      "red": {
+        "fill": "var(--color-paint-red-fill)",
+        "stroke": "var(--color-paint-red-stroke)",
+        "ink": "var(--color-paint-red-ink)"
+      },
+      "amber": {
+        "fill": "var(--color-paint-amber-fill)",
+        "stroke": "var(--color-paint-amber-stroke)",
+        "ink": "var(--color-paint-amber-ink)"
+      },
+      "green": {
+        "fill": "var(--color-paint-green-fill)",
+        "stroke": "var(--color-paint-green-stroke)",
+        "ink": "var(--color-paint-green-ink)",
+        "dot": "var(--color-paint-green-dot)"
+      },
+      "teal": {
+        "fill": "var(--color-paint-teal-fill)",
+        "stroke": "var(--color-paint-teal-stroke)",
+        "ink": "var(--color-paint-teal-ink)",
+        "dot": "var(--color-paint-teal-dot)"
+      },
+      "navy": {
+        "fill": "var(--color-paint-navy-fill)",
+        "stroke": "var(--color-paint-navy-stroke)",
+        "ink": "var(--color-paint-navy-ink)"
+      },
+      "purple": {
+        "fill": "var(--color-paint-purple-fill)",
+        "stroke": "var(--color-paint-purple-stroke)",
+        "ink": "var(--color-paint-purple-ink)",
+        "dot": "var(--color-paint-purple-dot)"
+      },
+      "pink": {
+        "fill": "var(--color-paint-pink-fill)",
+        "stroke": "var(--color-paint-pink-stroke)",
+        "ink": "var(--color-paint-pink-ink)"
+      },
+      "gray": {
+        "fill": "var(--color-paint-gray-fill)",
+        "stroke": "var(--color-paint-gray-stroke)",
+        "ink": "var(--color-paint-gray-ink)",
+        "dot": "var(--color-paint-gray-dot)"
+      }
     },
     "ui": {
       "link": "var(--color-ui-link)",
@@ -106,6 +207,7 @@ export const tokens = freeze({
     "bg": "var(--color-bg)",
     "node": "var(--color-node)",
     "surface": "var(--color-surface)",
+    "card": "var(--color-card)",
     "border": "var(--color-border)",
     "card-on": "var(--color-card-on)",
     "group": "var(--color-group)",
@@ -282,6 +384,16 @@ export const tokens = freeze({
     "range": "var(--opacity-range)",
     "chip-visible-min": "var(--opacity-chip-visible-min)"
   },
+  "distance": {
+    "card": {
+      "min": "var(--distance-card-min)",
+      "max": "var(--distance-card-max)"
+    },
+    "flow": "var(--distance-flow)",
+    "neighbor": "var(--distance-neighbor)",
+    "neighbor-cvd": "var(--distance-neighbor-cvd)",
+    "fill": "var(--distance-fill)"
+  },
   "z": {
     "raised": "var(--z-raised)",
     "overlay": "var(--z-overlay)"
@@ -365,41 +477,142 @@ export const values = freeze({
         "900": "#0b0b0b",
         "1000": "#000000"
       },
-      "purple": {
-        "500": "#8b5cf6",
-        "400": "#9b90ff",
-        "600": "#483c95"
+      "red": {
+        "light-fill": "#ffebea",
+        "light-stroke": "#e0606a",
+        "light-ink": "#be414e",
+        "dark-fill": "#402627",
+        "dark-stroke": "#fa9a9d",
+        "dark-ink": "#fa9a9d"
+      },
+      "amber": {
+        "light-fill": "#f9efda",
+        "light-stroke": "#ad8300",
+        "light-ink": "#8a6800",
+        "dark-fill": "#362c15",
+        "dark-stroke": "#dab45c",
+        "dark-ink": "#dab45c"
       },
       "green": {
-        "500": "#10b981",
-        "400": "#b6da70",
-        "700": "#517000"
-      },
-      "slate": {
-        "500": "#8b949e",
-        "400": "#b0a0a4",
-        "600": "#57494d"
+        "light-fill": "#dff7ea",
+        "light-stroke": "#009d6e",
+        "light-ink": "#007c55",
+        "light-dot": "#00835b",
+        "dark-fill": "#173226",
+        "dark-stroke": "#6cd0a4",
+        "dark-ink": "#6cd0a4",
+        "dark-dot": "#6dd2a5"
       },
       "teal": {
-        "500": "#11a6b0",
-        "400": "#87f3f6",
-        "700": "#008084"
+        "light-fill": "#daf7f7",
+        "light-stroke": "#00999d",
+        "light-ink": "#00797c",
+        "light-dot": "#006568",
+        "dark-fill": "#0f3233",
+        "dark-stroke": "#47d0d4",
+        "dark-ink": "#47d0d4",
+        "dark-dot": "#6ff2f6"
+      },
+      "navy": {
+        "light-fill": "#edefff",
+        "light-stroke": "#7e7eeb",
+        "light-ink": "#6360ca",
+        "dark-fill": "#2a2b42",
+        "dark-stroke": "#acb1ff",
+        "dark-ink": "#acb1ff"
+      },
+      "purple": {
+        "light-fill": "#f7ebff",
+        "light-stroke": "#b16fd4",
+        "light-ink": "#9250b3",
+        "light-dot": "#9453b6",
+        "dark-fill": "#35283d",
+        "dark-stroke": "#d3a3ee",
+        "dark-ink": "#d3a3ee",
+        "dark-dot": "#d4a4ef"
+      },
+      "pink": {
+        "light-fill": "#ffeaf5",
+        "light-stroke": "#d263a7",
+        "light-ink": "#b04488",
+        "dark-fill": "#3d2633",
+        "dark-stroke": "#ee9bca",
+        "dark-ink": "#ee9bca"
+      },
+      "slate": {
+        "light-fill": "#edf0f4",
+        "light-stroke": "#818b96",
+        "light-ink": "#646e78",
+        "light-dot": "#303942",
+        "dark-fill": "#2a2d30",
+        "dark-stroke": "#afbbc6",
+        "dark-ink": "#afbbc6",
+        "dark-dot": "#929da7"
       }
     },
     "state": {
       "active": "#218fe5",
       "active-fill": "#1072c2",
       "active-text": "#1072c2",
-      "on-active": "#ffffff"
+      "on-active": "#ffffff",
+      "error": "#e0606a",
+      "success": "#009d6e",
+      "warning": "#ad8300"
     },
     "flow": {
-      "purple": "#483c95",
-      "green": "#517000",
-      "teal": "#008084",
-      "gray": "#57494d"
+      "purple": "#9453b6",
+      "green": "#00835b",
+      "teal": "#006568",
+      "gray": "#303942"
     },
     "figure": {
       "icon": "#125de6"
+    },
+    "paint": {
+      "red": {
+        "fill": "#ffebea",
+        "stroke": "#e0606a",
+        "ink": "#be414e"
+      },
+      "amber": {
+        "fill": "#f9efda",
+        "stroke": "#ad8300",
+        "ink": "#8a6800"
+      },
+      "green": {
+        "fill": "#dff7ea",
+        "stroke": "#009d6e",
+        "ink": "#007c55",
+        "dot": "#00835b"
+      },
+      "teal": {
+        "fill": "#daf7f7",
+        "stroke": "#00999d",
+        "ink": "#00797c",
+        "dot": "#006568"
+      },
+      "navy": {
+        "fill": "#edefff",
+        "stroke": "#7e7eeb",
+        "ink": "#6360ca"
+      },
+      "purple": {
+        "fill": "#f7ebff",
+        "stroke": "#b16fd4",
+        "ink": "#9250b3",
+        "dot": "#9453b6"
+      },
+      "pink": {
+        "fill": "#ffeaf5",
+        "stroke": "#d263a7",
+        "ink": "#b04488"
+      },
+      "gray": {
+        "fill": "#edf0f4",
+        "stroke": "#818b96",
+        "ink": "#646e78",
+        "dot": "#303942"
+      }
     },
     "ui": {
       "link": "#1072c2",
@@ -421,16 +634,17 @@ export const values = freeze({
     "bg": "#f6f7f9",
     "node": "#ffffff",
     "surface": "#eef0f3",
+    "card": "#f6f7f9",
     "border": "#818b99",
     "card-on": "#edf5fb",
     "group": "#eef0f3",
     "plate-border": "#d5dbe3",
     "page": "#ffffff",
     "tag": {
-      "purple": "#8b5cf6",
-      "green": "#10b981",
-      "teal": "#11a6b0",
-      "gray": "#8b949e"
+      "purple": "#b16fd4",
+      "green": "#009d6e",
+      "teal": "#00999d",
+      "gray": "#818b96"
     }
   },
   "font": {
@@ -596,6 +810,16 @@ export const values = freeze({
     "band": 0.22,
     "range": 0.4,
     "chip-visible-min": 0.1
+  },
+  "distance": {
+    "card": {
+      "min": 0.015,
+      "max": 0.04
+    },
+    "flow": 0.1,
+    "neighbor": 0.06,
+    "neighbor-cvd": 0.025,
+    "fill": 0.015
   },
   "z": {
     "raised": 2,

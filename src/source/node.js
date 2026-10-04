@@ -1,4 +1,4 @@
-// 도형 선언(`box id "이름" ["부제"] [shape=circle|tile] [badge="LB"] [icon=server] [count=3]`)을 읽는다.
+// 도형 선언(`box id "이름" ["부제"] [shape=circle|tile] [badge="LB"] [icon=server] [count=3] [fill=red] [stroke=red]`)을 읽는다.
 import { STATEMENTS, optionsOf } from './grammar.js';
 import { checkId, currentGroup, rejectName } from './names.js';
 import { readOptions } from './options.js';
@@ -30,8 +30,8 @@ export function readNode({ tokens, line }, ctx) {
   const isTile = found.shape === 'tile';
   const form = found.shape === 'rect' || isTile ? undefined : found.shape;
   checkNodeOptions({ found, form, sub, line }, ctx);
-  const { badge, icon, count } = found;
-  ctx.figure.nodes.push({ id: id.value, shape: form ?? shape, label: label.value, sub: sub?.type === 'text' ? sub.value : undefined, badge, icon, count, tile: isTile || undefined, parent: currentGroup(ctx), line });
+  const { badge, icon, count, fill, stroke } = found;
+  ctx.figure.nodes.push({ id: id.value, shape: form ?? shape, label: label.value, sub: sub?.type === 'text' ? sub.value : undefined, badge, icon, count, fill, stroke, tile: isTile || undefined, parent: currentGroup(ctx), line });
 }
 
 // cost: time O(1), heap O(1), stack O(1)

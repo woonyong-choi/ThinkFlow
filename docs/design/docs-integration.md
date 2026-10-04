@@ -84,8 +84,11 @@
 | `data.main` | 차트에서 그림이 주장하는 계열(새 것, 개선) | `#218fe5` | `#79c0ff` | 그림 바탕, 그룹, 카드 바탕, 노드 | 3.00 / 7.62 |
 | `data.compare` | 비교 기준 계열(기존) | `#d96c1f` | `#f5a374` | 같음 | 3.01 / 7.32 |
 | `data.grid`, `data.heat-low` | 격자와 축, 히트맵 값 0 칸(꾸밈) | `#c6cacf` / `#a9cdea` | `#3c3e42` / `#2b4254` | 그림 바탕 | 1.54, 1.55 / 1.60, 1.65 |
-| `flow.purple`, `flow.green`, `flow.teal`, `flow.gray` | 흐름 점과 이동 글 상자의 갈래색(`tone=`). 점, 글 상자 면과 테두리 | `#483c95`, `#517000`, `#008084`, `#57494d` | `#9b90ff`, `#b6da70`, `#87f3f6`, `#b0a0a4` | 그림 바탕, 그룹, 카드 바탕, 노드, 문서 바탕. 글 상자 글자는 `state.on-active` | 4.16 / 5.13 이상 |
-| `tag.purple`, `tag.green`, `tag.teal`, `tag.gray` | 카드 태그 범주색. 글자는 `fg`, 색은 옅은 띠(`opacity.tag`)로만 | `#8b5cf6`, `#10b981`, `#11a6b0`, `#8b949e` | 같음 | 노드, 카드 바탕 위 띠와 글자 `fg` | 8.46 이상 |
+| `flow.purple`, `flow.green`, `flow.teal`, `flow.gray` | 흐름 점과 이동 글 상자의 갈래색(`tone=`). 점, 글 상자 면과 테두리. 팔레트 점 단계(`paint.*.dot`) | `#483c95`, `#517000`, `#008084`, `#57494d` | `#9b90ff`, `#b6da70`, `#87f3f6`, `#b0a0a4` | 그림 바탕, 그룹, 카드 바탕, 노드, 문서 바탕. 글 상자 글자는 `state.on-active` | 4.16 / 5.13 이상 |
+| `tag.purple`, `tag.green`, `tag.teal`, `tag.gray` | 카드 태그 범주색. 글자는 `fg`, 색은 옅은 띠(`opacity.tag`)로만. 팔레트 테두리 단계(`paint.*.stroke`) | `#b16fd4`, `#009d6e`, `#00999d`, `#818b96` | `#d3a3ee`, `#6cd0a4`, `#47d0d4`, `#afbbc6` | 노드, 카드 바탕 위 띠와 글자 `fg` | 8.46 이상 |
+| `state.error`, `state.success`, `state.warning` | 오류, 성공, 경고. 테두리, 점, 표시 같은 그래픽에 쓰고 글자에는 쓰지 않는다. 팔레트 `red`, `green`, `amber`의 테두리 단계 | `#e0606a`, `#009d6e`, `#ad8300` | `#fa9a9d`, `#6cd0a4`, `#dab45c` | 그림 바탕, 그룹, 카드 바탕, 노드, 문서 바탕 | 3 이상 |
+| `card` | 카드 기본 바탕. 도형 바탕(`node`)과 OKLab 거리가 `distance.card.min`~`max`(0.015~0.04) | `#f6f7f9` | `#2c2d30` | 글자 `fg`, `muted` | 4.5 이상 |
+| `paint.<색>.fill`, `.stroke`, `.ink` | 원본이 `fill=`, `stroke=`, `card=`로 고르는 색. 이름은 `red`, `amber`, `green`, `teal`, `navy`, `purple`, `pink`, `gray`. 아래 팔레트 표 | 팔레트 표 | 팔레트 표 | 면 단계는 `fg`, `muted` 글자, 나머지 단계는 그림 면과 모든 색의 면 | 4.5 이상(글자), 3 이상(그래픽) |
 | `border` | 노드, 그룹, 카드, 조작부 윤곽(그룹 테두리도 같은 색) | `#818b99` | `#72767a` | 그림 바탕, 그룹, 카드 바탕, 노드, 문서 바탕 | 3.02 / 3.01 |
 
 - `flow.*`는 점이 한눈에 갈리도록 이름끼리 OKLab 거리 0.10 이상이고 적록 색각 이상(protanopia, deuteranopia) 시뮬레이션에서도 같다. 파랑(지금)과 주황(비교)과도 OKLab 거리 0.10 이상이다. `test/contrast.test.js`의 `flow_tone_colors_stay_apart_from_each_other_for_normal_protan_and_deutan_sight_and_from_blue_and_orange_for_normal_sight`가 잰다. 이름은 카드 태그 `tone`과 같은 집합이고 이름을 늘리면 `flow.*` 색도 같은 기준으로 더한다.
@@ -98,6 +101,25 @@
 - 라이트 모드 그림 바탕(`color.bg`)은 흰 문서 안에서 그림 경계가 보이도록 아주 옅은 회색(`palette.gray.25`)이고, 판 테두리(`color.plate-border`)가 경계를 더한다. 재생기와 목록 카드의 바깥 선, 조작 막대 선도 같은 `plate-border`다(예전 `color.frame`을 합쳤다. 라이트 `palette.gray.200`, 다크 `palette.neutral.800`). 상자, 원통, 사람, 테이블 채우기(`color.node`)는 라이트에서 흰색이라 바탕 위에 떠 보이고, 다크에서는 바탕(`palette.neutral.900`)보다 한 단계 밝은 `palette.neutral.850`이다. 구조 그림의 그룹은 `color.group`(바탕, 라이트 `palette.gray.40`, 다크 `palette.neutral.875`로 노드 `neutral.850`과 한 톤 갈라 안쪽일수록 밝아지는 쌓임이 이어진다)과 `color.border`로 경계를 잡는다. 이 회색 판은 문서에 넣는 SVG 파일에만 있다. 재생기와 목록 쪽 카드 안에서는 카드 전체가 같은 `color.bg` 한 톤이다.
 - 9px 태그 글자는 범주색으로 쓰면 대비가 1.7~3.4라 읽기 어려워서, 글자는 `color.fg`로 쓰고 범주색은 글자 뒤의 옅은 바탕 띠로만 전한다. 태그 색은 갈래를 나누는 색이고 판정을 뜻하지 않는다. 스킬의 상태 색 금지는 차트 판정에 대한 규칙이라 태그 색과 부딪치지 않는다.
 
+
+#### 팔레트
+
+팔레트는 이력서 파랑의 OKLCH 밝기와 채도에서 색상만 돌린 색이다. 라이트는 이력서 `#2b96ed`(L 0.656, C 0.160), 다크는 `palette.blue.400`에서 읽는다. sRGB 밖이면 채도만 줄인다. `gray`는 같은 색상에서 채도를 낮췄다. 값은 `scripts/build-palette.mjs`가 토큰 정본의 면 값에서 계산해 `color.palette.*`에 쓰고(`npm run palette`, 이어 `npm run tokens`), `test/palette.test.js`가 다시 계산한 값과 같은지 본다. 색마다 단계는 셋이다. `fill`은 옅은 면(`fg`, `muted` 글자 4.5, `border` 3 이상), `stroke`는 같은 색상에서 모든 그림 면과 모든 색의 `fill` 위 3을 넘는 가장 밝은(다크는 가장 어두운) 값, `ink`는 같은 조건에서 4.5를 넘는 값이다. 갈래색(`flow.*`)은 `ink`와 같은 색상에 밝기만 달리한 `dot` 단계다. 같은 밝기의 색은 색각 이상 시뮬레이션에서 가까워지기 때문이다.
+
+| 색 | 라이트 fill, stroke, ink | 다크 fill, stroke, ink |
+|---|---|---|
+| `red` | `#ffebea`, `#e0606a`, `#be414e` | `#402627`, `#fa9a9d`, `#fa9a9d` |
+| `amber` | `#f9efda`, `#ad8300`, `#8a6800` | `#362c15`, `#dab45c`, `#dab45c` |
+| `green` | `#dff7ea`, `#009d6e`, `#007c55` | `#173226`, `#6cd0a4`, `#6cd0a4` |
+| `teal` | `#daf7f7`, `#00999d`, `#00797c` | `#0f3233`, `#47d0d4`, `#47d0d4` |
+| `navy` | `#edefff`, `#7e7eeb`, `#6360ca` | `#2a2b42`, `#acb1ff`, `#acb1ff` |
+| `purple` | `#f7ebff`, `#b16fd4`, `#9250b3` | `#35283d`, `#d3a3ee`, `#d3a3ee` |
+| `pink` | `#ffeaf5`, `#d263a7`, `#b04488` | `#3d2633`, `#ee9bca`, `#ee9bca` |
+| `gray` | `#edf0f4`, `#818b96`, `#646e78` | `#2a2d30`, `#afbbc6`, `#afbbc6` |
+
+- 이웃한 색(색상 순서 `red`, `amber`, `green`, `teal`, `navy`, `purple`, `pink`)의 `stroke`는 OKLab 거리가 보통 시각에서 `distance.neighbor`(0.06) 이상, 적록 색각 이상(protanopia, deuteranopia) 시뮬레이션에서 `distance.neighbor-cvd`(0.025) 이상이다. 같은 밝기와 채도에서 색상만 다른 열 가지 색은 이보다 벌리기 어렵고, 색각 이상에서는 파랑 계열 이웃이 가까워진다. 그림은 색 하나로 뜻을 전하지 않는다. 이름과 글이 함께 간다. 팔레트 색은 모두 파랑(지금)과 주황(비교)에서도 보통 시각 0.06 이상 떨어진다.
+- 갈래색(`flow.*`)끼리와 파랑, 주황은 `distance.flow`(0.10) 이상이다. 위 이웃 기준과 달리 색각 이상에서도 이 값이다.
+- 색을 고른 도형이 켜지면 테두리는 그 색을 유지하고 굵기가 `border.thin`에서 `border.strong`으로 바뀌며 후광이 보인다. 파랑으로 바꾸지 않는 이유는 `stroke`가 "오류", "정상" 같은 범주를 나르고 있어 켜질 때 그 뜻이 사라지면 안 되기 때문이다. 파랑(지금)은 `stroke`를 고르지 않은 도형에만 쓴다.
 
 ### 색표와 글꼴
 
@@ -121,6 +143,9 @@
 | 히트맵 칸 숫자와 그 칸 색 | 4.5 이상 | 칸마다 어두운 글자와 밝은 글자 중 대비가 큰 쪽을 빌드 때 고르고, 어느 강도에서나 4.5를 넘게 칸 색 범위를 정했다 |
 | 경계(`border`)와 그림 바탕, 노드, 그룹, 카드 바탕, 문서 바탕 | 3 이상 | WCAG 그래픽 기준, 예외 없음. 같은 색상에서 3을 넘는 가장 약한 값이다. 라이트 `palette.gray.500`, 다크 `palette.neutral.500` |
 | 켜진 탭 표시(`border` 색 고리)와 탭 묶음 바탕 | 3 이상 | UI 상태 표시도 그래픽 기준이다. 알약 면(`ui.control-on`)은 글자 대비 4.5만 맡는다 |
+| 팔레트 `fill` 위 글자(`fg`, `muted`)와 카드 태그 띠 위 `fg` | 4.5 이상 | 같음. 모든 색, 두 테마 |
+| 팔레트 `stroke`와 그림 면, 모든 색의 `fill`. `state.error`, `state.success`, `state.warning` | 3 이상 | WCAG 그래픽 기준 |
+| 팔레트 `ink`와 그림 면, 모든 색의 `fill`, 이동 글 상자 글자(`state.on-active`) | 4.5 이상 | 같음 |
 | 계열 막대와 점(`data.main`, `data.compare`)과 그림 바탕, 노드, 그룹, 카드 바탕 | 3 이상 | 데이터 표시라 그래픽 기준이다. 라이트 주황은 `palette.orange.550`이다 |
 | 차이 차트의 0선, 행 기준 점선, 잘린 축의 지그재그(`muted`)와 그림 바탕 | 4.5 이상 | 값 차이를 전하는 그래픽이라 `muted`가 이미 맞추는 글자 기준을 쓴다. 꾸밈 요소가 아니다 |
 | 꾸밈 요소: 격자와 축, 히트맵 값 0 칸, 신뢰구간 띠와 덤벨 범위 막대기 | 1.5 이상 | WCAG 적용 대상 밖이다. 값은 숫자로도 적히고 이 요소는 구조만 돕는다 |
@@ -135,7 +160,7 @@
 | 원본과 만든 그림 함께 커밋 | 그대로 |
 | 변환 뒤 그림을 열어 겹침, 잘림, 빈 영역 확인 | 겹침과 잘림은 [그림 검사](figure-check.md)가 대신한다. 빈 영역은 검사 항목이 없어 눈 확인으로 남는다 |
 | 다시 변환 뒤 `git diff` 없음 | [배치](layout.md)의 결정성 요구사항이 지킨다 |
-| 원본에 색, `config`, `sketch` 없음 | 문법에 색 줄이 없어 검사 항목에서 지운다 |
+| 원본에 색, `config`, `sketch` 없음 | 색 줄과 hex는 문법에 없다. 도형 색은 팔레트 이름 `fill=`, `stroke=`, `card=`만 받아 검사 항목에서 지운다 |
 
 - 결과는 움직이는 SVG `{이름}.svg` 하나다. 무엇이 언제 움직이는지는 [재생](playback.md)을 따른다. HTML 재생기는 문서 저장소에 넣지 않는다. 문서 저장소에 스크립트가 든 파일을 늘리지 않기 위해서다.
 

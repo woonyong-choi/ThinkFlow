@@ -3,6 +3,7 @@ import { canvasOf, fitCanvas } from './canvas.js';
 import { CHART_FACES, chartText } from './chart/draw.js';
 import { createAnimator } from './animate/animator.js';
 import { drawScene } from './draw/figure.js';
+import { paintCss } from './draw/paint.js';
 import { drawTrackPaths } from './draw/tracks.js';
 import { createGlyphSet, embedFonts, wrap } from './measure/fonts.js';
 import { lineHeight } from './measure/sizes.js';
@@ -39,7 +40,7 @@ export async function toSvg(result, { isStatic = false, name = '' } = {}) {
   return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="fl${content.className}" width="${r(shownWidth)}" height="${r(shownHeight)}" viewBox="0 0 ${r(width)} ${r(height)}" role="img">
 <title>${escapeXml(plainText(title))}</title>
 <style>${fonts}
-${STYLES.tokens}${STYLES.figure}${STYLES.animated}${result.chart ? STYLES.chart + chartMotionCss(timeline.growMs, result.chart.dotAts) : ''}
+${STYLES.tokens}${STYLES.figure}${STYLES.animated}${paintCss(result.scene)}${result.chart ? STYLES.chart + chartMotionCss(timeline.growMs, result.chart.dotAts) : ''}
 ${animator.css.join('\n')}
 </style>
 <defs>${DEFS}</defs>
