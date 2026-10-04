@@ -27,6 +27,9 @@ export const BADGE_MAX = 8;
 /** 값(`value`)이 보이는 글자 수 상한. 카드 오른쪽 끝에 들어갈 자리가 정해져 있어 `mark`와 같다. */
 export const VALUE_MAX = 8;
 
+/** 큐 칸 수(`slots`)의 상한. 가장 넓은 큐(칸 폭 16px, 틈 4px)가 약 640px라 캔버스 폭(960) 안에 들고, 칸 수를 세어 읽을 수 있는 한계다. */
+export const QUEUE_SLOTS_MAX = 32;
+
 /** 카드를 쓰는 도형(`show`, `value`가 놓이는 곳). 이름 순서는 오류 안내 글에 그대로 나온다. */
 export const CARD_SHAPES = ['box', 'external', 'store', 'person', 'table'];
 
@@ -111,6 +114,7 @@ export const STATEMENTS = table({
   external: { ...V1, section: 'declare', kinds: FLOW_SEQUENCE, node: { hasSub: true }, scopes: ['node'] },
   store: { ...V1, section: 'declare', kinds: FLOW_SEQUENCE, node: { hasSub: true }, scopes: ['node'] },
   decision: { ...V1, section: 'declare', kinds: ['flow'], node: { hasSub: false } },
+  queue: { ...V1, section: 'declare', kinds: ['flow'], node: { hasSub: false }, scopes: ['queue'] },
   state: { ...V1, section: 'declare', kinds: ['state'], node: { hasSub: false } },
   group: { ...V1, section: 'declare', kinds: ['flow', 'state'] },
   grid: { ...V1, section: 'declare', kinds: ['flow'] },
@@ -159,6 +163,8 @@ export const OPTIONS = table({
   'node.fill': PAINT,
   'node.stroke': PAINT,
   'box.count': PLURAL,
+  'queue.slots': { ...COUNT, format: `1 이상 ${QUEUE_SLOTS_MAX} 이하 정수`, max: QUEUE_SLOTS_MAX },
+  'queue.from': { ...INDEX, format: '0 이상 slots 이하 정수' },
   'edge.no': COUNT,
   'step.for': { ...V1, type: 'word', format: '시간' },
   'hop.time': { ...V1, type: 'word', format: '시간' },

@@ -113,6 +113,7 @@ export function labelRows(it) {
   const textH = lines.reduce((sum, [, , s]) => sum + s.line, 0);
   let top;
   if (it.shape === 'person') top = it.y + it.h + SPACE['3'];
+  else if (it.shape === 'queue') top = it.y + INNER_Y;
   else if (it.decor) top = it.y + INNER_Y + it.decor.room;
   else if (it.card) top = it.y + INNER_Y;
   else top = it.y + (body.h - textH) / 2;

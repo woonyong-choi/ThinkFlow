@@ -1,5 +1,6 @@
 // 도형 하나의 윤곽을 그린다. 상자, 원통, 사람, 갈림길, 원, 상태 점, 테이블, 격자. 이름과 카드는 draw/figure.js가 그린다.
 import { STACK_STEP, bodyOf } from '../measure/decor.js';
+import { queueSlots } from '../measure/queue.js';
 import { STYLE } from '../measure/sizes.js';
 import { centerBaseline, escapeXml, renderRich, roundCoord as r } from '../text.js';
 import { tokens, values } from '../tokens.js';
@@ -22,6 +23,7 @@ const geometry = {
     ];
   },
   circle: (it) => [`<circle cx="${r(it.x + it.w / 2)}" cy="${r(it.y + it.h / 2)}" r="${r(it.w / 2)}"`],
+  queue: (it) => [`<rect x="${r(it.x)}" y="${r(it.y)}" width="${r(it.w)}" height="${r(it.h)}" rx="${RADIUS['2xl']}"`],
   rect: (it) => {
     const { x, y, w, h } = bodyOf(it);
     return [`<rect x="${r(x)}" y="${r(y)}" width="${r(w)}" height="${r(h)}" rx="${RADIUS.xl}"`];
@@ -51,6 +53,8 @@ export function drawShape(it, stroke, paint) {
       return `<polygon points="${r(cx)},${r(y)} ${r(x + w)},${r(y + h / 2)} ${r(cx)},${r(y + h)} ${r(x)},${r(y + h / 2)}" ${fill} ${stroke}/>`;
     case 'circle':
       return `${geometry.circle(it)[0]} ${fill} ${stroke}/>`;
+    case 'queue':
+      return `${geometry.queue(it)[0]} ${fill} ${stroke}/>${emptySlots(it)}`;
     case 'start':
       return `<circle cx="${r(cx)}" cy="${r(y + h / 2)}" r="${r(w / 2)}" fill="${tokens.color.fg}" ${stroke}/>`;
     case 'final':
@@ -98,4 +102,12 @@ function drawTable(it, stroke, { decorate, glyphs }) {
     );
   });
   return frame + header + rows.join('');
+}
+
+// cost: time O(s), heap O(s), stack O(1)
+// vars: s = 칸 수
+// basis: estimate
+// 큐의 빈 칸: 무채색 면에 외곽선(도형 면 위 대비 3). 찬 칸은 그 위에 값 층(draw/values.js)이 같은 자리에 얹는다.
+function emptySlots(it) {
+  return queueSlots(it).map((s) => `<rect x="${r(s.x)}" y="${r(s.y)}" width="${r(s.w)}" height="${r(s.h)}" rx="${RADIUS.sm}" fill="${tokens.color.figure['queue-empty']}" stroke="${tokens.color.outline}" stroke-width="${values.border.thin}"/>`).join('');
 }

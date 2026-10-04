@@ -32,7 +32,7 @@ export function validateFigure(figure, problems) {
 // 도형, 그룹, 상태, 테이블, 계열 이름이 겹치지 않는지 보고 이름 → 선언을 돌려준다.
 function collectNames(figure, problems) {
   const names = new Map();
-  for (const item of [...figure.nodes, ...figure.groups.map((g) => ({ ...g, shape: 'group' })), ...figure.chart.series.map((s) => ({ ...s, shape: 'series' })), ...figure.values.map((v) => ({ ...v, shape: 'value' }))]) {
+  for (const item of [...figure.nodes, ...figure.groups.map((g) => ({ ...g, shape: 'group' })), ...figure.chart.series.map((s) => ({ ...s, shape: 'series' })), ...figure.values.filter((v) => !v.queue).map((v) => ({ ...v, shape: 'value' }))]) {
     const known = names.get(item.id);
     if (known) problems.error(item.line, `the name "${item.id}" is already used (line ${known.line})`);
     else names.set(item.id, item);

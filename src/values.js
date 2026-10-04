@@ -24,9 +24,9 @@ export function rootOf(byId, id) {
 // cost: time O(v), heap O(v), stack O(1)
 // vars: v = 값 수
 // basis: estimate
-/** 값 카드 줄을 도형별로. 선언한 값은 모든 단계의 카드에 늘 올라 있다. 줄은 `이름` 글과 오른쪽 끝 자리(mark)이고, 값 글자는 시간표의 변화 목록이 따로 그린다. */
+/** 값 카드 줄을 도형별로. 큐가 스스로 가진 값은 카드 줄이 없다. 선언한 값은 모든 단계의 카드에 늘 올라 있다. 줄은 `이름` 글과 오른쪽 끝 자리(mark)이고, 값 글자는 시간표의 변화 목록이 따로 그린다. */
 export function valueRowsByNode(figure) {
   const rows = new Map();
-  for (const v of figure.values) rows.set(v.on, [...(rows.get(v.on) ?? []), { text: v.label, mark: VALUE_SAMPLE, isValue: true, valueId: v.id }]);
+  for (const v of figure.values.filter((value) => !value.queue)) rows.set(v.on, [...(rows.get(v.on) ?? []), { text: v.label, mark: VALUE_SAMPLE, isValue: true, valueId: v.id }]);
   return rows;
 }

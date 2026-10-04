@@ -31,7 +31,20 @@ export function readNode({ tokens, line }, ctx) {
   const form = found.shape === 'rect' || isTile ? undefined : found.shape;
   checkNodeOptions({ found, form, sub, line }, ctx);
   const { badge, icon, count, fill, stroke } = found;
-  ctx.figure.nodes.push({ id: id.value, shape: form ?? shape, label: label.value, sub: sub?.type === 'text' ? sub.value : undefined, badge, icon, count, fill, stroke, tile: isTile || undefined, parent: parentFor(id, ctx), line });
+  const queue = shape === 'queue' ? readQueue({ found, id: id.value, label: label.value, line }, ctx) : undefined;
+  ctx.figure.nodes.push({ id: id.value, shape: form ?? shape, label: label.value, sub: sub?.type === 'text' ? sub.value : undefined, badge, icon, count, fill, stroke, tile: isTile || undefined, ...queue, parent: parentFor(id, ctx), line });
+}
+
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+// 큐의 칸 수(slots)와 처음 찬 칸 수(from, 생략하면 0). 큐는 같은 이름의 값 하나를 스스로 가진다(찬 칸 수). 이 값은 `on 큐 큐+1`, `set="큐-1@큐"`처럼 도형 이름으로 바꾸고 카드 줄은 만들지 않는다(queue: true).
+function readQueue({ found, id, label, line }, ctx) {
+  if (found.slots === undefined) ctx.problems.error(line, `a queue needs its slot count. Write: queue ${id} "${label}" slots=N`);
+  if (found.slots !== undefined && found.from > found.slots) ctx.problems.error(line, `from is the number of filled slots at the start, at most slots=${found.slots}. Found ${found.from}`);
+  const slots = found.slots ?? 1;
+  const from = found.from ?? 0;
+  ctx.figure.values.push({ id, label, on: id, from: String(from), ref: undefined, queue: true, slots, line });
+  return { slots, from };
 }
 
 // cost: time O(1), heap O(1), stack O(1)

@@ -34,6 +34,8 @@ step "요청" "클라이언트가 서버를 부르고 서버가 데이터베이�
 
 `track`은 박자와 따로 도는 흐름입니다. 출발지마다 점이 선들을 멈춤 없이 이어 지나고, 값 줄(`value`, `on`)은 점이 닿을 때 바뀝니다.
 
+큐(`queue q "큐" slots=6`)는 칸이 있는 도형이고, 찬 칸 수가 큐 이름으로 부르는 값입니다. `on q q+1`, `set="q-1@q"`처럼 같은 식으로 바꾸면 칸 수가 바뀌고, 음수는 빈 큐, 칸 수를 넘으면 가득 찬 큐로 그립니다([그림 문법](../design/figure-syntax.md#큐)). 예제는 [queue-backpressure](../../examples/queue-backpressure.dap)입니다.
+
 ```dap name=motion
 flow right
 title "주문이 몰릴 때"

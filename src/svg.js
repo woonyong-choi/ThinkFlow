@@ -3,6 +3,7 @@ import { canvasOf, fitCanvas } from './canvas.js';
 import { CHART_FACES, chartText } from './chart/draw.js';
 import { createAnimator } from './animate/animator.js';
 import { drawScene } from './draw/figure.js';
+import { drawQueueStart } from './draw/values.js';
 import { paintCss } from './draw/paint.js';
 import { drawTrackPaths } from './draw/tracks.js';
 import { createGlyphSet, embedFonts, wrap } from './measure/fonts.js';
@@ -109,5 +110,5 @@ function drawCaptions(timeline, { animator, glyphs }, { width, top }) {
 
 // 멈춘 SVG: 모든 선과 도형을 보이고 카드는 비운다. 움직임 class는 없다.
 function staticAnimator() {
-  return { css: [], decorate: () => () => '', packet: () => '', windows: () => '', chart: () => {}, values: () => '', isStatic: true };
+  return { css: [], decorate: () => () => '', packet: () => '', windows: () => '', chart: () => {}, values: (scene) => drawQueueStart(scene), isStatic: true };
 }

@@ -9,7 +9,7 @@ import { NUMBER_PATTERN } from './words.js';
 /** 값 선언(놓일 도형, 참조 사슬), `on` 줄, 모든 이동과 흐름의 값 바꾸기 식을 확인한다. */
 export function checkValues(figure, names, problems) {
   const byId = new Map(figure.values.map((v) => [v.id, v]));
-  for (const value of figure.values) checkDeclaration(value, { byId, names, figure }, problems);
+  for (const value of figure.values.filter((v) => !v.queue)) checkDeclaration(value, { byId, names, figure }, problems);
   for (const { node, line } of figure.arrivals) if (!names.has(node) && !figure.rejectedNames.has(node)) problems.error(line, unknownName('node', node, names.keys()));
   if (!problems.errors.length) checkSets(figure, byId, problems);
 }
@@ -57,9 +57,10 @@ function checkSets(figure, byId, problems) {
 // basis: estimate
 // 식 하나. nodes는 경로의 도형 이름이고 `on` 줄의 식은 경로가 없다.
 function checkExpression(e, { nodes, byId, isWord }, problems) {
-  const { ref } = byId.get(e.id);
+  const { ref, queue } = byId.get(e.id);
   const visits = nodes.filter((n) => n === e.at).length;
-  if (ref !== undefined) problems.error(e.line, `"${e.id}" is a reference to "${ref}". Set "${ref}" instead, and "${e.id}" follows it`);
+  if (queue && !Number.isInteger(Number(e.operand))) problems.error(e.line, `"${e.id}" is a queue, so it counts filled slots in whole numbers. Found "${e.id}${e.op}${e.operand}"`);
+  else if (ref !== undefined) problems.error(e.line, `"${e.id}" is a reference to "${ref}". Set "${ref}" instead, and "${e.id}" follows it`);
   else if (e.at !== undefined && visits === 0) problems.error(e.line, `@${e.at} is not on this path (${nodes.join(' -> ')}). A set applies where the dot reaches a node on its path`);
   else if (visits > 1) problems.error(e.line, `@${e.at} is ambiguous: the path (${nodes.join(' -> ')}) reaches it ${visits} times. Use an on line for the node, or a path that passes it once`);
   else if (e.op !== '=' && isWord) problems.error(e.line, `"${e.id}${e.op}${e.operand}" does a sum, but "${e.id}" holds a word. Use = for words`);

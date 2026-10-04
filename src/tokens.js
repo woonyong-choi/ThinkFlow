@@ -238,7 +238,9 @@ export const tokens = freeze({
     },
     "figure": {
       "icon": "var(--color-figure-icon)",
-      "icon-tile": "var(--color-figure-icon-tile)"
+      "icon-tile": "var(--color-figure-icon-tile)",
+      "queue-fill": "var(--color-figure-queue-fill)",
+      "queue-empty": "var(--color-figure-queue-empty)"
     },
     "paint": {
       "red": {
@@ -401,6 +403,11 @@ export const tokens = freeze({
       "cap": "var(--size-chart-cap)",
       "range": "var(--size-chart-range)",
       "arrow-min": "var(--size-chart-arrow-min)"
+    },
+    "queue": {
+      "slot-width": "var(--size-queue-slot-width)",
+      "slot-height": "var(--size-queue-slot-height)",
+      "slot-gap": "var(--size-queue-slot-gap)"
     },
     "person": {
       "width": "var(--size-person-width)",
@@ -772,7 +779,9 @@ export const values = freeze({
     },
     "figure": {
       "icon": "#125de6",
-      "icon-tile": "#edf4ff"
+      "icon-tile": "#edf4ff",
+      "queue-fill": "#125de6",
+      "queue-empty": "#d6d6d6"
     },
     "paint": {
       "red": {
@@ -935,6 +944,11 @@ export const values = freeze({
       "cap": 8,
       "range": 6,
       "arrow-min": 16
+    },
+    "queue": {
+      "slot-width": 16,
+      "slot-height": 14,
+      "slot-gap": 4
     },
     "person": {
       "width": 56,

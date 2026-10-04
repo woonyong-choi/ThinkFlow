@@ -32,8 +32,9 @@ export function readOptions(tokens, { scopes, what, line, ctx }) {
 function readValue(token, spec, { line, ctx }) {
   const bad = (message) => ctx.problems.error(line, message);
   if (spec.type === 'number') {
-    const isNumber = token.valueType === 'word' && INTEGER_PATTERN.test(token.value) && Number.isSafeInteger(Number(token.value)) && Number(token.value) >= spec.min;
-    return isNumber ? Number(token.value) : bad(`${token.key} is a whole number of ${spec.min} or more. Found "${token.value}"`);
+    const isNumber = token.valueType === 'word' && INTEGER_PATTERN.test(token.value) && Number.isSafeInteger(Number(token.value)) && Number(token.value) >= spec.min && Number(token.value) <= (spec.max ?? Infinity);
+    const range = spec.max === undefined ? `${spec.min} or more` : `${spec.min} to ${spec.max}`;
+    return isNumber ? Number(token.value) : bad(`${token.key} is a whole number of ${range}. Found "${token.value}"`);
   }
   if (spec.type === 'text') {
     if (token.valueType !== 'text') return bad(`${token.key} is quoted text: ${token.key}="..."`);

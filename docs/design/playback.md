@@ -64,8 +64,9 @@
 
 ### 값 변화
 
-- `values`는 단계마다 선언한 값 하나당 한 줄이다. `{ si, id, node, t0, t1, initial, changes, periods, flashes, card }`이고 `changes`는 [그림 전체 시각, 새 글] 목록, `periods`는 값 줄이 보이는 동안 글이 바뀌는 구간 `[시작, 끝, 글]`, `flashes`는 바뀌는 순간마다 `duration.value-flash` 동안 줄을 밝히는 구간이다. `periods`와 `flashes`는 시간표가 한 번 계산하고 움직이는 SVG와 재생기가 읽기만 한다. 단계가 시작하면 `initial`로 돌아간다.
+- `values`는 단계마다 선언한 값 하나당 한 줄이다. `{ si, id, node, t0, t1, initial, changes, periods, flashes, card, slots? }`이고 `changes`는 [그림 전체 시각, 새 글] 목록, `periods`는 값 줄이 보이는 동안 글이 바뀌는 구간 `[시작, 끝, 글]`, `flashes`는 바뀌는 순간마다 `duration.value-flash` 동안 줄을 밝히는 구간이다. `periods`와 `flashes`는 시간표가 한 번 계산하고 움직이는 SVG와 재생기가 읽기만 한다. 단계가 시작하면 `initial`로 돌아간다.
 - 값은 점이 도형에 닿는 시각(이동 곡선을 거꾸로 푼다) 순서로 바뀐다. 같은 시각이면 `on` 줄이 모두 `set=`보다 앞이고, 같은 종류면 이동과 흐름의 선언 순서다. 참조 값 줄은 가리키는 값이 바뀌는 같은 시각에 같은 글로 바뀐다. 단계가 끝난 뒤에 닿는 점은 값을 바꾸지 못한다.
+- 큐(`queue`)의 값 줄은 `slots`(칸 수)를 더 갖고 카드 줄이 없다(`card`도 없다). 같은 `periods`와 `flashes`를 쓰고, 글자 요소 대신 값 글자마다 그 찬 칸 수(음수는 0, `slots` 초과는 `slots`)만큼 찬 칸을 얹은 묶음(`<g class="queue-fill">`)을 두어 같은 방식으로 보인다. 밝힘 테두리는 카드 줄이 아니라 큐 윤곽을 따라 `duration.value-flash` 동안 보인다. 칸 수로 바꾸는 규칙(`filledSlots`)은 그리는 쪽 한 곳에 있고 재생기는 계산하지 않는다.
 - 움직이는 SVG는 값마다 글자 요소를 하나씩 두고 SMIL 이산 불투명도로 보이고, `flashes`에서 줄 둘레 테두리를 같은 방식으로 밝힌다. 재생기는 같은 구간으로 지금 시각의 글자 요소를 고른다. 시간표는 앞 박자를 몰라도 시각만으로 값을 정할 수 있게 구간 전체를 담는다.
 
 ### 박자 상태
@@ -186,6 +187,7 @@
 | 모든 글 상자가 점에서 가장자리 기준 16px(상자 간격 12에 옆으로 비킨 여백 4) 안에 있고, 점이 선 라벨 위를 지날 때 라벨 글자 대비가 4.5 이상이다. | `test/chip-reach.test.js`(재생기를 가짜 시계로 돌려 프레임마다 잼. saturn 예제, `test/fixtures/chip-reach`의 맥락과 낡은 캐시 원본) |
 | 움직이는 SVG의 점이 시간표와 같은 시각에 같은 위치에 있다. keyTimes는 늘어나기만 하고 keySplines 수가 맞으며, 보임 창과 이동 구간이 시간표 이동과 같고, 경로와 점이 한 좌표 그룹에 있다. | `test/motion.test.js`의 `toSvg_moving_packets_match_the_timeline_at_every_example`. 예제마다 25ms 간격으로 SMIL 값을 풀어 시간표 기대와 비교 |
 | 전체 화면에서 휠로 확대하면 커서 아래 지점이 고정된다. | 브라우저에서 확대 전후 커서 아래 그림 좌표 비교 |
+| 큐 값이 바뀌면 찬 칸 수가 바뀌고 큐 윤곽이 `duration.value-flash` 동안 밝아진다. 정지 SVG는 `from` 칸 수만큼 채운다. | `test/queue.test.js`의 `toSvg_animated_queue_swaps_the_filled_slot_group_with_each_value_and_flashes_the_outline_for_the_value_flash`, `toSvg_static_draws_an_empty_a_partly_filled_and_a_full_queue_with_different_filled_slot_counts` |
 | 멈춘 SVG는 모든 선과 계열을 보이고 움직임이 없다. | `test/motion.test.js`의 `toSvg_static_output_has_no_motion_and_shows_every_series`. 결과에 `@keyframes`와 `animateMotion`이 없는지, 단계가 있는 차트는 모든 계열이 숨김 없이 있는지 확인 |
 | 막대 차트 행 이름이 보이는 막대와 세로로 맞는다. | `test/chart.test.js`의 `buildTimeline_bar_label_shift_follows_the_visible_bars_and_is_zero_when_all_are_shown`, `drawChart_bar_label_of_a_row_with_a_missing_series_is_centered_on_its_only_bar` |
 | 조작 막대의 탭 묶음과 설명이 한 가운데 축에 있고, 탭 묶음 높이가 둥근 단추 높이와 같다. | `test/pages.test.js`의 `player_controls_share_one_axis_and_height_and_the_ring_and_active_tab_show_state`(Chrome이 있을 때). `getBoundingClientRect`로 가운데 축 차이 1px 이하, 높이 차이 1px 이하 확인 |

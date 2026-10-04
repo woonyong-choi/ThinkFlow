@@ -4,6 +4,7 @@ import { BADGE_STYLE, DECOR, STACK_STEP, groupDecor, nodeDecor } from './decor.j
 import { measure, wrap } from './fonts.js';
 import { planGridLinks } from './grid-links.js';
 import { layoutMiniGraph } from './minigraph.js';
+import { sizeQueue } from './queue.js';
 
 const SPACE = values.space;
 const TEXT = values.size.text;
@@ -44,7 +45,7 @@ export const GRID = Object.freeze({ pad: SPACE['6'], cellPadX: SPACE['4'], cellP
 // basis: estimate
 /**
  * 도형 하나의 크기. box는 배치에 넘기는 사각형, margin은 배치 바깥 여백(위, 아래)이다.
- * @param node 그림 모형의 도형. shape: person, box, external, store, decision, state, table, grid, start, final
+ * @param node 그림 모형의 도형. shape: person, box, external, store, queue, decision, state, table, grid, start, final
  * @param contents 시간 흐름에서 이 도형 카드에 보일 내용 목록. 내용은 카드 줄 목록이다
  * @param lineCounts 사람 몸통 높이를 정할 선 수 { out: 나가는 선 수, in: 들어오는 선 수 }와, 격자 칸에 이은 선 끝 cells(grid-links.js의 links)
  * @returns { w, h, marginTop, marginBottom, marginSide?, labelLines, subLines, card?: { w, h, layouts }, cells?, empties?, titleH? }. 격자의 cells는 { id, kind, x, y, w, h, lines, ... } 칸 목록이고 좌표는 격자 왼쪽 위가 원점이다
@@ -54,6 +55,7 @@ export function sizeNode(node, contents = [], lineCounts = { out: 0, in: 0 }) {
   if (node.shape === 'table') return sizeTable(node, contents);
   if (node.shape === 'grid') return sizeGrid(node, lineCounts.cells);
   if (node.shape === 'circle') return sizeCircle(node);
+  if (node.shape === 'queue') return sizeQueue(node, STYLE.label);
   if (node.shape === 'start' || node.shape === 'final') return { w: SIZE.node['state-dot'], h: SIZE.node['state-dot'], marginTop: 0, marginBottom: 0, labelLines: [], subLines: [] };
   const maxInner = SIZE.node['max-width'] - INNER_X * 2;
   const labelLines = wrap(node.label, maxInner, STYLE.label);

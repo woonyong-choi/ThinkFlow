@@ -243,6 +243,8 @@
   --color-palette-slate-dark-outline: #888888;
   --color-figure-icon: var(--color-blue-light-stroke);
   --color-figure-icon-tile: var(--color-blue-light-fill);
+  --color-figure-queue-fill: var(--color-blue-light-stroke);
+  --color-figure-queue-empty: var(--color-gray-161);
   --color-paint-red-fill: var(--color-red-light-fill);
   --color-paint-red-stroke: var(--color-red-light-stroke);
   --color-paint-red-outline: var(--color-red-light-outline);
@@ -344,6 +346,9 @@
   --size-chart-cap: 8px;
   --size-chart-range: 6px;
   --size-chart-arrow-min: 16px;
+  --size-queue-slot-width: 16px;
+  --size-queue-slot-height: 14px;
+  --size-queue-slot-gap: 4px;
   --size-person-width: 56px;
   --size-person-head: 20px;
   --size-person-shoulder: 14px;
@@ -447,6 +452,8 @@
     --color-accent: var(--color-blue-dark-stroke);
     --color-figure-icon: var(--color-blue-dark-stroke);
     --color-figure-icon-tile: var(--color-blue-dark-fill);
+    --color-figure-queue-fill: var(--color-blue-dark-stroke);
+    --color-figure-queue-empty: var(--color-gray-910);
     --color-paint-red-fill: var(--color-red-dark-fill);
     --color-paint-red-stroke: var(--color-red-dark-stroke);
     --color-paint-red-outline: var(--color-red-dark-outline);
@@ -539,6 +546,8 @@
   --color-accent: var(--color-blue-dark-stroke);
   --color-figure-icon: var(--color-blue-dark-stroke);
   --color-figure-icon-tile: var(--color-blue-dark-fill);
+  --color-figure-queue-fill: var(--color-blue-dark-stroke);
+  --color-figure-queue-empty: var(--color-gray-910);
   --color-paint-red-fill: var(--color-red-dark-fill);
   --color-paint-red-stroke: var(--color-red-dark-stroke);
   --color-paint-red-outline: var(--color-red-dark-outline);

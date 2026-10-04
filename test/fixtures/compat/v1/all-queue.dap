@@ -1,0 +1,16 @@
+daphnis 1
+flow right
+title "큐"
+subtitle "칸 수와 처음 찬 칸 수, 값처럼 바뀌는 찬 칸 수"
+
+box producer "생산자"
+queue jobs "작업 큐" slots=4 from=1
+box worker "작업자"
+on jobs jobs+1
+
+producer -> jobs
+jobs -> worker
+
+step "차오르고 비워진다" for=6s
+  track producer -> jobs "작업" every=2s time=1s
+  track jobs -> worker "꺼냄" at=3s every=3s time=1s set="jobs-1@jobs"

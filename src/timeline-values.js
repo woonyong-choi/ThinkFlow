@@ -74,13 +74,13 @@ function spansOf(row) {
  * 참조 값은 가리키는 값이 바뀌는 같은 시각에 같은 글로 바뀐다. 글이 그대로면 바뀐 것이 아니라 변화를 적지 않는다.
  * @param moves 식이 있는 이동과 흐름 { start, ms, nodes, fracs, sets }. start는 그림 전체 시각(ms), fracs는 nodes가 경로 길이의 어느 비율에 있는지다
  * @param span { si, t0, t1 }. 단계 번호와 단계의 시작과 끝 시각
- * @returns { si, id, node, t0, t1, initial, changes, periods, flashes }[]. 선언한 값마다 하나다
+ * @returns { si, id, node, t0, t1, initial, changes, periods, flashes, slots? }[]. 선언한 값마다 하나다. slots는 큐의 칸 수다
  */
 export function valueRows(figure, { moves, span }) {
   const byId = valueTable(figure);
   const state = new Map(figure.values.filter((v) => v.ref === undefined).map((v) => [v.id, v.from]));
   const textOf = (id) => state.get(rootOf(byId, id));
-  const rows = figure.values.map((v) => ({ si: span.si, id: v.id, node: v.on, t0: span.t0, t1: span.t1, initial: textOf(v.id), changes: [] }));
+  const rows = figure.values.map((v) => ({ si: span.si, id: v.id, node: v.on, t0: span.t0, t1: span.t1, initial: textOf(v.id), changes: [], ...(v.queue ? { slots: v.slots } : {}) }));
   const events = moves.flatMap((move, mi) => [...arrivalEvents(move, mi, figure.arrivals), ...setEvents(move, mi)]).filter((ev) => ev.t <= span.t1);
   for (const { t, e } of events.sort(compareEvents)) {
     const next = applyExpression(e, state);
