@@ -1,5 +1,6 @@
 // 12번: 순서 그림 메모가 그림 안에 있고 화살표, 라벨, 다른 생명선을 가리지 않는다.
-import { FIT_SLACK, overlaps, pillBox } from './geometry.js';
+import { FIT_SLACK } from '../measure/fonts.js';
+import { overlaps, pillBox } from './geometry.js';
 
 // 오류 메시지에 넣는 메모 글 길이
 const NAME_MAX = 24;

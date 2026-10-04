@@ -1,5 +1,6 @@
 // 시간 흐름을 시간표로 편다. 박자마다 상태를 완전히 적어서, 탭으로 건너뛰어도 앞 박자를 다시 계산하지 않는다(docs/design/playback.md).
 import { presentSlots, slotMiddle } from './chart/slots.js';
+import { roundToScale } from './format.js';
 import { hopMs } from './hop-ms.js';
 import { flowSeg } from './timeline-flow.js';
 import { createSeg } from './timeline-seg.js';
@@ -10,6 +11,15 @@ import { valueRowsByNode } from './values.js';
 const DWELL = values.duration;
 // 행 이름 세로 옮김(px)을 반올림하는 단위의 역수(소수 둘째 자리)
 const SHIFT_PRECISION = 100;
+
+// cost: time O(r), heap O(r), stack O(1)
+// vars: r = 도형의 카드 줄 수
+// basis: estimate
+// 카드 줄 하나를 도형별 줄 목록(rows)에 적용한다. clear는 그 도형의 줄을 비우고 아니면 줄을 더한다.
+function applyCardOp(rows, op) {
+  if (op.type === 'clear') rows.delete(op.node);
+  else rows.set(op.node, [...(rows.get(op.node) ?? []), op.row]);
+}
 
 // cost: time O(b·(o + k)), heap O(c·r), stack O(1)
 // vars: b = 박자 수, o = 박자의 카드 줄 수, k = 카드 있는 도형 수, c = 카드 내용 수, r = 줄 수
@@ -41,10 +51,7 @@ export function collectCards(figure) {
     starts.set(step, state);
     for (const beat of step.beats) {
       const before = state;
-      for (const op of beat.ops) {
-        if (op.type === 'clear') rows.delete(op.node);
-        else rows.set(op.node, [...(rows.get(op.node) ?? []), op.row]);
-      }
+      for (const op of beat.ops) applyCardOp(rows, op);
       state = stateOf();
       beats.set(beat, { before, after: state });
     }
@@ -172,7 +179,7 @@ function labelShiftsOf(figure, shown) {
     if (!seen.length) return 0;
     const present = presentSlots(row, series);
     const bars = seen.filter((i) => present.includes(i));
-    return Math.round((slotMiddle(bars.length ? bars : seen) - slotMiddle(present)) * SHIFT_PRECISION) / SHIFT_PRECISION;
+    return roundToScale(slotMiddle(bars.length ? bars : seen) - slotMiddle(present), SHIFT_PRECISION);
   });
 }
 

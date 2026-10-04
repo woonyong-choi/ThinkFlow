@@ -8,17 +8,14 @@ import { tokens, values } from '../tokens.js';
 import { cardGlyphs, createTones, drawCard } from './card.js';
 import { drawDecor, drawGroupTab } from './decor.js';
 import { drawHalo, paintOf, tintOf } from './paint.js';
-import { drawShape, outlineOf } from './shape.js';
+import { LINE_DASH, drawShape, outlineOf } from './shape.js';
 
 const SPACE = values.space;
 const SIZE = values.size;
 const RADIUS = values.radius;
-const EDGE_DASH = `${values.dash.line} ${values.dash.gap}`;
 const INNER_Y = SPACE['6'];
 // 그룹 면 단계는 깊이 0, 1, 2 이상 셋(color.group-1, group-2, group-3)이다. 깊이를 이 값으로 막는다.
 const MAX_GROUP_STEP = 2;
-// 점선 경계 그룹(border=dashed)의 점선
-const GROUP_DASH = `${values.dash.line} ${values.dash.gap}`;
 // 이름을 도형 안에서 따로 그리는 도형(테이블 머리, 격자 제목)
 const HAS_OWN_LABELS = new Set(['table', 'grid']);
 
@@ -56,7 +53,7 @@ function drawGroup(g, j, { decorate, glyphs, scene }) {
   const deep = depth ? ` d${depth + 1}` : '';
   const dashed = g.border === 'dashed';
   return (
-    `<g id="g-${j}" class="fl-group${g.iconData ? ' tabbed' : ''}" data-id="${escapeXml(g.id)}"><rect x="${r(g.x)}" y="${r(g.y)}" width="${r(g.w)}" height="${r(g.h)}" rx="${RADIUS['2xl']}" class="frame-box fl-stroke${deep}${dashed ? ' dashed' : ''}${colors} ${decorate('group', j)}"${dashed ? ` stroke-dasharray="${GROUP_DASH}"` : ''}/>` +
+    `<g id="g-${j}" class="fl-group${g.iconData ? ' tabbed' : ''}" data-id="${escapeXml(g.id)}"><rect x="${r(g.x)}" y="${r(g.y)}" width="${r(g.w)}" height="${r(g.h)}" rx="${RADIUS['2xl']}" class="frame-box fl-stroke${deep}${dashed ? ' dashed' : ''}${colors} ${decorate('group', j)}"${dashed ? ` stroke-dasharray="${LINE_DASH}"` : ''}/>` +
     `${g.iconData ? drawGroupTab(g) : ''}<text x="${r(left + head.textDx)}" y="${r(centerBaseline(g.y + SIZE.group.title / 2, STYLE.group.size))}" class="frame${paint ? ` gt-${paint}` : ''}">${renderRich(g.label)}</text>${decor}</g>`
   );
 }
@@ -145,7 +142,7 @@ function arrowheads({ head }) {
 // 선 하나. 알약 라벨은 drawPill이 따로 그린다.
 function drawEdge(e, j, { decorate }) {
   const { d } = routePolyline(e.points, RADIUS.route);
-  const dash = e.dashed ? ` stroke-dasharray="${EDGE_DASH}"` : '';
+  const dash = e.dashed ? ` stroke-dasharray="${LINE_DASH}"` : '';
   const path = `<path id="p-${j}" d="${d}" class="fl-path ${decorate('edge', j)}"${dash}${arrowheads(e)}/>`;
   return `<g id="e-${j}" class="${edgeClass(e, j, decorate)}">${path}</g>`;
 }

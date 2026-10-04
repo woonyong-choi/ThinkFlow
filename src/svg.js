@@ -1,5 +1,5 @@
 // 스크립트 없이 움직이는 SVG와 멈춘 SVG. 시간표의 박자 상태를 CSS keyframes와 SMIL로 옮긴다(docs/design/playback.md).
-import { canvasOf, fitCanvas } from './canvas.js';
+import { FIGURE_PAD, canvasOf, fitCanvas } from './canvas.js';
 import { CHART_FACES, chartText } from './chart/draw.js';
 import { createAnimator } from './animate/animator.js';
 import { drawScene } from './draw/figure.js';
@@ -93,7 +93,7 @@ function drawCaptions(timeline, { animator, glyphs }, { width, top }) {
   const wrapped = new Map(captions.map((c) => [c, wrap(c, wrapWidth, CAPTION)]));
   const lines = Math.max(1, ...[...wrapped.values()].map((l) => l.length));
   // 설명 글 아래 여백은 그림 내용 위 여백(그림 둘레 여백 space.14)과 같다. 마지막 줄 기준선에서 글자 내림 4를 더한 만큼 아래에 둔다.
-  const height = captions.length ? SPACE['22'] + (lines - 1) * CAPTION_LINE + SPACE['2'] + SPACE['14'] : SPACE['15'];
+  const height = captions.length ? SPACE['22'] + (lines - 1) * CAPTION_LINE + SPACE['2'] + FIGURE_PAD : SPACE['15'];
   const labels = timeline.steps.map((label, si) => {
     glyphs.add(label, STEP_LABEL.face);
     const cls = animator.windows(timeline.segs.map((s) => s.si === si), { on: 'opacity: 1', off: 'opacity: 0', isSwap: true });

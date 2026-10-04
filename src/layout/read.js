@@ -4,15 +4,11 @@ import { values } from '../tokens.js';
 import { LayoutError } from './error.js';
 import { withLeads } from './cell-ports.js';
 import { placeTitles } from './titles.js';
-import { ROOT, decorOf } from './model.js';
+import { CROWD, ROOT, TOUCH, decorOf } from './model.js';
 
 const SETTLE = values.space['4'];
 // 번호 알약을 얹을 구간 안 자리(구간 길이 비율). 가운데를 먼저 보고 양옆으로 간다.
 const RUN_FRACTIONS = [0.5, 0.35, 0.65, 0.2, 0.8];
-// 두 좌표가 같다고 보는 거리
-const TOUCH = 0.5;
-// 같은 면의 선 끝이 이보다 가까워지면 붙어 보인다(그림 검사 5번과 같은 값)
-const CROWD = values.space['2-5'];
 // 선 옆에 두는 라벨 알약과 선 사이 간격
 const BESIDE_GAP = values.space['3'];
 

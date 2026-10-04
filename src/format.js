@@ -17,6 +17,11 @@ export function roundTo(value, digits) {
   return rounded === 0 ? 0 : rounded;
 }
 
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+/** value를 1/scale 간격으로 반올림한다(scale이 1000이면 소수 셋째 자리). 시간표와 차트 강도처럼 계산 중간에 줄이는 값에 쓴다. 출력 글자는 roundTo가 줄인다. */
+export const roundToScale = (value, scale) => Math.round(value * scale) / scale;
+
 /** 좌표, 너비, 높이, 반지름 같은 화면 길이. */
 export const coord = (value) => roundTo(value, DIGITS.coord);
 

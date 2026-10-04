@@ -10,7 +10,8 @@ import { fillOf } from './paint.js';
 const SPACE = values.space;
 const SIZE = values.size;
 const RADIUS = values.radius;
-const EDGE_DASH = `${values.dash.line} ${values.dash.gap}`;
+/** 선, 바깥 도형 테두리, 점선 경계 그룹이 함께 쓰는 점선(stroke-dasharray) */
+export const LINE_DASH = `${values.dash.line} ${values.dash.gap}`;
 
 // 윤곽 모양. 채우기와 선은 부르는 쪽이 정한다.
 const geometry = {
@@ -72,7 +73,7 @@ export function drawShape(it, stroke, paint) {
 // basis: estimate
 // 상자와 외부 도형. 복제 개수(count)가 있으면 뒤 윤곽 두 겹이 오른쪽 아래로 비쳐 보인다. 앞 상자(몸통)는 bodyOf가 정한다.
 function drawBox(it, stroke, fill) {
-  const dash = it.shape === 'external' ? ` stroke-dasharray="${EDGE_DASH}"` : '';
+  const dash = it.shape === 'external' ? ` stroke-dasharray="${LINE_DASH}"` : '';
   const steps = Array.from({ length: (it.stack ?? 0) / STACK_STEP }, (_, k) => it.stack / STACK_STEP - k);
   return [...steps, 0].map((k) => `${geometry.rect({ ...it, x: it.x + k * STACK_STEP, y: it.y + k * STACK_STEP })[0]} ${fill} ${stroke}${dash}/>`).join('');
 }

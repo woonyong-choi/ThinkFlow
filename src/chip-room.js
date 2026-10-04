@@ -43,23 +43,29 @@ function edgesOfLeg(k, { hop, names, scene }) {
 export function chipRoomNeeds({ scene, timeline, avoid, direction }, asked = new Map()) {
   const needs = new Map();
   for (const seg of timeline.segs) {
-    for (const hop of seg.hops) {
-      if (!hop.data || hop.track === undefined) continue;
-      const issues = issuesOfHop(scene, hop, avoid).filter((issue) => issue.hits.length);
-      if (!issues.length) continue;
-      const { names, gaps } = timeline.tracks[hop.track];
-      const nodes = names.map((id) => id.split('.')[0]);
-      const chip = sizeChip(hop.data);
-      const base = (direction === 'down' ? chip.h : chip.w) + CHIP_GAP * 2;
-      for (const issue of issues) {
-        for (const e of edgesOfLeg(legAt(issue.at, gaps), { hop, names: nodes, scene })) {
-          const index = scene.edges[e].index;
-          needs.set(index, Math.max(needs.get(index) ?? 0, asked.has(index) ? asked.get(index) + STEP : base));
-        }
-      }
-    }
+    for (const hop of seg.hops) addHopNeeds(needs, hop, { scene, timeline, avoid, direction, asked });
   }
   return needs;
+}
+
+// cost: time O(i·e), heap O(1), stack O(1)
+// vars: i = 이동이 지나는 가림 지점 수, e = 한 구간의 선 수
+// basis: estimate
+// 이동 하나가 지나는 선마다 필요한 간격을 needs에 더한다. 글 상자가 없거나 흐름이 아니거나 가려지는 곳이 없으면 아무것도 더하지 않는다.
+function addHopNeeds(needs, hop, { scene, timeline, avoid, direction, asked }) {
+  if (!hop.data || hop.track === undefined) return;
+  const issues = issuesOfHop(scene, hop, avoid).filter((issue) => issue.hits.length);
+  if (!issues.length) return;
+  const { names, gaps } = timeline.tracks[hop.track];
+  const nodes = names.map((id) => id.split('.')[0]);
+  const chip = sizeChip(hop.data);
+  const base = (direction === 'down' ? chip.h : chip.w) + CHIP_GAP * 2;
+  for (const issue of issues) {
+    for (const e of edgesOfLeg(legAt(issue.at, gaps), { hop, names: nodes, scene })) {
+      const index = scene.edges[e].index;
+      needs.set(index, Math.max(needs.get(index) ?? 0, asked.has(index) ? asked.get(index) + STEP : base));
+    }
+  }
 }
 
 // 흐름 글 상자가 이름을 가려 25% 넘게 숨는다고 7번이 알린 경고인지

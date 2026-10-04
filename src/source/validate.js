@@ -153,13 +153,20 @@ function checkTimeline(figure, names, problems) {
       for (const hop of beat.hops) resolveHop(hop, { figure, names, problems }, usedEdges);
       for (const op of beat.ops) checkCardTarget(op, { figure, names }, problems);
       for (const target of beat.light) checkLightTarget(target, { line: beat.line, figure, names }, problems);
-      for (const note of beat.notes) if (!names.has(note.node) && !figure.rejectedNames.has(note.node)) problems.error(note.line, unknownName('participant', note.node, names.keys()));
+      for (const note of beat.notes) checkNoteParticipant(note, { figure, names }, problems);
     }
   }
   figure.edges.forEach((edge, i) => {
     if (edge.quiet && !usedEdges.has(i)) problems.warn(edge.line, `[check 11] quiet edge ${edge.from} -> ${edge.to} is never passed, so it never shows. Pass it in a step or remove quiet`);
   });
   if (figure.kind === 'sequence') checkParticipantOrder(figure, problems);
+}
+
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+// 메모가 가리키는 참여자가 선언돼 있는지 본다. 이미 거부한 이름은 따로 알렸으므로 다시 알리지 않는다.
+function checkNoteParticipant(note, { figure, names }, problems) {
+  if (!names.has(note.node) && !figure.rejectedNames.has(note.node)) problems.error(note.line, unknownName('participant', note.node, names.keys()));
 }
 
 // cost: time O(e), heap O(1), stack O(1)

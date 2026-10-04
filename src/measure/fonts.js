@@ -9,6 +9,8 @@ import { values } from '../tokens.js';
 const require = createRequire(import.meta.url);
 // 글자 사이 간격(px). 글자마다 더해지므로 글 폭에 글자 수만큼 곱해 더한다. 고정폭 글은 간격을 주지 않는다.
 const TRACKING = values.tracking.text;
+/** 잰 글 폭의 반올림 차이를 넘기 위한 여유. 글이 칸 안에 드는지 가를 때 더한다. */
+export const FIT_SLACK = 0.5;
 
 // 글꼴 이름과 파일. weight는 CSS font-weight, family는 SVG 안 @font-face 이름이다.
 // 본문은 한글, 라틴, 숫자를 Pretendard(FigSans) 하나로 그린다. 참고 문서 페이지와 같은 글꼴이다.

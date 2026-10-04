@@ -1,10 +1,9 @@
 // 흐름(track)의 점에만 있는 움직임: 도형 안에서 숨는 보임 구간, 단계 끝에서 잘리는 점의 사라짐과 이동, 다른 점의 글 상자와 겹칠 때 숨는 글 상자.
 // 시간표가 한 번 계산한 값(hop.gaps, hop.cut, hop.chipFade)을 SMIL로 옮기기만 한다.
-import { arrivalOffsetMs, curveOf, progressAt } from '../easing.js';
+import { arrivalOffsetMs, MOVE, progressAt } from '../easing.js';
 import { ratio } from '../format.js';
 import { values } from '../tokens.js';
 
-const MOVE = curveOf('move');
 const CUT_FADE_MS = values.duration['cut-fade'];
 // 잘리는 점의 이동을 이동 곡선에서 재는 지점 수. 잘린 점은 곡선 일부만 지나 SMIL 곡선 하나로 그릴 수 없어 선형 구간으로 잇는다.
 const CUT_SAMPLES = 24;

@@ -1,4 +1,5 @@
 // 배치 모형을 elkjs 그래프로 바꾼다. 선택 사항 값은 모두 토큰이다(docs/design/layout.md 간격과 결정성).
+import { FIGURE_PAD } from '../canvas.js';
 import { groupTitleWidth, hasPill, isOnLinePill, sizePill } from '../measure/sizes.js';
 import { values } from '../tokens.js';
 import { ROOT } from './model.js';
@@ -138,7 +139,7 @@ function cycleStrategy(c, ctx) {
 }
 
 function rootOptions(figure) {
-  const pad = SPACE['14'];
+  const pad = FIGURE_PAD;
   return { 'elk.padding': `[top=${pad},left=${pad},bottom=${pad},right=${pad}]`, ...(figure.aspect !== undefined ? wrapOptions(figure.aspect) : {}) };
 }
 

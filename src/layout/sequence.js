@@ -1,11 +1,11 @@
 // 순서 그림 배치. 참여자 열과 메시지 행이 정해진 격자라 elkjs를 쓰지 않는다(docs/design/layout.md 순서 그림 배치).
 import { measure, wrap } from '../measure/fonts.js';
+import { FIGURE_PAD } from '../canvas.js';
 import { STYLE, sizePill } from '../measure/sizes.js';
 import { values } from '../tokens.js';
 
 const SPACE = values.space;
 const SIZE = values.size;
-const PAD = SPACE['14'];
 // 메모 상자 안쪽 여백과 최대 너비
 const NOTE_PAD = SPACE['5'];
 const NOTE_MAX = SIZE.chip['max-width'];
@@ -28,15 +28,15 @@ export function layoutSequence(figure, sizes) {
   const headH = Math.max(...participants.map((p) => sizes.get(p.id).h + sizes.get(p.id).marginTop + sizes.get(p.id).marginBottom));
   const items = participants.map((p, i) => {
     const size = sizes.get(p.id);
-    const bottom = PAD + headH - size.marginBottom;
+    const bottom = FIGURE_PAD + headH - size.marginBottom;
     return { ...p, ...size, x: centers[i] - size.w / 2, y: bottom - size.h, w: size.w, h: size.h, ports: [] };
   });
-  const rows = layoutRows(messages, noteBoxes, { index, centers, top: PAD + headH + SPACE['12'] });
+  const rows = layoutRows(messages, noteBoxes, { index, centers, top: FIGURE_PAD + headH + SPACE['12'] });
   const { edges, notes } = rows;
   const bottom = rows.bottom + SPACE['8'];
   const lifelines = items.map((it) => ({ id: it.id, x: centers[index.get(it.id)], y1: it.y + it.h + it.marginBottom, y2: bottom }));
   const right = Math.max(...items.map((it) => it.x + it.w), ...notes.map((n) => n.x + n.w), ...edges.flatMap((e) => e.points.map((p) => p.x)));
-  return { items, groups: [], edges, lifelines, notes, width: right + PAD, height: bottom + PAD };
+  return { items, groups: [], edges, lifelines, notes, width: right + FIGURE_PAD, height: bottom + FIGURE_PAD };
 }
 
 // cost: time O(m·n), heap O(m + n), stack O(1)
@@ -108,8 +108,8 @@ function placeColumns({ participants, sizes, index }, messages, noteBoxes) {
     const hop = beat.hops[0];
     if (hop.from === hop.to) rightNeed[index.get(hop.from)] = Math.max(rightNeed[index.get(hop.from)], sizePill(hop.data).w + SPACE['20']);
   }
-  // 첫 참여자의 왼쪽 메모는 그림 왼쪽 여백(PAD) 안에서 시작한다.
-  const centers = [Math.max(PAD + half(0), PAD + leftNeed[0] - SPACE['6'])];
+  // 첫 참여자의 왼쪽 메모는 그림 왼쪽 여백(FIGURE_PAD) 안에서 시작한다.
+  const centers = [Math.max(FIGURE_PAD + half(0), FIGURE_PAD + leftNeed[0] - SPACE['6'])];
   for (let i = 1; i < participants.length; i++) {
     let c = centers[i - 1] + Math.max(half(i - 1) + half(i) + SPACE['16'], rightNeed[i - 1], leftNeed[i]);
     for (const beat of messages) {

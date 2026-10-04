@@ -1,9 +1,8 @@
 // 9번과 10번: 그림 비율과 문서 폭에서 읽힘.
-import { canvasOf, displayRatio } from '../canvas.js';
+import { ASPECT_MAX, canvasOf, displayRatio } from '../canvas.js';
 import { ROOT } from '../layout/model.js';
 import { values } from '../tokens.js';
 
-const ASPECT_MAX = values.scale['aspect-max'];
 // 가장 작은 글 토큰. 그림이 줄어들어도 이보다 작은 글이 되면 읽히지 않는다.
 const MIN_READABLE = Math.min(...Object.values(values.size.text));
 // 줄인 글 크기 비교에서 반올림을 넘기 위한 여유

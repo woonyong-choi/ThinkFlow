@@ -8,6 +8,10 @@ import { addPort, endpoint } from './ports.js';
 const SIZE = values.size;
 /** 가장 바깥 그룹의 내부 이름. 원본 이름은 소문자, 숫자, `-`뿐이라 `_`가 든 이 이름과 부딪히지 않는다. */
 export const ROOT = '__root';
+/** 두 좌표가 같다고 보는 거리. 배치 읽기와 그림 검사가 같은 값을 쓴다. */
+export const TOUCH = 0.5;
+/** 같은 면의 선 끝이 이보다 가까워지면 붙어 보인다(그림 검사 5번). 배치도 이 값으로 선 끝을 비킨다. */
+export const CROWD = values.space['2-5'];
 
 // cost: time O(s + e·d), heap O(s + e·d), stack O(1)
 // vars: s = 도형 수, e = 선 수, d = 그룹 깊이

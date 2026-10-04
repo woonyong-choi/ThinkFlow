@@ -71,15 +71,21 @@ function createLookup(cells, count) {
 function collect(cells, span, { stamps, round }) {
   const found = [];
   for (let cx = span.x0; cx <= span.x1; cx++) {
-    for (let cy = span.y0; cy <= span.y1; cy++) {
-      for (const i of cells.get(cx * ROW_STRIDE + cy) ?? []) {
-        if (stamps[i] === round) continue;
-        stamps[i] = round;
-        found.push(i);
-      }
-    }
+    for (let cy = span.y0; cy <= span.y1; cy++) addUnstamped(found, cells.get(cx * ROW_STRIDE + cy) ?? [], { stamps, round });
   }
   return found.length > 1 ? found.sort((a, b) => a - b) : found;
+}
+
+// cost: time O(m), heap O(m), stack O(1)
+// vars: m = 칸에 걸린 사각형 수
+// basis: estimate
+// 칸에 걸린 사각형 번호 가운데 이번 회차(round)에 아직 표시하지 않은 것을 표시하고 found에 더한다.
+function addUnstamped(found, indexes, { stamps, round }) {
+  for (const i of indexes) {
+    if (stamps[i] === round) continue;
+    stamps[i] = round;
+    found.push(i);
+  }
 }
 
 // 사각형이 걸치는 칸 번호 범위

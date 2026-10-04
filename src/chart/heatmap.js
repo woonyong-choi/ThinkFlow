@@ -1,5 +1,6 @@
 // 히트맵: 행과 열 이름, 값에 비례한 칸 진하기, 칸 안 값
 import { mixHex, pickInk } from '../contrast.js';
+import { roundToScale } from '../format.js';
 import { measure } from '../measure/fonts.js';
 import { centerBaseline, renderRich, roundCoord as r } from '../text.js';
 import { tokens, values } from '../tokens.js';
@@ -23,7 +24,7 @@ const STRENGTH_PRECISION = 1000;
  * @returns { strength, fill, isOn }. strength는 STRENGTH_PRECISION에 맞춰 줄인 강도다.
  */
 export function heatLook(rawStrength, heat) {
-  const strength = Math.round(rawStrength * STRENGTH_PRECISION) / STRENGTH_PRECISION;
+  const strength = roundToScale(rawStrength, STRENGTH_PRECISION);
   const fill = mixHex(heat.low, heat.high, strength);
   return { strength, fill, isOn: pickInk(fill, heat.ink, heat.inkOn) === heat.inkOn };
 }

@@ -2,11 +2,10 @@
 // 숨김은 이동마다 한 번 계산한 불투명도 키(hop.chipFade)로 시간표에 담고, 움직이는 SVG와 재생기와 그림 검사 7번이 그 키를 그대로 읽는다(docs/design/playback.md 이동 글).
 import { CHIP_FRAME_MS, CHIP_VISIBLE_MIN, chipStateAt } from './chip-motion.js';
 import { OVERLAP_SLACK, overlapArea, sizeChip } from './chip.js';
-import { curveOf, progressAt } from './easing.js';
+import { MOVE, progressAt } from './easing.js';
 import { flattenRoute } from './route.js';
 import { values } from './tokens.js';
 
-const MOVE = curveOf('move');
 /** 글 상자가 숨고 다시 나타나는 시간(ms). 이동 글 상자 흐려짐 토큰과 같다. */
 export const CHIP_HIDE_FADE_MS = values.duration['chip-fade'];
 
@@ -138,17 +137,23 @@ function overlapsAt(hops, t, world) {
  */
 export function findClashes(scene, timeline) {
   const world = { scene, timeline, cache: new Map() };
-  const found = [];
   const seen = new Set();
-  for (const seg of timeline.segs) {
-    const hops = seg.hops.filter((hop) => hop.data);
-    if (hops.length < 2) continue;
-    for (let t = 0; t <= seg.t1 - seg.t0; t += CHIP_FRAME_MS) {
-      for (const { a, b } of overlapsAt(hops, t, world)) {
-        const key = `${hops.indexOf(a)}\u0000${hops.indexOf(b)}\u0000${seg.t0}`;
-        if (!seen.has(key)) found.push({ seg, a, b, t });
-        seen.add(key);
-      }
+  return timeline.segs.flatMap((seg) => clashesOfSeg(seg, world, seen));
+}
+
+// cost: time O(F·h²), heap O(h), stack O(1)
+// vars: F = 구간의 프레임 수, h = 구간의 글 상자 있는 이동 수
+// basis: estimate
+// 구간 하나의 겹침. seen은 이미 낸 이동 쌍 키 모음이고 새로 낸 쌍을 더한다.
+function clashesOfSeg(seg, world, seen) {
+  const hops = seg.hops.filter((hop) => hop.data);
+  const found = [];
+  if (hops.length < 2) return found;
+  for (let t = 0; t <= seg.t1 - seg.t0; t += CHIP_FRAME_MS) {
+    for (const { a, b } of overlapsAt(hops, t, world)) {
+      const key = `${hops.indexOf(a)}\u0000${hops.indexOf(b)}\u0000${seg.t0}`;
+      if (!seen.has(key)) found.push({ seg, a, b, t });
+      seen.add(key);
     }
   }
   return found;

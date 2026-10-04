@@ -5,7 +5,7 @@ import { values } from '../tokens.js';
 import { finishRowChart, rowValueScale } from './axis.js';
 import { inkGroup, labelText, valueText } from './labels.js';
 import { BAR, SPACE, TEXT, seriesColor } from './metrics.js';
-import { formatNumber, valueFormat } from './scale.js';
+import { formatNumber, seriesFormats } from './scale.js';
 import { rimRect } from './rim.js';
 import { presentSlots, slotMiddle } from './slots.js';
 import { hasRowRule } from '../source/chart-rules.js';
@@ -44,14 +44,6 @@ function valueReaches(chart) {
       return [{ value: Math.max(v, row.values[`${s.id}.high`] ?? 0), extra: SPACE['3'] + measure(formats[i](v), TEXT['11'], i === 0 ? 'numSemibold' : 'num') }];
     }),
   );
-}
-
-// cost: time O(r·s), heap O(s), stack O(1)
-// vars: r = 행 수, s = 계열 수
-// basis: estimate
-// 계열마다 값 글자 만드는 함수. 계열 안은 같은 소수 자릿수다.
-function seriesFormats(chart) {
-  return chart.series.map((s) => valueFormat(chart.rows.map((row) => row.values[s.id]).filter((v) => typeof v === 'number'), chart.decimals));
 }
 
 // cost: time O(r·s), heap O(1), stack O(1)

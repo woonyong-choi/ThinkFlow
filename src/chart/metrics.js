@@ -1,4 +1,5 @@
 // 차트 그리기가 함께 쓰는 크기 상수와 색. 값은 모두 토큰에서 온다.
+import { FIGURE_PAD } from '../canvas.js';
 import { tokens, values } from '../tokens.js';
 
 export const SPACE = values.space;
@@ -8,7 +9,7 @@ export const WIDTH = SIZE.chart.width;
 export const BAR = SIZE.chart.bar;
 export const ROW = SIZE.chart.row;
 export const DOT = SIZE.chart.dot;
-export const PAD = SPACE['14'];
+export const PAD = FIGURE_PAD;
 export const CAP = SIZE.chart.cap;
 // 내용이 닿는 오른쪽 끝. 왼쪽 여백(PAD)과 같은 여백을 오른쪽에도 둔다.
 export const RIGHT = WIDTH - PAD;

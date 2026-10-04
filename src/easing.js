@@ -31,7 +31,8 @@ export function timeAt(curve, progress) {
   return axis(x1, x2, (low + high) / 2);
 }
 
-const MOVE = curveOf('move');
+/** 점이 선을 지나는 곡선(`easing.move`). 움직이는 SVG와 재생기가 같은 곡선을 쓴다. */
+export const MOVE = curveOf('move');
 
 // cost: time O(STEPS), heap O(1), stack O(1)
 // vars: STEPS = 이분 탐색 횟수

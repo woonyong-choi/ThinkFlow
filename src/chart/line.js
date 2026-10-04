@@ -3,6 +3,7 @@
 import { roundCoord as r } from '../text.js';
 import { values } from '../tokens.js';
 import { curveOf, timeAt } from '../easing.js';
+import { roundToScale } from '../format.js';
 import { drawRules } from './axis.js';
 import { CAP, DOT, SPACE, seriesColor } from './metrics.js';
 import { plotFrame } from './plot-frame.js';
@@ -20,7 +21,7 @@ function arrivals(xy) {
   const lengths = [0];
   for (let k = 1; k < xy.length; k++) lengths.push(lengths[k - 1] + Math.hypot(xy[k][0] - xy[k - 1][0], xy[k][1] - xy[k - 1][1]));
   const total = lengths.at(-1) || 1;
-  return lengths.map((length) => Math.round(timeAt(REVEAL, length / total) * AT_PRECISION) / AT_PRECISION);
+  return lengths.map((length) => roundToScale(timeAt(REVEAL, length / total), AT_PRECISION));
 }
 
 // cost: time O(p), heap O(p), stack O(1)

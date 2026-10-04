@@ -2,9 +2,9 @@
 import { CHIP_GAP, chipCandidateAt, chipCandidates, descOf, sizeChip } from './chip.js';
 import { gridOf } from './chip-grid.js';
 import { issuesOf, settle, simplify } from './chip-fade.js';
-import { cutPath, dotAt, MOVE, NODE_MS, visibleShare } from './chip-motion.js';
+import { cutPath, dotAt, NODE_MS, visibleShare } from './chip-motion.js';
 import { addSlides, SWITCH_COST } from './chip-slide.js';
-import { progressAt } from './easing.js';
+import { MOVE, progressAt } from './easing.js';
 import { flattenRoute } from './route.js';
 import { values } from './tokens.js';
 

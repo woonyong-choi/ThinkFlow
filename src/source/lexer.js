@@ -23,30 +23,46 @@ export function tokenizeLine(text, line, problems) {
     } else if (c === '#') {
       break;
     } else if (c === '"') {
-      const quoted = readQuoted(text, i, { line, problems });
-      // 빈 글은 이름 없는 도형이나 빈 항목이 된다. 글이 필요 없으면 따옴표째 뺀다.
-      if (quoted.value.trim() === '') problems.error(line, 'quoted text cannot be empty. Write the text or remove the quotes', { column: i + 1 });
-      tokens.push({ type: 'text', value: quoted.value, column: i + 1, length: quoted.end - i });
-      i = quoted.end;
-      if (i < text.length && !/\s/.test(text[i]) && text[i] !== '#') problems.error(line, `put a space after the closing quote. Found "${text[i]}"`, { column: i + 1 });
+      i = pushQuoted(tokens, { text, start: i, line }, problems);
     } else {
-      const start = i;
-      // 따옴표 밖의 `#`는 낱말 중간이어도 주석의 시작이다.
-      while (i < text.length && !/\s|\uFEFF/.test(text[i]) && text[i] !== '"' && text[i] !== '#') i++;
-      const word = text.slice(start, i);
-      if (text[i] === '"' && word.endsWith('=')) {
-        const quoted = readQuoted(text, i, { line, problems });
-        if (quoted.value.trim() === '') problems.error(line, `${word.slice(0, -1)}= cannot be empty. Write the text or remove the option`, { column: start + 1 });
-        tokens.push({ type: 'option', key: word.slice(0, -1), value: quoted.value, valueType: 'text', column: start + 1, length: quoted.end - start, valueColumn: i + 1 });
-        i = quoted.end;
-      } else if (text[i] === '"') {
-        problems.error(line, `put a space before the quote after "${word}"`, { column: start + 1 });
-      } else {
-        pushWord(tokens, { word, line, column: start + 1, isHash: text[i] === '#' }, problems);
-      }
+      i = pushBare(tokens, { text, start: i, line }, problems);
     }
   }
   return tokens;
+}
+
+// cost: time O(n), heap O(n), stack O(1)
+// vars: n = 따옴표 안 글자 수
+// basis: estimate
+// 따옴표 글 낱말 하나를 넣고 다음 읽을 자리를 돌려준다. 빈 글이나 닫는 따옴표 뒤 붙은 글자는 오류다.
+function pushQuoted(tokens, { text, start, line }, problems) {
+  const quoted = readQuoted(text, start, { line, problems });
+  // 빈 글은 이름 없는 도형이나 빈 항목이 된다. 글이 필요 없으면 따옴표째 뺀다.
+  if (quoted.value.trim() === '') problems.error(line, 'quoted text cannot be empty. Write the text or remove the quotes', { column: start + 1 });
+  tokens.push({ type: 'text', value: quoted.value, column: start + 1, length: quoted.end - start });
+  const next = quoted.end;
+  if (next < text.length && !/\s/.test(text[next]) && text[next] !== '#') problems.error(line, `put a space after the closing quote. Found "${text[next]}"`, { column: next + 1 });
+  return next;
+}
+
+// cost: time O(n), heap O(n), stack O(1)
+// vars: n = 낱말 글자 수
+// basis: estimate
+// 따옴표 밖 낱말 하나(`키="글"` 꼴 포함)를 넣고 다음 읽을 자리를 돌려준다.
+function pushBare(tokens, { text, start, line }, problems) {
+  let i = start;
+  // 따옴표 밖의 `#`는 낱말 중간이어도 주석의 시작이다.
+  while (i < text.length && !/\s|\uFEFF/.test(text[i]) && text[i] !== '"' && text[i] !== '#') i++;
+  const word = text.slice(start, i);
+  if (text[i] === '"' && word.endsWith('=')) {
+    const quoted = readQuoted(text, i, { line, problems });
+    if (quoted.value.trim() === '') problems.error(line, `${word.slice(0, -1)}= cannot be empty. Write the text or remove the option`, { column: start + 1 });
+    tokens.push({ type: 'option', key: word.slice(0, -1), value: quoted.value, valueType: 'text', column: start + 1, length: quoted.end - start, valueColumn: i + 1 });
+    return quoted.end;
+  }
+  if (text[i] === '"') problems.error(line, `put a space before the quote after "${word}"`, { column: start + 1 });
+  else pushWord(tokens, { word, line, column: start + 1, isHash: text[i] === '#' }, problems);
+  return i;
 }
 
 // cost: time O(n), heap O(1), stack O(1)

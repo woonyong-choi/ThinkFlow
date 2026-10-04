@@ -1,12 +1,8 @@
 // 그림 검사가 함께 쓰는 사각형, 선분, 부모 관계 계산.
-import { ROOT } from '../layout/model.js';
+import { ROOT, TOUCH } from '../layout/model.js';
+import { FIT_SLACK } from '../measure/fonts.js';
 import { groupHead, sizePill } from '../measure/sizes.js';
 import { values } from '../tokens.js';
-
-/** 잰 글 폭의 반올림 차이를 넘기 위한 여유 */
-export const FIT_SLACK = 0.5;
-/** 도형 경계와 선 끝이 같다고 보는 거리 */
-export const TOUCH = 0.5;
 
 /** 도형과 그룹 안쪽으로 들어가야 선이 지나간 것으로 보는 안쪽 여백 */
 export const THROUGH_INSET = 1;

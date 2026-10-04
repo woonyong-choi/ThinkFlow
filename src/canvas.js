@@ -5,6 +5,10 @@ import { values } from './tokens.js';
 export const CANVAS = values.size['figure-canvas'];
 /** 그림 머리 `width wide`를 쓴 그림의 표시 폭 */
 export const CANVAS_WIDE = values.size['figure-canvas-wide'];
+/** 그림 둘레 안쪽 여백. 배치와 차트가 내용 둘레에, 설명 글이 아래에 같은 값을 둔다. */
+export const FIGURE_PAD = values.space['14'];
+/** 보이는 가로세로 비율의 한도. 비율이 이 값이나 그 역수를 넘으면 그림이 읽히지 않는다. */
+export const ASPECT_MAX = values.scale['aspect-max'];
 
 // cost: time O(1), heap O(1), stack O(1)
 // basis: estimate

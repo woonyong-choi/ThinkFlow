@@ -1,17 +1,16 @@
 // 점 위에 뜨는 글 상자의 크기와 자리. 움직이는 SVG, 재생기, 그림 검사가 시간표에 담은 같은 계획을 쓴다(docs/design/playback.md 이동 글).
-import { measure } from './measure/fonts.js';
+import { FIGURE_PAD } from './canvas.js';
+import { FIT_SLACK, measure } from './measure/fonts.js';
 import { STYLE } from './measure/sizes.js';
 import { values } from './tokens.js';
 
 const SPACE = values.space;
 /** 글 상자와 점 사이 간격 */
 export const CHIP_GAP = SPACE['6'];
-/** 글 상자가 판 위아래 끝에서 떨어져야 하는 거리. 판 안쪽 여백(그림 둘레 여백)과 같다. */
-export const CHIP_MARGIN = SPACE['14'];
+/** 글 상자가 판 위아래 끝에서 떨어져야 하는 거리. 그림 둘레 여백(FIGURE_PAD)이다. */
+export const CHIP_MARGIN = FIGURE_PAD;
 // 이름 글자와 겹친 넓이가 이 값 이하면 겹침 없음으로 본다(잰 글 폭의 반올림 차이)
 export const OVERLAP_SLACK = 0.5;
-// 잰 글 폭의 반올림 차이를 넘기 위한 여유
-const FIT_SLACK = 0.5;
 /** 글 상자가 도형, 글자, 알약, 다른 선, 그룹 틀에서 떨어져야 하는 최소 간격. 비켜 놓는 자리는 이만큼 띄운다. */
 export const CHIP_CLEAR = SPACE['2'];
 // 가리는 것을 비켜 올리거나 내리는 최대 거리

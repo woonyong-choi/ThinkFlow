@@ -1,8 +1,6 @@
 // 3번, 4번, 5번: 선이 도형을 지나지 않고, 끝이 연결점에 있고, 다른 선과 붙지 않는다.
-import { THROUGH_INSET, TOUCH, capitalize, drawnBox, near, onBorder, segmentHits } from './geometry.js';
-import { values } from '../tokens.js';
-
-const CROWD = values.space['2-5'];
+import { CROWD, TOUCH } from '../layout/model.js';
+import { THROUGH_INSET, capitalize, drawnBox, near, onBorder, segmentHits } from './geometry.js';
 
 // cost: time O(e·(s + g)·p·d), heap O(1), stack O(1)
 // vars: e = 선 수, s = 도형 수, g = 그룹 수, p = 경로 점 수, d = 그룹 깊이

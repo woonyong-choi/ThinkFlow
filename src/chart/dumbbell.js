@@ -4,7 +4,7 @@ import { centerBaseline, roundCoord as r } from '../text.js';
 import { finishRowChart, rowValueScale } from './axis.js';
 import { inkGroup, labelText, valueText } from './labels.js';
 import { DOT, ROW, SIZE, SPACE, TEXT, WIDTH, PAD, seriesColor } from './metrics.js';
-import { formatChange, valueFormat } from './scale.js';
+import { formatChange, seriesFormats } from './scale.js';
 
 const ARROW_MIN = SIZE.chart['arrow-min'];
 
@@ -13,14 +13,6 @@ const ARROW_MIN = SIZE.chart['arrow-min'];
 // 계열 s의 신뢰구간 값(low, high). 없으면 빈 목록이다.
 function boundsOf(row, s) {
   return [`${s.id}.low`, `${s.id}.high`].map((key) => row.values[key]).filter((v) => v !== undefined);
-}
-
-// cost: time O(r), heap O(1), stack O(1)
-// vars: r = 행 수
-// basis: estimate
-// 두 계열의 값 글자 만드는 함수. 계열 안은 같은 소수 자릿수다.
-function seriesFormats(chart) {
-  return chart.series.map((s) => valueFormat(chart.rows.map((row) => row.values[s.id]).filter((v) => typeof v === 'number'), chart.decimals));
 }
 
 // cost: time O(r), heap O(r), stack O(1)

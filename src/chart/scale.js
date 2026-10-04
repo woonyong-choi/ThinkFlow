@@ -63,6 +63,14 @@ export function valueFormat(list, decimals) {
   return (value) => (Math.abs(value) >= 1000 || isErased(value) ? formatNumber(value) : roundHalfAway(value, places).toFixed(places));
 }
 
+// cost: time O(r·s), heap O(r), stack O(1)
+// vars: r = 행 수, s = 계열 수
+// basis: estimate
+/** 계열마다 값 글자를 만드는 함수 목록. 계열 안은 같은 소수 자릿수다. */
+export function seriesFormats(chart) {
+  return chart.series.map((s) => valueFormat(chart.rows.map((row) => row.values[s.id]).filter((v) => typeof v === 'number'), chart.decimals));
+}
+
 /** 덤벨 바뀐 비율 글자. 줄면 −, 늘면 +. 첫 값이 0이거나 비율이 숫자 범위를 넘으면(0에 가장 가까운 정규 수에서 1로 간 값) 빈 글이다. */
 export function formatChange(before, after) {
   const ratio = ((after - before) * 100) / before;

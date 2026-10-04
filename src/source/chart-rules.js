@@ -208,19 +208,25 @@ function checkChartTimeline(figure, problems) {
   for (const step of figure.steps) {
     if (!step.beats.length && !step.hasError) problems.error(step.line, `step "${step.label}" has no lines. Add reveal, light, say, or wait`);
     for (const beat of step.beats) {
-      for (const id of beat.reveal) {
-        if (!ids.length) problems.error(beat.line, `a ${chartType} chart without series has nothing to reveal`);
-        else if (!ids.includes(id)) problems.error(beat.line, unknownName('series', id, ids));
-        else if (revealed.includes(id)) problems.error(beat.line, `series "${id}" is already revealed`);
-        else revealed.push(id);
-        if (chartType === 'dumbbell' && id === ids[1] && !revealed.includes(ids[0])) problems.error(beat.line, `reveal "${ids[0]}" before "${ids[1]}". The arrow starts from the compare series`);
-      }
+      for (const id of beat.reveal) checkReveal({ id, line: beat.line }, { ids, revealed, chartType }, problems);
       for (const target of beat.chartLight) checkChartLightShape(target, chartType, problems);
     }
   }
   if (revealed.length) {
     for (const s of chart.series) if (!revealed.includes(s.id)) problems.error(s.line, `series "${s.id}" is never revealed. Add "reveal ${s.id}" or remove the series`);
   }
+}
+
+// cost: time O(s), heap O(1), stack O(1)
+// vars: s = 계열 수
+// basis: estimate
+// reveal 한 줄의 계열이 있고 아직 안 밝혔는지, 덤벨이면 비교 계열 뒤인지 본다. 맞으면 revealed에 더한다.
+function checkReveal({ id, line }, { ids, revealed, chartType }, problems) {
+  if (!ids.length) problems.error(line, `a ${chartType} chart without series has nothing to reveal`);
+  else if (!ids.includes(id)) problems.error(line, unknownName('series', id, ids));
+  else if (revealed.includes(id)) problems.error(line, `series "${id}" is already revealed`);
+  else revealed.push(id);
+  if (chartType === 'dumbbell' && id === ids[1] && !revealed.includes(ids[0])) problems.error(line, `reveal "${ids[0]}" before "${ids[1]}". The arrow starts from the compare series`);
 }
 
 function checkChartLightShape(target, chartType, problems) {

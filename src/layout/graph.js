@@ -1,6 +1,6 @@
 // 구조, 상태, 데이터 관계 그림을 elkjs로 배치한다. 그룹마다 따로 배치하고, 그룹 경계를 넘는 선은 경계마다 연결점을 거친다(docs/design/layout.md).
 import ELK from 'elkjs/lib/elk.bundled.js';
-import { canvasOf, displayRatio } from '../canvas.js';
+import { ASPECT_MAX, canvasOf, displayRatio } from '../canvas.js';
 import { values } from '../tokens.js';
 import { toElk } from './elk.js';
 import { LayoutError } from './error.js';
@@ -8,7 +8,6 @@ import { buildModel } from './model.js';
 import { isBodyShape, recordPortOrder } from './ports.js';
 import { readElk } from './read.js';
 
-const ASPECT_MAX = values.scale['aspect-max'];
 // 알맞은 보이는 비율의 범위. 세로로 긴 쪽은 두 화면 모두 페이지 스크롤로 읽혀 한도(aspect-max)의 역수까지, 가로로 넓은 쪽은 데스크톱 가로 화면 비율(1400x900)까지다.
 const FIT_MIN = 1 / ASPECT_MAX;
 const FIT_MAX = values.scale['aspect-fit-max'];
