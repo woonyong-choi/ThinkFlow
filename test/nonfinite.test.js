@@ -5,6 +5,7 @@ import { join } from 'node:path';
 import { test } from 'node:test';
 import { fileURLToPath } from 'node:url';
 import { buildFigure } from '../src/build.js';
+import { toHtml } from '../src/html.js';
 import { toSvg } from '../src/svg.js';
 
 const ROOT = fileURLToPath(new URL('../', import.meta.url));
@@ -39,5 +40,21 @@ test('rebuilt_example_and_compat_svgs_contain_no_NaN_or_Infinity', async () => {
 
     assert.doesNotMatch(withoutFonts(await toSvg(result)), NON_FINITE, path);
     assert.doesNotMatch(withoutFonts(await toSvg(result, { isStatic: true })), NON_FINITE, path);
+  }
+});
+
+// 근거: 이슈 #103 완료 조건 "성공한 출력의 시간표, SVG, HTML 데이터에 NaN, Infinity, null 시각이 없다". 시간 상한 값으로 만든 그림도 시간표 숫자가 모두 유한하다
+test('figure_at_the_time_limit_has_a_finite_timeline_and_no_non_finite_text_in_svg_and_html', async () => {
+  const source = 'flow right\nspeed 3600000ms\nbox a "A"\nbox b "B"\na -> b\nstep "s" for=1800s\n  track a -> b time=3600000ms every=1800s\nstep "t" for=1800s\n  track a -> b time=1ms at=0s every=900s\n';
+  const result = await buildFigure(source, { strict: true });
+  const numbers = [];
+  JSON.stringify(result.timeline, (_key, value) => (typeof value === 'number' ? (numbers.push(value), value) : value));
+
+  assert.ok(numbers.length > 20);
+  assert.ok(numbers.every(Number.isFinite));
+  assert.ok(result.timeline.segs.every((seg) => Number.isFinite(seg.t0) && Number.isFinite(seg.t1)));
+  for (const text of [await toSvg(result), await toSvg(result, { isStatic: true }), await toHtml(result, 'edge')]) {
+    assert.doesNotMatch(withoutFonts(text), NON_FINITE);
+    assert.doesNotMatch(text, /"t[01]":null/);
   }
 });

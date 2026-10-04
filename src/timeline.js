@@ -139,6 +139,7 @@ function beatSeg({ step, si, beat, bi }, { memory, run }, { cards, chips, scene 
   const hold = dwellOf(said) + (bi === step.beats.length - 1 ? DWELL['step-end'] : 0);
   const card = cards.beats.get(beat) ?? { before: {}, after: {} };
   return createSeg(run, {
+    line: beat.line,
     si,
     bi,
     length: Math.max(move, grow) + beat.waitMs + hold,

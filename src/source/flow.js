@@ -1,7 +1,7 @@
 // 흐름 단계 문장(`step ... for=시간`, `track a -> b -> c ...`)을 읽는다. 선이 있는지와 시간이 맞는지는 flow-check.js가 확인한다.
 import { readMoveOptions, readTime } from './move-options.js';
 import { readOptions } from './options.js';
-import { parseTime } from './values.js';
+import { isOverTimeLimit, overLimitMessage, parseTime } from './values.js';
 
 const TRACK_FORM = 'write a track as: track a, b -> c -> d ["text"] [at=time] [every=time] [time=time] [tone=name] [set="id+1@node"]';
 
@@ -13,7 +13,8 @@ export function readStepOptions(options, { line, ctx }) {
   const found = readOptions(options, { scopes: ['step'], what: 'a step', line, ctx });
   if (found.for === undefined) return undefined;
   const ms = parseTime(found.for);
-  if (ms === undefined) ctx.problems.error(line, `for is a positive time such as 12s. Found "${found.for}"`);
+  if (ms === undefined && isOverTimeLimit(found.for)) ctx.problems.error(line, overLimitMessage('for', found.for), { code: 'time-limit' });
+  else if (ms === undefined) ctx.problems.error(line, `for is a positive time such as 12s. Found "${found.for}"`);
   return ms;
 }
 

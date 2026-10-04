@@ -2,7 +2,7 @@
 import { optionsOf } from './grammar.js';
 import { readOptions } from './options.js';
 import { readSets } from './value.js';
-import { parseTime } from './values.js';
+import { isOverTimeLimit, overLimitMessage, parseTime } from './values.js';
 
 const WHAT = { hop: 'a move', track: 'a track' };
 
@@ -26,6 +26,7 @@ export function readMoveOptions(options, { scope, line, ctx }) {
 export function readTime(text, { key, isZeroOk = false, line, ctx }) {
   if (text === undefined) return undefined;
   const ms = parseTime(text, isZeroOk);
-  if (ms === undefined) ctx.problems.error(line, `${key} is ${isZeroOk ? 'a time such as 0s, 900ms, or 2s' : 'a positive time such as 900ms or 2s'}. Found "${text}"`);
+  if (ms === undefined && isOverTimeLimit(text)) ctx.problems.error(line, overLimitMessage(key, text), { code: 'time-limit' });
+  else if (ms === undefined) ctx.problems.error(line, `${key} is ${isZeroOk ? 'a time such as 0s, 900ms, or 2s' : 'a positive time such as 900ms or 2s'}. Found "${text}"`);
   return ms;
 }

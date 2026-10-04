@@ -10,9 +10,9 @@ const NOISE_DIGITS = 9;
 
 // cost: time O(1), heap O(1), stack O(1)
 // basis: estimate
-/** value를 소수 digits자리로 반올림한다. 반올림 경계(12.25 등)가 1e-12 위아래 어느 쪽이어도 같은 값이고(걷어 낸 값이 하나로 정해지고 toFixed가 그 값을 자른다), -0은 0이다. */
+/** value를 소수 digits자리로 반올림한다. 유한하지 않은 값은 깨진 파일 대신 오류(RangeError)로 끝낸다. 반올림 경계(12.25 등)가 1e-12 위아래 어느 쪽이어도 같은 값이고(걷어 낸 값이 하나로 정해지고 toFixed가 그 값을 자른다), -0은 0이다. */
 export function roundTo(value, digits) {
-  if (!Number.isFinite(value)) return value;
+  if (!Number.isFinite(value)) throw new RangeError(`output number is not finite: ${value}`);
   const rounded = Number(Number(value.toFixed(NOISE_DIGITS)).toFixed(digits));
   return rounded === 0 ? 0 : rounded;
 }

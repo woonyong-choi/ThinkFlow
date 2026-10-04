@@ -48,9 +48,16 @@ function planTrack(track, { scene, speed }) {
 // cost: time O(1), heap O(1), stack O(1)
 // basis: estimate
 // 흐름 하나의 출발 수. 배열을 만들지 않고 단계 길이와 every에서 센다. every가 없으면 한 번이다.
+// 나눗셈 오차로 하나 많거나 적게 나올 수 있어(`ceil(0.07 / 0.01)`은 8), 마지막 출발 `at + (n-1)·every`가 단계 끝 전이고 그다음 출발 `at + n·every`가 단계 끝 이후가 되도록 한 번 맞춘다. departures가 만드는 시각과 같은 식이다.
 export function departureCount(track, lengthMs) {
   if (track.atMs >= lengthMs) return 0;
-  return track.everyMs === undefined ? 1 : Math.ceil((lengthMs - track.atMs) / track.everyMs);
+  if (track.everyMs === undefined) return 1;
+  const startOf = (i) => track.atMs + i * track.everyMs;
+  let count = Math.ceil((lengthMs - track.atMs) / track.everyMs);
+  // 나눗셈 오차는 하나를 넘지 않는다. 시각이 늘지 않는 입력(at + n·every === at)에서 끝없이 세지 않도록 한 번씩만 맞춘다.
+  if (count > 1 && startOf(count - 1) >= lengthMs) count--;
+  else if (startOf(count) < lengthMs) count++;
+  return count;
 }
 
 // cost: time O(t), heap O(1), stack O(1)
@@ -67,12 +74,14 @@ function reserveDots(step, lengthMs, { run, limit }) {
 // cost: time O(n), heap O(n), stack O(1)
 // vars: n = 출발 수
 // basis: estimate
-// 흐름 하나의 출발 시각(단계 안 ms). at에서 시작해 every마다 되풀이하고 단계 끝(lengthMs) 전에 출발한 점만 그린다. every가 없으면 한 번이다.
+// 흐름 하나의 출발 시각(단계 안 ms). 미리 센 출발 수(departureCount)만큼 `at + i·every`로 만든다. 시각이 유한하지 않거나 엄격히 늘지 않거나 단계 끝 전이 아니면(지원하지 않는 시간 정밀도) 그 track 줄의 오류로 끝낸다. every가 없으면 한 번이다.
 function departures(track, lengthMs) {
+  const count = departureCount(track, lengthMs);
   const starts = [];
-  for (let at = track.atMs; at < lengthMs; at += track.everyMs) {
+  for (let i = 0; i < count; i++) {
+    const at = track.atMs + i * (track.everyMs ?? 0);
+    if (!Number.isFinite(at) || at >= lengthMs || (i > 0 && at <= starts[i - 1])) throw new FigureError([makeDiagnostic({ severity: 'error', line: track.line, message: `time precision is not supported: departure ${i} of ${count} would start at ${at}ms, which does not come after the one before it. Raise every= or lower at=` }, { code: 'time-precision' })]);
     starts.push(at);
-    if (track.everyMs === undefined) break;
   }
   return starts;
 }
@@ -106,6 +115,7 @@ export function flowSeg({ step, si }, run, { scene, cards, chips, dotsLimit = DO
   });
   const start = cards.starts.get(step) ?? {};
   const seg = createSeg(run, {
+    line: step.line,
     si,
     bi: 0,
     length,

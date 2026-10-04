@@ -91,7 +91,7 @@ step "대화" "입력은 화면을 거쳐 엔진이 에이전트로 보낸다"
 |---|---|
 | 계열 이름, `x`, `y`, `min`, `q1`, `median`, `q3`, `max`, `계열.low`, `계열.high` | 숫자. 막대 계열 값만 빠진 값 `-`도 된다 |
 
-- 시간은 `900ms`나 `2s`이고 0보다 크다. 단위 없는 숫자는 시간이 아니다.
+- 시간은 `900ms`나 `2s`이고 0보다 크다. 단위 없는 숫자는 시간이 아니다. 시간 값 하나는 1시간(`3600s`, 3600000ms)을 넘을 수 없고, 넘으면 그 줄의 오류다(`code`는 `time-limit`). `speed`, `for`, `wait`, `time=`, `at=`, `every=` 모두 같다. 단계 하나의 길이와 그림 전체 시간에도 같은 상한이 있다([재생](playback.md#시간-상한)).
 - 숫자는 `-`와 소수점만 쓰는 십진수다(`-3`, `91.4`). 천 단위 쉼표와 지수 표기는 오류다. 음수를 쓸 수 있는 자리는 [차트](charts.md)의 값 축 표가 정한다.
 - 글 값은 늘 따옴표 안에 쓴다. `tag=you`는 오류다.
 
@@ -239,7 +239,7 @@ step "대화" "입력은 화면을 거쳐 엔진이 에이전트로 보낸다"
 - 흐름은 박자와 따로 돈다. 한 단계에 `track` 줄을 두면 그 단계는 길이가 `for`인 구간 하나이고, 흐름끼리 서로 기다리지 않는다. 한 단계에 박자 줄(이동, `show`, `clear`, `light`, `say`, `wait`)과 `track` 줄을 섞으면 오류다. 한 그림에는 두 종류의 단계가 함께 있어도 된다. 구조 그림에서만 쓴다.
 - `track a, b, c -> x -> y`는 출발지마다 흐름 하나로 펼친다. `at`을 적지 않으면 출발지 i의 첫 출발은 `every × i / n`(n은 출발지 수)이라 출발이 엇갈린다. `tone`을 적지 않으면 출발지 이름마다 브랜드 파랑(`brand`), 보라(`purple`) 순으로 색이 하나씩 배정되고 셋째 출발지부터는 모두 진한 회색(`gray`)이며, 같은 출발지 이름은 그림 전체에서 같은 색이다. 적으면 그 값이다.
 - 구간마다 이동과 같은 규칙으로 선을 고른다(같은 방향 선, 없으면 거꾸로, 둘 다 없으면 오류). 점은 구간 사이에서 멈추지 않고 이어 붙인 경로를 지나며, 도형 안을 지나는 동안은 보이지 않는다. 이동 시간은 구간 시간(선 길이 비례)의 합이고 `time=`은 경로 전체의 시간이다. 출발과 도착이 느린 곡선(`easing.move`)은 경로 전체에 한 번 건다.
-- `at`은 처음 출발 시각이다(`0s`도 된다). `every`가 있으면 단계 끝 전까지 그 간격으로 되풀이해 출발한다. 단계 끝까지 도착하지 못하는 점은 단계 끝에서 서서히 사라지게 그리고(`duration.cut-fade`), 그 점이 닿지 못한 도형의 값은 바뀌지 않는다. 출발 수와 잘린 점 수는 배치가 정하는 이동 시간에 따라 달라지므로 횟수가 중요한 그림은 `time=`을 적는다. 점이 하나도 그려지지 않는 흐름은 [그림 검사](figure-check.md) 14번 오류다.
+- `at`은 처음 출발 시각이다(`0s`도 된다). `every`가 있으면 단계 끝 전까지 그 간격으로 되풀이해 출발한다. `at + every`가 `at`과 같아지는 것처럼 출발 시각이 엄격히 늘지 않는 시간 정밀도는 지원하지 않고 그 `track` 줄의 오류다(`code`는 `time-precision`. `every=`를 늘리거나 `at=`을 줄인다). 단계 끝까지 도착하지 못하는 점은 단계 끝에서 서서히 사라지게 그리고(`duration.cut-fade`), 그 점이 닿지 못한 도형의 값은 바뀌지 않는다. 출발 수와 잘린 점 수는 배치가 정하는 이동 시간에 따라 달라지므로 횟수가 중요한 그림은 `time=`을 적는다. 점이 하나도 그려지지 않는 흐름은 [그림 검사](figure-check.md) 14번 오류다.
 - `for`는 `track`이 없는 단계에 쓰면 오류다.
 - 글은 이동 글 상자처럼 점과 함께 간다. 흐름이 지나는 선은 점이 처음 닿는 시각에 밝아지고 단계 끝까지 남는다. 도형은 켜 두지 않고, 점이 닿을 때마다 후광만 `duration.pulse` 동안 한 번 깜빡인다.
 
@@ -279,7 +279,7 @@ step "대화" "입력은 화면을 거쳐 엔진이 에이전트로 보낸다"
 | `warning` | 품질 문제 | 씀 | `--strict` |
 | `deprecated` | 옛 형식이고 계속 동작한다 | 씀 | `--no-deprecated` |
 
-- 진단 하나의 모양은 `{ severity, code, line, column, message, fix? }`이고 모든 진단이 쓴다. `--json`은 여기에 `file`을 더하고, 옛 필드 `lines`, `check`, `level`도 함께 내(폐기, 다음 판까지) 진단마다 한 줄을 표준 출력에 쓴다. `code`는 `syntax`(문법), `check-1`~`check-14`([그림 검사](figure-check.md) 번호), `deprecated-statement`, `deprecated-option`, `deprecated-value`, `deprecated-kind`, `deprecated-extension`(옛 확장자 파일), `deprecated-fence`(마크다운 옛 울타리), `unsupported-version`, `invalid-version`, `version-required`, `layout`(배치 실패, [배치](layout.md#배치-실패)), `io`, `internal`이다. `column`은 줄 안 1부터 센 자리다. `fix`는 `{ line, column, length, text }`로, 그 줄의 `column`부터 `length`글자를 `text`로 바꾼다.
+- 진단 하나의 모양은 `{ severity, code, line, column, message, fix? }`이고 모든 진단이 쓴다. `--json`은 여기에 `file`을 더하고, 옛 필드 `lines`, `check`, `level`도 함께 내(폐기, 다음 판까지) 진단마다 한 줄을 표준 출력에 쓴다. `code`는 `syntax`(문법), `check-1`~`check-14`([그림 검사](figure-check.md) 번호), `time-limit`(시간 상한 초과), `time-precision`(출발 시각이 늘지 않는 시간 정밀도), `deprecated-statement`, `deprecated-option`, `deprecated-value`, `deprecated-kind`, `deprecated-extension`(옛 확장자 파일), `deprecated-fence`(마크다운 옛 울타리), `unsupported-version`, `invalid-version`, `version-required`, `layout`(배치 실패, [배치](layout.md#배치-실패)), `io`, `internal`이다. `column`은 줄 안 1부터 센 자리다. `fix`는 `{ line, column, length, text }`로, 그 줄의 `column`부터 `length`글자를 `text`로 바꾼다.
 - `daphnis migrate 원본... [--write]`는 진단의 `fix`를 그대로 적용한다. 기본은 바뀔 줄만 `-`, `+`로 보여 주고, `--write`일 때만 파일을 고친다. 원본에 오류가 있거나 고친 글에 오류나 폐기가 남으면 아무것도 쓰지 않는다. 새 폐기 항목은 표에 `replace`만 적으면 된다.
 
 - CLI 출력과 옵션도 같은 규칙이다. 명령과 옵션 이름, 종료 코드, `--json` 필드는 추가만 하고, 옛 `--json` 필드(`lines`, `check`, `level`)는 `src/diagnostics.js` 표에 deprecated로 표시해 다음 판까지 함께 낸다.

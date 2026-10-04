@@ -11,7 +11,7 @@ import { createProblems } from './problems.js';
 import { readTimeline } from './steps.js';
 import { readOn, readValue } from './value.js';
 import { validateFigure } from './validate.js';
-import { parseTime } from './values.js';
+import { isOverTimeLimit, overLimitMessage, parseTime } from './values.js';
 import { NUMBER_PATTERN } from './words.js';
 
 const SECTIONS = ['header', 'declare', 'timeline'];
@@ -269,7 +269,8 @@ function readHeader({ tokens, line }, { figure, problems }) {
     else figure[key] = value.value;
   } else if (key === 'speed') {
     const ms = parseTime(value?.value);
-    if (value?.type !== 'word' || ms === undefined) problems.error(line, 'write speed as a time such as 900ms or 2s');
+    if (value?.type === 'word' && ms === undefined && isOverTimeLimit(value.value)) problems.error(line, overLimitMessage('speed', value.value), { code: 'time-limit' });
+    else if (value?.type !== 'word' || ms === undefined) problems.error(line, 'write speed as a time such as 900ms or 2s');
     else figure.speedMs = ms;
   } else if (key === 'aspect') {
     const ratio = Number(value?.value);

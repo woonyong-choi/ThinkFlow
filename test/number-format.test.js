@@ -8,6 +8,7 @@ import { buildFigure } from '../src/build.js';
 import { createClock } from '../src/animate/clock.js';
 import { toHtml } from '../src/html.js';
 import { toSvg } from '../src/svg.js';
+import { roundedNumbers, roundTo } from '../src/format.js';
 import { roundCoord } from '../src/text.js';
 
 const EXAMPLES = fileURLToPath(new URL('../examples/', import.meta.url));
@@ -77,4 +78,13 @@ test('rounding_is_stable_on_the_half_boundary', () => {
     assert.equal(clock.keyTime(5 + noise * 1e6), clock.keyTime(5));
     assert.equal(clock.percent(5 + noise * 1e6), clock.percent(5));
   }
+});
+
+// 근거: 이슈 #103 완료 조건 "재생기 데이터와 SVG에 비유한 숫자가 들어가지 않는다". JSON.stringify가 null로 바꿔 숨기지 않고 직렬화 직전에 오류로 끝낸다
+test('serializing_a_non_finite_number_fails_instead_of_writing_null_NaN_or_Infinity', () => {
+  for (const bad of [NaN, Infinity, -Infinity]) {
+    assert.throws(() => roundTo(bad, 5), RangeError, String(bad));
+    assert.throws(() => JSON.stringify({ t1: bad }, roundedNumbers), RangeError, String(bad));
+  }
+  assert.equal(JSON.stringify({ t1: 1.5, none: null }, roundedNumbers), '{"t1":1.5,"none":null}');
 });

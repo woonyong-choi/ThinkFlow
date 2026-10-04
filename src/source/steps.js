@@ -2,7 +2,7 @@
 import { readStepOptions, readTrack, checkMixedStep } from './flow.js';
 import { parseMiniGraph } from './minigraph.js';
 import { readMoveOptions } from './move-options.js';
-import { parseNumber, parseTime } from './values.js';
+import { isOverTimeLimit, overLimitMessage, parseNumber, parseTime } from './values.js';
 import { flagNames, optionsOf, valueNames } from './grammar.js';
 
 // cost: time O(t), heap O(t), stack O(1)
@@ -188,7 +188,8 @@ function readSay({ tokens, line }, ctx) {
 function readWait({ tokens, line }, ctx) {
   const [, time, extra] = tokens;
   const ms = parseTime(time?.value);
-  if (time?.type !== 'word' || ms === undefined || extra) ctx.problems.error(line, 'write wait as: wait 2s');
+  if (time?.type === 'word' && ms === undefined && !extra && isOverTimeLimit(time.value)) ctx.problems.error(line, overLimitMessage('wait', time.value), { code: 'time-limit' });
+  else if (time?.type !== 'word' || ms === undefined || extra) ctx.problems.error(line, 'write wait as: wait 2s');
   pushBeat(ctx, line).waitMs = ms ?? 0;
 }
 
