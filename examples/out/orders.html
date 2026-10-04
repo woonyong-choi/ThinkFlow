@@ -200,7 +200,7 @@
   --size-packet-radius: 4.5px;
   --size-packet-halo: 10px;
   --size-packet-hop-ref: 300px;
-  --size-packet-chip-reach: 12px;
+  --size-packet-chip-reach: 16px;
   --size-arrow-head: 5px;
   --size-arrow-head-lit: 4px;
   --size-node-card-width: 176px;
@@ -324,6 +324,7 @@
   --scale-aspect-max: 3;
   --scale-zoom-step: 1.25;
   --scale-flow-dots-max: 80;
+  --scale-chip-visible-share: 0.6;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) {
@@ -1696,7 +1697,7 @@ function createStage(root, data) {
     packetLayer: svg.querySelector('.fl-packets'),
     nodes: data.cardCounts.map((_, i) => svg.querySelector(`#n-${i}`)),
     groups: all('.fl-group'),
-    edges: data.edgeEnds.map((_, j) => svg.querySelector(`#e-${j}`)),
+    edges: data.edgeEnds.map((_, j) => withLabel(svg.querySelector(`#e-${j}`), svg.querySelector(`#l-${j}`))),
     paths: data.edgeEnds.map((_, j) => svg.querySelector(`#p-${j}`)),
     trackPaths: Array.from({ length: data.trackCount ?? 0 }, (_, k) => svg.querySelector(`#tp-${k}`)),
     values: data.values ?? [],
@@ -1709,6 +1710,14 @@ function createStage(root, data) {
     packets: [],
     pendingCards: [],
   };
+}
+
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+// 선 묶음과 알약 묶음(점 층 위에 따로 그려진다)의 class를 함께 바꾸는 손잡이. 알약이 없으면 선만 바꾼다.
+function withLabel(edge, label) {
+  const both = (act) => (name, on) => [edge, label].forEach((el) => el && act(el.classList, name, on));
+  return { classList: { toggle: both((list, name, on) => list.toggle(name, on)), add: both((list, name) => list.add(name)), remove: both((list, name) => list.remove(name)) } };
 }
 
 // cost: time O(n·c), heap O(n·c), stack O(1)
@@ -2003,7 +2012,7 @@ function drawValueState(stage, seg, t) {
   });
 }
 
-figurePlay(document.querySelector('.fl-figure'), {"segs":[{"si":0,"t0":0,"t1":4740,"hops":[],"edgesOn":[],"nodesOn":[],"groupsOn":[],"partsOn":["payments.order_id","orders.id"],"cards":{},"cardsBefore":{},"cardsAt":{},"caption":"결제 행은 주문 행을 외래 키로 가리킨다","series":[],"growing":[],"lights":[]},{"si":0,"t0":4740,"t1":7790,"hops":[{"edge":0,"isBack":false,"ms":750,"to":"orders","data":["order_id 1042"],"line":16,"chipPath":[[0,48.47607421623539,-31,1],[0.005964783915087195,48.11818718384475,-31,1],[0.018437560239978185,47.369820604351276,-31,1],[0.03811187083526059,46.18936196863433,-31,1],[0.06570096117429003,44.534016548292584,-31,1],[0.10187787646557456,42.3634016308155,-31,1],[0.1471694540672311,39.64590697471613,-31,1],[0.20178945770550127,36.3687067564199,-31,1],[0.2654118923904264,32.55136067532442,-31,1],[0.336927964018532,28.260396377638074,-31,1],[0.41429543374262523,23.618348194192492,-31,1],[0.5745912671782765,14.000598188053402,-31,1],[0.6510007925372481,9.416026666515108,-31,1],[0.7213290129396324,5.196333442372065,-31,1],[0.7839458953917328,1.4393204952460223,-31,1],[0.8380716006702216,-1.8082218214632917,-31,1],[0.8835734692388322,-4.538333935579942,-31,1],[0.9207356536169877,-6.768064998269267,-31,1],[0.9500707149255626,-8.528168676783764,-31,1],[0.9721901497987274,-9.855334769173623,-31,1],[0.9877253322178113,-10.787445714318665,-31,1],[0.9972839607967611,-11.360963429055687,-31,1],[1,-11.523925777478155,-31,1]]}],"edgesOn":[0],"nodesOn":[0,1],"groupsOn":[],"partsOn":["payments.order_id","orders.id"],"cards":{},"cardsBefore":{},"cardsAt":{},"caption":"결제 행은 주문 행을 외래 키로 가리킨다","series":[],"growing":[],"lights":[]}],"steps":["결제"],"cardCounts":[0,0],"edgeEnds":[[0,1]],"seriesCount":0,"rowCount":0,"metrics":{"active":"var(--color-state-active)","chipFill":"var(--color-state-active-fill)","halo":10,"haloOpacity":0.2,"packet":4.5,"chipRadius":8,"chipLine":15,"chipPadX":18,"chipPadY":8,"chipGap":12,"icon":12,"iconStroke":1.75,"pauseStroke":2.5,"zoomMax":6,"zoomStep":1.25,"move":[0.455,0.03,0.515,0.955]}});
+figurePlay(document.querySelector('.fl-figure'), {"segs":[{"si":0,"t0":0,"t1":4740,"hops":[],"edgesOn":[],"nodesOn":[],"groupsOn":[],"partsOn":["payments.order_id","orders.id"],"cards":{},"cardsBefore":{},"cardsAt":{},"caption":"결제 행은 주문 행을 외래 키로 가리킨다","series":[],"growing":[],"lights":[]},{"si":0,"t0":4740,"t1":7790,"hops":[{"edge":0,"isBack":false,"ms":750,"to":"orders","data":["order_id 1042"],"line":16,"chipPath":[[0,30.47607421623539,0.5,1],[0.005964783915087195,30.118187183844753,0.5,1],[0.018437560239978185,29.369820604351276,0.5,1],[0.9721901497987274,-27.855334769173623,0,1],[0.9877253322178113,-28.787445714318665,0,1],[0.9972839607967611,-29.360963429055687,0,1],[1,-29.523925777478155,0,1]]}],"edgesOn":[0],"nodesOn":[0,1],"groupsOn":[],"partsOn":["payments.order_id","orders.id"],"cards":{},"cardsBefore":{},"cardsAt":{},"caption":"결제 행은 주문 행을 외래 키로 가리킨다","series":[],"growing":[],"lights":[]}],"steps":["결제"],"cardCounts":[0,0],"edgeEnds":[[0,1]],"seriesCount":0,"rowCount":0,"metrics":{"active":"var(--color-state-active)","chipFill":"var(--color-state-active-fill)","halo":10,"haloOpacity":0.2,"packet":4.5,"chipRadius":8,"chipLine":15,"chipPadX":18,"chipPadY":8,"chipGap":12,"icon":12,"iconStroke":1.75,"pauseStroke":2.5,"zoomMax":6,"zoomStep":1.25,"move":[0.455,0.03,0.515,0.955]}});
 </script>
 </body>
 </html>

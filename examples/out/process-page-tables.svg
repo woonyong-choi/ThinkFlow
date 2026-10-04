@@ -181,7 +181,7 @@
   --size-packet-radius: 4.5px;
   --size-packet-halo: 10px;
   --size-packet-hop-ref: 300px;
-  --size-packet-chip-reach: 12px;
+  --size-packet-chip-reach: 16px;
   --size-arrow-head: 5px;
   --size-arrow-head-lit: 4px;
   --size-node-card-width: 176px;
@@ -305,6 +305,7 @@
   --scale-aspect-max: 3;
   --scale-zoom-step: 1.25;
   --scale-flow-dots-max: 80;
+  --scale-chip-visible-share: 0.6;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) {
@@ -708,6 +709,7 @@
 <g class="p5-0" opacity="0"><circle r="10" fill="var(--color-state-active)" opacity="0.2"/><circle r="4.5" fill="var(--color-state-active)"/><animate attributeName="opacity" dur="34.436s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.44134;0.58509" values="0;1;0"/><animateMotion dur="34.436s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.44134;0.58509;1" keySplines="0 0 1 1;0.455 0.03 0.515 0.955;0 0 1 1" keyPoints="0;0;1;1"><mpath href="#p-3" xlink:href="#p-3"/></animateMotion></g>
 <g class="p7-0" opacity="0"><circle r="10" fill="var(--color-state-active)" opacity="0.2"/><circle r="4.5" fill="var(--color-state-active)"/><animate attributeName="opacity" dur="34.436s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.69892;0.76382" values="0;1;0"/><animateMotion dur="34.436s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.69892;0.76382;1" keySplines="0 0 1 1;0.455 0.03 0.515 0.955;0 0 1 1" keyPoints="0;0;1;1"><mpath href="#p-1" xlink:href="#p-1"/></animateMotion></g>
 <g class="p8-0" opacity="0"><circle r="10" fill="var(--color-state-active)" opacity="0.2"/><circle r="4.5" fill="var(--color-state-active)"/><animate attributeName="opacity" dur="34.436s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.78415;0.93321" values="0;1;0"/><animateMotion dur="34.436s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.78415;0.93321;1" keySplines="0 0 1 1;0.455 0.03 0.515 0.955;0 0 1 1" keyPoints="0;0;1;1"><mpath href="#p-4" xlink:href="#p-4"/></animateMotion></g>
+
 </g>
 <text x="480" y="530" opacity="0" class="steplabel a13">프로세스 A</text>
 <text x="480" y="530" opacity="0" class="steplabel a14">프로세스 B</text>

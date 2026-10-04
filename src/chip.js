@@ -173,12 +173,12 @@ function candidateAt({ point, chip, scene, avoid, index }, { row, x, order: side
   const box = { x: x - chip.w / 2, y: row.top, w: chip.w, h: chip.h };
   // 선과 그룹 틀은 최소 간격 안에 들어와도 순위만 낮춘다.
   const padded = { x: box.x - CHIP_CLEAR, y: box.y - CHIP_CLEAR, w: box.w + CHIP_CLEAR * 2, h: box.h + CHIP_CLEAR * 2 };
-  const { hits, area, nearArea } = overlapsOf({ box, padded }, avoid, index?.near(padded));
+  const { hits, pillHits, area, nearArea } = overlapsOf({ box, padded }, avoid, index?.near(padded));
   const isOutside = isOutsideFigure(box, scene);
   const isTight = row.top < CHIP_MARGIN - FIT_SLACK || row.top + chip.h > scene.height - CHIP_MARGIN + FIT_SLACK;
   const isCrowded = Math.min(box.x, scene.width - box.x - box.w) < CHIP_GAP - FIT_SLACK;
   const order = row.order + sideOrder + (Math.abs(x - point.x) + Math.abs(row.dy)) * SHIFT_WEIGHT;
-  return { dx: x - point.x, dy: row.dy, box, isOutside, hits, rank: [Number(isOutside), area, nearArea, Number(isTight), Number(isCrowded), order], key: desc.key, desc };
+  return { dx: x - point.x, dy: row.dy, box, isOutside, hits, pillHits, rank: [Number(isOutside), area, nearArea, Number(isTight), Number(isCrowded), order], key: desc.key, desc };
 }
 
 // cost: time O(m), heap O(h), stack O(1)
@@ -187,16 +187,18 @@ function candidateAt({ point, chip, scene, avoid, index }, { row, x, order: side
 // 글 상자와 겹치는 도형, 글자, 알약의 이름과 겹친 넓이 합, 선과 그룹 틀(soft)과 간격을 둔 상자의 겹친 넓이 합. ids는 잴 번호(오름차순)이고 없으면 모두 잰다.
 function overlapsOf({ box, padded }, avoid, ids) {
   const hits = [];
+  const pillHits = [];
   let [area, nearArea] = [0, 0];
   for (let k = 0; k < (ids ? ids.length : avoid.length); k++) {
     const o = avoid[ids ? ids[k] : k];
     if (o.soft) nearArea += overlapArea(padded, o);
     else if (overlapArea(box, o) > OVERLAP_SLACK) {
       hits.push(o.name);
+      if (o.isPill) pillHits.push(o.name);
       area += overlapArea(box, o);
     }
   }
-  return { hits, area, nearArea };
+  return { hits, pillHits, area, nearArea };
 }
 
 // cost: time O(r), heap O(1), stack O(1)

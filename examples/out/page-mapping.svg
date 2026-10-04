@@ -181,7 +181,7 @@
   --size-packet-radius: 4.5px;
   --size-packet-halo: 10px;
   --size-packet-hop-ref: 300px;
-  --size-packet-chip-reach: 12px;
+  --size-packet-chip-reach: 16px;
   --size-arrow-head: 5px;
   --size-arrow-head-lit: 4px;
   --size-node-card-width: 176px;
@@ -305,6 +305,7 @@
   --scale-aspect-max: 3;
   --scale-zoom-step: 1.25;
   --scale-flow-dots-max: 80;
+  --scale-chip-visible-share: 0.6;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) {
@@ -700,6 +701,7 @@
 <g class="p2-0" opacity="0"><circle r="10" fill="var(--color-state-active)" opacity="0.2"/><circle r="4.5" fill="var(--color-state-active)"/><animate attributeName="opacity" dur="21.361s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.27152;0.37372" values="0;1;0"/><animateMotion dur="21.361s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.27152;0.37372;1" keySplines="0 0 1 1;0.455 0.03 0.515 0.955;0 0 1 1" keyPoints="0;0;1;1"><mpath href="#p-2" xlink:href="#p-2"/></animateMotion></g>
 <g class="p4-0" opacity="0"><circle r="10" fill="var(--color-state-active)" opacity="0.2"/><circle r="4.5" fill="var(--color-state-active)"/><animate attributeName="opacity" dur="21.361s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.51416;0.56767" values="0;1;0"/><animateMotion dur="21.361s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.51416;0.56767;1" keySplines="0 0 1 1;0.455 0.03 0.515 0.955;0 0 1 1" keyPoints="0;0;1;1"><mpath href="#p-1" xlink:href="#p-1"/></animateMotion></g>
 <g class="p6-0" opacity="0"><circle r="10" fill="var(--color-state-active)" opacity="0.2"/><circle r="4.5" fill="var(--color-state-active)"/><animate attributeName="opacity" dur="21.361s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.68049;0.85956" values="0;1;0"/><animateMotion dur="21.361s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.68049;0.85956;1" keySplines="0 0 1 1;0.455 0.03 0.515 0.955;0 0 1 1" keyPoints="0;0;1;1"><mpath href="#p-3" xlink:href="#p-3"/></animateMotion></g>
+
 </g>
 <text x="480" y="322" opacity="0" class="steplabel a11">페이지 1</text>
 <text x="480" y="322" opacity="0" class="steplabel a12">페이지 4</text>

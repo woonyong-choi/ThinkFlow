@@ -2,7 +2,7 @@
 import { CHIP_GAP, chipCandidateAt, chipCandidates, descOf, sizeChip } from './chip.js';
 import { gridOf } from './chip-grid.js';
 import { issuesOf, settle, simplify } from './chip-fade.js';
-import { dotAt, MOVE, NODE_MS } from './chip-motion.js';
+import { dotAt, MOVE, NODE_MS, visibleShare } from './chip-motion.js';
 import { addSlides, SWITCH_COST } from './chip-slide.js';
 import { progressAt } from './easing.js';
 import { flattenRoute } from './route.js';
@@ -19,8 +19,12 @@ const DETACH_COST_PER_PX = 2e4;
 const NEAR_COST = 300;
 const MARGIN_COST = 500;
 const ORDER_COST = 100;
-// 흐름(track)의 글 상자는 자기 점에서 이 거리(px, 상자 가장자리와 점 중심) 안에만 둔다. 이를 넘는 후보는 비용을 재지 않고 제외한다(점 옆 기본 자리는 늘 이 안이다)
+// 글 상자(흐름과 박자 이동 모두)는 자기 점에서 이 거리(px, 상자 가장자리와 점 중심) 안에만 둔다. 이를 넘는 후보는 비용을 재지 않고 제외한다(점 옆 기본 자리는 늘 이 안이다)
 const ATTACH_MAX = values.size.packet['chip-reach'];
+// 박자 이동의 글 상자가 보여야 하는 비율의 하한. 못 넘으면 도형 이름을 가리는 자리도 쓴다(선 라벨 알약은 가리지 않는다)
+const SHARE_MIN = values.scale['chip-visible-share'];
+// 보이는 채로 가리는 자리의 비용(겹친 넓이 px²마다). 적게 가리는 자리를 고르게 한다
+const SHOWN_HIT_COST = 1000;
 
 // 이동에 맞춘 계획의 문제 목록. 그림 검사가 같은 계획을 다시 세우지 않고 쓴다. { scene, issues }
 const plannedIssues = new WeakMap();
@@ -73,9 +77,23 @@ export function issuesOfHop(scene, hop, avoid) {
  * @returns { path, issues }. path는 이동 진행 비율 at(오름차순)마다 [at, dx, dy, opacity]이고, issues는 지점마다 { at, isOutside, hits }다
  */
 export function planChip(scene, hop, avoid) {
+  const plan = planWith(scene, hop, { avoid, isRelaxed: false });
+  if (hop.track !== undefined) return plan;
+  const move = { route: hop.route ?? flattenRoute(scene.edges[hop.edge].points), hop, chip: sizeChip(hop.data) };
+  if (visibleShare(move, plan.path) >= SHARE_MIN) return plan;
+  // 박자 이동의 글은 정보라서, 깨끗한 자리가 모자라 숨는 시간이 길면 도형 이름을 가리더라도 점 옆에 보인다.
+  const shown = planWith(scene, hop, { avoid, isRelaxed: true });
+  return visibleShare(move, shown.path) > visibleShare(move, plan.path) ? shown : plan;
+}
+
+// cost: time O(n·k·m + L·n·b²·s·m), heap O(n·k), stack O(1)
+// vars: n = 계획 지점 수, k = 자리 종류 수, m = 글 상자 둘레 칸에 걸린 사각형 수, L = 미끄러짐 배수 수(3), b = BEAM, s = 미끄러짐 프레임 수
+// basis: measured npm run perf
+// 계획 한 번. isRelaxed면 선 라벨 알약만 가리면 안 되는 것으로 보고 도형과 글자는 가려도 숨기지 않는다.
+function planWith(scene, hop, { avoid, isRelaxed }) {
   const own = hop.edges ?? [hop.edge];
-  const ctx = { scene, hop, chip: sizeChip(hop.data), field: avoid.filter((o) => !own.includes(o.edge)), route: hop.route ?? flattenRoute(scene.edges[hop.edge].points), dots: new Map(), frames: new Map(), isAttached: hop.track !== undefined };
-  ctx.hard = ctx.field.filter((o) => !o.soft);
+  const ctx = { scene, hop, isRelaxed, chip: sizeChip(hop.data), field: avoid.filter((o) => !own.includes(o.edge)), route: hop.route ?? flattenRoute(scene.edges[hop.edge].points), dots: new Map(), frames: new Map() };
+  ctx.hard = ctx.field.filter((o) => !o.soft && (!isRelaxed || o.isPill));
   ctx.hardIndex = gridOf(ctx.hard);
   ctx.index = gridOf(ctx.field);
   const times = nodeTimes(hop.ms);
@@ -111,6 +129,7 @@ function usefulDescs(ctx, times) {
   const known = times.map((t) => {
     const found = new Map();
     for (const c of chipCandidates(dotAt(ctx, t), ctx.chip, { scene: ctx.scene, avoid: ctx.field, isWide: true, index: ctx.index })) {
+      if (ctx.isRelaxed) c.hits = c.pillHits;
       found.set(c.key, c);
       if (!c.isOutside && c.hits.length === 0) descs.set(c.key, c.desc);
     }
@@ -131,8 +150,9 @@ function slotsAt(ctx, t, { descs, known }) {
   descs.forEach((desc, key) => {
     const c = known.get(key) ?? chipCandidateAt(point, ctx.chip, { scene: ctx.scene, avoid: ctx.field, desc, index: ctx.index });
     // c는 이 이동 계획만 쓰는 후보라 그대로 고쳐 쓴다.
+    if (ctx.isRelaxed) c.hits = c.pillHits;
     c.point = point;
-    c.cost = ctx.isAttached && !isWithinReach(c.box, point) ? Infinity : unaryCost(c, point);
+    c.cost = isWithinReach(c.box, point) ? unaryCost(c, point, ctx.isRelaxed) : Infinity;
     c.isClean = !c.isOutside && c.hits.length === 0;
     slots.set(key, c);
   });
@@ -152,8 +172,8 @@ const isWithinReach = (box, point) => gapOf(box, point) <= ATTACH_MAX;
 // cost: time O(1), heap O(1), stack O(1)
 // basis: estimate
 // 후보 하나의 한 지점 비용. 겹침이나 그림 밖은 흐려져야 하므로 가장 크다.
-function unaryCost({ rank: [, area, near, tight, crowded, order], box, isOutside, hits }, point) {
-  const unclean = isOutside || hits.length ? UNCLEAN_COST + area : 0;
+function unaryCost({ rank: [, area, near, tight, crowded, order], box, isOutside, hits }, point, isRelaxed) {
+  const unclean = (isOutside || hits.length ? UNCLEAN_COST : 0) + (isRelaxed ? area * SHOWN_HIT_COST : area * Number(hits.length > 0 || isOutside));
   const gap = gapOf(box, point);
   return unclean + near * NEAR_COST + (tight + crowded) * MARGIN_COST + order * ORDER_COST + Math.max(0, gap - DETACH_GAP) * DETACH_COST_PER_PX;
 }

@@ -200,7 +200,7 @@
   --size-packet-radius: 4.5px;
   --size-packet-halo: 10px;
   --size-packet-hop-ref: 300px;
-  --size-packet-chip-reach: 12px;
+  --size-packet-chip-reach: 16px;
   --size-arrow-head: 5px;
   --size-arrow-head-lit: 4px;
   --size-node-card-width: 176px;
@@ -324,6 +324,7 @@
   --scale-aspect-max: 3;
   --scale-zoom-step: 1.25;
   --scale-flow-dots-max: 80;
+  --scale-chip-visible-share: 0.6;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) {
@@ -1252,13 +1253,13 @@ html.embedded .fl-figure {
 <g id="n-1" class="fl-node" data-id="app"><rect x="116" y="64" width="100" height="46" rx="10" fill="var(--color-node)" class="fl-stroke "/><text x="166" y="91.7" class="label">앱</text></g>
 <g id="n-2" class="fl-node" data-id="auth"><rect x="269.9" y="64" width="100" height="46" rx="10" fill="var(--color-node)" class="fl-stroke "/><text x="319.9" y="91.7" class="label">인가 서버</text></g>
 <g id="n-3" class="fl-node" data-id="api"><rect x="495.6" y="64" width="100" height="46" rx="10" fill="var(--color-node)" class="fl-stroke " stroke-dasharray="5 4"/><text x="545.6" y="91.7" class="label">리소스 API</text></g>
-<g id="e-0" class="fl-edge"><path id="p-0" d="M 56 162 L 166 162" class="fl-path " marker-end="url(#fl-arrow)"/><g class="fl-pill"><rect x="77.2" y="140" width="67.7" height="18" rx="9" class="pill "/><text x="111" y="153" class="edgelabel ">로그인 누름</text></g></g>
-<g id="e-1" class="fl-edge"><path id="p-1" d="M 166 228 L 319.9 228" class="fl-path " marker-end="url(#fl-arrow)"/><g class="fl-pill"><rect x="194.6" y="206" width="96.7" height="18" rx="9" class="pill "/><text x="242.9" y="219" class="edgelabel "><tspan class="code">authorize</tspan> 요청</text></g></g>
-<g id="e-2" class="fl-edge"><path id="p-2" d="M 319.85986328125 272 L 166 272" class="fl-path " stroke-dasharray="5 4" marker-end="url(#fl-arrow)"/><g class="fl-pill"><rect x="198.5" y="250" width="88.8" height="18" rx="9" class="pill "/><text x="242.9" y="263" class="edgelabel ">redirect ?code</text></g></g>
-<g id="e-3" class="fl-edge"><path id="p-3" d="M 166 316 L 319.9 316" class="fl-path " marker-end="url(#fl-arrow)"/><g class="fl-pill"><rect x="178" y="294" width="129.9" height="18" rx="9" class="pill "/><text x="242.9" y="307" class="edgelabel ">token (code + verifier)</text></g></g>
-<g id="e-4" class="fl-edge"><path id="p-4" d="M 319.85986328125 360 L 166 360" class="fl-path " stroke-dasharray="5 4" marker-end="url(#fl-arrow)"/><g class="fl-pill"><rect x="184.7" y="338" width="116.5" height="18" rx="9" class="pill "/><text x="242.9" y="351" class="edgelabel "><tspan class="code">access_token</tspan> 발급</text></g></g>
-<g id="e-5" class="fl-edge"><path id="p-5" d="M 166 404 L 545.6 404" class="fl-path " marker-end="url(#fl-arrow)"/><g class="fl-pill"><rect x="314" y="382" width="83.5" height="18" rx="9" class="pill "/><text x="355.8" y="395" class="edgelabel "><tspan class="code">GET /me</tspan> 호출</text></g></g>
-<g class="fl-note"><rect x="331.9" y="182" width="201.7" height="50" rx="6" class="note-box"/><text x="341.9" y="203" class="row"><tspan class="code">challenge = S256(verifier)</tspan>를</text><text x="341.9" y="218" class="row">저장한다</text></g><g class="fl-packets"></g></svg></div>
+<g id="e-0" class="fl-edge"><path id="p-0" d="M 56 162 L 166 162" class="fl-path " marker-end="url(#fl-arrow)"/></g>
+<g id="e-1" class="fl-edge"><path id="p-1" d="M 166 228 L 319.9 228" class="fl-path " marker-end="url(#fl-arrow)"/></g>
+<g id="e-2" class="fl-edge"><path id="p-2" d="M 319.85986328125 272 L 166 272" class="fl-path " stroke-dasharray="5 4" marker-end="url(#fl-arrow)"/></g>
+<g id="e-3" class="fl-edge"><path id="p-3" d="M 166 316 L 319.9 316" class="fl-path " marker-end="url(#fl-arrow)"/></g>
+<g id="e-4" class="fl-edge"><path id="p-4" d="M 319.85986328125 360 L 166 360" class="fl-path " stroke-dasharray="5 4" marker-end="url(#fl-arrow)"/></g>
+<g id="e-5" class="fl-edge"><path id="p-5" d="M 166 404 L 545.6 404" class="fl-path " marker-end="url(#fl-arrow)"/></g>
+<g class="fl-note"><rect x="331.9" y="182" width="201.7" height="50" rx="6" class="note-box"/><text x="341.9" y="203" class="row"><tspan class="code">challenge = S256(verifier)</tspan>를</text><text x="341.9" y="218" class="row">저장한다</text></g><g class="fl-packets"></g><g class="fl-pills"><g id="l-0" class="fl-edge"><g class="fl-pill"><rect x="77.2" y="140" width="67.7" height="18" rx="9" class="pill "/><text x="111" y="153" class="edgelabel ">로그인 누름</text></g></g><g id="l-1" class="fl-edge"><g class="fl-pill"><rect x="194.6" y="206" width="96.7" height="18" rx="9" class="pill "/><text x="242.9" y="219" class="edgelabel "><tspan class="code">authorize</tspan> 요청</text></g></g><g id="l-2" class="fl-edge"><g class="fl-pill"><rect x="198.5" y="250" width="88.8" height="18" rx="9" class="pill "/><text x="242.9" y="263" class="edgelabel ">redirect ?code</text></g></g><g id="l-3" class="fl-edge"><g class="fl-pill"><rect x="178" y="294" width="129.9" height="18" rx="9" class="pill "/><text x="242.9" y="307" class="edgelabel ">token (code + verifier)</text></g></g><g id="l-4" class="fl-edge"><g class="fl-pill"><rect x="184.7" y="338" width="116.5" height="18" rx="9" class="pill "/><text x="242.9" y="351" class="edgelabel "><tspan class="code">access_token</tspan> 발급</text></g></g><g id="l-5" class="fl-edge"><g class="fl-pill"><rect x="314" y="382" width="83.5" height="18" rx="9" class="pill "/><text x="355.8" y="395" class="edgelabel "><tspan class="code">GET /me</tspan> 호출</text></g></g></g></svg></div>
 <figcaption class="fl-foot">
 <div class="fl-bar"><button type="button" class="fl-round fl-pause"><svg class="fl-ring" viewBox="0 0 30 30" aria-hidden="true"><circle class="fl-ring-fill" cx="15" cy="15" r="14.125" stroke-width="1.75" transform="rotate(-90 15 15)"/></svg><span class="fl-pause-icon"></span></button><div class="fl-tabs" role="tablist"></div><button type="button" class="fl-round fl-rate" aria-label="배속">1×</button></div>
 <p class="fl-caption" aria-live="polite"></p>
@@ -1708,7 +1709,7 @@ function createStage(root, data) {
     packetLayer: svg.querySelector('.fl-packets'),
     nodes: data.cardCounts.map((_, i) => svg.querySelector(`#n-${i}`)),
     groups: all('.fl-group'),
-    edges: data.edgeEnds.map((_, j) => svg.querySelector(`#e-${j}`)),
+    edges: data.edgeEnds.map((_, j) => withLabel(svg.querySelector(`#e-${j}`), svg.querySelector(`#l-${j}`))),
     paths: data.edgeEnds.map((_, j) => svg.querySelector(`#p-${j}`)),
     trackPaths: Array.from({ length: data.trackCount ?? 0 }, (_, k) => svg.querySelector(`#tp-${k}`)),
     values: data.values ?? [],
@@ -1721,6 +1722,14 @@ function createStage(root, data) {
     packets: [],
     pendingCards: [],
   };
+}
+
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+// 선 묶음과 알약 묶음(점 층 위에 따로 그려진다)의 class를 함께 바꾸는 손잡이. 알약이 없으면 선만 바꾼다.
+function withLabel(edge, label) {
+  const both = (act) => (name, on) => [edge, label].forEach((el) => el && act(el.classList, name, on));
+  return { classList: { toggle: both((list, name, on) => list.toggle(name, on)), add: both((list, name) => list.add(name)), remove: both((list, name) => list.remove(name)) } };
 }
 
 // cost: time O(n·c), heap O(n·c), stack O(1)

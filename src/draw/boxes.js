@@ -95,7 +95,7 @@ function pillBoxes(scene) {
     .filter((e) => hasPill(e) && e.labelAt)
     .map((e) => {
       const { w, h } = sizePill(e.label, e.no);
-      return { x: e.labelAt.x - w / 2, y: e.labelAt.y - h / 2, w, h, name: plainText(e.label ?? `${e.no}`) };
+      return { x: e.labelAt.x - w / 2, y: e.labelAt.y - h / 2, w, h, name: plainText(e.label ?? `${e.no}`), isPill: true };
     });
 }
 

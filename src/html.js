@@ -113,7 +113,7 @@ function playerSvg(content, title, canvas) {
   const { viewWidth, shownWidth, shownHeight } = fitCanvas(content.width, height, canvas);
   return (
     `<svg xmlns="http://www.w3.org/2000/svg" class="fl" width="${r(shownWidth)}" height="${r(shownHeight)}" style="aspect-ratio: ${r(viewWidth)} / ${r(height)}" viewBox="${r((content.width - viewWidth) / 2)} 0 ${r(viewWidth)} ${r(height)}" role="img">` +
-    `<title>${escapeXml(title)}</title><defs>${DEFS}</defs>${content.svg}<g class="fl-packets"></g></svg>`
+    `<title>${escapeXml(title)}</title><defs>${DEFS}</defs>${content.svg}<g class="fl-packets"></g>${content.pills ?? ''}</svg>`
   );
 }
 

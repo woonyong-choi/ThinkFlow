@@ -199,7 +199,7 @@
   --size-packet-radius: 4.5px;
   --size-packet-halo: 10px;
   --size-packet-hop-ref: 300px;
-  --size-packet-chip-reach: 12px;
+  --size-packet-chip-reach: 16px;
   --size-arrow-head: 5px;
   --size-arrow-head-lit: 4px;
   --size-node-card-width: 176px;
@@ -323,6 +323,7 @@
   --scale-aspect-max: 3;
   --scale-zoom-step: 1.25;
   --scale-flow-dots-max: 80;
+  --scale-chip-visible-share: 0.6;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) {
@@ -1250,10 +1251,10 @@ html.embedded .fl-figure {
 <g id="n-4" class="fl-node" data-id="mem"><rect x="655" y="32.2" width="88" height="74" rx="10" fill="var(--color-node)" class="fl-stroke "/><text x="699" y="51.8" class="label">물리 주소</text><g class="fl-part" data-part="mem.pa"><rect x="667" y="62.2" width="64" height="32" class="grid-cell "/><text x="699" y="82.8" class="item">0x4120</text></g></g>
 <g id="e-0" class="fl-edge"><path id="p-0" d="M 162 68.66666666666666 L 234 68.7" class="fl-path " marker-end="url(#fl-arrow)"/></g>
 <g id="e-1" class="fl-edge"><path id="p-1" d="M 162 212 L 176 212 Q 190 212, 190 198 L 190 109.7 Q 190 87.7, 212 87.7 L 234 87.7" class="fl-path " marker-end="url(#fl-arrow)"/></g>
-<g id="e-2" class="fl-edge"><path id="p-2" d="M 400.72125 78.16666666666666 L 555 78.2" class="fl-path " marker-end="url(#fl-arrow)"/><g class="fl-pill"><rect x="460.7" y="68.7" width="34.2" height="18" rx="9" class="pill "/><text x="477.8" y="81.6" class="edgelabel ">통과</text></g></g>
+<g id="e-2" class="fl-edge"><path id="p-2" d="M 400.72125 78.16666666666666 L 555 78.2" class="fl-path " marker-end="url(#fl-arrow)"/></g>
 <g id="e-3" class="fl-edge"><path id="p-3" d="M 162 79.33333333333333 L 176 79.3 Q 190 79.3, 190 65.3 L 190 54.7 Q 190 32.7, 212 32.7 L 562.2 32.7 Q 575 32.7, 575 45.4 L 575 58.2" class="fl-path " marker-end="url(#fl-arrow)"/></g>
 <g id="e-4" class="fl-edge"><path id="p-4" d="M 162 180 L 553 180 Q 575 180, 575 158 L 575 98.2" class="fl-path " marker-end="url(#fl-arrow)"/></g>
-<g id="e-5" class="fl-edge"><path id="p-5" d="M 594.9612500000001 78.16666666666666 L 667 78.2" class="fl-path " marker-end="url(#fl-arrow)"/></g><g class="fl-packets"></g></svg></div>
+<g id="e-5" class="fl-edge"><path id="p-5" d="M 594.9612500000001 78.16666666666666 L 667 78.2" class="fl-path " marker-end="url(#fl-arrow)"/></g><g class="fl-packets"></g><g class="fl-pills"><g id="l-2" class="fl-edge"><g class="fl-pill"><rect x="460.7" y="68.7" width="34.2" height="18" rx="9" class="pill "/><text x="477.8" y="81.6" class="edgelabel ">통과</text></g></g></g></svg></div>
 <figcaption class="fl-foot">
 <div class="fl-bar"><button type="button" class="fl-round fl-pause"><svg class="fl-ring" viewBox="0 0 30 30" aria-hidden="true"><circle class="fl-ring-fill" cx="15" cy="15" r="14.125" stroke-width="1.75" transform="rotate(-90 15 15)"/></svg><span class="fl-pause-icon"></span></button><div class="fl-tabs" role="tablist"></div><button type="button" class="fl-round fl-rate" aria-label="배속">1×</button></div>
 <p class="fl-caption" aria-live="polite"></p>
@@ -1703,7 +1704,7 @@ function createStage(root, data) {
     packetLayer: svg.querySelector('.fl-packets'),
     nodes: data.cardCounts.map((_, i) => svg.querySelector(`#n-${i}`)),
     groups: all('.fl-group'),
-    edges: data.edgeEnds.map((_, j) => svg.querySelector(`#e-${j}`)),
+    edges: data.edgeEnds.map((_, j) => withLabel(svg.querySelector(`#e-${j}`), svg.querySelector(`#l-${j}`))),
     paths: data.edgeEnds.map((_, j) => svg.querySelector(`#p-${j}`)),
     trackPaths: Array.from({ length: data.trackCount ?? 0 }, (_, k) => svg.querySelector(`#tp-${k}`)),
     values: data.values ?? [],
@@ -1716,6 +1717,14 @@ function createStage(root, data) {
     packets: [],
     pendingCards: [],
   };
+}
+
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+// 선 묶음과 알약 묶음(점 층 위에 따로 그려진다)의 class를 함께 바꾸는 손잡이. 알약이 없으면 선만 바꾼다.
+function withLabel(edge, label) {
+  const both = (act) => (name, on) => [edge, label].forEach((el) => el && act(el.classList, name, on));
+  return { classList: { toggle: both((list, name, on) => list.toggle(name, on)), add: both((list, name) => list.add(name)), remove: both((list, name) => list.remove(name)) } };
 }
 
 // cost: time O(n·c), heap O(n·c), stack O(1)

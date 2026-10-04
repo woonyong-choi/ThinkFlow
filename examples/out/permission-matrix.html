@@ -199,7 +199,7 @@
   --size-packet-radius: 4.5px;
   --size-packet-halo: 10px;
   --size-packet-hop-ref: 300px;
-  --size-packet-chip-reach: 12px;
+  --size-packet-chip-reach: 16px;
   --size-arrow-head: 5px;
   --size-arrow-head-lit: 4px;
   --size-node-card-width: 176px;
@@ -323,6 +323,7 @@
   --scale-aspect-max: 3;
   --scale-zoom-step: 1.25;
   --scale-flow-dots-max: 80;
+  --scale-chip-visible-share: 0.6;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) {
@@ -1245,7 +1246,7 @@ html.embedded .fl-figure {
 <button type="button" class="fl-round fl-full"></button><div class="fl-zoom"><button type="button" class="fl-round" data-zoom="in" aria-label="확대"></button><button type="button" class="fl-round" data-zoom="out" aria-label="축소"></button><button type="button" class="fl-round" data-zoom="fit" aria-label="전체 보기"></button></div>
 <div class="fl-canvas"><svg xmlns="http://www.w3.org/2000/svg" class="fl" width="960" height="194" style="aspect-ratio: 960 / 194" viewBox="-210.4 0 960 194" role="img"><title>파일 권한 비트를 소유자, 그룹, 기타로 읽기</title><defs><marker id="fl-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-muted)"/></marker><marker id="fl-arrow-on" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-state-active)"/></marker><marker id="fl-arrow-main" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-data-main)"/></marker></defs><g id="n-0" class="fl-node" data-id="listing"><rect x="28" y="68.5" width="100" height="57" rx="10" fill="var(--color-node)" class="fl-stroke "/><text x="78" y="94.2" class="label">ls -l</text><text x="78" y="110" class="sub">-rwxr-x---</text></g>
 <g id="n-1" class="fl-node" data-id="mode"><rect x="349.1" y="28" width="162" height="138" rx="10" fill="var(--color-node)" class="fl-stroke "/><text x="430.1" y="47.7" class="label">chmod 750 권한 비트</text><g class="fl-part" data-part="mode.owner-r"><rect x="361.1" y="58" width="46" height="32" class="grid-cell "/><text x="384.1" y="78.7" class="item">r</text></g><g class="fl-part" data-part="mode.owner-w"><rect x="407.1" y="58" width="46" height="32" class="grid-cell "/><text x="430.1" y="78.7" class="item">w</text></g><g class="fl-part" data-part="mode.owner-x"><rect x="453.1" y="58" width="46" height="32" class="grid-cell "/><text x="476.1" y="78.7" class="item">x</text></g><g class="fl-part" data-part="mode.group-r"><rect x="361.1" y="90" width="46" height="32" class="grid-cell "/><text x="384.1" y="110.7" class="item">r</text></g><g class="fl-part" data-part="mode.group-w"><rect x="407.1" y="90" width="46" height="32" class="grid-cell "/><text x="430.1" y="110.7" class="item">-</text></g><g class="fl-part" data-part="mode.group-x"><rect x="453.1" y="90" width="46" height="32" class="grid-cell "/><text x="476.1" y="110.7" class="item">x</text></g><g class="fl-part" data-part="mode.other-r"><rect x="361.1" y="122" width="46" height="32" class="grid-cell "/><text x="384.1" y="142.7" class="item">-</text></g><g class="fl-part" data-part="mode.other-w"><rect x="407.1" y="122" width="46" height="32" class="grid-cell "/><text x="430.1" y="142.7" class="item">-</text></g><g class="fl-part" data-part="mode.other-x"><rect x="453.1" y="122" width="46" height="32" class="grid-cell "/><text x="476.1" y="142.7" class="item">-</text></g></g>
-<g id="e-0" class="fl-edge"><path id="p-0" d="M 128 97 L 349.1 97" class="fl-path " marker-end="url(#fl-arrow)"/><g class="fl-pill"><rect x="188" y="87.5" width="101.1" height="18" rx="9" class="pill "/><text x="238.6" y="100.5" class="edgelabel ">권한 문자를 나눈다</text></g></g><g class="fl-packets"></g></svg></div>
+<g id="e-0" class="fl-edge"><path id="p-0" d="M 128 97 L 349.1 97" class="fl-path " marker-end="url(#fl-arrow)"/></g><g class="fl-packets"></g><g class="fl-pills"><g id="l-0" class="fl-edge"><g class="fl-pill"><rect x="188" y="87.5" width="101.1" height="18" rx="9" class="pill "/><text x="238.6" y="100.5" class="edgelabel ">권한 문자를 나눈다</text></g></g></g></svg></div>
 <figcaption class="fl-foot">
 <div class="fl-bar"><button type="button" class="fl-round fl-pause"><svg class="fl-ring" viewBox="0 0 30 30" aria-hidden="true"><circle class="fl-ring-fill" cx="15" cy="15" r="14.125" stroke-width="1.75" transform="rotate(-90 15 15)"/></svg><span class="fl-pause-icon"></span></button><div class="fl-tabs" role="tablist"></div><button type="button" class="fl-round fl-rate" aria-label="배속">1×</button></div>
 <p class="fl-caption" aria-live="polite"></p>
@@ -1695,7 +1696,7 @@ function createStage(root, data) {
     packetLayer: svg.querySelector('.fl-packets'),
     nodes: data.cardCounts.map((_, i) => svg.querySelector(`#n-${i}`)),
     groups: all('.fl-group'),
-    edges: data.edgeEnds.map((_, j) => svg.querySelector(`#e-${j}`)),
+    edges: data.edgeEnds.map((_, j) => withLabel(svg.querySelector(`#e-${j}`), svg.querySelector(`#l-${j}`))),
     paths: data.edgeEnds.map((_, j) => svg.querySelector(`#p-${j}`)),
     trackPaths: Array.from({ length: data.trackCount ?? 0 }, (_, k) => svg.querySelector(`#tp-${k}`)),
     values: data.values ?? [],
@@ -1708,6 +1709,14 @@ function createStage(root, data) {
     packets: [],
     pendingCards: [],
   };
+}
+
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+// 선 묶음과 알약 묶음(점 층 위에 따로 그려진다)의 class를 함께 바꾸는 손잡이. 알약이 없으면 선만 바꾼다.
+function withLabel(edge, label) {
+  const both = (act) => (name, on) => [edge, label].forEach((el) => el && act(el.classList, name, on));
+  return { classList: { toggle: both((list, name, on) => list.toggle(name, on)), add: both((list, name) => list.add(name)), remove: both((list, name) => list.remove(name)) } };
 }
 
 // cost: time O(n·c), heap O(n·c), stack O(1)

@@ -427,7 +427,8 @@ export const tokens = freeze({
     "fold-step": "var(--scale-fold-step)",
     "aspect-max": "var(--scale-aspect-max)",
     "zoom-step": "var(--scale-zoom-step)",
-    "flow-dots-max": "var(--scale-flow-dots-max)"
+    "flow-dots-max": "var(--scale-flow-dots-max)",
+    "chip-visible-share": "var(--scale-chip-visible-share)"
   }
 });
 
@@ -680,7 +681,7 @@ export const values = freeze({
       "radius": 4.5,
       "halo": 10,
       "hop-ref": 300,
-      "chip-reach": 12
+      "chip-reach": 16
     },
     "arrow": {
       "head": 5,
@@ -854,6 +855,7 @@ export const values = freeze({
     "fold-step": 0.75,
     "aspect-max": 3,
     "zoom-step": 1.25,
-    "flow-dots-max": 80
+    "flow-dots-max": 80,
+    "chip-visible-share": 0.6
   }
 });

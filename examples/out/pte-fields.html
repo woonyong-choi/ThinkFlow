@@ -199,7 +199,7 @@
   --size-packet-radius: 4.5px;
   --size-packet-halo: 10px;
   --size-packet-hop-ref: 300px;
-  --size-packet-chip-reach: 12px;
+  --size-packet-chip-reach: 16px;
   --size-arrow-head: 5px;
   --size-arrow-head-lit: 4px;
   --size-node-card-width: 176px;
@@ -323,6 +323,7 @@
   --scale-aspect-max: 3;
   --scale-zoom-step: 1.25;
   --scale-flow-dots-max: 80;
+  --scale-chip-visible-share: 0.6;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) {
@@ -1245,7 +1246,7 @@ html.embedded .fl-figure {
 <button type="button" class="fl-round fl-full"></button><div class="fl-zoom"><button type="button" class="fl-round" data-zoom="in" aria-label="확대"></button><button type="button" class="fl-round" data-zoom="out" aria-label="축소"></button><button type="button" class="fl-round" data-zoom="fit" aria-label="전체 보기"></button></div>
 <div class="fl-canvas"><svg xmlns="http://www.w3.org/2000/svg" class="fl" width="960" height="230" style="aspect-ratio: 960 / 230" viewBox="-171.9 0 960 230" role="img"><title>페이지 표 항목의 필드</title><defs><marker id="fl-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-muted)"/></marker><marker id="fl-arrow-on" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-state-active)"/></marker><marker id="fl-arrow-main" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-data-main)"/></marker></defs><g id="n-0" class="fl-node" data-id="mmu"><rect x="28" y="86.5" width="100" height="57" rx="10" fill="var(--color-node)" class="fl-stroke "/><text x="78" y="112.2" class="label">MMU</text><text x="78" y="128" class="sub">주소 변환</text></g>
 <g id="n-1" class="fl-node" data-id="pte"><rect x="282.2" y="28" width="306" height="174" rx="10" fill="var(--color-node)" class="fl-stroke "/><text x="435.2" y="47.7" class="label">페이지 표 항목 (PTE)</text><rect x="529.2" y="124" width="47" height="33" class="grid-cell empty"/><rect x="529.2" y="157" width="47" height="33" class="grid-cell empty"/><g class="fl-part" data-part="pte.frame"><rect x="294.2" y="58" width="141" height="66" class="grid-cell "/><text x="364.7" y="95.7" class="item">프레임 번호</text></g><g class="fl-part" data-part="pte.valid"><rect x="435.2" y="58" width="47" height="33" class="grid-cell "/><text x="458.7" y="79.2" class="item">V</text></g><g class="fl-part" data-part="pte.dirty"><rect x="482.2" y="58" width="47" height="33" class="grid-cell "/><text x="505.7" y="79.2" class="item">D</text></g><g class="fl-part" data-part="pte.ref"><rect x="529.2" y="58" width="47" height="33" class="grid-cell "/><text x="552.7" y="79.2" class="item">R</text></g><g class="fl-part" data-part="pte.prot"><rect x="435.2" y="91" width="141" height="33" class="grid-cell "/><text x="505.7" y="112.2" class="item">권한 (읽기, 쓰기, 실행)</text></g><g class="fl-part" data-part="pte.note"><rect x="294.2" y="124" width="235" height="66" class="grid-cell "/><text x="411.7" y="143.7" class="item">참조 비트는 CPU가 접근할 때 켜고,</text><text x="411.7" y="161.7" class="item">운영체제가 주기적으로 지워 최근에 쓰지</text><text x="411.7" y="179.7" class="item">않은 페이지를 교체 후보로 고른다</text></g></g>
-<g id="e-0" class="fl-edge"><path id="p-0" d="M 128 115 L 282.2 115" class="fl-path " marker-end="url(#fl-arrow)"/><g class="fl-pill"><rect x="188" y="105.5" width="34.2" height="18" rx="9" class="pill "/><text x="205.1" y="118.5" class="edgelabel ">조회</text></g></g><g class="fl-packets"></g></svg></div>
+<g id="e-0" class="fl-edge"><path id="p-0" d="M 128 115 L 282.2 115" class="fl-path " marker-end="url(#fl-arrow)"/></g><g class="fl-packets"></g><g class="fl-pills"><g id="l-0" class="fl-edge"><g class="fl-pill"><rect x="188" y="105.5" width="34.2" height="18" rx="9" class="pill "/><text x="205.1" y="118.5" class="edgelabel ">조회</text></g></g></g></svg></div>
 <figcaption class="fl-foot">
 <div class="fl-bar"><button type="button" class="fl-round fl-pause"><svg class="fl-ring" viewBox="0 0 30 30" aria-hidden="true"><circle class="fl-ring-fill" cx="15" cy="15" r="14.125" stroke-width="1.75" transform="rotate(-90 15 15)"/></svg><span class="fl-pause-icon"></span></button><div class="fl-tabs" role="tablist"></div><button type="button" class="fl-round fl-rate" aria-label="배속">1×</button></div>
 <p class="fl-caption" aria-live="polite"></p>
@@ -1695,7 +1696,7 @@ function createStage(root, data) {
     packetLayer: svg.querySelector('.fl-packets'),
     nodes: data.cardCounts.map((_, i) => svg.querySelector(`#n-${i}`)),
     groups: all('.fl-group'),
-    edges: data.edgeEnds.map((_, j) => svg.querySelector(`#e-${j}`)),
+    edges: data.edgeEnds.map((_, j) => withLabel(svg.querySelector(`#e-${j}`), svg.querySelector(`#l-${j}`))),
     paths: data.edgeEnds.map((_, j) => svg.querySelector(`#p-${j}`)),
     trackPaths: Array.from({ length: data.trackCount ?? 0 }, (_, k) => svg.querySelector(`#tp-${k}`)),
     values: data.values ?? [],
@@ -1708,6 +1709,14 @@ function createStage(root, data) {
     packets: [],
     pendingCards: [],
   };
+}
+
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+// 선 묶음과 알약 묶음(점 층 위에 따로 그려진다)의 class를 함께 바꾸는 손잡이. 알약이 없으면 선만 바꾼다.
+function withLabel(edge, label) {
+  const both = (act) => (name, on) => [edge, label].forEach((el) => el && act(el.classList, name, on));
+  return { classList: { toggle: both((list, name, on) => list.toggle(name, on)), add: both((list, name) => list.add(name)), remove: both((list, name) => list.remove(name)) } };
 }
 
 // cost: time O(n·c), heap O(n·c), stack O(1)

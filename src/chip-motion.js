@@ -26,6 +26,22 @@ export function chipStateAt({ route, hop, chip }, path, t) {
   return { point, opacity, box: boxAt(point, chip, { dx, dy }) };
 }
 
+// cost: time O(F·k), heap O(1), stack O(1)
+// vars: F = 이동의 프레임 수, k = 경로 지점 수
+// basis: estimate
+/** 이동에서 점이 보이는 프레임 가운데 글 상자가 보이는(CHIP_VISIBLE_MIN 이상) 프레임의 비율(0~1). 점이 도형 안에 있어 안 보이는 프레임은 세지 않는다. */
+export function visibleShare(move, path) {
+  const { hop } = move;
+  let [seen, shown] = [0, 0];
+  for (let t = 0; t <= hop.ms; t += CHIP_FRAME_MS) {
+    const progress = progressAt(MOVE, Math.min(1, t / hop.ms));
+    if (hop.gaps?.some(([from, to]) => progress > from && progress < to)) continue;
+    seen += 1;
+    if (chipStateAt(move, path, t).opacity >= CHIP_VISIBLE_MIN) shown += 1;
+  }
+  return seen ? shown / seen : 1;
+}
+
 // cost: time O(1), heap O(1), stack O(1)
 // basis: estimate
 // 점 위 기본 자리에서 옮긴 만큼 옮긴 글 상자

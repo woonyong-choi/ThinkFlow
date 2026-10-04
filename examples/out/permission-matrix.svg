@@ -181,7 +181,7 @@
   --size-packet-radius: 4.5px;
   --size-packet-halo: 10px;
   --size-packet-hop-ref: 300px;
-  --size-packet-chip-reach: 12px;
+  --size-packet-chip-reach: 16px;
   --size-arrow-head: 5px;
   --size-arrow-head-lit: 4px;
   --size-node-card-width: 176px;
@@ -305,6 +305,7 @@
   --scale-aspect-max: 3;
   --scale-zoom-step: 1.25;
   --scale-flow-dots-max: 80;
+  --scale-chip-visible-share: 0.6;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) {
@@ -686,9 +687,10 @@
 <g transform="translate(210.4 0)">
 <g id="n-0" class="fl-node" data-id="listing"><rect x="28" y="68.5" width="100" height="57" rx="10" fill="var(--color-node)" class="fl-stroke a0"/><text x="78" y="94.2" class="label">ls -l</text><text x="78" y="110" class="sub">-rwxr-x---</text></g>
 <g id="n-1" class="fl-node" data-id="mode"><rect x="349.1" y="28" width="162" height="138" rx="10" fill="var(--color-node)" class="fl-stroke a0"/><text x="430.1" y="47.7" class="label">chmod 750 권한 비트</text><g class="fl-part" data-part="mode.owner-r"><rect x="361.1" y="58" width="46" height="32" class="grid-cell a1"/><text x="384.1" y="78.7" class="item">r</text></g><g class="fl-part" data-part="mode.owner-w"><rect x="407.1" y="58" width="46" height="32" class="grid-cell a1"/><text x="430.1" y="78.7" class="item">w</text></g><g class="fl-part" data-part="mode.owner-x"><rect x="453.1" y="58" width="46" height="32" class="grid-cell a1"/><text x="476.1" y="78.7" class="item">x</text></g><g class="fl-part" data-part="mode.group-r"><rect x="361.1" y="90" width="46" height="32" class="grid-cell a2"/><text x="384.1" y="110.7" class="item">r</text></g><g class="fl-part" data-part="mode.group-w"><rect x="407.1" y="90" width="46" height="32" class="grid-cell a3"/><text x="430.1" y="110.7" class="item">-</text></g><g class="fl-part" data-part="mode.group-x"><rect x="453.1" y="90" width="46" height="32" class="grid-cell a2"/><text x="476.1" y="110.7" class="item">x</text></g><g class="fl-part" data-part="mode.other-r"><rect x="361.1" y="122" width="46" height="32" class="grid-cell a4"/><text x="384.1" y="142.7" class="item">-</text></g><g class="fl-part" data-part="mode.other-w"><rect x="407.1" y="122" width="46" height="32" class="grid-cell a4"/><text x="430.1" y="142.7" class="item">-</text></g><g class="fl-part" data-part="mode.other-x"><rect x="453.1" y="122" width="46" height="32" class="grid-cell a4"/><text x="476.1" y="142.7" class="item">-</text></g></g>
-<g id="e-0" class="fl-edge"><path id="p-0" d="M 128 97 L 349.1 97" class="fl-path a5" marker-end="url(#fl-arrow)"/><g class="fl-pill"><rect x="188" y="87.5" width="101.1" height="18" rx="9" class="pill a6"/><text x="238.6" y="100.5" class="edgelabel a7">권한 문자를 나눈다</text></g></g>
+<g id="e-0" class="fl-edge"><path id="p-0" d="M 128 97 L 349.1 97" class="fl-path a5" marker-end="url(#fl-arrow)"/></g>
 
 
+<g class="fl-pills"><g id="l-0" class="fl-edge"><g class="fl-pill"><rect x="188" y="87.5" width="101.1" height="18" rx="9" class="pill a6"/><text x="238.6" y="100.5" class="edgelabel a7">권한 문자를 나눈다</text></g></g></g>
 </g>
 <text x="480" y="212" opacity="0" class="steplabel a8">소유자</text>
 <text x="480" y="212" opacity="0" class="steplabel a9">그룹</text>

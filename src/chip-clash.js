@@ -1,4 +1,4 @@
-// 서로 다른 점의 글 상자가 겹치는 것을 다룬다. 흐름(track)은 점이 여럿 동시에 지나므로, 겹치는 구간에서 나중에 출발한 점의 글 상자를 숨기고(점은 보인다) 자리가 나면 서서히 다시 보인다.
+// 서로 다른 점의 글 상자가 겹치는 것을 다룬다. 점이 여럿 동시에 지나는 구간(흐름, 박자의 `&` 동시 이동)에서, 겹치는 구간에서 나중에 출발한 점의 글 상자를 숨기고(점은 보인다) 자리가 나면 서서히 다시 보인다.
 // 숨김은 이동마다 한 번 계산한 불투명도 키(hop.chipFade)로 시간표에 담고, 움직이는 SVG와 재생기와 그림 검사 7번이 그 키를 그대로 읽는다(docs/design/playback.md 이동 글).
 import { CHIP_FRAME_MS, CHIP_VISIBLE_MIN, chipStateAt } from './chip-motion.js';
 import { OVERLAP_SLACK, overlapArea, sizeChip } from './chip.js';
@@ -66,7 +66,7 @@ function clashedAt(hops, t, world) {
   const placed = [];
   const clashed = [];
   for (const hop of hops) {
-    const chip = chipAt(motionOf(hop, world, world.cache), t - hop.at, { isFactored: false });
+    const chip = chipAt(motionOf(hop, world, world.cache), t - (hop.at ?? 0), { isFactored: false });
     if (chip && placed.some((box) => overlapArea(box, chip.box) > OVERLAP_SLACK)) clashed.push(hop);
     else if (chip) placed.push(chip.box);
   }
@@ -100,13 +100,13 @@ function spansOf(times) {
 // vars: F = 구간의 프레임 수, h = 구간의 글 상자 있는 이동 수
 // basis: estimate
 /**
- * 흐름 구간마다 글 상자가 겹치는 구간을 찾아 나중에 출발한 점의 hop.chipFade(불투명도 키)에 담는다.
+ * 구간마다 글 상자가 겹치는 구간을 찾아 나중에 출발한 점의 hop.chipFade(불투명도 키)에 담는다.
  * 60fps 프레임마다 먼저 출발한 점부터 글 상자를 놓고, 이미 놓인 글 상자와 겹치면 그 프레임은 겹침이다.
  */
 export function planClashes(scene, timeline) {
   const world = { scene, timeline, cache: new Map() };
   for (const seg of timeline.segs) {
-    const hops = seg.hops.filter((hop) => hop.track !== undefined && hop.data).sort((a, b) => a.at - b.at);
+    const hops = seg.hops.filter((hop) => hop.data).sort((a, b) => (a.at ?? 0) - (b.at ?? 0));
     if (hops.length < 2) continue;
     for (const [hop, times] of clashTimes(seg, hops, world)) if (times.length) hop.chipFade = fadeKeysOf(spansOf(times));
   }
@@ -117,7 +117,7 @@ export function planClashes(scene, timeline) {
 // basis: estimate
 // 프레임 하나에서 보이는 글 상자끼리 겹치는 이동 쌍.
 function overlapsAt(hops, t, world) {
-  const chips = hops.map((hop) => chipAt(motionOf(hop, world, world.cache), t - hop.at, { isFactored: true })).filter(Boolean);
+  const chips = hops.map((hop) => chipAt(motionOf(hop, world, world.cache), t - (hop.at ?? 0), { isFactored: true })).filter(Boolean);
   return chips.flatMap((a, i) => chips.slice(i + 1).filter((b) => overlapArea(a.box, b.box) > OVERLAP_SLACK).map((b) => ({ a: a.hop, b: b.hop })));
 }
 
@@ -125,15 +125,14 @@ function overlapsAt(hops, t, world) {
 // vars: F = 구간의 프레임 수, h = 구간의 글 상자 있는 이동 수
 // basis: estimate
 /**
- * 흐름(track)의 보이는 글 상자끼리 겹치는 곳. 숨김(hop.chipFade)을 적용한 뒤에도 겹치면 { seg, a, b, t }(이동 a, b와 구간 안 시각)이다. 이동 쌍마다 처음 한 곳만 돌려준다.
- * 박자의 이동은 옛 그림의 출력과 진단을 바꾸지 않으려고 보지 않는다.
+ * 보이는 글 상자끼리 겹치는 곳. 숨김(hop.chipFade)을 적용한 뒤에도 겹치면 { seg, a, b, t }(이동 a, b와 구간 안 시각)이다. 이동 쌍마다 처음 한 곳만 돌려준다.
  */
 export function findClashes(scene, timeline) {
   const world = { scene, timeline, cache: new Map() };
   const found = [];
   const seen = new Set();
   for (const seg of timeline.segs) {
-    const hops = seg.hops.filter((hop) => hop.track !== undefined && hop.data);
+    const hops = seg.hops.filter((hop) => hop.data);
     if (hops.length < 2) continue;
     for (let t = 0; t <= seg.t1 - seg.t0; t += CHIP_FRAME_MS) {
       for (const { a, b } of overlapsAt(hops, t, world)) {

@@ -181,7 +181,7 @@
   --size-packet-radius: 4.5px;
   --size-packet-halo: 10px;
   --size-packet-hop-ref: 300px;
-  --size-packet-chip-reach: 12px;
+  --size-packet-chip-reach: 16px;
   --size-arrow-head: 5px;
   --size-arrow-head-lit: 4px;
   --size-node-card-width: 176px;
@@ -305,6 +305,7 @@
   --scale-aspect-max: 3;
   --scale-zoom-step: 1.25;
   --scale-flow-dots-max: 80;
+  --scale-chip-visible-share: 0.6;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) {
@@ -784,6 +785,7 @@
 <g id="e-5" class="fl-edge"><path id="p-5" d="M 700.1279296875 146.5 L 759.8 146.5 Q 781.8 146.5, 781.8 168.5 L 781.8 169 Q 781.8 191, 759.8 191 L 50 191 Q 28 191, 28 213 L 28 233 Q 28 255, 50 255 L 104 255" class="fl-path a14" marker-end="url(#fl-arrow)"/></g>
 <g id="e-6" class="fl-edge"><path id="p-6" d="M 245.74609375 255 L 315.8 255" class="fl-path a14" marker-end="url(#fl-arrow)"/></g>
 <g id="e-7" class="fl-edge"><path id="p-7" d="M 459.80810546875 255 L 529.8 255" class="fl-path a14" marker-end="url(#fl-arrow)"/></g>
+
 
 
 </g>

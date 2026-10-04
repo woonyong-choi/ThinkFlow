@@ -71,8 +71,9 @@ export function figureContent(result, glyphs) {
     rowCount: 0,
     metrics: timeline.tracks || timeline.values || timeline.segs.some((seg) => seg.hops.some((hop) => hop.tone)) ? { ...PLAYER_METRICS, ...FLOW_METRICS } : PLAYER_METRICS,
   };
-  const body = drawScene(scene, () => '', glyphs) + drawTrackPaths(timeline) + drawValues(scene, timeline, { glyphs, windows: () => '' });
-  return { svg: body, width: scene.width, height: scene.height, data };
+  const { body: figure, pills } = drawScene(scene, () => '', glyphs);
+  const body = figure + drawTrackPaths(timeline) + drawValues(scene, timeline, { glyphs, windows: () => '' });
+  return { svg: body, pills, width: scene.width, height: scene.height, data };
 }
 
 // cost: time O(e), heap O(e), stack O(1)

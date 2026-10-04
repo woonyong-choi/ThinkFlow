@@ -59,10 +59,10 @@ ${captions.svg}
 // 구조, 상태, 데이터, 순서 그림 본문과 점
 function drawFigureBody(result, animator, glyphs) {
   const { scene, timeline } = result;
-  const body = drawScene(scene, animator.decorate(scene), glyphs);
+  const { body, pills } = drawScene(scene, animator.decorate(scene), glyphs);
   const packets = timeline.segs.flatMap((seg, si) => seg.hops.map((hop, hi) => animator.packet({ seg, hop, name: `p${si}-${hi}` }, glyphs)));
   const tracks = animator.isStatic ? '' : drawTrackPaths(timeline);
-  return { svg: `${body}\n${tracks}${animator.values(scene, timeline, glyphs)}\n${packets.join('\n')}`, width: scene.width, height: scene.height, className: '' };
+  return { svg: `${body}\n${tracks}${animator.values(scene, timeline, glyphs)}\n${packets.join('\n')}\n${pills}`, width: scene.width, height: scene.height, className: '' };
 }
 
 // cost: time O(c), heap O(c), stack O(1)

@@ -8,13 +8,14 @@ import { flattenRoute } from '../src/route.js';
 import { values } from '../src/tokens.js';
 import { CHIP_CLEAR, CHIP_GAP, CHIP_MARGIN, placeChip, sizeChip } from '../src/chip.js';
 import { CHIP_FRAME_MS, CHIP_STEP_MAX, CHIP_VISIBLE_MIN, chipStateAt, planChip } from '../src/chip-plan.js';
+import { visibleShare } from '../src/chip-motion.js';
 import { chipObstacles } from '../src/draw/boxes.js';
 import { toHtml } from '../src/html.js';
 import { toSvg } from '../src/svg.js';
 
 const EXAMPLES = new URL('../examples/', import.meta.url);
 // 예제와 CS:APP, async 데모 사본. 글 상자가 튀거나 겹친다고 지적받은 그림이 모두 들어 있다.
-const FIGURE_DIRS = [EXAMPLES, new URL('./fixtures/csapp/', import.meta.url), new URL('./fixtures/layout/', import.meta.url)];
+const FIGURE_DIRS = [EXAMPLES, new URL('./fixtures/csapp/', import.meta.url), new URL('./fixtures/layout/', import.meta.url), new URL('./fixtures/chip-reach/', import.meta.url)];
 // 그림 옆 경계에 가까운 선에서 출발하는 이동 글: 글 상자가 판 밖으로 나가려는 원본
 const EDGE_SOURCES = [
   'flow right\nbox a "A"\nbox b "B"\nbox c "C"\nbox d "D"\na -> b\nb -> c\nc -> d\nstep "보내기"\n  a -> b "왼쪽 끝에서 출발"',
@@ -139,6 +140,7 @@ function isInside(hop, t) {
 // 근거: 설계 playback.md 요구사항 "60fps 프레임마다 보이는 동안 이름, 열, 그룹 제목, 알약을 가리지 않고 그림 안에 있다. 한 프레임에 CHIP_STEP_MAX 넘게 더 움직이지 않는다". 버그 #20, #4 증상 3
 test('buildFigure_every_example_and_demo_chip_stays_inside_clear_and_never_jumps_in_any_60fps_frame', async () => {
   let frames = 0;
+  const counts = new Map();
   for (const { file, scene, hops, tracks } of await chipFigures()) {
     const names = chipObstacles(scene);
     for (const hop of hops) {
@@ -152,7 +154,13 @@ test('buildFigure_every_example_and_demo_chip_stays_inside_clear_and_never_jumps
           const gap = Math.hypot(Math.max(box.x - point.x, 0, point.x - box.x - box.w), Math.max(box.y - point.y, 0, point.y - box.y - box.h));
           assert.ok(gap <= values.size.packet['chip-reach'] + 0.5, `${file}: ${Math.round(t)}ms에 흐름 글 상자가 점에서 ${gap.toFixed(1)}px 떨어진다`);
         }
-        assert.ok(!isVisible || !hit, `${file}: ${Math.round(t)}ms에 이동 글 상자가 ${hit?.name}을 가린다`);
+        if (hop.track === undefined) {
+          // 박자 이동은 깨끗한 자리만으로 6할을 못 채울 때만 도형 이름을 가린다. 선 라벨 알약은 어떤 경우에도 가리지 않는다.
+          const pill = names.find((name) => name.isPill && overlaps(box, name));
+          assert.ok(!isVisible || !pill, `${file}: ${Math.round(t)}ms에 이동 글 상자가 알약 ${pill?.name}을 가린다`);
+          const count = counts.get(hop) ?? { seen: 0, clean: 0, hit: 0 };
+          counts.set(hop, { seen: count.seen + 1, clean: count.clean + Number(isVisible && !hit), hit: count.hit + Number(isVisible && Boolean(hit)) });
+        } else assert.ok(!isVisible || !hit, `${file}: ${Math.round(t)}ms에 이동 글 상자가 ${hit?.name}을 가린다`);
         assert.ok(!isVisible || (box.x >= -0.5 && box.y >= -0.5 && box.x + box.w <= scene.width + 0.5 && box.y + box.h <= scene.height + 0.5), `${file}: ${Math.round(t)}ms에 판 밖`);
         const center = { x: box.x + box.w / 2, y: box.y + box.h / 2 };
         if (before) {
@@ -165,6 +173,21 @@ test('buildFigure_every_example_and_demo_chip_stays_inside_clear_and_never_jumps
     }
   }
   assert.ok(frames > 1000, `잰 프레임 ${frames}개`);
+  for (const { seen, clean, hit } of counts.values()) assert.ok(hit === 0 || clean / seen < 0.6, '가리는 자리는 깨끗한 자리만으로 6할을 못 채울 때만 쓴다');
+});
+
+// 근거: 사용자 결정 "박자 이동의 글 상자는 점이 보이는 시간의 6할 이상 보인다"(글이 정보라서 이동 내내 숨기지 않는다). 흐름은 점 색이 흐름을 구분해 제외
+test('buildFigure_every_beat_move_in_the_examples_and_demos_shows_its_chip_for_at_least_60_percent', async () => {
+  let beats = 0;
+  for (const { file, scene, hops } of await chipFigures()) {
+    for (const hop of hops.filter((h) => h.track === undefined)) {
+      const share = visibleShare({ route: flattenRoute(scene.edges[hop.edge].points), hop, chip: sizeChip(hop.data) }, hop.chipPath);
+
+      assert.ok(share >= 0.6, `${file}: "${hop.data.join(' ')}"의 글 상자가 ${Math.round(share * 100)}%만 보인다`);
+      beats += 1;
+    }
+  }
+  assert.ok(beats > 50, `잰 이동 ${beats}개`);
 });
 
 // 한 이동의 가짜 장면: 가로선 하나(y 150)와 가리는 사각형
@@ -205,8 +228,8 @@ test('planChip_slides_to_the_other_side_instead_of_jumping_when_one_side_is_bloc
 
 // 근거: 설계 playback.md 요구사항 "길이 없으면 바꾸지 않고 흐린다". 버그 #20
 test('planChip_fades_instead_of_switching_when_every_slide_would_cover_something', () => {
-  // 위, 아래, 양옆이 모두 막혀 어느 자리에서도 이 구간을 지날 수 없다.
-  const blockers = [{ x: 30, y: 0, w: 570, h: 300, name: '벽' }];
+  // 위, 아래, 양옆이 모두 선 라벨 알약에 막혀 어느 자리에서도 이 구간을 지날 수 없다.
+  const blockers = [{ x: 30, y: 0, w: 570, h: 300, name: '벽', isPill: true }];
 
   const plan = planChip(LINE_SCENE, LINE_HOP, blockers);
   const walk = walkPlan(plan, blockers);
@@ -214,6 +237,17 @@ test('planChip_fades_instead_of_switching_when_every_slide_would_cover_something
   assert.equal(walk.overlaps, 0);
   assert.ok(walk.opacity < CHIP_VISIBLE_MIN, '막힌 구간에서 보이지 않는다');
   assert.ok(walk.step <= CHIP_STEP_MAX, `속도 ${walk.step}`);
+});
+
+// 근거: 사용자 결정 "글 상자는 이동 구간의 대부분에서 보인다. 붙임 거리 안에서 못 찾으면 점 옆에 둔다"(선 라벨 알약은 가리지 않는다). 반대 사례: 알약이 막으면 숨는다(위 시험)
+test('planChip_shows_the_chip_over_a_shape_name_when_no_clean_place_is_within_reach_but_never_over_a_pill', () => {
+  const wall = [{ x: 30, y: 0, w: 570, h: 300, name: '벽' }];
+  const move = { route: flattenRoute(LINE_SCENE.edges[0].points), hop: LINE_HOP, chip: sizeChip(LINE_HOP.data) };
+
+  const plan = planChip(LINE_SCENE, LINE_HOP, wall);
+
+  assert.ok(visibleShare(move, plan.path) >= 0.6, `보이는 비율 ${visibleShare(move, plan.path)}`);
+  assert.ok(visibleShare(move, planChip(LINE_SCENE, LINE_HOP, [{ ...wall[0], isPill: true }]).path) < 0.6);
 });
 
 // 근거: 설계 playback.md 요구사항 "이동 글 상자가 ... 바꾸지 않고": 막는 것이 없으면 한 자리에 머문다

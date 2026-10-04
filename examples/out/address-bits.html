@@ -199,7 +199,7 @@
   --size-packet-radius: 4.5px;
   --size-packet-halo: 10px;
   --size-packet-hop-ref: 300px;
-  --size-packet-chip-reach: 12px;
+  --size-packet-chip-reach: 16px;
   --size-arrow-head: 5px;
   --size-arrow-head-lit: 4px;
   --size-node-card-width: 176px;
@@ -323,6 +323,7 @@
   --scale-aspect-max: 3;
   --scale-zoom-step: 1.25;
   --scale-flow-dots-max: 80;
+  --scale-chip-visible-share: 0.6;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) {
@@ -1245,7 +1246,7 @@ html.embedded .fl-figure {
 <button type="button" class="fl-round fl-full"></button><div class="fl-zoom"><button type="button" class="fl-round" data-zoom="in" aria-label="확대"></button><button type="button" class="fl-round" data-zoom="out" aria-label="축소"></button><button type="button" class="fl-round" data-zoom="fit" aria-label="전체 보기"></button></div>
 <div class="fl-canvas"><svg xmlns="http://www.w3.org/2000/svg" class="fl" width="960" height="342" style="aspect-ratio: 960 / 342" viewBox="-184 0 960 342" role="img"><title>가상 주소를 VPN과 오프셋으로 나눈다</title><defs><marker id="fl-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-muted)"/></marker><marker id="fl-arrow-on" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-state-active)"/></marker><marker id="fl-arrow-main" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-data-main)"/></marker></defs><g id="n-0" class="fl-node" data-id="va"><rect x="28" y="28" width="536" height="74" rx="10" fill="var(--color-node)" class="fl-stroke "/><text x="296" y="47.7" class="label">가상 주소 (16비트)</text><g class="fl-part" data-part="va.vpn"><rect x="40" y="58" width="320" height="32" class="grid-cell "/><text x="200" y="78.7" class="item">VPN (10비트)</text></g><g class="fl-part" data-part="va.offset"><rect x="360" y="58" width="192" height="32" class="grid-cell "/><text x="456" y="78.7" class="item">오프셋 (6비트)</text></g></g>
 <g id="n-1" class="fl-node" data-id="pa"><rect x="28" y="240" width="536" height="74" rx="10" fill="var(--color-node)" class="fl-stroke "/><text x="296" y="259.7" class="label">물리 주소 (16비트)</text><g class="fl-part" data-part="pa.pfn"><rect x="40" y="270" width="320" height="32" class="grid-cell "/><text x="200" y="290.7" class="item">PFN (10비트)</text></g><g class="fl-part" data-part="pa.offset"><rect x="360" y="270" width="192" height="32" class="grid-cell "/><text x="456" y="290.7" class="item">오프셋 (6비트)</text></g></g>
-<g id="e-0" class="fl-edge"><path id="p-0" d="M 296 102 L 296 240" class="fl-path " marker-end="url(#fl-arrow)"/><g class="fl-pill"><rect x="255.5" y="162" width="80.9" height="18" rx="9" class="pill "/><text x="296" y="175" class="edgelabel ">페이지 표 조회</text></g></g><g class="fl-packets"></g></svg></div>
+<g id="e-0" class="fl-edge"><path id="p-0" d="M 296 102 L 296 240" class="fl-path " marker-end="url(#fl-arrow)"/></g><g class="fl-packets"></g><g class="fl-pills"><g id="l-0" class="fl-edge"><g class="fl-pill"><rect x="255.5" y="162" width="80.9" height="18" rx="9" class="pill "/><text x="296" y="175" class="edgelabel ">페이지 표 조회</text></g></g></g></svg></div>
 <figcaption class="fl-foot">
 <div class="fl-bar"><button type="button" class="fl-round fl-pause"><svg class="fl-ring" viewBox="0 0 30 30" aria-hidden="true"><circle class="fl-ring-fill" cx="15" cy="15" r="14.125" stroke-width="1.75" transform="rotate(-90 15 15)"/></svg><span class="fl-pause-icon"></span></button><div class="fl-tabs" role="tablist"></div><button type="button" class="fl-round fl-rate" aria-label="배속">1×</button></div>
 <p class="fl-caption" aria-live="polite"></p>
@@ -1695,7 +1696,7 @@ function createStage(root, data) {
     packetLayer: svg.querySelector('.fl-packets'),
     nodes: data.cardCounts.map((_, i) => svg.querySelector(`#n-${i}`)),
     groups: all('.fl-group'),
-    edges: data.edgeEnds.map((_, j) => svg.querySelector(`#e-${j}`)),
+    edges: data.edgeEnds.map((_, j) => withLabel(svg.querySelector(`#e-${j}`), svg.querySelector(`#l-${j}`))),
     paths: data.edgeEnds.map((_, j) => svg.querySelector(`#p-${j}`)),
     trackPaths: Array.from({ length: data.trackCount ?? 0 }, (_, k) => svg.querySelector(`#tp-${k}`)),
     values: data.values ?? [],
@@ -1708,6 +1709,14 @@ function createStage(root, data) {
     packets: [],
     pendingCards: [],
   };
+}
+
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+// 선 묶음과 알약 묶음(점 층 위에 따로 그려진다)의 class를 함께 바꾸는 손잡이. 알약이 없으면 선만 바꾼다.
+function withLabel(edge, label) {
+  const both = (act) => (name, on) => [edge, label].forEach((el) => el && act(el.classList, name, on));
+  return { classList: { toggle: both((list, name, on) => list.toggle(name, on)), add: both((list, name) => list.add(name)), remove: both((list, name) => list.remove(name)) } };
 }
 
 // cost: time O(n·c), heap O(n·c), stack O(1)
@@ -2002,7 +2011,7 @@ function drawValueState(stage, seg, t) {
   });
 }
 
-figurePlay(document.querySelector('.fl-figure'), {"segs":[{"si":0,"t0":0,"t1":5325,"hops":[],"edgesOn":[],"nodesOn":[],"groupsOn":[],"partsOn":["va.vpn"],"cards":{},"cardsBefore":{},"cardsAt":{},"caption":"윗 10비트는 페이지 번호이고 아랫 6비트는 페이지 안의 위치다","series":[],"growing":[],"lights":[]},{"si":0,"t0":5325,"t1":7625,"hops":[],"edgesOn":[],"nodesOn":[],"groupsOn":[],"partsOn":["va.vpn","va.offset"],"cards":{},"cardsBefore":{},"cardsAt":{},"caption":"윗 10비트는 페이지 번호이고 아랫 6비트는 페이지 안의 위치다","series":[],"growing":[],"lights":[]},{"si":1,"t0":7625,"t1":10745,"hops":[{"edge":0,"isBack":false,"ms":1725,"to":"pa","data":["VPN을 PFN으로"],"line":18,"chipPath":[[0,92.48886718750003,47,1],[0.15154895861229906,92.48886718750003,47,1],[0.9953342350301185,92.48886718750003,0,1],[1,92.48886718750003,0,1]]}],"edgesOn":[0],"nodesOn":[0,1],"groupsOn":[],"partsOn":[],"cards":{},"cardsBefore":{},"cardsAt":{},"caption":"페이지 번호만 프레임 번호로 바뀌고 오프셋은 그대로 간다","series":[],"growing":[],"lights":[]},{"si":1,"t0":10745,"t1":11445,"hops":[],"edgesOn":[0],"nodesOn":[0,1],"groupsOn":[],"partsOn":["pa.pfn"],"cards":{},"cardsBefore":{},"cardsAt":{},"caption":"페이지 번호만 프레임 번호로 바뀌고 오프셋은 그대로 간다","series":[],"growing":[],"lights":[]},{"si":1,"t0":11445,"t1":13745,"hops":[],"edgesOn":[0],"nodesOn":[0,1],"groupsOn":[],"partsOn":["pa.pfn","pa.offset"],"cards":{},"cardsBefore":{},"cardsAt":{},"caption":"페이지 번호만 프레임 번호로 바뀌고 오프셋은 그대로 간다","series":[],"growing":[],"lights":[]}],"steps":["나누기","바꾸기"],"cardCounts":[0,0],"edgeEnds":[[0,1]],"seriesCount":0,"rowCount":0,"metrics":{"active":"var(--color-state-active)","chipFill":"var(--color-state-active-fill)","halo":10,"haloOpacity":0.2,"packet":4.5,"chipRadius":8,"chipLine":15,"chipPadX":18,"chipPadY":8,"chipGap":12,"icon":12,"iconStroke":1.75,"pauseStroke":2.5,"zoomMax":6,"zoomStep":1.25,"move":[0.455,0.03,0.515,0.955]}});
+figurePlay(document.querySelector('.fl-figure'), {"segs":[{"si":0,"t0":0,"t1":5325,"hops":[],"edgesOn":[],"nodesOn":[],"groupsOn":[],"partsOn":["va.vpn"],"cards":{},"cardsBefore":{},"cardsAt":{},"caption":"윗 10비트는 페이지 번호이고 아랫 6비트는 페이지 안의 위치다","series":[],"growing":[],"lights":[]},{"si":0,"t0":5325,"t1":7625,"hops":[],"edgesOn":[],"nodesOn":[],"groupsOn":[],"partsOn":["va.vpn","va.offset"],"cards":{},"cardsBefore":{},"cardsAt":{},"caption":"윗 10비트는 페이지 번호이고 아랫 6비트는 페이지 안의 위치다","series":[],"growing":[],"lights":[]},{"si":1,"t0":7625,"t1":10745,"hops":[{"edge":0,"isBack":false,"ms":1725,"to":"pa","data":["VPN을 PFN으로"],"line":18,"chipPath":[[0,0,47,1],[0.039141691425930054,0,47,1],[0.4840976486102868,0,0,0.2222222222222227],[0.5191580198490617,0,0,2.3684757858670006e-16],[0.8202275865172568,0,0,0],[0.8990835101343462,0,0,0.8888888888888893],[0.9148511648694492,0,0,1],[1,0,0,1]]}],"edgesOn":[0],"nodesOn":[0,1],"groupsOn":[],"partsOn":[],"cards":{},"cardsBefore":{},"cardsAt":{},"caption":"페이지 번호만 프레임 번호로 바뀌고 오프셋은 그대로 간다","series":[],"growing":[],"lights":[]},{"si":1,"t0":10745,"t1":11445,"hops":[],"edgesOn":[0],"nodesOn":[0,1],"groupsOn":[],"partsOn":["pa.pfn"],"cards":{},"cardsBefore":{},"cardsAt":{},"caption":"페이지 번호만 프레임 번호로 바뀌고 오프셋은 그대로 간다","series":[],"growing":[],"lights":[]},{"si":1,"t0":11445,"t1":13745,"hops":[],"edgesOn":[0],"nodesOn":[0,1],"groupsOn":[],"partsOn":["pa.pfn","pa.offset"],"cards":{},"cardsBefore":{},"cardsAt":{},"caption":"페이지 번호만 프레임 번호로 바뀌고 오프셋은 그대로 간다","series":[],"growing":[],"lights":[]}],"steps":["나누기","바꾸기"],"cardCounts":[0,0],"edgeEnds":[[0,1]],"seriesCount":0,"rowCount":0,"metrics":{"active":"var(--color-state-active)","chipFill":"var(--color-state-active-fill)","halo":10,"haloOpacity":0.2,"packet":4.5,"chipRadius":8,"chipLine":15,"chipPadX":18,"chipPadY":8,"chipGap":12,"icon":12,"iconStroke":1.75,"pauseStroke":2.5,"zoomMax":6,"zoomStep":1.25,"move":[0.455,0.03,0.515,0.955]}});
 </script>
 </body>
 </html>

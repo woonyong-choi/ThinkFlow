@@ -200,7 +200,7 @@
   --size-packet-radius: 4.5px;
   --size-packet-halo: 10px;
   --size-packet-hop-ref: 300px;
-  --size-packet-chip-reach: 12px;
+  --size-packet-chip-reach: 16px;
   --size-arrow-head: 5px;
   --size-arrow-head-lit: 4px;
   --size-node-card-width: 176px;
@@ -324,6 +324,7 @@
   --scale-aspect-max: 3;
   --scale-zoom-step: 1.25;
   --scale-flow-dots-max: 80;
+  --scale-chip-visible-share: 0.6;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) {
@@ -1288,12 +1289,12 @@ html.embedded .fl-figure {
 <g id="n-4" class="fl-node" data-id="search"><g class="fl-halo " fill="none" opacity="0"><rect x="519.5" y="178" width="100" height="57" rx="10" stroke="var(--color-paint-amber-stroke)" stroke-width="12"/><rect x="519.5" y="178" width="100" height="57" rx="10" stroke="var(--color-bg)" stroke-width="8.5"/></g><rect x="519.5" y="178" width="100" height="57" rx="10" fill="var(--color-paint-amber-fill)" class="fl-stroke ps-amber "/><text x="569.5" y="203.7" class="label">검색</text><text x="569.5" y="219.5" class="sub">응답 지연</text></g>
 <g id="n-5" class="fl-node" data-id="ledger"><g class="fl-halo " fill="none" opacity="0"><path d="M1155.4 40 a 88 12 0 0 1 176 0 v 94 a 88 12 0 0 1 -176 0 z" stroke="var(--color-paint-green-stroke)" stroke-width="12"/><path d="M1155.4 40 a 88 12 0 0 1 176 0 v 94 a 88 12 0 0 1 -176 0 z" stroke="var(--color-bg)" stroke-width="8.5"/></g><path d="M1155.4 40 a 88 12 0 0 1 176 0 v 94 a 88 12 0 0 1 -176 0 z" fill="var(--color-paint-green-fill)" class="fl-stroke ps-green "/><path d="M1155.4 40 a 88 12 0 0 0 176 0" fill="none" class="fl-stroke ps-green "/><text x="1243.4" y="65.7" class="label">원장</text><text x="1243.4" y="81.5" class="sub">데이터베이스</text><rect x="1165.4" y="97" width="156" height="27" rx="6" fill="var(--color-card)" stroke="var(--color-border)" stroke-dasharray="3 3" class="fl-card "/><g id="n-5-c0" opacity="0" class="fl-layer "><rect x="1165.9" y="97.5" width="155" height="26" rx="5.5" fill="var(--color-paint-amber-fill)"/><text x="1173.4" y="114" class="row">접수만 기록</text></g></g>
 <g id="n-6" class="fl-node" data-id="cache"><g class="fl-halo " fill="none" opacity="0"><path d="M811.4 178 a 50 12 0 0 1 100 0 v 57 a 50 12 0 0 1 -100 0 z" stroke="var(--color-paint-gray-stroke)" stroke-width="12"/><path d="M811.4 178 a 50 12 0 0 1 100 0 v 57 a 50 12 0 0 1 -100 0 z" stroke="var(--color-bg)" stroke-width="8.5"/></g><path d="M811.4 178 a 50 12 0 0 1 100 0 v 57 a 50 12 0 0 1 -100 0 z" fill="var(--color-paint-gray-fill)" class="fl-stroke ps-gray "/><path d="M811.4 178 a 50 12 0 0 0 100 0" fill="none" class="fl-stroke ps-gray "/><text x="861.4" y="203.7" class="label">캐시</text><text x="861.4" y="219.5" class="sub">중지</text></g>
-<g id="e-0" class="fl-edge"><path id="p-0" d="M 84 96.5 L 251.2 96.5" class="fl-path " marker-end="url(#fl-arrow)"/><g class="fl-pill"><rect x="144" y="87" width="47.2" height="18" rx="9" class="pill "/><rect x="146" y="89" width="14" height="14" rx="7" class="number-pill"/><text x="153" y="100" class="number">1</text><text x="174.1" y="100" class="edgelabel ">요청</text></g></g>
-<g id="e-1" class="fl-edge"><path id="p-1" d="M 351.24 87 L 519.5 87" class="fl-path " marker-end="url(#fl-arrow)"/><g class="fl-pill"><rect x="411.3" y="77.5" width="48.1" height="18" rx="9" class="pill "/><rect x="413.3" y="79.1" width="14.9" height="14.853515625" rx="7.4267578125" class="number-pill"/><text x="420.7" y="90.5" class="number">2</text><text x="442.3" y="90.5" class="edgelabel ">주문</text></g></g>
-<g id="e-2" class="fl-edge"><path id="p-2" d="M 351.24 106 L 359.2 106 Q 367.2 106, 367.2 114 L 367.2 184.5 Q 367.2 206.5, 389.2 206.5 L 519.5 206.5" class="fl-path " marker-end="url(#fl-arrow)"/><g class="fl-pill"><rect x="411.2" y="197" width="48.2" height="18" rx="9" class="pill "/><rect x="413.2" y="198.5" width="15" height="14.99853515625" rx="7.499267578125" class="number-pill"/><text x="420.7" y="210" class="number">3</text><text x="442.4" y="210" class="edgelabel ">검색</text></g></g>
-<g id="e-3" class="fl-edge"><path id="p-3" d="M 619.47853515625 87 L 811.4 87" class="fl-path " marker-end="url(#fl-arrow)"/><g class="fl-pill"><rect x="679.5" y="77.5" width="71.9" height="18" rx="9" class="pill "/><rect x="681.5" y="78.8" width="15.3" height="15.326171875" rx="7.6630859375" class="number-pill"/><text x="689.1" y="90.5" class="number">4</text><text x="722.6" y="90.5" class="edgelabel ">결제 요청</text></g></g>
-<g id="e-4" class="fl-edge"><path id="p-4" d="M 987.37845703125 87 L 1155.4 87" class="fl-path " marker-end="url(#fl-arrow)"/><g class="fl-pill"><rect x="1047.4" y="77.5" width="48" height="18" rx="9" class="pill "/><rect x="1049.4" y="79.1" width="14.7" height="14.7353515625" rx="7.36767578125" class="number-pill"/><text x="1056.7" y="90.5" class="number">5</text><text x="1078.2" y="90.5" class="edgelabel ">기록</text></g></g>
-<g id="e-5" class="fl-edge"><path id="p-5" d="M 619.47853515625 206.5 L 811.4 206.5" class="fl-path " marker-end="url(#fl-arrow)"/><g class="fl-pill"><rect x="698.3" y="197" width="34.2" height="18" rx="9" class="pill "/><text x="715.4" y="210" class="edgelabel ">조회</text></g></g><g class="fl-packets"></g></svg></div>
+<g id="e-0" class="fl-edge"><path id="p-0" d="M 84 96.5 L 251.2 96.5" class="fl-path " marker-end="url(#fl-arrow)"/></g>
+<g id="e-1" class="fl-edge"><path id="p-1" d="M 351.24 87 L 519.5 87" class="fl-path " marker-end="url(#fl-arrow)"/></g>
+<g id="e-2" class="fl-edge"><path id="p-2" d="M 351.24 106 L 359.2 106 Q 367.2 106, 367.2 114 L 367.2 184.5 Q 367.2 206.5, 389.2 206.5 L 519.5 206.5" class="fl-path " marker-end="url(#fl-arrow)"/></g>
+<g id="e-3" class="fl-edge"><path id="p-3" d="M 619.47853515625 87 L 811.4 87" class="fl-path " marker-end="url(#fl-arrow)"/></g>
+<g id="e-4" class="fl-edge"><path id="p-4" d="M 987.37845703125 87 L 1155.4 87" class="fl-path " marker-end="url(#fl-arrow)"/></g>
+<g id="e-5" class="fl-edge"><path id="p-5" d="M 619.47853515625 206.5 L 811.4 206.5" class="fl-path " marker-end="url(#fl-arrow)"/></g><g class="fl-packets"></g><g class="fl-pills"><g id="l-0" class="fl-edge"><g class="fl-pill"><rect x="144" y="87" width="47.2" height="18" rx="9" class="pill "/><rect x="146" y="89" width="14" height="14" rx="7" class="number-pill"/><text x="153" y="100" class="number">1</text><text x="174.1" y="100" class="edgelabel ">요청</text></g></g><g id="l-1" class="fl-edge"><g class="fl-pill"><rect x="411.3" y="77.5" width="48.1" height="18" rx="9" class="pill "/><rect x="413.3" y="79.1" width="14.9" height="14.853515625" rx="7.4267578125" class="number-pill"/><text x="420.7" y="90.5" class="number">2</text><text x="442.3" y="90.5" class="edgelabel ">주문</text></g></g><g id="l-2" class="fl-edge"><g class="fl-pill"><rect x="411.2" y="197" width="48.2" height="18" rx="9" class="pill "/><rect x="413.2" y="198.5" width="15" height="14.99853515625" rx="7.499267578125" class="number-pill"/><text x="420.7" y="210" class="number">3</text><text x="442.4" y="210" class="edgelabel ">검색</text></g></g><g id="l-3" class="fl-edge"><g class="fl-pill"><rect x="679.5" y="77.5" width="71.9" height="18" rx="9" class="pill "/><rect x="681.5" y="78.8" width="15.3" height="15.326171875" rx="7.6630859375" class="number-pill"/><text x="689.1" y="90.5" class="number">4</text><text x="722.6" y="90.5" class="edgelabel ">결제 요청</text></g></g><g id="l-4" class="fl-edge"><g class="fl-pill"><rect x="1047.4" y="77.5" width="48" height="18" rx="9" class="pill "/><rect x="1049.4" y="79.1" width="14.7" height="14.7353515625" rx="7.36767578125" class="number-pill"/><text x="1056.7" y="90.5" class="number">5</text><text x="1078.2" y="90.5" class="edgelabel ">기록</text></g></g><g id="l-5" class="fl-edge"><g class="fl-pill"><rect x="698.3" y="197" width="34.2" height="18" rx="9" class="pill "/><text x="715.4" y="210" class="edgelabel ">조회</text></g></g></g></svg></div>
 <figcaption class="fl-foot">
 <div class="fl-bar"><button type="button" class="fl-round fl-pause"><svg class="fl-ring" viewBox="0 0 30 30" aria-hidden="true"><circle class="fl-ring-fill" cx="15" cy="15" r="14.125" stroke-width="1.75" transform="rotate(-90 15 15)"/></svg><span class="fl-pause-icon"></span></button><div class="fl-tabs" role="tablist"></div><button type="button" class="fl-round fl-rate" aria-label="배속">1×</button></div>
 <p class="fl-caption" aria-live="polite"></p>
@@ -1743,7 +1744,7 @@ function createStage(root, data) {
     packetLayer: svg.querySelector('.fl-packets'),
     nodes: data.cardCounts.map((_, i) => svg.querySelector(`#n-${i}`)),
     groups: all('.fl-group'),
-    edges: data.edgeEnds.map((_, j) => svg.querySelector(`#e-${j}`)),
+    edges: data.edgeEnds.map((_, j) => withLabel(svg.querySelector(`#e-${j}`), svg.querySelector(`#l-${j}`))),
     paths: data.edgeEnds.map((_, j) => svg.querySelector(`#p-${j}`)),
     trackPaths: Array.from({ length: data.trackCount ?? 0 }, (_, k) => svg.querySelector(`#tp-${k}`)),
     values: data.values ?? [],
@@ -1756,6 +1757,14 @@ function createStage(root, data) {
     packets: [],
     pendingCards: [],
   };
+}
+
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+// 선 묶음과 알약 묶음(점 층 위에 따로 그려진다)의 class를 함께 바꾸는 손잡이. 알약이 없으면 선만 바꾼다.
+function withLabel(edge, label) {
+  const both = (act) => (name, on) => [edge, label].forEach((el) => el && act(el.classList, name, on));
+  return { classList: { toggle: both((list, name, on) => list.toggle(name, on)), add: both((list, name) => list.add(name)), remove: both((list, name) => list.remove(name)) } };
 }
 
 // cost: time O(n·c), heap O(n·c), stack O(1)

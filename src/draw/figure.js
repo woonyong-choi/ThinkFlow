@@ -23,9 +23,10 @@ const HAS_OWN_LABELS = new Set(['table', 'grid']);
 // vars: s = 도형 수, k = 카드 내용 수, r = 카드 줄 수, n = 글자 수, e = 선 수, p = 경로 점 수, out = 만든 SVG 글자 수
 // basis: estimate
 /**
- * 장면을 그린다. 순서는 그룹, 생명선, 도형, 선, 메모다.
+ * 장면을 그린다. body의 순서는 그룹, 생명선, 도형, 선, 메모다. 선 라벨 알약(pills)은 따로 돌려준다. 점과 글 상자가 알약 위로 지나면 알약 글자의 대비가 깨지므로, 호출하는 쪽이 점 층 뒤에 둔다(docs/design/playback.md 점 층).
  * @param decorate (kind, index, extra) => class. 움직이는 SVG가 박자별 class를 넣는다. kind: node, edge, pill, pilltext, quiet, card, layer, part
  * @param glyphs 쓴 글자를 모으는 그릇(createGlyphSet)
+ * @returns { body, pills }. pills는 알약이 있는 선마다 `l-번호` 묶음을 담은 `<g class="fl-pills">`이고 알약이 없으면 빈 글이다
  */
 export function drawScene(scene, decorate, glyphs) {
   const paint = { toneOf: createTones(scene.tagOrder), decorate, glyphs, scene };
@@ -35,7 +36,8 @@ export function drawScene(scene, decorate, glyphs) {
   scene.items.forEach((it, i) => parts.push(drawItem(it, i, paint)));
   scene.edges.forEach((e, j) => parts.push(drawEdge(e, j, paint)));
   for (const note of scene.notes ?? []) parts.push(drawNote(note, glyphs));
-  return parts.join('\n');
+  const pills = scene.edges.flatMap((e, j) => drawPill(e, j, paint) ?? []);
+  return { body: parts.join('\n'), pills: pills.length ? `<g class="fl-pills">${pills.join('')}</g>` : '' };
 }
 
 // 그리는 데 함께 쓰는 것: toneOf(카드 태그 색), decorate(움직이는 SVG의 class), glyphs(쓴 글자 모음), scene(후광이 바깥 바탕을 찾는 데 쓴다)
@@ -131,23 +133,34 @@ function arrowheads({ head }) {
   return `${start}${head === 'none' ? '' : ' marker-end="url(#fl-arrow)"'}`;
 }
 
-// cost: time O(p + n), heap O(out), stack O(1)
-// vars: p = 경로 점 수, n = 라벨 글자 수, out = 만든 SVG 글자 수
+// cost: time O(p), heap O(out), stack O(1)
+// vars: p = 경로 점 수, out = 만든 SVG 글자 수
 // basis: estimate
-// 선 하나와 알약 라벨. 라벨 자리는 배치가 정했다.
-function drawEdge(e, j, { decorate, glyphs }) {
+// 선 하나. 알약 라벨은 drawPill이 따로 그린다.
+function drawEdge(e, j, { decorate }) {
   const { d } = routePolyline(e.points, RADIUS.route);
   const dash = e.dashed ? ` stroke-dasharray="${EDGE_DASH}"` : '';
   const path = `<path id="p-${j}" d="${d}" class="fl-path ${decorate('edge', j)}"${dash}${arrowheads(e)}/>`;
-  const quiet = e.quiet ? ` quiet ${decorate('quiet', j)}` : '';
-  const open = `<g id="e-${j}" class="fl-edge${e.isMark ? ' mark' : ''}${quiet}">`;
-  if (!hasPill(e) || !e.labelAt) return `${open}${path}</g>`;
+  return `<g id="e-${j}" class="${edgeClass(e, j, decorate)}">${path}</g>`;
+}
+
+// 선과 알약 묶음이 함께 쓰는 class. 알약 묶음도 선과 같이 켜지고 조용해진다.
+function edgeClass(e, j, decorate) {
+  return `fl-edge${e.isMark ? ' mark' : ''}${e.quiet ? ` quiet ${decorate('quiet', j)}` : ''}`;
+}
+
+// cost: time O(n), heap O(out), stack O(1)
+// vars: n = 라벨 글자 수, out = 만든 SVG 글자 수
+// basis: estimate
+// 선의 알약 라벨 묶음. 라벨 자리는 배치가 정했다. 없으면 undefined다.
+function drawPill(e, j, { decorate, glyphs }) {
+  if (!hasPill(e) || !e.labelAt) return undefined;
   const { w, h, numW, textW } = sizePill(e.label, e.no);
   const { x, y } = e.labelAt;
   const frame = e.label === undefined ? '' : `<rect x="${r(x - w / 2)}" y="${r(y - h / 2)}" width="${r(w)}" height="${h}" rx="${h / 2}" class="pill ${decorate('pill', j)}"/>`;
   const number = e.no === undefined ? '' : drawNumber(e.no, { x: x - w / 2 + SPACE['1'], y, numW }, glyphs);
   const text = e.label === undefined ? '' : drawPillText(e.label, { x: e.no === undefined ? x : x - w / 2 + SPACE['1'] + numW + SPACE['2'] + textW / 2, y, cls: decorate('pilltext', j) }, glyphs);
-  return `${open}${path}<g class="fl-pill">${frame}${number}${text}</g></g>`;
+  return `<g id="l-${j}" class="${edgeClass(e, j, decorate)}"><g class="fl-pill">${frame}${number}${text}</g></g>`;
 }
 
 // cost: time O(n), heap O(out), stack O(1)
