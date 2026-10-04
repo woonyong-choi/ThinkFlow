@@ -110,7 +110,9 @@
 - 차트의 막대, 선, 값 글자, 점은 CSS 애니메이션이라 브라우저 시계를 따로 따른다. 그래서 재생기는 박자 시계가 바뀔 때마다(일시정지와 재개, 배속, 단계 이동으로 움직임을 다시 걸 때) 차트 움직임(`getAnimations`의 이름이 `chart-`로 시작하는 것)에 같은 상태를 건다. 정지면 `pause()`, 재개면 `play()`, 배속이면 `playbackRate`를 박자 시계의 배속과 같게 둔다. 이미 끝난 움직임에는 `play()`를 부르지 않는다(처음부터 다시 돌기 때문이다). 단계 이동으로 새로 거는 움직임도 지금의 정지와 배속을 따라 처음(0ms)부터 시작한다. 재생기는 모델 상태를 다시 계산하지 않고 시간표가 정한 상태에 시계만 맞춘다.
 - 전체 화면은 브라우저 전체 화면을 쓰고, 쓸 수 없으면 창을 덮는 모양으로 대신한다. `Esc`로 닫는다.
 - 확대, 축소, 끌어 옮기기는 전체 화면에서만 켠다. 문서 안에서는 그림 전체가 보이는 편이 읽기 쉽기 때문이다. 배율은 1배에서 토큰 `scale.zoom-max`배 사이이고, 화면 좌표는 브라우저 변환 행렬로 그림 좌표로 바꾼다.
-- `prefers-reduced-motion`이 켜져 있으면 멈춘 채로 시작하고 차트는 다 자란 상태로 그린다.
+- `prefers-reduced-motion`이 켜진 채로 열면 멈춘 채로 시작하고, 현재 단계까지 공개된 계열을 다 자란 정지 상태로 그린다(막대 폭, 선 경로, 값 글자, 점이 모두 완성 상태). 아직 공개되지 않은 계열은 드러내지 않는다. 단계를 옮겨도 그 단계까지 공개된 계열만 다 자란 상태로 바뀐다.
+- 재생 중에 설정이 켜지면(`matchMedia`의 `change` 이벤트) 바로 멈추고 같은 정지 상태로 바꾼다. 설정이 꺼져도 저절로 재생하지 않고, 사용자가 재생을 누를 때까지 기다린다. 사용자가 재생을 누르면 설정과 상관없이 자라는 움직임이 다시 걸린다.
+- 단계 없는 차트도 재생·일시정지 단추와 배속 단추가 있는 조작 막대를 보인다. 탭과 설명 줄은 단계가 없어 숨긴다. 움직임 줄이기가 아니면 되풀이해 자라며 시작하고 단추로 멈춘다. 움직임 줄이기면 다 자란 정지 상태로 시작하고 재생을 누르면 되풀이한다. 되풀이 움직임(`chart-loop`)은 재생을 켤 때 걸고, 설정이 켜지면 뗀다.
 - iframe 안에서는 테두리를 빼고 틀이 카드 너비를 다 채우며, 본문 높이를 바깥 쪽에 알린다.
 - 표시 폭 규칙은 문서 미리보기, 목록 카드, 재생기가 같다. 컨테이너 폭은 화면 폭에서 좌우 바깥 여백(`space.16`)을 둘 뺀 값이고, 그림 표시 폭은 `min(표준 캔버스 폭 size.figure-canvas, 컨테이너 폭)`이다. 컨테이너 최대 폭(`size.document.column`, `size.gallery.column`, 재생기 `.fl-figure`)이 모두 캔버스 폭이라 1400 화면에서는 세 곳 모두 960, 900 화면에서는 세 곳 모두 836이다.
 - 이 규칙이 지켜지도록 컨테이너는 그림 둘레에 좌우 여백을 두지 않고, 카드와 재생기 테두리는 레이아웃 폭을 차지하지 않는 고리(`box-shadow`)로 그린다.
@@ -200,6 +202,12 @@
 | 멈춘 SVG는 모든 선과 계열을 보이고 움직임이 없다. | `test/motion.test.js`의 `toSvg_static_output_has_no_motion_and_shows_every_series`. 결과에 `@keyframes`와 `animateMotion`이 없는지, 단계가 있는 차트는 모든 계열이 숨김 없이 있는지 확인 |
 | 막대 차트 행 이름이 보이는 막대와 세로로 맞는다. | `test/chart.test.js`의 `buildTimeline_bar_label_shift_follows_the_visible_bars_and_is_zero_when_all_are_shown`, `drawChart_bar_label_of_a_row_with_a_missing_series_is_centered_on_its_only_bar` |
 | 조작 막대의 탭 묶음과 설명이 한 가운데 축에 있고, 탭 묶음 높이가 둥근 단추 높이와 같다. | `test/pages.test.js`의 `player_controls_share_one_axis_and_height_and_the_ring_and_active_tab_show_state`(Chrome이 있을 때). `getBoundingClientRect`로 가운데 축 차이 1px 이하, 높이 차이 1px 이하 확인 |
+| 움직임 줄이기로 열면 단계 없는 차트는 다 자란 채 멈춰 있고 진행하는 애니메이션이 없다. | `test/player-reduced-motion.test.js`의 `player_reduced_motion_opens_a_stepless_chart_fully_grown_with_no_progressing_animation`(Chrome이 있을 때). `getAnimations()`의 `playState`와 `currentTime`, 막대 폭, 선 경로, 값 글자의 계산된 스타일 확인 |
+| 움직임 줄이기로 열면 단계 있는 차트는 멈춘 채로 시작하고 첫 단계에 공개된 계열만 다 자란 상태다. | `test/player-reduced-motion.test.js`의 `player_reduced_motion_opens_a_stepped_chart_paused_with_only_the_first_step_series_grown` |
+| 재생 중에 설정을 켜면 바로 멈추고 현재 단계의 완성 상태가 된다. | `test/player-reduced-motion.test.js`의 `player_reduced_motion_turned_on_while_playing_stops_at_the_grown_state_of_the_current_step`. `page.emulateMedia`로 실행 중에 바꾼다 |
+| 멈춘 상태에서 설정을 꺼도 저절로 재생하지 않는다. | `test/player-reduced-motion.test.js`의 `player_reduced_motion_turned_off_while_paused_does_not_start_playing` |
+| 움직임 줄이기에서 단계를 옮기면 그 단계까지 공개된 계열만 완성 상태로 바뀐다. | `test/player-reduced-motion.test.js`의 `player_reduced_motion_step_change_shows_only_the_series_revealed_so_far_fully_grown` |
+| 단계 없는 차트에 재생 단추가 있고 누르면 재생하며, 다시 누르면 멈춘다. | `test/player-reduced-motion.test.js`의 `player_stepless_chart_has_a_play_button_that_plays_and_pauses` |
 | 일시정지 동안 차트 움직임이 멈추고, 배속이 차트 움직임의 재생 속도와 박자 시계에 같은 비율로 걸리며, 단계 이동으로 다시 거는 움직임도 지금의 정지와 배속을 따른다. | `test/chart-player.test.js`(Chrome이 있을 때). 실제 Chrome에서 `getAnimations()`의 `currentTime`, `playState`, `playbackRate`와 진행 고리 값을 정지 전후, 배속마다, 탭 이동 뒤에 잰다 |
 | 현재 탭의 진행은 일시정지 단추 둘레의 고리로 보이고 시간에 따라 채워진다. | `test/pages.test.js`의 `player_controls_share_one_axis_and_height_and_the_ring_and_active_tab_show_state`(Chrome이 있을 때). 고리가 단추를 감싸고 `stroke-dashoffset`이 줄어드는지 확인 |
 | 탭은 segmented 방식이라 켜진 탭만 채운 알약 면과 굵은 글을 갖는다. | `test/pages.test.js`의 `player_controls_share_one_axis_and_height_and_the_ring_and_active_tab_show_state`(Chrome이 있을 때). 켜진 탭과 나머지 탭의 계산된 글 굵기, 면, 글 색 비교 |

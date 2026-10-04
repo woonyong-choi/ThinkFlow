@@ -5,6 +5,7 @@
 const PLAYER_RATES = [1, 2, 0.5];
 // 설명 글이 바뀔 때 앞 글이 사라지고 뒤 글이 나타나는 각 시간(ms)을 담은 토큰 변수. 움직이는 SVG와 같은 토큰이다.
 const CAPTION_FADE_VAR = '--duration-caption-fade';
+const REDUCED_MOTION = matchMedia('(prefers-reduced-motion: reduce)');
 
 // cost: time O(s + c) 시작, 프레임마다 O(h + k), heap O(s + c), stack O(1)
 // vars: s = 도형 수, c = 선 수, h = 한 박자의 이동 수, k = 카드 있는 도형 수
@@ -21,14 +22,35 @@ function figurePlay(root, data) {
   figureView(root, data.metrics);
   centerCanvas(root);
   setPlaying(player, player.clock.isPlaying);
+  REDUCED_MOTION.addEventListener('change', () => REDUCED_MOTION.matches && settleReducedMotion(player));
   if (data.segs.length) {
     enterSegment(player, 0);
     requestAnimationFrame(player.tick);
   } else {
-    // 시간 흐름이 없는 그림은 조작 막대를 숨긴다. 차트는 SVG 이미지처럼 되풀이해 자란다.
-    root.querySelector('.fl-foot').hidden = true;
-    player.stage.svg.classList.add('chart-loop');
+    // 시간 흐름이 없는 그림은 단계 이름과 설명이 없어 탭과 설명 줄을 숨기고 재생 단추와 배속만 둔다.
+    // 차트는 SVG 이미지처럼 되풀이해 자라며, 움직임 줄이기에서는 재생을 누를 때까지 다 자란 채 멈춰 있다.
+    root.querySelector('.fl-tabs').hidden = true;
+    player.caption.hidden = true;
+    player.ring.draw(0);
   }
+}
+
+// cost: time O(s + r), heap O(1), stack O(1)
+// vars: s = 계열 수, r = 차트 행 수
+// basis: estimate
+// 움직임 줄이기가 켜지면 바로 멈추고, 지금 단계까지 공개된 계열을 다 자란 정지 상태로 바꾼다. 꺼질 때는 아무것도 하지 않는다(재생은 사용자가 누른다).
+function settleReducedMotion(player) {
+  const { data, clock, stage } = player;
+  setPlaying(player, false);
+  if (data.segs.length) drawChartState(stage, data.segs[clock.index], false);
+  else stage.svg.classList.remove('chart-loop');
+}
+
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+// 차트가 자라는 움직임을 걸어도 되는지. 움직임 줄이기가 아니거나, 사용자가 재생을 눌러 재생 중일 때다.
+function mayAnimate(clock) {
+  return !REDUCED_MOTION.matches || clock.isPlaying;
 }
 
 // cost: time O(1), heap O(1), stack O(1)
@@ -81,7 +103,7 @@ function createClock() {
     index: 0,
     elapsed: 0,
     before: performance.now(),
-    isPlaying: !matchMedia('(prefers-reduced-motion: reduce)').matches,
+    isPlaying: !REDUCED_MOTION.matches,
     rate: PLAYER_RATES[0],
   };
 }
@@ -126,7 +148,7 @@ function enterSegment(player, i) {
   const seg = data.segs[i];
   clock.index = i;
   clock.elapsed = 0;
-  drawSegmentState(player.stage, seg);
+  drawSegmentState(player.stage, seg, mayAnimate(clock));
   showCaption(player, seg.caption);
   markTabs(player.tabs, seg.si);
   resetPackets(player.stage, seg);
@@ -147,7 +169,7 @@ function showCaption(player, text) {
   player.captionFade?.cancel();
   const fadeMs = parseFloat(getComputedStyle(caption).getPropertyValue(CAPTION_FADE_VAR));
   const fill = () => caption.replaceChildren(...richNodes(text, htmlCode));
-  if (isFirst || !fadeMs || matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  if (isFirst || !fadeMs || REDUCED_MOTION.matches) {
     fill();
     return;
   }

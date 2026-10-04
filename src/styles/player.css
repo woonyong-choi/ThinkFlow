@@ -76,6 +76,7 @@ html.embedded .fl-figure {
 }
 
 .fl-bar .fl-rate {
+  grid-column: 3;
   justify-self: start;
 }
 

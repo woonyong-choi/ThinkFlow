@@ -30,6 +30,7 @@ function createStage(root, data) {
     seriesEls: Array.from({ length: data.seriesCount }, (_, i) => all(`.cs-${i}`)),
     labelEls: all('.chart-label.shift'),
     rowEls: Array.from({ length: data.rowCount }, (_, k) => all(`.cr-${k}`)),
+    isStill: data.segs.length === 0,
     packets: [],
     pendingCards: [],
   };
@@ -59,7 +60,7 @@ function highlightOnHover(stage) {
 // vars: s = 도형 수, c = 선 수, k = 카드 내용 수 합, r = 차트 행 수
 // basis: estimate
 // 박자 seg의 상태를 그린다. 점이 도착하는 도형의 카드는 cardsAt 시각에 바뀐다.
-function drawSegmentState(stage, seg) {
+function drawSegmentState(stage, seg, mayGrow) {
   stage.isFlow = Boolean(seg.pulses);
   stage.nodes.forEach((g, n) => g?.classList.toggle('on', seg.nodesOn.includes(n)));
   stage.groups.forEach((g, n) => g.classList.toggle('on', seg.groupsOn.includes(n)));
@@ -70,7 +71,7 @@ function drawSegmentState(stage, seg) {
   stage.pendingOn = pendingLights(stage, seg);
   stage.pendingPulses = [...(seg.pulses ?? [])];
   drawValueState(stage, seg, seg.t0);
-  drawChartState(stage, seg);
+  drawChartState(stage, seg, mayGrow);
 }
 
 // cost: time O(e + s), heap O(e + s), stack O(1)
@@ -99,10 +100,10 @@ function showCards(stage, cards, only) {
 // cost: time O(r + s), heap O(1), stack O(1)
 // vars: r = 차트 행 수, s = 계열 수
 // basis: estimate
-// 차트: 드러낸 계열을 보이고, 이 박자에 드러내는 계열은 자라는 움직임을 다시 건다. light가 있으면 나머지 행을 흐린다.
-function drawChartState(stage, seg) {
+// 차트: 드러낸 계열을 보이고, 이 박자에 드러내는 계열은 자라는 움직임을 다시 건다(mayGrow가 거짓이면 걸지 않고 다 자란 채 둔다). light가 있으면 나머지 행을 흐린다.
+function drawChartState(stage, seg, mayGrow) {
   stage.seriesEls.forEach((els, s) => {
-    const isGrowing = seg.growing.includes(s);
+    const isGrowing = mayGrow && seg.growing.includes(s);
     for (const el of els) {
       el.classList.toggle('hidden', !seg.series.includes(s));
       el.classList.remove('play');
@@ -123,6 +124,8 @@ function drawChartState(stage, seg) {
 // 정지면 멈추고 재개하면 잇고, 배속이면 재생 속도를 같게 한다. 모델 상태는 다시 계산하지 않는다(상태는 시간표가 정한다).
 // 이미 끝난 움직임은 건드리지 않는다. play()는 끝난 움직임을 처음부터 다시 돌리기 때문이다.
 function syncChartMotion(stage, clock) {
+  // 시간 흐름 없는 차트는 되풀이 움직임(chart-loop)을 재생을 켤 때 건다. 건 뒤에는 정지와 재개를 아래 반복문이 맡는다.
+  if (stage.isStill && clock.isPlaying) stage.svg.classList.add('chart-loop');
   for (const animation of stage.svg.getAnimations({ subtree: true })) {
     if (!animation.animationName?.startsWith('chart-')) continue;
     animation.playbackRate = clock.rate;
