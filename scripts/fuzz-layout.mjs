@@ -245,7 +245,7 @@ function buildWithin(builder, source) {
 
 function saveHang(source, options, index) {
   mkdirSync(options.hangDir, { recursive: true });
-  writeFileSync(join(options.hangDir, `hang-${options.kind}-seed${options.seed}-${index}.muto`), `${source}\n`);
+  writeFileSync(join(options.hangDir, `hang-${options.kind}-seed${options.seed}-${index}.dap`), `${source}\n`);
 }
 
 // cost: time O(count·build), heap O(k), stack O(1)

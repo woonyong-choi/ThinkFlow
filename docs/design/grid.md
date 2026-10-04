@@ -170,13 +170,13 @@ step "조회" "페이지 1은 표의 둘째 행을 거쳐 프레임 7로 간다"
 | 칸이 없는 자리는 빈 칸이고, 칸끼리 겹치지 않으며 모두 격자 안에 있다. | `test/layout.test.js`의 `buildFigure_grid_positions_without_a_cell_stay_empty_and_every_cell_stays_inside_the_frame`. 칸과 빈 자리 사각형이 서로 겹치지 않는지 확인 |
 | 격자는 구조 그림에서 크기가 고정된 도형 하나로 배치되고, 선은 격자 테두리에 닿는다. | `test/layout.test.js`의 `layoutGraph_box_sizes_equal_measured_sizes`(잰 크기와 같음), `buildFigure_grid_between_flow_boxes_is_one_shape_whose_edges_end_on_its_border` |
 | 칸 자리와 선택 사항을 어긴 원본, 격자 밖 칸, 틀린 칸 연결, 밝힐 수 없는 칸을 줄 번호와 함께 알린다. | `test/grammar.test.js`의 `parseFigure_malformed_source_reports_the_line_and_the_rule`(격자 행) |
-| `grid`, `item`, `gap`을 이름으로 쓴 옛 원본이 그대로 읽힌다. | `test/grammar.test.js`의 `parseFigure_valid_forms_read_without_errors`(격자 낱말 행), `test/compat.test.js`의 `compat_v1_every_fixture_builds_without_errors_and_matches_the_structure_snapshot`(`all-grid.muto`) |
+| `grid`, `item`, `gap`을 이름으로 쓴 옛 원본이 그대로 읽힌다. | `test/grammar.test.js`의 `parseFigure_valid_forms_read_without_errors`(격자 낱말 행), `test/compat.test.js`의 `compat_v1_every_fixture_builds_without_errors_and_matches_the_structure_snapshot`(`all-grid.dap`) |
 | 문법 표에 모든 낱말과 선택 사항이 판 1로 있고 고정 묶음이 쓴다. | `test/compat.test.js`의 `compat_v1_covers_every_word_option_and_value_in_the_grammar_table`, `test/grammar.test.js`의 `grammarDoc_figure_syntax_tables_equal_the_tables_made_from_the_grammar` |
 | 칸 `light`는 도형 `light`와 같은 박자 규칙이다. | `test/motion.test.js`의 `buildTimeline_grid_cell_light_stays_for_the_rest_of_the_step_like_a_node_light` |
 | 칸에서 칸으로 가는 선이 칸 테두리에서 나가고 들어오며, 안쪽 칸으로 가는 선도 이웃 칸을 지나지 않는다. | `test/layout.test.js`의 `buildFigure_grid_cell_edges_start_and_end_on_their_cell_and_never_cross_another_cell_flow_right`, `..._flow_down`, `buildFigure_grid_edge_between_two_cells_of_one_grid_stays_inside_the_grid_frame`. 그림 검사 3번(칸), 4번(칸 테두리)이 strict 빌드에서 같은 규칙을 지킨다 |
 | 합친 칸, 비트 띠, 같은 면에서 나가는 여러 선, 한 격자의 두 칸을 잇는 선이 섞여도 오류가 없다. | `npm run fuzz`(구조 그림에 칸 선 끝이 섞인다). [배치](layout.md)의 요구사항 표와 같은 명령 |
 | 칸 면, 글, 윤곽은 모든 면에서 대비 기준을 넘는다. | `test/contrast.test.js`의 `contrast_text_pairs_reach_4_5_in_both_themes`, `contrast_graphic_pairs_reach_3_in_both_themes`. 칸이 쓰는 `fg`, `muted`, `border`, `state.active`와 `node`, `surface`, `card-on` 짝이 이 입력에 이미 들어 있다 |
-| 문서의 예시와 예제 그림이 오류와 경고 없이 만들어지고 움직임이 시간표와 같다. | `test/grammar.test.js`의 `docExamples_every_design_doc_example_builds_without_errors_or_warnings`, `test/motion.test.js`의 `toSvg_moving_packets_match_the_timeline_at_every_example`(`examples/address-bits.muto` 외 세 파일 포함) |
+| 문서의 예시와 예제 그림이 오류와 경고 없이 만들어지고 움직임이 시간표와 같다. | `test/grammar.test.js`의 `docExamples_every_design_doc_example_builds_without_errors_or_warnings`, `test/motion.test.js`의 `toSvg_moving_packets_match_the_timeline_at_every_example`(`examples/address-bits.dap` 외 세 파일 포함) |
 | 올바른 무작위 구조 그림(칸 격자가 섞인)이 배치 오류나 그림 검사 오류가 되지 않는다. | `npm run fuzz`(구조 그림의 4분의 1이 칸 격자를 담는다). [배치](layout.md)의 요구사항 표와 같은 명령 |
 
 ## 단점
@@ -189,4 +189,4 @@ step "조회" "페이지 1은 표의 둘째 행을 거쳐 프레임 7로 간다"
 
 ## 미해결 질문
 
-- 큰 격자의 칸 수에 한도를 두고 `gap`으로 접게 강제할지. ([#28](https://github.com/woonyong-choi/mutoscope/issues/28))
+- 큰 격자의 칸 수에 한도를 두고 `gap`으로 접게 강제할지. ([#28](https://github.com/woonyong-choi/daphnis/issues/28))

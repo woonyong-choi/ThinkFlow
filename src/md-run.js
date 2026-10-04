@@ -1,4 +1,4 @@
-// mutoscope md: 마크다운 문서의 ```muto 블록을 SVG로 만들고 블록 아래 이미지 줄을 맞춘다(docs/design/markdown.md).
+// daphnis md: 마크다운 문서의 ```dap 블록을 SVG로 만들고 블록 아래 이미지 줄을 맞춘다(docs/design/markdown.md).
 // 모든 문서를 먼저 만든 다음에 쓴다. 오류가 하나라도 있으면 아무 파일도 쓰지 않고, --check는 쓰지 않고 갱신이 필요한지만 알린다.
 import { existsSync, mkdirSync, readdirSync, readFileSync, unlinkSync } from 'node:fs';
 import { basename, dirname, extname, join, relative, sep } from 'node:path';
@@ -11,7 +11,9 @@ import { plainText } from './text.js';
 // cost: time O(1), heap O(1), stack O(1)
 // basis: estimate
 // 이 문서에서 만든 SVG라는 표시. 이름이 바뀌어 안 쓰는 SVG를 찾아 지울 때 문서 이름까지 맞는 파일만 지운다.
-const svgMark = (file) => `<!-- mutoscope md ${basename(file)} -->`;
+const svgMark = (file) => `<!-- daphnis md ${basename(file)} -->`;
+// 옛 이름의 표시. 옛 표시가 든 SVG도 이 문서가 만든 것으로 보고 안 쓰게 되면 지운다.
+const legacySvgMark = (file) => `<!-- mutoscope md ${basename(file)} -->`;
 const problem = (message, code = 'md') => makeDiagnostic({ severity: 'error', line: 0, message }, { code });
 
 // cost: time O(1), heap O(1), stack O(1)
@@ -77,7 +79,10 @@ function staleSvgs(file, outDir, keep) {
   return readdirSync(outDir)
     .filter((name) => name.startsWith(prefix) && name.endsWith('.svg') && !keep.has(join(outDir, name)))
     .map((name) => join(outDir, name))
-    .filter((path) => readFileSync(path, 'utf8').includes(svgMark(file)));
+    .filter((path) => {
+      const text = readFileSync(path, 'utf8');
+      return text.includes(svgMark(file)) || text.includes(legacySvgMark(file));
+    });
 }
 
 // cost: time O(b·build + n), heap O(b·out), stack O(1), io 2b + n
@@ -98,6 +103,7 @@ async function planDocument(file, args, claimed) {
   const lines = text.split(/\r?\n/);
   const found = findBlocks(lines);
   report(file, found.errors.map(({ line, message }) => ({ ...problem(message), line })), json);
+  report(file, found.blocks.filter((block) => block.legacy).map((block) => ({ ...makeDiagnostic({ severity: 'deprecated', line: block.open + 1, message: 'the code block language "muto" is now "dap". Write the fence as ```dap' }, { code: 'deprecated-fence' }) })), json);
   const outDir = args['out-dir'] ?? dirname(file);
   const targets = targetsOf(file, found.blocks, outDir);
   const unique = claimTargets(file, targets, { claimed, json });
@@ -119,7 +125,7 @@ const changedFiles = (files) => files.filter(({ path, text }) => !existsSync(pat
 // vars: d = 문서 수, b = 문서 안 블록 수, build = 블록 하나를 만드는 비용, out = SVG 글자 수, n = 폴더 안 파일 수
 // basis: estimate
 /**
- * `mutoscope md`를 실행한다. 종료 코드를 돌려준다: 0 정상(또는 --check에서 갱신 불필요), 1 오류(또는 --check에서 갱신 필요).
+ * `daphnis md`를 실행한다. 종료 코드를 돌려준다: 0 정상(또는 --check에서 갱신 불필요), 1 오류(또는 --check에서 갱신 필요).
  * 오류가 있으면 아무 파일도 쓰거나 지우지 않는다.
  */
 export async function runMd(args) {
@@ -131,8 +137,8 @@ export async function runMd(args) {
   const writes = changedFiles(plans.flatMap((plan) => plan.files));
   const removes = plans.flatMap((plan) => plan.stale);
   if (args.flags.has('check')) {
-    for (const { path } of writes) report(path, [problem('is out of date. Run mutoscope md to update it', 'md-outdated')], json);
-    for (const path of removes) report(path, [problem('is a stale figure. Run mutoscope md to remove it', 'md-outdated')], json);
+    for (const { path } of writes) report(path, [problem('is out of date. Run daphnis md to update it', 'md-outdated')], json);
+    for (const path of removes) report(path, [problem('is a stale figure. Run daphnis md to remove it', 'md-outdated')], json);
     return writes.length || removes.length ? 1 : 0;
   }
   for (const { path, text } of writes) {

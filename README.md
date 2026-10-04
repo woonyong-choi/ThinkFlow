@@ -1,10 +1,17 @@
-# mutoscope
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/assets/daphnis-dark.svg">
+    <img src="docs/assets/daphnis-light.svg" alt="daphnis" width="160">
+  </picture>
+</p>
+
+# daphnis
 
 English | [한국어](README.ko.md)
 
-A command that turns one `.muto` source into one animated documentation figure: a structure, sequence, state, or data relation diagram, or a chart.
+A command that turns one `.dap` source into one animated documentation figure: a structure, sequence, state, or data relation diagram, or a chart.
 
-Design documents need figures that show which path a request takes, and charts that show a baseline before the improved value. Drawing diagrams in D2 and charts in Vega-Lite gives two looks in one document, and the D2 layout does not match a custom drawing style. mutoscope measures every shape with the same font files it embeds, lays out with elkjs, checks the result for overlaps, and plays steps in an HTML player or an animated SVG.
+Design documents need figures that show which path a request takes, and charts that show a baseline before the improved value. Drawing diagrams in D2 and charts in Vega-Lite gives two looks in one document, and the D2 layout does not match a custom drawing style. daphnis measures every shape with the same font files it embeds, lays out with elkjs, checks the result for overlaps, and plays steps in an HTML player or an animated SVG.
 
 > [!NOTE]
 > In development. There is no npm release yet; run it straight from GitHub or from a clone.
@@ -36,36 +43,36 @@ step "Chat" "Input goes through the screen to the engine"
 ![Figure rendered from the source above: the developer's question moves from Screen to Engine, then to Codex CLI](docs/assets/how-it-works.svg)
 
 1. You write the first line as the figure kind, then shapes and edges, then steps from `step` on.
-2. mutoscope lays out the shapes inside `system` from top to bottom and the rest from left to right.
+2. daphnis lays out the shapes inside `system` from top to bottom and the rest from left to right.
 3. In the first beat a dot moves from `user` to `tui`, and the card inside `tui` fills in when the dot arrives.
-4. A typo such as `engine -> cdex` stops the build with `how-it-works.muto:19: unknown node "cdex". Did you mean "codex"? Declared: codex, engine, system, tui, user`.
+4. A typo such as `engine -> cdex` stops the build with `how-it-works.dap:19: unknown node "cdex". Did you mean "codex"? Declared: codex, engine, system, tui, user`.
 
 ## Installation
 
 Requirements: Node.js 20 or later.
 
-mutoscope is not on npm yet, so `npm install mutoscope` does not work. Run it straight from GitHub:
+daphnis is not on npm yet, so `npm install daphnis` does not work. Run it straight from GitHub:
 
 ```sh
-npx github:woonyong-choi/mutoscope render figure.muto
+npx github:woonyong-choi/daphnis render figure.dap
 ```
 
 Or work from a clone:
 
 ```sh
-git clone https://github.com/woonyong-choi/mutoscope.git
-cd mutoscope
+git clone https://github.com/woonyong-choi/daphnis.git
+cd daphnis
 npm install
 ```
 
-After the first npm release, `npm install --save-dev mutoscope` adds the `mutoscope` command to a project and `npx mutoscope` runs it. The examples below use `node src/cli.js` from a clone.
+After the first npm release, `npm install --save-dev daphnis` adds the `daphnis` command to a project and `npx daphnis` runs it. The examples below use `node src/cli.js` from a clone.
 
 ## Usage
 
 ### Render one figure
 
 ```sh
-node src/cli.js render examples/memory.muto --html
+node src/cli.js render examples/memory.dap --html
 ```
 
 ```text
@@ -78,7 +85,7 @@ The SVG animates without scripts. The HTML adds step tabs, pause, speed, fullscr
 ### Check a figure
 
 ```sh
-node src/cli.js check examples/memory.muto --strict --json
+node src/cli.js check examples/memory.dap --strict --json
 ```
 
 The command prints nothing and exits with 0 when the figure has no errors, warnings, or deprecated forms. `--strict` fails on warnings and `--no-deprecated` fails on deprecated forms. `--json` prints one `{ file, severity, code, line, column, message, fix? }` object per diagnostic.
@@ -86,11 +93,11 @@ The command prints nothing and exits with 0 when the figure has no errors, warni
 ### Migrate old files
 
 ```sh
-node src/cli.js migrate examples/memory.muto
-node src/cli.js migrate examples/memory.muto --write
+node src/cli.js migrate examples/memory.dap
+node src/cli.js migrate examples/memory.dap --write
 ```
 
-Files written for an older grammar keep working. `migrate` shows the lines it would change as a diff and rewrites the file only with `--write`. It refuses a file that still has errors or deprecated forms after the change. The first line may be `mutoscope 1` to name the grammar version, and a file without it reads as version 1.
+Files written for an older grammar keep working. `migrate` shows the lines it would change as a diff and rewrites the file only with `--write`. It refuses a file that still has errors or deprecated forms after the change. The first line may be `daphnis 1` to name the grammar version, and a file without it reads as version 1.
 
 ### Render all examples with a gallery
 
@@ -102,10 +109,10 @@ Open `examples/out/index.html` to see every example on one page.
 
 ### Keep figures in a Markdown document
 
-Write the source in a `muto` code block. A name keeps the image file name stable when blocks move.
+Write the source in a `dap` code block. A name keeps the image file name stable when blocks move.
 
 ````text
-```muto name=flow
+```dap name=flow
 flow right
 box client "Client"
 box server "Server"
@@ -117,7 +124,7 @@ client -> server "GET"
 node src/cli.js md docs/guide.md
 ```
 
-The command writes `docs/guide-flow.svg` next to the document and puts `![Client, Server](guide-flow.svg)<!-- muto -->` right below the block (the alt text is the figure `title`). Run it again and nothing changes. Renaming a block removes the old SVG, `--out-dir images` moves the SVG files, and `--check` writes nothing and exits with 1 when a document or SVG is out of date. Any error in any block stops the command before it writes. See [Markdown](docs/design/markdown.md) for the rules.
+The command writes `docs/guide-flow.svg` next to the document and puts `![Client, Server](guide-flow.svg)<!-- dap -->` right below the block (the alt text is the figure `title`). Run it again and nothing changes. Renaming a block removes the old SVG, `--out-dir images` moves the SVG files, and `--check` writes nothing and exits with 1 when a document or SVG is out of date. Any error in any block stops the command before it writes. See [Markdown](docs/design/markdown.md) for the rules.
 
 ### Check figures in CI
 
@@ -125,9 +132,9 @@ The repository root has a composite GitHub Action. This step fails a pull reques
 
 ```yaml
 - uses: actions/checkout@v4
-- uses: woonyong-choi/mutoscope@main
+- uses: woonyong-choi/daphnis@main
   with:
-    paths: "docs/**/*.muto docs/**/*.md README.md"
+    paths: "docs/**/*.dap docs/**/*.md README.md"
     mode: check   # check (default) or render
     strict: true  # also fail on warnings
 ```
@@ -145,7 +152,7 @@ The repository root has a composite GitHub Action. This step fails a pull reques
 - Colors and fonts: figures are mostly neutral gray, with groups one step darker per nesting depth. The brand blue `#125DE6` marks only what matters (the lit shape, flowing dots, the main chart series, the icons), and purple, red (errors), and green (healthy) are rare accents; orange is kept for comparison and warnings. A group can take a `sky` or `purple` accent with a tinted face. Every outline reaches contrast 3 and every text 4.5, in light and dark. Text uses the embedded Pretendard and JetBrains Mono files.
 - Figure check: overlaps, edges through nodes, crowded edges, aspect ratio, and readability.
 - Playback: an HTML player and an animated SVG from the same timeline.
-- Markdown: `mutoscope md` renders the `muto` code blocks of a document and keeps the image lines below them up to date; a GitHub Action checks them in CI.
+- Markdown: `daphnis md` renders the `dap` code blocks of a document and keeps the image lines below them up to date; a GitHub Action checks them in CI.
 
 ## Status
 

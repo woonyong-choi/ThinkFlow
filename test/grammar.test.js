@@ -145,7 +145,7 @@ const VALID = [
   { form: '선택 사항 낱말 이름', source: 'flow right\nbox quiet "q"\nbox dashed "d"\nquiet -> dashed "x" quiet dashed\nstep "s"\n  quiet -> dashed' },
   { form: '열 이름 pk와 unique', source: 'data right\ntable pk "t" {\n  pk bigint pk\n  unique varchar unique\n}' },
   { form: '계열 이름 reveal 낱말', source: 'chart bar\nseries mono "A"\nrow "r" mono=1\nstep "s"\n  reveal mono' },
-  { form: '낱말 mutoscope 이름', source: 'flow right\nbox mutoscope "도구"\nbox b "B"\nmutoscope -> b\n' },
+  { form: '낱말 daphnis 이름', source: 'flow right\nbox daphnis "도구"\nbox b "B"\ndaphnis -> b\n' },
   // 계약 figure-syntax.md: 열 이름은 대문자와 예약어를 허용한다(#6)
   { form: '열 이름 대문자와 외래 키', source: 'data right\ntable users "users" {\n  userId bigint pk\n  createdAt timestamp\n}\ntable posts "posts" {\n  authorId bigint fk=users.userId\n}' },
   { form: '열 이름 예약어', source: 'data right\ntable orders "orders" {\n  state varchar\n  id bigint pk\n}' },
@@ -215,23 +215,23 @@ test('parseFigure_error_diagnostic_has_severity_code_line_column_and_message', (
 // 근거: 계약 figure-syntax.md 호환 규칙 "판": 판 줄이 없으면 판 1, 있으면 그 판으로 읽고, 첫 문장이어야 하며, 이름으로도 쓸 수 있다
 test('parseFigure_version_line_sets_the_version_and_defaults_to_1', () => {
   assert.equal(parseFigure(BASE).figure.version, 1);
-  const { figure } = parseFigure(`mutoscope 1\n# 주석\n${BASE}`);
+  const { figure } = parseFigure(`daphnis 1\n# 주석\n${BASE}`);
   assert.deepEqual([figure.version, figure.kind, figure.line], [1, 'flow', 3]);
-  assert.match(errorsOf(`${BASE}mutoscope 1\n`)[0], /^5: the version line/);
-  assert.match(errorsOf('mutoscope 1\n')[0], /no figure/);
+  assert.match(errorsOf(`${BASE}daphnis 1\n`)[0], /^5: the version line/);
+  assert.match(errorsOf('daphnis 1\n')[0], /no figure/);
 });
 
 // 근거: 계약 figure-syntax.md 호환 규칙: 진단 code unsupported-version, invalid-version, version-required
 test('parseFigure_version_problems_have_a_stable_code', () => {
-  const [unsupported] = problemsOf(`mutoscope ${VERSION + 1}\n${BASE}`);
+  const [unsupported] = problemsOf(`daphnis ${VERSION + 1}\n${BASE}`);
   assert.equal(unsupported.code, 'unsupported-version');
   assert.match(unsupported.message, new RegExp(`version ${VERSION + 1}`));
-  for (const line of ['mutoscope', 'mutoscope 0', 'mutoscope one', 'mutoscope 1 2', 'mutoscope "1"']) assert.equal(problemsOf(`${line}\n${BASE}`)[0].code, 'invalid-version', line);
+  for (const line of ['daphnis', 'daphnis 0', 'daphnis one', 'daphnis 1 2', 'daphnis "1"']) assert.equal(problemsOf(`${line}\n${BASE}`)[0].code, 'invalid-version', line);
   withEntry(STATEMENTS, 'future', { since: VERSION + 1, section: 'declare', kinds: ['flow'] }, () => {
     const [error] = problemsOf(`${BASE}future x\n`);
 
     assert.equal(error.code, 'version-required');
-    assert.match(error.message, new RegExp(`mutoscope ${VERSION + 1}`));
+    assert.match(error.message, new RegExp(`daphnis ${VERSION + 1}`));
   });
 });
 
@@ -288,5 +288,5 @@ test('readme_example_equals_the_source_of_the_rendered_asset', () => {
   const read = (path) => readFileSync(new URL(path, import.meta.url), 'utf8');
   const block = /```text\n(flow right[\s\S]*?)```/.exec(read('../README.md'))[1];
 
-  assert.equal(block, read('../docs/assets/how-it-works.muto'));
+  assert.equal(block, read('../docs/assets/how-it-works.dap'));
 });

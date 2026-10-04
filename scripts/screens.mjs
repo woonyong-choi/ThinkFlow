@@ -30,7 +30,7 @@ const SHOTS = [
 // vars: s = 화면 수, w = 화면마다 기다리는 시간
 // basis: estimate
 async function main() {
-  execFileSync(process.execPath, ['src/cli.js', 'render', 'examples/saturn.muto', '--static', '--out', 'examples/screens-static'], { stdio: 'ignore' });
+  execFileSync(process.execPath, ['src/cli.js', 'render', 'examples/saturn.dap', '--static', '--out', 'examples/screens-static'], { stdio: 'ignore' });
   // 같은 이름 saturn.svg가 움직이는 SVG(examples/out)와 겹치지 않도록 정적 SVG는 따로 렌더해 이름을 바꿔 옮긴다. SHOTS의 13번이 이 이름을 연다.
   renameSync('examples/screens-static/saturn.svg', `${OUT}/saturn-static.svg`);
   rmSync('examples/screens-static', { recursive: true });

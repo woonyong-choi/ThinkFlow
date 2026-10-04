@@ -28,7 +28,7 @@ const SHORT_HASH = 7;
 // vars: f = 그림 원본 수
 // basis: estimate
 function sourcesOf() {
-  return SOURCE_DIRS.flatMap((dir) => readdirSync(join(ROOT, dir)).filter((name) => name.endsWith('.muto')).map((name) => join(ROOT, dir, name)));
+  return SOURCE_DIRS.flatMap((dir) => readdirSync(join(ROOT, dir)).filter((name) => name.endsWith('.dap')).map((name) => join(ROOT, dir, name)));
 }
 
 // cost: time O(f·n), heap O(f), stack O(1), io f
@@ -66,7 +66,7 @@ async function timeFigure(path) {
   const text = readFileSync(path, 'utf8');
   const before = process.cpuUsage();
   const result = await buildFigure(text, { baseDir: dirname(path) });
-  await toSvg(result, { isStatic: false, name: basename(path, '.muto') });
+  await toSvg(result, { isStatic: false, name: basename(path, '.dap') });
   const used = process.cpuUsage(before);
   return (used.user + used.system) / 1000;
 }

@@ -109,7 +109,7 @@ export const runCli = (args, cwd) => spawnSync(process.execPath, [CLI, ...args],
 // basis: estimate
 /** 테스트마다 새 폴더를 만들어 run(folder)를 돌리고 끝나면 지운다. run이 Promise를 돌려주면 끝난 뒤에 지운다. */
 export function withFolder(run) {
-  const folder = mkdtempSync(join(tmpdir(), 'mutoscope-test-'));
+  const folder = mkdtempSync(join(tmpdir(), 'daphnis-test-'));
   const cleanup = () => rmSync(folder, { recursive: true, force: true });
   try {
     const result = run(folder);

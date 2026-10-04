@@ -16,7 +16,7 @@ const REACH_RULE = 16;
 const REACH_TOLERANCE = 0.5;
 const TEXT_CONTRAST = 4.5;
 const FRAME_MS = 50;
-const SOURCES = ['../examples/saturn.muto', './fixtures/chip-reach/context.muto', './fixtures/chip-reach/a7-cache.muto'];
+const SOURCES = ['../examples/saturn.dap', './fixtures/chip-reach/context.dap', './fixtures/chip-reach/a7-cache.dap'];
 
 // cost: time O(p·l), heap O(p), stack O(1)
 // vars: p = 화면의 점 수, l = 선 라벨 수

@@ -1,4 +1,4 @@
-// md 명령: 문서 안 ```muto 블록의 SVG와 이미지 줄(docs/design/markdown.md). 멱등, 이름 안정, 오류 시 미기록, --check 종료 코드는 그 문서의 요구사항 표다.
+// md 명령: 문서 안 ```dap 블록의 SVG와 이미지 줄(docs/design/markdown.md). 멱등, 이름 안정, 오류 시 미기록, --check 종료 코드는 그 문서의 요구사항 표다.
 import assert from 'node:assert/strict';
 import { existsSync, readFileSync, statSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -8,7 +8,7 @@ import { runCli as run, withFolder } from './helpers.js';
 const FLOW = 'flow right\ntitle "Request path"\nbox a "Client"\nbox b "Server"\na -> b "GET"\nstep "s"\n  a -> b\n';
 const BAR = 'chart bar\ntitle "Latency"\nseries s "S"\nrow "r" s=1\n';
 const doc = (...blocks) => `# Doc\n\n${blocks.join('\n')}\nend\n`;
-const block = (info, source) => `\`\`\`muto${info ? ` ${info}` : ''}\n${source}\`\`\`\n`;
+const block = (info, source) => `\`\`\`dap${info ? ` ${info}` : ''}\n${source}\`\`\`\n`;
 const read = (folder, name) => readFileSync(join(folder, name), 'utf8');
 const put = (folder, name, text) => writeFileSync(join(folder, name), text);
 
@@ -23,7 +23,7 @@ test('md_render_adds_an_image_line_below_the_block_and_a_second_run_changes_noth
     const second = run(['md', 'doc.md'], folder);
 
     assert.equal(first.status, 0, first.stderr);
-    assert.match(markdown, /```\n\n!\[Request path\]\(doc-flow\.svg\)<!-- muto -->\n\nend\n$/);
+    assert.match(markdown, /```\n\n!\[Request path\]\(doc-flow\.svg\)<!-- dap -->\n\nend\n$/);
     assert.equal(second.status, 0);
     assert.equal(second.stdout, '', '다시 돌리면 쓴 파일이 없다');
     assert.equal(read(folder, 'doc.md'), markdown);
@@ -71,7 +71,7 @@ test('md_rename_removes_the_stale_svg_but_not_a_hand_made_file_with_the_same_pre
 // 근거: 요구사항 "블록이 없어진 이미지 줄을 지우고 SVG도 정리한다"
 test('md_removed_block_removes_its_image_line_and_svg_but_a_marked_line_inside_a_text_fence_stays', () => {
   withFolder((folder) => {
-    const example = '````text\n![x](x.svg)<!-- muto -->\n````\n';
+    const example = '````text\n![x](x.svg)<!-- dap -->\n````\n';
     put(folder, 'doc.md', doc(block('name=flow', FLOW), example));
     run(['md', 'doc.md'], folder);
 
@@ -93,7 +93,7 @@ test('md_fails_without_writing_any_file_when_the_input_must_not_pass', () => {
     { name: 'unknown_fence_option', text: doc(block('title=x', FLOW)), args: [], stderr: /^doc\.md:3: unknown option "title=x"/m },
     { name: 'uppercase_name', text: doc(block('name=Flow', FLOW)), args: [], stderr: /^doc\.md:3: block name "Flow"/m },
     { name: 'duplicate_name', text: doc(block('name=a', FLOW), block('name=a', BAR)), args: [], stderr: /^doc\.md:13: .*is also written for doc\.md:3/m },
-    { name: 'unclosed_fence', text: '```muto\nflow right\n', args: [], stderr: /^doc\.md:1: the muto fence is never closed/m },
+    { name: 'unclosed_fence', text: '```dap\nflow right\n', args: [], stderr: /^doc\.md:1: the dap fence is never closed/m },
   ];
   for (const { name, text, args, stderr } of cases) {
     withFolder((folder) => {
@@ -124,7 +124,7 @@ test('md_check_exits_1_when_an_update_is_needed_and_writes_nothing', () => {
     run(['md', 'doc.md'], folder);
     put(folder, 'doc.md', read(folder, 'doc.md').replace('name=flow', 'name=path'));
     run(['md', 'doc.md'], folder);
-    put(folder, 'doc-flow.svg', '<!-- mutoscope md doc.md -->');
+    put(folder, 'doc-flow.svg', '<!-- daphnis md doc.md -->');
     const stale = run(['md', 'doc.md', '--check'], folder);
 
     assert.equal(unrendered.status, 1);
@@ -151,11 +151,11 @@ test('md_out_dir_writes_svgs_there_and_links_them_relative_to_the_document', () 
   });
 });
 
-// 근거: 요구사항 "muto 블록만 대상이다". 다른 울타리 안의 muto 줄과 목록 안 들여쓴 블록
-test('md_ignores_muto_inside_other_fences_and_renders_an_indented_block_in_a_list', () => {
+// 근거: 요구사항 "dap 블록만 대상이다". 다른 울타리 안의 dap 줄과 목록 안 들여쓴 블록
+test('md_ignores_dap_inside_other_fences_and_renders_an_indented_block_in_a_list', () => {
   withFolder((folder) => {
-    const nested = '````text\n```muto\nflow right\nbox a "A"\n```\n````\n';
-    const listed = '- item\n\n  ```muto\n  flow right\n  box a "A"\n  ```\n';
+    const nested = '````text\n```dap\nflow right\nbox a "A"\n```\n````\n';
+    const listed = '- item\n\n  ```dap\n  flow right\n  box a "A"\n  ```\n';
     put(folder, 'doc.md', doc(nested, listed));
 
     const result = run(['md', 'doc.md'], folder);
@@ -163,14 +163,14 @@ test('md_ignores_muto_inside_other_fences_and_renders_an_indented_block_in_a_lis
     assert.equal(result.status, 0, result.stderr);
     assert.ok(!existsSync(join(folder, 'doc-2.svg')), 'text 울타리 안 블록은 그리지 않는다');
     assert.ok(existsSync(join(folder, 'doc-1.svg')));
-    assert.match(read(folder, 'doc.md'), /\n {2}!\[doc figure 1\]\(doc-1\.svg\)<!-- muto -->\n/);
+    assert.match(read(folder, 'doc.md'), /\n {2}!\[doc figure 1\]\(doc-1\.svg\)<!-- dap -->\n/);
   });
 });
 
 // 근거: 계약 CLI 옵션은 명령마다 받는 것만(D08 추가만). md 전용 옵션은 다른 명령에서, 파일 명령 옵션은 md에서 거절한다
 test('md_options_are_refused_by_the_wrong_command', () => {
   withFolder((folder) => {
-    for (const args of [['render', 'a.muto', '--check'], ['check', 'a.muto', '--out-dir', 'x'], ['md', 'doc.md', '--out', 'x'], ['md', 'doc.md', '--html']]) {
+    for (const args of [['render', 'a.dap', '--check'], ['check', 'a.dap', '--out-dir', 'x'], ['md', 'doc.md', '--out', 'x'], ['md', 'doc.md', '--html']]) {
       const result = run(args, folder);
 
       assert.equal(result.status, 2, args.join(' '));
@@ -188,8 +188,24 @@ test('md_keeps_crlf_line_endings_and_stays_idempotent', () => {
     const markdown = read(folder, 'doc.md');
 
     assert.equal(first.status, 0, first.stderr);
-    assert.match(markdown, /!\[Request path\]\(doc-flow\.svg\)<!-- muto -->\r\n/);
+    assert.match(markdown, /!\[Request path\]\(doc-flow\.svg\)<!-- dap -->\r\n/);
     assert.ok(!/[^\r]\n/.test(markdown), '모든 줄바꿈이 CRLF다');
     assert.equal(run(['md', 'doc.md', '--check'], folder).status, 0);
+  });
+});
+
+// 근거: 설계 markdown.md 호환 "옛 이름". 옛 울타리(muto)와 옛 이미지 표시를 같은 블록으로 읽어 새 표시로 고쳐 쓰고 폐기 안내를 낸다
+test('md_reads_the_old_fence_and_old_image_mark_and_rewrites_the_mark_with_a_deprecation_notice', () => {
+  withFolder((folder) => {
+    put(folder, 'doc.md', `${doc(block('name=flow', FLOW)).replace('```dap', '```muto')}`.replace('\nend', '\n![x](doc-flow.svg)<!-- muto -->\nend'));
+
+    const result = run(['md', 'doc.md'], folder);
+    const markdown = read(folder, 'doc.md');
+
+    assert.equal(result.status, 0, result.stderr);
+    assert.match(result.stderr, /^doc\.md:3: deprecated: the code block language "muto" is now "dap"/m);
+    assert.match(markdown, /!\[Request path\]\(doc-flow\.svg\)<!-- dap -->/);
+    assert.doesNotMatch(markdown, /<!-- muto -->/);
+    assert.equal(markdown.match(/doc-flow\.svg/g).length, 1);
   });
 });

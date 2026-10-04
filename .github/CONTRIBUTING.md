@@ -1,6 +1,6 @@
 # Contributing
 
-This guide explains how to contribute to mutoscope.
+This guide explains how to contribute to daphnis.
 
 ## Before you start
 
@@ -11,8 +11,8 @@ Open an issue before you start work.
 Requirements: Node.js 20 or later.
 
 ```sh
-git clone https://github.com/woonyong-choi/mutoscope.git
-cd mutoscope
+git clone https://github.com/woonyong-choi/daphnis.git
+cd daphnis
 npm install
 ```
 

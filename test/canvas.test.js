@@ -38,7 +38,7 @@ test('sizeTokens_chart_gallery_and_document_widths_equal_the_figure_canvas', () 
 
 // 근거: 설계 docs-integration.md "모든 그림의 SVG width는 같은 표준 캔버스 폭이다"(모든 예제와 여섯 차트 종류)
 test('toSvg_every_example_and_chart_type_is_canvas_wide_and_inside_its_viewbox', async () => {
-  const files = readdirSync(EXAMPLES).filter((f) => f.endsWith('.muto'));
+  const files = readdirSync(EXAMPLES).filter((f) => f.endsWith('.dap'));
   assert.ok(files.length > 0);
   for (const file of files) {
     const result = await buildFigure(readFileSync(new URL(file, EXAMPLES), 'utf8'));

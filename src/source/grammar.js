@@ -4,7 +4,7 @@
 
 /** 이 도구가 읽는 가장 높은 문법 판. 깨지는 변경에만 올린다. */
 export const VERSION = 1;
-/** 첫 줄에 판 표기(`mutoscope 1`)가 없을 때 읽는 판. 판 표기가 생기기 전 파일이 모두 이 판이다. */
+/** 첫 줄에 판 표기(`daphnis 1`)가 없을 때 읽는 판. 판 표기가 생기기 전 파일이 모두 이 판이다. */
 export const DEFAULT_VERSION = 1;
 
 // 원형이 없는 표. `constructor` 같은 낱말이 표 항목으로 잡히지 않게 한다.
@@ -94,7 +94,8 @@ export const VALUES = {
  * positional은 낱말 뒤 자리별 값 목록 이름이다.
  */
 export const STATEMENTS = table({
-  mutoscope: { ...V1, section: 'version', kinds: ALL_KINDS },
+  daphnis: { ...V1, section: 'version', kinds: ALL_KINDS },
+  mutoscope: { ...V1, section: 'version', kinds: ALL_KINDS, deprecated: { since: 1, replace: 'daphnis' } },
   title: { ...V1, section: 'header', kinds: ALL_KINDS },
   subtitle: { ...V1, section: 'header', kinds: ALL_KINDS },
   speed: { ...V1, section: 'header', kinds: ALL_KINDS },

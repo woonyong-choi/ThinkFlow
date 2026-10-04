@@ -12,13 +12,16 @@ import { createProblems } from '../src/source/problems.js';
 import { runCli, withFolder } from './helpers.js';
 
 const V1 = new URL('./fixtures/compat/v1/', import.meta.url);
-const NAMES = readdirSync(V1).filter((name) => name.endsWith('.muto')).sort();
+const NAMES = readdirSync(V1).filter((name) => name.endsWith('.dap')).sort();
 const SNAPSHOT = JSON.parse(readFileSync(new URL('structure.snapshot.json', V1), 'utf8'));
 
 // 한 번도 지나지 않는 quiet 선(경고 11번)이 있는 원본
 const QUIET_SOURCE = 'flow right\nbox a "A"\nbox b "B"\na -> b "보냄" quiet\nb -> a\nstep "s"\n  b -> a\n';
 // 폐기된 tone 값(blue는 brand로, orange와 teal은 purple로 읽힌다)을 쓴 원본
 const OLD_TONES = 'flow right\nbox a "A"\nstep "s"\n  show a "x" tag="t" tone=blue\n  show a "y" tag="u" tone=orange\n';
+
+// 옛 도구 이름으로 쓴 판 표기 줄(`mutoscope 1`)의 폐기 진단. 고정 묶음의 요약은 이름이 바뀌기 전 값 그대로 두려고 세지 않는다.
+const isRenamedVersionWord = (d) => d.code === 'deprecated-statement' && d.fix?.text === 'daphnis';
 
 const sourceOf = (name) => readFileSync(new URL(name, V1), 'utf8');
 
@@ -32,7 +35,7 @@ function summarize({ figure, scene, timeline, deprecations }) {
     kind: figure.kind,
     chartType: figure.chartType ?? null,
     version: figure.version,
-    deprecated: deprecations.length,
+    deprecated: deprecations.filter((d) => !isRenamedVersionWord(d)).length,
     shapes: scene ? scene.items.length : 0,
     groups: scene ? scene.groups.length : 0,
     lines: scene ? scene.edges.length : 0,
@@ -55,7 +58,7 @@ test('compat_v1_every_fixture_builds_without_errors_and_matches_the_structure_sn
 
 // 근거: 설계 figure-syntax.md 요구사항 "옛 형식 원본이 오류 없이 읽히고 폐기 진단과 fix를 낸다"
 test('compat_v1_old_forms_report_only_deprecated_never_errors_or_warnings', async () => {
-  const tones = await buildFigure(sourceOf('old-tone-blue-orange.muto'));
+  const tones = await buildFigure(sourceOf('old-tone-blue-orange.dap'));
 
   assert.deepEqual(tones.deprecations.map((d) => [d.severity, d.code, d.fix.text]), [['deprecated', 'deprecated-value', 'brand'], ['deprecated', 'deprecated-value', 'purple']]);
   assert.deepEqual(tones.warnings, []);
@@ -117,15 +120,15 @@ test('compat_v1_covers_every_word_option_and_value_in_the_grammar_table', () => 
     for (const name of Object.keys(items)) if (!used.values.has(name) && !used.words.has(name)) missing.push(`value ${list}.${name}`);
   }
 
-  assert.deepEqual(missing, [], 'add a new .muto file to test/fixtures/compat/v1 that uses each missing entry (never edit the existing ones)');
+  assert.deepEqual(missing, [], 'add a new .dap file to test/fixtures/compat/v1 that uses each missing entry (never edit the existing ones)');
 });
 
 // 근거: 계약 figure-check.md와 figure-syntax.md 진단 모양: --json은 새 필드와 옛 필드(lines, check, level)를 함께 낸다
 test('compat_cli_json_keeps_the_old_fields_with_old_values_next_to_the_new_ones', () => {
   withFolder((folder) => {
-    writeFileSync(join(folder, 'quiet.muto'), QUIET_SOURCE);
-    const old = runCli(['check', new URL('old-tone-blue-orange.muto', V1).pathname, '--json']);
-    const quiet = runCli(['check', join(folder, 'quiet.muto'), '--json']);
+    writeFileSync(join(folder, 'quiet.dap'), QUIET_SOURCE);
+    const old = runCli(['check', new URL('old-tone-blue-orange.dap', V1).pathname, '--json']);
+    const quiet = runCli(['check', join(folder, 'quiet.dap'), '--json']);
     const [first] = old.stdout.trim().split('\n').map((line) => JSON.parse(line));
     const [warning] = quiet.stdout.trim().split('\n').map((line) => JSON.parse(line));
 
@@ -138,16 +141,16 @@ test('compat_cli_json_keeps_the_old_fields_with_old_values_next_to_the_new_ones'
 // 근거: 계약 figure-syntax.md 호환 규칙: 명령과 옵션 이름, 종료 코드는 추가만 한다. --strict는 경고도 실패, --write는 migrate만
 test('compat_cli_old_options_and_exit_codes_still_work', () => {
   withFolder((folder) => {
-    const file = new URL('main-bar.muto', V1).pathname;
-    writeFileSync(join(folder, 'quiet.muto'), QUIET_SOURCE);
+    const file = new URL('main-bar.dap', V1).pathname;
+    writeFileSync(join(folder, 'quiet.dap'), QUIET_SOURCE);
 
     assert.equal(runCli(['check', file, '--strict', '--json']).status, 0);
     assert.equal(runCli(['render', file, '--static', '--html', '--out', folder]).status, 0);
-    assert.equal(runCli(['check', 'missing.muto']).status, 1);
+    assert.equal(runCli(['check', 'missing.dap']).status, 1);
     assert.equal(runCli([]).status, 2);
     assert.equal(runCli(['check', file, '--unknown']).status, 2);
     assert.equal(runCli(['check', file, '--write']).status, 2);
-    assert.equal(runCli(['check', join(folder, 'quiet.muto'), '--strict']).status, 1);
+    assert.equal(runCli(['check', join(folder, 'quiet.dap'), '--strict']).status, 1);
   });
 });
 
@@ -183,18 +186,18 @@ test('migrateSource_applies_any_deprecated_entry_in_the_table_without_special_co
 // 근거: 설계 figure-syntax.md 요구사항 "migrate가 고친 원본에 오류와 폐기가 남지 않는다"
 test('cli_migrate_previews_a_diff_and_write_fixes_the_file_so_check_reports_nothing', () => {
   withFolder((folder) => {
-    writeFileSync(join(folder, 'old.muto'), OLD_TONES);
+    writeFileSync(join(folder, 'old.dap'), OLD_TONES);
 
-    const preview = runCli(['migrate', 'old.muto'], folder);
-    const untouched = readFileSync(join(folder, 'old.muto'), 'utf8');
-    const written = runCli(['migrate', 'old.muto', '--write'], folder);
-    const checked = runCli(['check', 'old.muto', '--strict', '--no-deprecated'], folder);
+    const preview = runCli(['migrate', 'old.dap'], folder);
+    const untouched = readFileSync(join(folder, 'old.dap'), 'utf8');
+    const written = runCli(['migrate', 'old.dap', '--write'], folder);
+    const checked = runCli(['check', 'old.dap', '--strict', '--no-deprecated'], folder);
 
     assert.equal(preview.status, 0, preview.stderr);
-    assert.match(preview.stdout, /^--- old\.muto\n\+\+\+ old\.muto \(migrated\)\n@@ line 4 @@\n-  show a "x" tag="t" tone=blue\n\+  show a "x" tag="t" tone=brand\n@@ line 5 @@/);
+    assert.match(preview.stdout, /^--- old\.dap\n\+\+\+ old\.dap \(migrated\)\n@@ line 4 @@\n-  show a "x" tag="t" tone=blue\n\+  show a "x" tag="t" tone=brand\n@@ line 5 @@/);
     assert.equal(untouched, OLD_TONES);
     assert.equal(written.status, 0, written.stderr);
-    assert.equal(readFileSync(join(folder, 'old.muto'), 'utf8'), OLD_TONES.replace('tone=blue', 'tone=brand').replace('tone=orange', 'tone=purple'));
+    assert.equal(readFileSync(join(folder, 'old.dap'), 'utf8'), OLD_TONES.replace('tone=blue', 'tone=brand').replace('tone=orange', 'tone=purple'));
     assert.deepEqual([checked.status, checked.stderr], [0, '']);
   });
 });
@@ -203,27 +206,40 @@ test('cli_migrate_previews_a_diff_and_write_fixes_the_file_so_check_reports_noth
 test('cli_migrate_does_not_write_a_file_with_errors', () => {
   withFolder((folder) => {
     const broken = `${OLD_TONES}a -> zz\n`;
-    writeFileSync(join(folder, 'bad.muto'), broken);
+    writeFileSync(join(folder, 'bad.dap'), broken);
 
-    const result = runCli(['migrate', 'bad.muto', '--write'], folder);
+    const result = runCli(['migrate', 'bad.dap', '--write'], folder);
 
     assert.equal(result.status, 1);
-    assert.match(result.stderr, /^bad\.muto:6: unknown node "zz"/m);
-    assert.equal(readFileSync(join(folder, 'bad.muto'), 'utf8'), broken);
+    assert.match(result.stderr, /^bad\.dap:6: unknown node "zz"/m);
+    assert.equal(readFileSync(join(folder, 'bad.dap'), 'utf8'), broken);
   });
 });
 
 // 근거: 계약 figure-syntax.md 진단 표: deprecated는 파일을 쓰고 표준 오류에 남기며 --no-deprecated일 때만 실패한다
 test('cli_check_prints_deprecated_and_only_no_deprecated_fails_on_it', () => {
   withFolder((folder) => {
-    writeFileSync(join(folder, 'old.muto'), OLD_TONES);
+    writeFileSync(join(folder, 'old.dap'), OLD_TONES);
 
-    const plain = runCli(['check', 'old.muto', '--strict'], folder);
-    const strict = runCli(['check', 'old.muto', '--no-deprecated'], folder);
+    const plain = runCli(['check', 'old.dap', '--strict'], folder);
+    const strict = runCli(['check', 'old.dap', '--no-deprecated'], folder);
 
     assert.equal(plain.status, 0);
-    assert.match(plain.stderr, /^old\.muto:4: deprecated: tone value "blue" is deprecated/m);
+    assert.match(plain.stderr, /^old\.dap:4: deprecated: tone value "blue" is deprecated/m);
     assert.equal(strict.status, 1);
-    assert.match(strict.stderr, /^old\.muto:4: tone value "blue" is deprecated/m);
+    assert.match(strict.stderr, /^old\.dap:4: tone value "blue" is deprecated/m);
   });
+});
+
+// 근거: 설계 figure-syntax.md 호환 규칙 "옛 이름". 옛 판 표기 `mutoscope 1`은 같은 그림으로 읽고 폐기 진단과 fix를 내며 migrate가 고친다
+test('compat_old_name_version_line_reads_the_same_figure_reports_deprecated_and_migrates', async () => {
+  const body = 'flow right\nbox a "A"\nbox b "B"\na -> b\nstep "s"\n  a -> b\n';
+  const old = await buildFigure(`mutoscope 1\n${body}`);
+  const current = await buildFigure(`daphnis 1\n${body}`);
+  const migrated = migrateSource(`mutoscope 1\n${body}`);
+
+  assert.deepEqual(old.deprecations.map((d) => [d.severity, d.code, d.line, d.fix.text]), [['deprecated', 'deprecated-statement', 1, 'daphnis']]);
+  assert.deepEqual([current.deprecations, old.warnings], [[], []]);
+  assert.deepEqual(summarize(old), summarize(current));
+  assert.equal(migrated.text, `daphnis 1\n${body}`);
 });

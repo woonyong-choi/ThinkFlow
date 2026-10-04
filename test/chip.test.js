@@ -118,7 +118,7 @@ test('placeChip_places_the_chip_clear_of_obstacles_or_reports_what_it_cannot_avo
 // basis: estimate
 // 글 상자가 있는 이동을 가진 그림마다 { file, scene, hops }
 async function chipFigures() {
-  const sources = FIGURE_DIRS.flatMap((dir) => readdirSync(dir).filter((f) => f.endsWith('.muto')).map((file) => ({ file, source: readFileSync(new URL(file, dir), 'utf8') })));
+  const sources = FIGURE_DIRS.flatMap((dir) => readdirSync(dir).filter((f) => f.endsWith('.dap')).map((file) => ({ file, source: readFileSync(new URL(file, dir), 'utf8') })));
   const figures = [];
   for (const { file, source } of [...sources, ...EDGE_SOURCES.map((source, i) => ({ file: `edge-${i}`, source }))]) {
     const result = await buildFigure(source, { baseDir: 'examples' });
@@ -262,7 +262,7 @@ test('planChip_keeps_one_position_for_the_whole_hop_when_nothing_is_in_the_way',
 
 // 근거: 설계 playback.md 요구사항 "SVG와 재생기가 같은 계획을 쓴다"
 test('toHtml_and_toSvg_share_the_chip_plan_from_the_timeline', async () => {
-  const result = await buildFigure(readFileSync(new URL('saturn.muto', EXAMPLES), 'utf8'), { baseDir: 'examples' });
+  const result = await buildFigure(readFileSync(new URL('saturn.dap', EXAMPLES), 'utf8'), { baseDir: 'examples' });
   const hops = result.timeline.segs.flatMap((seg) => seg.hops).filter((hop) => hop.data);
   const html = await toHtml(result, 'saturn');
   const svg = await toSvg(result, { name: 'saturn' });
@@ -274,7 +274,7 @@ test('toHtml_and_toSvg_share_the_chip_plan_from_the_timeline', async () => {
 
 // 근거: 버그 #4 증상 3과 #20: 도형 옆을 지나는 이동 글이 check 7 경고 없이 그려진다
 test('buildFigure_chip_beside_shape_fixture_has_no_check_7_warning', async () => {
-  const source = readFileSync(new URL('./fixtures/layout/chip-beside-shape.muto', import.meta.url), 'utf8');
+  const source = readFileSync(new URL('./fixtures/layout/chip-beside-shape.dap', import.meta.url), 'utf8');
 
   const { warnings } = await buildFigure(source, { strict: true });
 

@@ -17,7 +17,7 @@ const TOLERANCE = 0.002;
 // basis: estimate
 // 이동이 있는 예제마다 { name, result, svg }
 async function animatedExamples() {
-  const names = readdirSync(EXAMPLES).filter((f) => f.endsWith('.muto'));
+  const names = readdirSync(EXAMPLES).filter((f) => f.endsWith('.dap'));
   const all = await Promise.all(
     names.map(async (file) => {
       const result = await buildFigure(readFileSync(new URL(file, EXAMPLES), 'utf8'), { baseDir: 'examples' });
@@ -91,7 +91,7 @@ function isInsideGroup(svg, groupStart, index) {
 }
 
 // time=이 붙은 이동은 길이와 무관한 절대 시간이라 길이 비례를 보는 원본에서는 뺀다.
-const HOP_SOURCE = readFileSync(new URL('../examples/saturn.muto', import.meta.url), 'utf8').replace(/ time=\S+/g, '');
+const HOP_SOURCE = readFileSync(new URL('../examples/saturn.dap', import.meta.url), 'utf8').replace(/ time=\S+/g, '');
 
 // cost: time O(b·h), heap O(b·h), stack O(1)
 // vars: b = 박자 수, h = 박자의 이동 수
@@ -229,7 +229,7 @@ test('toSvg_moving_packets_match_the_timeline_at_every_example', async () => {
 test('toSvg_caption_and_step_label_fade_one_after_another_never_crossfade', async () => {
   const SEEN = 0.02;
   let checked = 0;
-  for (const file of readdirSync(EXAMPLES).filter((f) => f.endsWith('.muto'))) {
+  for (const file of readdirSync(EXAMPLES).filter((f) => f.endsWith('.dap'))) {
     const result = await buildFigure(readFileSync(new URL(file, EXAMPLES), 'utf8'), { baseDir: 'examples' });
     if (!result.timeline.segs.length) continue;
     const svg = await toSvg(result, { name: file });

@@ -9,6 +9,7 @@ import { DEFS, STYLES } from './styles.js';
 import { escapeXml, plainText, roundCoord as r } from './text.js';
 import { values } from './tokens.js';
 import { chartContent, figureContent } from './html/content.js';
+import { faviconLinks } from './html/favicon.js';
 
 // 브라우저 스크립트 파일(src/player/). 한 스크립트로 이어 붙여 HTML에 넣는다.
 const PLAYER_FILES = ['view', 'play', 'controls', 'stage', 'curve', 'values'];
@@ -77,6 +78,7 @@ export async function toHtml(result, name) {
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${escapeXml(plainText(figure.title ?? name))}</title>
+${faviconLinks()}
 ${EMBED_SCRIPT}
 <style>${fonts}
 ${STYLES.tokens}${STYLES.control}${STYLES.player}${STYLES.figure}${paintCss(result.scene)}${STYLES.chart}${result.chart ? chartMotionCss(timeline.growMs, result.chart.dotAts) : ''}</style>

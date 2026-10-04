@@ -1,11 +1,11 @@
-name: mutoscope
-description: Check or render .muto figures and the muto code blocks in Markdown documents
+name: daphnis
+description: Check or render .dap figures and the dap code blocks in Markdown documents
 author: choi woo-nyong
 inputs:
   paths:
-    description: Space-separated glob patterns of tracked .muto and .md files. A pattern is a git glob (`**/*.md`, `docs/*.muto`).
+    description: Space-separated glob patterns of tracked .dap and .md files. A pattern is a git glob (`**/*.md`, `docs/*.dap`).
     required: false
-    default: '**/*.muto **/*.md'
+    default: '**/*.dap **/*.md'
   mode:
     description: '`check` fails when a source has an error or a Markdown figure is out of date and writes nothing. `render` writes the SVG files and updates the Markdown image lines.'
     required: false
@@ -20,10 +20,10 @@ runs:
     - uses: actions/setup-node@v4
       with:
         node-version: 20
-    - name: Install mutoscope
+    - name: Install daphnis
       shell: bash
       run: npm ci --omit=dev --ignore-scripts --no-audit --no-fund --prefix "$GITHUB_ACTION_PATH"
-    - name: Run mutoscope
+    - name: Run daphnis
       shell: bash
       env:
         PATHS: ${{ inputs.paths }}
@@ -34,23 +34,23 @@ runs:
         set -f
         case "$MODE" in check|render) ;; *) echo "::error::mode must be check or render, not '$MODE'"; exit 1 ;; esac
         case "$STRICT" in true) strict_flag=--strict ;; false) strict_flag= ;; *) echo "::error::strict must be true or false, not '$STRICT'"; exit 1 ;; esac
-        muto_files=()
+        dap_files=()
         md_files=()
         while IFS= read -r file; do
           case "$file" in
-            *.muto) muto_files+=("$file") ;;
+            *.dap) dap_files+=("$file") ;;
             *.md) md_files+=("$file") ;;
           esac
         done < <(for pattern in $PATHS; do git ls-files -- ":(glob)$pattern"; done | sort -u)
-        if [ "${#muto_files[@]}" -eq 0 ] && [ "${#md_files[@]}" -eq 0 ]; then
-          echo "::error::no tracked .muto or .md file matches '$PATHS'"
+        if [ "${#dap_files[@]}" -eq 0 ] && [ "${#md_files[@]}" -eq 0 ]; then
+          echo "::error::no tracked .dap or .md file matches '$PATHS'"
           exit 1
         fi
-        if [ "$MODE" = check ]; then muto_command=check; md_flag=--check; else muto_command=render; md_flag=; fi
+        if [ "$MODE" = check ]; then dap_command=check; md_flag=--check; else dap_command=render; md_flag=; fi
         cli="$GITHUB_ACTION_PATH/src/cli.js"
         status=0
-        if [ "${#muto_files[@]}" -gt 0 ]; then
-          node "$cli" "$muto_command" "${muto_files[@]}" $strict_flag || status=1
+        if [ "${#dap_files[@]}" -gt 0 ]; then
+          node "$cli" "$dap_command" "${dap_files[@]}" $strict_flag || status=1
         fi
         if [ "${#md_files[@]}" -gt 0 ]; then
           node "$cli" md "${md_files[@]}" $md_flag $strict_flag || status=1

@@ -7,7 +7,7 @@
 
 ## 요약
 
-그림 문법은 `.muto` 파일 하나에 그림 하나를 적는 줄 단위 문법이다. 첫 문장에 그림 종류를 적고, 도형과 선을 선언한 뒤, `step` 줄부터 움직임을 적는다. 사람이 쓰는 글은 모두 따옴표 안에, 이름과 낱말은 모두 따옴표 밖에 둔다. 같은 일을 적는 방법은 하나뿐이다.
+그림 문법은 `.dap` 파일 하나에 그림 하나를 적는 줄 단위 문법이다. 첫 문장에 그림 종류를 적고, 도형과 선을 선언한 뒤, `step` 줄부터 움직임을 적는다. 사람이 쓰는 글은 모두 따옴표 안에, 이름과 낱말은 모두 따옴표 밖에 둔다. 같은 일을 적는 방법은 하나뿐이다.
 
 ## 동기
 
@@ -46,7 +46,7 @@ step "대화" "입력은 화면을 거쳐 엔진이 에이전트로 보낸다"
   say "대화를 기록한다"
 ```
 
-1. 사용자가 `mutoscope render saturn.muto`를 실행한다.
+1. 사용자가 `daphnis render saturn.dap`를 실행한다.
 2. `system` 안 도형은 위에서 아래로, 바깥 도형은 왼쪽에서 오른쪽으로 놓인다.
 3. 첫 박자에 점이 `user`에서 `tui`로 가고, 점이 닿을 때 `tui` 카드에 `YOU` 태그 줄이 나타난다.
 4. `engine -> db` 선은 `quiet`라서 그 선을 처음 지나는 박자부터 보인다.
@@ -54,7 +54,7 @@ step "대화" "입력은 화면을 거쳐 엔진이 에이전트로 보낸다"
 ### 오타 알아채기
 
 1. AI가 위 원본의 24번째 줄을 `engine -> cdex "turn" time=3s`로 적는다.
-2. 명령이 `saturn.muto:24: unknown node "cdex". Did you mean "codex"? Declared: cli, codex, db, engine, system, tui, user`를 내고 실패한다.
+2. 명령이 `saturn.dap:24: unknown node "cdex". Did you mean "codex"? Declared: cli, codex, db, engine, system, tui, user`를 내고 실패한다.
 3. AI가 이름을 고친다.
 
 ## 상세 설계
@@ -117,7 +117,7 @@ step "대화" "입력은 화면을 거쳐 엔진이 에이전트로 보낸다"
 
 | 머리 줄 | 뜻 | 기본값 |
 |---|---|---|
-| `mutoscope 1` | 문법 판. 파일의 첫 문장일 때만 쓰고 그림 종류 문장 앞에 둔다([호환 규칙](#호환-규칙)) | 판 1 |
+| `daphnis 1` | 문법 판. 파일의 첫 문장일 때만 쓰고 그림 종류 문장 앞에 둔다([호환 규칙](#호환-규칙)) | 판 1 |
 | `title "글"` | 그림 제목. SVG `<title>`, 차트는 그림 안 제목, 그 밖 그림은 목록 쪽 머리 제목 | 파일 이름 |
 | `subtitle "글"` | 그림 아래 한 줄 설명 | 없음 |
 | `speed 3s` | 점이 기준 길이 `size.packet.hop-ref`의 선을 지나는 시간. 선 길이에 비례해 이동 시간이 정해져 모든 이동이 같은 속도로 보인다(아래 이동 시간). 차트에서는 계열이 자라는 시간([차트](charts.md)) | 토큰 `duration.hop`과 `size.packet.hop-ref`, 차트는 `duration.reveal` |
@@ -252,9 +252,9 @@ step "대화" "입력은 화면을 거쳐 엔진이 에이전트로 보낸다"
 
 ### 호환 규칙
 
-이미 쓴 `.muto`는 기능이 늘어 문법이 바뀌어도 깨지지 않는다. 낱말, 선택 사항, 값 목록, 기본값, 판, 폐기 정보는 문법 표(`src/source/grammar.js`) 한 곳에만 있다. 파서, 검증, 오류 메시지, `migrate`, 이 절의 표가 모두 그 표를 읽는다.
+이미 쓴 `.dap`는 기능이 늘어 문법이 바뀌어도 깨지지 않는다. 낱말, 선택 사항, 값 목록, 기본값, 판, 폐기 정보는 문법 표(`src/source/grammar.js`) 한 곳에만 있다. 파서, 검증, 오류 메시지, `migrate`, 이 절의 표가 모두 그 표를 읽는다.
 
-- 판: 첫 문장에 `mutoscope 1`을 쓰면 그 판으로 읽고, 없으면 판 1이다. 이 도구가 모르는 판 번호는 오류(`unsupported-version`)이고 지원하는 판을 알린다. 판 번호는 옛 원본을 깨는 변경에만 올리고, 같은 판 안에서는 추가만 한다. 파일의 판보다 높은 `since`의 항목을 쓰면 오류(`version-required`)다.
+- 판: 첫 문장에 `daphnis 1`을 쓰면 그 판으로 읽고, 없으면 판 1이다. 이 도구가 모르는 판 번호는 오류(`unsupported-version`)이고 지원하는 판을 알린다. 판 번호는 옛 원본을 깨는 변경에만 올리고, 같은 판 안에서는 추가만 한다. 파일의 판보다 높은 `since`의 항목을 쓰면 오류(`version-required`)다.
 - 추가만: 새 낱말과 새 선택 사항은 생략할 수 있고, 생략한 기본값이 옛 뜻을 그대로 지킨다. `series`의 `role`이 그 예다. 생략하면 선언 순서대로 역할을 받고(첫 계열 main, 둘째 compare, 덤벨은 시작점이 compare라 첫 계열 compare), 하나만 적으면 다른 계열이 남은 역할을 받는다. 둘 다 적었을 때만 main 하나, compare 하나인지 본다.
 - 폐기: 옛 형식은 오류로 바꾸지 않는다. 표의 `deprecated: { since, replace }`가 새 이름이고, 낱말, 선택 사항 키, 값, 그림 종류 어디에 있든 같은 규칙으로 새 이름으로 바꿔 읽어 그림이 같다. `deprecated` 진단과 `fix`를 내고, 값 없는 낱말(flag)은 이름 자리의 낱말과 가를 수 없어 별칭을 두지 않는다.
 - 진단은 세 종류다.
@@ -265,10 +265,11 @@ step "대화" "입력은 화면을 거쳐 엔진이 에이전트로 보낸다"
 | `warning` | 품질 문제 | 씀 | `--strict` |
 | `deprecated` | 옛 형식이고 계속 동작한다 | 씀 | `--no-deprecated` |
 
-- 진단 하나의 모양은 `{ severity, code, line, column, message, fix? }`이고 모든 진단이 쓴다. `--json`은 여기에 `file`을 더하고, 옛 필드 `lines`, `check`, `level`도 함께 내(폐기, 다음 판까지) 진단마다 한 줄을 표준 출력에 쓴다. `code`는 `syntax`(문법), `check-1`~`check-14`([그림 검사](figure-check.md) 번호), `deprecated-statement`, `deprecated-option`, `deprecated-value`, `deprecated-kind`, `unsupported-version`, `invalid-version`, `version-required`, `layout`(배치 실패, [배치](layout.md#배치-실패)), `io`, `internal`이다. `column`은 줄 안 1부터 센 자리다. `fix`는 `{ line, column, length, text }`로, 그 줄의 `column`부터 `length`글자를 `text`로 바꾼다.
-- `mutoscope migrate 원본... [--write]`는 진단의 `fix`를 그대로 적용한다. 기본은 바뀔 줄만 `-`, `+`로 보여 주고, `--write`일 때만 파일을 고친다. 원본에 오류가 있거나 고친 글에 오류나 폐기가 남으면 아무것도 쓰지 않는다. 새 폐기 항목은 표에 `replace`만 적으면 된다.
+- 진단 하나의 모양은 `{ severity, code, line, column, message, fix? }`이고 모든 진단이 쓴다. `--json`은 여기에 `file`을 더하고, 옛 필드 `lines`, `check`, `level`도 함께 내(폐기, 다음 판까지) 진단마다 한 줄을 표준 출력에 쓴다. `code`는 `syntax`(문법), `check-1`~`check-14`([그림 검사](figure-check.md) 번호), `deprecated-statement`, `deprecated-option`, `deprecated-value`, `deprecated-kind`, `deprecated-extension`(옛 확장자 파일), `deprecated-fence`(마크다운 옛 울타리), `unsupported-version`, `invalid-version`, `version-required`, `layout`(배치 실패, [배치](layout.md#배치-실패)), `io`, `internal`이다. `column`은 줄 안 1부터 센 자리다. `fix`는 `{ line, column, length, text }`로, 그 줄의 `column`부터 `length`글자를 `text`로 바꾼다.
+- `daphnis migrate 원본... [--write]`는 진단의 `fix`를 그대로 적용한다. 기본은 바뀔 줄만 `-`, `+`로 보여 주고, `--write`일 때만 파일을 고친다. 원본에 오류가 있거나 고친 글에 오류나 폐기가 남으면 아무것도 쓰지 않는다. 새 폐기 항목은 표에 `replace`만 적으면 된다.
 
 - CLI 출력과 옵션도 같은 규칙이다. 명령과 옵션 이름, 종료 코드, `--json` 필드는 추가만 하고, 옛 `--json` 필드(`lines`, `check`, `level`)는 `src/diagnostics.js` 표에 deprecated로 표시해 다음 판까지 함께 낸다.
+- 옛 이름: 이 도구의 옛 이름 `mutoscope`로 쓴 것은 한 판 동안 계속 받고 폐기 안내를 낸다. 안내는 `deprecated` 진단이라 종료 코드를 바꾸지 않는다. 옛 명령 `mutoscope`는 `daphnis`와 같은 진입점의 별칭 bin이고 실행할 때마다 표준 오류에 안내를 쓴다(표준 출력과 `--json`은 그대로). 첫 문장의 `mutoscope 1`은 `daphnis 1`로 읽고 `fix`를 낸다(`migrate`가 고친다). 옛 확장자 `.muto` 파일은 읽고 `deprecated-extension`을 낸다. 마크다운의 ` ```muto ` 울타리는 읽고 `deprecated-fence`를 내며, 이미지 줄의 옛 표시 `<!-- muto -->`와 SVG의 옛 표시 `<!-- mutoscope md … -->`는 이 도구가 만든 것으로 알아보고 새 표시로 다시 쓴다. 목록 쪽 테마 저장 키 `mutoscope-theme`은 새 키 `daphnis-theme`이 없을 때만 읽는다.
 - 고정 묶음: `test/fixtures/compat/v1/`는 판 1 원본의 고정 묶음이다. 폐기 전 예제 원본(`main-*`), 옛 형식 사례(`old-*`), 모든 낱말과 선택 사항을 한 번씩 쓰는 파일(`all-*`)이 들어 있고, 앞으로 고치지 않는다. `test/compat.test.js`는 모든 파일이 오류 없이 읽히고 구조 요약(도형, 선, 박자, 계열 수)이 스냅샷과 같은지, 문법 표의 모든 항목이 묶음에 쓰였는지 본다. 새 판이 생기면 `v2` 폴더를 더한다.
 - 기능 추가 체크리스트: 표에 항목을 더한다(`since`는 현재 판). 생략했을 때의 기본값이 옛 뜻을 지키는지 확인한다. 항목을 쓰는 `all-*` 파일을 묶음에 더한다(있는 파일은 고치지 않는다). 옛 형식을 없애면 표에 `deprecated.replace`를 적는다. `npm run grammar`로 아래 문법 표를 다시 쓴다.
 
@@ -277,7 +278,8 @@ step "대화" "입력은 화면을 거쳐 엔진이 에이전트로 보낸다"
 <!-- grammar-table:start -->
 | 부분 | 낱말 | 그림 종류 | 판 | 폐기 |
 |---|---|---|---|---|
-| 판 표기 | `mutoscope` | 모든 그림 | 판 1 |  |
+| 판 표기 | `daphnis` | 모든 그림 | 판 1 |  |
+| 판 표기 | `mutoscope` | 모든 그림 | 판 1 | 폐기(판 1), `daphnis`로 읽는다 |
 | 머리 | `title`, `subtitle`, `speed` | 모든 그림 | 판 1 |  |
 | 머리 | `aspect`, `width` | flow, state, data | 판 1 |  |
 | 머리 | `x`, `y`, `scale`, `zero`, `decimals` | chart | 판 1 |  |

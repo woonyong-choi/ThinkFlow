@@ -84,7 +84,7 @@ function extentOf(body) {
 }
 
 const charts = readdirSync(EXAMPLES)
-  .filter((file) => file.endsWith('.muto') && readFileSync(new URL(file, EXAMPLES), 'utf8').startsWith('chart '))
+  .filter((file) => file.endsWith('.dap') && readFileSync(new URL(file, EXAMPLES), 'utf8').startsWith('chart '))
   .map((file) => [file, readFileSync(new URL(file, EXAMPLES), 'utf8')]);
 
 
@@ -263,7 +263,7 @@ test('buildFigure_series_color_follows_the_role_not_the_declaration_order', asyn
 // 근거: 설계 docs-integration.md "같은 계열 이름은 모든 예제에서 같은 역할이다"
 test('examples_same_series_label_and_id_have_the_same_role_in_every_source', () => {
   const dirs = [new URL('../examples/', import.meta.url), ASSETS];
-  const sources = dirs.flatMap((dir) => readdirSync(dir).filter((name) => name.endsWith('.muto')).map((name) => ({ name, text: readFileSync(new URL(name, dir), 'utf8') })));
+  const sources = dirs.flatMap((dir) => readdirSync(dir).filter((name) => name.endsWith('.dap')).map((name) => ({ name, text: readFileSync(new URL(name, dir), 'utf8') })));
   const byLabel = new Map();
   const byId = new Map();
   for (const { name, text } of sources.filter(({ text: t }) => /^chart /.test(t))) {
@@ -470,7 +470,7 @@ test('drawChart_heatmap_cells_fill_the_width_up_to_the_right_margin', async () =
 
 // 근거: 버그 #11(산점도 선) 화살촉이 점 이름을 가리지 않는다
 test('drawChart_scatter_arrowhead_stays_clear_of_every_point_name', async () => {
-  const { chart } = await buildFigure(readFileSync(new URL('scatter.muto', EXAMPLES), 'utf8'));
+  const { chart } = await buildFigure(readFileSync(new URL('scatter.dap', EXAMPLES), 'utf8'));
   const links = [...chart.body.matchAll(/<line x1="([\d.-]+)" y1="([\d.-]+)" x2="([\d.-]+)" y2="([\d.-]+)"[^>]*class="chart-link draw"/g)].map((m) => m.slice(1).map(Number));
   const names = [...chart.body.matchAll(/<text x="([\d.-]+)" y="([\d.-]+)" class="chart-name late( end)?">(.*?)<\/text>/g)].map((m) => {
     const width = measure(m[4], 11);

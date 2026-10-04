@@ -14,10 +14,10 @@ const BAR = 'chart bar\nseries s "S"\nrow "r" s=1\n';
 const QUIET = 'flow right\nbox a "A"\nbox b "B"\na -> b "보냄" quiet\nb -> a\nstep "s"\n  b -> a\n';
 const BAD = 'flow right\nbox a "A"\na -> zz\n';
 
-// 근거: 계약 package.json bin "mutoscope": 명령은 심볼릭 링크로 실행되어도 사용법을 낸다
+// 근거: 계약 package.json bin "daphnis": 명령은 심볼릭 링크로 실행되어도 사용법을 낸다
 test('main_run_through_symlink_prints_usage', () => {
   withFolder((folder) => {
-    const link = join(folder, 'mutoscope');
+    const link = join(folder, 'daphnis');
     symlinkSync(CLI, link);
 
     const result = spawnSync(process.execPath, [link], { encoding: 'utf8' });
@@ -30,9 +30,9 @@ test('main_run_through_symlink_prints_usage', () => {
 // 근거: 계약 playback.md 결과 "움직이는 SVG {이름}.svg 하나, --html이면 재생기 HTML"
 test('main_render_writes_svg_and_html', () => {
   withFolder((folder) => {
-    writeFileSync(join(folder, 'a.muto'), FLOW);
+    writeFileSync(join(folder, 'a.dap'), FLOW);
 
-    const result = run(['render', 'a.muto', '--html'], folder);
+    const result = run(['render', 'a.dap', '--html'], folder);
 
     assert.equal(result.status, 0, result.stderr);
     assert.ok(existsSync(join(folder, 'a.svg')) && existsSync(join(folder, 'a.html')));
@@ -42,12 +42,12 @@ test('main_render_writes_svg_and_html', () => {
 // 근거: 설계 figure-check.md 요구사항 "오류가 있으면 그림 파일을 쓰지 않는다", figure-syntax.md "오류를 모두 모아 알리고 파일을 쓰지 않는다"
 test('main_render_with_an_error_writes_no_file_and_reports_the_line', () => {
   withFolder((folder) => {
-    writeFileSync(join(folder, 'bad.muto'), 'flow right\nbox a "A"\na -> zz\n');
+    writeFileSync(join(folder, 'bad.dap'), 'flow right\nbox a "A"\na -> zz\n');
 
-    const result = run(['render', 'bad.muto'], folder);
+    const result = run(['render', 'bad.dap'], folder);
 
     assert.equal(result.status, 1);
-    assert.match(result.stderr, /^bad\.muto:3: unknown node "zz"/m);
+    assert.match(result.stderr, /^bad\.dap:3: unknown node "zz"/m);
     assert.ok(!existsSync(join(folder, 'bad.svg')));
   });
 });
@@ -55,11 +55,11 @@ test('main_render_with_an_error_writes_no_file_and_reports_the_line', () => {
 // 근거: 감사 C1 "gallery --strict가 strict를 버림", C2 "빈 입력을 그림 0개인 정상 gallery로 만듦", C3 "오류 파일만 건너뛰고 나머지를 씀"(AGENTS "오류가 있으면 결과 파일을 쓰지 않음"), 옵션은 gallery가 받는 것만(figure-check.md 명령)
 test('main_gallery_fails_without_writing_any_file_when_the_input_must_not_pass', () => {
   const cases = [
-    { name: 'strict_warning', files: { 'q.muto': QUIET }, args: ['--strict'], status: 1, stderr: /q\.muto:4: .*quiet edge/ },
-    { name: 'error_next_to_a_good_file', files: { 'good.muto': FLOW, 'bad.muto': BAD }, args: [], status: 1, stderr: /bad\.muto:3: unknown node "zz"/ },
-    { name: 'no_muto_files', files: { 'note.txt': 'x' }, args: [], status: 1, stderr: /no \.muto files/ },
-    { name: 'static_is_not_a_gallery_option', files: { 'good.muto': FLOW }, args: ['--static'], status: 2, stderr: /--static is not for gallery/ },
-    { name: 'json_is_not_a_gallery_option', files: { 'good.muto': FLOW }, args: ['--json'], status: 2, stderr: /--json is not for gallery/ },
+    { name: 'strict_warning', files: { 'q.dap': QUIET }, args: ['--strict'], status: 1, stderr: /q\.dap:4: .*quiet edge/ },
+    { name: 'error_next_to_a_good_file', files: { 'good.dap': FLOW, 'bad.dap': BAD }, args: [], status: 1, stderr: /bad\.dap:3: unknown node "zz"/ },
+    { name: 'no_dap_files', files: { 'note.txt': 'x' }, args: [], status: 1, stderr: /no \.dap files/ },
+    { name: 'static_is_not_a_gallery_option', files: { 'good.dap': FLOW }, args: ['--static'], status: 2, stderr: /--static is not for gallery/ },
+    { name: 'json_is_not_a_gallery_option', files: { 'good.dap': FLOW }, args: ['--json'], status: 2, stderr: /--json is not for gallery/ },
   ];
   for (const { name, files, args, status, stderr } of cases) {
     withFolder((folder) => {
@@ -77,7 +77,7 @@ test('main_gallery_fails_without_writing_any_file_when_the_input_must_not_pass',
 // 근거: 감사 C1 반대 사례 "경고만 있는 원본은 --strict 없이는 통과하고, --strict 뒤에 다른 옵션이 붙어도 gallery가 받는 옵션은 그대로 받는다"
 test('main_gallery_still_writes_the_files_for_a_warning_without_strict_and_accepts_its_options', () => {
   withFolder((folder) => {
-    writeFileSync(join(folder, 'q.muto'), QUIET);
+    writeFileSync(join(folder, 'q.dap'), QUIET);
 
     const plain = run(['gallery', '.', '--out', 'plain'], folder);
     const flagged = run(['gallery', '.', '--out', 'flagged', '--html', '--no-deprecated'], folder);
@@ -92,9 +92,9 @@ test('main_gallery_still_writes_the_files_for_a_warning_without_strict_and_accep
 // 근거: 설계 figure-check.md 요구사항 "--json 출력이 한 줄에 메시지 하나다"와 진단 필드 { file, line, ..., severity, code, column }
 test('main_json_prints_one_message_per_line_with_the_documented_fields', () => {
   withFolder((folder) => {
-    writeFileSync(join(folder, 'bad.muto'), 'flow right\nbox Step "S"\nbox a "A"\na -> zz\n');
+    writeFileSync(join(folder, 'bad.dap'), 'flow right\nbox Step "S"\nbox a "A"\na -> zz\n');
 
-    const lines = run(['check', 'bad.muto', '--json'], folder).stdout.trim().split('\n');
+    const lines = run(['check', 'bad.dap', '--json'], folder).stdout.trim().split('\n');
 
     assert.equal(lines.length, 2);
     for (const line of lines) assert.deepEqual(Object.keys(JSON.parse(line)), ['file', 'line', 'lines', 'check', 'level', 'message', 'severity', 'code', 'column']);
@@ -105,33 +105,33 @@ test('main_json_prints_one_message_per_line_with_the_documented_fields', () => {
 // 근거: 버그 68ec356 "덧붙는 오류를 줄이면서도 문법 오류와 글꼴 없는 글자 오류를 함께 알린다", 설계 figure-syntax.md "오류를 모두 모아 알린다"
 test('main_check_reports_syntax_and_glyph_errors_together', () => {
   withFolder((folder) => {
-    writeFileSync(join(folder, 'bad.muto'), 'flow right\nbox a "A 😀"\nbox b "B"\na -> cdex\n');
+    writeFileSync(join(folder, 'bad.dap'), 'flow right\nbox a "A 😀"\nbox b "B"\na -> cdex\n');
 
-    const { stderr } = run(['check', 'bad.muto'], folder);
+    const { stderr } = run(['check', 'bad.dap'], folder);
 
-    assert.match(stderr, /bad\.muto:2: the font has no glyph/);
-    assert.match(stderr, /bad\.muto:4: unknown node "cdex"/);
+    assert.match(stderr, /bad\.dap:2: the font has no glyph/);
+    assert.match(stderr, /bad\.dap:4: unknown node "cdex"/);
   });
 });
 
 // 근거: 버그 68ec356 "읽을 수 없는 파일은 한 줄 메시지로 알리고 나머지 파일은 계속 검사한다"
 test('main_missing_file_reports_one_line_and_checks_the_rest', () => {
   withFolder((folder) => {
-    writeFileSync(join(folder, 'ok.muto'), 'flow right\naspect 1.6\nbox a "A"\nbox b "B"\na -> b\n');
+    writeFileSync(join(folder, 'ok.dap'), 'flow right\naspect 1.6\nbox a "A"\nbox b "B"\na -> b\n');
 
-    const { stderr, status } = run(['check', 'nope.muto', 'ok.muto'], folder);
+    const { stderr, status } = run(['check', 'nope.dap', 'ok.dap'], folder);
 
     assert.equal(status, 1);
-    assert.equal(stderr.trim(), 'nope.muto: cannot read the file: ENOENT');
+    assert.equal(stderr.trim(), 'nope.dap: cannot read the file: ENOENT');
   });
 });
 
 // 근거: 설계 playback.md 요구사항 "재생기 안에는 그림 바탕 판이 없고, SVG 파일에만 있다"(점 격자 없는 둥근 판)
 test('main_render_svg_keeps_the_rounded_plate_and_the_html_player_has_none', () => {
   withFolder((folder) => {
-    writeFileSync(join(folder, 'b.muto'), BAR);
+    writeFileSync(join(folder, 'b.dap'), BAR);
 
-    const result = run(['render', 'b.muto', '--html'], folder);
+    const result = run(['render', 'b.dap', '--html'], folder);
     const svg = readFileSync(join(folder, 'b.svg'), 'utf8');
     const html = readFileSync(join(folder, 'b.html'), 'utf8');
 
@@ -145,8 +145,8 @@ test('main_render_svg_keeps_the_rounded_plate_and_the_html_player_has_none', () 
 // 근거: 설계 playback.md 요구사항 "gallery가 문서 미리보기를 쓴다"와 layout.md 카드 머리 "파일 이름과 꼬리표, 그림이 제목을 그리지 않을 때만 제목"
 test('main_gallery_writes_the_index_and_the_document_preview_with_each_figure_and_a_card_head', () => {
   withFolder((folder) => {
-    writeFileSync(join(folder, 'a.muto'), 'flow right\ntitle "흐름 제목"\nbox a "A"\n');
-    writeFileSync(join(folder, 'b.muto'), 'chart bar\ntitle "차트 제목"\nseries s "S"\nrow "r" s=1\n');
+    writeFileSync(join(folder, 'a.dap'), 'flow right\ntitle "흐름 제목"\nbox a "A"\n');
+    writeFileSync(join(folder, 'b.dap'), 'chart bar\ntitle "차트 제목"\nseries s "S"\nrow "r" s=1\n');
 
     const result = run(['gallery', '.', '--out', 'out'], folder);
     const page = (name) => readFileSync(join(folder, 'out', `${name}.html`), 'utf8');
@@ -158,9 +158,47 @@ test('main_gallery_writes_the_index_and_the_document_preview_with_each_figure_an
     assert.match(page('document'), /<img src="a\.svg"/);
     assert.match(page('document'), /<img src="b\.svg"/);
     for (const name of ['index', 'document']) {
-      assert.match(page(name), /<h2><span class="title">흐름 제목<\/span><code class="name">a\.muto<\/code><span class="kind">flow<\/span><\/h2>/);
-      assert.match(page(name), /<h2><code class="name">b\.muto<\/code><span class="kind">bar<\/span><\/h2>/);
+      assert.match(page(name), /<h2><span class="title">흐름 제목<\/span><code class="name">a\.dap<\/code><span class="kind">flow<\/span><\/h2>/);
+      assert.match(page(name), /<h2><code class="name">b\.dap<\/code><span class="kind">bar<\/span><\/h2>/);
       for (const mode of ['system', 'light', 'dark']) assert.match(page(name), new RegExp(`data-mode="${mode}"`));
     }
+  });
+});
+
+// 근거: 이슈 완료 조건 "옛 명령 mutoscope가 같은 그림을 낸다", D08 별칭. 옛 이름으로 실행하면 stderr에만 폐기 안내를 쓴다
+test('main_old_command_name_renders_the_same_svg_and_only_stderr_gets_the_deprecation_notice', () => {
+  withFolder((folder) => {
+    const link = join(folder, 'mutoscope');
+    symlinkSync(CLI, link);
+    writeFileSync(join(folder, 'a.dap'), FLOW);
+
+    const current = spawnSync(process.execPath, [CLI, 'render', 'a.dap', '--out', 'new'], { cwd: folder, encoding: 'utf8' });
+    const old = spawnSync(process.execPath, [link, 'render', 'a.dap', '--out', 'old'], { cwd: folder, encoding: 'utf8' });
+    const json = spawnSync(process.execPath, [link, 'check', 'a.dap', '--json'], { cwd: folder, encoding: 'utf8' });
+
+    assert.equal(current.stderr, '');
+    assert.equal(old.status, 0, old.stderr);
+    assert.match(old.stderr, /deprecated: the "mutoscope" command is now "daphnis"/);
+    assert.equal(readFileSync(join(folder, 'old/a.svg'), 'utf8'), readFileSync(join(folder, 'new/a.svg'), 'utf8'));
+    assert.equal(json.stdout, '');
+    assert.match(json.stderr, /deprecated/);
+  });
+});
+
+// 근거: 이슈 결정 "`.muto`는 계속 읽고 폐기 안내만 낸다". 같은 그림이고 종료 코드는 그대로, 안내는 새 확장자를 알린다
+test('cli_old_extension_is_read_with_only_a_deprecation_notice', () => {
+  withFolder((folder) => {
+    writeFileSync(join(folder, 'a.dap'), FLOW);
+    writeFileSync(join(folder, 'b.muto'), FLOW);
+
+    const result = run(['render', 'b.muto'], folder);
+    run(['render', 'a.dap'], folder);
+    const gallery = run(['gallery', '.', '--out', 'out'], folder);
+
+    assert.equal(result.status, 0, result.stderr);
+    assert.match(result.stderr, /^b\.muto: deprecated: the \.muto extension is now \.dap\. Rename the file to b\.dap$/m);
+    assert.ok(readFileSync(join(folder, 'b.svg'), 'utf8').replace('<title>b</title>', '<title>a</title>') === readFileSync(join(folder, 'a.svg'), 'utf8'), '같은 원본이면 이름 말고는 같은 SVG');
+    assert.equal(gallery.status, 0, gallery.stderr);
+    assert.match(readFileSync(join(folder, 'out/index.html'), 'utf8'), /<code class="name">b\.muto<\/code>/);
   });
 });

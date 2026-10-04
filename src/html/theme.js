@@ -8,7 +8,9 @@ const THEME_MODES = [
 ];
 export const THEME_BUTTONS = THEME_MODES.map(([mode, label]) => `<button type="button" data-mode="${mode}" aria-pressed="false">${label}</button>`).join('');
 export const THEME_SCRIPT = `
-const THEME_KEY = 'mutoscope-theme';
+const THEME_KEY = 'daphnis-theme';
+// 옛 이름의 저장 키. 읽기만 하고, 새 키가 없을 때 한 판 동안 이어 받는다.
+const LEGACY_THEME_KEY = 'mutoscope-theme';
 // cost: time O(1), heap O(1), stack O(1)
 // vars: 단추 3개
 // basis: estimate
@@ -26,7 +28,7 @@ function applyTheme(mode) {
 }
 function savedTheme() {
   try {
-    return localStorage.getItem(THEME_KEY);
+    return localStorage.getItem(THEME_KEY) ?? localStorage.getItem(LEGACY_THEME_KEY);
   } catch {
     return null;
   }

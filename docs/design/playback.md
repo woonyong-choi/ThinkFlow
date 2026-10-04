@@ -142,7 +142,7 @@
 | `render 원본 --html` | `{이름}.svg`와 HTML 재생기 `{이름}.html`. `--static`과 함께 주면 SVG가 멈춘 SVG다 |
 | `migrate 원본` | 쓰지 않음. 옛 형식을 고칠 때 바뀔 줄을 표준 출력에 보인다. `--write`면 원본 파일을 고친다([그림 문법](figure-syntax.md#호환-규칙)) |
 | `md 문서` | [마크다운 반영과 배포](markdown.md)가 정한다. 블록마다 SVG `{문서 이름}-{이름 또는 순번}.svg`와 문서의 이미지 줄 |
-| `gallery 폴더` | 폴더 안 원본마다 `{이름}.svg`와 `{이름}.html`, 목록 쪽 `index.html`, 문서 미리보기 `document.html`. 목록 쪽은 그림마다 HTML과 SVG를 잇는다. 원본이 하나도 없거나 하나라도 오류면 전체가 실패(종료 1)이고 아무 파일도 쓰지 않는다 |
+| `gallery 폴더` | 폴더 안 `.dap` 원본(옛 `.muto`도 읽고 폐기 안내)마다 `{이름}.svg`와 `{이름}.html`, 목록 쪽 `index.html`, 문서 미리보기 `document.html`. 목록 쪽은 그림마다 HTML과 SVG를 잇는다. 원본이 하나도 없거나 하나라도 오류면 전체가 실패(종료 1)이고 아무 파일도 쓰지 않는다 |
 
 - 한 번의 실행은 `{이름}.svg`를 하나만 쓴다. 움직이는 SVG와 멈춘 SVG가 같은 이름을 다투지 않게 하기 위해서다.
 - HTML은 미리보기와 목록 쪽용이다. 문서 저장소에는 SVG만 넣는다([문서 스킬 연동](docs-integration.md)).
@@ -154,7 +154,7 @@
 - iframe 높이는 그림 쪽이 알린 본문 높이에 맞추고, 카드는 줄에서 가장 긴 카드 높이로 늘이지 않는다.
 - 위쪽에 테마 단추 "시스템 / 라이트 / 다크"가 있다. 고르면 목록 쪽과 모든 iframe 그림이 그 모드로 바뀐다.
 - 시스템은 루트에 `color-scheme: light dark`를 걸어 OS 설정을 따른다. 라이트와 다크는 루트에 `color-scheme`을 그 값으로 걸고 목록 쪽 자체 색은 토큰 CSS의 `data-theme`로 바꾼다. iframe 안 문서는 Chrome에서 부모의 `color-scheme`을 `prefers-color-scheme`에 안정적으로 받지 못해(OS 다크에서 라이트를 골라도 어둡게 남음), 목록 쪽이 iframe에 `{ theme }` 메시지를 보내고 iframe 문서가 자기 루트의 `data-theme`과 `color-scheme`을 바꾼다. 새로 뜬 iframe은 `themeRequest`로 현재 테마를 받는다.
-- 고른 값은 `localStorage`의 `mutoscope-theme`에 기억하고 첫 그림 전에 적용한다. 단독 재생기 HTML에는 이 단추가 없고 OS 설정만 따른다.
+- 고른 값은 `localStorage`의 `daphnis-theme`에 기억하고 첫 그림 전에 적용한다(새 키가 없으면 옛 키 `mutoscope-theme`을 읽는다). 단독 재생기 HTML에는 이 단추가 없고 OS 설정만 따른다.
 
 ### 문서 미리보기
 

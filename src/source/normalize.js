@@ -16,7 +16,7 @@ function resolveName(name, { table, category, label, line, column, ctx }) {
   const entry = entryOf(table, name);
   if (!entry) return name;
   if (entry.since > ctx.version) {
-    ctx.problems.error(line, `${label} "${name}" needs grammar version ${entry.since}. Write "mutoscope ${entry.since}" as the first line`, { code: 'version-required', column });
+    ctx.problems.error(line, `${label} "${name}" needs grammar version ${entry.since}. Write "daphnis ${entry.since}" as the first line`, { code: 'version-required', column });
   }
   const { deprecated } = entry;
   if (!deprecated) return name;

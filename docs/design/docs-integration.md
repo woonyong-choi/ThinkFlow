@@ -17,15 +17,15 @@
 
 ### 구성 요소 그림 변환
 
-1. 기여자가 `docs/assets/architecture.muto`를 고친다.
-2. 기여자가 저장소 루트에서 `python3 <스킬 폴더>/scripts/render_figures.py docs/assets/architecture.muto`를 실행한다.
-3. 스크립트가 `mutoscope render --strict docs/assets/architecture.muto`를 부르고, 같은 폴더에 움직이는 SVG `architecture.svg`가 생긴다.
+1. 기여자가 `docs/assets/architecture.dap`를 고친다.
+2. 기여자가 저장소 루트에서 `python3 <스킬 폴더>/scripts/render_figures.py docs/assets/architecture.dap`를 실행한다.
+3. 스크립트가 `daphnis render --strict docs/assets/architecture.dap`를 부르고, 같은 폴더에 움직이는 SVG `architecture.svg`가 생긴다.
 4. 그림 검사 오류가 있으면 스크립트가 실패하고 결과 파일은 생기지 않는다.
 
 ### 실험 차트 변환
 
 1. `03-analyze`가 `results/summary.json`을 쓴다.
-2. `results/figures/accuracy.muto`의 `data "../summary.json" at "/accuracy"`가 그 값을 읽는다.
+2. `results/figures/accuracy.dap`의 `data "../summary.json" at "/accuracy"`가 그 값을 읽는다.
 3. 원본에 숫자를 손으로 적지 않는다.
 
 ## 상세 설계
@@ -162,7 +162,7 @@
 
 | 스킬 규칙 | 이 도구 |
 |---|---|
-| 변환은 `render_figures`로만 | `render_figures`가 `.muto` 원본마다 `mutoscope render --strict`를 부른다. 경고도 실패다 |
+| 변환은 `render_figures`로만 | `render_figures`가 `.dap` 원본마다 `daphnis render --strict`를 부른다. 경고도 실패다 |
 | 실험 차트 값 손 기재 금지, 비율에 신뢰구간 | `docs/experiments/` 아래 차트에 `--require-data --require-ci`를 붙인다([차트](charts.md)) |
 | 원본과 만든 그림 함께 커밋 | 그대로 |
 | 변환 뒤 그림을 열어 겹침, 잘림, 빈 영역 확인 | 겹침과 잘림은 [그림 검사](figure-check.md)가 대신한다. 빈 영역은 검사 항목이 없어 눈 확인으로 남는다 |
@@ -174,9 +174,9 @@
 ### 바꾸는 순서
 
 1. 이 도구가 스킬의 다섯 그림(맥락, 구성 요소, 순서, 상태, 데이터)과 여섯 차트 종류를 구현하고, 모든 예제가 그림 검사를 통과한다.
-2. repo-docs-figures 스킬의 도구 표, 색표, D2 절, Vega-Lite 절을 이 도구 기준으로 다시 쓰고, `render_figures`에 `.muto` 변환을 넣는다.
+2. repo-docs-figures 스킬의 도구 표, 색표, D2 절, Vega-Lite 절을 이 도구 기준으로 다시 쓰고, `render_figures`에 `.dap` 변환을 넣는다.
 3. 스킬 저장소의 형식 검사가 `total 0`이 된 뒤 skill-sync로 설치한다.
-4. 문서 저장소마다 `docs/assets/*.d2`와 `*.vl.json`을 `.muto`로 옮기고 다시 변환한다. 옮긴 뒤 D2와 Vega-Lite 변환 분기를 지운다.
+4. 문서 저장소마다 `docs/assets/*.d2`와 `*.vl.json`을 `.dap`로 옮기고 다시 변환한다. 옮긴 뒤 D2와 Vega-Lite 변환 분기를 지운다.
 
 - 1번이 끝나기 전에 스킬을 바꾸지 않는다. 없는 도구를 쓰라고 적는 스킬은 스킬의 정직한 상태 규칙을 어기기 때문이다.
 

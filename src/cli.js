@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// 사용: mutoscope render|check|gallery|migrate|md … 명령과 결과 파일은 docs/design/playback.md 결과 파일 절이다.
+// 사용: daphnis render|check|gallery|migrate|md … 명령과 결과 파일은 docs/design/playback.md 결과 파일 절이다.
 // stdout에는 만든 파일 경로(또는 --json 메시지)만, stderr에는 오류와 경고만 쓴다.
 import { mkdirSync, readdirSync, readFileSync, realpathSync } from 'node:fs';
 import { basename, dirname, join, relative } from 'node:path';
@@ -13,11 +13,11 @@ import { toSvg } from './svg.js';
 
 const USAGE = [
   'usage:',
-  '  mutoscope render <file.muto ...> [--out dir] [--html] [--static] [--strict] [--no-deprecated] [--require-data] [--require-ci] [--json]',
-  '  mutoscope check <file.muto ...> [--strict] [--no-deprecated] [--require-data] [--require-ci] [--json]',
-  '  mutoscope gallery <dir> [--out dir] [--title "text"] [--strict] [--no-deprecated] [--require-data] [--require-ci]',
-  '  mutoscope migrate <file.muto ...> [--write] [--json]',
-  '  mutoscope md <file.md ...> [--check] [--out-dir dir] [--static] [--strict] [--no-deprecated] [--require-data] [--require-ci] [--json]',
+  '  daphnis render <file.dap ...> [--out dir] [--html] [--static] [--strict] [--no-deprecated] [--require-data] [--require-ci] [--json]',
+  '  daphnis check <file.dap ...> [--strict] [--no-deprecated] [--require-data] [--require-ci] [--json]',
+  '  daphnis gallery <dir> [--out dir] [--title "text"] [--strict] [--no-deprecated] [--require-data] [--require-ci]',
+  '  daphnis migrate <file.dap ...> [--write] [--json]',
+  '  daphnis md <file.md ...> [--check] [--out-dir dir] [--static] [--strict] [--no-deprecated] [--require-data] [--require-ci] [--json]',
 ].join('\n');
 // gallery가 받는 옵션. --html은 gallery가 늘 HTML을 쓰므로 받기만 한다(옛 호출이 깨지지 않게).
 const GALLERY_FLAGS = ['html', 'strict', 'no-deprecated', 'require-data', 'require-ci'];
@@ -25,8 +25,12 @@ const FLAGS = ['--html', '--static', '--strict', '--no-deprecated', '--require-d
 // md 명령이 받지 않는 옵션과 md 명령만 받는 옵션
 const MD_REFUSED = ['out', 'title', 'html', 'write'];
 const MD_ONLY = ['check', 'out-dir'];
-// 판 표기 줄(`mutoscope 1`). 목록 쪽 머리에서 종류 줄을 찾을 때 건너뛴다.
-const VERSION_LINE = /^\s*mutoscope\s/;
+// 판 표기 줄(`daphnis 1`). 목록 쪽 머리에서 종류 줄을 찾을 때 건너뛴다.
+const VERSION_LINE = /^\s*(?:daphnis|mutoscope)\s/;
+// 원본 확장자. `.muto`는 옛 확장자라 계속 읽고 폐기 안내를 낸다.
+const SOURCE_EXT = /\.dap$/;
+const LEGACY_EXT = /\.muto$/;
+const ANY_EXT = /\.(?:dap|muto)$/;
 
 // cost: time O(1), heap O(1), stack O(1)
 // basis: estimate
@@ -92,6 +96,15 @@ async function processFile(input, args) {
   return true;
 }
 
+// cost: time O(1), heap O(1), stack O(1), io 1
+// basis: estimate
+// 옛 확장자(.muto) 원본이면 새 확장자로 바꾸라는 폐기 안내를 낸다. 파일은 그대로 읽는다.
+function noteLegacyExtension(input, json) {
+  if (!LEGACY_EXT.test(input)) return;
+  const renamed = input.replace(LEGACY_EXT, '.dap');
+  report(input, [makeDiagnostic({ severity: 'deprecated', line: 0, message: `the .muto extension is now .dap. Rename the file to ${renamed}` }, { code: 'deprecated-extension' })], json);
+}
+
 // cost: time O(build), heap O(out), stack O(1), io 1
 // vars: build = 원본 하나를 만드는 비용, out = 결과 글자 수
 // basis: estimate
@@ -105,6 +118,7 @@ async function buildInput(input, args) {
     report(input, [makeDiagnostic({ severity: 'error', line: 0, message: `cannot read the file: ${error.code ?? error.message}` }, { code: 'io' })], json);
     return undefined;
   }
+  noteLegacyExtension(input, json);
   return buildReported(source, input, { flags: args.flags, baseDir: dirname(input) });
 }
 
@@ -114,7 +128,7 @@ async function buildInput(input, args) {
 // 만든 그림의 SVG(--html이면 HTML도)를 쓴다.
 async function writeFigure(input, result, args) {
   const json = args.flags.has('json');
-  const name = basename(input).replace(/\.muto$/, '');
+  const name = basename(input).replace(ANY_EXT, '');
   const folder = args.out ?? dirname(input);
   mkdirSync(folder, { recursive: true });
   writeOutput(join(folder, `${name}.svg`), await toSvg(result, { isStatic: args.flags.has('static'), name }), json);
@@ -135,6 +149,8 @@ function migrateFile(input, args) {
     report(input, [makeDiagnostic({ severity: 'error', line: 0, message: `cannot read the file: ${error.code ?? error.message}` }, { code: 'io' })], json);
     return false;
   }
+  noteLegacyExtension(input, json);
+  noteLegacyExtension(input, json);
   const result = migrateSource(source);
   if (result.errors) {
     report(input, result.errors, json);
@@ -147,6 +163,15 @@ function migrateFile(input, args) {
   }
   if (diff) writeOutput(input, result.text, json);
   return true;
+}
+
+// cost: time O(n log n), heap O(n), stack O(1)
+// vars: n = 폴더 안 파일 수
+// basis: estimate
+// 폴더 안 원본 파일 이름. 이름이 같은 .dap와 .muto가 같이 있으면 .dap만 쓴다.
+function sourceFiles(names) {
+  const current = new Set(names.filter((f) => SOURCE_EXT.test(f)).map((f) => f.replace(SOURCE_EXT, '')));
+  return names.filter((f) => SOURCE_EXT.test(f) || (LEGACY_EXT.test(f) && !current.has(f.replace(LEGACY_EXT, '')))).sort();
 }
 
 // cost: time O(f·build), heap O(f·out), stack O(1), io 3f + 2
@@ -164,9 +189,9 @@ async function writeGallery(args) {
     process.stderr.write(`${folder}: cannot read the folder: ${error.code ?? error.message}\n`);
     return 1;
   }
-  const files = names.filter((f) => f.endsWith('.muto')).sort();
+  const files = sourceFiles(names);
   if (!files.length) {
-    process.stderr.write(`${folder}: no .muto files\n`);
+    process.stderr.write(`${folder}: no .dap files\n`);
     return 1;
   }
   const galleryArgs = { ...args, command: 'render', out, flags: new Set([...args.flags, 'html']) };
@@ -176,7 +201,8 @@ async function writeGallery(args) {
   const figures = [];
   for (const { file, input, result } of built) {
     await writeFigure(input, result, galleryArgs);
-    figures.push({ name: file.replace(/\.muto$/, ''), ...describe(readFileSync(input, 'utf8')), href: relative(out, join(out, file.replace(/\.muto$/, ''))) });
+    const name = file.replace(ANY_EXT, '');
+    figures.push({ name, ext: file.slice(name.length), ...describe(readFileSync(input, 'utf8')), href: relative(out, join(out, name)) });
   }
   const heading = args.title ?? basename(folder);
   writeOutput(join(out, 'index.html'), toGallery(figures, heading), false);
@@ -195,6 +221,14 @@ function describe(source) {
   return { title, kind: isChart ? second : first, isChart };
 }
 
+// cost: time O(1), heap O(1), stack O(1), io 1
+// basis: estimate
+// 옛 명령 이름(`mutoscope`)으로 실행했으면 stderr에 폐기 안내를 쓴다. stdout과 종료 코드는 건드리지 않는다.
+function noteLegacyCommand(invoked) {
+  if (basename(invoked).replace(/\.js$/, '') === 'mutoscope') process.stderr.write('deprecated: the "mutoscope" command is now "daphnis". Use "daphnis" with the same arguments\n');
+}
+
 // npm이 만든 실행 파일은 심볼릭 링크라서, 실제 경로끼리 비교해야 직접 실행을 알아본다.
 const isEntry = Boolean(process.argv[1]) && realpathSync(process.argv[1]) === realpathSync(fileURLToPath(import.meta.url));
+if (isEntry) noteLegacyCommand(process.argv[1]);
 if (isEntry) process.exitCode = await main(process.argv.slice(2));

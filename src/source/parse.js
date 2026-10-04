@@ -64,17 +64,22 @@ export function readFigure(source, problems) {
 
 // cost: time O(1), heap O(1), stack O(1)
 // basis: estimate
-// 첫 문장이 판 표기(`mutoscope 1`)면 그 판을 정하고 뺀 나머지 문장을 돌려준다. 판 표기가 없으면 DEFAULT_VERSION이다.
+// 첫 문장이 판 표기(`daphnis 1`)면 그 판을 정하고 뺀 나머지 문장을 돌려준다. 판 표기가 없으면 DEFAULT_VERSION이다.
 // 모르는 판이거나 판 표기만 있고 그림이 없으면 읽을 규칙이 없어 여기서 멈춘다.
 function readVersion(statements, ctx) {
   const [first, ...rest] = statements;
   const [head, number, extra] = first.tokens;
-  if (head.type !== 'word' || head.value !== 'mutoscope' || first.tokens[1]?.type === 'arrow') return statements;
+  if (head.type !== 'word' || STATEMENTS[head.value]?.section !== 'version' || first.tokens[1]?.type === 'arrow') return statements;
   const { problems } = ctx;
+  const legacy = STATEMENTS[head.value].deprecated;
+  if (legacy) {
+    const message = `statement word "${head.value}" is deprecated since version ${legacy.since} and now reads as "${legacy.replace}". Use "${legacy.replace}"`;
+    problems.deprecate(first.line, message, { code: 'deprecated-statement', column: head.column, fix: { line: first.line, column: head.column, length: head.value.length, text: legacy.replace } });
+  }
   const version = /^[1-9]\d*$/.test(number?.value ?? '') && number.type === 'word' && !extra ? Number(number.value) : undefined;
-  if (version === undefined) problems.error(first.line, `write the version line as: mutoscope ${VERSION}`, { code: 'invalid-version' });
+  if (version === undefined) problems.error(first.line, `write the version line as: daphnis ${VERSION}`, { code: 'invalid-version' });
   else if (version > VERSION) {
-    problems.error(first.line, `this tool reads grammar version ${VERSION === 1 ? '1' : `1 to ${VERSION}`}. The file says version ${version}. Update mutoscope, or write a version it supports`, { code: 'unsupported-version', column: number.column });
+    problems.error(first.line, `this tool reads grammar version ${VERSION === 1 ? '1' : `1 to ${VERSION}`}. The file says version ${version}. Update daphnis, or write a version it supports`, { code: 'unsupported-version', column: number.column });
   } else ctx.version = ctx.figure.version = version;
   problems.throwIfAny();
   if (!rest.length) {
@@ -173,7 +178,7 @@ function isPlaced(word, { tokens, line }, ctx) {
     return false;
   }
   if (section === 'version') {
-    problems.error(line, 'the version line "mutoscope N" must be the first line of the file', { code: 'invalid-version' });
+    problems.error(line, 'the version line "daphnis N" must be the first line of the file', { code: 'invalid-version' });
     return false;
   }
   if (SECTIONS.indexOf(section) < SECTIONS.indexOf(ctx.section)) {

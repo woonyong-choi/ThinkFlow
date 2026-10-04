@@ -20,7 +20,7 @@ jobs:
       - run: npm ci
       - run: npm test
       - run: npm run check
-      - run: node src/cli.js check examples/*.muto docs/assets/*.muto --strict
+      - run: node src/cli.js check examples/*.dap docs/assets/*.dap --strict
 
   # 저장소 루트 action.yml을 이 저장소에서 한 번 써서 동작을 확인한다. 마크다운 그림이 낡으면 실패한다.
   action:
@@ -29,6 +29,6 @@ jobs:
       - uses: actions/checkout@v4
       - uses: ./
         with:
-          paths: docs/design/markdown.md docs/assets/*.muto
+          paths: docs/design/markdown.md docs/assets/*.dap
           mode: check
           strict: 'true'

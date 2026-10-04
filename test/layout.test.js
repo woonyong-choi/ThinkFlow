@@ -18,7 +18,7 @@ import { docExamples } from './helpers.js';
 const EXAMPLES = new URL('../examples/', import.meta.url);
 const FIXTURES = new URL('./fixtures/layout/', import.meta.url);
 const COMPAT = new URL('./fixtures/compat/v1/', import.meta.url);
-const fixture = (name) => readFileSync(new URL(`${name}.muto`, FIXTURES), 'utf8');
+const fixture = (name) => readFileSync(new URL(`${name}.dap`, FIXTURES), 'utf8');
 const item = (scene, id) => scene.items.find((it) => it.id === id);
 const lineOf = (count, make) => Array.from({ length: count }, (_, i) => make(i)).join('\n');
 
@@ -347,7 +347,7 @@ test('buildFigure_state_cycle_that_does_not_fit_turns_down_and_keeps_the_return_
 
 // 근거: 설계 layout.md 그림 크기 "aspect를 적지 않았을 때만 방향을 돌리는 맞춤을 한다. 들어가는 그림은 방향을 그대로 둔다"
 test('buildFigure_declared_direction_stays_when_the_figure_fits_or_aspect_is_written', async () => {
-  const fits = await buildFigure(readFileSync(new URL('memory.muto', EXAMPLES), 'utf8'), { strict: true });
+  const fits = await buildFigure(readFileSync(new URL('memory.dap', EXAMPLES), 'utf8'), { strict: true });
   const withAspect = await buildFigure(fixture('event-loop-right').replace('flow right', 'flow right\naspect 1.6'));
 
   assert.ok(item(fits.scene, 'user').x < item(fits.scene, 'answer').x, 'flow right 그대로');
@@ -423,7 +423,7 @@ test('buildFigure_fuzz_ends_of_in_and_out_edges_on_one_side_of_a_shape_keep_the_
 // 근거: 설계 layout.md 요구사항 "곧은 구간 가운데 점이 없다"
 test('buildFigure_paths_have_no_middle_point_on_a_straight_run', async () => {
   for (const name of ['memory', 'saturn', 'orders', 'order-state']) {
-    const { scene } = await buildFigure(readFileSync(new URL(`${name}.muto`, EXAMPLES), 'utf8'));
+    const { scene } = await buildFigure(readFileSync(new URL(`${name}.dap`, EXAMPLES), 'utf8'));
     for (const e of scene.edges.filter((edge) => edge.points.length > 2)) {
       e.points.slice(1, -1).forEach((p, i) => {
         const [a, c] = [e.points[i], e.points[i + 2]];
@@ -529,7 +529,7 @@ test('buildFigure_person_body_grows_only_as_much_as_its_lines_need', async () =>
   }
 });
 
-const CHAIN = readFileSync(new URL('./fixtures/table-chain.muto', import.meta.url), 'utf8');
+const CHAIN = readFileSync(new URL('./fixtures/table-chain.dap', import.meta.url), 'utf8');
 
 // cost: time O(p), heap O(1), stack O(1)
 // vars: p = 경로 점 수
@@ -559,7 +559,7 @@ test('buildFigure_table_column_edges_of_a_stack_leave_and_enter_on_the_right_fac
   }
 });
 
-const QUIET = readFileSync(new URL('./fixtures/quiet-label-gap.muto', import.meta.url), 'utf8');
+const QUIET = readFileSync(new URL('./fixtures/quiet-label-gap.dap', import.meta.url), 'utf8');
 
 // cost: time O(s), heap O(s), stack O(1)
 // vars: s = 도형 수
@@ -633,7 +633,7 @@ function collisions(scene) {
 }
 
 const sequenceSources = () =>
-  [EXAMPLES, FIXTURES, COMPAT].flatMap((dir) => readdirSync(dir).filter((f) => f.endsWith('.muto')).map((f) => ({ file: f, source: readFileSync(new URL(f, dir), 'utf8') }))).filter(({ source }) => /^sequence\b/m.test(source.replace(/^mutoscope.*\n/, '')));
+  [EXAMPLES, FIXTURES, COMPAT].flatMap((dir) => readdirSync(dir).filter((f) => f.endsWith('.dap')).map((f) => ({ file: f, source: readFileSync(new URL(f, dir), 'utf8') }))).filter(({ source }) => /^sequence\b/m.test(source.replace(/^(?:daphnis|mutoscope).*\n/, '')));
 
 const NOTE_CASES = [
   { name: '보내는 쪽 메모는 라벨 위에 쌓인다', source: ['sequence', 'box a "호출"', 'box b "응답"', 'step "s" "c"', '  a -> b "긴 요청 라벨이 있는 메시지"', '  note a "보내는 쪽 메모가 화살표 위를 지나간다"', ''].join('\n'), expect: (scene) => assert.ok(scene.notes[0].y + scene.notes[0].h < scene.edges[0].labelAt.y, '메모가 라벨 위에 있다') },
@@ -682,9 +682,9 @@ test('buildFigure_state_figures_light_the_edges_their_move_lines_name', async ()
   const built = await buildFigure(STATE_SOURCE, { strict: true });
   let checked = 0;
   for (const dir of [EXAMPLES, COMPAT, FIXTURES]) {
-    for (const file of readdirSync(dir).filter((f) => f.endsWith('.muto'))) {
+    for (const file of readdirSync(dir).filter((f) => f.endsWith('.dap'))) {
       const source = readFileSync(new URL(file, dir), 'utf8');
-      if (!/^state\b/m.test(source.replace(/^mutoscope.*\n/, ''))) continue;
+      if (!/^state\b/m.test(source.replace(/^(?:daphnis|mutoscope).*\n/, ''))) continue;
       assert.deepEqual(mismatches(await buildFigure(source, { baseDir: dir.pathname })), [], file);
       checked += 1;
     }

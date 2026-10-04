@@ -1,6 +1,6 @@
-# mutoscope
+# daphnis
 
-`.muto` 원본 하나를 움직이는 문서 그림 하나(구조, 순서, 상태, 데이터 관계 그림과 차트)로 바꾸는 명령. 마크다운 문서 안의 ` ```muto ` 블록도 그림으로 반영한다(`mutoscope md`).
+`.dap` 원본 하나를 움직이는 문서 그림 하나(구조, 순서, 상태, 데이터 관계 그림과 차트)로 바꾸는 명령. 마크다운 문서 안의 ` ```dap ` 블록도 그림으로 반영한다(`daphnis md`).
 
 설계 문서는 [docs/README.md](docs/README.md)에 있다.
 
@@ -33,9 +33,9 @@ npm run check
 ## 규칙
 
 - 태그를 만들거나 `npm publish`를 하지 않는다. 배포는 `release.yml`이 `v*` 태그에서 한다(`NPM_TOKEN` 등록 뒤 사용자가 태그)
-- `package.json`의 `files`는 `src`, `LICENSE`, `NOTICE`만. 바꾸면 `test/package.test.js`가 지킨다
+- `package.json`의 `files`는 `src`, 로고 SVG(`docs/assets/daphnis-*.svg`), `LICENSE`, `NOTICE`만. 바꾸면 `test/package.test.js`가 지킨다
 - 배포 전에는 README에 npm 설치를 사용 가능으로 쓰지 않는다
-- 기존 명령의 옵션과 출력은 바꾸지 않고 추가만(`mutoscope md`는 새 명령)
+- 기존 명령의 옵션과 출력은 바꾸지 않고 추가만(`daphnis md`는 새 명령). 옛 이름(`mutoscope` 명령, `.muto`, ` ```muto `)은 한 판 동안 받고 폐기 안내만 낸다
 - 커밋 전 명령 절의 명령 모두 통과
 - 동작, 계약, 설정 변경은 같은 PR에서 설계 문서 갱신
 - 새 문서는 `docs/README.md` 문서 목록 안에서만 추가
