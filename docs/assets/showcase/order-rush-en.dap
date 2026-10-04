@@ -1,0 +1,33 @@
+flow right
+title "Orders arriving together"
+subtitle "When the web, the app, and partners send orders at once, the in-flight count and the stock change one after another"
+
+box web "Web" icon=desktop
+box app "App" icon=mobile
+box partner "Partner" icon=apigw
+box api "Order API" icon=server
+store db "Stock DB" icon=db
+box pay "Payment" icon=key
+
+value stock "Stock" on=db from=120
+value shown "Stock on screen" on=app ref=stock
+value pending "In flight" on=api
+on api pending+1
+on db pending-1, stock-1
+
+web -> api
+app -> api
+partner -> api
+api -> db
+api -> pay
+
+step "One order" "A web order reaches the stock DB through the API"
+  web -> api "Order" tone=brand
+  say "When the API accepts the order, the in-flight count goes up by 1"
+  api -> db "Deduct" tone=brand
+  say "When the DB lowers the stock, the in-flight count drops and the stock on screen changes at the same moment"
+  api -> pay "Charge" tone=purple
+  say "Payment works apart from the stock"
+
+step "A rush" "Orders from the web, the app, and partners overlap and the values keep changing"
+  track web, app, partner -> api -> db "Order" every=2s

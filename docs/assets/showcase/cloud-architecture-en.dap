@@ -1,0 +1,75 @@
+flow right
+width wide
+title "Cloud architecture"
+subtitle "Web requests reach the app server through DNS, a CDN, a load balancer, and web servers (1-6); administrators reach it through a VPN and a bastion (7-9)"
+
+group users "Users" icon=user border=dashed {
+  box client "Web user" shape=tile icon=desktop
+}
+group admins "Admins" icon=admin border=dashed direction=down {
+  box admin "Operator" shape=tile icon=admin
+  box vpn "VPN" shape=tile icon=vpn
+}
+group net "Internet" icon=cdn border=dashed direction=down {
+  box dns "DNS" shape=tile icon=dns
+  box cdn "CDN" shape=tile icon=cdn
+  box storage "Storage" shape=tile icon=object
+}
+group cloud "Cloud" icon=region {
+  group vpc "VPC" icon=vpc border=dashed direction=right {
+    group pub "Public subnet" icon=subnet direction=right {
+      box lb "Balancer" shape=tile icon=lb
+      box bastion "Bastion" shape=tile icon=bastion
+    }
+    group scaling "Scaling group" icon=scaling border=dashed direction=right {
+      box web "Web server" shape=tile icon=server count=3
+    }
+    group priv "Private subnet" icon=subnet direction=right {
+      box app "App server" shape=tile icon=server
+      store db "DB primary" icon=db badge="RW"
+      store dbro "DB replica" icon=db badge="RO"
+      store cache "Cache" icon=cache badge="RW"
+      store cachero "Cache RO" icon=cache badge="RO"
+      box mq "Queue" shape=tile icon=mq
+    }
+  }
+}
+group ops "Operations" icon=monitoring border=dashed direction=down {
+  box monitor "Monitoring" shape=tile icon=monitoring
+  box logs "Log search" shape=tile icon=logsearch
+}
+
+client -> dns no=1
+dns -> cdn no=2
+cdn -> lb no=3
+lb -> web no=4
+web -> app no=5
+app -> db no=6
+admin -> vpn no=7
+vpn -> bastion no=8
+bastion -> app no=9
+app -> dbro dashed
+app -> cache
+app -> cachero dashed
+app -> mq
+cdn -> storage
+app -> monitor
+app -> logs
+
+step "Resolve" "The domain resolves from DNS to the CDN"
+  client -> dns
+  dns -> cdn
+step "Distribute" "The CDN hands the request to the balancer, which spreads it over the web servers"
+  cdn -> lb
+  lb -> web
+step "Process" "A web server calls the app server, which uses the cache and the queue"
+  web -> app
+  app -> cache & app -> mq
+step "Store" "The app server writes to the primary DB and reads the replicas"
+  app -> db
+  app -> dbro
+step "VPN login" "An administrator connects to the VPN gateway"
+  admin -> vpn
+step "Through the bastion" "The VPN reaches the app server through the bastion"
+  vpn -> bastion
+  bastion -> app

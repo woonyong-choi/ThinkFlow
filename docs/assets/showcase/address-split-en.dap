@@ -1,0 +1,20 @@
+flow down
+title "Splitting an address"
+
+grid va "Virtual address (16 bits)" cols=16 {
+  item vpn "Page number (10 bits)" col=0 cols=10
+  item offset "Offset (6 bits)" col=10 cols=6
+}
+grid pa "Physical address (16 bits)" cols=16 {
+  item pfn "Frame number (10 bits)" col=0 cols=10
+  item offset "Offset (6 bits)" col=10 cols=6
+}
+va -> pa "Page table lookup"
+
+step "Split" "The upper 10 bits are the page number and the lower 6 bits are the position in the page"
+  light va.vpn
+  light va.offset
+step "Translate" "Only the page number becomes a frame number, and the offset passes through"
+  va -> pa "Page number to frame number"
+  light pa.pfn
+  light pa.offset

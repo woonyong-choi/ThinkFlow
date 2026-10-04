@@ -1,0 +1,17 @@
+sequence
+title "OAuth authorization code with PKCE"
+
+person user "User"
+box app "App"
+box auth "Auth server"
+external api "Resource API"
+
+step "Authorize" "The user signs in on the auth server itself"
+  user -> app "Tap sign in"
+  app -> auth "`authorize` request"
+  note auth "Stores `challenge = S256(verifier)`"
+  auth -> app "redirect ?code" dashed
+step "Token" "The server issues a token only for the code plus the original secret"
+  app -> auth "token (code + verifier)"
+  auth -> app "Issue `access_token`" dashed
+  app -> api "Call `GET /me`"

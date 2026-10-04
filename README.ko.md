@@ -11,10 +11,114 @@
 
 `.dap` 원본 하나를 움직이는 문서 그림 하나로 바꾸는 명령입니다. 구조, 순서, 상태, 데이터 관계 그림과 차트를 그립니다.
 
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/assets/showcase/cloud-architecture-ko-dark.svg">
+    <img src="docs/assets/showcase/cloud-architecture-ko-light.svg" alt="클라우드 구성도: 웹 요청이 DNS, CDN, 로드 밸런서, 웹 서버를 거쳐 앱 서버로 가고, 관리자는 VPN과 바스천을 거쳐 앱 서버에 닿습니다" width="100%">
+  </picture>
+</p>
+
 설계 문서에는 요청이 어떤 길로 가는지 보이는 그림과, 기준값 뒤에 개선 값을 보이는 차트가 필요합니다. 그림은 D2로, 차트는 Vega-Lite로 그리면 한 문서 안의 그림이 두 모양이 되고, D2 배치는 다른 그리기 모양과 맞지 않습니다. daphnis는 그림에 넣는 글꼴 파일로 모든 도형을 재고, elkjs로 배치하고, 겹침을 검사한 뒤, HTML 재생기나 움직이는 SVG로 단계를 재생합니다.
 
 > [!NOTE]
 > 개발 중입니다. 아직 npm 배포판이 없으니 GitHub에서 바로 실행하거나 복제해서 쓰세요.
+
+## 갤러리
+
+<table>
+  <tr>
+    <td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/showcase/order-rush-ko-dark.svg"><img src="docs/assets/showcase/order-rush-ko-light.svg" alt="웹, 앱, 제휴사의 주문이 주문 API에 함께 들어오고 처리 중 개수와 재고가 바뀌는 그림" width="100%"></picture><br>시뮬레이션: 동시에 흐르며 값이 바뀝니다. <a href="docs/reference/flow.md">구조 그림</a></td>
+    <td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/showcase/shop-schema-ko-dark.svg"><img src="docs/assets/showcase/shop-schema-ko-light.svg" alt="주문이 사용자를, 주문 항목이 주문과 상품을 외래 키로 가리키는 쇼핑몰 테이블 그림" width="100%"></picture><br>데이터 관계: 테이블과 외래 키. <a href="docs/reference/data.md">데이터 관계 그림</a></td>
+  </tr>
+  <tr>
+    <td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/showcase/latency-ko-dark.svg"><img src="docs/assets/showcase/latency-ko-light.svg" alt="엔드포인트별 p95 지연을 캐시를 넣기 전과 뒤로 비교한 덤벨 차트" width="100%"></picture><br>차트: 기준값과 개선 값. <a href="docs/reference/charts.md">차트</a></td>
+    <td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/showcase/oauth-ko-dark.svg"><img src="docs/assets/showcase/oauth-ko-light.svg" alt="사용자, 앱, 인가 서버, API 사이의 OAuth 인가 코드와 PKCE 순서 그림" width="100%"></picture><br>순서: 메시지가 오가는 차례. <a href="docs/reference/sequence.md">순서 그림</a></td>
+  </tr>
+</table>
+
+## 빠른 시작
+
+요구 사항: Node.js 20 이상.
+
+아직 npm에 올라가 있지 않아 `npm install daphnis`는 되지 않습니다. 아래 단계처럼 `npx github:woonyong-choi/daphnis <명령>`으로 GitHub에서 바로 실행합니다.
+
+복제해서 쓸 수도 있습니다. 이때는 `daphnis` 대신 `node src/cli.js`를 실행합니다.
+
+```sh
+git clone https://github.com/woonyong-choi/daphnis.git
+cd daphnis
+npm install
+```
+
+첫 npm 배포 뒤에는 `npm install --save-dev daphnis`로 프로젝트에 `daphnis` 명령을 더하고 `npx daphnis`로 실행합니다.
+
+1. 원본 하나를 씁니다. `hello.dap`으로 저장합니다.
+
+   ```text
+   flow right
+   title "Request path"
+
+   box client "Client"
+   box server "Server"
+   store db "Database"
+
+   client -> server "GET /orders"
+   server -> db "SELECT"
+
+   step "Request" "The client calls the server, which reads the database"
+     client -> server
+     server -> db
+   ```
+
+2. 그림으로 만듭니다.
+
+   ```sh
+   npx github:woonyong-choi/daphnis render hello.dap
+   ```
+
+   명령이 `hello.svg`를 씁니다. 스크립트 없이 움직이는 SVG입니다. `--html`을 더하면 단계 탭, 일시정지, 배속, 전체 화면, 확대가 있는 재생기도 씁니다.
+
+3. 마크다운 문서에 그림을 넣습니다. 원본을 `dap` 코드 블록으로 쓰고 `daphnis md`를 실행합니다.
+
+   ````text
+   ```dap name=request
+   flow right
+   box client "Client"
+   box server "Server"
+   client -> server "GET /orders"
+   ```
+   ````
+
+   ```sh
+   npx github:woonyong-choi/daphnis md guide.md
+   ```
+
+   명령은 문서 옆에 `guide-request.svg`를 쓰고 블록 바로 아래에 `![Client, Server](guide-request.svg)<!-- dap -->`를 넣습니다. 다시 돌려도 아무것도 바뀌지 않습니다.
+
+4. CI에서 그림을 최신으로 지킵니다. 아래 GitHub Action 단계는 원본에 경고가 있거나 마크다운 그림이 낡았을 때 PR을 실패시킵니다.
+
+   ```yaml
+   - uses: actions/checkout@v4
+   - uses: woonyong-choi/daphnis@main
+     with:
+       paths: "docs/**/*.dap docs/**/*.md README.md"
+       mode: check   # check(기본) 또는 render
+       strict: true  # 경고도 실패
+   ```
+
+   `paths`는 추적 중인 파일에 쓰는 git 글롭입니다. `mode: render`는 SVG와 이미지 줄을 쓰지만 커밋하지는 않습니다. 맞는 파일이 하나도 없으면 단계가 실패합니다.
+
+## 그림 종류
+
+| 종류 | 데모 | 레퍼런스 |
+|---|---|---|
+| 구조 (`flow`) | [주문이 동시에 들어올 때](docs/assets/showcase/order-rush-ko-light.svg) | [구조 그림](docs/reference/flow.md) |
+| 구성도 (그룹과 아이콘을 쓴 `flow`) | [클라우드 구성도](docs/assets/showcase/cloud-architecture-ko-light.svg) | [구성도](docs/reference/architecture.md) |
+| 순서 (`sequence`) | [OAuth와 PKCE](docs/assets/showcase/oauth-ko-light.svg) | [순서 그림](docs/reference/sequence.md) |
+| 상태 (`state`) | [주문 상태](docs/assets/showcase/order-state-ko-light.svg) | [상태 그림](docs/reference/state.md) |
+| 데이터 관계 (`data`) | [쇼핑몰 데이터베이스](docs/assets/showcase/shop-schema-ko-light.svg) | [데이터 관계 그림](docs/reference/data.md) |
+| 칸 격자 (`flow` 안의 `grid`) | [주소 나누기](docs/assets/showcase/address-split-ko-light.svg) | [칸 격자](docs/reference/grid.md) |
+| 차트 (`chart`) | [엔드포인트별 p95 지연](docs/assets/showcase/latency-ko-light.svg) | [차트](docs/reference/charts.md) |
 
 ## 작동 방식
 
@@ -47,29 +151,11 @@ step "Chat" "Input goes through the screen to the engine"
 3. 첫 박자에 점이 `user`에서 `tui`로 가고, 점이 닿을 때 `tui` 안 카드가 채워집니다.
 4. `engine -> cdex` 같은 오타는 `how-it-works.dap:19: unknown node "cdex". Did you mean "codex"? Declared: codex, engine, system, tui, user`를 내고 멈춥니다.
 
-## 설치
-
-요구 사항: Node.js 20 이상.
-
-아직 npm에 올라가 있지 않아 `npm install daphnis`는 되지 않습니다. GitHub에서 바로 실행합니다.
-
-```sh
-npx github:woonyong-choi/daphnis render figure.dap
-```
-
-복제해서 쓸 수도 있습니다.
-
-```sh
-git clone https://github.com/woonyong-choi/daphnis.git
-cd daphnis
-npm install
-```
-
-첫 npm 배포 뒤에는 `npm install --save-dev daphnis`로 프로젝트에 `daphnis` 명령을 더하고 `npx daphnis`로 실행합니다. 아래 예시는 복제한 저장소에서 `node src/cli.js`로 실행합니다.
-
 ## 사용법
 
 ### 그림 하나 만들기
+
+이 절의 명령은 복제한 저장소에서 실행합니다.
 
 ```sh
 node src/cli.js render examples/memory.dap --html
@@ -109,37 +195,7 @@ npm run examples
 
 ### 마크다운 문서에 그림 넣기
 
-원본을 `dap` 코드 블록으로 씁니다. 이름을 붙이면 블록 순서가 바뀌어도 이미지 파일 이름이 그대로입니다.
-
-````text
-```dap name=flow
-flow right
-box client "Client"
-box server "Server"
-client -> server "GET"
-```
-````
-
-```sh
-node src/cli.js md docs/guide.md
-```
-
-명령은 문서 옆에 `docs/guide-flow.svg`를 쓰고 블록 바로 아래에 `![Client, Server](guide-flow.svg)<!-- dap -->`를 넣습니다(대체 글은 그림의 `title`). 다시 돌려도 아무것도 바뀌지 않습니다. 블록 이름을 바꾸면 옛 SVG가 지워지고, `--out-dir images`는 SVG 위치를 바꾸며, `--check`는 쓰지 않고 문서나 SVG가 낡았으면 종료 코드 1로 끝납니다. 어느 블록이든 오류가 있으면 아무 파일도 쓰기 전에 멈춥니다. 규칙은 [마크다운](docs/design/markdown.md)에 있습니다.
-
-### CI에서 그림 검사하기
-
-저장소 루트에 composite GitHub Action이 있습니다. 아래 단계는 원본에 경고가 있거나 마크다운 그림이 낡았을 때 PR을 실패시킵니다.
-
-```yaml
-- uses: actions/checkout@v4
-- uses: woonyong-choi/daphnis@main
-  with:
-    paths: "docs/**/*.dap docs/**/*.md README.md"
-    mode: check   # check(기본) 또는 render
-    strict: true  # 경고도 실패
-```
-
-`paths`는 추적 중인 파일에 쓰는 git 글롭입니다. `mode: render`는 SVG와 이미지 줄을 쓰지만 커밋하지는 않습니다. 맞는 파일이 하나도 없으면 단계가 실패합니다.
+`dap` 블록 이름을 바꾸면 옛 SVG가 지워지고, `--out-dir images`는 SVG 위치를 바꾸며, `--check`는 쓰지 않고 문서나 SVG가 낡았으면 종료 코드 1로 끝납니다. 어느 블록이든 오류가 있으면 아무 파일도 쓰기 전에 멈춥니다. 규칙은 [마크다운](docs/design/markdown.md)에, 첫 실행과 GitHub Action은 [빠른 시작](#빠른-시작)에 있습니다.
 
 ## 기능
 
@@ -165,7 +221,7 @@ node src/cli.js md docs/guide.md
 
 ## 문서
 
-설계 문서는 한국어로 씁니다.
+설계 문서와 종류별 레퍼런스는 한국어로 씁니다.
 
 - [아키텍처](docs/architecture.md): 구성 요소, 실행 흐름, 불변 조건
 - [그림 문법](docs/design/figure-syntax.md): 줄 규칙, 파일 구조, 구조 그림, 시간 흐름, 오류
@@ -177,6 +233,7 @@ node src/cli.js md docs/guide.md
 - [재생](docs/design/playback.md): 시간표, 박자 상태, HTML 재생기, 움직이는 SVG
 - [마크다운과 배포](docs/design/markdown.md): `md` 명령, GitHub Action, 배포
 - [문서 스킬 연동](docs/design/docs-integration.md): 문서 스킬의 D2와 Vega-Lite를 대신하는 계약
+- [구조 그림](docs/reference/flow.md), [구성도](docs/reference/architecture.md), [순서 그림](docs/reference/sequence.md), [상태 그림](docs/reference/state.md), [데이터 관계 그림](docs/reference/data.md), [칸 격자](docs/reference/grid.md), [차트](docs/reference/charts.md): 종류마다 최소 예제, 단계, 흔한 오류
 
 전체 문서는 [docs/README.md](docs/README.md)에 있습니다.
 

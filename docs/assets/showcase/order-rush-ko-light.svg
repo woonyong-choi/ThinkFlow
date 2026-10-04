@@ -1,0 +1,829 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="fl" width="960" height="431" viewBox="0 0 960 431" role="img">
+<title>주문이 동시에 들어올 때</title>
+<style>@font-face{font-family:FigSans;font-weight:500;src:url(data:font/woff2;base64,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) format("woff2")}
+@font-face{font-family:FigSans;font-weight:400;src:url(data:font/woff2;base64,d09GMk9UVE8AABy8AAwAAAAALUgAABxsAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAADb1NGiIbhFgcilYGYACEHAE2AiQDgl4EBgWCeAcgG24sUdRuUktUsq8KeLKTkcRw4ADTtqZtddtm2lbJER32K5JIJMnF5YpBonB5HyHJrB+u9c6bSbJJLrf5iFhARZJAokKFIGyFq/FVNQL4Bvg29Z9ICCGMEEpfKRJFQhm+EXx5UPskr5QRSihBQpASSgm50CIhxOAxw6hzzpqLMuecIzelxhlLM0YJUcKccXjUWcZ31vntcdnL3297ozfB9/v99tx3viQxJFQiCU9kvLtHEiVqSKTGdEInRO9/AGKq8E/irNq7S+RU68qH7srEqs4SQs8Ss2fGCwT0JT3Z8JE6+RpL8axn0unDnSY+hJqwAsAOCKgCpLX8nPj/v8zZfxnK0Pc7osgm3SFkTozCY8zmzab8/een0n6GVnfMDr0OdNl0rbJOKBNKKYvbpTcJwiMN1gZVhRMoh6/7GWW69nMRbaAm93mbbLYwl75xrF+sWOiyTOVFfUElIVC4566YQ4Yec9t2fW4RTQs4WZVzsSrn0kNyflXOOZB5ns0LcpYtauULOfdHLRlfndv4Da0u7ACA4g03sb3X+RXwTXLBNXBiicxpNTajHcSd8BjwscD9vHQqHyAEPny6Pzg2m4baodv761+wv8rJVp2tc72wy1HlYifLy/7XjFY+0B0OM7tb2J5PQ1iR/ewz//TQejE77wPcNadqdJQRs3vNOk834wf7zxhzaa7M4LA8ld2yNTvjNeEAERONdqs3HcdwHDZU4Qy84tPrBjBp8gzNPGqqTcT0m5T50O/wAX87dIRAGAtzYSObSuciXGB5yPtQmF77MArSwTxmOO9lFot1t+BMQawgw5axlwqxQlmhotBUWFvoLQxzWJzVnfid+Tw+L8DLFJuKq2DDbjEyiIwjayKeSCR6UlQmOigyi66jVegAmkLT6H/Qz9FvS4HSdi4BER2f8az+SL7AqwkCqoffX7ok4uTNVcQn8UDzBXWvLE++kv2in8AnPrFB3vImkIJ7648hUnZja+kyn0XLG0Xm/z194NUCQAWuX9itlIyKnoXNSbUavcTvipt6/FXcgBFvyXjPZxb8YC02IYsi5IGDIlyEHwGE8BfcRT8GMIw3kcbbeBcfYg4L+B7LnMMZLmAWP8bFLGIJy3gfH+Tn+QSf5Br28G/5Ar/MV/k1vsf/4FH+H57hj3hBSFIqRSIWVBRSJofkiLwgp6VOPPJ7uSURuS/D8h95Rz6Rr9QB1a+SalTj9DF9WAf0nHnMVJo2M2w+MJ8nrOTppCw5mfiSu8lssmYL7V57zDbaFttuwzZl/2vn7Krb6mpcsVM6izvj6t0F9yf3ivure8MNu2n3uVv0W+4BzdcsWkQrawNtp310pKqkK+3qyhXEQSMx7XE12y5xozE2IXCFIoGxKZdeaLZupa8aV/2WpbbzljtEkVokJRh4m3Kfge5Tpsnx7zmOJxAL7ApFsHXVHbG9Y5tqQBc3VkZYZ0G5uGnojYYBQ7X1P4H7KNldb3oZ2q82jljX6rKG2Y6tVkGBBC2QK35BVp2lOiT1HdQFw+6t3A3gPehpGEV4m0BiTzZiY0R0h9JKPHqGbMrIoMSEReV6k1TWVY+Y1iasZAiRRQDm21d8QclCI+sZhMzYBPv3XwoU4c0X//365GRw4vkWIxTW60Ag0JaCccjEvCo8fvHrD3604FfP7rhWu97o4C1OPxHcEPEx4FeBOzDv5PT8ow//98cxIeeGNUazrLHaouts/ujbk/G2MgpGyGx9XbjLPBGPdRPtCazu2XFjTQP5TjLNxlpJtqPpdukY6yvr05rGQTtfdVrauv2FC9ekJSIakQJd8fdz6C3kXvUiGUOQcRhjxZqlmmtCdbpFp3L3oIl0G/tM6v6QGRKTUIfYI1oYZSJjEZQIwAiGi5u6HTWpABXJ8haMArwPqPdFLNpOzNh0lzLcSNsq2KZu170moDe7jqZu4lo6JrTLWWkctL6348um9hux61bsqil4xkjvjbEOiEnAXiapGv8RsidKerOTPMOPr6wCuDG46oxiQIi9+Y6QgMqN4buVxswmjAZcinXFN7bTyK9ub/JG/OpKkmETE5S08YRNL/uC9jCyDbUfZ9LnPJWH802eHR6KY+JxLlvBLv71JwigGFXSVx2t67nvQeyr3LWj+0k9mT6TFDvfrfywIsXBYkFedAtKZfZ+DQ05srkA8QybHEHXzwbylUiQRPZyAwFx3YJUjXhe0PWzxtwk6NpkjueLbqF7AZzMuhOhrHxh03QcMORfI68fDCOtuoDXaPzikgYeTqYMP+Hl1RTeLOC8rjAXCCirkE6Hmcq5voLcN/Tyn9ltj7ngYdg/QVHRSl+Y3Of4l4vaIsVgXAw6XQPmWrICxrhJ1+AXtKMBo6VuaamsAVN7qTaphenJJDh9aSthdISKDBHT01pRAhkCaI2kgiJC7ZKexJUpIkpSjicpP1umC7q4GBixN0rNkgpVs5qRSkJz1ULvSCDc0QIHYSuJIKRuAwuCfhMFZZ9RfQFki6FvqZEUh+qqT+KUsFRiAu0cYKDSzuUJjUv7tdG6FVah/ZbxEmLHtsq0Dc5esVoR2kbY6hpbBf3BHxb4wfSHbasn+XlKbbYgVGFAjHeAVz5RId2QUcjwyks1N/IIsY9CDACEwIgmQHGTrAWmbXThn8kcvS9GMwVD361wMlZXWKTogD32G2TphNN2GZ+xb8JzuLQNhVSz/GRKn3aBMBXV7KA5VomrHhB6EnScKkYwkiIA5UsofR/50aU68a4vvYFHxRhlmu0H3112iopWfYqkv5hOQg9csxdh/kBdem7mt6H3u6DISitZd7qe97T5Raa9qXTVOaa0fmmiTuRWJ0W0mXzLkHKqz5gD0JIkj3/t+SzkayVyn7eu4u/asZ81PT9pmoPFA27y26SG9Dy0fhcSV2lN1Z0hgqfKVsyW16C4TGitvqcIQ4nfDJlxuk/qus9BcYTXiQnO5bhusvNO2RUllcRzq5hOwwgCsxNv0Ut7kvLoy5qbuA6J9a6+8NZBN+J6eTHr8mrglHbVDTHvFS78lKa9jUX5xuPkOvdZtw8PMLW7+aHypkDN/BXVHyyb+Mq3nivrn+Ij+xVOwbR36V1j/cdLQkMAdTbgYeNDRvPiSiKXPIhFhXl6e6vkgCMpqbGmB7sjeWUKOuID4jzYchQUi/hI4lwV9cQ2AzAC3exKgk5qUhm5T2fEn/Nb9i96XpsU6Xn9km5lN2CHoRQ/8+koZz+HqkbMKKom/zR43yAX92tUxInNhRpu3cKtVpS6dqynePWDVeKWzdjrUHXrPr8qvgCfnGCAkwrBV++ma9/fOMbtDCtAGpOrji0mYGqb9w3LeHnD+3izPAE7dGHKVbcAJ0e6ZtJ8p3P6a8mZ5bcoNRnbtbruD4mWe6SW0jqaoMd6tK07WV11j8E2IlusNXkyFBZX+AYPgi6CTG7xu6fG3CofUtr4Mwl1XB3Ha9j4hOs+lbjyoHTFmn14g8vUJc00rwL2u6BATWrIzvO9a31LmwR4322ykGMCrI2nkuklZYx5vnVx4RzHdxGrLPNUgm8FhU4ggwkwdq4XLTk2h89ydUVq+zwHYepynYeiDBYlDAGG61bCyk9vlbJsbhdq+zHIQiOamMRMeovJq9DsuSPRbjTuY2sHzR8r+9TNJt3b7dlmXYWmBBj2QLEbu+Djsg5t+qZpfdJ3MyWzmgbWWCsSVPjQ5luS+mHjlb5vO8fkd+G2IgexNRiSmuYezZUxUIsXiJZESRQhRfLaYpbyIEi64jovxSnJuhGgY1etZ9f2CmjI70gnFgQkSGDZCk1QMXBMM6514ZpsxjfBN2u7nvLq+oMOGh5rop1vPBaFKFTP1i83UOflEtwrW0zTgIFnLAYdLwDsKXeIxVEV7E6r59Ppxk58ExoxZNrHvgscxuHBK5hnLvfxgojkmFyUPvlKsuphpVWvqXd0vj6kb+q0/sxwzWnzZzOfFCeapDrptU/ZT5zMdbhPvdJ3+kE/m0EyjsxLYXOoDu7w7/BZtiIlpffT3nQ8/SY+EgvizyMUd8XH45NRHk/GSzEWkzEV34rT8YPfRe+bBC7elVx8xWpXYOP+z3ReNNMsL3+pqG8x2mQHzIc1isoPk3Yspq7ArTPVbF170v+9I+G2D47uWeGe0dN7hcWdZFq5UbeEmShGXPeazZXn2BdH9xByeQ8vMR+K7u7h5Sg6i1K5qaJwe6WjvudCuXDXRnL9vJBAXF6p1vPP0o7yunElj6ZO14pqzYK9ZHWlBg2dYIfGhMaT61b8VK2v5mjCAD3WooJNmnJx7jRNQQ88s+vwODXMp3pe/HTlNOpnSsjhDaudT2kFEUhCc+bz57/0CnMaBwwkszdR2qlKqhlfBOx3+d+6RweF1+s9b8CRXFC9C60Qs1h1hWKDC5+lq4Q3OWB6ByrBUQfMnSQwZ75w/kuvMgfjJXJx0aWXPfa3ASUDIXP+1xd+9z1zqgD0PWbXgYiRt9MjnP0eQt9zOqxDuvGZH/Q8SGY7pdUsZPIc3svhguRgAsZ3N4nYJ+NfiS/GLD7oTS9f0vnargk2tqGimQxUhA21oQKupHxntV7BxvVSTRY3wuiqWHvr860eMiKh0pmfOs17zzV2ybEm9Tc7ebNTNj2tvt/WyUZ+XOCz3XXikseStwVlkI9h6wlsqepHXTfZsh8WeH93+qmpFj+anRvzbK+CAmkywIIeTfkFwgZ11T0FRYi9ZRjmOnZEBo4sz/GZPr8gFsyzKGKKGddXBmEnmTSLYxRSz4Wve2R4qJn0r8n1AwhMmp9vqBYR7NmryNGq9Co/dt7jAYMKXviyhw7UIfwhZ5DkTMQb4I7LS25gmpqUGQg23BJStJxn+KofK2YJ7wJOX7nqsWgdrZseBQ5AmSbeedqDLDD2W3F8t1CUr7sScZGRQ419yNpYUrkqZmntN1l9jJh8OR1o/g4Yh8HFZRNCx3lxjSK6c+nbzgwPNpOB1Xl9P16dND9/SFGpATEYMMnuu4tm0lEvttFnajzzafcODzCruzHXaDiU6bJnhJIsv1QeXUXvTpEpcuGLEiraIZ9aVE3KB9PRpnprNR5/1CdMnuNFZZEz4uL6EaPnFrOoojEomsOYIq7zQDxkUCwuZG08yV31W5bezksTYybP4akc116BMvIdjYpN1DJ8R5FM7eL/mv+yzPpeY8MjzYC0F8CJomp++CabzPyUwDRzNfCRsUq0k+83XHbTdiX3aApc/XfZydl9r66wvph6NOenBbZziseEv+OQAMZBwm0y9fku5prqYzVCYF9Weo/zJDXv+VE4KRBDiikE7VBi7Sxzcu6emBwKCDEKrw0niqveMqFNC453TL6dXCGtEFiEjZ9jBjAgidQIG0x8oxGFzn7W76YzoLshk1w9nPulR4NAZfZHXbgj7almMqQk9uLkEuLCf0GYSGLT8K9O3p8mk9+4Kq41Fe01j4GkQVddFdPyck8hvxfjz9J/ZcbbhT1qiowmrUMjvrmItIRvaSZOtIFvfMJTWcdyb8U1Y4BcA2IxYBytvu9SVyDcdZy8O+5o0Lu8DqdDJqRDXekKk73oQ/4KQ1nh8lkxW19dZnWmmN62aHX5uMkL7Kq909rKTmeG48wTgP4ztL4tf2Ux1b7vq+9ySSiVMk3/i2l92kTFpmmlByXo3RMVBUmxsKStspg2qBsh3bONNPWRe4Z8TztZZPjQYjqZhZi8N7nwTPqOknlGtDDNccY32YnLCN3rUAgvu98mbLoJpNBmrxeOPXY/M7LLOyjupvNmpYxZQDM6k/SosLVkww94NUQyDZknhNSqapxhdhlRzzQ6Mlvtxvir+w53iS2CDj+i4u/CxO3MyKTqwXiykoAmT4LfCsT3iJqSTJBpfYvtpfxWyaen5dI3N8Y8uz16kBosccxe/gi5TtBaX6k8x8VzHF9YLLPMCwmo4eIx+uQAeKrAeYdUrZ/LqYULWjU0P2Qh0/hdd/d0jfLuB1b3g0RvhRmsxldRqxJEatqzZizjqeOQTGLnpJth9D1RdZKTO/Lzx5vUp/gA9hyB5Jj6oDwpV1ssUe2ayj7Mwuiua1gdacSEiKRukVQ8Tawp0cISUU+mmOGY2rLMqm2iIltxsYhTOeqsh4jpOJSNp2aODARlZthanl9cDbUrnPKnXGDekJgESmbKO9Os873tymP/Y2zGQOKdwMXSO5OrQJg+dNVN3YfAYASxBLCzxLIW56JLeIFnAkUseAZ7x+Qiv2bFQkF+xjuE0DFU/7Lp2cv35jp92XWASqA5Xvzhyy+Hs1DV5pGQa9UDMbgxkiApJHpi3XpidU4ko5IDJfCpSMQx6B1FajuAsA9w4oBLhChOceWsJ5XtcgpStKrDiMM9B5VXdUGRrCFUKXqfXJySElhzHgbuAW6RdR5vootiyC03CE60agKto4g0C8CGjbXCH6H5dC+pqXe0TKwZ504rm0YAzFjvl6wDm/EKGNhjkDpOSL4cRKhHSdS6FbGy7HUnyzDQABsKG8Kzg33I+2qVHFA4LryUCGNFii/bxFdyNqJwqbDMksonHzgV4eEDgoAOPfkizHayrldf9oCDu8n1Jh8qLoX5sLqbDvnJVPFuOZ55HdkJMa1y3F0TNyp0+9VMd3Dd0DXp1eIpngIGca2eHCUyZUsqqOemRPmorKwnuZ9yMT9H0STzOSPGO0ezQOXwQoteNG1D0i0pWaJn7pNL77L/+ASNjdYgnV9hWq0tfLLyO5XmGYSuwZYvvmlorjovCdOswGYMUPNgGTNwmcEHf+wPSFIKr4dV8YIvTHiGX4mKQXun/cXEPhfFIV8jGhuMo9WFddOl3YTorn8fuk8fMaKZSayMbXat7mVS1trNvVDZ+OcZaSgSBkqoNSxps/rcccPXKYWkCm4DNyRP03Sza85z0Bs+P4znwKEbYF5YMvPtSnWYhWPu3Fr64M6aAcYL36ksWwHyABKIL65XTfL0VJEPURC66oolR47AQpJixnZ+EWrf/Te5S+APfv5HntctwF1E+gYSKj7Klp4fM+MiiMFTFLr8zERFngbEXFPH1tstBvPGmC0mxDTfsDq3naTEUw8wPUlwnBjBdBpGjLlqWSkkkc3tm/AuvxFG3Drnd2fNNZGwKKbEIF9faSzhYHgcLWDgnm+OCjbNQsjsBF5GUzGHEJ9h4wcewDjvesOJ+/u4kahbXa2l4VaF4QaMi0vgT7m+GZxXYRBrhtSFK1IyyQKMJZkAN9MiiU5kUNDXLfrKMigLSBTppxNSUegooXQsqY1f4mwIPYgV+KWW0Nsm1m1lgvDvGqvqPIcbshlfSZGsiBhEjOtbU7y4EmZXEx49+e2OMTzeZIr3Zc/hSI6ZL32mY1d4h35WW9GTpUImEF9JG1JALHVboVAeP9OJfWvM2XEoeHIyj5X9XJwsBoscIDiSFXpMmaGX+sIlwi0EFSq4xSipW9AK3PumDkwV7mOjY2MXl8xhUmrosiHE1rCgu3BZ/HVtYF15LAWE+IA/mgKC0aDcNCNhthgAXNPlDNNdmWuaDlhQ61nXn1md9Lh+X1kvgNzxlcrCNQLDMVzk8OFKyQ2EzxpnnhqcqPpGTfFy23VOPMX/TUZtWF1p6aLO9EO2sXt6hi61yXkxsFT2DoVRYqrQ+7iYJjQtR81sIU7khQnxSAvW1A8FZ3mS4XX14b9Swgx2/zYnL7fz9LUHzFzoCDaGweTcWk85fw44bdcpNkcdCYCZ5qoGyiSrDT5//cP12RmzVNEu7mTiSbXkg6EMGrLZ9agnSV/LN3qDctGH8zuUOwQ79FwyLQFRQHTRVXCkYXXkeHvIOVcir4UcbnFFYwAoZ6dqXQCFcl+T27AgH969VFMNgKcVbjnpAUAFiCR+QxO5GYhKhW3lRw32f32KvUq5U/ZL1luz3H231Jvv9DcVxUUdcLY6VQ/eHGUf9hnOWqMWRhKZWTAHETaorLl0rrWRb7bBCXb4JnucaJ/nOsIJjgLHHeGgONOkyzZUVSZ6Wmwq+UF5UMUmtNmK6TIf0cstTz0vt6bIxovs95LD+xpIittZpXUwRdKRLXXapOAx8Jpgc5SbQeKQaLzDWhKhKsdjVK5wkr5AZI/taXnYnFChujneWlg4ZfRnML1M+OH2MoKspGCUZzvaqNvHnLU5lDPjMPHMuaoXwjfg3cAPIRT48DN3i4CJPdfpU8DIP14MBAYOflVlA/ou6k65geilm9VA+OpWD3RfyWLBW5u+EgjcVrkqgfbbGrgEaP2ZiNVAk2HVtZ47T7I2VTJrGbFvHiIqm5BVVbAsRW2yaGykRjA8CiVjIktnGC2SzjtODTlhihsgv2gLpLRJD1xWQULln3iOM8xABcbgGC7CCxe0gEGjVZ/xn0UzQpysZBCShkUPbbVZYIstku0cwnCP2lvX5UTuwYpltlAl9ijisbOgo21jK8ocCODdVoqVhCRbMxFP7PTqUtjZkqiJGoHa6M8ggVWbMAs0ck0XwcbW6RkU4gBDFWKzUEkUQUGx4bEssHOiUkrfDAxf8YpttpXPogbDEVnFBGqjhJYRwyThyWENSFVvXxxGidyQFV8mV3WseJgRgUqX2EiLZ6Ccg/TKqwcznmp0nBJPITfcJsdz460sduIe7rYoIg3EXr2lDOo0uqhTYRwNplmJQOdY8WpLYrXKMekOuNkLx4QKFHkrvPJtuPVTywBz2samwquRypE1jrfcAc/3kAW3C/NSMglB7iq93HTBmEcNSeoTExHWo0vQNQEd2ng1qFXNqdJxViZaJsfZGV2e9Qo1nG0G243N91NLHJBSYq0pD/EeoKUJayPXbXEscg4x0nvse5CSUmK7MkihqA0WmRleOUS0pZBMy0h8/R3apFOSnlRpAuiNKMTvdKn4BtEVlax10nJBvcDFjWfLgUHsD/Hm6/9pALC6sVBHzPlANJla0D0EUB1GwTNEFqWEBMcX675JZpMZwYctsJucwjN0b0A4w3lhWvjRcHU4Eu4Pp8IfRnZEApHb0Y5oIDoWnYtuvPHY3F24z9Lv7Q8nau+jSXoybzD84OUh1tDd4TPDseHMiGxkaRQblY0qRk2jtaPe0fAYa2z1Tfyb+RP8icBE5m3T21XThv+KNzZI3N/hLwtXmvsaB/j/wKCk+LYZggEGKv8q7yqvKD9cPvzjGD2weqD5gLvsfNlLZcayPWWFmsP7perv940pbys9T7+h+EbxsGLbU7ekN6XbnzwrGZB4JcdKvyuVoIvoj+h36AdoCv076kcLnpA9UfrELvEjoh7RGWgemi36pmg7kKNAcBwsVyi3v3jvyDbsGzHXFpyv564PANHgGdMytNZdGIheAthaGqA2eWVbdfFjwlxlzBqDeaQZellwB9cTxM0fKFjzUjBg5vTARhN0Mz5joRqxE/vpIFzJ0ySozxNAMEANJTRKa0elOipTKoF23FBKQBKduKJUQ2+jV4S914KhwytUkYAFdliBKCmUDaHHRbhRsjAEgCoNKKmw1AduNLFDmsmRGLWmis8WPcmsAdYBvIsA7hAGd0NlJl1ll4TmwXaBz0Sa0Ercd4A9wHEyDn9CLqQjoikfP+dCkXQuS33OFRNac5Umx3O1GVxhPIU90q1C7ex2sTnGHfQu+th5QR1nVRgjt1uNKqcFjbHtJiQCK7XHPu8+q5pdDQuRQCD4AcjqH1ekvRj2zNr2/l4Gzyq3J10z22bv2b3XadXONqJKJOwJzXZ75ghYiA6xnxVOCJWA13HpXRzPuEsu6nXr/59LAAAA) format("woff2")}
+@font-face{font-family:FigSans;font-weight:600;src:url(data:font/woff2;base64,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) format("woff2")}
+/* tokens.json: 생성물, 손으로 고치지 않음 */
+:root {
+  --color-palette-gray-0: #ffffff;
+  --color-palette-gray-25: #f8f8f8;
+  --color-palette-gray-outline: #787878;
+  --color-palette-gray-group-1: #ededed;
+  --color-palette-gray-group-2: #e1e1e1;
+  --color-palette-gray-group-3: #d6d6d6;
+  --color-palette-gray-40: #f0f0f0;
+  --color-palette-gray-100: #e7e7e7;
+  --color-palette-gray-200: #dadada;
+  --color-palette-gray-500: #8a8a8a;
+  --color-palette-gray-50: #f4f4f4;
+  --color-palette-gray-150: #e4e4e4;
+  --color-palette-gray-300: #b7b7b7;
+  --color-palette-neutral-group-1: #202020;
+  --color-palette-neutral-group-2: #2a2a2a;
+  --color-palette-neutral-group-3: #343434;
+  --color-palette-neutral-outline: #888888;
+  --color-palette-neutral-100: #f0f0f0;
+  --color-palette-neutral-400: #aaaaaa;
+  --color-palette-neutral-500: #757575;
+  --color-palette-neutral-750: #393939;
+  --color-palette-neutral-800: #363636;
+  --color-palette-neutral-850: #3e3e3e;
+  --color-palette-neutral-875: #1c1c1c;
+  --color-palette-neutral-900: #171717;
+  --color-palette-neutral-950: #121212;
+  --color-palette-neutral-600: #595959;
+  --color-palette-blue-light-fill: #edf4ff;
+  --color-palette-blue-light-stroke: #125de6;
+  --color-palette-blue-light-ink: #0151d9;
+  --color-palette-blue-light-heat-low: #b7cdf5;
+  --color-palette-blue-light-heat-high: #004dd2;
+  --color-palette-blue-light-icon: #125de6;
+  --color-palette-blue-dark-fill: #1c2a43;
+  --color-palette-blue-dark-stroke: #70a3ff;
+  --color-palette-blue-dark-ink: #78a9ff;
+  --color-palette-blue-dark-heat-low: #293751;
+  --color-palette-blue-dark-heat-high: #4474cc;
+  --color-palette-blue-dark-icon: #70a3ff;
+  --color-palette-blue-light-outline: #658dd5;
+  --color-palette-blue-dark-outline: #6789c4;
+  --color-palette-ink-200: #c9c9c9;
+  --color-palette-ink-600: #5d5d5d;
+  --color-palette-ink-700: #595959;
+  --color-palette-ink-850: #111111;
+  --color-palette-ink-900: #1f1f1f;
+  --color-palette-ink-1000: #000000;
+  --color-palette-red-light-fill: #ffefed;
+  --color-palette-red-light-stroke: #c70005;
+  --color-palette-red-light-ink: #be0004;
+  --color-palette-red-light-dot: #6c0001;
+  --color-palette-red-dark-fill: #40201c;
+  --color-palette-red-dark-stroke: #fc7182;
+  --color-palette-red-dark-ink: #ff8390;
+  --color-palette-red-dark-dot: #e25971;
+  --color-palette-red-light-outline: #cd7367;
+  --color-palette-red-dark-outline: #c56f73;
+  --color-palette-amber-light-fill: #fff0ea;
+  --color-palette-amber-light-stroke: #d44b00;
+  --color-palette-amber-light-ink: #a63900;
+  --color-palette-amber-dark-fill: #3f2116;
+  --color-palette-amber-dark-stroke: #fa7a49;
+  --color-palette-amber-dark-ink: #ff875a;
+  --color-palette-amber-light-outline: #c47a5f;
+  --color-palette-amber-dark-outline: #c37356;
+  --color-palette-green-light-fill: #eaf8e9;
+  --color-palette-green-light-stroke: #008c1a;
+  --color-palette-green-light-ink: #006d12;
+  --color-palette-green-light-dot: #006d12;
+  --color-palette-green-dark-fill: #1a301a;
+  --color-palette-green-dark-stroke: #58bf5a;
+  --color-palette-green-dark-ink: #58bf5a;
+  --color-palette-green-dark-dot: #62c963;
+  --color-palette-green-light-outline: #629a61;
+  --color-palette-green-dark-outline: #5a9659;
+  --color-palette-teal-light-fill: #eaf8e9;
+  --color-palette-teal-light-stroke: #008c1a;
+  --color-palette-teal-light-ink: #006d12;
+  --color-palette-teal-light-dot: #006d12;
+  --color-palette-teal-dark-fill: #1a301a;
+  --color-palette-teal-dark-stroke: #58bf5a;
+  --color-palette-teal-dark-ink: #58bf5a;
+  --color-palette-teal-dark-dot: #62c963;
+  --color-palette-teal-light-outline: #629a61;
+  --color-palette-teal-dark-outline: #5a9659;
+  --color-palette-navy-light-fill: #edf4ff;
+  --color-palette-navy-light-stroke: #125de6;
+  --color-palette-navy-light-ink: #0151d9;
+  --color-palette-navy-dark-fill: #1c2a43;
+  --color-palette-navy-dark-stroke: #70a3ff;
+  --color-palette-navy-dark-ink: #78a9ff;
+  --color-palette-navy-light-outline: #658dd5;
+  --color-palette-navy-dark-outline: #6789c4;
+  --color-palette-purple-light-fill: #f7f0ff;
+  --color-palette-purple-light-stroke: #8c6aaa;
+  --color-palette-purple-light-ink: #704f8c;
+  --color-palette-purple-light-dot: #704f8c;
+  --color-palette-purple-light-tint-1: #f1eaf9;
+  --color-palette-purple-light-tint-2: #e6ddf0;
+  --color-palette-purple-light-tint-3: #dcd1e8;
+  --color-palette-purple-dark-fill: #31233d;
+  --color-palette-purple-dark-stroke: #b693d6;
+  --color-palette-purple-dark-ink: #be9ade;
+  --color-palette-purple-dark-dot: #9c7abb;
+  --color-palette-purple-dark-tint-1: #231d28;
+  --color-palette-purple-dark-tint-2: #2e2635;
+  --color-palette-purple-dark-tint-3: #393042;
+  --color-palette-purple-light-outline: #9884ac;
+  --color-palette-purple-dark-outline: #977eae;
+  --color-palette-pink-light-fill: #f7f0ff;
+  --color-palette-pink-light-stroke: #8c6aaa;
+  --color-palette-pink-light-ink: #704f8c;
+  --color-palette-pink-dark-fill: #31233d;
+  --color-palette-pink-dark-stroke: #b693d6;
+  --color-palette-pink-dark-ink: #be9ade;
+  --color-palette-pink-light-outline: #9884ac;
+  --color-palette-pink-dark-outline: #977eae;
+  --color-palette-slate-light-fill: #e7e7e7;
+  --color-palette-slate-light-stroke: #5d5d5d;
+  --color-palette-slate-light-ink: #5d5d5d;
+  --color-palette-slate-light-dot: #747474;
+  --color-palette-slate-dark-fill: #363636;
+  --color-palette-slate-dark-stroke: #aaaaaa;
+  --color-palette-slate-dark-ink: #aaaaaa;
+  --color-palette-slate-dark-dot: #c7c7c7;
+  --color-palette-slate-light-outline: #848484;
+  --color-palette-slate-dark-outline: #888888;
+  --color-palette-orange-light-fill: #fff0ea;
+  --color-palette-orange-light-stroke: #d44b00;
+  --color-palette-orange-light-ink: #a63900;
+  --color-palette-orange-dark-fill: #3f2116;
+  --color-palette-orange-dark-stroke: #fa7a49;
+  --color-palette-orange-dark-ink: #ff875a;
+  --color-palette-orange-light-outline: #c47a5f;
+  --color-palette-orange-dark-outline: #c37356;
+  --color-palette-sky-light-fill: #e9f1fe;
+  --color-palette-sky-light-stroke: #125de6;
+  --color-palette-sky-light-ink: #0151d9;
+  --color-palette-sky-light-tint-1: #e5eefc;
+  --color-palette-sky-light-tint-2: #d7e2f4;
+  --color-palette-sky-light-tint-3: #cad7ed;
+  --color-palette-sky-dark-fill: #1c2a43;
+  --color-palette-sky-dark-stroke: #70a3ff;
+  --color-palette-sky-dark-ink: #78a9ff;
+  --color-palette-sky-dark-tint-1: #1a202b;
+  --color-palette-sky-dark-tint-2: #222a38;
+  --color-palette-sky-dark-tint-3: #2a3446;
+  --color-palette-sky-light-outline: #628ad3;
+  --color-palette-sky-dark-outline: #6789c4;
+  --color-state-active: var(--color-palette-blue-light-stroke);
+  --color-state-active-fill: var(--color-palette-blue-light-ink);
+  --color-state-active-text: var(--color-palette-blue-light-ink);
+  --color-state-on-active: var(--color-palette-gray-0);
+  --color-state-error: var(--color-paint-red-stroke);
+  --color-state-success: var(--color-paint-green-stroke);
+  --color-state-warning: var(--color-paint-amber-stroke);
+  --color-state-glow: var(--color-palette-blue-light-fill);
+  --color-flow-brand: var(--color-state-active);
+  --color-flow-purple: var(--color-paint-purple-dot);
+  --color-flow-green: var(--color-paint-green-dot);
+  --color-flow-gray: var(--color-paint-gray-dot);
+  --color-flow-red: var(--color-paint-red-dot);
+  --color-figure-icon: var(--color-palette-blue-light-icon);
+  --color-figure-icon-tile: var(--color-palette-blue-light-fill);
+  --color-paint-red-fill: var(--color-palette-red-light-fill);
+  --color-paint-red-stroke: var(--color-palette-red-light-stroke);
+  --color-paint-red-outline: var(--color-palette-red-light-outline);
+  --color-paint-red-ink: var(--color-palette-red-light-ink);
+  --color-paint-red-dot: var(--color-palette-red-light-dot);
+  --color-paint-amber-fill: var(--color-palette-amber-light-fill);
+  --color-paint-amber-stroke: var(--color-palette-amber-light-stroke);
+  --color-paint-amber-outline: var(--color-palette-amber-light-outline);
+  --color-paint-amber-ink: var(--color-palette-amber-light-ink);
+  --color-paint-green-fill: var(--color-palette-green-light-fill);
+  --color-paint-green-stroke: var(--color-palette-green-light-stroke);
+  --color-paint-green-outline: var(--color-palette-green-light-outline);
+  --color-paint-green-ink: var(--color-palette-green-light-ink);
+  --color-paint-green-dot: var(--color-palette-green-light-dot);
+  --color-paint-teal-fill: var(--color-palette-teal-light-fill);
+  --color-paint-teal-stroke: var(--color-palette-teal-light-stroke);
+  --color-paint-teal-outline: var(--color-palette-teal-light-outline);
+  --color-paint-teal-ink: var(--color-palette-teal-light-ink);
+  --color-paint-teal-dot: var(--color-palette-teal-light-dot);
+  --color-paint-navy-fill: var(--color-palette-navy-light-fill);
+  --color-paint-navy-stroke: var(--color-palette-navy-light-stroke);
+  --color-paint-navy-outline: var(--color-palette-navy-light-outline);
+  --color-paint-navy-ink: var(--color-palette-navy-light-ink);
+  --color-paint-purple-fill: var(--color-palette-purple-light-fill);
+  --color-paint-purple-stroke: var(--color-palette-purple-light-stroke);
+  --color-paint-purple-outline: var(--color-palette-purple-light-outline);
+  --color-paint-purple-ink: var(--color-palette-purple-light-ink);
+  --color-paint-purple-dot: var(--color-palette-purple-light-dot);
+  --color-paint-purple-group-1: var(--color-palette-purple-light-tint-1);
+  --color-paint-purple-group-2: var(--color-palette-purple-light-tint-2);
+  --color-paint-purple-group-3: var(--color-palette-purple-light-tint-3);
+  --color-paint-pink-fill: var(--color-palette-pink-light-fill);
+  --color-paint-pink-stroke: var(--color-palette-pink-light-stroke);
+  --color-paint-pink-outline: var(--color-palette-pink-light-outline);
+  --color-paint-pink-ink: var(--color-palette-pink-light-ink);
+  --color-paint-sky-fill: var(--color-palette-sky-light-fill);
+  --color-paint-sky-stroke: var(--color-palette-sky-light-stroke);
+  --color-paint-sky-outline: var(--color-palette-sky-light-outline);
+  --color-paint-sky-ink: var(--color-palette-sky-light-ink);
+  --color-paint-sky-group-1: var(--color-palette-sky-light-tint-1);
+  --color-paint-sky-group-2: var(--color-palette-sky-light-tint-2);
+  --color-paint-sky-group-3: var(--color-palette-sky-light-tint-3);
+  --color-paint-gray-fill: var(--color-palette-slate-light-fill);
+  --color-paint-gray-stroke: var(--color-palette-slate-light-stroke);
+  --color-paint-gray-outline: var(--color-palette-slate-light-outline);
+  --color-paint-gray-ink: var(--color-palette-slate-light-ink);
+  --color-paint-gray-dot: var(--color-palette-slate-light-dot);
+  --color-ui-link: var(--color-palette-blue-light-ink);
+  --color-ui-focus: var(--color-palette-blue-light-stroke);
+  --color-ui-progress: var(--color-palette-blue-light-stroke);
+  --color-ui-control-on: var(--color-palette-gray-0);
+  --color-data-main: var(--color-palette-blue-light-stroke);
+  --color-data-compare: var(--color-palette-orange-light-stroke);
+  --color-data-heat-low: var(--color-palette-blue-light-heat-low);
+  --color-data-heat-high: var(--color-palette-blue-light-heat-high);
+  --color-data-heat-ink: var(--color-palette-ink-1000);
+  --color-data-heat-ink-on: var(--color-palette-gray-0);
+  --color-data-grid: var(--color-palette-ink-200);
+  --color-fg: var(--color-palette-ink-900);
+  --color-muted: var(--color-palette-ink-600);
+  --color-group-title: var(--color-palette-ink-700);
+  --color-bg: var(--color-palette-gray-25);
+  --color-node: var(--color-palette-gray-0);
+  --color-surface: var(--color-palette-gray-40);
+  --color-card: var(--color-palette-gray-50);
+  --color-outline: var(--color-palette-gray-outline);
+  --color-border: var(--color-palette-gray-150);
+  --color-card-on: var(--color-palette-blue-light-fill);
+  --color-group-1: var(--color-palette-gray-group-1);
+  --color-plate-border: var(--color-palette-gray-200);
+  --color-page: var(--color-palette-gray-0);
+  --color-tag-purple: var(--color-paint-purple-stroke);
+  --color-tag-green: var(--color-paint-green-stroke);
+  --color-tag-gray: var(--color-paint-gray-stroke);
+  --color-tag-red: var(--color-paint-red-stroke);
+  --color-tag-brand: var(--color-state-active);
+  --color-line: var(--color-palette-gray-300);
+  --color-group-2: var(--color-palette-gray-group-2);
+  --color-group-3: var(--color-palette-gray-group-3);
+  --font-sans: FigSans, FigSansSym, FigSansMath, Pretendard, 'Pretendard Variable', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif;
+  --font-mono: FigMono, FigSans, FigSansSym, FigSansMath, ui-monospace, SFMono-Regular, Menlo, monospace;
+  --size-text-9: 9px;
+  --size-text-11: 11px;
+  --size-text-13: 13px;
+  --size-text-15: 15px;
+  --size-text-22: 22px;
+  --size-control-outer: 36px;
+  --size-control-inner: 28px;
+  --size-control-icon: 16px;
+  --size-control-icon-stroke: 1.75px;
+  --size-pill-height: 18px;
+  --size-icon-node: 20px;
+  --size-icon-group: 18px;
+  --size-icon-tile: 32px;
+  --size-icon-tile-gap: 6px;
+  --size-tag-height: 14px;
+  --size-packet-radius: 4.5px;
+  --size-packet-halo: 10px;
+  --size-packet-hop-ref: 300px;
+  --size-packet-chip-reach: 16px;
+  --size-arrow-head: 5px;
+  --size-arrow-head-lit: 4px;
+  --size-node-card-width: 176px;
+  --size-node-min-width: 100px;
+  --size-node-max-width: 210px;
+  --size-node-min-height: 46px;
+  --size-node-store-cap: 12px;
+  --size-node-state-dot: 14px;
+  --size-node-table-row: 26px;
+  --size-node-circle: 40px;
+  --size-node-tile-width: 80px;
+  --size-node-tile-pad: 8px;
+  --size-grid-cell: 32px;
+  --size-figure-canvas: 960px;
+  --size-figure-canvas-wide: 1440px;
+  --size-chip-max-width: 210px;
+  --size-player-caption-max: 720px;
+  --size-player-embedded-chrome: 150px;
+  --size-gallery-column: var(--size-figure-canvas);
+  --size-gallery-frame: 820px;
+  --size-document-column: var(--size-figure-canvas);
+  --size-chart-width: var(--size-figure-canvas);
+  --size-chart-label: 140px;
+  --size-chart-label-max: 240px;
+  --size-chart-bar: 12px;
+  --size-chart-row: 40px;
+  --size-chart-dot: 5px;
+  --size-chart-plot-h: 260px;
+  --size-chart-axis: 48px;
+  --size-chart-cell: 40px;
+  --size-chart-cap: 8px;
+  --size-chart-range: 6px;
+  --size-chart-arrow-min: 16px;
+  --size-person-width: 56px;
+  --size-person-head: 20px;
+  --size-person-shoulder: 14px;
+  --size-person-body: 22px;
+  --size-sequence-row: 44px;
+  --size-group-title: 28px;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --leading-normal: 1.5;
+  --leading-snug: 1.35;
+  --tracking-tag: 0.03em;
+  --tracking-frame: 0.04em;
+  --tracking-text: -0.3px;
+  --space-1: 2px;
+  --space-2: 4px;
+  --space-3: 6px;
+  --space-4: 8px;
+  --space-5: 10px;
+  --space-6: 12px;
+  --space-7: 14px;
+  --space-8: 16px;
+  --space-9: 18px;
+  --space-11: 22px;
+  --space-12: 24px;
+  --space-14: 28px;
+  --space-15: 30px;
+  --space-16: 32px;
+  --space-20: 40px;
+  --space-22: 44px;
+  --space-30: 60px;
+  --space-0-5: 1px;
+  --space-1-5: 3px;
+  --space-2-5: 5px;
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+  --radius-xl: 10px;
+  --radius-2xl: 14px;
+  --radius-route: 22px;
+  --radius-full: 999px;
+  --border-hair: 0.75px;
+  --border-thin: 1px;
+  --border-lifeline: 1.25px;
+  --border-tag: 1.5px;
+  --border-edge: 1.75px;
+  --border-strong: 2.5px;
+  --border-casing: 4.5px;
+  --border-halo: 8px;
+  --dash-line: 5;
+  --dash-gap: 4;
+  --dash-card: 3;
+  --opacity-tag: 0.15;
+  --opacity-halo: 0.2;
+  --opacity-dim: 0.3;
+  --opacity-dim-ink: 0.9;
+  --opacity-band: 0.22;
+  --opacity-range: 0.4;
+  --opacity-chip-visible-min: 0.1;
+  --distance-card-min: 0.015;
+  --distance-card-max: 0.04;
+  --distance-flow: 0.1;
+  --distance-neighbor: 0.06;
+  --distance-neighbor-cvd: 0.025;
+  --distance-fill: 0.015;
+  --distance-fill-dark-bg: 0.07;
+  --distance-fill-dark-node: 0.03;
+  --z-raised: 2;
+  --z-overlay: 10;
+  --duration-fast: 200ms;
+  --duration-hop: 3750ms;
+  --duration-caption-fade: 200ms;
+  --duration-hop-min: 500ms;
+  --duration-chip-slide: 300ms;
+  --duration-chip-fade: 150ms;
+  --duration-dwell: 700ms;
+  --duration-dwell-per-char: 45ms;
+  --duration-dwell-max: 3200ms;
+  --duration-step-end: 1600ms;
+  --duration-chart-cycle: 7000ms;
+  --duration-reveal: 900ms;
+  --duration-value-flash: 700ms;
+  --duration-pulse: 450ms;
+  --duration-chip-frame: 16.666666666666668ms;
+  --duration-flow-step: 12000ms;
+  --duration-cut-fade: 600ms;
+  --easing-move: cubic-bezier(0.455, 0.03, 0.515, 0.955);
+  --easing-reveal: cubic-bezier(0, 0, 0.58, 1);
+  --scale-zoom-max: 6;
+  --scale-aspect-fit-max: 1.6;
+  --scale-fold-aspect: var(--scale-aspect-fit-max);
+  --scale-fold-step: 0.75;
+  --scale-aspect-max: 3;
+  --scale-zoom-step: 1.25;
+  --scale-flow-dots-max: 80;
+  --scale-chip-visible-share: 0.6;
+}
+
+[data-theme='dark'] {
+  --color-state-active: var(--color-palette-blue-dark-stroke);
+  --color-state-active-fill: var(--color-palette-blue-dark-stroke);
+  --color-state-active-text: var(--color-palette-blue-dark-ink);
+  --color-state-on-active: var(--color-palette-ink-850);
+  --color-state-glow: var(--color-palette-blue-dark-fill);
+  --color-figure-icon: var(--color-palette-blue-dark-icon);
+  --color-figure-icon-tile: var(--color-palette-blue-dark-fill);
+  --color-paint-red-fill: var(--color-palette-red-dark-fill);
+  --color-paint-red-stroke: var(--color-palette-red-dark-stroke);
+  --color-paint-red-outline: var(--color-palette-red-dark-outline);
+  --color-paint-red-ink: var(--color-palette-red-dark-ink);
+  --color-paint-red-dot: var(--color-palette-red-dark-dot);
+  --color-paint-amber-fill: var(--color-palette-amber-dark-fill);
+  --color-paint-amber-stroke: var(--color-palette-amber-dark-stroke);
+  --color-paint-amber-outline: var(--color-palette-amber-dark-outline);
+  --color-paint-amber-ink: var(--color-palette-amber-dark-ink);
+  --color-paint-green-fill: var(--color-palette-green-dark-fill);
+  --color-paint-green-stroke: var(--color-palette-green-dark-stroke);
+  --color-paint-green-outline: var(--color-palette-green-dark-outline);
+  --color-paint-green-ink: var(--color-palette-green-dark-ink);
+  --color-paint-green-dot: var(--color-palette-green-dark-dot);
+  --color-paint-teal-fill: var(--color-palette-teal-dark-fill);
+  --color-paint-teal-stroke: var(--color-palette-teal-dark-stroke);
+  --color-paint-teal-outline: var(--color-palette-teal-dark-outline);
+  --color-paint-teal-ink: var(--color-palette-teal-dark-ink);
+  --color-paint-teal-dot: var(--color-palette-teal-dark-dot);
+  --color-paint-navy-fill: var(--color-palette-navy-dark-fill);
+  --color-paint-navy-stroke: var(--color-palette-navy-dark-stroke);
+  --color-paint-navy-outline: var(--color-palette-navy-dark-outline);
+  --color-paint-navy-ink: var(--color-palette-navy-dark-ink);
+  --color-paint-purple-fill: var(--color-palette-purple-dark-fill);
+  --color-paint-purple-stroke: var(--color-palette-purple-dark-stroke);
+  --color-paint-purple-outline: var(--color-palette-purple-dark-outline);
+  --color-paint-purple-ink: var(--color-palette-purple-dark-ink);
+  --color-paint-purple-dot: var(--color-palette-purple-dark-dot);
+  --color-paint-purple-group-1: var(--color-palette-purple-dark-tint-1);
+  --color-paint-purple-group-2: var(--color-palette-purple-dark-tint-2);
+  --color-paint-purple-group-3: var(--color-palette-purple-dark-tint-3);
+  --color-paint-pink-fill: var(--color-palette-pink-dark-fill);
+  --color-paint-pink-stroke: var(--color-palette-pink-dark-stroke);
+  --color-paint-pink-outline: var(--color-palette-pink-dark-outline);
+  --color-paint-pink-ink: var(--color-palette-pink-dark-ink);
+  --color-paint-sky-fill: var(--color-palette-sky-dark-fill);
+  --color-paint-sky-stroke: var(--color-palette-sky-dark-stroke);
+  --color-paint-sky-outline: var(--color-palette-sky-dark-outline);
+  --color-paint-sky-ink: var(--color-palette-sky-dark-ink);
+  --color-paint-sky-group-1: var(--color-palette-sky-dark-tint-1);
+  --color-paint-sky-group-2: var(--color-palette-sky-dark-tint-2);
+  --color-paint-sky-group-3: var(--color-palette-sky-dark-tint-3);
+  --color-paint-gray-fill: var(--color-palette-slate-dark-fill);
+  --color-paint-gray-stroke: var(--color-palette-slate-dark-stroke);
+  --color-paint-gray-outline: var(--color-palette-slate-dark-outline);
+  --color-paint-gray-ink: var(--color-palette-slate-dark-ink);
+  --color-paint-gray-dot: var(--color-palette-slate-dark-dot);
+  --color-ui-link: var(--color-palette-blue-dark-ink);
+  --color-ui-focus: var(--color-palette-blue-dark-stroke);
+  --color-ui-progress: var(--color-palette-blue-dark-stroke);
+  --color-ui-control-on: var(--color-palette-neutral-750);
+  --color-data-main: var(--color-palette-blue-dark-stroke);
+  --color-data-compare: var(--color-palette-orange-dark-stroke);
+  --color-data-heat-low: var(--color-palette-blue-dark-heat-low);
+  --color-data-heat-high: var(--color-palette-blue-dark-heat-high);
+  --color-data-heat-ink: var(--color-palette-gray-0);
+  --color-data-heat-ink-on: var(--color-palette-gray-0);
+  --color-data-grid: var(--color-palette-neutral-750);
+  --color-fg: var(--color-palette-neutral-100);
+  --color-muted: var(--color-palette-neutral-400);
+  --color-group-title: var(--color-palette-neutral-400);
+  --color-bg: var(--color-palette-neutral-900);
+  --color-node: var(--color-palette-neutral-850);
+  --color-surface: var(--color-palette-neutral-800);
+  --color-card: var(--color-palette-neutral-800);
+  --color-outline: var(--color-palette-neutral-outline);
+  --color-border: var(--color-palette-neutral-750);
+  --color-card-on: var(--color-palette-blue-dark-fill);
+  --color-page: var(--color-palette-neutral-950);
+  --color-group-1: var(--color-palette-neutral-group-1);
+  --color-plate-border: var(--color-palette-neutral-800);
+  --color-line: var(--color-palette-neutral-600);
+  --color-group-2: var(--color-palette-neutral-group-2);
+  --color-group-3: var(--color-palette-neutral-group-3);
+}
+/* 그림 안 글자와 모양. HTML 재생기와 움직이는 SVG가 같이 쓴다. */
+.fl text {
+  font-family: var(--font-sans);
+  letter-spacing: var(--tracking-text);
+}
+
+.fl .label {
+  font-size: var(--size-text-13);
+  font-weight: var(--weight-medium);
+  text-anchor: middle;
+  fill: var(--color-fg);
+}
+
+.fl .sub {
+  font-size: var(--size-text-11);
+  text-anchor: middle;
+  fill: var(--color-muted);
+}
+
+.fl .frame {
+  font-size: var(--size-text-11);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-frame);
+  fill: var(--color-group-title);
+}
+
+.fl .edgelabel {
+  font-size: var(--size-text-11);
+  text-anchor: middle;
+  fill: var(--color-muted);
+}
+
+.fl .row {
+  font-size: var(--size-text-11);
+  fill: var(--color-fg);
+}
+
+.fl .row.mono {
+  font-family: var(--font-mono);
+  letter-spacing: normal;
+  font-size: var(--size-text-11);
+}
+
+/* 백틱으로 감싼 글. 코드 글꼴로 그린다. */
+.fl .code {
+  font-family: var(--font-mono);
+  letter-spacing: normal;
+}
+
+.fl .muted {
+  fill: var(--color-muted);
+}
+
+.fl .tag {
+  font-size: var(--size-text-9);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--tracking-tag);
+  text-anchor: middle;
+  fill: var(--color-fg);
+}
+
+.fl .mark {
+  font-size: var(--size-text-11);
+  font-weight: var(--weight-semibold);
+  text-anchor: end;
+  fill: var(--color-state-active-text);
+}
+
+/* 값 카드 줄의 값 글자. 줄의 이름(row)은 카드 층이 그리고 값은 오른쪽 끝에 얹힌다. */
+.fl .value {
+  font-size: var(--size-text-11);
+  font-weight: var(--weight-semibold);
+  text-anchor: end;
+  fill: var(--color-fg);
+}
+
+.fl .mini {
+  font-size: var(--size-text-11);
+  text-anchor: middle;
+  fill: var(--color-fg);
+}
+
+.fl .mini.on {
+  fill: var(--color-state-on-active);
+}
+
+.fl .chip {
+  font-size: var(--size-text-11);
+  text-anchor: middle;
+  fill: var(--color-state-on-active);
+}
+
+.fl .cell {
+  font-size: var(--size-text-13);
+  fill: var(--color-fg);
+}
+
+.fl .item {
+  font-size: var(--size-text-13);
+  text-anchor: middle;
+  fill: var(--color-fg);
+}
+
+.fl .item.gap {
+  fill: var(--color-muted);
+}
+
+.fl .cell.type {
+  font-family: var(--font-mono);
+  letter-spacing: normal;
+  font-size: var(--size-text-11);
+  text-anchor: end;
+  fill: var(--color-muted);
+}
+
+.fl .fl-stroke {
+  stroke: var(--color-outline);
+  stroke-width: var(--border-thin);
+}
+
+.fl .fl-path {
+  fill: none;
+  stroke: var(--color-line);
+  stroke-width: var(--border-edge);
+}
+
+.fl .cell .key {
+  font-size: var(--size-text-9);
+  font-weight: var(--weight-semibold);
+  fill: var(--color-muted);
+}
+
+.fl .frame-box {
+  fill: var(--color-group-1);
+  stroke: none;
+}
+
+.fl .frame-box.d2 {
+  fill: var(--color-group-2);
+}
+
+.fl .frame-box.d3 {
+  fill: var(--color-group-3);
+}
+
+.fl .frame-box.dashed {
+  stroke: var(--color-line);
+}
+
+.fl .lifeline {
+  stroke: var(--color-line);
+  stroke-width: var(--border-lifeline);
+  stroke-dasharray: var(--dash-gap) var(--dash-gap);
+}
+
+.fl .note-box {
+  fill: var(--color-surface);
+  stroke: var(--color-line);
+  stroke-dasharray: var(--dash-card) var(--dash-card);
+}
+
+.fl .pill {
+  fill: var(--color-node);
+  stroke: var(--color-outline);
+}
+
+.fl .part-bg {
+  fill: transparent;
+}
+
+.fl .col-line {
+  stroke: var(--color-outline);
+  stroke-width: var(--border-hair);
+}
+
+.fl .grid-cell {
+  fill: var(--color-node);
+  stroke: var(--color-outline);
+  stroke-width: var(--border-thin);
+}
+
+.fl .grid-ring {
+  fill: none;
+  stroke: none;
+}
+
+.fl .grid-cell.gap {
+  fill: var(--color-surface);
+  stroke: var(--color-line);
+  stroke-dasharray: var(--dash-card) var(--dash-card);
+}
+
+.fl .grid-cell.empty {
+  fill: none;
+  stroke: var(--color-line);
+  stroke-dasharray: var(--dash-card) var(--dash-card);
+}
+
+.fl .fl-edge.mark .fl-path {
+  stroke: var(--color-fg);
+}
+
+/* 도형 윗줄과 그룹 제목 줄의 장식: 글자 배지, 아이콘 */
+.fl .badge {
+  font-size: var(--size-text-11);
+  font-weight: var(--weight-semibold);
+  text-anchor: middle;
+  fill: var(--color-fg);
+}
+
+.fl .badge-pill {
+  fill: var(--color-node);
+  stroke: var(--color-outline);
+  stroke-width: var(--border-thin);
+}
+
+.fl .fl-icon {
+  color: var(--color-figure-icon);
+}
+
+.fl .icon-tile {
+  fill: var(--color-figure-icon-tile);
+}
+
+.fl .fl-icon.in-tile {
+  color: var(--color-figure-icon);
+}
+
+/* 선 번호 원. 라벨 알약과 달리 켜져도 색이 바뀌지 않아 정지 그림과 같은 순서로 읽힌다. */
+.fl .number-pill {
+  fill: var(--color-fg);
+}
+
+.fl .number {
+  font-size: var(--size-text-11);
+  font-weight: var(--weight-semibold);
+  text-anchor: middle;
+  fill: var(--color-bg);
+}
+/* 움직이는 SVG에만 있는 단계 이름과 설명 줄 */
+.fl .steplabel {
+  font-family: var(--font-sans);
+  letter-spacing: var(--tracking-text);
+  font-size: var(--size-text-15);
+  font-weight: var(--weight-semibold);
+  text-anchor: middle;
+  fill: var(--color-fg);
+}
+
+.fl .caption {
+  font-size: var(--size-text-13);
+  text-anchor: middle;
+  fill: var(--color-muted);
+}
+
+@keyframes a0 { 0%,19.088% { stroke: var(--color-state-active); stroke-width: var(--border-strong) } 19.089%,23.546% { stroke: var(--color-state-active); stroke-width: var(--border-strong) } 23.546%,33.304% { stroke: var(--color-state-active); stroke-width: var(--border-strong) } 33.304%,39.99% { stroke: var(--color-state-active); stroke-width: var(--border-strong) } 39.991%,45.515% { stroke: var(--color-state-active); stroke-width: var(--border-strong) } 45.516%,54.278% { stroke: var(--color-state-active); stroke-width: var(--border-strong) } 54.279% { stroke: var(--color-state-active); stroke-width: var(--border-strong) } 55.041%,100% { stroke: var(--color-outline); stroke-width: var(--border-thin) } }
+.fl .a0 { animation: a0 26.246s infinite linear; }
+@keyframes a1 { 0%,19.088% { opacity: 1 } 19.089%,23.546% { opacity: 1 } 23.546%,33.304% { opacity: 1 } 33.304%,39.99% { opacity: 1 } 39.991%,45.515% { opacity: 1 } 45.516%,54.278% { opacity: 1 } 54.279% { opacity: 1 } 55.041%,100% { opacity: 0 } }
+.fl .a1 { animation: a1 26.246s infinite linear; }
+@keyframes a2 { 0%,19.088% { opacity: 1 } 19.089%,23.546% { opacity: 1 } 23.546%,33.304% { opacity: 1 } 33.304%,39.99% { opacity: 1 } 39.991%,45.515% { opacity: 1 } 45.516%,54.278% { opacity: 1 } 54.279%,100% { opacity: 1 } }
+.fl .a2 { animation: a2 26.246s infinite linear; }
+@keyframes a3 { 0%,19.088% { stroke: var(--color-state-active); fill: var(--color-card-on) } 19.089%,23.546% { stroke: var(--color-state-active); fill: var(--color-card-on) } 23.546%,33.304% { stroke: var(--color-state-active); fill: var(--color-card-on) } 33.304%,39.99% { stroke: var(--color-state-active); fill: var(--color-card-on) } 39.991%,45.515% { stroke: var(--color-state-active); fill: var(--color-card-on) } 45.516%,54.278% { stroke: var(--color-state-active); fill: var(--color-card-on) } 54.279%,100% { stroke: var(--color-state-active); fill: var(--color-card-on) } }
+.fl .a3 { animation: a3 26.246s infinite linear; }
+@keyframes a4 { 0%,19.088% { stroke: var(--color-outline); stroke-width: var(--border-thin) } 19.089%,23.546% { stroke: var(--color-outline); stroke-width: var(--border-thin) } 23.546%,33.304% { stroke: var(--color-outline); stroke-width: var(--border-thin) } 33.304%,39.99% { stroke: var(--color-outline); stroke-width: var(--border-thin) } 39.991%,45.515% { stroke: var(--color-outline); stroke-width: var(--border-thin) } 45.516%,54.278% { stroke: var(--color-outline); stroke-width: var(--border-thin) } 54.279%,100% { stroke: var(--color-outline); stroke-width: var(--border-thin) } }
+.fl .a4 { animation: a4 26.246s infinite linear; }
+@keyframes a5 { 0%,19.088% { opacity: 0 } 19.089%,23.546% { opacity: 0 } 23.546%,33.304% { opacity: 0 } 33.304%,39.99% { opacity: 0 } 39.991%,45.515% { opacity: 0 } 45.516%,54.278% { opacity: 0 } 54.279%,100% { opacity: 0 } }
+.fl .a5 { animation: a5 26.246s infinite linear; }
+@keyframes a6 { 0%,19.088% { stroke: var(--color-outline); stroke-width: var(--border-thin) } 19.089%,23.546% { stroke: var(--color-outline); stroke-width: var(--border-thin) } 23.546%,33.304% { stroke: var(--color-outline); stroke-width: var(--border-thin) } 33.304%,39.99% { stroke: var(--color-outline); stroke-width: var(--border-thin) } 39.991% { stroke: var(--color-outline); stroke-width: var(--border-thin) } 40.753%,45.515% { stroke: var(--color-state-active); stroke-width: var(--border-strong) } 45.516%,54.278% { stroke: var(--color-state-active); stroke-width: var(--border-strong) } 54.279% { stroke: var(--color-state-active); stroke-width: var(--border-strong) } 55.041%,100% { stroke: var(--color-outline); stroke-width: var(--border-thin) } }
+.fl .a6 { animation: a6 26.246s infinite linear; }
+@keyframes a7 { 0%,19.088% { opacity: 0 } 19.089%,23.546% { opacity: 0 } 23.546%,33.304% { opacity: 0 } 33.304%,39.99% { opacity: 0 } 39.991% { opacity: 0 } 40.753%,45.515% { opacity: 1 } 45.516%,54.278% { opacity: 1 } 54.279% { opacity: 1 } 55.041%,100% { opacity: 0 } }
+.fl .a7 { animation: a7 26.246s infinite linear; }
+@keyframes a8 { 0%,19.088% { stroke: var(--color-state-active); stroke-width: var(--border-strong); marker-end: url(#fl-arrow-on) } 19.089%,23.546% { stroke: var(--color-state-active); stroke-width: var(--border-strong); marker-end: url(#fl-arrow-on) } 23.546%,33.304% { stroke: var(--color-state-active); stroke-width: var(--border-strong); marker-end: url(#fl-arrow-on) } 33.304%,39.99% { stroke: var(--color-state-active); stroke-width: var(--border-strong); marker-end: url(#fl-arrow-on) } 39.991%,45.515% { stroke: var(--color-state-active); stroke-width: var(--border-strong); marker-end: url(#fl-arrow-on) } 45.516%,54.278% { stroke: var(--color-state-active); stroke-width: var(--border-strong); marker-end: url(#fl-arrow-on) } 54.279%,100% { stroke: var(--color-state-active); stroke-width: var(--border-strong); marker-end: url(#fl-arrow-on) } }
+.fl .a8 { animation: a8 26.246s infinite linear; }
+@keyframes a9 { 0%,19.088% { stroke: var(--color-line); stroke-width: var(--border-edge); marker-end: url(#fl-arrow) } 19.089%,23.546% { stroke: var(--color-line); stroke-width: var(--border-edge); marker-end: url(#fl-arrow) } 23.546%,33.304% { stroke: var(--color-line); stroke-width: var(--border-edge); marker-end: url(#fl-arrow) } 33.304%,39.99% { stroke: var(--color-line); stroke-width: var(--border-edge); marker-end: url(#fl-arrow) } 39.991%,45.515% { stroke: var(--color-line); stroke-width: var(--border-edge); marker-end: url(#fl-arrow) } 45.516%,54.278% { stroke: var(--color-line); stroke-width: var(--border-edge); marker-end: url(#fl-arrow) } 54.279%,56.82% { stroke: var(--color-line); stroke-width: var(--border-edge); marker-end: url(#fl-arrow) } 56.82% { stroke: var(--color-line); stroke-width: var(--border-edge); marker-end: url(#fl-arrow) } 57.582%,100% { stroke: var(--color-state-active); stroke-width: var(--border-strong); marker-end: url(#fl-arrow-on) } }
+.fl .a9 { animation: a9 26.246s infinite linear; }
+@keyframes a10 { 0%,19.088% { stroke: var(--color-line); stroke-width: var(--border-edge); marker-end: url(#fl-arrow) } 19.089%,23.546% { stroke: var(--color-line); stroke-width: var(--border-edge); marker-end: url(#fl-arrow) } 23.546%,33.304% { stroke: var(--color-line); stroke-width: var(--border-edge); marker-end: url(#fl-arrow) } 33.304%,39.99% { stroke: var(--color-line); stroke-width: var(--border-edge); marker-end: url(#fl-arrow) } 39.991%,45.515% { stroke: var(--color-line); stroke-width: var(--border-edge); marker-end: url(#fl-arrow) } 45.516%,54.278% { stroke: var(--color-line); stroke-width: var(--border-edge); marker-end: url(#fl-arrow) } 54.279%,59.357% { stroke: var(--color-line); stroke-width: var(--border-edge); marker-end: url(#fl-arrow) } 59.358% { stroke: var(--color-line); stroke-width: var(--border-edge); marker-end: url(#fl-arrow) } 60.12%,100% { stroke: var(--color-state-active); stroke-width: var(--border-strong); marker-end: url(#fl-arrow-on) } }
+.fl .a10 { animation: a10 26.246s infinite linear; }
+@keyframes a11 { 0%,19.088% { stroke: var(--color-line); stroke-width: var(--border-edge); marker-end: url(#fl-arrow) } 19.089%,23.546% { stroke: var(--color-line); stroke-width: var(--border-edge); marker-end: url(#fl-arrow) } 23.546% { stroke: var(--color-line); stroke-width: var(--border-edge); marker-end: url(#fl-arrow) } 24.308%,33.304% { stroke: var(--color-state-active); stroke-width: var(--border-strong); marker-end: url(#fl-arrow-on) } 33.304%,39.99% { stroke: var(--color-state-active); stroke-width: var(--border-strong); marker-end: url(#fl-arrow-on) } 39.991%,45.515% { stroke: var(--color-state-active); stroke-width: var(--border-strong); marker-end: url(#fl-arrow-on) } 45.516%,54.278% { stroke: var(--color-state-active); stroke-width: var(--border-strong); marker-end: url(#fl-arrow-on) } 54.279% { stroke: var(--color-state-active); stroke-width: var(--border-strong); marker-end: url(#fl-arrow-on) } 55.041%,62.003% { stroke: var(--color-line); stroke-width: var(--border-edge); marker-end: url(#fl-arrow) } 62.003% { stroke: var(--color-line); stroke-width: var(--border-edge); marker-end: url(#fl-arrow) } 62.765%,100% { stroke: var(--color-state-active); stroke-width: var(--border-strong); marker-end: url(#fl-arrow-on) } }
+.fl .a11 { animation: a11 26.246s infinite linear; }
+@keyframes a12 { 0%,19.088% { stroke: var(--color-line); stroke-width: var(--border-edge); marker-end: url(#fl-arrow) } 19.089%,23.546% { stroke: var(--color-line); stroke-width: var(--border-edge); marker-end: url(#fl-arrow) } 23.546%,33.304% { stroke: var(--color-line); stroke-width: var(--border-edge); marker-end: url(#fl-arrow) } 33.304%,39.99% { stroke: var(--color-line); stroke-width: var(--border-edge); marker-end: url(#fl-arrow) } 39.991% { stroke: var(--color-line); stroke-width: var(--border-edge); marker-end: url(#fl-arrow) } 40.753%,45.515% { stroke: var(--color-state-active); stroke-width: var(--border-strong); marker-end: url(#fl-arrow-on) } 45.516%,54.278% { stroke: var(--color-state-active); stroke-width: var(--border-strong); marker-end: url(#fl-arrow-on) } 54.279% { stroke: var(--color-state-active); stroke-width: var(--border-strong); marker-end: url(#fl-arrow-on) } 55.041%,100% { stroke: var(--color-line); stroke-width: var(--border-edge); marker-end: url(#fl-arrow) } }
+.fl .a12 { animation: a12 26.246s infinite linear; }
+@keyframes a13 { 0%,19.088% { opacity: 1 } 19.089%,23.546% { opacity: 1 } 23.546%,33.304% { opacity: 1 } 33.304%,39.99% { opacity: 1 } 39.991%,45.515% { opacity: 1 } 45.516%,54.278% { opacity: 1 } 54.279% { opacity: 1 } 55.041%,100% { opacity: 0 } }
+.fl .a13 { animation: a13 26.246s infinite linear; }
+@keyframes a14 { 0%,19.088% { opacity: 0 } 19.089%,23.546% { opacity: 0 } 23.546%,33.304% { opacity: 0 } 33.304%,39.99% { opacity: 0 } 39.991%,45.515% { opacity: 0 } 45.516%,55.04% { opacity: 0 } 55.041% { opacity: 0 } 55.803%,100% { opacity: 1 } }
+.fl .a14 { animation: a14 26.246s infinite linear; }
+@keyframes a15 { 0%,19.088% { opacity: 1 } 19.089% { opacity: 1 } 19.851%,23.546% { opacity: 0 } 23.546%,33.304% { opacity: 0 } 33.304%,39.99% { opacity: 0 } 39.991%,45.515% { opacity: 0 } 45.516%,54.278% { opacity: 0 } 54.279%,100% { opacity: 0 } }
+.fl .a15 { animation: a15 26.246s infinite linear; }
+@keyframes a16 { 0%,19.85% { opacity: 0 } 19.851% { opacity: 0 } 20.613%,23.546% { opacity: 1 } 23.546%,33.304% { opacity: 1 } 33.304% { opacity: 1 } 34.066%,39.99% { opacity: 0 } 39.991%,45.515% { opacity: 0 } 45.516%,54.278% { opacity: 0 } 54.279%,100% { opacity: 0 } }
+.fl .a16 { animation: a16 26.246s infinite linear; }
+@keyframes a17 { 0%,19.088% { opacity: 0 } 19.089%,23.546% { opacity: 0 } 23.546%,34.066% { opacity: 0 } 34.066% { opacity: 0 } 34.828%,39.99% { opacity: 1 } 39.991%,45.515% { opacity: 1 } 45.516% { opacity: 1 } 46.278%,54.278% { opacity: 0 } 54.279%,100% { opacity: 0 } }
+.fl .a17 { animation: a17 26.246s infinite linear; }
+@keyframes a18 { 0%,19.088% { opacity: 0 } 19.089%,23.546% { opacity: 0 } 23.546%,33.304% { opacity: 0 } 33.304%,39.99% { opacity: 0 } 39.991%,46.277% { opacity: 0 } 46.278% { opacity: 0 } 47.04%,54.278% { opacity: 1 } 54.279% { opacity: 1 } 55.041%,100% { opacity: 0 } }
+.fl .a18 { animation: a18 26.246s infinite linear; }
+</style>
+<defs><marker id="fl-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-line)"/></marker><marker id="fl-arrow-on" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-state-active)"/></marker><marker id="fl-arrow-main" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-data-main)"/></marker></defs>
+<rect x="0.5" y="0.5" width="959" height="430" rx="10" fill="var(--color-bg)" stroke="var(--color-plate-border)" stroke-width="1"/>
+<g transform="translate(128 0)">
+<g id="n-0" class="fl-node" data-id="web"><g class="fl-halo a1" fill="none" opacity="0"><rect x="104" y="28" width="100" height="66" rx="10" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="104" y="28" width="100" height="66" rx="10" fill="var(--color-node)" class="fl-stroke a0"/><rect x="144" y="40" width="20" height="20" rx="6" class="icon-tile"/><g class="fl-icon in-tile" transform="translate(147.8 43.8) scale(0.3875)"><g fill="currentColor"><path d="M28,4H4A2,2,0,0,0,2,6V22a2,2,0,0,0,2,2h8v4H8v2H24V28H20V24h8a2,2,0,0,0,2-2V6A2,2,0,0,0,28,4ZM18,28H14V24h4Zm10-6H4V6H28Z"/></g></g><text x="154" y="77.7" class="label">웹</text></g>
+<g id="n-1" class="fl-node" data-id="app"><g class="fl-halo a1" fill="none" opacity="0"><rect x="28" y="126" width="176" height="103" rx="10" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="28" y="126" width="176" height="103" rx="10" fill="var(--color-node)" class="fl-stroke a0"/><rect x="106" y="138" width="20" height="20" rx="6" class="icon-tile"/><g class="fl-icon in-tile" transform="translate(109.8 141.8) scale(0.3875)"><g fill="currentColor"><path d="M22,4H10A2.002,2.002,0,0,0,8,6V28a2.0023,2.0023,0,0,0,2,2H22a2.0027,2.0027,0,0,0,2-2V6A2.0023,2.0023,0,0,0,22,4Zm0,2,0,2H10V6ZM10,28V10H22l0,18Z"/></g></g><text x="116" y="175.7" class="label">앱</text><rect x="38" y="192" width="156" height="27" rx="6" fill="var(--color-card)" stroke="var(--color-outline)" stroke-dasharray="3 3" class="fl-card a3"/><g id="n-1-c0" opacity="0" class="fl-layer a2"><text x="46" y="209" class="row">화면 재고</text></g></g>
+<g id="n-2" class="fl-node" data-id="partner"><g class="fl-halo a5" fill="none" opacity="0"><rect x="104" y="261" width="100" height="66" rx="10" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="104" y="261" width="100" height="66" rx="10" fill="var(--color-node)" class="fl-stroke a4"/><rect x="144" y="273" width="20" height="20" rx="6" class="icon-tile"/><g class="fl-icon in-tile" transform="translate(147.8 276.8) scale(0.3875)"><g fill="currentColor"><path d="M17,18.1841V13.8159a3.0007,3.0007,0,1,0-2,0v4.3687a3,3,0,1,0,2,0ZM16,10a1,1,0,1,1-1,1A1.0009,1.0009,0,0,1,16,10Zm0,12a1,1,0,1,1,1-1A1.0009,1.0009,0,0,1,16,22Z"/><path d="M30.4141,17.4141a1.9995,1.9995,0,0,0,0-2.8282L24.6272,8.7993l2.9006-2.8628a2.0018,2.0018,0,1,0-1.4416-1.3872L23.2129,7.3848,17.4141,1.5859a1.9995,1.9995,0,0,0-2.8282,0L8.7993,7.3726,5.9368,4.4717A2.002,2.002,0,1,0,4.55,5.9136l2.835,2.8735L1.5859,14.5859a1.9995,1.9995,0,0,0,0,2.8282l5.7989,5.7988L4.55,26.0864a1.9977,1.9977,0,1,0,1.387,1.4419l2.8625-2.9009,5.7866,5.7867a1.9995,1.9995,0,0,0,2.8282,0l5.7988-5.7989,2.8733,2.8355a1.998,1.998,0,1,0,1.4416-1.3872l-2.9006-2.8628ZM16,29,3,16,16,3,29,16Z"/></g></g><text x="154" y="310.7" class="label">제휴사</text></g>
+<g id="n-3" class="fl-node" data-id="api"><g class="fl-halo a1" fill="none" opacity="0"><rect x="264" y="216.8" width="176" height="103" rx="10" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="264" y="216.8" width="176" height="103" rx="10" fill="var(--color-node)" class="fl-stroke a0"/><rect x="342" y="228.8" width="20" height="20" rx="6" class="icon-tile"/><g class="fl-icon in-tile" transform="translate(345.8 232.6) scale(0.3875)"><g fill="currentColor"><circle cx="9" cy="6" r="1"/><path d="M26,10H6A2.0021,2.0021,0,0,1,4,8V4A2.0021,2.0021,0,0,1,6,2H26a2.0021,2.0021,0,0,1,2,2V8A2.0021,2.0021,0,0,1,26,10ZM6,4V8H26V4Z"/><circle cx="9" cy="16" r="1"/><path d="M26,20H6a2.0021,2.0021,0,0,1-2-2V14a2.0021,2.0021,0,0,1,2-2H26a2.0021,2.0021,0,0,1,2,2v4A2.0021,2.0021,0,0,1,26,20ZM6,14v4H26V14Z"/><circle cx="9" cy="26" r="1"/><path d="M26,30H6a2.0021,2.0021,0,0,1-2-2V24a2.0021,2.0021,0,0,1,2-2H26a2.0021,2.0021,0,0,1,2,2v4A2.0021,2.0021,0,0,1,26,30ZM6,24v4H26V24Z"/></g></g><text x="352" y="266.4" class="label">주문 API</text><rect x="274" y="282.8" width="156" height="27" rx="6" fill="var(--color-card)" stroke="var(--color-outline)" stroke-dasharray="3 3" class="fl-card a3"/><g id="n-3-c0" opacity="0" class="fl-layer a2"><text x="282" y="299.8" class="row">처리 중</text></g></g>
+<g id="n-4" class="fl-node" data-id="db"><g class="fl-halo a1" fill="none" opacity="0"><path d="M500 93.4 a 88 12 0 0 1 176 0 v 115 a 88 12 0 0 1 -176 0 z" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><path d="M500 93.4 a 88 12 0 0 1 176 0 v 115 a 88 12 0 0 1 -176 0 z" fill="var(--color-node)" class="fl-stroke a0"/><path d="M500 93.4 a 88 12 0 0 0 176 0" fill="none" class="fl-stroke a0"/><rect x="578" y="117.4" width="20" height="20" rx="6" class="icon-tile"/><g class="fl-icon in-tile" transform="translate(581.8 121.2) scale(0.3875)"><g fill="currentColor"><path d="M24,3H8A2,2,0,0,0,6,5V27a2,2,0,0,0,2,2H24a2,2,0,0,0,2-2V5A2,2,0,0,0,24,3Zm0,2v6H8V5ZM8,19V13H24v6Zm0,8V21H24v6Z"/><circle cx="11" cy="8" r="1"/><circle cx="11" cy="16" r="1"/><circle cx="11" cy="24" r="1"/></g></g><text x="588" y="155.1" class="label">재고 DB</text><rect x="510" y="171.4" width="156" height="27" rx="6" fill="var(--color-card)" stroke="var(--color-outline)" stroke-dasharray="3 3" class="fl-card a3"/><g id="n-4-c0" opacity="0" class="fl-layer a2"><text x="518" y="188.4" class="row">재고</text></g></g>
+<g id="n-5" class="fl-node" data-id="pay"><g class="fl-halo a7" fill="none" opacity="0"><rect x="500" y="252.4" width="100" height="66" rx="10" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="500" y="252.4" width="100" height="66" rx="10" fill="var(--color-node)" class="fl-stroke a6"/><rect x="540" y="264.4" width="20" height="20" rx="6" class="icon-tile"/><g class="fl-icon in-tile" transform="translate(543.8 268.2) scale(0.3875)"><g fill="currentColor"><path d="m28,26c-.178,0-.3472.0308-.5115.0742l-1.0554-1.0552c.3516-.5947.5669-1.2798.5669-2.019s-.2153-1.4243-.5669-2.019l1.0554-1.0552c.1643.0435.3335.0742.5115.0742,1.1045,0,2-.8955,2-2s-.8955-2-2-2-2,.8955-2,2c0,.1777.0308.3472.0742.5117l-1.0552,1.0552c-.595-.3516-1.2795-.5669-2.019-.5669s-1.4241.2153-2.019.5669l-1.0552-1.0552c.0435-.1646.0742-.334.0742-.5117,0-1.1045-.8955-2-2-2s-2,.8955-2,2,.8955,2,2,2c.178,0,.3472-.0308.5115-.0742l1.0554,1.0552c-.3516.5947-.5669,1.2798-.5669,2.019s.2153,1.4243.5669,2.019l-1.0554,1.0552c-.1643-.0435-.3335-.0742-.5115-.0742-1.1045,0-2,.8955-2,2s.8955,2,2,2,2-.8955,2-2c0-.1777-.0308-.3472-.0742-.5117l1.0552-1.0552c.595.3516,1.2795.5669,2.019.5669s1.4241-.2153,2.019-.5669l1.0552,1.0552c-.0435.1646-.0742.334-.0742.5117,0,1.1045.8955,2,2,2s2-.8955,2-2-.8955-2-2-2Zm-7-3c0-1.1025.8972-2,2-2s2,.8975,2,2-.8972,2-2,2-2-.8975-2-2Z" stroke-width="0"/><circle cx="22" cy="10" r="2" stroke-width="0"/><path d="m21,2c-4.9626,0-9,4.0371-9,9,0,.7788.0989,1.5469.2944,2.291L2,23.5859v6.4141h6.4143l7-7-2.7073-2.707-1.4141,1.4141,1.2927,1.293-1.5896,1.5898-1.2869-1.2949-1.4185,1.4102,1.2913,1.2988-1.9963,1.9961h-3.5857v-3.5859l9.7122-9.7119.8555-.8677-.1982-.5845c-.2451-.7217-.3694-1.4785-.3694-2.25,0-3.8599,3.1401-7,7-7s7,3.1401,7,7h2c0-4.9629-4.0374-9-9-9Z" stroke-width="0"/></g></g><text x="550" y="302.1" class="label">결제</text></g>
+<g id="e-0" class="fl-edge"><path id="p-0" d="M 204 61 L 217 61 Q 230 61, 230 74 L 230 225.5 Q 230 242.5, 247 242.5 L 264 242.5" class="fl-path a8" marker-end="url(#fl-arrow)"/></g>
+<g id="e-1" class="fl-edge"><path id="p-1" d="M 204 177.5 L 212 177.5 Q 220 177.5, 220 185.5 L 220 246.3 Q 220 268.3, 242 268.3 L 264 268.3" class="fl-path a9" marker-end="url(#fl-arrow)"/></g>
+<g id="e-2" class="fl-edge"><path id="p-2" d="M 204 294 L 264 294" class="fl-path a10" marker-end="url(#fl-arrow)"/></g>
+<g id="e-3" class="fl-edge"><path id="p-3" d="M 440 251.08333333333331 L 448 251.1 Q 456 251.1, 456 243.1 L 456 172.9 Q 456 150.9, 478 150.9 L 500 150.9" class="fl-path a11" marker-end="url(#fl-arrow)"/></g>
+<g id="e-4" class="fl-edge"><path id="p-4" d="M 440 285.41666666666663 L 500 285.4" class="fl-path a12" marker-end="url(#fl-arrow)"/></g>
+<defs><path id="tp-0" class="fl-track-path" d="M 204 61 L 217 61 Q 230 61, 230 74 L 230 225.5 Q 230 242.5, 247 242.5 L 264 242.5 L 440 251.08333333333331 L 448 251.1 Q 456 251.1, 456 243.1 L 456 172.9 Q 456 150.9, 478 150.9 L 500 150.9" fill="none"/><path id="tp-1" class="fl-track-path" d="M 204 177.5 L 212 177.5 Q 220 177.5, 220 185.5 L 220 246.3 Q 220 268.3, 242 268.3 L 264 268.3 L 440 251.08333333333331 L 448 251.1 Q 456 251.1, 456 243.1 L 456 172.9 Q 456 150.9, 478 150.9 L 500 150.9" fill="none"/><path id="tp-2" class="fl-track-path" d="M 204 294 L 264 294 L 440 251.08333333333331 L 448 251.1 Q 456 251.1, 456 243.1 L 456 172.9 Q 456 150.9, 478 150.9 L 500 150.9" fill="none"/></defs><g class="fl-value"><rect x="514" y="175.4" width="148" height="19" rx="4" fill="none" stroke="var(--color-state-active)" stroke-width="1.75" opacity="0" data-vf="0"><animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.30637;0.33304" values="0;1;0"/></rect><text x="658" y="188.4" class="value" opacity="0" data-v="0" data-t="120">120<animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.30637" values="1;0"/></text><text x="658" y="188.4" class="value" opacity="0" data-v="0" data-t="119">119<animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.30637;0.54279" values="0;1;0"/></text></g>
+<g class="fl-value"><rect x="42" y="196" width="148" height="19" rx="4" fill="none" stroke="var(--color-state-active)" stroke-width="1.75" opacity="0" data-vf="1"><animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.30637;0.33304" values="0;1;0"/></rect><text x="186" y="209" class="value" opacity="0" data-v="1" data-t="120">120<animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.30637" values="1;0"/></text><text x="186" y="209" class="value" opacity="0" data-v="1" data-t="119">119<animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.30637;0.54279" values="0;1;0"/></text></g>
+<g class="fl-value"><rect x="278" y="286.8" width="148" height="19" rx="4" fill="none" stroke="var(--color-state-active)" stroke-width="1.75" opacity="0" data-vf="2"><animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.10962;0.13629;0.30637;0.33304" values="0;1;0;1;0"/></rect><text x="422" y="299.8" class="value" opacity="0" data-v="2" data-t="0">0<animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.10962;0.30637;0.54279" values="1;0;1;0"/></text><text x="422" y="299.8" class="value" opacity="0" data-v="2" data-t="1">1<animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.10962;0.30637" values="0;1;0"/></text></g>
+<g class="fl-value"><rect x="514" y="175.4" width="148" height="19" rx="4" fill="none" stroke="var(--color-state-active)" stroke-width="1.75" opacity="0" data-vf="3"><animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.69306;0.74998;0.76926;0.82618;0.84546;0.90239;0.92166;0.97859;0.99787;1" values="0;1;0;1;0;1;0;1;0;1;0"/></rect><text x="658" y="188.4" class="value" opacity="0" data-v="3" data-t="120">120<animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.54279;0.69306" values="0;1;0"/></text><text x="658" y="188.4" class="value" opacity="0" data-v="3" data-t="119">119<animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.69306;0.70552" values="0;1;0"/></text><text x="658" y="188.4" class="value" opacity="0" data-v="3" data-t="118">118<animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.70552;0.72331" values="0;1;0"/></text><text x="658" y="188.4" class="value" opacity="0" data-v="3" data-t="117">117<animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.72331;0.76926" values="0;1;0"/></text><text x="658" y="188.4" class="value" opacity="0" data-v="3" data-t="116">116<animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.76926;0.78172" values="0;1;0"/></text><text x="658" y="188.4" class="value" opacity="0" data-v="3" data-t="115">115<animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.78172;0.79951" values="0;1;0"/></text><text x="658" y="188.4" class="value" opacity="0" data-v="3" data-t="114">114<animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.79951;0.84546" values="0;1;0"/></text><text x="658" y="188.4" class="value" opacity="0" data-v="3" data-t="113">113<animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.84546;0.85792" values="0;1;0"/></text><text x="658" y="188.4" class="value" opacity="0" data-v="3" data-t="112">112<animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.85792;0.87571" values="0;1;0"/></text><text x="658" y="188.4" class="value" opacity="0" data-v="3" data-t="111">111<animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.87571;0.92166" values="0;1;0"/></text><text x="658" y="188.4" class="value" opacity="0" data-v="3" data-t="110">110<animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.92166;0.93412" values="0;1;0"/></text><text x="658" y="188.4" class="value" opacity="0" data-v="3" data-t="109">109<animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.93412;0.95192" values="0;1;0"/></text><text x="658" y="188.4" class="value" opacity="0" data-v="3" data-t="108">108<animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.95192;0.99787" values="0;1;0"/></text><text x="658" y="188.4" class="value" opacity="0" data-v="3" data-t="107">107<animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.99787;1" values="0;1;0"/></text></g>
+<g class="fl-value"><rect x="42" y="196" width="148" height="19" rx="4" fill="none" stroke="var(--color-state-active)" stroke-width="1.75" opacity="0" data-vf="4"><animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.69306;0.74998;0.76926;0.82618;0.84546;0.90239;0.92166;0.97859;0.99787;1" values="0;1;0;1;0;1;0;1;0;1;0"/></rect><text x="186" y="209" class="value" opacity="0" data-v="4" data-t="120">120<animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.54279;0.69306" values="0;1;0"/></text><text x="186" y="209" class="value" opacity="0" data-v="4" data-t="119">119<animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.69306;0.70552" values="0;1;0"/></text><text x="186" y="209" class="value" opacity="0" data-v="4" data-t="118">118<animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.70552;0.72331" values="0;1;0"/></text><text x="186" y="209" class="value" opacity="0" data-v="4" data-t="117">117<animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.72331;0.76926" values="0;1;0"/></text><text x="186" y="209" class="value" opacity="0" data-v="4" data-t="116">116<animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.76926;0.78172" values="0;1;0"/></text><text x="186" y="209" class="value" opacity="0" data-v="4" data-t="115">115<animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.78172;0.79951" values="0;1;0"/></text><text x="186" y="209" class="value" opacity="0" data-v="4" data-t="114">114<animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.79951;0.84546" values="0;1;0"/></text><text x="186" y="209" class="value" opacity="0" data-v="4" data-t="113">113<animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.84546;0.85792" values="0;1;0"/></text><text x="186" y="209" class="value" opacity="0" data-v="4" data-t="112">112<animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.85792;0.87571" values="0;1;0"/></text><text x="186" y="209" class="value" opacity="0" data-v="4" data-t="111">111<animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.87571;0.92166" values="0;1;0"/></text><text x="186" y="209" class="value" opacity="0" data-v="4" data-t="110">110<animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.92166;0.93412" values="0;1;0"/></text><text x="186" y="209" class="value" opacity="0" data-v="4" data-t="109">109<animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.93412;0.95192" values="0;1;0"/></text><text x="186" y="209" class="value" opacity="0" data-v="4" data-t="108">108<animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.95192;0.99787" values="0;1;0"/></text><text x="186" y="209" class="value" opacity="0" data-v="4" data-t="107">107<animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.99787;1" values="0;1;0"/></text></g>
+<g class="fl-value"><rect x="278" y="286.8" width="148" height="19" rx="4" fill="none" stroke="var(--color-state-active)" stroke-width="1.75" opacity="0" data-vf="5"><animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.62003;0.64972;0.69306;0.74998;0.76926;0.82618;0.84546;0.90239;0.92166;0.97859;0.99787;1" values="0;1;0;1;0;1;0;1;0;1;0;1;0"/></rect><text x="422" y="299.8" class="value" opacity="0" data-v="5" data-t="0">0<animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.54279;0.62003" values="0;1;0"/></text><text x="422" y="299.8" class="value" opacity="0" data-v="5" data-t="1">1<animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.62003;0.62069" values="0;1;0"/></text><text x="422" y="299.8" class="value" opacity="0" data-v="5" data-t="2">2<animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.62069;0.62305;0.69306;0.69623;0.76926;0.77244;0.84546;0.84864;0.92166;0.92484;0.99787;1" values="0;1;0;1;0;1;0;1;0;1;0;1;0"/></text><text x="422" y="299.8" class="value" opacity="0" data-v="5" data-t="3">3<animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.62305;0.69306;0.69623;0.69689;0.72331;0.76926;0.77244;0.77309;0.79951;0.84546;0.84864;0.84929;0.87571;0.92166;0.92484;0.9255;0.95192;0.99787" values="0;1;0;1;0;1;0;1;0;1;0;1;0;1;0;1;0;1;0"/></text><text x="422" y="299.8" class="value" opacity="0" data-v="5" data-t="4">4<animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.69689;0.69925;0.70552;0.72331;0.77309;0.77545;0.78172;0.79951;0.84929;0.85165;0.85792;0.87571;0.9255;0.92786;0.93412;0.95192" values="0;1;0;1;0;1;0;1;0;1;0;1;0;1;0;1;0"/></text><text x="422" y="299.8" class="value" opacity="0" data-v="5" data-t="5">5<animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.69925;0.70552;0.77545;0.78172;0.85165;0.85792;0.92786;0.93412" values="0;1;0;1;0;1;0;1;0"/></text></g>
+<g class="p0-0" opacity="0"><circle r="10" fill="var(--color-flow-brand)" opacity="0.2"/><circle r="4.5" fill="var(--color-flow-brand)"/><g><rect x="-18.2" y="-35" width="36.4" height="23" rx="8" fill="var(--color-flow-brand)" stroke="var(--color-flow-brand)" stroke-width="1.75"/><text x="0" y="-20" class="chip">주문</text><animateTransform attributeName="transform" type="translate" dur="26.246s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.00254;0.00508;0.00635;0.00762;0.00889;0.01016;0.01143;0.02286;0.02413;0.0254;0.02667;0.02794;0.02921;0.07493;0.0762;0.07747;0.07874;0.08001;0.08128;0.08255;0.08636;0.08763;0.0889;0.09017;0.09144;0.09271;0.09398;0.09525;0.09652;0.09779;0.10033;0.10287;0.10541;0.10795;0.10962;1" values="22.2 47;21.7 47;20.7 47;20.1 47;19.4 47;18.6 47;17.6 47;16.6 47;19.8 0;17.9 0;16.2 0;15.1 0;14.4 0;14.2 0;14.2 0;14 0;13.5 0;12.6 0;11.1 0;9.3 0;7.2 0;0.6 0;-1.5 0;-3.4 0;-5.2 0;-6.9 0;-8.5 0;-9.9 0;-11.3 0;-12.6 0;-13.7 0;-15.7 0;-17.3 0;-18.5 0;-19.4 0;-19.8 0;-19.8 0"/></g><animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.10962" values="1;0"/><animateMotion dur="26.246s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.10962;1" keySplines="0.455 0.03 0.515 0.955;0 0 1 1" keyPoints="0;1;1"><mpath href="#p-0" xlink:href="#p-0"/></animateMotion></g>
+<g class="p2-0" opacity="0"><circle r="10" fill="var(--color-flow-brand)" opacity="0.2"/><circle r="4.5" fill="var(--color-flow-brand)"/><g><rect x="-18.2" y="-35" width="36.4" height="23" rx="8" fill="var(--color-flow-brand)" stroke="var(--color-flow-brand)" stroke-width="1.75"/><text x="0" y="-20" class="chip">차감</text><animateTransform attributeName="transform" type="translate" dur="26.246s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.23546;0.23673;0.238;0.23927;0.24054;0.24181;0.24308;0.24435;0.24562;0.24689;0.24816;0.2507;0.25197;0.25324;0.25451;0.27484;0.27611;0.27738;0.27865;0.27992;0.28119;0.285;0.28627;0.2977;0.29897;0.30024;0.30151;0.30278;0.30405;0.30532;0.30637;1" values="22.2 0;22.2 0;22 0;21.6 0;21 0;20.3 0;19.4 0;18.4 0;17.1 0;15.7 0;14.1 0;12.3 0;8.4 0;7 0;6.3 0;6.2 0;6.2 0;5.9 0;5 0;3.4 0;1.1 0;-1.8 0;-11.6 0;-14.6 0;-17.3 0;-18.5 0;-19.5 0;-20.3 0;-21 0;-21.5 0;-22 0;-22.2 0;-22.2 0"/></g><animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.23546;0.30637" values="0;1;0"/><animateMotion dur="26.246s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.23546;0.30637;1" keySplines="0 0 1 1;0.455 0.03 0.515 0.955;0 0 1 1" keyPoints="0;0;1;1"><mpath href="#p-3" xlink:href="#p-3"/></animateMotion></g>
+<g class="p4-0" opacity="0"><circle r="10" fill="var(--color-flow-purple)" opacity="0.2"/><circle r="4.5" fill="var(--color-flow-purple)"/><g><rect x="-18.2" y="-35" width="36.4" height="23" rx="8" fill="var(--color-flow-purple)" stroke="var(--color-flow-purple)" stroke-width="1.75"/><text x="0" y="-20" class="chip">결제</text><animateTransform attributeName="transform" type="translate" dur="26.246s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.39991;0.41134;0.41261;0.41515;0.41642;0.41769;0.41896;0.42023;0.4215;0.42277;0.42404;0.42531;0.42658;0.42785;0.42848;1" values="22.2 47;22.2 47;20 0;15.3 0;5.7 0;1.1 0;-3.1 0;-6.8 0;-10.1 0;-12.8 0;-15 0;-16.8 0;-18.1 0;-19.1 0;-19.6 0;-19.8 0;-19.8 0"/></g><animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.39991;0.42848" values="0;1;0"/><animateMotion dur="26.246s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.39991;0.42848;1" keySplines="0 0 1 1;0.455 0.03 0.515 0.955;0 0 1 1" keyPoints="0;0;1;1"><mpath href="#p-4" xlink:href="#p-4"/></animateMotion></g>
+<g class="p6-0" opacity="0"><circle r="10" fill="var(--color-flow-brand)" opacity="0.2"/><circle r="4.5" fill="var(--color-flow-brand)"/><g><rect x="-18.2" y="-35" width="36.4" height="23" rx="8" fill="var(--color-flow-brand)" stroke="var(--color-flow-brand)" stroke-width="1.75"/><text x="0" y="-20" class="chip">주문</text><animateTransform attributeName="transform" type="translate" dur="26.246s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.54279;0.54533;0.54787;0.55041;0.55295;0.55549;0.55803;0.5593;0.56057;0.56311;0.56692;0.56819;0.56946;0.57073;0.572;0.57327;0.60756;0.61899;0.66471;0.66979;0.67106;0.67868;0.72331;1" values="22.2 0;22.2 0;21.5 0;20.5 0;19.1 0;17.4 0;15.3 0;12.8 0;11.5 0;10 0;6.7 0;1.3 0;-0.4 0;-1.8 0;-2.9 0;-3.5 0;-3.8 0;-3.8 0;0 0;0 0;0 0;0 0;0 0;-22.2 0;-22.2 0"/><animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.54279;0.54533;0.54787;0.55041;0.55295;0.55549;0.55803;0.5593;0.56057;0.56311;0.56692;0.56819;0.56946;0.57073;0.572;0.57327;0.60756;0.61899;0.66471;0.66979;0.67106;0.67868;0.72331;1" values="1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;0;0;0.9;1;1;1;1"/></g><animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.54279;0.62305;0.6564;0.72331" values="0;1;0;1;0"/><animateMotion dur="26.246s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.54279;0.72331;1" keySplines="0 0 1 1;0.455 0.03 0.515 0.955;0 0 1 1" keyPoints="0;0;1;1"><mpath href="#tp-0" xlink:href="#tp-0"/></animateMotion></g>
+<g class="p6-1" opacity="0"><circle r="10" fill="var(--color-flow-brand)" opacity="0.2"/><circle r="4.5" fill="var(--color-flow-brand)"/><g><rect x="-18.2" y="-35" width="36.4" height="23" rx="8" fill="var(--color-flow-brand)" stroke="var(--color-flow-brand)" stroke-width="1.75"/><text x="0" y="-20" class="chip">주문</text><animateTransform attributeName="transform" type="translate" dur="26.246s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.61899;0.62153;0.62407;0.62661;0.62915;0.63169;0.63423;0.6355;0.63677;0.63931;0.64312;0.64439;0.64566;0.64693;0.6482;0.64947;0.68376;0.69519;0.74091;0.74599;0.74726;0.75488;0.79951;1" values="22.2 0;22.2 0;21.5 0;20.5 0;19.1 0;17.4 0;15.3 0;12.8 0;11.5 0;10 0;6.7 0;1.3 0;-0.4 0;-1.8 0;-2.9 0;-3.5 0;-3.8 0;-3.8 0;0 0;0 0;0 0;0 0;0 0;-22.2 0;-22.2 0"/><animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.61899;0.62153;0.62407;0.62661;0.62915;0.63169;0.63423;0.6355;0.63677;0.63931;0.64312;0.64439;0.64566;0.64693;0.6482;0.64947;0.68376;0.69519;0.74091;0.74599;0.74726;0.75488;0.79951;1" values="1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;0;0;0.9;1;1;1;1"/></g><animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.61899;0.69925;0.7326;0.79951" values="0;1;0;1;0"/><animateMotion dur="26.246s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.61899;0.79951;1" keySplines="0 0 1 1;0.455 0.03 0.515 0.955;0 0 1 1" keyPoints="0;0;1;1"><mpath href="#tp-0" xlink:href="#tp-0"/></animateMotion></g>
+<g class="p6-2" opacity="0"><circle r="10" fill="var(--color-flow-brand)" opacity="0.2"/><circle r="4.5" fill="var(--color-flow-brand)"/><g><rect x="-18.2" y="-35" width="36.4" height="23" rx="8" fill="var(--color-flow-brand)" stroke="var(--color-flow-brand)" stroke-width="1.75"/><text x="0" y="-20" class="chip">주문</text><animateTransform attributeName="transform" type="translate" dur="26.246s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.69519;0.69773;0.70027;0.70281;0.70535;0.70789;0.71043;0.7117;0.71297;0.71551;0.71932;0.72059;0.72186;0.72313;0.7244;0.72567;0.75996;0.77139;0.81711;0.8222;0.82347;0.83109;0.87571;1" values="22.2 0;22.2 0;21.5 0;20.5 0;19.1 0;17.4 0;15.3 0;12.8 0;11.5 0;10 0;6.7 0;1.3 0;-0.4 0;-1.8 0;-2.9 0;-3.5 0;-3.8 0;-3.8 0;0 0;0 0;0 0;0 0;0 0;-22.2 0;-22.2 0"/><animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.69519;0.69773;0.70027;0.70281;0.70535;0.70789;0.71043;0.7117;0.71297;0.71551;0.71932;0.72059;0.72186;0.72313;0.7244;0.72567;0.75996;0.77139;0.81711;0.8222;0.82347;0.83109;0.87571;1" values="1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;0;0;0.9;1;1;1;1"/></g><animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.69519;0.77545;0.8088;0.87571" values="0;1;0;1;0"/><animateMotion dur="26.246s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.69519;0.87571;1" keySplines="0 0 1 1;0.455 0.03 0.515 0.955;0 0 1 1" keyPoints="0;0;1;1"><mpath href="#tp-0" xlink:href="#tp-0"/></animateMotion></g>
+<g class="p6-3" opacity="0"><circle r="10" fill="var(--color-flow-brand)" opacity="0.2"/><circle r="4.5" fill="var(--color-flow-brand)"/><g><rect x="-18.2" y="-35" width="36.4" height="23" rx="8" fill="var(--color-flow-brand)" stroke="var(--color-flow-brand)" stroke-width="1.75"/><text x="0" y="-20" class="chip">주문</text><animateTransform attributeName="transform" type="translate" dur="26.246s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.77139;0.77393;0.77647;0.77901;0.78155;0.78409;0.78663;0.7879;0.78917;0.79171;0.79552;0.79679;0.79806;0.79933;0.8006;0.80187;0.83617;0.8476;0.89332;0.8984;0.89967;0.90729;0.95192;1" values="22.2 0;22.2 0;21.5 0;20.5 0;19.1 0;17.4 0;15.3 0;12.8 0;11.5 0;10 0;6.7 0;1.3 0;-0.4 0;-1.8 0;-2.9 0;-3.5 0;-3.8 0;-3.8 0;0 0;0 0;0 0;0 0;0 0;-22.2 0;-22.2 0"/><animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.77139;0.77393;0.77647;0.77901;0.78155;0.78409;0.78663;0.7879;0.78917;0.79171;0.79552;0.79679;0.79806;0.79933;0.8006;0.80187;0.83617;0.8476;0.89332;0.8984;0.89967;0.90729;0.95192;1" values="1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;0;0;0.9;1;1;1;1"/></g><animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.77139;0.85165;0.88501;0.95192" values="0;1;0;1;0"/><animateMotion dur="26.246s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.77139;0.95192;1" keySplines="0 0 1 1;0.455 0.03 0.515 0.955;0 0 1 1" keyPoints="0;0;1;1"><mpath href="#tp-0" xlink:href="#tp-0"/></animateMotion></g>
+<g><animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.97714;1" values="1;1;0"/><g class="p6-4" opacity="0"><circle r="10" fill="var(--color-flow-brand)" opacity="0.2"/><circle r="4.5" fill="var(--color-flow-brand)"/><g><rect x="-18.2" y="-35" width="36.4" height="23" rx="8" fill="var(--color-flow-brand)" stroke="var(--color-flow-brand)" stroke-width="1.75"/><text x="0" y="-20" class="chip">주문</text><animateTransform attributeName="transform" type="translate" dur="26.246s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.8476;0.85014;0.85268;0.85522;0.85776;0.8603;0.86284;0.86411;0.86538;0.86792;0.87173;0.873;0.87427;0.87554;0.87681;0.87808;0.91237;0.9238;0.96952;0.9746;0.97587;0.98349" values="22.2 0;22.2 0;21.5 0;20.5 0;19.1 0;17.4 0;15.3 0;12.8 0;11.5 0;10 0;6.7 0;1.3 0;-0.4 0;-1.8 0;-2.9 0;-3.5 0;-3.8 0;-3.8 0;0 0;0 0;0 0;0 0;0 0"/><animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.8476;0.85014;0.85268;0.85522;0.85776;0.8603;0.86284;0.86411;0.86538;0.86792;0.87173;0.873;0.87427;0.87554;0.87681;0.87808;0.91237;0.9238;0.96952;0.9746;0.97587;0.98349" values="1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;0;0;0.9;1;1"/></g><animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.8476;0.92786;0.96121;1" values="0;1;0;1;0"/><animateMotion dur="26.246s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.8476;0.85395;0.8603;0.86665;0.873;0.87935;0.8857;0.89205;0.8984;0.90475;0.9111;0.91745;0.9238;0.93015;0.9365;0.94285;0.9492;0.95555;0.9619;0.96825;0.9746;0.98095;0.9873;0.99365;1" keyPoints="0;4.19095164399131e-11;0.004206182489939088;0.012401032630780335;0.024922310073970534;0.042122085566985414;0.06435392124453883;0.09195132987211654;0.12519419960107975;0.1642600608970681;0.20915914289287557;0.2596573280385052;0.31520039109736503;0.37486424515583283;0.4373623915776013;0.501133042162659;0.5644999025979088;0.6258652356439338;0.6838767217842537;0.7375245820849134;0.7861598787619417;0.8294539487475594;0.8673289481368331;0.8998842526205909;0.9273327089494905;0.9499516676942307"><mpath href="#tp-0" xlink:href="#tp-0"/></animateMotion></g></g>
+<g><animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.97714;1" values="1;1;0"/><g class="p6-5" opacity="0"><circle r="10" fill="var(--color-flow-brand)" opacity="0.2"/><circle r="4.5" fill="var(--color-flow-brand)"/><g><rect x="-18.2" y="-35" width="36.4" height="23" rx="8" fill="var(--color-flow-brand)" stroke="var(--color-flow-brand)" stroke-width="1.75"/><text x="0" y="-20" class="chip">주문</text><animateTransform attributeName="transform" type="translate" dur="26.246s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.9238;0.92634;0.92888;0.93142;0.93396;0.9365;0.93904;0.94031;0.94158;0.94412;0.94793;0.9492;0.95047;0.95174;0.95301;0.95428;0.98857;1" values="22.2 0;22.2 0;21.5 0;20.5 0;19.1 0;17.4 0;15.3 0;12.8 0;11.5 0;10 0;6.7 0;1.3 0;-0.4 0;-1.8 0;-2.9 0;-3.5 0;-3.8 0;-3.8 0;0 0"/><animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.9238;0.92634;0.92888;0.93142;0.93396;0.9365;0.93904;0.94031;0.94158;0.94412;0.94793;0.9492;0.95047;0.95174;0.95301;0.95428;0.98857;1" values="1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;1;0"/></g><animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.9238;1" values="0;1;0"/><animateMotion dur="26.246s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.9238;0.92697;0.93015;0.93332;0.9365;0.93967;0.94285;0.94602;0.9492;0.95237;0.95555;0.95872;0.9619;0.96507;0.96825;0.97142;0.9746;0.97777;0.98095;0.98412;0.9873;0.99047;0.99365;0.99682;1" keyPoints="0;4.19095164399131e-11;0.0016248399461027381;0.004206182489939088;0.00778435330491805;0.012401032630780335;0.018099083580295043;0.024922310073970534;0.032915121059259596;0.042122085566985414;0.05258735507329543;0.06435392124453883;0.07746268813596278;0.09195132987211654;0.10785290353350666;0.12519419960107975;0.14399383147006184;0.1642600608970681;0.18598841291828605;0.20915914289287557;0.2337346989197666;0.2596573280385052;0.28684706939040466;0.31520039109736503;0.34458973866194553;0.37486424515583283"><mpath href="#tp-0" xlink:href="#tp-0"/></animateMotion></g></g>
+<g class="p6-6" opacity="0"><circle r="10" fill="var(--color-flow-purple)" opacity="0.2"/><circle r="4.5" fill="var(--color-flow-purple)"/><g><animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.5682;0.67551;0.68122;0.70535;0.71107;1" values="NaN;NaN;1;0;0;1;1"/><g><rect x="-18.2" y="-35" width="36.4" height="23" rx="8" fill="var(--color-flow-purple)" stroke="var(--color-flow-purple)" stroke-width="1.75"/><text x="0" y="-20" class="chip">주문</text><animateTransform attributeName="transform" type="translate" dur="26.246s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.5682;0.61138;0.61392;0.61646;0.6571;0.66218;0.66345;0.68377;0.70552;1" values="0 0;0 0;0 0;0 0;0 0;0 0;0 0;0 0;0 0;-22.2 0;-22.2 0"/><animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.5682;0.61138;0.61392;0.61646;0.6571;0.66218;0.66345;0.68377;0.70552;1" values="0;0;0;0.4;0;0;0.9;1;1;1;1"/></g></g><animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.5682;0.62003;0.64998;0.70552" values="0;1;0;1;0"/><animateMotion dur="26.246s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5682;0.70552;1" keySplines="0 0 1 1;0.455 0.03 0.515 0.955;0 0 1 1" keyPoints="0;0;1;1"><mpath href="#tp-1" xlink:href="#tp-1"/></animateMotion></g>
+<g class="p6-7" opacity="0"><circle r="10" fill="var(--color-flow-purple)" opacity="0.2"/><circle r="4.5" fill="var(--color-flow-purple)"/><g><animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.6444;0.75171;0.75742;0.78155;0.78727;1" values="NaN;NaN;1;0;0;1;1"/><g><rect x="-18.2" y="-35" width="36.4" height="23" rx="8" fill="var(--color-flow-purple)" stroke="var(--color-flow-purple)" stroke-width="1.75"/><text x="0" y="-20" class="chip">주문</text><animateTransform attributeName="transform" type="translate" dur="26.246s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.6444;0.68758;0.69012;0.69266;0.73331;0.73839;0.73966;0.75998;0.78172;1" values="0 0;0 0;0 0;0 0;0 0;0 0;0 0;0 0;0 0;-22.2 0;-22.2 0"/><animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.6444;0.68758;0.69012;0.69266;0.73331;0.73839;0.73966;0.75998;0.78172;1" values="0;0;0;0.4;0;0;0.9;1;1;1;1"/></g></g><animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.6444;0.69623;0.72618;0.78172" values="0;1;0;1;0"/><animateMotion dur="26.246s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.6444;0.78172;1" keySplines="0 0 1 1;0.455 0.03 0.515 0.955;0 0 1 1" keyPoints="0;0;1;1"><mpath href="#tp-1" xlink:href="#tp-1"/></animateMotion></g>
+<g class="p6-8" opacity="0"><circle r="10" fill="var(--color-flow-purple)" opacity="0.2"/><circle r="4.5" fill="var(--color-flow-purple)"/><g><animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.72061;0.82791;0.83363;0.85776;0.86347;1" values="NaN;NaN;1;0;0;1;1"/><g><rect x="-18.2" y="-35" width="36.4" height="23" rx="8" fill="var(--color-flow-purple)" stroke="var(--color-flow-purple)" stroke-width="1.75"/><text x="0" y="-20" class="chip">주문</text><animateTransform attributeName="transform" type="translate" dur="26.246s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.72061;0.76379;0.76633;0.76887;0.80951;0.81459;0.81586;0.83618;0.85792;1" values="0 0;0 0;0 0;0 0;0 0;0 0;0 0;0 0;0 0;-22.2 0;-22.2 0"/><animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.72061;0.76379;0.76633;0.76887;0.80951;0.81459;0.81586;0.83618;0.85792;1" values="0;0;0;0.4;0;0;0.9;1;1;1;1"/></g></g><animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.72061;0.77244;0.80238;0.85792" values="0;1;0;1;0"/><animateMotion dur="26.246s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.72061;0.85792;1" keySplines="0 0 1 1;0.455 0.03 0.515 0.955;0 0 1 1" keyPoints="0;0;1;1"><mpath href="#tp-1" xlink:href="#tp-1"/></animateMotion></g>
+<g class="p6-9" opacity="0"><circle r="10" fill="var(--color-flow-purple)" opacity="0.2"/><circle r="4.5" fill="var(--color-flow-purple)"/><g><animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.79681;0.90411;0.90983;0.93396;0.93967;1" values="NaN;NaN;1;0;0;1;1"/><g><rect x="-18.2" y="-35" width="36.4" height="23" rx="8" fill="var(--color-flow-purple)" stroke="var(--color-flow-purple)" stroke-width="1.75"/><text x="0" y="-20" class="chip">주문</text><animateTransform attributeName="transform" type="translate" dur="26.246s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.79681;0.83999;0.84253;0.84507;0.88571;0.89079;0.89206;0.91238;0.93412;1" values="0 0;0 0;0 0;0 0;0 0;0 0;0 0;0 0;0 0;-22.2 0;-22.2 0"/><animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.79681;0.83999;0.84253;0.84507;0.88571;0.89079;0.89206;0.91238;0.93412;1" values="0;0;0;0.4;0;0;0.9;1;1;1;1"/></g></g><animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.79681;0.84864;0.87859;0.93412" values="0;1;0;1;0"/><animateMotion dur="26.246s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.79681;0.93412;1" keySplines="0 0 1 1;0.455 0.03 0.515 0.955;0 0 1 1" keyPoints="0;0;1;1"><mpath href="#tp-1" xlink:href="#tp-1"/></animateMotion></g>
+<g><animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.97714;1" values="1;1;0"/><g class="p6-10" opacity="0"><circle r="10" fill="var(--color-flow-purple)" opacity="0.2"/><circle r="4.5" fill="var(--color-flow-purple)"/><g><animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.87301;0.98031;0.98603;1" values="NaN;NaN;1;0;0"/><g><rect x="-18.2" y="-35" width="36.4" height="23" rx="8" fill="var(--color-flow-purple)" stroke="var(--color-flow-purple)" stroke-width="1.75"/><text x="0" y="-20" class="chip">주문</text><animateTransform attributeName="transform" type="translate" dur="26.246s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.87301;0.91619;0.91873;0.92127;0.96191;0.96699;0.96826;0.98858" values="0 0;0 0;0 0;0 0;0 0;0 0;0 0;0 0;0 0"/><animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.87301;0.91619;0.91873;0.92127;0.96191;0.96699;0.96826;0.98858" values="0;0;0;0.4;0;0;0.9;1;1"/></g></g><animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.87301;0.92484;0.95479;1" values="0;1;0;1;0"/><animateMotion dur="26.246s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.87301;0.8783;0.88359;0.88888;0.89417;0.89947;0.90476;0.91005;0.91534;0.92063;0.92592;0.93121;0.9365;0.9418;0.94709;0.95238;0.95767;0.96296;0.96825;0.97354;0.97883;0.98413;0.98942;0.99471;1" keyPoints="0;4.19095164399131e-11;0.0048108972048651255;0.01444617648614801;0.029352973344274478;0.04999596833429781;0.07683413462212872;0.11028079073696584;0.15064070184929337;0.19801967164575868;0.2522093123131016;0.31256518398767236;0.3779189727283104;0.4465815835108937;0.5164804668538703;0.5854188182219087;0.6513752850007006;0.7127380001046824;0.7684090422296256;0.817785062477467;0.860663405810697;0.8971260381624416;0.9274346322719669;0.9519499929754232;0.9710763900854076;0.985226120343249"><mpath href="#tp-1" xlink:href="#tp-1"/></animateMotion></g></g>
+<g><animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.97714;1" values="1;1;0"/><g class="p6-11" opacity="0"><circle r="10" fill="var(--color-flow-purple)" opacity="0.2"/><circle r="4.5" fill="var(--color-flow-purple)"/><g><rect x="-18.2" y="-35" width="36.4" height="23" rx="8" fill="var(--color-flow-purple)" stroke="var(--color-flow-purple)" stroke-width="1.75"/><text x="0" y="-20" class="chip">주문</text><animateTransform attributeName="transform" type="translate" dur="26.246s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.94921;0.99239;0.99493;0.99747" values="0 0;0 0;0 0;0 0;0 0"/><animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.94921;0.99239;0.99493;0.99747" values="0;0;0;0.4;0"/></g><animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.94921;1" values="0;1;0"/><animateMotion dur="26.246s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.94921;0.95133;0.95344;0.95556;0.95768;0.95979;0.96191;0.96402;0.96614;0.96826;0.97037;0.97249;0.97461;0.97672;0.97884;0.98095;0.98307;0.98519;0.9873;0.98942;0.99154;0.99365;0.99577;0.99788;1" keyPoints="0;4.19095164399131e-11;0.0013726396093636326;0.0034758583793879877;0.006336607622219879;0.00998265705178906;0.014442518226921093;0.019745334651255473;0.025920739111461318;0.03299866168957403;0.0410090908709195;0.049981768426862194;0.05994581047503498;0.0709292506757612;0.08295848165587226;0.09605759623706613;0.11024761148249367;0.12554557063747757;0.141963528221872;0.15950741748019853;0.17817581535798288;0.19795864926044332;0.2188358654537007;0.24077615230532287;0.2637357672542524;0.2876575992563617"><mpath href="#tp-1" xlink:href="#tp-1"/></animateMotion></g></g>
+<g class="p6-12" opacity="0"><circle r="10" fill="var(--color-flow-gray)" opacity="0.2"/><circle r="4.5" fill="var(--color-flow-gray)"/><g><animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.59358;0.65963;0.66535;0.69265;0.69837;1" values="NaN;NaN;1;0;0;1;1"/><g><rect x="-18.2" y="-35" width="36.4" height="23" rx="8" fill="var(--color-flow-gray)" stroke="var(--color-flow-gray)" stroke-width="1.75"/><text x="0" y="-20" class="chip">주문</text><animateTransform attributeName="transform" type="translate" dur="26.246s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.59358;0.59485;0.59612;0.59739;0.59866;0.59993;0.6012;0.60247;0.60374;0.61517;0.6647;0.66978;0.67105;0.69306;1" values="22.2 15.3;22.2 15.3;21.8 15.3;21.2 15.3;20.3 15.3;19.3 15.3;18.1 15.3;16.6 15.3;14.9 15.3;13 15.3;0 47;0 47;0 47;0 47;-22.2 0;-22.2 0"/><animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.59358;0.59485;0.59612;0.59739;0.59866;0.59993;0.6012;0.60247;0.60374;0.61517;0.6647;0.66978;0.67105;0.69306;1" values="1;1;1;1;1;1;1;1;1;1;0;0;0.9;1;1;1"/></g></g><animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.59358;0.62069;0.64913;0.69306" values="0;1;0;1;0"/><animateMotion dur="26.246s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.59358;0.69306;1" keySplines="0 0 1 1;0.455 0.03 0.515 0.955;0 0 1 1" keyPoints="0;0;1;1"><mpath href="#tp-2" xlink:href="#tp-2"/></animateMotion></g>
+<g class="p6-13" opacity="0"><circle r="10" fill="var(--color-flow-gray)" opacity="0.2"/><circle r="4.5" fill="var(--color-flow-gray)"/><g><animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.66978;0.73583;0.74155;0.76885;0.77457;1" values="NaN;NaN;1;0;0;1;1"/><g><rect x="-18.2" y="-35" width="36.4" height="23" rx="8" fill="var(--color-flow-gray)" stroke="var(--color-flow-gray)" stroke-width="1.75"/><text x="0" y="-20" class="chip">주문</text><animateTransform attributeName="transform" type="translate" dur="26.246s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.66978;0.67105;0.67232;0.67359;0.67486;0.67613;0.6774;0.67867;0.67994;0.69137;0.7409;0.74598;0.74725;0.76926;1" values="22.2 15.3;22.2 15.3;21.8 15.3;21.2 15.3;20.3 15.3;19.3 15.3;18.1 15.3;16.6 15.3;14.9 15.3;13 15.3;0 47;0 47;0 47;0 47;-22.2 0;-22.2 0"/><animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.66978;0.67105;0.67232;0.67359;0.67486;0.67613;0.6774;0.67867;0.67994;0.69137;0.7409;0.74598;0.74725;0.76926;1" values="1;1;1;1;1;1;1;1;1;1;0;0;0.9;1;1;1"/></g></g><animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.66978;0.69689;0.72533;0.76926" values="0;1;0;1;0"/><animateMotion dur="26.246s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.66978;0.76926;1" keySplines="0 0 1 1;0.455 0.03 0.515 0.955;0 0 1 1" keyPoints="0;0;1;1"><mpath href="#tp-2" xlink:href="#tp-2"/></animateMotion></g>
+<g class="p6-14" opacity="0"><circle r="10" fill="var(--color-flow-gray)" opacity="0.2"/><circle r="4.5" fill="var(--color-flow-gray)"/><g><animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.74598;0.81203;0.81775;0.84506;0.85077;1" values="NaN;NaN;1;0;0;1;1"/><g><rect x="-18.2" y="-35" width="36.4" height="23" rx="8" fill="var(--color-flow-gray)" stroke="var(--color-flow-gray)" stroke-width="1.75"/><text x="0" y="-20" class="chip">주문</text><animateTransform attributeName="transform" type="translate" dur="26.246s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.74598;0.74725;0.74852;0.74979;0.75106;0.75233;0.7536;0.75487;0.75614;0.76757;0.8171;0.82218;0.82345;0.84546;1" values="22.2 15.3;22.2 15.3;21.8 15.3;21.2 15.3;20.3 15.3;19.3 15.3;18.1 15.3;16.6 15.3;14.9 15.3;13 15.3;0 47;0 47;0 47;0 47;-22.2 0;-22.2 0"/><animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.74598;0.74725;0.74852;0.74979;0.75106;0.75233;0.7536;0.75487;0.75614;0.76757;0.8171;0.82218;0.82345;0.84546;1" values="1;1;1;1;1;1;1;1;1;1;0;0;0.9;1;1;1"/></g></g><animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.74598;0.77309;0.80153;0.84546" values="0;1;0;1;0"/><animateMotion dur="26.246s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.74598;0.84546;1" keySplines="0 0 1 1;0.455 0.03 0.515 0.955;0 0 1 1" keyPoints="0;0;1;1"><mpath href="#tp-2" xlink:href="#tp-2"/></animateMotion></g>
+<g class="p6-15" opacity="0"><circle r="10" fill="var(--color-flow-gray)" opacity="0.2"/><circle r="4.5" fill="var(--color-flow-gray)"/><g><animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.82218;0.88824;0.89395;0.92126;0.92697;1" values="NaN;NaN;1;0;0;1;1"/><g><rect x="-18.2" y="-35" width="36.4" height="23" rx="8" fill="var(--color-flow-gray)" stroke="var(--color-flow-gray)" stroke-width="1.75"/><text x="0" y="-20" class="chip">주문</text><animateTransform attributeName="transform" type="translate" dur="26.246s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.82218;0.82345;0.82472;0.82599;0.82726;0.82853;0.8298;0.83107;0.83234;0.84377;0.8933;0.89838;0.89965;0.92166;1" values="22.2 15.3;22.2 15.3;21.8 15.3;21.2 15.3;20.3 15.3;19.3 15.3;18.1 15.3;16.6 15.3;14.9 15.3;13 15.3;0 47;0 47;0 47;0 47;-22.2 0;-22.2 0"/><animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.82218;0.82345;0.82472;0.82599;0.82726;0.82853;0.8298;0.83107;0.83234;0.84377;0.8933;0.89838;0.89965;0.92166;1" values="1;1;1;1;1;1;1;1;1;1;0;0;0.9;1;1;1"/></g></g><animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.82218;0.84929;0.87774;0.92166" values="0;1;0;1;0"/><animateMotion dur="26.246s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.82218;0.92166;1" keySplines="0 0 1 1;0.455 0.03 0.515 0.955;0 0 1 1" keyPoints="0;0;1;1"><mpath href="#tp-2" xlink:href="#tp-2"/></animateMotion></g>
+<g class="p6-16" opacity="0"><circle r="10" fill="var(--color-flow-gray)" opacity="0.2"/><circle r="4.5" fill="var(--color-flow-gray)"/><g><animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.89838;0.96444;0.97015;0.99746;1" values="NaN;NaN;1;0;0;0"/><g><rect x="-18.2" y="-35" width="36.4" height="23" rx="8" fill="var(--color-flow-gray)" stroke="var(--color-flow-gray)" stroke-width="1.75"/><text x="0" y="-20" class="chip">주문</text><animateTransform attributeName="transform" type="translate" dur="26.246s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.89838;0.89965;0.90092;0.90219;0.90346;0.90473;0.906;0.90727;0.90854;0.91998;0.96951;0.97459;0.97586;0.99787;1" values="22.2 15.3;22.2 15.3;21.8 15.3;21.2 15.3;20.3 15.3;19.3 15.3;18.1 15.3;16.6 15.3;14.9 15.3;13 15.3;0 47;0 47;0 47;0 47;-22.2 0;-22.2 0"/><animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.89838;0.89965;0.90092;0.90219;0.90346;0.90473;0.906;0.90727;0.90854;0.91998;0.96951;0.97459;0.97586;0.99787;1" values="1;1;1;1;1;1;1;1;1;1;0;0;0.9;1;1;1"/></g></g><animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.89838;0.9255;0.95394;0.99787" values="0;1;0;1;0"/><animateMotion dur="26.246s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.89838;0.99787;1" keySplines="0 0 1 1;0.455 0.03 0.515 0.955;0 0 1 1" keyPoints="0;0;1;1"><mpath href="#tp-2" xlink:href="#tp-2"/></animateMotion></g>
+<g><animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.97714;1" values="1;1;0"/><g class="p6-17" opacity="0"><circle r="10" fill="var(--color-flow-gray)" opacity="0.2"/><circle r="4.5" fill="var(--color-flow-gray)"/><g><rect x="-18.2" y="-35" width="36.4" height="23" rx="8" fill="var(--color-flow-gray)" stroke="var(--color-flow-gray)" stroke-width="1.75"/><text x="0" y="-20" class="chip">주문</text><animateTransform attributeName="transform" type="translate" dur="26.246s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.97459;0.97586;0.97713;0.9784;0.97967;0.98094;0.98221;0.98348;0.98475;0.99618" values="22.2 15.3;22.2 15.3;21.8 15.3;21.2 15.3;20.3 15.3;19.3 15.3;18.1 15.3;16.6 15.3;14.9 15.3;13 15.3;0 47"/><animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.97459;0.97586;0.97713;0.9784;0.97967;0.98094;0.98221;0.98348;0.98475;0.99618" values="1;1;1;1;1;1;1;1;1;1;0"/></g><animate attributeName="opacity" dur="26.246s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.97459;1" values="0;1;0"/><animateMotion dur="26.246s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.97459;0.97565;0.9767;0.97776;0.97882;0.97988;0.98094;0.982;0.98306;0.98412;0.98518;0.98623;0.98729;0.98835;0.98941;0.99047;0.99153;0.99259;0.99365;0.99471;0.99576;0.99682;0.99788;0.99894;1" keyPoints="0;4.19095164399131e-11;0.0008712393624484943;0.0020870760707760207;0.0036562594445480726;0.005587733094083185;0.007890626808511754;0.0105742441400572;0.013648048240839096;0.017121641697292307;0.02100474646529;0.02530717409733918;0.03003879558744982;0.03520950063713391;0.040829154481489695;0.04690754483152005;0.05345432079432947;0.06047892332917914;0.06799050613444188;0.07599784565225821;0.0845092355313;0.09353237865670219;0.10307425449992708;0.11314098186510857;0.12373766477393125;0.1348682262662869"><mpath href="#tp-2" xlink:href="#tp-2"/></animateMotion></g></g>
+
+</g>
+<text x="480" y="373" opacity="0" class="steplabel a13">주문 하나</text>
+<text x="480" y="373" opacity="0" class="steplabel a14">주문 폭주</text>
+<g opacity="0" class="a15"><text x="480" y="399" class="caption">웹 주문 하나가 API를 거쳐 재고 DB에 닿습니다</text></g>
+<g opacity="0" class="a16"><text x="480" y="399" class="caption">API가 주문을 받으면 처리 중이 1 늘어납니다</text></g>
+<g opacity="0" class="a17"><text x="480" y="399" class="caption">DB가 재고를 줄이면 처리 중이 줄고, 화면 재고도 같은 순간 바뀝니다</text></g>
+<g opacity="0" class="a18"><text x="480" y="399" class="caption">결제는 재고와 따로 일합니다</text></g>
+<g opacity="0" class="a14"><text x="480" y="399" class="caption">웹, 앱, 제휴사의 주문이 겹쳐 들어와 값이 계속 바뀝니다</text></g>
+</svg>

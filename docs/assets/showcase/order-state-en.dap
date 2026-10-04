@@ -1,0 +1,25 @@
+state down
+title "Order states"
+
+state created "Created"
+state paid "Paid"
+state shipped "Shipped"
+state delivered "Delivered"
+state cancelled "Cancelled"
+start created
+final delivered
+final cancelled
+
+created -> paid "Payment approved"
+paid -> shipped "Dispatch"
+shipped -> delivered "Receipt confirmed"
+created -> cancelled "Payment failed"
+paid -> cancelled "Customer cancels" dashed
+
+step "Normal order" "After payment the order ships and ends with receipt"
+  created -> paid "$39"
+  paid -> shipped
+  shipped -> delivered
+step "Cancellation" "A paid order can still be cancelled before it ships"
+  created -> paid
+  paid -> cancelled "Refund"

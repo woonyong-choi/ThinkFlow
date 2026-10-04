@@ -286,7 +286,8 @@ test('grammarDoc_figure_syntax_tables_equal_the_tables_made_from_the_grammar', (
 // 근거: 규칙 docs-integration.md 변환과 검사 "원본과 만든 그림 함께 커밋": README 예시 원본은 만든 그림의 원본과 같다
 test('readme_example_equals_the_source_of_the_rendered_asset', () => {
   const read = (path) => readFileSync(new URL(path, import.meta.url), 'utf8');
-  const block = /```text\n(flow right[\s\S]*?)```/.exec(read('../README.md'))[1];
+  const block = (readme) => /## (?:How it works|작동 방식)\n\n```text\n(flow right[\s\S]*?)```/.exec(read(readme))[1];
 
-  assert.equal(block, read('../docs/assets/how-it-works.dap'));
+  assert.equal(block('../README.md'), read('../docs/assets/how-it-works.dap'));
+  assert.equal(block('../README.ko.md'), read('../docs/assets/how-it-works.dap'));
 });

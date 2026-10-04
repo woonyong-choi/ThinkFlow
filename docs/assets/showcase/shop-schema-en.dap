@@ -1,0 +1,41 @@
+data right
+title "Shop database"
+subtitle "Orders point to users, order items point to orders and products, and payments point to orders"
+
+table users "users" {
+  id bigint pk
+  email varchar
+  created_at timestamp
+}
+table orders "orders" {
+  id bigint pk
+  user_id bigint fk=users.id
+  status varchar
+}
+table products "products" {
+  id bigint pk
+  name varchar
+  price "numeric(10, 2)"
+}
+table order_items "order_items" {
+  order_id bigint fk=orders.id
+  product_id bigint fk=products.id
+  quantity int
+}
+table payments "payments" {
+  id bigint pk
+  order_id bigint fk=orders.id
+  amount "numeric(10, 2)"
+}
+
+step "Place an order" "An order row points to the user who placed it"
+  light orders.user_id users.id
+  orders -> users "user_id 7"
+step "Add items" "Each item row points to an order and a product"
+  light order_items.order_id orders.id
+  light order_items.product_id products.id
+  order_items -> orders "order_id 1042"
+  order_items -> products "product_id 31"
+step "Pay" "A payment row points to the order it settles"
+  light payments.order_id orders.id
+  payments -> orders "order_id 1042"

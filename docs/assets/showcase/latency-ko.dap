@@ -1,0 +1,18 @@
+chart dumbbell
+title "엔드포인트별 p95 지연"
+subtitle "예시 데이터. 엔드포인트마다 5회 평균, 캐시를 넣기 전과 뒤"
+x "지연(ms)"
+
+series before "넣기 전" role=compare
+series after "넣은 뒤" role=main
+
+row "GET /search" before=840 before.low=790 before.high=900 after=210 after.low=190 after.high=235
+row "GET /feed" before=620 before.low=580 before.high=670 after=240 after.low=215 after.high=270
+row "POST /checkout" before=450 before.low=420 before.high=490 after=380 after.low=350 after.high=410
+row "GET /profile" before=180 before.low=165 before.high=200 after=60 after.low=52 after.high=70
+
+step "넣기 전" "캐시가 없으면 검색과 피드 요청이 느립니다"
+  reveal before
+step "넣은 뒤" "캐시를 넣으면 모든 엔드포인트가 빨라지고 검색이 가장 많이 줄어듭니다"
+  reveal after
+  light "GET /search"

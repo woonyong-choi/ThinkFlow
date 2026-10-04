@@ -11,10 +11,114 @@ English | [한국어](README.ko.md)
 
 A command that turns one `.dap` source into one animated documentation figure: a structure, sequence, state, or data relation diagram, or a chart.
 
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/assets/showcase/cloud-architecture-en-dark.svg">
+    <img src="docs/assets/showcase/cloud-architecture-en-light.svg" alt="Cloud architecture figure: web requests pass DNS, a CDN, a balancer, and web servers to the app server, while administrators reach it through a VPN and a bastion" width="100%">
+  </picture>
+</p>
+
 Design documents need figures that show which path a request takes, and charts that show a baseline before the improved value. Drawing diagrams in D2 and charts in Vega-Lite gives two looks in one document, and the D2 layout does not match a custom drawing style. daphnis measures every shape with the same font files it embeds, lays out with elkjs, checks the result for overlaps, and plays steps in an HTML player or an animated SVG.
 
 > [!NOTE]
 > In development. There is no npm release yet; run it straight from GitHub or from a clone.
+
+## Gallery
+
+<table>
+  <tr>
+    <td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/showcase/order-rush-en-dark.svg"><img src="docs/assets/showcase/order-rush-en-light.svg" alt="Orders from the web, the app, and a partner reach the order API together, and the in-flight count and the stock change" width="100%"></picture><br>Simulation: concurrent flows and values that change. <a href="docs/reference/flow.md">Structure figures</a></td>
+    <td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/showcase/shop-schema-en-dark.svg"><img src="docs/assets/showcase/shop-schema-en-light.svg" alt="Shop database tables with foreign keys from orders to users and from order items to orders and products" width="100%"></picture><br>Data relations: tables and foreign keys. <a href="docs/reference/data.md">Data relation figures</a></td>
+  </tr>
+  <tr>
+    <td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/showcase/latency-en-dark.svg"><img src="docs/assets/showcase/latency-en-light.svg" alt="Dumbbell chart of p95 latency per endpoint before and after adding a cache" width="100%"></picture><br>Chart: a baseline and the improved value. <a href="docs/reference/charts.md">Charts</a></td>
+    <td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/showcase/oauth-en-dark.svg"><img src="docs/assets/showcase/oauth-en-light.svg" alt="Sequence of the OAuth authorization code flow with PKCE between a user, an app, an auth server, and an API" width="100%"></picture><br>Sequence: messages in order. <a href="docs/reference/sequence.md">Sequence figures</a></td>
+  </tr>
+</table>
+
+## Quick start
+
+Requirements: Node.js 20 or later.
+
+daphnis is not on npm yet, so `npm install daphnis` does not work. Run it straight from GitHub with `npx github:woonyong-choi/daphnis <command>`, as the steps below do.
+
+Or work from a clone and run `node src/cli.js` in place of `daphnis`:
+
+```sh
+git clone https://github.com/woonyong-choi/daphnis.git
+cd daphnis
+npm install
+```
+
+After the first npm release, `npm install --save-dev daphnis` adds the `daphnis` command to a project and `npx daphnis` runs it.
+
+1. Write one source. Save this as `hello.dap`:
+
+   ```text
+   flow right
+   title "Request path"
+
+   box client "Client"
+   box server "Server"
+   store db "Database"
+
+   client -> server "GET /orders"
+   server -> db "SELECT"
+
+   step "Request" "The client calls the server, which reads the database"
+     client -> server
+     server -> db
+   ```
+
+2. Render it:
+
+   ```sh
+   npx github:woonyong-choi/daphnis render hello.dap
+   ```
+
+   The command writes `hello.svg`, an animated SVG that plays without scripts. Add `--html` for a player with step tabs, pause, speed, fullscreen, and zoom.
+
+3. Put figures in a Markdown document. Write the source in a `dap` code block and run `daphnis md`:
+
+   ````text
+   ```dap name=request
+   flow right
+   box client "Client"
+   box server "Server"
+   client -> server "GET /orders"
+   ```
+   ````
+
+   ```sh
+   npx github:woonyong-choi/daphnis md guide.md
+   ```
+
+   The command writes `guide-request.svg` next to the document and puts `![Client, Server](guide-request.svg)<!-- dap -->` right below the block. Run it again and nothing changes.
+
+4. Keep them current in CI. This GitHub Action step fails a pull request when a source has a warning or a Markdown figure is out of date:
+
+   ```yaml
+   - uses: actions/checkout@v4
+   - uses: woonyong-choi/daphnis@main
+     with:
+       paths: "docs/**/*.dap docs/**/*.md README.md"
+       mode: check   # check (default) or render
+       strict: true  # also fail on warnings
+   ```
+
+   `paths` are git globs of tracked files. `mode: render` writes the SVG files and image lines but does not commit them. The step fails when no file matches.
+
+## Figure kinds
+
+| Kind | Demo | Reference |
+|---|---|---|
+| Structure (`flow`) | [Orders arriving together](docs/assets/showcase/order-rush-en-light.svg) | [Structure figures](docs/reference/flow.md) |
+| Architecture (`flow` with groups and icons) | [Cloud architecture](docs/assets/showcase/cloud-architecture-en-light.svg) | [Architecture](docs/reference/architecture.md) |
+| Sequence (`sequence`) | [OAuth with PKCE](docs/assets/showcase/oauth-en-light.svg) | [Sequence figures](docs/reference/sequence.md) |
+| State (`state`) | [Order states](docs/assets/showcase/order-state-en-light.svg) | [State figures](docs/reference/state.md) |
+| Data relation (`data`) | [Shop database](docs/assets/showcase/shop-schema-en-light.svg) | [Data relation figures](docs/reference/data.md) |
+| Cell grid (`grid` in `flow`) | [Splitting an address](docs/assets/showcase/address-split-en-light.svg) | [Cell grids](docs/reference/grid.md) |
+| Chart (`chart`) | [p95 latency](docs/assets/showcase/latency-en-light.svg) | [Charts](docs/reference/charts.md) |
 
 ## How it works
 
@@ -47,29 +151,11 @@ step "Chat" "Input goes through the screen to the engine"
 3. In the first beat a dot moves from `user` to `tui`, and the card inside `tui` fills in when the dot arrives.
 4. A typo such as `engine -> cdex` stops the build with `how-it-works.dap:19: unknown node "cdex". Did you mean "codex"? Declared: codex, engine, system, tui, user`.
 
-## Installation
-
-Requirements: Node.js 20 or later.
-
-daphnis is not on npm yet, so `npm install daphnis` does not work. Run it straight from GitHub:
-
-```sh
-npx github:woonyong-choi/daphnis render figure.dap
-```
-
-Or work from a clone:
-
-```sh
-git clone https://github.com/woonyong-choi/daphnis.git
-cd daphnis
-npm install
-```
-
-After the first npm release, `npm install --save-dev daphnis` adds the `daphnis` command to a project and `npx daphnis` runs it. The examples below use `node src/cli.js` from a clone.
-
 ## Usage
 
 ### Render one figure
+
+The commands in this section run from a clone.
 
 ```sh
 node src/cli.js render examples/memory.dap --html
@@ -109,37 +195,7 @@ Open `examples/out/index.html` to see every example on one page.
 
 ### Keep figures in a Markdown document
 
-Write the source in a `dap` code block. A name keeps the image file name stable when blocks move.
-
-````text
-```dap name=flow
-flow right
-box client "Client"
-box server "Server"
-client -> server "GET"
-```
-````
-
-```sh
-node src/cli.js md docs/guide.md
-```
-
-The command writes `docs/guide-flow.svg` next to the document and puts `![Client, Server](guide-flow.svg)<!-- dap -->` right below the block (the alt text is the figure `title`). Run it again and nothing changes. Renaming a block removes the old SVG, `--out-dir images` moves the SVG files, and `--check` writes nothing and exits with 1 when a document or SVG is out of date. Any error in any block stops the command before it writes. See [Markdown](docs/design/markdown.md) for the rules.
-
-### Check figures in CI
-
-The repository root has a composite GitHub Action. This step fails a pull request when a source has a warning or a Markdown figure is out of date:
-
-```yaml
-- uses: actions/checkout@v4
-- uses: woonyong-choi/daphnis@main
-  with:
-    paths: "docs/**/*.dap docs/**/*.md README.md"
-    mode: check   # check (default) or render
-    strict: true  # also fail on warnings
-```
-
-`paths` are git globs of tracked files. `mode: render` writes the SVG files and image lines but does not commit them. The step fails when no file matches.
+Renaming a `dap` block removes the old SVG, `--out-dir images` moves the SVG files, and `--check` writes nothing and exits with 1 when a document or SVG is out of date. Any error in any block stops the command before it writes. See [Markdown](docs/design/markdown.md) for the rules, and [Quick start](#quick-start) for the first run and the GitHub Action.
 
 ## Features
 
@@ -165,7 +221,7 @@ The code on `main` implements the redesign and the tests pass. The design docume
 
 ## Documentation
 
-The design documents are written in Korean.
+The design documents and the per-kind references are written in Korean.
 
 - [Architecture](docs/architecture.md): components, flows, and invariants
 - [Figure syntax](docs/design/figure-syntax.md): line rules, file structure, flow figures, timeline, and errors
@@ -177,6 +233,7 @@ The design documents are written in Korean.
 - [Playback](docs/design/playback.md): timeline, beat state, the HTML player, and the animated SVG
 - [Markdown and release](docs/design/markdown.md): the `md` command, the GitHub Action, and publishing
 - [Docs skill integration](docs/design/docs-integration.md): replacing D2 and Vega-Lite in the docs skill
+- [Structure figures](docs/reference/flow.md), [architecture](docs/reference/architecture.md), [sequence figures](docs/reference/sequence.md), [state figures](docs/reference/state.md), [data relation figures](docs/reference/data.md), [cell grids](docs/reference/grid.md), and [charts](docs/reference/charts.md): a minimal example, steps, and common errors for each kind
 
 All documents are listed in [docs/README.md](docs/README.md).
 

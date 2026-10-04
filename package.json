@@ -45,7 +45,7 @@
     "tokens": "node scripts/build-tokens.mjs src/tokens.json --out src",
     "check": "node scripts/check-tokens.mjs src && node scripts/check-cost-comments.mjs src test && node scripts/check-size.mjs src scripts",
     "examples": "node src/cli.js gallery examples --out examples/out --title \"예제\"",
-    "screens": "node scripts/screens.mjs"
+    "showcase": "node scripts/build-showcase.mjs"
   },
   "engines": {
     "node": ">=20"
