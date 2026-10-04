@@ -1,5 +1,6 @@
 // 흐름(track)과 값(value, set=, tone=): 오류 진단, 값이 도착 순서대로 바뀌는지(시간표), 갈래색 이름 집합.
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
 import { buildFigure } from '../src/build.js';
 import { findClashes } from '../src/chip-clash.js';
@@ -220,4 +221,16 @@ test('buildFigure_set_step_that_overflows_to_infinity_or_passes_1e15_is_a_line_e
   const { timeline } = await buildFigure(`${BASE}step "s"\n  a -> b "go" set="n+999999"\n`);
 
   assert.equal(JSON.stringify(timeline).includes('Infinity'), false);
+});
+
+// 근거: 이슈 #97 "글 상자 숨김 불투명도 키에 NaN": 시작 시각이 없는 동시 이동도 숨김 키가 모두 유한하고, 겹침 없이 한 박자에 같이 출발하면 나중 점의 글 상자가 처음부터 숨는다
+test('planClashes_keeps_every_fade_key_finite_and_hides_the_later_simultaneous_chip_from_its_start', async () => {
+  const source = readFileSync(new URL('./fixtures/layout/event-loop.dap', import.meta.url), 'utf8');
+  const result = await buildFigure(source, { strict: true });
+  const hidden = result.timeline.segs.flatMap((seg) => seg.hops).filter((hop) => hop.chipFade);
+
+  assert.equal(hidden.length, 1);
+  assert.ok(hidden[0].chipFade.flat().every(Number.isFinite));
+  assert.deepEqual(hidden[0].chipFade[0], [0, 0]);
+  assert.deepEqual(findClashes(result.scene, result.timeline), []);
 });

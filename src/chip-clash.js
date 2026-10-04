@@ -27,10 +27,10 @@ export function fadeAt(keys, t) {
 // vars: s = 숨는 구간 수
 // basis: estimate
 // 겹치는 구간 [시작, 끝]을 불투명도 키로. 겹침이 시작되기 전에 CHIP_HIDE_FADE_MS만큼 앞서 흐려져 겹칠 때는 이미 안 보이고, 끝난 뒤 같은 시간 동안 나타난다.
-// 이동 시작(0)보다 앞선 키는 0에서의 보간 값으로 바꾼다.
+// 이동 시작(0)보다 앞선 키는 0에서의 보간 값으로 바꾼다. 첫 키가 0 뒤면 fadeAt이 첫 키의 값 1을 돌려준다.
 function fadeKeysOf(spans) {
   const raw = spans.flatMap(([from, to]) => [[from - CHIP_HIDE_FADE_MS, 1], [from, 0], [to, 0], [to + CHIP_HIDE_FADE_MS, 1]]);
-  const atZero = fadeAt([[-Infinity, 1], ...raw], 0);
+  const atZero = fadeAt(raw, 0);
   const keys = [[0, atZero], ...raw.filter(([at]) => at > 0)];
   return keys.filter(([at], i) => i === keys.length - 1 || keys[i + 1][0] > at);
 }
@@ -88,7 +88,7 @@ function clashedAt(hops, t, world) {
 // 구간 하나에서 이동마다 글 상자가 겹친 이동 시작 뒤 시각 목록.
 function clashTimes(seg, hops, world) {
   const times = new Map(hops.map((hop) => [hop, []]));
-  for (let t = 0; t <= seg.t1 - seg.t0; t += CHIP_FRAME_MS) for (const hop of clashedAt(hops, t, world)) times.get(hop).push(t - hop.at);
+  for (let t = 0; t <= seg.t1 - seg.t0; t += CHIP_FRAME_MS) for (const hop of clashedAt(hops, t, world)) times.get(hop).push(t - (hop.at ?? 0));
   return times;
 }
 
