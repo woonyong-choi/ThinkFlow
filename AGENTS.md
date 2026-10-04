@@ -20,7 +20,7 @@
 | `action.yml`, `.github/workflows/` | GitHub Action(composite), CI, `v*` 태그 배포, design-tokens 새 버전 감지(`design-tokens-update.yml`) |
 | `src/player/` | 브라우저에서 도는 재생기(`play.js`, `controls.js`, `stage.js`, `curve.js`)와 전체 화면·확대(`view.js`) |
 | `examples/` | 예제 원본, `out/` 결과 |
-| `scripts/` | 화면 확인 도구(`shoot.mjs`), 첫 화면과 갤러리 그림 생성(`build-showcase.mjs`), 토큰 생성과 낡음 검사(`build-tokens.mjs`), 팔레트 값 계산(`build-palette.mjs`), design-tokens 새 버전 판정과 PR 본문(`update-design-tokens.mjs`), 하드코딩, 비용 주석, 수치 기준 검사(`check-tokens.mjs`, `check-cost-comments.mjs`, `check-size.mjs`), 배치 무작위 시험(`fuzz-layout.mjs`), 빌드 시간 기준 검사(`perf-chips.mjs`, 로컬 전용), 문서 표 생성(`build-grammar-doc.mjs`, `build-check-doc.mjs`) |
+| `scripts/` | 화면 확인 도구(`shoot.mjs`), 첫 화면과 갤러리 그림 생성(`build-showcase.mjs`), 토큰 생성과 낡음 검사(`build-tokens.mjs`), 팔레트 값 계산(`build-palette.mjs`), design-tokens 새 버전 판정, PR 본문, 이슈와 PR 올리기와 프로젝트 등록(`update-design-tokens.mjs`, `lib/design-tokens-board.mjs`), 하드코딩, 비용 주석, 수치 기준 검사(`check-tokens.mjs`, `check-cost-comments.mjs`, `check-size.mjs`), 배치 무작위 시험(`fuzz-layout.mjs`), 빌드 시간 기준 검사(`perf-chips.mjs`, 로컬 전용), 문서 표 생성(`build-grammar-doc.mjs`, `build-check-doc.mjs`) |
 | `docs/` | 설계 문서, 그림 종류별 레퍼런스(`reference/`), README 그림(`assets/showcase/`) |
 
 ## 명령

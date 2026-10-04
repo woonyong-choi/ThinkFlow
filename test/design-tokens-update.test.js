@@ -77,3 +77,13 @@ test('design_tokens_update_workflow_listens_to_dispatch_schedule_and_manual_runs
   assert.match(text, /workflow_dispatch:/);
   assert.match(text, /permissions:\n\s+contents: write\n\s+pull-requests: write\n\s+issues: write/);
 });
+
+// 근거: 이슈 #106. 이슈와 PR 만들기는 스크립트의 publish가 맡고(YAML에 gh issue create를 두지 않는다), 프로젝트 번호를 하드코딩하지 않으며, 토큰 권한 설명에 Projects를 적는다
+test('design_tokens_update_workflow_delegates_publishing_and_documents_the_projects_permission', () => {
+  const text = readFileSync(join(ROOT, '.github/workflows/design-tokens-update.yml'), 'utf8');
+
+  assert.match(text, /node scripts\/update-design-tokens\.mjs publish /);
+  assert.doesNotMatch(text, /gh issue create|gh pr create/);
+  assert.doesNotMatch(text, /project-number|projects\/\d+|projectV2\(number/i);
+  assert.match(text.split('\non:')[0], /프로젝트 쓰기 권한\(Projects\)/);
+});

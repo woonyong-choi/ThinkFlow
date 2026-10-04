@@ -1,10 +1,13 @@
 // design-tokens 새 버전 감지(.github/workflows/design-tokens-update.yml)가 쓰는 판정과 글 만들기.
 // 사용: node scripts/update-design-tokens.mjs detect [--tags 파일]   package.json의 태그와 최신 태그를 비교해 `key=value` 줄(current, latest, update)을 낸다.
 //       node scripts/update-design-tokens.mjs body --kind pr|issue --current 태그 --latest 태그 [--issue 번호] [--test pass|fail] [--check pass|fail] [--log 파일]   PR이나 이슈 본문을 낸다.
+//       node scripts/update-design-tokens.mjs publish --current 태그 --latest 태그 --branch 이름 --dir 폴더 [--test pass|fail] [--check pass|fail] [--log 파일]   이슈와 PR을 찾아 쓰거나 만들고, 이슈를 프로젝트 진행판에 `대기`로 등록한다. 등록 실패는 실행 요약과 경고 줄에 남기고 계속한다.
 // `detect`의 태그 목록은 GitHub API(공개 저장소)에서 받는다. `--tags`는 같은 모양의 응답 파일을 대신 읽는 시험용 입구다.
-// 환경 변수: REQUESTED(알림이나 수동 실행이 알려 준 태그, 비면 최신 태그), GITHUB_TOKEN(있으면 API 호출에 쓴다)
-import { readFileSync } from 'node:fs';
+// 환경 변수: REQUESTED(알림이나 수동 실행이 알려 준 태그, 비면 최신 태그), GITHUB_TOKEN(있으면 API 호출에 쓴다), `publish`는 GH_TOKEN, GITHUB_REPOSITORY, GITHUB_STEP_SUMMARY
+import { readFileSync, writeFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { pathToFileURL } from 'node:url';
+import { createIssue, findIssue, realGh, registerOnBoard, reportFailures } from './lib/design-tokens-board.mjs';
 
 export const REPO = 'woonyong-choi/design-tokens';
 const TAG = /^v(\d+)\.(\d+)\.(\d+)$/;
@@ -133,6 +136,35 @@ export function issueBody({ current, latest }) {
   ].join('\n');
 }
 
+// cost: time O(1), heap O(1), stack O(1), io 8
+// basis: estimate
+/**
+ * 이슈와 PR을 올린다. 같은 버전으로 다시 실행해도 열린 이슈와 PR을 찾아 쓰고 새로 만들지 않는다.
+ * 프로젝트 등록은 실패해도 이슈와 PR 만들기를 멈추지 않는다.
+ * @param context { gh: 실행 함수, options: publish 옵션, env, write: 경고 줄 쓰기 }
+ * @returns { issue, pr } pr은 이미 있던 PR 번호이거나 새로 만든 PR 주소
+ */
+export function publish({ gh, options, env, write }) {
+  const { current, latest, branch, dir } = options;
+  let issue = findIssue(gh, latest);
+  if (issue === null) {
+    const bodyFile = join(dir, 'issue.md');
+    writeFileSync(bodyFile, issueBody({ current, latest }));
+    issue = createIssue({ gh, latest, bodyFile });
+  }
+  const failures = registerOnBoard({ gh, repo: env.GITHUB_REPOSITORY, issue });
+  reportFailures({ failures, issue, summaryFile: env.GITHUB_STEP_SUMMARY, write });
+  const open = JSON.parse(gh(['pr', 'list', '--state', 'open', '--head', branch, '--json', 'number']).stdout || '[]');
+  if (open.length > 0) return { issue, pr: open[0].number };
+  const bodyFile = join(dir, 'pr.md');
+  const log = options.log ? readFileSync(options.log, 'utf8') : '';
+  writeFileSync(bodyFile, prBody({ current, latest, issue, results: { test: options.test, check: options.check }, log }));
+  const draft = options.test === 'pass' && options.check === 'pass' ? [] : ['--draft'];
+  const created = gh(['pr', 'create', '--base', 'main', '--head', branch, '--title', `chore(tokens): design-tokens ${latest}로 올린다`, '--body-file', bodyFile, ...draft]);
+  if (created.status !== 0) throw new Error(created.stderr.trim());
+  return { issue, pr: created.stdout.trim() };
+}
+
 // cost: time O(a), heap O(a), stack O(1)
 // vars: a = 인자 수
 // basis: estimate
@@ -175,7 +207,11 @@ async function run([command, ...args]) {
     if (kind === 'issue') return issueBody({ current, latest });
     if (kind === 'pr') return prBody({ current, latest, issue: options.issue, results: { test: options.test, check: options.check }, log: options.log ? readFileSync(options.log, 'utf8') : '' });
   }
-  throw new Error('usage: update-design-tokens.mjs detect [--tags file] | body --kind pr|issue --current tag --latest tag [--issue n --test pass|fail --check pass|fail --log file]');
+  if (command === 'publish') {
+    const result = publish({ gh: realGh, options, env: process.env, write: (text) => process.stdout.write(text) });
+    return `issue=${result.issue}\npr=${result.pr}\n`;
+  }
+  throw new Error('usage: update-design-tokens.mjs detect [--tags file] | body --kind pr|issue --current tag --latest tag [--issue n --test pass|fail --check pass|fail --log file] | publish --current tag --latest tag --branch name --dir folder [--test pass|fail --check pass|fail --log file]');
 }
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {

@@ -40,6 +40,8 @@
 4. `npm run palette`가 이 저장소가 값을 갖는 팔레트 단계(`sky`와 `slate`의 면과 외곽선)를 공통 토큰의 면 위 대비 규칙으로 다시 계산해 `src/tokens.json`에 쓴다. 나머지 팔레트 단계는 공통 토큰을 가리키는 별칭이다.
 5. design-tokens에 새 태그가 나오면 `design-tokens-update` 워크플로가 의존성을 올리고 1~4와 `npm run figures`로 생성물을 다시 만든 PR과 이슈를 연다. 알림(`repository_dispatch`)과 매일 한 번의 정기 확인, 수동 실행을 받는다. 같은 버전의 PR이 열려 있으면 새로 만들지 않는다.
 
+새 이슈는 라벨 `build`, `area:repo`, `P3`와 제목 `공통 토큰 v0.1.2 변경`(20자를 넘으면 `토큰 v0.1.2 변경`)으로 만들고, 저장소에 연결된 프로젝트(GraphQL `repository.projectsV2`로 조회)에 등록해 Status를 `대기`로 둔다. 프로젝트 쓰기 권한(Projects)이 있는 `DESIGN_TOKENS_UPDATE_TOKEN`이 필요하다. 성공은 토큰 유무가 아니라 조회, 등록, 상태 설정 호출 결과로 판단하고, 하나라도 실패하면 실행 요약의 "프로젝트 등록 실패" 문단과 `::warning::` 줄에 단계와 이유를 남기되 이슈와 PR 만들기는 계속한다. 같은 버전으로 다시 실행하면 열린 이슈(옛 제목 `design-tokens v0.1.2로 올린다` 포함)와 PR을 찾아 쓰고, 판에 없는 이슈만 등록한다. 이 로직은 `scripts/update-design-tokens.mjs publish`와 `scripts/lib/design-tokens-board.mjs`에 있다.
+
 `GITHUB_TOKEN`으로 만든 PR은 다른 워크플로를 자동 실행하지 않아 `ci.yml`이 돌지 않는다. 그래서 워크플로가 같은 job에서 `npm test`와 `npm run check`를 돌려 결과를 PR 본문에 적고, 실패하면 초안 PR로 연다. 저장소 비밀 `DESIGN_TOKENS_UPDATE_TOKEN`(쓰기 권한 토큰)을 등록하면 그 토큰으로 PR을 만들어 `ci.yml`도 자동으로 돈다. 등록하지 않았다면 PR을 닫았다가 다시 열면 `ci.yml`이 돈다. 워크플로가 PR을 만들려면 저장소 설정(Actions > General)의 "Allow GitHub Actions to create and approve pull requests"가 켜져 있어야 한다. 정기 확인은 저장소에 60일 동안 활동이 없으면 GitHub가 멈춘다.
 
 ### 재생하기
