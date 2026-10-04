@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { buildFigure } from '../src/build.js';
 import { findClashes } from '../src/chip-clash.js';
+import { flowSeg } from '../src/timeline-flow.js';
 import { valueNames } from '../src/source/grammar.js';
 import { tokens, values } from '../src/tokens.js';
 
@@ -180,4 +181,29 @@ test('buildFigure_rejects_a_word_with_spaces_and_an_ambiguous_at_and_reads_equal
   assert.match(space[0].message, /without spaces/);
   assert.match(twice[0].message, /@a is ambiguous/);
   assert.deepEqual(text.timeline.values[0].changes.map(([, v]) => v), ['copy']);
+});
+
+const HUGE_EVERY = `flow right\nbox a "A"\nbox b "B"\na -> b\nstep "Load" for=12s\n  track a -> b time=1s every=0.000001ms\n`;
+
+// 근거: 이슈 #81, 설계 playback.md 흐름 단계: 출발 수는 배열을 만들기 전에 계산해 상한을 넘으면 그리기를 막는 오류로 끝낸다
+test('buildFigure_rejects_a_track_with_billions_of_departures_with_an_error_before_allocating_them', async () => {
+  const started = performance.now();
+  const problems = await errorsOf(HUGE_EVERY);
+
+  assert.equal(problems.length, 1);
+  assert.deepEqual([problems[0].severity, problems[0].code, problems[0].line], ['error', 'check-14', 6]);
+  assert.match(problems[0].message, /12000000000 dots/);
+  assert.ok(performance.now() - started < 3000, '할당 없이 빠르게 끝난다');
+});
+
+// 근거: 이슈 #81 완료 조건 "작은 상한을 주입한 시험에서 상한 초과 입력을 배열 생성 전에 거부한다"
+test('flowSeg_counts_departures_from_for_and_every_and_refuses_over_the_injected_limit_before_listing_them', () => {
+  const scene = { edges: [{ points: [{ x: 0, y: 0 }, { x: 100, y: 0 }] }] };
+  const track = { path: ['a', 'b'], source: 'a', legs: [{ edge: 0 }], atMs: 0, everyMs: 1000, timeMs: 500, sets: [], line: 3 };
+  const step = { forMs: 10000, tracks: [track], label: 's' };
+  const run = () => ({ figure: { steps: [step] }, speed: 600, t: 0, tracks: [], values: [], seriesIds: [], hasReveal: false });
+  const deps = (dotsLimit) => ({ scene, cards: { starts: new Map() }, chips: () => [], dotsLimit });
+
+  assert.doesNotThrow(() => flowSeg({ step, si: 0 }, run(), deps(10)));
+  assert.throws(() => flowSeg({ step, si: 0 }, run(), deps(9)), (error) => error.problems[0].line === 3 && /10 dots, over the limit of 9/.test(error.problems[0].message));
 });

@@ -1,10 +1,11 @@
 // daphnis md: 마크다운 문서의 ```dap 블록을 SVG로 만들고 블록 아래 이미지 줄을 맞춘다(docs/design/markdown.md).
 // 모든 문서를 먼저 만든 다음에 쓴다. 오류가 하나라도 있으면 아무 파일도 쓰지 않고, --check는 쓰지 않고 갱신이 필요한지만 알린다.
-import { existsSync, mkdirSync, readdirSync, readFileSync, unlinkSync } from 'node:fs';
+import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { basename, dirname, extname, join, relative, sep } from 'node:path';
-import { buildReported, report, writeOutput } from './build-reported.js';
+import { buildReported, report } from './build-reported.js';
 import { fileHref } from './href.js';
 import { applyImages, findBlocks } from './md.js';
+import { commitWrites, FILE_IO } from './md-write.js';
 import { makeDiagnostic } from './source/problems.js';
 import { toSvg } from './svg.js';
 import { plainText } from './text.js';
@@ -112,8 +113,10 @@ async function planDocument(file, args, claimed) {
   const built = found.errors.length || !unique ? undefined : await buildTargets(file, targets, args);
   if (!built) return undefined;
   const images = built.map(({ label, svg, result }) => ({ alt: plainText(result.figure.title ?? label), href: hrefOf(file, svg) }));
-  const files = [{ path: file, text: applyImages(lines, found, images).join(eol) }];
+  const files = [];
   for (const item of built) files.push({ path: item.svg, text: await svgText(file, item, { args, outDir }) });
+  // 문서는 SVG 뒤에 쓴다. 문서가 가리키는 SVG가 먼저 놓여 있어야 중간에 멈춰도 깨진 링크가 없다.
+  files.push({ path: file, text: applyImages(lines, found, images).join(eol), isDocument: true });
   return { files, stale: staleSvgs(file, outDir, new Set(built.map((item) => item.svg))) };
 }
 
@@ -131,7 +134,33 @@ function outputPlan(plans) {
   const files = plans.flatMap((plan) => plan.files);
   const written = new Set(files.map(({ path }) => path));
   const removes = [...new Set(plans.flatMap((plan) => plan.stale))].filter((path) => !written.has(path));
-  return { writes: changedFiles(files), removes };
+  const writes = changedFiles(files);
+  return { writes: [...writes.filter((file) => !file.isDocument), ...writes.filter((file) => file.isDocument)], removes };
+}
+
+// cost: time O(f), heap O(f), stack O(1), io 3f
+// vars: f = 문서 전체가 쓰거나 지울 파일 수
+// basis: estimate
+// 계획을 디스크에 적용한다. SVG와 문서를 commitWrites로 쓰고(SVG 먼저, 문서 마지막), 성공한 뒤에만 경로를 알리고 낡은 SVG를 지운다. 지우기가 실패해도 문서와 새 SVG는 일관되고 낡은 SVG만 남는다.
+function applyPlan({ writes, removes }, { json, io }) {
+  const result = commitWrites(writes, io);
+  if (result.error) {
+    report(result.path, [problem(`cannot write the file: ${result.error.code ?? result.error.message}`, 'io')], json);
+    for (const path of result.unrestored) report(path, [problem('could not be restored after a failed write. Restore it from version control', 'io')], json);
+    return 1;
+  }
+  if (!json) for (const { path } of writes) process.stdout.write(`${path}\n`);
+  let status = 0;
+  for (const path of removes) {
+    try {
+      io.unlink(path);
+      if (!json) process.stdout.write(`removed ${path}\n`);
+    } catch (error) {
+      report(path, [problem(`cannot remove the file: ${error.code ?? error.message}`, 'io')], json);
+      status = 1;
+    }
+  }
+  return status;
 }
 
 // cost: time O(d·b·build), heap O(d·b·out), stack O(1), io d·(2b + n)
@@ -139,9 +168,10 @@ function outputPlan(plans) {
 // basis: estimate
 /**
  * `daphnis md`를 실행한다. 종료 코드를 돌려준다: 0 정상(또는 --check에서 갱신 불필요), 1 오류(또는 --check에서 갱신 필요).
- * 오류가 있으면 아무 파일도 쓰거나 지우지 않는다.
+ * 오류가 있으면 아무 파일도 쓰거나 지우지 않는다. 쓰기나 삭제가 실패해도 1이다(진단 code io).
+ * @param io 파일 쓰기 동작. 시험이 실패를 주입한다
  */
-export async function runMd(args) {
+export async function runMd(args, io = FILE_IO) {
   const json = args.flags.has('json');
   const claimed = new Map();
   const plans = [];
@@ -153,13 +183,5 @@ export async function runMd(args) {
     for (const path of removes) report(path, [problem('is a stale figure. Run daphnis md to remove it', 'md-outdated')], json);
     return writes.length || removes.length ? 1 : 0;
   }
-  for (const { path, text } of writes) {
-    mkdirSync(dirname(path), { recursive: true });
-    writeOutput(path, text, json);
-  }
-  for (const path of removes) {
-    unlinkSync(path);
-    if (!json) process.stdout.write(`removed ${path}\n`);
-  }
-  return 0;
+  return applyPlan({ writes, removes }, { json, io });
 }

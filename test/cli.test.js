@@ -1,6 +1,6 @@
 // CLI: 명령 결과 파일, 종료 코드, 오류 출력, --json 필드, gallery(docs/design/figure-check.md, playback.md). 호환 필드와 종료 코드는 compat.test.js.
 import assert from 'node:assert/strict';
-import { existsSync, readFileSync, symlinkSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readdirSync, readFileSync, symlinkSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { test } from 'node:test';
 import { fileURLToPath } from 'node:url';
@@ -162,6 +162,65 @@ test('main_gallery_writes_the_index_and_the_document_preview_with_each_figure_an
       assert.match(page(name), /<h2><code class="name">b\.dap<\/code><span class="kind">bar<\/span><\/h2>/);
       for (const mode of ['system', 'light', 'dark']) assert.match(page(name), new RegExp(`data-mode="${mode}"`));
     }
+  });
+});
+
+const NAMED_BOX = (id) => `flow right\ntitle "${id} figure"\nbox a "A"\n`;
+const iframeSrcs = (page) => [...page.matchAll(/<iframe src="([^"]+)"/g)].map((m) => m[1].replace(/^\.\//, ''));
+
+// 근거: 이슈 #73 "갤러리 예약 이름(index, document) 원본이 목록 파일을 덮어쓴다". 모든 원본의 재생 화면과 목록 파일은 서로 다른 출력 파일이다
+test('main_gallery_keeps_a_source_named_index_or_document_apart_from_the_list_and_preview_files', () => {
+  withFolder((folder) => {
+    for (const name of ['index', 'document', 'plain']) writeFileSync(join(folder, `${name}.dap`), NAMED_BOX(name));
+
+    const result = run(['gallery', '.', '--out', 'out'], folder);
+    const read = (file) => readFileSync(join(folder, 'out', file), 'utf8');
+    const srcs = iframeSrcs(read('index.html'));
+
+    assert.equal(result.status, 0, result.stderr);
+    assert.equal(srcs.length, 3);
+    assert.ok(!srcs.includes('index.html') && !srcs.includes('document.html'), `재생 화면이 목록 파일을 가리킨다: ${srcs}`);
+    assert.equal(new Set(srcs).size, 3);
+    for (const [src, name] of srcs.map((src, i) => [src, ['document', 'index', 'plain'][i]])) {
+      assert.ok(read(src).includes(`${name} figure`), `${src}는 ${name} 그림의 재생 화면이다`);
+      assert.ok(!read(src).includes('<iframe'), `${src}는 목록이 아니다`);
+    }
+    assert.match(read('document.html'), /<img src="\.\/index\.svg"/);
+    assert.ok(existsSync(join(folder, 'out', 'index.svg')) && existsSync(join(folder, 'out', 'document.svg')));
+  });
+});
+
+// 근거: 이슈 #73 완료 조건 "출력 이름 충돌을 쓰기 전에 검증한다, 충돌 시 기존 파일 보존"
+test('main_gallery_refuses_clashing_output_names_before_writing_and_keeps_existing_files', () => {
+  const cases = [{ name: 'player_name_taken', files: ['index', 'index-player'] }];
+  for (const { name, files } of cases) {
+    withFolder((folder) => {
+      for (const file of files) writeFileSync(join(folder, `${file}.dap`), NAMED_BOX(file));
+      mkdirSync(join(folder, 'out'));
+      writeFileSync(join(folder, 'out', 'index.html'), 'keep');
+
+      const result = run(['gallery', '.', '--out', 'out'], folder);
+
+      assert.equal(result.status, 1, name);
+      assert.match(result.stderr, /would be written twice/, name);
+      assert.deepEqual(readdirSync(join(folder, 'out')), ['index.html'], name);
+      assert.equal(readFileSync(join(folder, 'out', 'index.html'), 'utf8'), 'keep', name);
+    });
+  }
+});
+
+// 근거: 이슈 #73. 대소문자만 다른 `INDEX.html`은 대소문자를 가리지 않는 파일 시스템에서 `index.html`과 같은 파일이다
+test('main_gallery_treats_reserved_names_case_insensitively', () => {
+  withFolder((folder) => {
+    writeFileSync(join(folder, 'INDEX.dap'), NAMED_BOX('INDEX'));
+
+    const result = run(['gallery', '.', '--out', 'out'], folder);
+    const srcs = iframeSrcs(readFileSync(join(folder, 'out', 'index.html'), 'utf8'));
+
+    assert.equal(result.status, 0, result.stderr);
+    assert.equal(srcs.length, 1);
+    assert.notEqual(srcs[0].toLowerCase(), 'index.html');
+    assert.ok(readFileSync(join(folder, 'out', srcs[0]), 'utf8').includes('INDEX figure'));
   });
 });
 

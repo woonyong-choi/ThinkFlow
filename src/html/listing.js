@@ -14,19 +14,24 @@ function cardHead({ name, ext = '.dap', title, kind, isChart }) {
   return `<h2>${heading}<code class="name">${escapeXml(name)}${escapeXml(ext)}</code><span class="kind">${escapeXml(kind)}</span></h2>`;
 }
 
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+// 그림 재생 화면의 파일 이름(확장자 없이). 따로 정한 이름(`page`)이 없으면 `href`다.
+const pageOf = ({ href, page }) => (page ?? href);
+
 // cost: time O(f), heap O(out), stack O(1)
 // vars: f = 그림 수, out = 만든 HTML 글자 수
 // basis: estimate
 /**
  * 여러 그림을 한 쪽에서 보는 목록. 그림마다 재생 화면을 iframe으로 넣는다.
- * @param figures { name, ext?, title, kind, isChart, href }[]. href는 목록 쪽에서 본 확장자 뺀 상대 경로 원본 글자다(인코딩은 여기서 한다).
+ * @param figures { name, ext?, title, kind, isChart, href, page? }[]. href는 목록 쪽에서 본 확장자 뺀 상대 경로 원본 글자다(인코딩은 여기서 한다). page는 재생 화면 파일 이름(확장자 없이, 같은 폴더)이고 없으면 href와 같다.
  */
 export function toGallery(figures, heading) {
   const cards = figures
     .map(
       (f) =>
-        `<section><header>${cardHead(f)}<nav><a href="${hrefAttr(`${f.href}.html`)}">열기</a><a href="${hrefAttr(`${f.href}.svg`)}">SVG</a></nav></header>` +
-        `<iframe src="${hrefAttr(`${f.href}.html`)}" loading="lazy" allowfullscreen title="${escapeXml(f.name)}"></iframe></section>`,
+        `<section><header>${cardHead(f)}<nav><a href="${hrefAttr(`${pageOf(f)}.html`)}">열기</a><a href="${hrefAttr(`${f.href}.svg`)}">SVG</a></nav></header>` +
+        `<iframe src="${hrefAttr(`${pageOf(f)}.html`)}" loading="lazy" allowfullscreen title="${escapeXml(f.name)}"></iframe></section>`,
     )
     .join('\n');
   return `<!doctype html>

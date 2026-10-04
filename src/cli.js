@@ -31,6 +31,8 @@ const VERSION_LINE = /^\s*(?:daphnis|mutoscope)\s/;
 const SOURCE_EXT = /\.dap$/;
 const LEGACY_EXT = /\.muto$/;
 const ANY_EXT = /\.(?:dap|muto)$/;
+// gallery가 목록과 문서 미리보기로 쓰는 쪽 이름(확장자 없이)
+const RESERVED_PAGES = new Set(['index', 'document']);
 
 // cost: time O(1), heap O(1), stack O(1)
 // basis: estimate
@@ -125,14 +127,14 @@ async function buildInput(input, args) {
 // cost: time O(out), heap O(out), stack O(1), io 3
 // vars: out = 결과 글자 수
 // basis: estimate
-// 만든 그림의 SVG(--html이면 HTML도)를 쓴다.
+// 만든 그림의 SVG(--html이면 HTML도)를 쓴다. args.page가 있으면 HTML 파일 이름(확장자 없이)이다.
 async function writeFigure(input, result, args) {
   const json = args.flags.has('json');
   const name = basename(input).replace(ANY_EXT, '');
   const folder = args.out ?? dirname(input);
   mkdirSync(folder, { recursive: true });
   writeOutput(join(folder, `${name}.svg`), await toSvg(result, { isStatic: args.flags.has('static'), name }), json);
-  if (args.flags.has('html')) writeOutput(join(folder, `${name}.html`), await toHtml(result, name), json);
+  if (args.flags.has('html')) writeOutput(join(folder, `${args.page ?? name}.html`), await toHtml(result, name), json);
 }
 
 // cost: time O(n + s), heap O(n), stack O(1), io 2
@@ -174,6 +176,31 @@ function sourceFiles(names) {
   return names.filter((f) => SOURCE_EXT.test(f) || (LEGACY_EXT.test(f) && !current.has(f.replace(LEGACY_EXT, '')))).sort();
 }
 
+// cost: time O(f), heap O(f), stack O(1)
+// vars: f = 폴더 안 원본 수
+// basis: estimate
+// 갤러리가 쓰는 재생 화면 이름. 원본 이름이 목록 쪽(index)이나 문서 미리보기(document)와 같으면(대소문자 무시, 대소문자를 가리지 않는 파일 시스템에서 같은 파일) `{이름}-player`다. 예약 파일 이름은 그대로 둔다.
+const playerPage = (name) => (RESERVED_PAGES.has(name.toLowerCase()) ? `${name}-player` : name);
+
+// cost: time O(f), heap O(f), stack O(1)
+// vars: f = 폴더 안 원본 수
+// basis: estimate
+// 쓸 파일 이름이 겹치는 곳을 찾아 알리고 겹침이 있으면 false다(대소문자 무시). 예약 파일 둘도 이미 이름을 가진 것으로 센다.
+function claimOutputs(names) {
+  const claimed = new Map([...RESERVED_PAGES].map((page) => [`${page}.html`, `the gallery ${page} page`]));
+  let ok = true;
+  for (const name of names) {
+    for (const file of [`${name}.svg`, `${playerPage(name)}.html`]) {
+      const key = file.toLowerCase();
+      if (claimed.has(key)) {
+        process.stderr.write(`${file} would be written twice: for ${name} and for ${claimed.get(key)}. Rename one of the sources\n`);
+        ok = false;
+      } else claimed.set(key, name);
+    }
+  }
+  return ok;
+}
+
 // cost: time O(f·build), heap O(f·out), stack O(1), io 3f + 2
 // vars: f = 폴더 안 원본 수, build = 원본 하나를 만드는 비용, out = 그림 하나의 결과 글자 수
 // basis: estimate
@@ -194,15 +221,16 @@ async function writeGallery(args) {
     process.stderr.write(`${folder}: no .dap files\n`);
     return 1;
   }
+  if (!claimOutputs(files.map((file) => file.replace(ANY_EXT, '')))) return 1;
   const galleryArgs = { ...args, command: 'render', out, flags: new Set([...args.flags, 'html']) };
   const built = [];
   for (const file of files) built.push({ file, input: join(folder, file), result: await buildInput(join(folder, file), galleryArgs) });
   if (built.some(({ result }) => !result)) return 1;
   const figures = [];
   for (const { file, input, result } of built) {
-    await writeFigure(input, result, galleryArgs);
     const name = file.replace(ANY_EXT, '');
-    figures.push({ name, ext: file.slice(name.length), ...describe(readFileSync(input, 'utf8')), href: relative(out, join(out, name)) });
+    await writeFigure(input, result, { ...galleryArgs, page: playerPage(name) });
+    figures.push({ name, ext: file.slice(name.length), ...describe(readFileSync(input, 'utf8')), href: relative(out, join(out, name)), page: playerPage(name) });
   }
   const heading = args.title ?? basename(folder);
   writeOutput(join(out, 'index.html'), toGallery(figures, heading), false);

@@ -2,10 +2,13 @@
 import { arrivalOffsetMs } from './easing.js';
 import { hopMs } from './hop-ms.js';
 import { flattenRoute, routeLength } from './route.js';
+import { makeDiagnostic, FigureError } from './source/problems.js';
 import { createSeg } from './timeline-seg.js';
 import { values } from './tokens.js';
 
 const FLOW_STEP_MS = values.duration['flow-step'];
+// 한 그림이 그릴 수 있는 점 수의 하드 상한. 경고 기준(`scale.flow-dots-max`)의 열 배다. 경고선 위에서 그림은 느려질 뿐이지만 이 선을 넘으면 입력이 처리 예산을 넘으므로 그리지 않는다.
+const DOTS_LIMIT = values.scale['flow-dots-max'] * 10;
 
 // cost: time O(l·p), heap O(l·p), stack O(1)
 // vars: l = 흐름의 구간(선) 수, p = 선의 경로 점 수
@@ -42,6 +45,25 @@ function planTrack(track, { scene, speed }) {
   };
 }
 
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+// 흐름 하나의 출발 수. 배열을 만들지 않고 단계 길이와 every에서 센다. every가 없으면 한 번이다.
+export function departureCount(track, lengthMs) {
+  if (track.atMs >= lengthMs) return 0;
+  return track.everyMs === undefined ? 1 : Math.ceil((lengthMs - track.atMs) / track.everyMs);
+}
+
+// cost: time O(t), heap O(1), stack O(1)
+// vars: t = 단계의 흐름 수
+// basis: estimate
+// 이 단계의 점 수를 그림 전체 합계에 더하고, 한도를 넘으면 출발 시각 배열을 만들기 전에 오류로 끝낸다.
+function reserveDots(step, lengthMs, { run, limit }) {
+  for (const track of step.tracks) {
+    run.dots = (run.dots ?? 0) + departureCount(track, lengthMs);
+    if (run.dots > limit) throw new FigureError([makeDiagnostic({ severity: 'error', line: track.line, message: `[check 14] the flows would draw ${run.dots} dots, over the limit of ${limit}. Raise every=, shorten for=, or remove a track` }, { code: 'check-14' })]);
+  }
+}
+
 // cost: time O(n), heap O(n), stack O(1)
 // vars: n = 출발 수
 // basis: estimate
@@ -62,14 +84,15 @@ function departures(track, lengthMs) {
  * 흐름 단계 하나의 구간. 구간 길이는 단계의 for=이고, 없으면 토큰 duration.flow-step이다.
  * 선은 점이 처음 닿는 시각에 켜지고 단계 끝까지 남는다(edgesAt). 도형은 켜 두지 않고 점이 닿을 때마다 후광만 깜빡인다(pulses: { id, at }).
  * @param run 시간표를 지나며 이어지는 값 { figure, speed, t, tracks, ... }
- * @param deps { scene, cards, chips }
+ * @param deps { scene, cards, chips, dotsLimit? }. dotsLimit은 그림 전체 점 수의 하드 상한이고(기본 `scale.flow-dots-max`의 열 배), 넘으면 FigureError다
  * @returns { segs, moves }. segs는 구간 하나의 목록, moves는 값 바꾸기 식이 쓰는 이동 목록이다
  */
-export function flowSeg({ step, si }, run, { scene, cards, chips }) {
+export function flowSeg({ step, si }, run, { scene, cards, chips, dotsLimit = DOTS_LIMIT }) {
   const plans = step.tracks.map((track) => planTrack(track, { scene, speed: run.speed }));
   const first = run.tracks.length;
   run.tracks.push(...plans.map((plan, i) => ({ parts: plan.parts, route: plan.route, names: plan.names, gaps: plan.gaps, line: step.tracks[i].line })));
   const length = step.forMs ?? FLOW_STEP_MS;
+  reserveDots(step, length, { run, limit: dotsLimit });
   const hops = [];
   const edgesAt = {};
   const pulses = [];
