@@ -3,7 +3,8 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { resolveBudget } from './budget.js';
 import { checkChartFigure, checkFigure } from './check.js';
-import { CHIP_GAP, sizeChip } from './chip.js';
+import { checkEventBudget } from './event-budget.js';
+import { CHIP_GAP, sizeChip, wrapChip } from './chip.js';
 import { planClashes } from './chip-clash.js';
 import { planHops } from './chip-plan.js';
 import { widenForHiddenChips } from './chip-room.js';
@@ -13,16 +14,15 @@ import { drawChecked } from './chart/guard.js';
 import { LayoutError } from './layout/error.js';
 import { layoutGraph } from './layout/graph.js';
 import { layoutSequence } from './layout/sequence.js';
-import { findMissingGlyph, wrap } from './measure/fonts.js';
+import { findMissingGlyph } from './measure/fonts.js';
 import { hasUnpairedBacktick } from './text.js';
 import { checkGridBudget, checkGridExtent } from './measure/grid-cost.js';
 import { countLines } from './measure/line-counts.js';
-import { STYLE, sizeNode } from './measure/sizes.js';
+import { sizeNode } from './measure/sizes.js';
 import { INTERVAL_TYPES, checkChartLightTargets, checkChartRows, hasRowRule } from './source/chart-rules.js';
 import { readFigure } from './source/parse.js';
 import { createProblems, FigureError } from './source/problems.js';
 import { collectCards, buildTimeline } from './timeline.js';
-import { values } from './tokens.js';
 
 // 원소 키. 종류마다 행 이름이 들어 있는 키다.
 const LABEL_KEY = { bar: 'label', dumbbell: 'label', difference: 'label', box: 'label', scatter: 'name' };
@@ -56,10 +56,11 @@ export async function buildFigure(source, { baseDir = '.', strict = false, noDep
     return finish({ figure, chart, timeline }, problems, { strict, noDeprecated });
   }
   checkGridBudget(figure, limits);
+  checkEventBudget(figure, limits);
   const sizes = new Map(figure.nodes.map((n) => [n.id, sizeNode(n, cards.contents.get(n.id), figure.kind === 'sequence' ? undefined : countLines(figure, n.id))]));
   checkGridExtent(figure, sizes, problems);
   problems.throwIfAny();
-  const { scene, timeline } = await placeScene(figure, { sizes, cards, source }, problems);
+  const { scene, timeline } = await placeScene(figure, { sizes, cards, source, limits }, problems);
   return finish({ figure, scene, timeline }, problems, { strict, noDeprecated });
 }
 
@@ -72,7 +73,7 @@ const LAYOUT_CHECKS = new Set(['check-2', 'check-3', 'check-4', 'check-5', 'chec
 /**
  * 배치, 시간표, 그림 검사를 한 번 하고 장면을 돌려준다. 구조 그림이 3번이나 4번 오류를 내면 안전 배치(줄 바꿈, 모델 순서 없음)로 한 번 더 하고,
  * 그 오류가 줄면 그쪽을 쓴다. aspect를 적었는데 안전 배치를 쓰면 무시했다고 경고한다.
- * @param inputs { sizes, cards, source }
+ * @param inputs { sizes, cards, source, limits }
  */
 async function placeScene(figure, inputs, problems) {
   const failures = (a) => a.local.errors.filter((d) => LAYOUT_CHECKS.has(d.code)).length;
@@ -94,10 +95,10 @@ async function placeScene(figure, inputs, problems) {
 // vars: elk = 배치 시간, check = 그림 검사 시간, s = 도형 수, e = 선 수
 // basis: estimate
 // 장면 한 번. 검사 결과는 따로 모은 진단 그릇(local)에 담는다.
-async function attemptScene(figure, { sizes, cards, source }) {
+async function attemptScene(figure, { sizes, cards, source, limits }) {
   const local = createProblems(source);
   const scene = figure.kind === 'sequence' ? layoutSequence(figure, sizes) : await layoutOrFail(figure, sizes, local);
-  const timeline = buildTimeline(figure, { cards, chips: wrapChip, scene });
+  const timeline = buildTimeline(figure, { cards, chips: wrapChip, scene, limits });
   widenForChips(scene, timeline);
   planChips(scene, timeline);
   // 태그 색은 원본에 처음 나온 순서로 정한다(docs/design/figure-syntax.md 카드 줄).
@@ -157,11 +158,6 @@ function finish(result, problems, { strict, noDeprecated }) {
   for (const d of promoted) problems.error(d.line, d.message, { code: d.code, column: d.column, fix: d.fix });
   problems.throwIfAny();
   return { ...result, warnings: problems.warnings, deprecations: problems.deprecations };
-}
-
-/** 글 상자 글을 토큰 `size.chip.max-width` 너비의 줄로 나눈다. HTML과 SVG가 같은 줄을 쓴다. */
-function wrapChip(text) {
-  return wrap(text, values.size.chip['max-width'], STYLE.chip);
 }
 
 // cost: time O(j + r·k), heap O(j), stack O(1), io 1

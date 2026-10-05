@@ -119,6 +119,8 @@ function emptyFigure() {
     arrivals: [],
     // 읽기 식(`:=`)을 하나라도 썼는지. 안 쓴 원본은 시간표가 읽기 처리를 거치지 않는다.
     hasRead: false,
+    // `when`이나 `wait`를 하나라도 썼는지. 안 쓴 원본은 시간표가 이벤트 처리를 거치지 않는다.
+    hasConditions: false,
     start: undefined,
     finals: [],
     chart: { series: [], rules: [], missing: undefined, data: undefined, x: undefined, y: undefined, scale: VALUES.scale.default, scaleLine: undefined, zero: VALUES.zero.default, zeroLine: undefined, decimals: undefined, rows: [], links: [] },

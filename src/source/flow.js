@@ -6,7 +6,7 @@ import { readSets } from './value.js';
 import { ID_PATTERN } from './words.js';
 import { isOverTimeLimit, overLimitMessage, parseTime, TIME_LIMIT_MS } from './values.js';
 
-const TRACK_FORM = 'write a track as: track a, b -> c -> d ["text"] [at=time] [every=time] [time=time] [legs="time, -"] [tone=name] [set="id+1@node"] [lost=60%]';
+const TRACK_FORM = 'write a track as: track a, b -> c -> d ["text"] [at=time] [every=time] [time=time] [legs="time, -"] [tone=name] [set="id+1@node"] [lost=60%] [when="condition"] [wait="condition"] [timeout=time] [else=node] [stuck]';
 const STATUS_FORM = 'write status as: status="node=ok, node=warn"';
 // 구간 시간의 합을 `time=`과 견주는 오차(ms). 소수 초(`1.1s`)를 밀리초로 바꾸며 생기는 부동소수점 오차를 같은 값으로 본다.
 const LEG_EPSILON_MS = 1e-6;
@@ -105,18 +105,20 @@ export function readTrack({ tokens, line }, ctx) {
   const { sources, path, rest } = splitPath(tokens);
   const texts = rest.filter((t) => t.type === 'text');
   const options = rest.filter((t) => t.type === 'option');
-  if (!sources.length || !path.length || texts.length > 1 || rest.length > texts.length + options.length) {
+  const stuck = rest.filter((t) => t.type === 'word' && t.value === 'stuck');
+  if (!sources.length || !path.length || texts.length > 1 || rest.length > texts.length + options.length + stuck.length) {
     ctx.problems.error(line, TRACK_FORM);
     return;
   }
-  const { found, timeMs, tone, sets, lost } = readMoveOptions(options, { scope: 'track', line, ctx });
+  if (stuck.length > 1) ctx.problems.error(line, 'stuck is written twice in one track');
+  const { found, timeMs, tone, sets, lost, condition } = readMoveOptions(options, { scope: 'track', line, ctx, isStuck: stuck.length > 0 });
   const atMs = readTime(found.at, { key: 'at', isZeroOk: true, line, ctx });
   const everyMs = readTime(found.every, { key: 'every', line, ctx });
   const legTimes = readLegs(found.legs, { lineCount: path.length, timeMs, line, ctx });
   sources.forEach((source, i) => {
     // 출발 시각을 적지 않으면 출발지가 every 안에서 고르게 엇갈려 출발한다.
     const start = atMs ?? Math.round(((everyMs ?? 0) * i) / sources.length);
-    ctx.step.tracks.push({ path: [source, ...path], source, data: texts[0]?.value, atMs: start, everyMs, timeMs, tone: tone ?? toneOfSource(source, ctx), sets, lost, legTimes, line });
+    ctx.step.tracks.push({ path: [source, ...path], source, data: texts[0]?.value, atMs: start, everyMs, timeMs, tone: tone ?? toneOfSource(source, ctx), sets, lost, legTimes, ...(condition ? { condition } : {}), line });
   });
 }
 

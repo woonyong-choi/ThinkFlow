@@ -1,6 +1,6 @@
 // 흐름 단계(`track`)를 시간표 구간 하나로 만든다. 박자가 끝나야 다음 박자가 시작하는 시계와 달리, 흐름은 단계 길이 안에서 서로 기다리지 않고 각자 출발한다(docs/design/playback.md 흐름 단계).
 import { arrivalOffsetMs } from './easing.js';
-import { ratio } from './format.js';
+import { DIGITS, ratio, roundTo } from './format.js';
 import { hopMs, lengthMs } from './hop-ms.js';
 import { isPassed } from './lost.js';
 import { flattenRoute, routeLength } from './route.js';
@@ -133,8 +133,7 @@ function departures(track, lengthMs) {
  * 단계 끝까지 도착하지 못하는 점과 사라지는 점(lost)은 그려지는 시간(cut)에서 끝나고, 사라지기 전에 통과하지 못한 도형은 후광도 선 켜짐도 없다.
  * 선은 점이 그 선에 들어선 지점(첫 선은 0, 그다음은 도형 안 구간을 지난 비율)이 사라지는 비율보다 앞일 때만 켜진다.
  */
-function trackEvents(plan, { track, index, length, chips }, { hops, edgesAt, pulses }) {
-  const starts = departures(track, length);
+function trackEvents(plan, { track, index, length, chips, starts }, { hops, edgesAt, pulses }) {
   const lostMs = track.lost === undefined ? Infinity : arrivalOffsetMs(track.lost, plan.ms, plan.pace);
   for (const at of starts) hops.push({ track: index, edges: plan.edges, gaps: plan.gaps, isBack: false, at, ms: plan.ms, ...cutOf(Math.min(lostMs, at + plan.ms > length ? length - at : Infinity)), ...(plan.pace ? { pace: plan.pace } : {}), to: plan.nodes.at(-1), data: track.data === undefined ? undefined : chips(track.data), ...(track.tone ? { tone: track.tone } : {}), line: track.line });
   for (const at of starts) plan.nodes.slice(1).forEach((id, k) => isPassed(plan.fracs[k + 1], track.lost) && pulses.push({ id, at: at + arrivalOffsetMs(plan.fracs[k + 1], plan.ms, plan.pace) }));
@@ -144,6 +143,46 @@ function trackEvents(plan, { track, index, length, chips }, { hops, edgesAt, pul
 // 그려지는 시간(cut) 필드. 단계 끝이나 사라짐으로 잘리지 않으면(Infinity) 필드가 없다.
 const cutOf = (cut) => (cut === Infinity ? {} : { cut });
 
+// cost: time O(t·d·log d), heap O(t·d), stack O(1)
+// vars: t = 흐름 수, d = 흐름의 출발 수
+// basis: estimate
+/**
+ * 조건을 쓴 흐름 단계의 점. 출발마다 이벤트 처리에 넘겨 `when`이 거짓인 출발은 점을 만들지 않고(출발 수에는 들어간다), `wait`가 풀린 출발은 풀린 시각(`at`)에 출발하며,
+ * 시간 초과로 끝난 대기는 `else` 도형으로 가는 점을 출발시킨다. 점의 이동, 선 켜짐, 후광은 조건이 없는 흐름과 같은 규칙(trackEvents)이다.
+ */
+function conditionalTracks(plans, { step, first, length, chips, run, scene, engine }, out) {
+  const t0 = run.t;
+  const base = (id) => id.split('.')[0];
+  let order = 0;
+  const launches = plans.flatMap((plan, i) => {
+    const track = step.tracks[i];
+    const { when, wait, timeoutMs, isStuck } = track.condition ?? {};
+    const elsePlan = track.elseLeg && { ms: hopMs(scene.edges[track.elseLeg.edge].points, run.speed), nodes: [base(track.source), base(track.condition.elseNode)], fracs: [0, 1], sets: [] };
+    return departures(track, length).map((rel) => ({ order: order++, line: track.line, node: track.source, text: track.path.join(' -> '), when, wait, timeoutMs, isStuck, readyAt: t0 + rel, rel, track: i, plan: { ms: plan.ms, nodes: plan.nodes, fracs: plan.fracs, pace: plan.pace, lost: track.lost, sets: track.sets }, elsePlan }));
+  });
+  const { started } = engine.runLaunches({ launches, tEnd: t0 + length });
+  const starts = plans.map(() => []);
+  const branches = [];
+  for (const { launch, at, via, isElse } of started) {
+    const rel = via === 'direct' ? launch.rel : roundTo(at - t0, DIGITS.ratio);
+    if (rel >= length) continue;
+    if (isElse) branches.push({ launch, rel });
+    else starts[launch.track].push(rel);
+  }
+  plans.forEach((plan, i) => trackEvents(plan, { track: step.tracks[i], index: first + i, length, chips, starts: starts[i].sort((a, b) => a - b) }, out));
+  for (const { launch, rel } of branches) branchEvents(step.tracks[launch.track], { plan: launch.elsePlan, rel, length, chips }, out);
+}
+
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+// 시간 초과 분기 점 하나. 출발 도형에서 `else` 도형으로 가는 선 하나를 지난다. 글과 색은 흐름에서 이어받고, 단계 끝까지 도착하지 못하면 그 끝에서 잘린다.
+function branchEvents(track, { plan, rel, length, chips }, { hops, edgesAt, pulses }) {
+  const { edge, isBack } = track.elseLeg;
+  hops.push({ edge, isBack: Boolean(isBack), at: rel, ms: plan.ms, ...cutOf(rel + plan.ms > length ? length - rel : Infinity), to: plan.nodes.at(-1), data: track.data === undefined ? undefined : chips(track.data), ...(track.tone ? { tone: track.tone } : {}), line: track.line });
+  edgesAt[edge] = Math.min(edgesAt[edge] ?? Infinity, rel);
+  pulses.push({ id: plan.nodes.at(-1), at: rel + plan.ms });
+}
+
 // cost: time O(t·(d + l)), heap O(t·d + e), stack O(1)
 // vars: t = 흐름 수, d = 흐름의 출발 수, l = 흐름의 구간 수, e = 지나는 선 수
 // basis: estimate
@@ -152,9 +191,10 @@ const cutOf = (cut) => (cut === Infinity ? {} : { cut });
  * 선은 점이 처음 닿는 시각에 켜지고 단계 끝까지 남는다(edgesAt). 도형은 켜 두지 않고 점이 닿을 때마다 후광만 깜빡인다(pulses: { id, at }).
  * @param run 시간표를 지나며 이어지는 값 { figure, speed, t, tracks, ... }
  * @param deps { scene, cards, chips, dotsLimit? }. dotsLimit은 그림 전체 점 수의 하드 상한이고(기본 `scale.flow-dots-max`의 열 배), 넘으면 FigureError다
+ * @param step 단계 { step, si, engine }. engine은 조건을 쓴 단계의 이벤트 처리 그릇(flow-events.js)이고, 있으면 출발 시각과 건너뜀을 그 결과로 정한다
  * @returns { segs, moves }. segs는 구간 하나의 목록, moves는 값 바꾸기 식이 쓰는 이동 목록이다
  */
-export function flowSeg({ step, si }, run, { scene, cards, chips, dotsLimit = DOTS_LIMIT }) {
+export function flowSeg({ step, si, engine }, run, { scene, cards, chips, dotsLimit = DOTS_LIMIT }) {
   const plans = step.tracks.map((track) => planTrack(track, { scene, speed: run.speed }));
   const first = run.tracks.length;
   run.tracks.push(...plans.map((plan, i) => ({ parts: plan.parts, route: plan.route, names: plan.names, gaps: plan.gaps, line: step.tracks[i].line })));
@@ -163,7 +203,8 @@ export function flowSeg({ step, si }, run, { scene, cards, chips, dotsLimit = DO
   const hops = [];
   const edgesAt = {};
   const pulses = [];
-  plans.forEach((plan, i) => trackEvents(plan, { track: step.tracks[i], index: first + i, length, chips }, { hops, edgesAt, pulses }));
+  if (engine) conditionalTracks(plans, { step, first, length, chips, run, scene, engine }, { hops, edgesAt, pulses });
+  else plans.forEach((plan, i) => trackEvents(plan, { track: step.tracks[i], index: first + i, length, chips, starts: departures(step.tracks[i], length) }, { hops, edgesAt, pulses }));
   const start = cards.starts.get(step) ?? {};
   const seg = createSeg(run, {
     line: step.line,
@@ -183,6 +224,7 @@ export function flowSeg({ step, si }, run, { scene, cards, chips, dotsLimit = DO
     status: step.status,
     extra: { edgesAt, nodesAt: {}, pulses: pulses.filter(({ at }) => at < length) },
   });
+  if (engine) return { segs: [seg], moves: [] };
   const moves = hops.map((hop) => ({ ...plans[hop.track - first], start: seg.t0 + hop.at, sets: step.tracks[hop.track - first].sets, lost: step.tracks[hop.track - first].lost }));
   return { segs: [seg], moves };
 }

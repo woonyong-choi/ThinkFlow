@@ -95,7 +95,6 @@ step "맞바꿈" "읽기는 갱신을 시작할 때 값을 읽는다" keep="save
 ### 잠금이 풀릴 때까지 기다리기
 
 ```text
-# 흐름 조건 예시
 flow right
 title "잠금으로 막기"
 
@@ -121,7 +120,6 @@ step "풀리면 B가 들어간다" keep="holder"
 ### 풀리지 않는 대기 남기기
 
 ```text
-# 흐름 조건 예시
 flow right
 title "교착"
 
@@ -431,18 +429,9 @@ step "소비자 하나가 느려진다" for=6s status="slow=warn"
 - 도형은 `box`, `external`, `store`, `person`, `queue`, `decision`이다. 그룹, 격자, 없는 이름, 한 단계 안에서 같은 도형의 중복, 모르는 종류는 오류다.
 - 상태는 그 단계에서만 적용하고 다음 단계는 도형의 선언 상태로 돌아간다. `keep`은 상태를 넘기지 않는다. 멈춘 SVG는 한 단계의 상태를 보이지 않으므로 알약을 그리지 않는다.
 
-### 추가 문법 표
+### 새 기능의 호환과 진단 code
 
-이 절의 문장과 선택 사항을 문법 표(`src/source/grammar.js`)의 꼴로 모은 표다. 모두 판 1이고 생략하면 지금과 같은 뜻이라 같은 판 안의 추가다. 구현이 항목을 문법 표에 넣으면 [호환 규칙](#호환-규칙)의 생성 표가 이 줄을 대신하고 이 표의 해당 줄을 지운다.
-
-| 선택 사항 | 값 | 판 | 폐기 |
-|---|---|---|---|
-| `hop.when`, `track.when` | 조건 글 | 판 1 |  |
-| `hop.wait`, `track.wait` | 조건 글 | 판 1 |  |
-| `hop.timeout`, `track.timeout` | 시간 | 판 1 |  |
-| `hop.else`, `track.else` | 도형 이름 | 판 1 |  |
-| `hop.stuck`, `track.stuck` | 값 없음(낱말만) | 판 1 |  |
-
+- 값 유지와 읽기, 사라짐과 구간 시간, 조건과 대기의 문장, 선택 사항, 낱말은 모두 판 1이고 문법 표(`src/source/grammar.js`)가 정본이다. [호환 규칙](#호환-규칙)의 생성 표에 모든 항목이 있다.
 - 새 기능을 하나도 쓰지 않는 원본은 값 초기화, 이벤트 순서, 출력, 비용이 그대로다([재생](playback.md#기존-원본과의-호환)).
 - 새 낱말은 지금까지 오류였던 꼴(`:=`, 새 선택 사항 키)뿐이라 옛 원본이 새 뜻으로 바뀌지 않는다.
 - 새 진단 `code`는 `value-type`(실행 때 값 종류가 맞지 않음), `leg-time`(구간 시간이 맞지 않음), `wait-stalled`(끝나지 않는 대기, 경고), `budget-exceeded`(이벤트 예산 초과)다. 나머지 오류는 `syntax`와 `time-limit`을 쓴다.
@@ -457,7 +446,7 @@ step "소비자 하나가 느려진다" for=6s status="slow=warn"
 - 이름 오류에는 선언된 이름 목록을 알파벳순으로 붙이고, 편집 거리가 2 이하인 이름이 있으면 `Did you mean "{이름}"?`을 붙인다.
 - 오류가 하나라도 있으면 파일을 쓰지 않는다. 문법 오류, 글꼴에 없는 글자, `data` 읽기 오류는 한 번에 모두 알린다. 파일이 비었거나 첫 줄의 그림 종류를 모르면 거기서 멈춘다. 다음 줄을 읽을 규칙이 없기 때문이다.
 - [그림 검사](figure-check.md)는 배치가 끝나야 돌므로, 원본 오류가 없을 때만 그 오류를 알린다.
-- 생성 예산을 넘으면 `budget-exceeded` 오류다. 필요한 양, 지금 한도, 올리는 방법(`--budget 이름=값`, Action 입력 `budget`)을 적고 파일을 쓰기 전에 끝난다. 예산 이름과 기본 한도는 [칸 격자](grid.md#예산)가 정본이다. `--budget` 값이 틀리면 그림을 만들기 전에 사용법 오류(종료 2)다.
+- 생성 예산을 넘으면 `budget-exceeded` 오류다. 필요한 양, 지금 한도, 올리는 방법(`--budget 이름=값`, Action 입력 `budget`)을 적고 파일을 쓰기 전에 끝난다. 격자 예산의 이름과 기본 한도는 [칸 격자](grid.md#예산)가, 이벤트 예산(`events`, `chain`)은 [재생](playback.md#이벤트-예산)이 정한다. `--budget` 값이 틀리면 그림을 만들기 전에 사용법 오류(종료 2)다.
 - 경고와 폐기는 파일을 쓰고 표준 오류에 남긴다. `--strict`면 경고도 실패이고, `--no-deprecated`면 폐기도 실패다.
 - 문법 밖의 화면 오류(겹침, 넘침)는 [그림 검사](figure-check.md)가 같은 형식으로 알린다.
 
@@ -476,7 +465,7 @@ step "소비자 하나가 느려진다" for=6s status="slow=warn"
 | `warning` | 품질 문제 | 씀 | `--strict` |
 | `deprecated` | 옛 형식이고 계속 동작한다 | 씀 | `--no-deprecated` |
 
-- 진단 하나의 모양은 `{ severity, code, line, column, message, fix? }`이고 모든 진단이 쓴다. `--json`은 여기에 `file`을 더하고, 옛 필드 `lines`, `check`, `level`도 함께 내(폐기, 다음 판까지) 진단마다 한 줄을 표준 출력에 쓴다. `code`는 `syntax`(문법), `check-1`~`check-14`([그림 검사](figure-check.md) 번호), `time-limit`(시간 상한 초과), `time-precision`(출발 시각이 늘지 않는 시간 정밀도), `value-type`, `leg-time`, `wait-stalled`, `budget-exceeded`(생성 예산 초과, [추가 문법 표](#추가-문법-표), [칸 격자](grid.md#예산)), `deprecated-statement`, `deprecated-option`, `deprecated-value`, `deprecated-kind`, `deprecated-extension`(옛 확장자 파일), `deprecated-fence`(마크다운 옛 울타리), `unsupported-version`, `invalid-version`, `version-required`, `layout`(배치 실패, [배치](layout.md#배치-실패)), `io`, `internal`이다. `column`은 줄 안 1부터 센 자리다. `fix`는 `{ line, column, length, text }`로, 그 줄의 `column`부터 `length`글자를 `text`로 바꾼다.
+- 진단 하나의 모양은 `{ severity, code, line, column, message, fix? }`이고 모든 진단이 쓴다. `--json`은 여기에 `file`을 더하고, 옛 필드 `lines`, `check`, `level`도 함께 내(폐기, 다음 판까지) 진단마다 한 줄을 표준 출력에 쓴다. `code`는 `syntax`(문법), `check-1`~`check-14`([그림 검사](figure-check.md) 번호), `time-limit`(시간 상한 초과), `time-precision`(출발 시각이 늘지 않는 시간 정밀도), `value-type`, `leg-time`, `wait-stalled`, `budget-exceeded`(생성 예산 초과, [새 기능의 호환과 진단 code](#새-기능의-호환과-진단-code), [칸 격자](grid.md#예산), [이벤트 예산](playback.md#이벤트-예산)), `deprecated-statement`, `deprecated-option`, `deprecated-value`, `deprecated-kind`, `deprecated-extension`(옛 확장자 파일), `deprecated-fence`(마크다운 옛 울타리), `unsupported-version`, `invalid-version`, `version-required`, `layout`(배치 실패, [배치](layout.md#배치-실패)), `io`, `internal`이다. `column`은 줄 안 1부터 센 자리다. `fix`는 `{ line, column, length, text }`로, 그 줄의 `column`부터 `length`글자를 `text`로 바꾼다.
 - `daphnis migrate 원본... [--write]`는 진단의 `fix`를 그대로 적용한다. 기본은 바뀔 줄만 `-`, `+`로 보여 주고, `--write`일 때만 파일을 고친다. 원본에 오류가 있거나 고친 글에 오류나 폐기가 남으면 아무것도 쓰지 않는다. 새 폐기 항목은 표에 `replace`만 적으면 된다.
 
 - CLI 출력과 옵션도 같은 규칙이다. 명령과 옵션 이름, 종료 코드, `--json` 필드는 추가만 하고, 옛 `--json` 필드(`lines`, `check`, `level`)는 `src/diagnostics.js` 표에 deprecated로 표시해 다음 판까지 함께 낸다.
@@ -532,12 +521,22 @@ step "소비자 하나가 느려진다" for=6s status="slow=warn"
 | `hop.tone` | `brand`, `purple`, `green`, `gray`, `red` | 판 1 |  |
 | `hop.set` | 글 | 판 1 |  |
 | `hop.lost` | 0 이상 100 이하 퍼센트 | 판 1 |  |
+| `hop.when` | 조건 글 | 판 1 |  |
+| `hop.wait` | 조건 글 | 판 1 |  |
+| `hop.timeout` | 시간 | 판 1 |  |
+| `hop.else` | 도형 이름 | 판 1 |  |
+| `hop.stuck` | 값 없음(낱말만) | 판 1 |  |
 | `track.at` | 시간(0 가능) | 판 1 |  |
 | `track.every` | 시간 | 판 1 |  |
 | `track.time` | 시간 | 판 1 |  |
 | `track.tone` | `brand`, `purple`, `green`, `gray`, `red` | 판 1 |  |
 | `track.set` | 글 | 판 1 |  |
 | `track.lost` | 0 이상 100 이하 퍼센트 | 판 1 |  |
+| `track.when` | 조건 글 | 판 1 |  |
+| `track.wait` | 조건 글 | 판 1 |  |
+| `track.timeout` | 시간 | 판 1 |  |
+| `track.else` | 도형 이름 | 판 1 |  |
+| `track.stuck` | 값 없음(낱말만) | 판 1 |  |
 | `track.legs` | 시간 또는 -의 목록 | 판 1 |  |
 | `value.on` | 도형 이름 | 판 1 |  |
 | `value.from` | 숫자 또는 낱말 | 판 1 |  |
@@ -589,8 +588,8 @@ step "소비자 하나가 느려진다" for=6s status="slow=warn"
 
 | 요구사항 | 검증 계획 |
 |---|---|
-| 문서의 모든 예시 원본이 오류와 경고 없이 읽힌다. | `test/grammar.test.js`의 `docExamples_every_design_doc_example_builds_without_errors_or_warnings`. 문서의 예시 원본을 뽑아 strict로 읽는다. 흐름 조건 예시는 첫 줄 주석을 지워 같은 시험에 넣는다 |
-| 조건식, `keep`, `lost`, `legs`, `status`, `else`의 틀린 값과 짝이 맞지 않는 선택 사항을 줄 번호와 함께 알린다. | 규칙마다 원본 하나로 줄 번호와 `code`(`syntax`, `value-type`, `leg-time`) 확인. 없는 값과 `1=1`, 낱말에 `<`, 첫 단계 `keep`, 항목 수가 다른 `legs`, 범위 밖 `lost`를 포함. 담당: [#118](https://github.com/woonyong-choi/daphnis/issues/118), [#119](https://github.com/woonyong-choi/daphnis/issues/119), [#120](https://github.com/woonyong-choi/daphnis/issues/120) #120 몫은 `test/lost-status-legs.test.js`의 `parseFigure_lost_accepts_0_to_100_percent_and_rejects_a_missing_percent_sign_or_a_value_out_of_range`, `parseFigure_lost_and_status_belong_to_flow_figures_only`, `parseFigure_legs_needs_one_entry_per_line_and_at_least_two_lines`, `parseFigure_legs_sum_against_time_reports_leg_time_on_the_track_line_at_the_boundaries`, `parseFigure_legs_entries_and_their_sum_over_one_hour_report_time_limit`, `buildFigure_legs_distance_times_over_one_hour_end_with_time_limit_on_the_track_line`, `parseFigure_status_rejects_unknown_kinds_duplicates_unknown_names_and_non_shape_targets`. #118 몫(`keep`, `:=`, 단계 `set=`)은 `test/value-keep.test.js`의 `buildFigure_each_value_keep_and_read_mistake_is_a_syntax_error_on_its_own_line`, `buildFigure_keep_and_step_set_in_a_figure_without_values_are_errors`, `buildFigure_reading_a_non_integer_text_into_a_queue_is_a_value_type_error_at_run_time_on_that_line`, `main_render_with_a_keep_or_read_error_exits_1_with_the_line_and_code_and_writes_no_file`가 확인한다 |
+| 문서의 모든 예시 원본이 오류와 경고 없이 읽힌다. | `test/grammar.test.js`의 `docExamples_every_design_doc_example_builds_without_errors_or_warnings`. 문서의 예시 원본을 뽑아 strict로 읽는다. 값 유지와 읽기, 잠금, 교착 예시도 같은 시험 대상이다 |
+| 조건식, `keep`, `lost`, `legs`, `status`, `else`의 틀린 값과 짝이 맞지 않는 선택 사항을 줄 번호와 함께 알린다. | 규칙마다 원본 하나로 줄 번호와 `code`(`syntax`, `value-type`, `leg-time`) 확인. 없는 값과 `1=1`, 낱말에 `<`, 첫 단계 `keep`, 항목 수가 다른 `legs`, 범위 밖 `lost`를 포함. 담당: [#118](https://github.com/woonyong-choi/daphnis/issues/118), [#119](https://github.com/woonyong-choi/daphnis/issues/119), [#120](https://github.com/woonyong-choi/daphnis/issues/120) #119 몫은 `test/when-wait.test.js`의 `buildFigure_reports_condition_syntax_errors_with_the_line_and_the_runtime_type_error_as_value_type`(`syntax`와 `value-type`, 줄 번호), `buildFigure_conditions_belong_to_flow_figures_only`와 `test/condition.test.js`(조건식 문법)가 확인한다. #120 몫은 `test/lost-status-legs.test.js`의 `parseFigure_lost_accepts_0_to_100_percent_and_rejects_a_missing_percent_sign_or_a_value_out_of_range`, `parseFigure_lost_and_status_belong_to_flow_figures_only`, `parseFigure_legs_needs_one_entry_per_line_and_at_least_two_lines`, `parseFigure_legs_sum_against_time_reports_leg_time_on_the_track_line_at_the_boundaries`, `parseFigure_legs_entries_and_their_sum_over_one_hour_report_time_limit`, `buildFigure_legs_distance_times_over_one_hour_end_with_time_limit_on_the_track_line`, `parseFigure_status_rejects_unknown_kinds_duplicates_unknown_names_and_non_shape_targets`. #118 몫(`keep`, `:=`, 단계 `set=`)은 `test/value-keep.test.js`의 `buildFigure_each_value_keep_and_read_mistake_is_a_syntax_error_on_its_own_line`, `buildFigure_keep_and_step_set_in_a_figure_without_values_are_errors`, `buildFigure_reading_a_non_integer_text_into_a_queue_is_a_value_type_error_at_run_time_on_that_line`, `main_render_with_a_keep_or_read_error_exits_1_with_the_line_and_code_and_writes_no_file`가 확인한다 |
 | 새 기능을 쓰지 않는 원본의 시간표와 출력이 바뀌지 않는다. | 모든 예제와 `test/fixtures/compat/v1/`의 기존 파일을 이 설계 이전 출력과 바이트 비교. 새 낱말을 한 번씩 쓰는 `all-*` 파일을 묶음에 더해 읽힘 확인. 담당: [#118](https://github.com/woonyong-choi/daphnis/issues/118), [#119](https://github.com/woonyong-choi/daphnis/issues/119), [#120](https://github.com/woonyong-choi/daphnis/issues/120) #120은 `all-lost-status-legs.dap`를 묶음에 더해 `compat_v1_every_fixture_builds_without_errors_and_matches_the_structure_snapshot`와 `compat_v1_covers_every_word_option_and_value_in_the_grammar_table`가 읽힘과 문법 표 사용을 본다. #118 몫은 `test/compat.test.js`의 `compat_v1_every_fixture_builds_without_errors_and_matches_the_structure_snapshot`(`all-value-keep.dap`)와 `compat_v1_covers_every_word_option_and_value_in_the_grammar_table`이 확인한다 |
 | 세 부분 순서, 낱말 공백, 이름 형식, 값 형식을 어긴 줄을 줄 번호와 함께 알린다. | `test/grammar.test.js`의 `parseFigure_malformed_source_reports_the_line_and_the_rule`. 규칙마다 원본 하나로 줄 번호와 오류 확인 |
 | 선언하지 않은 이름과 비슷한 이름을 함께 알린다. | `test/grammar.test.js`의 `parseFigure_unknown_name_suggests_the_nearest_declared_name`. `cdex`를 쓴 원본이 `codex`를 제안하는지 확인 |

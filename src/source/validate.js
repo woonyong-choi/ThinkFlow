@@ -151,7 +151,11 @@ function checkTimeline(figure, names, problems) {
     checkFlowStep(step, { figure, names, problems, resolveHop, usedEdges });
     for (const { node } of step.status ?? []) checkStatusTarget(node, { line: step.line, figure, names }, problems);
     for (const beat of step.beats) {
-      for (const hop of beat.hops) resolveHop(hop, { figure, names, problems }, usedEdges);
+      for (const hop of beat.hops) {
+        resolveHop(hop, { figure, names, problems }, usedEdges);
+        // 시간 초과로 끝난 점이 갈 선도 이동처럼 고른다(출발 도형에서 `else` 도형으로).
+        if (hop.condition?.elseNode) resolveHop((hop.elseLeg = { from: hop.from, to: hop.condition.elseNode, line: hop.line }), { figure, names, problems }, usedEdges);
+      }
       for (const op of beat.ops) checkCardTarget(op, { figure, names }, problems);
       for (const target of beat.light) checkLightTarget(target, { line: beat.line, figure, names }, problems);
       for (const note of beat.notes) checkNoteParticipant(note, { figure, names }, problems);

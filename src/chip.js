@@ -1,6 +1,6 @@
 // 점 위에 뜨는 글 상자의 크기와 자리. 움직이는 SVG, 재생기, 그림 검사가 시간표에 담은 같은 계획을 쓴다(docs/design/playback.md 이동 글).
 import { FIGURE_PAD } from './canvas.js';
-import { FIT_SLACK, measure } from './measure/fonts.js';
+import { FIT_SLACK, measure, wrap } from './measure/fonts.js';
 import { STYLE } from './measure/sizes.js';
 import { values } from './tokens.js';
 
@@ -38,6 +38,11 @@ const ROW_TOP = {
 export function sizeChip(lines) {
   const w = Math.max(...lines.map((line) => measure(line, STYLE.chip.size, STYLE.chip.face))) + SPACE['9'];
   return { w, h: lines.length * STYLE.chip.line + SPACE['4'] };
+}
+
+/** 글 상자 글을 토큰 `size.chip.max-width` 너비의 줄로 나눈다. HTML과 SVG가 같은 줄을 쓴다. */
+export function wrapChip(text) {
+  return wrap(text, values.size.chip['max-width'], STYLE.chip);
 }
 
 /** 두 사각형의 겹친 넓이 */

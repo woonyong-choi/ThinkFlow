@@ -132,7 +132,8 @@ test('buildFigure_a_word_after_equals_stays_a_value_text_even_when_it_looks_like
 
 // 근거: 이슈 #118 완료 조건 "새 기능을 쓰지 않는 원본의 값 초기화, 값 갱신 순서, 시간표가 바뀌지 않고 이벤트 처리 비용이 붙지 않는다"
 test('parseFigure_a_source_without_the_new_syntax_has_no_read_flag_no_keep_and_no_step_set_so_the_old_value_path_runs', async () => {
-  for (const name of readdirSync(EXAMPLES).filter((file) => file.endsWith('.dap'))) {
+  // 조건 예제(`keep`을 쓴다)는 새 문법을 쓰는 원본이라 뺀다.
+  for (const name of readdirSync(EXAMPLES).filter((file) => file.endsWith('.dap') && !/^(mutex-wait|deadlock-wait|queue-wait|circuit-breaker)\.dap$/.test(file))) {
     const { figure } = parseFigure(readFileSync(new URL(name, EXAMPLES), 'utf8'));
 
     assert.equal(figure.hasRead, false, name);
@@ -193,7 +194,7 @@ test('buildFigure_keep_and_step_set_in_a_figure_without_values_are_errors', asyn
   assert.match(errors[1].message, /set belongs to flow figures only/);
 });
 
-// 근거: 계약 "큐에 정수가 아닌 글을 읽어 넣으면 실행 때 value-type 오류", 설계 figure-syntax.md 추가 문법 표 진단 code
+// 근거: 계약 "큐에 정수가 아닌 글을 읽어 넣으면 실행 때 value-type 오류", 설계 figure-syntax.md 새 기능의 호환과 진단 code
 test('buildFigure_reading_a_non_integer_text_into_a_queue_is_a_value_type_error_at_run_time_on_that_line', async () => {
   const word = await errorsOf(`${BASE}step "s"\n  a -> b set="q:=w"\n`);
   const decimal = await errorsOf(`${BASE.replace('value n "개수" on=b', 'value n "개수" on=b from=1.5')}step "s"\n  a -> b set="q:=n"\n`);

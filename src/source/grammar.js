@@ -17,6 +17,8 @@ const TEXT = { ...V1, type: 'text' };
 const COUNT = { ...V1, type: 'number', format: '양의 정수', min: 1 };
 /** 경로 길이의 비율. 숫자와 `%`를 붙여 쓴다(`60%`). */
 const PERCENT = { ...V1, type: 'word', format: '0 이상 100 이하 퍼센트' };
+/** 흐름 조건식 글(`when`, `wait`). 문법은 condition.js다. */
+const CONDITION = { ...V1, type: 'text', format: '조건 글' };
 const INDEX = { ...V1, type: 'number', format: '0 이상 정수', min: 0 };
 /** 아이콘 이름. 기본 세트의 이름(`server`)이거나 등록한 세트의 `세트:이름`이다. */
 const ICON = { ...V1, type: 'word', format: '이름 또는 세트:이름' };
@@ -182,12 +184,22 @@ export const OPTIONS = table({
   'hop.tone': { ...V1, type: 'word', values: 'tone' },
   'hop.set': TEXT,
   'hop.lost': PERCENT,
+  'hop.when': CONDITION,
+  'hop.wait': CONDITION,
+  'hop.timeout': { ...V1, type: 'word', format: '시간' },
+  'hop.else': { ...V1, type: 'word', format: '도형 이름' },
+  'hop.stuck': FLAG,
   'track.at': { ...V1, type: 'word', format: '시간(0 가능)' },
   'track.every': { ...V1, type: 'word', format: '시간' },
   'track.time': { ...V1, type: 'word', format: '시간' },
   'track.tone': { ...V1, type: 'word', values: 'tone' },
   'track.set': TEXT,
   'track.lost': PERCENT,
+  'track.when': CONDITION,
+  'track.wait': CONDITION,
+  'track.timeout': { ...V1, type: 'word', format: '시간' },
+  'track.else': { ...V1, type: 'word', format: '도형 이름' },
+  'track.stuck': FLAG,
   'track.legs': { ...TEXT, format: '시간 또는 -의 목록' },
   'value.on': { ...V1, type: 'word', format: '도형 이름' },
   'value.from': { ...V1, type: 'word', format: '숫자 또는 낱말' },

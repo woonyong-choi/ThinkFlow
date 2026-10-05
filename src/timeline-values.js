@@ -45,9 +45,13 @@ function applyChecked(e, { state, reads, byId }) {
 // vars: e = 갱신의 식 수
 // basis: estimate
 // 갱신 하나(같은 순간에 같은 줄이 적용하는 식 목록). 읽기 식의 원천은 갱신을 시작하는 시점의 값으로 한꺼번에 읽어 두고, 그 뒤에 식을 적은 순서대로 쓴다. 그래서 `a:=b, b:=a`는 맞바꿈이다.
-function runUpdate(exprs, { state, textOf, byId }) {
+export function runUpdate(exprs, { state, textOf, byId, onWrite }) {
   const reads = new Map(exprs.filter((e) => e.op === ':=').map((e) => [e.operand, textOf(e.operand)]));
-  for (const e of exprs) state.set(e.id, applyChecked(e, { state, reads, byId }));
+  for (const e of exprs) {
+    const next = applyChecked(e, { state, reads, byId });
+    if (onWrite && next !== state.get(e.id)) onWrite(e);
+    state.set(e.id, next);
+  }
 }
 
 // cost: time O(1), heap O(1), stack O(1)
@@ -94,7 +98,7 @@ const isSameUpdate = (a, b) => a.t === b.t && a.order[0] === b.order[0] && a.ord
 // vars: c = 값이 바뀌는 횟수
 // basis: estimate
 // 값 줄이 보이는 동안 글이 바뀌는 구간 [시작, 끝, 글]과, 바뀌는 순간마다 value-flash 동안 밝히는 구간(겹치면 하나로 잇는다). SVG와 재생기가 읽기만 한다.
-function spansOf(row) {
+export function spansOf(row) {
   const marks = [[row.t0, row.initial], ...row.changes];
   const periods = marks.map(([at, text], i) => [at, marks[i + 1]?.[0] ?? row.t1, text]);
   const flashes = [];
@@ -104,6 +108,24 @@ function spansOf(row) {
     else flashes.push([at, end]);
   }
   return { periods, flashes };
+}
+
+// cost: time O(w), heap O(1), stack O(1)
+// vars: w = 값 수
+// basis: estimate
+/**
+ * 시각 t에 값이 바뀐 줄마다 변화 [t, 글]을 적는다. isMerged면 같은 시각에 이어진 갱신이 값 줄에 보이는 것은 그 시각의 마지막 글 하나이고, 앞서 바뀐 글로 되돌아오면 바뀐 것이 아니다.
+ * 시간표의 값 줄(valueRows)과 이벤트 처리(flow-events.js)가 같이 쓴다.
+ */
+export function noteRowChanges(rows, textOf, { t, isMerged }) {
+  for (const row of rows) {
+    const text = textOf(row.id);
+    const last = row.changes.at(-1);
+    if (isMerged && last?.[0] === t) {
+      if (text === (row.changes.at(-2)?.[1] ?? row.initial)) row.changes.pop();
+      else last[1] = text;
+    } else if (text !== (last?.[1] ?? row.initial)) row.changes.push([t, text]);
+  }
 }
 
 // cost: time O(e·(log e + w)), heap O(e + w), stack O(1)
@@ -116,35 +138,24 @@ function spansOf(row) {
  * @param moves 식이 있는 이동과 흐름 { start, ms, nodes, fracs, sets, pace?, lost? }. start는 그림 전체 시각(ms), fracs는 nodes가 경로 길이의 어느 비율에 있는지, pace는 구간별 이동 시간 꺾은선, lost는 사라지는 경로 비율이다
  * @param span { si, t0, t1 }. 단계 번호와 단계의 시작과 끝 시각
  * @param start 단계 시작 값 { keep, carried, sets }. keep은 유지할 값 이름, carried는 앞 단계가 끝난 값 { 이름 → 글 }, sets는 단계 `set=` 식이다. keep도 set도 없는 단계는 넘기지 않는다
+ * @param writers 값을 마지막으로 쓴 줄을 적을 그릇(Map: 값 이름 → { line, at, isSet }). 조건을 쓰는 그림만 넘기고, 교착 설명(`stalls`)이 읽는다
  * @returns { si, id, node, t0, t1, initial, changes, periods, flashes, slots? }[]. 선언한 값마다 하나다. slots는 큐의 칸 수다
  * @throws FigureError 읽기 식이 큐에 정수가 아닌 글을 넣거나 낱말을 담은 값에 합을 하면 `value-type` 오류
  */
-export function valueRows(figure, { moves, span, start }) {
+export function valueRows(figure, { moves, span, start, writers }) {
   const byId = valueTable(figure);
   const state = new Map(figure.values.filter((v) => v.ref === undefined).map((v) => [v.id, v.from]));
   const textOf = (id) => state.get(rootOf(byId, id));
-  if (start) startValues(start, { state, textOf, byId });
+  if (writers) resetWriters(figure, { writers, span, keep: start?.keep });
+  if (start) startValues(start, { state, textOf, byId, onWrite: writers && ((e) => writers.set(rootOf(byId, e.id), { line: e.line, at: span.t0, isSet: true })) });
   const rows = figure.values.map((v) => ({ si: span.si, id: v.id, node: v.on, t0: span.t0, t1: span.t1, initial: textOf(v.id), changes: [], ...(v.queue ? { slots: v.slots } : {}) }));
   const events = moves.flatMap((move, mi) => [...arrivalEvents(move, mi, figure.arrivals), ...setEvents(move, mi)]).filter((ev) => ev.t <= span.t1).sort(compareEvents);
-  // cost: time O(w), heap O(1), stack O(1)
-  // vars: w = 값 수
-  // basis: estimate
-  const noteChanges = (t, { isMerged }) => {
-    for (const row of rows) {
-      const text = textOf(row.id);
-      const last = row.changes.at(-1);
-      // 같은 시각에 이어진 갱신이 값 줄에 보이는 것은 그 시각의 마지막 글 하나다. 앞서 바뀐 글로 되돌아오면 바뀐 것이 아니다.
-      if (isMerged && last?.[0] === t) {
-        if (text === (row.changes.at(-2)?.[1] ?? row.initial)) row.changes.pop();
-        else last[1] = text;
-      } else if (text !== (last?.[1] ?? row.initial)) row.changes.push([t, text]);
-    }
-  };
+  const noteChanges = (t, { isMerged }) => noteRowChanges(rows, textOf, { t, isMerged });
   // 읽기 식이 있는 단계만 갱신 단위로 읽고 쓴다. 읽기 식이 없는 단계는 같은 원본의 다른 단계가 읽기 식을 써도 식 하나씩 적용하는 옛 경로 그대로다.
   if (figure.hasRead && events.some((ev) => ev.e.op === ':=')) {
     for (let from = 0, to = 1; from < events.length; from = to, to = from + 1) {
       while (to < events.length && isSameUpdate(events[from], events[to])) to++;
-      runUpdate(events.slice(from, to).map((ev) => ev.e), { state, textOf, byId });
+      runUpdate(events.slice(from, to).map((ev) => ev.e), { state, textOf, byId, onWrite: writers && ((e) => writers.set(rootOf(byId, e.id), { line: e.line, at: events[from].t, isSet: true })) });
       noteChanges(events[from].t, { isMerged: true });
     }
     return rows.map((row) => ({ ...row, ...spansOf(row) }));
@@ -153,6 +164,7 @@ export function valueRows(figure, { moves, span, start }) {
     const next = applyExpression(e, state);
     if (next === undefined || next === state.get(e.id)) continue;
     state.set(e.id, next);
+    writers?.set(rootOf(byId, e.id), { line: e.line, at: t, isSet: true });
     noteChanges(t, { isMerged: false });
   }
   return rows.map((row) => ({ ...row, ...spansOf(row) }));
@@ -162,7 +174,15 @@ export function valueRows(figure, { moves, span, start }) {
 // vars: k = keep한 값 수, e = 단계 set= 식 수
 // basis: estimate
 // 단계의 시작 값을 정한다. keep한 값은 앞 단계가 끝난 값으로 바꾸고, 단계 `set=` 재설정은 그 위에 한 갱신으로 적용한다. 재설정은 값을 바꾸는 순간이 아니라 시작 값이라 변화로 적지 않는다.
-function startValues({ keep, carried, sets }, { state, textOf, byId }) {
+export function startValues({ keep, carried, sets }, { state, textOf, byId, onWrite }) {
   for (const id of keep) state.set(id, carried.get(id));
-  if (sets.length) runUpdate(sets, { state, textOf, byId });
+  if (sets.length) runUpdate(sets, { state, textOf, byId, onWrite });
+}
+
+// cost: time O(v), heap O(1), stack O(1)
+// vars: v = 값 수
+// basis: estimate
+/** 단계가 시작할 때 값의 마지막으로 쓴 줄을 정한다. keep한 값은 앞 단계가 남긴 기록을 그대로 두고, 나머지는 선언 줄이다. */
+export function resetWriters(figure, { writers, span, keep }) {
+  for (const v of figure.values.filter((value) => value.ref === undefined)) if (!keep?.includes(v.id) || !writers.has(v.id)) writers.set(v.id, { line: v.line, at: span.t0, isSet: false });
 }

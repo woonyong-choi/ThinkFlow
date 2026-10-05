@@ -16,6 +16,7 @@ export function checkFlowStep(step, deps) {
       resolveHop(leg, deps, usedEdges);
       return leg;
     });
+    if (track.condition?.elseNode) resolveHop((track.elseLeg = { from: track.source, to: track.condition.elseNode, line: track.line }), deps, usedEdges);
     const labels = track.legs.filter((leg) => leg.edge !== undefined).map((leg) => figure.edges[leg.edge].label);
     if (track.data !== undefined && labels.includes(track.data)) problems.warn(track.line, `[check 8] the moving text "${track.data}" repeats an edge label. Remove one of them`);
   }

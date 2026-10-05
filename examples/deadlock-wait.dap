@@ -1,0 +1,20 @@
+flow right
+title "풀리지 않는 교착"
+subtitle "두 작업이 서로 상대가 쥔 잠금을 기다려, 점이 출발하지 못한다"
+
+box t1 "작업 1"
+box t2 "작업 2"
+box l1 "잠금 가"
+box l2 "잠금 나"
+value h1 "가를 쥔 쪽" on=l1 from=none
+value h2 "나를 쥔 쪽" on=l2 from=none
+t1 -> l1
+t1 -> l2
+t2 -> l2
+t2 -> l1
+
+step "각자 하나씩 쥔다" "작업 1은 가, 작업 2는 나를 쥔다"
+  t1 -> l1 "쥠" set="h1=t1" tone=brand & t2 -> l2 "쥠" set="h2=t2" tone=purple
+step "서로 상대 것을 요청한다" "조건이 둘 다 거짓이고 처리할 이벤트가 없어 멈춘다" keep="h1, h2" status="t1=wait, t2=wait"
+  t1 -> l2 "요청" wait="h2='none'" stuck tone=brand & t2 -> l1 "요청" wait="h1='none'" stuck tone=purple
+  say "두 점 모두 출발하지 못하고, 누구도 잠금을 풀지 못한다"

@@ -1,6 +1,7 @@
 // 그림 검사. 배치가 끝난 장면에서 화면 오류를 찾아 원본 줄 번호와 함께 알린다(docs/design/figure-check.md).
 // 항목 목록은 check/items.js, 판정 함수는 check/ 아래 항목별 파일이다.
 import { CHECKS } from './check/items.js';
+import { warnStalls } from './event-budget.js';
 import { createFamily, drawnBox, pillBox, titleBox } from './check/geometry.js';
 import { statusBoxes } from './draw/status.js';
 import { hasPill } from './measure/sizes.js';
@@ -27,12 +28,13 @@ function createContext(figure, scene, timeline) {
 // cost: time O(e²·p² + e·s·p + s² + s·k·r·n + h·p), heap O(e + s), stack O(1)
 // vars: e = 선 수, p = 경로 점 수, s = 도형 수, k = 도형당 카드 내용 수, r = 카드 줄 수, n = 줄 글자 수, h = 글 상자 있는 이동 수
 // basis: estimate
-/** 장면({ figure, scene, timeline })을 검사해 오류와 경고를 problems에 넣는다. 항목 목록 순서대로 판정한다. 오류 메시지 앞에 검사 번호를 붙인다. */
+/** 장면({ figure, scene, timeline })을 검사해 오류와 경고를 problems에 넣는다. 항목 목록 순서대로 판정하고 오류 메시지 앞에 검사 번호를 붙인다. 끝나지 않는 대기(`stalls`)는 경고 `wait-stalled`로 알린다. */
 export function checkFigure({ figure, scene, timeline }, problems) {
   const context = createContext(figure, scene, timeline);
   for (const { judge, kinds } of CHECKS) {
     if (judge && (!kinds || kinds.includes(figure.kind))) judge(context, problems);
   }
+  warnStalls(figure, timeline, problems);
 }
 
 // cost: time O(c·r·n), heap O(r), stack O(1)

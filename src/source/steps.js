@@ -30,7 +30,7 @@ function readStep({ tokens, line }, ctx) {
     ctx.problems.error(line, 'write a step as: step "name" ["caption"] [for=12s] [keep=names] [set=exprs] [status=list]');
   }
   const { forMs, keep, sets, status } = readStepOptions(tokens.filter((t) => t.type === 'option'), { line, ctx });
-  ctx.step = { label: label?.value ?? '', caption: caption?.type === 'text' ? caption.value : undefined, line, beats: [], tracks: [], forMs, keep, sets, status };
+  ctx.step = { label: label?.value ?? '', caption: caption?.type === 'text' ? caption.value : undefined, line, beats: [], tracks: [], forMs, keep, sets, status, hasConditions: false };
   ctx.figure.steps.push(ctx.step);
 }
 
@@ -53,9 +53,11 @@ function readHops({ tokens, line }, ctx) {
       ctx.problems.error(line, 'write a move as: a -> b ["text"] [time=2s]');
       continue;
     }
-    const { timeMs, tone, sets, lost } = readMoveOptions(rest.filter((t) => t.type === 'option'), { scope: 'hop', line, ctx });
-    const hop = { from: from.value, to: to.value, data: undefined, timeMs, dashed: false, tone, sets, lost, line };
-    for (const t of rest.filter((w) => w.type !== 'option')) readHopWord(t, hop, { isSequence, line, ctx });
+    const stuck = rest.filter((t) => t.type === 'word' && t.value === 'stuck');
+    if (stuck.length > 1) ctx.problems.error(line, 'stuck is written twice in one move');
+    const { timeMs, tone, sets, lost, condition } = readMoveOptions(rest.filter((t) => t.type === 'option'), { scope: 'hop', line, ctx, isStuck: stuck.length > 0 });
+    const hop = { from: from.value, to: to.value, data: undefined, timeMs, dashed: false, tone, sets, lost, ...(condition ? { condition } : {}), line };
+    for (const t of rest.filter((w) => w.type !== 'option' && !stuck.includes(w))) readHopWord(t, hop, { isSequence, line, ctx });
     if (isSequence && hop.data === undefined) ctx.problems.error(line, 'a sequence message needs text: a -> b "message"');
     beat.hops.push(hop);
   }
@@ -68,7 +70,7 @@ function readHopWord(t, hop, { isSequence, line, ctx }) {
   if (t.type === 'text' && hop.data === undefined) hop.data = t.value;
   else if (isSequence && t.type === 'word' && t.value === 'dashed' && !hop.dashed) hop.dashed = true;
   else if ((t.type === 'text' && hop.data !== undefined) || (t.value === 'dashed' && hop.dashed)) ctx.problems.error(line, `${t.type === 'text' ? 'the move text' : 'dashed'} is written twice in one move`);
-  else ctx.problems.error(line, `a move takes a quoted text, time=, tone=, and set=. Found "${t.value}"`);
+  else ctx.problems.error(line, `a move takes a quoted text, time=, tone=, set=, lost=, when=, wait=, timeout=, else=, and stuck. Found "${t.value}"`);
 }
 
 // cost: time O(t + g), heap O(g), stack O(1)

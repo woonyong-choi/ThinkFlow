@@ -72,8 +72,8 @@ function playerSegs(timeline, { scene, itemIndex, groupIndex }) {
       t1: seg.t1,
       hops: seg.hops,
       edgesOn: seg.edgesOn,
-      nodesOn: seg.edgesAt ? [] : [...lit].filter((id) => itemIndex.has(id)).map((id) => itemIndex.get(id)),
-      groupsOn: seg.edgesAt ? [] : [...lit].filter((id) => groupIndex.has(id)).map((id) => groupIndex.get(id)),
+      nodesOn: seg.pulses ? [] : [...lit].filter((id) => itemIndex.has(id)).map((id) => itemIndex.get(id)),
+      groupsOn: seg.pulses ? [] : [...lit].filter((id) => groupIndex.has(id)).map((id) => groupIndex.get(id)),
       partsOn: seg.partsOn,
       cards: toIndex(itemIndex, seg.cards),
       cardsBefore: toIndex(itemIndex, seg.cardsBefore),
@@ -91,12 +91,12 @@ function playerSegs(timeline, { scene, itemIndex, groupIndex }) {
 // cost: time O(e), heap O(e), stack O(1)
 // vars: e = 처음 닿는 선과 도형 수
 // basis: estimate
-// 흐름 구간이 처음 닿을 때 켜지는 선, 도형, 그룹과 그 시각(구간 안 ms). 도형과 그룹은 번호로 바꿔 넘긴다. 박자 구간은 빈 객체다.
+// 흐름 구간이 처음 닿을 때 켜지는 선, 도형, 그룹과 그 시각(구간 안 ms). 도형과 그룹은 번호로 바꿔 넘긴다. 박자 구간은 대기가 풀린 뒤 출발한 이동이 처음 켜는 것만 갖고, 없으면 빈 객체다.
 function timedLights(seg, { itemIndex, groupIndex }) {
   if (!seg.edgesAt) return {};
   const pick = (map) => Object.fromEntries(Object.entries(seg.nodesAt).filter(([id]) => map.has(id)).map(([id, at]) => [map.get(id), at]));
-  const pulses = seg.pulses.filter(({ id }) => itemIndex.has(id)).map(({ id, at }) => ({ n: itemIndex.get(id), at })).sort((a, b) => a.at - b.at);
-  return { edgesAt: seg.edgesAt, nodesAt: pick(itemIndex), groupsAt: pick(groupIndex), pulses };
+  const pulses = seg.pulses?.filter(({ id }) => itemIndex.has(id)).map(({ id, at }) => ({ n: itemIndex.get(id), at })).sort((a, b) => a.at - b.at);
+  return { edgesAt: seg.edgesAt, nodesAt: pick(itemIndex), groupsAt: pick(groupIndex), ...(pulses ? { pulses } : {}) };
 }
 
 // cost: time O(r·c), heap O(r·c), stack O(1)

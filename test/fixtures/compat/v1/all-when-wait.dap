@@ -1,0 +1,24 @@
+flow right
+title "조건과 대기"
+box a "작업 A"
+box b "작업 B"
+box lock "잠금"
+store db "저장소"
+value holder "쥔 쪽" on=lock from=none
+value count "횟수" on=db
+on db count+1
+a -> lock
+b -> lock
+a -> db
+b -> db
+lock -> db
+
+step "잠금을 쥔다"
+  a -> lock "요청" set="holder=A" when="holder='none'"
+step "풀리면 들어간다" keep="holder, count"
+  a -> lock "풀기" set="holder=none" & b -> lock "요청" wait="holder='none'" timeout=5s else=db set="holder=B"
+step "교착은 의도다" keep="holder"
+  b -> lock "다시 요청" wait="holder='none' && count>=0" stuck
+step "흐름의 조건" for=6s keep="holder"
+  track a -> lock -> db every=2s time=1s when="count<3" wait="holder!='X' || !(count=1)" timeout=1s else=db
+  track b -> lock -> db at=1s time=1s wait="holder='A'" stuck

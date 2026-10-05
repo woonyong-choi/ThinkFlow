@@ -9,6 +9,9 @@ import { FigureError, makeDiagnostic } from './source/problems.js';
 export const BUDGETS = Object.freeze({
   'grid-elements': { limit: 500_000, unit: 'SVG elements drawn by grids' },
   'grid-path-commands': { limit: 1_000_000, unit: 'path commands in the empty-area paths of grids' },
+  // 흐름 조건과 대기를 계산하는 이벤트(docs/design/playback.md 이벤트 예산). 기본 한도는 같은 문서의 측정에서 정했다.
+  events: { limit: 300_000, unit: 'events (departures, arrivals, value updates, wait evaluations and releases)' },
+  chain: { limit: 5_000, unit: 'events at one moment' },
 });
 
 /** 예산 이름 목록 */
@@ -96,4 +99,21 @@ function diagnose(name, { total, over }, limit) {
   const { unit } = BUDGETS[name];
   const message = `this figure needs ${total} ${unit}, over the budget ${name}=${limit}, and ${over.what} is where the total passes it. Raise it with --budget ${name}=${total} (the Action input budget: ${name}=${total}), or shrink the grids`;
   return makeDiagnostic({ severity: 'error', line: over.line, message }, { code: 'budget-exceeded' });
+}
+
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+/**
+ * 이벤트 예산(`events`, `chain`)을 넘었을 때의 오류. 필요한 양을 아직 모르는 동적 이벤트는 넘은 줄과 시각을, 문장으로 센 합계(needed)는 필요한 양을 알린다. 파일을 쓰기 전에 끝난다.
+ * @param name 예산 이름
+ * @param limit 지금 한도
+ * @param where { line, t?, needed? }. t는 넘은 시각(그림 전체 ms), needed는 미리 센 필요한 양이다
+ * @returns FigureError (code `budget-exceeded`)
+ */
+export function eventBudgetError(name, limit, { line, t, needed }) {
+  const { unit } = BUDGETS[name];
+  const raise = needed ?? limit * 2;
+  const cause = needed === undefined ? `the figure passes the budget ${name}=${limit} at ${t}ms, counting ${unit}` : `this figure needs ${needed} ${unit} counted from its departures, over the budget ${name}=${limit}`;
+  const message = `${cause}. Raise it with --budget ${name}=${raise} (the Action input budget: ${name}=${raise}), or reduce the waits, tracks, and departures`;
+  return new FigureError([makeDiagnostic({ severity: 'error', line, message }, { code: 'budget-exceeded' })]);
 }
