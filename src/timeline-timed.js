@@ -81,11 +81,11 @@ export function startedHops(beat, { run, deps, engine }) {
   const { scene } = deps;
   const base = (id) => id.split('.')[0];
   const launches = beat.hops.map((hop, hi) => {
-    const { when, wait, timeoutMs, isStuck } = hop.condition ?? {};
+    const { when, wait, timeoutMs, isStuck, reserve } = hop.condition ?? {};
     const elsePlan = hop.elseLeg && { ...gridPlan({ ms: hopMs(scene.edges[hop.elseLeg.edge].points, run.speed), nodes: [base(hop.from), base(hop.condition.elseNode)], fracs: [0, 1] }, { line: hop.line }), sets: [] };
     const timeoutTicks = timeoutMs === undefined ? undefined : inputTicks(timeoutMs, { line: hop.line, key: 'timeout' });
     const plan = { ...planOf(hop, { run, scene }), lost: hop.lost, sets: hop.sets };
-    return { order: hi, line: hop.line, node: hop.from, text: `${hop.from} -> ${hop.to}`, when, wait, timeoutTicks, isStuck, rel: 0, plan, elsePlan, hop };
+    return { order: hi, line: hop.line, node: hop.from, text: `${hop.from} -> ${hop.to}`, when, wait, reserve, timeoutTicks, isStuck, rel: 0, plan, elsePlan, hop };
   });
   const { started, endTicks } = engine.runLaunches({ launches, start: run.t });
   const entries = started.map(({ launch, at, isElse }) => ({ hop: launch.hop, at: msOfTicks(at), isElse, ms: (isElse ? launch.elsePlan : launch.plan).ms }));

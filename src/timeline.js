@@ -100,11 +100,11 @@ export function buildTimeline(figure, deps) {
     isKept: figure.steps.some((step) => step.keep?.length),
     carry: new Map(),
     // 조건과 대기(`when`, `wait`)를 쓰는 그림만 이벤트 처리 기록을 갖는다. 예산 한도, 대기와 건너뜀과 교착 기록, 값을 마지막으로 쓴 줄이다.
-    ...(figure.hasConditions ? { limits: deps.limits ?? resolveBudget(), conditions: { waits: [], skips: [], stalls: [], events: 0 }, writers: new Map() } : {}),
+    ...(figure.hasConditions ? { limits: deps.limits ?? resolveBudget(), conditions: { waits: [], skips: [], stalls: [], events: 0, ...(figure.hasReserve ? { reserves: [] } : {}) }, writers: new Map() } : {}),
   };
   const segs = figure.steps.flatMap((step, si) => stepSegs({ step, si }, run, deps));
-  const { waits, skips, stalls, events } = run.conditions ?? {};
-  const extra = { ...(run.tracks.length ? { tracks: run.tracks } : {}), ...(run.values.length ? { values: run.values } : {}), ...(run.conditions ? { waits, skips, stalls, events } : {}) };
+  const { waits, skips, stalls, events, reserves } = run.conditions ?? {};
+  const extra = { ...(run.tracks.length ? { tracks: run.tracks } : {}), ...(run.values.length ? { values: run.values } : {}), ...(run.conditions ? { waits, skips, stalls, events, ...(reserves ? { reserves } : {}) } : {}) };
   return { segs, total: run.t || 1, steps: figure.steps.map((s) => s.label), growMs: speed, ...extra };
 }
 

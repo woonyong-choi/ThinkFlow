@@ -28,10 +28,10 @@ export function readMoveOptions(options, { scope, line, ctx, isStuck = false }) 
 // cost: time O(c), heap O(c), stack O(d)
 // vars: c = 조건 글자 수, d = 괄호 깊이
 // basis: estimate
-// 조건 선택 사항 묶음(`when`, `wait`, `timeout`, `else`, `stuck`). 구조 그림(flow)에서만 쓰고, `timeout`, `else`, `stuck`은 `wait`가 있어야 하며 `else`는 `timeout`이 있어야 한다.
+// 조건 선택 사항 묶음(`when`, `wait`, `timeout`, `else`, `stuck`, `reserve`). 구조 그림(flow)에서만 쓰고, `timeout`, `else`, `stuck`은 `wait`가 있어야 하며 `else`는 `timeout`이 있어야 한다.
 // `when`이나 `wait`가 있으면 그 단계와 그림이 조건 처리를 거친다고 표시한다. 하나도 안 썼으면 undefined다.
 function readCondition(found, { isStuck, line, ctx }) {
-  const has = ['when', 'wait', 'timeout', 'else'].filter((key) => found[key] !== undefined);
+  const has = ['when', 'wait', 'timeout', 'else', 'reserve'].filter((key) => found[key] !== undefined);
   if (!has.length && !isStuck) return undefined;
   const { problems } = ctx;
   if (ctx.figure.kind !== 'flow') {
@@ -51,11 +51,25 @@ function readCondition(found, { isStuck, line, ctx }) {
   if (found.wait === undefined && (found.timeout !== undefined || isStuck)) problems.error(line, `${found.timeout !== undefined ? 'timeout' : 'stuck'} goes with wait. Add wait="condition" or remove it`);
   if (found.timeout === undefined && found.else !== undefined) problems.error(line, 'else is where a wait goes when timeout passes. Add timeout=time or remove else');
   if (found.else !== undefined && found.wait === undefined) problems.error(line, 'else goes with wait and timeout. Add wait="condition" timeout=time or remove else');
-  if (found.when !== undefined || found.wait !== undefined) {
+  if (found.reserve !== undefined) {
+    condition.reserve = readReserve(found.reserve, { line, ctx });
+    ctx.figure.hasReserve = true;
+  }
+  if (found.when !== undefined || found.wait !== undefined || found.reserve !== undefined) {
     ctx.figure.hasConditions = true;
     if (ctx.step) ctx.step.hasConditions = true;
   }
   return condition;
+}
+
+// cost: time O(e·v), heap O(e), stack O(1)
+// vars: e = 식 수, v = 값 수
+// basis: estimate
+// `reserve="식, 식"`. 점이 출발하는 순간에 한 갱신으로 적용하므로 `@도형`은 쓸 수 없다. 식 읽기는 `set=`과 같다.
+function readReserve(text, { line, ctx }) {
+  const sets = readSets(text, { line, ctx });
+  if (sets.some((e) => e.at !== undefined)) ctx.problems.error(line, 'a reserve applies when the dot departs, so it takes no @node. Put @node in a set= to change a value where the dot arrives');
+  return sets;
 }
 
 // cost: time O(1), heap O(1), stack O(1)

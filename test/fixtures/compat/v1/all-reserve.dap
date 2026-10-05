@@ -1,0 +1,21 @@
+flow right
+title "원자 예약"
+box a "작업 A"
+box b "작업 B"
+box lock "잠금"
+queue q "큐" slots=4 from=3
+value holder "쥔 쪽" on=lock from=none
+value free "남은" on=lock from=1
+a -> lock
+b -> lock
+a -> q
+b -> q
+q -> a
+
+step "예약" for=8s
+  track a -> lock "요청" at=0s time=1s wait="holder='none' && free>0" reserve="holder=A, free-1" timeout=2s else=q
+  track b -> lock "요청" at=0s time=1s wait="holder='none'" reserve="holder=B"
+  track a -> lock "풀기" at=3s time=1s when="holder='A'" reserve="holder=none, free+1"
+step "칸" keep="holder, free"
+  a -> q time=1s when="q<4" reserve="q+1"
+  q -> a time=1s reserve="q-1"

@@ -107,14 +107,14 @@
 |---|---|---|
 | 1 | `on` 줄의 값 갱신 | 원본 선언 순서 |
 | 2 | 이동과 흐름 `set=`의 값 갱신 | 이동과 흐름의 선언 순서, 같은 줄이면 적은 순서 |
-| 3 | 풀린 대기의 실행 | 대기 줄의 선언 순서, 같은 흐름이면 보류한 순서 |
-| 4 | 이 시각에 출발하는 점의 실행 | 선언 순서, 같은 흐름이면 출발 순서 |
+| 3 | 풀린 대기의 실행(`reserve=`가 있으면 예약 포함) | 대기 줄의 선언 순서, 같은 흐름이면 보류한 순서 |
+| 4 | 이 시각에 출발하는 점의 실행(`reserve=`가 있으면 예약 포함) | 선언 순서, 같은 흐름이면 출발 순서 |
 
 - 갱신 하나는 같은 시각에 `on` 줄 하나(점이 도형에 닿는 일 하나)나 `set=` 하나가 적용하는 식의 목록이다. `@도형`을 붙인 식은 점이 그 도형에 닿는 시각의 갱신이다.
 - 값 갱신 하나는 읽기, 쓰기 순서다. 식에 든 읽기(`:=`)는 그 갱신을 시작하는 시점의 값을 읽고, 그 뒤에 식을 적은 순서대로 쓴다. 그래서 `set="a:=b, b:=a"`는 두 값을 맞바꾼다.
 - 읽기 식(`:=`)이 든 단계는 한 시각에 이어진 갱신의 결과를 값 줄에 그 시각의 마지막 글 하나로 보인다. 같은 시각에 앞서 바뀐 글로 되돌아오면 변화로 적지 않는다. 읽기 식이 없는 단계는 식 하나마다 변화를 적는 지금의 방식 그대로다.
 - 갱신이 끝나면 바뀐 값을 가리키는 참조 값 줄이 같은 글로 바뀌고(갱신마다 별도 이벤트로 센다), 그 값을 조건에서 쓰는 대기를 선언 순서로 다시 평가한다. 참이 되는 대기는 풀려서 순위 3에 놓인다.
-- 점의 출발 실행은 `wait`, `when` 순서로 조건을 보고 둘 다 통과한 출발만 점을 만든다. 출발은 값을 바꾸지 않고 값은 점이 도착할 때 바뀐다. 이동 시간이 0보다 크므로 도착은 늘 출발보다 늦다. 그래서 같은 시각에서 갱신이 새 갱신을 만드는 닫힌 고리는 없고, 한 시각의 연쇄는 갱신, 참조 값 갱신, 대기 해제, 출발에서 끝난다.
+- 점의 출발 실행은 `wait`, `when` 순서로 조건을 보고 둘 다 통과한 출발만 점을 만든다. 출발은 값을 바꾸지 않고 값은 점이 도착할 때 바뀐다. 예외는 `reserve=`가 있는 출발이고, 그 갱신은 [원자 예약](#원자-예약)이 정한다. 이동 시간이 0보다 크므로 도착은 늘 출발보다 늦다. 그래서 같은 시각에서 갱신이 새 갱신을 만드는 닫힌 고리는 없고, 한 시각의 연쇄는 갱신, 참조 값 갱신, 대기 해제, 출발에서 끝난다. 예약이 바꾼 값을 읽는 대기는 같은 시각에 한 번 더 평가하고, 이 연쇄는 `chain` 예산이 끊는다.
 - 박자 단계는 박자마다 같은 처리를 하고, 박자 시작 시각에서 시작한다. 앞 박자가 끝난 뒤의 값을 읽는다. 한 박자의 이동은 모두 박자 시작에 출발할 준비를 하고 선언 순서로 처리한다.
 - 점이 도형에 닿는 일은 값을 바꾸지 않아도 이벤트 하나다. 대기가 남았는데 닿을 점이 아직 있으면 처리할 이벤트가 남은 것이다. 닿을 때 적용할 식이 없으면 갱신 없이 이벤트로만 세고, 대기는 다시 평가하지 않는다.
 - 대기의 평가는 한 시각의 갱신(순위 1, 2)을 모두 적용한 뒤에 한다. 그 시각에 글이 실제로 바뀐 값을 읽는 대기만 다시 평가하고, 한 시각 안에서 바뀌었다가 처음 글로 돌아온 값은 바뀐 것이 아니다.
@@ -131,15 +131,40 @@
 - 값을 바꾸는 연쇄(참조 값, 대기 해제)는 이벤트 하나씩으로 세어 [이벤트 예산](#이벤트-예산)에 넣는다.
 - `timeout`이 지난 대기는 `else`가 있으면 출발 도형에서 `else` 도형으로 가는 점을 출발시킨다. 이 점은 시간 초과 시각에 출발하고 값은 `on` 줄만 적용한다(`set=`는 이어받지 않는다). 같은 시각에 풀림과 시간 초과가 겹치면 풀림이 이긴다.
 
+### 원자 예약
+
+잠금이나 큐처럼 용량이 정해진 자원은 조건 확인과 값 갱신이 한 사건이어야 한다. 기존 `wait="n=0"` 과 `set="n+1@a"`를 함께 쓰면 두 이동이 같은 시각에 둘 다 `n=0`을 읽고 출발한 뒤 `n`이 1, 2가 된다. 이 동작은 그대로 두고, 확인과 갱신을 한 사건으로 묶는 선택 사항 `reserve="식, 식"`을 따로 둔다.
+
+- `reserve=`의 식은 `set=`와 같은 꼴(`id+N`, `id-N`, `id=값`, `id:=원천`)이고 `@도형`은 쓰지 않는다. 점이 출발하는 사건에서 적용한다. `wait`와 `when`이 있으면 둘 다 참일 때만 적용하고, 둘 다 없으면 출발 때 조건 없이 적용한다.
+- 조건을 읽은 뒤 예약을 쓰기 전에 다른 이벤트가 끼지 않는다. 이 사건은 위 표의 순위 3(풀린 대기)이나 순위 4(출발) 안에서 일어나므로, 같은 시각의 요청은 선언 순서, 같은 흐름에서는 보류한 순서로 처리하고 앞 요청의 예약은 다음 요청의 조건 평가 전에 보인다. 그래서 가용량이 1인 자원에 같은 시각에 닿은 요청은 하나만 통과하고 나머지는 대기에 남는다. 이미 기다리던 요청(순위 3)은 이 시각에 새로 출발하는 요청(순위 4)보다 먼저 처리한다.
+- 예약이 값을 바꾸면 그 값을 읽는 다른 대기를 같은 시각에 다시 평가한다. 앞서 처리한 대기도 포함하고, 이 연쇄는 [이벤트 예산](#이벤트-예산)의 `chain`이 끊는다. 예약마다 이벤트 하나로 세고, 사전 검사는 예약이 있는 출발에 하나를 더한다.
+- 식 목록은 모두 적용하거나 하나도 적용하지 않는다. 식을 복사본에 먼저 적용해 읽기, 종류 검사, 합 계산이 모두 성공한 뒤에만 값에 반영한다. 하나라도 실패하면(`value-type`) 값은 하나도 바뀌지 않고 빌드는 그 줄의 오류로 끝나 시간표와 결과 파일을 만들지 않는다. 읽기 식(`:=`)은 갱신을 시작하는 시점의 값을 읽는다.
+- 값 줄에는 한 시각에 이어진 갱신의 결과가 마지막 글 하나로 보인다. 같은 시각에 해제와 획득이 겹치면 이전 글에서 새 글로 한 번 바뀌고, 이전 글로 되돌아오면 변화로 적지 않는다.
+
+| 상황 | 예약 |
+|---|---|
+| `wait`가 거짓이라 점이 기다린다 | 하지 않는다. 풀리는 시각에 조건을 다시 확인한 뒤 한다 |
+| `timeout`이 지나 대기가 끝난다 | 하지 않는다. `else` 점도 예약을 이어받지 않는다 |
+| `when`이 거짓이다(대기가 풀린 직후도 같다) | 하지 않는다. 건너뛴 이동으로 `skips`에 남는다 |
+| 점이 `lost`로 사라진다 | 출발 때 이미 했으므로 남는다. 사라진다고 돌려주지 않는다 |
+| 점이 도착한다 | 예약과 상관없다. 도착 때 바뀌는 값은 `set=`와 `on`이다 |
+| 단계가 끝날 때까지 대기가 풀리지 않는다 | 하지 않는다 |
+
+- 해제는 명시적인 모델 사건이다. 렌더러, 시간표 계산, 재생기는 예약을 스스로 돌려주지 않는다. 점이 닿을 때 풀려면 그 이동의 `set=`나 `on` 줄을 쓰고, 출발할 때 풀려면 `reserve=`를 쓴다(`when="holder='A'"`처럼 쥔 쪽만 풀게 할 수 있다). 풀린 시각에 기다리던 요청은 위 순서로 예약한다.
+- 사라진 요청이 잡은 예약은 해제 사건이 있어야 풀린다. 원본이 해제를 그리지 않으면 대기자는 `timeout`이나 단계 끝까지 기다리고, 처리할 이벤트가 없으면 `wait-stalled`로 알린다.
+- 시간표는 예약마다 `reserves`에 `{ si, line, node, t, writes: [{ id, from, to }] }`를 남긴다. `reserve=`를 쓴 원본만 이 항목을 갖는다. SVG와 HTML 재생기는 값 줄과 점의 시간표만 읽고 예약을 다시 계산하지 않는다. 일시정지, 배속, 재시작, 단계 직접 선택은 결과를 바꾸지 않는다.
+
 ### 조건으로 표현하는 예제
 
-공통 기능(`when`, `wait`, `timeout`, `else`, `keep`, `on`, `set=`)만으로 네 가지를 표현하고 예제 전용 문법은 없다. 모두 `examples/`에 있다.
+공통 기능(`when`, `wait`, `timeout`, `else`, `reserve`, `keep`, `on`, `set=`)만으로 여섯 가지를 표현하고 예제 전용 문법은 없다. 모두 `examples/`에 있다.
 
 | 예제 | 표현 | 값과 시각 |
 |---|---|---|
 | `mutex-wait.dap` | 잠금 획득과 해제 | `holder`가 `none`에서 `A`로, A가 풀면 `none`으로 돌아오고 같은 시각에 기다리던 B의 점이 출발해 `B`가 된다 |
 | `deadlock-wait.dap` | 풀리지 않는 교착 | 두 대기가 서로의 값을 기다려 `waits[].end`가 `stalled`이고 `stalls`가 두 `refs`(읽은 값의 글, 마지막으로 쓴 줄)를 담는다. `stuck`을 지우면 경고 `wait-stalled` |
 | `queue-wait.dap` | 큐 역압 | 큐 값이 3칸에 닿으면 생산의 `wait="q<3"`이 거짓이라 점이 출발하지 않고, 소비로 칸이 비는 시각에 풀린다. 오래 기다린 출발은 `timeout`과 `else`로 버려지는 도형으로 간다 |
+| `atomic-lock.dap` | 같은 시각의 잠금 요청 | 세 작업이 같은 시각에 `wait`와 `reserve`로 요청하면 A만 `holder`를 쥐고 B와 C는 기다린다. A가 풀면 그 시각에 B가, B가 풀면 그 시각에 C가 쥔다 |
+| `atomic-queue.dap` | 남은 칸이 하나인 큐 | 세 생산자가 같은 시각에 `q<4`를 확인하고 `q+1`을 예약해 하나만 칸을 차지한다. 소비로 칸이 비는 시각에 다음 생산자가 차지하고 큐는 4칸을 넘지 않는다 |
 | `circuit-breaker.dap` | 실패 횟수에 따른 회로 차단 | 실패 횟수 값이 3이 되면 확인 흐름이 `mode`를 `open`으로 바꾸고, 그 뒤 요청은 `when="mode='closed'"`가 거짓이라 `skips`에 남고 서비스에 닿지 않는다. 복구 확인 흐름이 `closed`로 되돌리면 요청이 다시 지나간다 |
 
 - 회로 차단은 근사다. 조건은 값을 읽을 뿐이고 값을 조건으로 바꾸는 장치가 없어서, 임계 판정은 `when`이 붙은 확인 흐름의 출발이 맡는다. 그래서 (1) 상태는 실패 횟수가 기준에 닿은 그 시각이 아니라 확인 흐름의 다음 출발과 이동 시간만큼 늦게 `open`이 되고, 그 사이에 출발한 요청은 아직 `closed`라 서비스에 닿는다. (2) 시간이 지나면 시험 요청 하나만 통과시키는 반개방(half-open) 상태는 없다. 복구는 원본이 그린 복구 확인 흐름의 시각이 정한다. (3) 요청마다 성공과 실패를 가르는 난수나 확률이 없다. 실패 횟수는 원본의 `set=`가 정한다.
@@ -348,6 +373,12 @@
 | 단계 상태가 그 단계에서만 보이고 단계를 옮겨도 같으며 색 없이도 구분된다. | `test/lost-status-legs.test.js`의 `buildTimeline_status_is_on_every_segment_of_its_step_only`(`segs[].status`), `toSvg_status_pills_are_on_exactly_while_the_timeline_status_has_them_at_every_25ms`(SMIL 값 비교), `player_status_pills_follow_the_step_through_pause_rate_restart_and_direct_selection`(Chrome이 있을 때. 일시정지, 배속, 재시작, 단계 직접 선택 뒤 상태), `toSvg_every_status_kind_draws_its_letters_and_a_symbol_next_to_the_colored_border`(글자와 기호), `contrast_status_pill_borders_and_symbols_reach_3_on_the_shape_face_the_figure_ground_and_group_faces_and_text_reaches_4_5`(라이트와 다크 대비), `checkLabels_status_pill_over_an_edge_label_a_name_or_another_node_is_a_check_2_error_on_the_step_line` |
 | 새 기능을 쓰지 않은 원본의 시간표와 출력이 바뀌지 않고 이벤트 처리 단계를 거치지 않는다. | 모든 예제의 시간표와 출력을 이 설계 이전과 비교하고, 이벤트 처리 함수 호출 수 확인. 담당: [#118](https://github.com/woonyong-choi/daphnis/issues/118), [#119](https://github.com/woonyong-choi/daphnis/issues/119), [#120](https://github.com/woonyong-choi/daphnis/issues/120) #119 몫은 `test/when-wait.test.js`의 `buildFigure_does_not_start_the_event_engine_for_sources_without_when_or_wait_and_adds_no_condition_fields`(모든 예제와 호환 묶음에서 이벤트 처리 함수 호출 수 0과 시간표에 조건 필드 없음), `buildFigure_a_step_without_conditions_keeps_its_result_when_another_step_of_the_figure_uses_them`가 확인하고, 모든 예제와 호환 묶음의 SVG, HTML, 멈춘 SVG, `check --json`, 시간표를 변경 전 출력과 바이트 비교한 결과는 PR에 남긴다. #120 몫은 `test/lost-status-legs.test.js`의 `buildTimeline_a_figure_without_the_new_words_has_no_status_pace_cut_or_lost_fields`(시간표)와 `toHtml_and_toSvg_add_status_and_pace_code_only_to_figures_that_use_them`(재생기 스크립트와 스타일)이고, 모든 예제와 호환 묶음의 SVG, HTML, 멈춘 SVG, `check --json`을 변경 전 출력과 바이트 비교한다. #118 몫은 `test/value-keep.test.js`의 `parseFigure_a_source_without_the_new_syntax_has_no_read_flag_no_keep_and_no_step_set_so_the_old_value_path_runs`(읽기 처리로 들어가는 조건이 새 문법뿐임)와 `buildFigure_a_step_without_the_new_syntax_keeps_its_result_when_another_step_of_the_figure_uses_it`가 확인하고, 출력 비교는 PR에 남긴다 |
 | 잠금 획득과 해제, 풀리지 않는 교착, 큐 역압, 실패 횟수에 따른 회로 차단이 공통 기능만으로 표현된다. | 네 예제를 `examples/`에 두고 `test/when-wait.test.js`의 `buildFigure_the_lock_example_releases_the_waiting_dot_at_the_release_time_and_the_holder_changes`, `buildFigure_the_deadlock_example_explains_both_waits_in_stalls_and_warns_only_without_stuck`, `buildFigure_the_back_pressure_example_waits_while_the_queue_is_full_and_releases_when_a_slot_empties`, `buildFigure_the_circuit_breaker_example_blocks_requests_once_the_failure_count_reaches_three_and_the_mode_changes`가 값 변화, 대기 해제 시각, 멈춘 대기, 건너뛴 이동을 확인한다. 회로 차단은 근사이고 한계는 [조건으로 표현하는 예제](#조건으로-표현하는-예제)에 있다. 담당: [#119](https://github.com/woonyong-choi/daphnis/issues/119) |
+| 같은 시각의 요청이 `reserve=`로 한 사건 안에서 확인되고 예약되어, 가용량 1에서 하나만 통과하고 나머지는 선언 순서와 대기 순서로 기다린다. 기존 `wait`와 `set=`는 그대로다. | `test/reserve.test.js`의 `buildFigure_three_requests_at_the_same_time_reserve_a_lock_of_one_for_the_first_declared_and_the_others_wait_in_order`, `buildFigure_the_request_at_the_earlier_tick_wins_over_the_one_declared_first_and_the_same_tick_follows_declaration_order`, `buildFigure_the_same_two_requests_with_reserve_start_one_dot_while_wait_and_set_still_start_both`(이슈의 현재 동작 원본이 수정 전후 같은 n 1, 2) |
+| 남은 큐 용량 1, 가용량 2, 같은 시각의 해제와 획득에서 초과 획득이 없다. | `test/reserve.test.js`의 `buildFigure_a_queue_with_one_free_slot_takes_one_of_three_producers_and_never_counts_over_its_slots`, `buildFigure_a_counter_of_two_lets_exactly_two_of_three_requests_in_and_the_third_waits_for_a_release` |
+| 여러 값의 예약은 모두 적용하거나 하나도 적용하지 않는다. | `test/reserve.test.js`의 `runAtomicUpdate_leaves_every_value_untouched_when_one_expression_fails_and_applies_all_when_none_fails`(오류를 넣고 앞뒤 상태 비교), `buildFigure_a_reserve_that_fails_at_run_time_ends_the_build_with_a_value_type_error_at_its_line_and_builds_no_timeline`, `buildFigure_one_reserve_updates_several_values_together_and_reads_the_values_from_before_the_update` |
+| `timeout`, `when` 거짓, `lost`, 해제가 계약대로 예약을 다룬다. 해제는 명시적인 모델 사건이다. | `test/reserve.test.js`의 `buildFigure_a_timed_out_wait_and_a_false_when_reserve_nothing_and_the_else_branch_carries_no_reservation`, `buildFigure_a_wait_released_into_a_false_when_ends_released_but_reserves_nothing`, `buildFigure_a_lost_dot_keeps_the_reservation_it_took_at_departure_until_a_model_event_releases_it`, `buildFigure_a_release_by_reserve_frees_at_the_departure_and_a_release_by_set_frees_at_the_arrival_and_both_wake_the_waiter_at_that_time`, `buildFigure_a_reserve_that_changes_a_value_wakes_an_earlier_wait_on_it_at_the_same_time` |
+| 예약 결과가 움직이는 SVG와 재생기에서 시간표와 같고 일시정지, 배속, 재시작, 단계 직접 선택이 결과를 바꾸지 않는다. | `test/reserve-player.test.js`(Chrome이 있을 때. SMIL 값을 25ms 간격으로 풀어 값 줄과 비교하고, 재생기를 가짜 시계로 돌려 일시정지, 배속, 재시작, 단계 직접 선택 뒤 값과 점을 처음부터 재생한 결과와 비교) |
+| 예약을 이벤트 예산에 세고 끝없는 연쇄와 과도한 생성은 제한 안에서 `budget-exceeded`로 끝난다. | `test/reserve.test.js`의 `buildFigure_counts_the_reserve_in_the_event_budget_and_refuses_a_huge_reserve_flow_before_building`, `buildFigure_ends_a_same_time_reserve_chain_with_budget_exceeded_when_the_chain_budget_is_small` |
 | 대기 해제 시각과 분기 이동이 움직이는 SVG와 재생기에서 같고 선과 도형은 풀린 시각에 켜진다. | `test/when-wait-player.test.js`의 `toSvg_a_dot_released_from_a_wait_or_sent_to_the_else_shape_starts_at_the_wait_end_time_in_the_timeline_and_the_smil`(SMIL 값을 25ms 간격으로 풀어 `waits[].t1`과 비교), `toSvg_the_edge_of_a_waiting_dot_lights_at_the_release_time_and_not_at_the_beat_start`, `player_dots_appear_at_the_release_and_branch_times_of_the_timeline`, `player_edge_of_a_waiting_dot_turns_on_at_the_release_time`(Chrome이 있을 때. 재생기 점과 선을 시간표 시각과 비교). 모든 예제의 점 위치와 글 상자는 `test/motion.test.js`, `test/chip.test.js`가 새 예제까지 함께 본다. 담당: [#119](https://github.com/woonyong-choi/daphnis/issues/119) |
 | 대기로 단계 길이나 전체 시간이 1시간 상한을 넘으면 `time-limit`으로 끝나고, 대기가 많은 원본이 메모리 한도를 넘지 않는다. | `test/when-wait.test.js`의 `buildFigure_a_wait_that_pushes_a_step_over_one_hour_ends_with_time_limit_and_a_shorter_one_passes`, `buildFigure_the_time_limit_boundary_holds_for_a_beat_stretched_by_a_wait`(상한 경계), `main_check_builds_a_figure_with_hundreds_of_waiting_dots_and_moving_text_inside_a_small_heap`(힙 256MB로 제한한 실행, 대기 753개와 글 상자). 담당: [#119](https://github.com/woonyong-choi/daphnis/issues/119) |
 | 점이 출발하지 않은 대기(`else` 없는 시간 초과, 기다린 뒤 `when` 거짓, 짧은 이동과 병렬인 대기)도 박자와 단계 길이에 들어가 다음 박자와 단계가 대기 뒤에 시작하고, 움직이는 SVG와 재생기의 전체 길이가 시간표와 같다. | `test/wait-length.test.js`의 `buildFigure_the_issue_source_starts_the_next_step_after_the_60s_timeout_and_keeps_every_wait_inside_its_beat`, `buildFigure_a_timeout_without_else_runs_the_beat_until_the_wait_ends_and_the_next_beat_and_step_start_after_it`, `buildFigure_a_wait_that_runs_beside_a_short_move_stretches_the_beat_to_the_wait_end`, `buildFigure_a_wait_released_and_then_skipped_by_a_false_when_keeps_the_beat_and_the_next_step_after_the_release`, `buildFigure_every_beat_and_step_after_a_wait_starts_at_or_after_the_end_of_that_wait`(시작 경계), `buildFigure_a_beat_stretched_only_by_a_wait_passes_at_exactly_one_hour_and_ends_with_time_limit_one_millisecond_over`, `buildFigure_waits_that_add_up_over_one_hour_across_beats_end_with_time_limit_at_the_second_wait`(상한 경계), `toSvg_the_loop_length_and_the_next_step_dot_follow_the_timetable_when_a_wait_starts_no_dot`(SMIL 한 바퀴), `player_turns_on_the_next_step_only_after_the_wait_and_wraps_at_the_timetable_total`(Chrome이 있을 때. 가짜 시계로 잰 단계 탭 전환과 한 바퀴 길이). 담당: [#135](https://github.com/woonyong-choi/daphnis/issues/135) |

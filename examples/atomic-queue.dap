@@ -1,0 +1,20 @@
+flow right
+title "남은 칸이 하나일 때 세 생산자가 동시에 넣는다"
+subtitle "칸 확인과 칸 차지하기를 한 사건으로 처리해, 한 작업만 들어가고 나머지는 칸이 빌 때까지 기다린다"
+
+box p1 "생산자 1"
+box p2 "생산자 2"
+box p3 "생산자 3"
+queue q "큐" slots=4 from=3
+box cons "소비자"
+p1 -> q
+p2 -> q
+p3 -> q
+q -> cons
+
+step "큐에 한 칸이 남았다" "먼저 처리된 생산자 1만 칸을 차지하고, 2와 3은 칸이 빌 때까지 기다린다" for=12s
+  track p1 -> q "작업" at=0s time=900ms wait="q<4" reserve="q+1"
+  track p2 -> q "작업" at=0s time=900ms wait="q<4" reserve="q+1"
+  track p3 -> q "작업" at=0s time=900ms wait="q<4" reserve="q+1"
+  track q -> cons "꺼냄" at=3s time=900ms tone=purple set="q-1@q"
+  track q -> cons "꺼냄" at=8s time=900ms tone=purple set="q-1@q"

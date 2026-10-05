@@ -82,6 +82,9 @@ function checkExpression(e, { nodes, byId, isWord }, problems) {
   else if ((e.op === '+' || e.op === '-') && isWord) problems.error(e.line, `"${e.id}${e.op}${e.operand}" does a sum, but "${e.id}" holds a word. Use = for words`);
 }
 
+// 이동이나 흐름의 식 모두: 닿을 때 적용하는 `set=`과 출발할 때 적용하는 `reserve=`
+const allSets = ({ sets, condition }) => [...sets, ...(condition?.reserve ?? [])];
+
 // cost: time O(s·h), heap O(h), stack O(1)
 // vars: s = 단계 수, h = 단계의 이동과 흐름 수
 // basis: estimate
@@ -92,8 +95,8 @@ export function movesOf(figure) {
     ...figure.arrivals.map((a) => ({ sets: a.sets, nodes: [] })),
     ...figure.steps.filter((step) => step.sets?.length).map((step) => ({ sets: step.sets, nodes: [] })),
     ...figure.steps.flatMap((step) => [
-      ...step.beats.flatMap((beat) => beat.hops.filter((h) => h.sets.length).map((h) => ({ sets: h.sets, nodes: [base(h.from), base(h.to)] }))),
-      ...step.tracks.filter((t) => t.sets.length).map((t) => ({ sets: t.sets, nodes: t.path.map(base) })),
+      ...step.beats.flatMap((beat) => beat.hops.filter((h) => allSets(h).length).map((h) => ({ sets: allSets(h), nodes: [base(h.from), base(h.to)] }))),
+      ...step.tracks.filter((t) => allSets(t).length).map((t) => ({ sets: allSets(t), nodes: t.path.map(base) })),
     ]),
   ];
 }

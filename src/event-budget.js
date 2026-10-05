@@ -20,8 +20,8 @@ export function checkEventBudget(figure, limits) {
   let over;
   for (const step of figure.steps.filter((s) => s.hasConditions)) {
     const items = [
-      ...step.beats.flatMap((beat) => beat.hops.map((hop) => ({ line: hop.line, events: 3 }))),
-      ...step.tracks.map((track) => ({ line: track.line, events: departureCount(track, step.forMs ?? FLOW_STEP_MS) * (1 + track.path.length) })),
+      ...step.beats.flatMap((beat) => beat.hops.map((hop) => ({ line: hop.line, events: 3 + (hop.condition?.reserve ? 1 : 0) }))),
+      ...step.tracks.map((track) => ({ line: track.line, events: departureCount(track, step.forMs ?? FLOW_STEP_MS) * (1 + track.path.length + (track.condition?.reserve ? 1 : 0)) })),
     ];
     for (const item of items) {
       total += item.events;

@@ -133,7 +133,7 @@ test('buildFigure_a_word_after_equals_stays_a_value_text_even_when_it_looks_like
 // 근거: 이슈 #118 완료 조건 "새 기능을 쓰지 않는 원본의 값 초기화, 값 갱신 순서, 시간표가 바뀌지 않고 이벤트 처리 비용이 붙지 않는다"
 test('parseFigure_a_source_without_the_new_syntax_has_no_read_flag_no_keep_and_no_step_set_so_the_old_value_path_runs', async () => {
   // 조건 예제(`keep`을 쓴다)는 새 문법을 쓰는 원본이라 뺀다.
-  for (const name of readdirSync(EXAMPLES).filter((file) => file.endsWith('.dap') && !/^(mutex-wait|deadlock-wait|queue-wait|circuit-breaker)\.dap$/.test(file))) {
+  for (const name of readdirSync(EXAMPLES).filter((file) => file.endsWith('.dap') && !/^(mutex-wait|deadlock-wait|queue-wait|circuit-breaker|atomic-lock|atomic-queue)\.dap$/.test(file))) {
     const { figure } = parseFigure(readFileSync(new URL(name, EXAMPLES), 'utf8'));
 
     assert.equal(figure.hasRead, false, name);

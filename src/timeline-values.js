@@ -54,6 +54,23 @@ export function runUpdate(exprs, { state, textOf, byId, onWrite }) {
   }
 }
 
+// cost: time O(e + v), heap O(v), stack O(1)
+// vars: e = 갱신의 식 수, v = 값 수
+// basis: estimate
+/**
+ * 예약(`reserve=`)의 식 목록을 한 번에 적용하거나 하나도 적용하지 않는다. 식을 복사본에 먼저 적용해 읽기, 종류 검사, 합 계산이 하나라도 실패하면(`value-type` 오류) state를 건드리지 않고 그 오류를 던진다.
+ * 모두 성공하면 바뀌는 값마다 onWrite를 한 번 부르고 복사본을 state에 반영한다. 읽기 식의 원천은 runUpdate와 같이 갱신을 시작하는 시점의 값이다.
+ * @returns 바뀐 값 이름(참조를 따라간 처음 값)의 목록
+ */
+export function runAtomicUpdate(exprs, { state, byId, onWrite }) {
+  const draft = new Map(state);
+  runUpdate(exprs, { state: draft, textOf: (id) => draft.get(rootOf(byId, id)), byId });
+  const changed = new Map(exprs.filter((e) => draft.get(e.id) !== state.get(e.id)).map((e) => [e.id, e]));
+  for (const e of changed.values()) onWrite?.(e);
+  for (const id of changed.keys()) state.set(id, draft.get(id));
+  return [...changed.keys()];
+}
+
 // cost: time O(1), heap O(1), stack O(1)
 // basis: estimate
 // 이벤트 하나. order는 같은 시각의 적용 순서 [종류(on 0, set 1), 이동 순번, 선언 순번, 식 순번]다.

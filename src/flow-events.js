@@ -6,6 +6,7 @@ import { isPassed } from './lost.js';
 import { evalCondition } from './source/condition.js';
 import { TIME_LIMIT_MS } from './source/values.js';
 import { msOfTicks, TICKS_PER_MS } from './time-grid.js';
+import { applyReserve } from './flow-reserve.js';
 import { noteRowChanges, resetWriters, runUpdate, spansOf, startValues } from './timeline-values.js';
 import { rootOf, valueTable } from './values.js';
 
@@ -27,6 +28,8 @@ class StepEngine {
   chain = 0;
   waitSeq = 0;
   prior = new Map();
+  // 예약이 바꾼 값 이름. 같은 시각에 그 값을 읽는 대기를 다시 평가할 때까지 모아 둔다.
+  reserved = new Set();
 
   // 참조를 끝까지 따라간 값 이름과 그 값의 지금 글
   root = (id) => rootOf(this.byId, id);
@@ -110,6 +113,7 @@ class StepEngine {
         return;
       }
     }
+    if (launch.reserve) applyReserve(this, launch, t);
     this.launchDot(launch, { t, via });
   }
 
@@ -224,9 +228,12 @@ class StepEngine {
       const items = [];
       while (this.heap.size && this.heap.peek().key[0] === t) items.push(this.heap.pop());
       const updates = items.filter((item) => item.kind === 'update');
-      this.settleWaits(updates.length ? this.applyUpdates(updates, t) : new Set(), t);
+      // 예약이 바꾼 값을 읽는 대기도 같은 시각에 다시 평가한다(원자 예약). 예약이 남기면 이 시각을 한 번 더 돈다.
+      const changed = new Set([...(updates.length ? this.applyUpdates(updates, t) : []), ...this.reserved]);
+      this.reserved.clear();
+      this.settleWaits(changed, t);
       this.runDepartures(items.filter((item) => item.kind === 'depart'), t);
-    } while (this.dropStale() && this.heap.peek().key[0] === t);
+    } while ((this.dropStale() && this.heap.peek().key[0] === t) || this.reserved.size > 0);
   }
 
   // cost: time O(n·log n), heap O(1), stack O(1)

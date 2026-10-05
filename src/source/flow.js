@@ -6,7 +6,7 @@ import { readSets } from './value.js';
 import { ID_PATTERN } from './words.js';
 import { isOverTimeLimit, overLimitMessage, parseTime, TIME_LIMIT_MS } from './values.js';
 
-const TRACK_FORM = 'write a track as: track a, b -> c -> d ["text"] [at=time] [every=time] [time=time] [legs="time, -"] [tone=name] [set="id+1@node"] [lost=60%] [when="condition"] [wait="condition"] [timeout=time] [else=node] [stuck]';
+const TRACK_FORM = 'write a track as: track a, b -> c -> d ["text"] [at=time] [every=time] [time=time] [legs="time, -"] [tone=name] [set="id+1@node"] [lost=60%] [when="condition"] [wait="condition"] [timeout=time] [else=node] [stuck] [reserve="id+1, id=word"]';
 const STATUS_FORM = 'write status as: status="node=ok, node=warn"';
 // 구간 시간의 합을 `time=`과 견주는 오차(ms). 소수 초(`1.1s`)를 밀리초로 바꾸며 생기는 부동소수점 오차를 같은 값으로 본다.
 const LEG_EPSILON_MS = 1e-6;

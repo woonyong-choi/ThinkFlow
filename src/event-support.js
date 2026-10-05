@@ -81,7 +81,7 @@ export function typeError(message, { line, key, text }) {
 /** 이 단계가 읽기 식(`:=`)을 쓰는지. `on` 줄, 단계 `set=`, 이동과 흐름의 `set=`을 본다. 읽기 식이 든 단계만 갱신을 묶어 읽고 쓴다. */
 export function stepReads(figure, step) {
   const has = (sets) => (sets ?? []).some((e) => e.op === ':=');
-  return figure.arrivals.some((a) => has(a.sets)) || has(step.sets) || step.beats.some((beat) => beat.hops.some((hop) => has(hop.sets))) || step.tracks.some((track) => has(track.sets));
+  return figure.arrivals.some((a) => has(a.sets)) || has(step.sets) || step.beats.some((beat) => beat.hops.some((hop) => has(hop.sets) || has(hop.condition?.reserve))) || step.tracks.some((track) => has(track.sets) || has(track.condition?.reserve));
 }
 
 // cost: time O(s), heap O(s), stack O(1)

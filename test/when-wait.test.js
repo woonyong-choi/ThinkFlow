@@ -562,8 +562,8 @@ test('buildFigure_builds_the_same_timeline_every_time_for_every_conditional_exam
 test('buildFigure_does_not_start_the_event_engine_for_sources_without_when_or_wait_and_adds_no_condition_fields', async () => {
   const before = engineStats.steps;
   const sources = [
-    ...readdirSync(EXAMPLES).filter((name) => name.endsWith('.dap') && !['mutex-wait', 'deadlock-wait', 'queue-wait', 'circuit-breaker'].includes(name.slice(0, -4))).map((name) => readFileSync(new URL(name, EXAMPLES), 'utf8')),
-    ...readdirSync(V1).filter((name) => name.endsWith('.dap') && name !== 'all-when-wait.dap').map((name) => readFileSync(new URL(name, V1), 'utf8')),
+    ...readdirSync(EXAMPLES).filter((name) => name.endsWith('.dap') && !['mutex-wait', 'deadlock-wait', 'queue-wait', 'circuit-breaker', 'atomic-lock', 'atomic-queue'].includes(name.slice(0, -4))).map((name) => readFileSync(new URL(name, EXAMPLES), 'utf8')),
+    ...readdirSync(V1).filter((name) => name.endsWith('.dap') && !['all-when-wait.dap', 'all-reserve.dap'].includes(name)).map((name) => readFileSync(new URL(name, V1), 'utf8')),
   ];
 
   assert.ok(sources.length > 60);

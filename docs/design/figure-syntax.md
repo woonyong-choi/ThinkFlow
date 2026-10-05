@@ -398,6 +398,7 @@ step "소비자 하나가 느려진다" for=6s status="slow=warn"
 | `timeout=시간` | `wait`와 함께 | 대기를 시작한 뒤 이 시간이 지나도 풀리지 않으면 대기를 끝낸다 |
 | `else=도형` | `timeout`과 함께 | 시간 초과로 끝난 점이 출발 도형에서 이 도형으로 가는 선을 지난다. 없으면 그 점은 만들지 않는다 |
 | `stuck` | `wait`와 함께 | 이 대기가 끝나지 않는 것이 의도임을 알린다. `wait-stalled` 경고를 내지 않고 결과에는 그대로 남는다 |
+| `reserve="식, 식"` | 이동, 흐름 | 조건을 통과해 점이 출발하는 같은 사건 안에서 값을 한 번에 바꾼다. 하나라도 실패하면 아무것도 바꾸지 않는다 |
 
 - 구조 그림(`flow`)의 박자 이동과 흐름에서만 쓴다. `&`로 이은 이동은 각자 조건을 가진다.
 - 한 줄에 `wait`와 `when`이 함께 있으면 `wait`가 풀린 뒤에 `when`을 평가한다.
@@ -405,6 +406,33 @@ step "소비자 하나가 느려진다" for=6s status="slow=warn"
 - `timeout`, `else`, `stuck`을 `wait` 없이 쓰거나 `else`를 `timeout` 없이 쓰면 오류다.
 - `else` 이동은 이동 규칙대로 선을 고르고(같은 방향 선, 없으면 거꾸로, 둘 다 없으면 오류) 글과 `tone`을 이어받는다. 시간은 선 길이로 정하고 `set`, `lost`, `when`, `wait`, `legs`는 이어받지 않는다. 흐름 줄이면 출발지마다 그 출발지에서 `else` 도형으로 가는 선을 고른다.
 - 평가 시점, 해제 순서, 대기가 끝나는 때는 [재생](playback.md#조건과-대기)이 정한다.
+
+#### 예약
+
+`wait`와 `set=`를 함께 쓰면 확인은 출발 때, 갱신은 점이 닿을 때 일어나서 같은 시각의 두 요청이 둘 다 통과한다. 확인과 갱신을 한 사건으로 하려면 `reserve=`를 쓴다.
+
+```text
+flow right
+title "잠금은 하나만 쥔다"
+
+box a "작업 A"
+box b "작업 B"
+box lock "잠금"
+value holder "쥔 쪽" on=lock from=none
+a -> lock
+b -> lock
+
+step "같은 시각에 요청한다" for=8s
+  track a -> lock "요청" at=0s time=1s wait="holder='none'" reserve="holder=A"
+  track b -> lock "요청" at=0s time=1s wait="holder='none'" reserve="holder=B"
+  track a -> lock "풀기" at=3s time=1s when="holder='A'" set="holder=none"
+```
+
+- 식은 `set=`와 같은 꼴이고(`id+N`, `id-N`, `id=값`, `id:=원천`) 점이 출발할 때 적용하므로 `@도형`은 쓸 수 없다. 틀린 식은 `set=`와 같은 오류다.
+- `when`이나 `wait`가 없어도 쓸 수 있다. 조건이 없으면 출발할 때 값을 바꾸기만 한다. 해제를 출발 때 하려면 이 꼴로 쓴다.
+- `reserve=`와 `set=`는 따로 쓴다. `set=`는 점이 닿을 때, `reserve=`는 점이 출발할 때 값을 바꾼다. 한 줄에 둘을 함께 써도 된다.
+- 값 종류가 맞지 않는 식(큐에 낱말을 읽어 넣기, 낱말에 합하기)은 실행 때 `value-type` 오류이고, 같은 목록의 앞 식도 적용하지 않는다. 선언만 보고 알 수 있는 오류는 `set=`처럼 읽을 때 `syntax`로 알린다.
+- 원자성, 선언 순서, 시간 초과와 사라짐과 해제의 규칙은 [재생](playback.md#원자-예약)이 정한다.
 
 ### 사라짐과 구간 시간
 
@@ -435,6 +463,7 @@ step "소비자 하나가 느려진다" for=6s status="slow=warn"
 - 값 유지와 읽기, 사라짐과 구간 시간, 조건과 대기의 문장, 선택 사항, 낱말은 모두 판 1이고 문법 표(`src/source/grammar.js`)가 정본이다. [호환 규칙](#호환-규칙)의 생성 표에 모든 항목이 있다.
 - 새 기능을 하나도 쓰지 않는 원본은 값 초기화, 이벤트 순서, 출력, 비용이 그대로다([재생](playback.md#기존-원본과의-호환)).
 - 새 낱말은 지금까지 오류였던 꼴(`:=`, 새 선택 사항 키)뿐이라 옛 원본이 새 뜻으로 바뀌지 않는다.
+- `reserve=`는 판 1에서 더한 선택 사항이라 옛 원본의 뜻이 바뀌지 않는다. 기존 `wait`와 `set=`의 동작도 그대로다.
 - 새 진단 `code`는 `value-type`(실행 때 값 종류가 맞지 않음), `leg-time`(구간 시간이 맞지 않음), `wait-stalled`(끝나지 않는 대기, 경고), `budget-exceeded`(이벤트 예산 초과)다. 나머지 오류는 `syntax`와 `time-limit`을 쓴다.
 
 ### 글 줄 나누기
@@ -527,6 +556,7 @@ step "소비자 하나가 느려진다" for=6s status="slow=warn"
 | `hop.timeout` | 시간 | 판 1 |  |
 | `hop.else` | 도형 이름 | 판 1 |  |
 | `hop.stuck` | 값 없음(낱말만) | 판 1 |  |
+| `hop.reserve` | 값 식 목록 | 판 1 |  |
 | `track.at` | 시간(0 가능) | 판 1 |  |
 | `track.every` | 시간 | 판 1 |  |
 | `track.time` | 시간 | 판 1 |  |
@@ -538,6 +568,7 @@ step "소비자 하나가 느려진다" for=6s status="slow=warn"
 | `track.timeout` | 시간 | 판 1 |  |
 | `track.else` | 도형 이름 | 판 1 |  |
 | `track.stuck` | 값 없음(낱말만) | 판 1 |  |
+| `track.reserve` | 값 식 목록 | 판 1 |  |
 | `track.legs` | 시간 또는 -의 목록 | 판 1 |  |
 | `value.on` | 도형 이름 | 판 1 |  |
 | `value.from` | 숫자 또는 낱말 | 판 1 |  |
@@ -591,6 +622,7 @@ step "소비자 하나가 느려진다" for=6s status="slow=warn"
 |---|---|
 | 문서의 모든 예시 원본이 오류와 경고 없이 읽힌다. | `test/grammar.test.js`의 `docExamples_every_design_doc_example_builds_without_errors_or_warnings`. 문서의 예시 원본을 뽑아 strict로 읽는다. 값 유지와 읽기, 잠금, 교착 예시도 같은 시험 대상이다 |
 | 조건식, `keep`, `lost`, `legs`, `status`, `else`의 틀린 값과 짝이 맞지 않는 선택 사항을 줄 번호와 함께 알린다. | 규칙마다 원본 하나로 줄 번호와 `code`(`syntax`, `value-type`, `leg-time`) 확인. 없는 값과 `1=1`, 낱말에 `<`, 첫 단계 `keep`, 항목 수가 다른 `legs`, 범위 밖 `lost`를 포함. 담당: [#118](https://github.com/woonyong-choi/daphnis/issues/118), [#119](https://github.com/woonyong-choi/daphnis/issues/119), [#120](https://github.com/woonyong-choi/daphnis/issues/120) #119 몫은 `test/when-wait.test.js`의 `buildFigure_reports_condition_syntax_errors_with_the_line_and_the_runtime_type_error_as_value_type`(`syntax`와 `value-type`, 줄 번호), `buildFigure_conditions_belong_to_flow_figures_only`와 `test/condition.test.js`(조건식 문법)가 확인한다. #120 몫은 `test/lost-status-legs.test.js`의 `parseFigure_lost_accepts_0_to_100_percent_and_rejects_a_missing_percent_sign_or_a_value_out_of_range`, `parseFigure_lost_and_status_belong_to_flow_figures_only`, `parseFigure_legs_needs_one_entry_per_line_and_at_least_two_lines`, `parseFigure_legs_sum_against_time_reports_leg_time_on_the_track_line_at_the_boundaries`, `parseFigure_legs_entries_and_their_sum_over_one_hour_report_time_limit`, `buildFigure_legs_distance_times_over_one_hour_end_with_time_limit_on_the_track_line`, `parseFigure_status_rejects_unknown_kinds_duplicates_unknown_names_and_non_shape_targets`. #118 몫(`keep`, `:=`, 단계 `set=`)은 `test/value-keep.test.js`의 `buildFigure_each_value_keep_and_read_mistake_is_a_syntax_error_on_its_own_line`, `buildFigure_keep_and_step_set_in_a_figure_without_values_are_errors`, `buildFigure_reading_a_non_integer_text_into_a_queue_is_a_value_type_error_at_run_time_on_that_line`, `main_render_with_a_keep_or_read_error_exits_1_with_the_line_and_code_and_writes_no_file`가 확인한다 |
+| `reserve=`의 틀린 꼴(`@도형`, 없는 값, 낱말에 합, 큐에 정수 아닌 값, 구조 그림 밖)을 줄 번호와 함께 알리고 조건 없는 예약을 받는다. | `test/reserve.test.js`의 `buildFigure_reports_reserve_written_outside_a_flow_with_an_at_node_with_unknown_values_or_with_a_bad_expression`, `buildFigure_moves_of_a_beat_reserve_in_declaration_order_and_the_reserved_value_is_kept_into_the_next_step`. 새 낱말은 `test/fixtures/compat/v1/all-reserve.dap`가 한 번씩 쓴다 |
 | 새 기능을 쓰지 않는 원본의 시간표와 출력이 바뀌지 않는다. | 모든 예제와 `test/fixtures/compat/v1/`의 기존 파일을 이 설계 이전 출력과 바이트 비교. 새 낱말을 한 번씩 쓰는 `all-*` 파일을 묶음에 더해 읽힘 확인. 담당: [#118](https://github.com/woonyong-choi/daphnis/issues/118), [#119](https://github.com/woonyong-choi/daphnis/issues/119), [#120](https://github.com/woonyong-choi/daphnis/issues/120) #120은 `all-lost-status-legs.dap`를 묶음에 더해 `compat_v1_every_fixture_builds_without_errors_and_matches_the_structure_snapshot`와 `compat_v1_covers_every_word_option_and_value_in_the_grammar_table`가 읽힘과 문법 표 사용을 본다. #118 몫은 `test/compat.test.js`의 `compat_v1_every_fixture_builds_without_errors_and_matches_the_structure_snapshot`(`all-value-keep.dap`)와 `compat_v1_covers_every_word_option_and_value_in_the_grammar_table`이 확인한다 |
 | 세 부분 순서, 낱말 공백, 이름 형식, 값 형식을 어긴 줄을 줄 번호와 함께 알린다. | `test/grammar.test.js`의 `parseFigure_malformed_source_reports_the_line_and_the_rule`. 규칙마다 원본 하나로 줄 번호와 오류 확인 |
 | 선언하지 않은 이름과 비슷한 이름을 함께 알린다. | `test/grammar.test.js`의 `parseFigure_unknown_name_suggests_the_nearest_declared_name`. `cdex`를 쓴 원본이 `codex`를 제안하는지 확인 |

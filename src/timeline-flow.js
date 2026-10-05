@@ -172,10 +172,10 @@ function conditionalTracks(plans, { step, first, length, chips, run, scene, engi
   let order = 0;
   const launches = plans.flatMap((plan, i) => {
     const track = step.tracks[i];
-    const { when, wait, timeoutMs, isStuck } = track.condition ?? {};
+    const { when, wait, timeoutMs, isStuck, reserve } = track.condition ?? {};
     const elsePlan = track.elseLeg && { ...gridPlan({ ms: hopMs(scene.edges[track.elseLeg.edge].points, run.speed), nodes: [base(track.source), base(track.condition.elseNode)], fracs: [0, 1] }, { line: track.line }), sets: [] };
     const timeoutTicks = timeoutMs === undefined ? undefined : inputTicks(timeoutMs, { line: track.line, key: 'timeout' });
-    return departureTicks(track, lengthTicks).map((rel) => ({ order: order++, line: track.line, node: track.source, text: track.path.join(' -> '), when, wait, timeoutTicks, isStuck, rel, track: i, plan: { ms: plan.ms, nodes: plan.nodes, fracs: plan.fracs, arrivals: plan.arrivals, pace: plan.pace, lost: track.lost, sets: track.sets }, elsePlan }));
+    return departureTicks(track, lengthTicks).map((rel) => ({ order: order++, line: track.line, node: track.source, text: track.path.join(' -> '), when, wait, reserve, timeoutTicks, isStuck, rel, track: i, plan: { ms: plan.ms, nodes: plan.nodes, fracs: plan.fracs, arrivals: plan.arrivals, pace: plan.pace, lost: track.lost, sets: track.sets }, elsePlan }));
   });
   const { started } = engine.runLaunches({ launches, start: t0, lengthTicks });
   const starts = plans.map(() => []);
