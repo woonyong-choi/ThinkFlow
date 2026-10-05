@@ -19,7 +19,7 @@
 설계 문서에는 요청이 어떤 길로 가는지 보이는 그림과, 기준값 뒤에 개선 값을 보이는 차트가 필요합니다. 그림은 D2로, 차트는 Vega-Lite로 그리면 한 문서 안의 그림이 두 모양이 되고, D2 배치는 다른 그리기 모양과 맞지 않습니다. daphnis는 그림에 넣는 글꼴 파일로 모든 도형을 재고, elkjs로 배치하고, 겹침을 검사한 뒤, HTML 재생기나 움직이는 SVG로 단계를 재생합니다.
 
 > [!NOTE]
-> 개발 중입니다. 아직 npm 배포판이 없으니 GitHub에서 바로 실행하거나 복제해서 쓰세요.
+> 개발 중입니다. 첫 npm 배포판은 0.1.0입니다.
 
 ## 갤러리
 
@@ -38,7 +38,7 @@
 
 요구 사항: Node.js 20 이상.
 
-아직 npm에 올라가 있지 않아 `npm install daphnis`는 되지 않습니다. 아래 단계처럼 `npx github:woonyong-choi/daphnis <명령>`으로 GitHub에서 바로 실행합니다.
+`npm install --save-dev daphnis`로 프로젝트에 더하고, 아래 단계처럼 `npx daphnis <명령>`으로 실행합니다.
 
 복제해서 쓸 수도 있습니다. 이때는 `daphnis` 대신 `node src/cli.js`를 실행합니다.
 
@@ -47,8 +47,6 @@ git clone https://github.com/woonyong-choi/daphnis.git
 cd daphnis
 npm install
 ```
-
-첫 npm 배포 뒤에는 `npm install --save-dev daphnis`로 프로젝트에 `daphnis` 명령을 더하고 `npx daphnis`로 실행합니다.
 
 1. 원본 하나를 씁니다. `hello.dap`으로 저장합니다.
 
@@ -71,7 +69,7 @@ npm install
 2. 그림으로 만듭니다.
 
    ```sh
-   npx github:woonyong-choi/daphnis render hello.dap
+   npx daphnis render hello.dap
    ```
 
    명령이 `hello.svg`를 씁니다. 스크립트 없이 움직이는 SVG입니다. `--html`을 더하면 단계 탭, 일시정지, 배속, 전체 화면, 확대가 있는 재생기도 씁니다.
@@ -88,7 +86,7 @@ npm install
    ````
 
    ```sh
-   npx github:woonyong-choi/daphnis md guide.md
+   npx daphnis md guide.md
    ```
 
    명령은 문서 옆에 `guide-request.svg`를 쓰고 블록 바로 아래에 `![request](guide-request.svg)<!-- dap -->`를 넣습니다. 대체 글은 블록의 `title`이고, `title`이 없으면 이름입니다. 다시 돌려도 아무것도 바뀌지 않습니다.

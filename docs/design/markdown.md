@@ -213,7 +213,7 @@ GitHub 마크다운은 ` ```dap ` 블록을 코드로 보이고 아래 이미지
 
 | 경로 | 명령 | 상태 |
 |---|---|---|
-| npm | `npx daphnis md doc.md` | 배포 뒤 |
+| npm | `npx daphnis md doc.md` | 0.1.0부터 |
 | 저장소 | `npx github:woonyong-choi/daphnis md doc.md` | 지금 |
 | GitHub Action | `uses: woonyong-choi/daphnis@main` | 지금 |
 

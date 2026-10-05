@@ -19,7 +19,7 @@ A command that turns one `.dap` source into one animated documentation figure: a
 Design documents need figures that show which path a request takes, and charts that show a baseline before the improved value. Drawing diagrams in D2 and charts in Vega-Lite gives two looks in one document, and the D2 layout does not match a custom drawing style. daphnis measures every shape with the same font files it embeds, lays out with elkjs, checks the result for overlaps, and plays steps in an HTML player or an animated SVG.
 
 > [!NOTE]
-> In development. There is no npm release yet; run it straight from GitHub or from a clone.
+> In development. The first npm release is 0.1.0.
 
 ## Gallery
 
@@ -38,7 +38,7 @@ Design documents need figures that show which path a request takes, and charts t
 
 Requirements: Node.js 20 or later.
 
-daphnis is not on npm yet, so `npm install daphnis` does not work. Run it straight from GitHub with `npx github:woonyong-choi/daphnis <command>`, as the steps below do.
+Add it to a project with `npm install --save-dev daphnis` and run it with `npx daphnis <command>`, as the steps below do.
 
 Or work from a clone and run `node src/cli.js` in place of `daphnis`:
 
@@ -47,8 +47,6 @@ git clone https://github.com/woonyong-choi/daphnis.git
 cd daphnis
 npm install
 ```
-
-After the first npm release, `npm install --save-dev daphnis` adds the `daphnis` command to a project and `npx daphnis` runs it.
 
 1. Write one source. Save this as `hello.dap`:
 
@@ -71,7 +69,7 @@ After the first npm release, `npm install --save-dev daphnis` adds the `daphnis`
 2. Render it:
 
    ```sh
-   npx github:woonyong-choi/daphnis render hello.dap
+   npx daphnis render hello.dap
    ```
 
    The command writes `hello.svg`, an animated SVG that plays without scripts. Add `--html` for a player with step tabs, pause, speed, fullscreen, and zoom.
@@ -88,7 +86,7 @@ After the first npm release, `npm install --save-dev daphnis` adds the `daphnis`
    ````
 
    ```sh
-   npx github:woonyong-choi/daphnis md guide.md
+   npx daphnis md guide.md
    ```
 
    The command writes `guide-request.svg` next to the document and puts `![request](guide-request.svg)<!-- dap -->` right below the block. The alt text is the block's `title`, or its name when there is no title. Run it again and nothing changes.
