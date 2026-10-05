@@ -95,11 +95,11 @@ function addBlock(found, open, { lines, close }) {
 /**
  * 문서에서 dap 코드 블록을 찾는다. 다른 울타리(`text` 등) 안의 dap 줄은 블록이 아니다.
  * quotes가 true일 때만 인용(`>`) 안 울타리를 읽는다(false면 인용 안 울타리는 울타리로도 보지 않는다). 인용 안 울타리는 인용이 끝나기 전에 닫혀야 한다. 인용 표시 없는 줄을 만나면 울타리를 닫은 것으로 읽지 않고 dap 울타리는 오류로 알린다.
- * @returns { blocks, errors, fenced }. blocks는 { name?, source, open, close, indent, leader, quote }(open, close는 0부터 센 줄 번호, leader는 인용 표시를 포함한 앞머리, quote는 인용 깊이),
- *   errors는 { line, message }(1부터 센 줄), fenced는 울타리에 든 줄 번호 집합이다
+ * @returns { blocks, errors, fenced, opens }. blocks는 { name?, source, open, close, indent, leader, quote }(open, close는 0부터 센 줄 번호, leader는 인용 표시를 포함한 앞머리, quote는 인용 깊이),
+ *   errors는 { line, message }(1부터 센 줄), fenced는 울타리에 든 줄 번호 집합, opens는 그중 여는 울타리 줄 번호 집합이다
  */
 export function findBlocks(lines, quotes = false) {
-  const found = { blocks: [], errors: [], fenced: new Set(), quotes };
+  const found = { blocks: [], errors: [], fenced: new Set(), opens: new Set(), quotes };
   let open;
   for (const [index, line] of lines.entries()) {
     if (open && open.ctx.rest(line) === undefined) {
@@ -110,6 +110,7 @@ export function findBlocks(lines, quotes = false) {
       open = openingFence(line, quotes);
       if (open) Object.assign(open, { at: index, ctx: contextOf(open) });
       if (open) found.fenced.add(index);
+      if (open) found.opens.add(index);
       continue;
     }
     found.fenced.add(index);

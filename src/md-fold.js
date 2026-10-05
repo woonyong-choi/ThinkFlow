@@ -12,6 +12,7 @@
 //   <!-- /daphnis fold v1 {id} -->       끝 표식
 // 접지 않은 배치는 블록 아래 `(빈 줄) 그림`이다. 표식 두 줄과 그 사이 모양이 정확히 맞는 것만 이 도구가 만든 감싸기로 읽고, 그 밖의 `<details>`는 사용자 것이다.
 import { contextOf, findBlocks, imageLine, isMarkedImage } from './md.js';
+import { detailsBefore } from './md-tags.js';
 
 export const FOLD_VERSION = 'v1';
 export const DEFAULT_TITLE = '그림 원본';
@@ -77,23 +78,16 @@ function strayMarks(lines, { fenced }, wrappers) {
   return lines.flatMap((line, i) => (!fenced.has(i) && !owned.has(i) && MARK_LIKE.test(line) ? [{ line: i + 1, message }] : []));
 }
 
-// cost: time O(n), heap O(b), stack O(1)
-// vars: n = 문서 줄 수, b = 블록 수
+// cost: time O(n·c + b), heap O(n), stack O(1)
+// vars: n = 문서 줄 수, c = 열린 인용·목록 칸 수, b = 블록 수
 // basis: estimate
-// 블록마다 그 앞까지 열려 있는 사용자 `<details>` 깊이 { depth, broken }. 이 도구가 만든 감싸기의 태그와 울타리 안은 세지 않는다. broken은 짝 없는 `</details>`를 만났다는 뜻이다.
+// 블록마다 그 앞까지 열려 있는 사용자 `<details>` 깊이 { depth, broken, brokenAt }(docs/design/markdown.md 사용자 details). 이 도구가 만든 감싸기의 태그는 세지 않는다. 세는 규칙은 md-tags.js다.
+// broken은 짝 없는 `</details>`를 만났다는 뜻이고 brokenAt은 그 줄 번호(1부터)다.
 function userDetails(lines, found, wrappers) {
   const skip = new Set(wrappers.flatMap((w, k) => (w ? [w.start + 3, found.blocks[k].close + 2] : [])));
-  const at = new Map(found.blocks.map((block, k) => [block.open, k]));
-  const out = [];
-  let depth = 0;
-  let broken = false;
-  lines.forEach((line, i) => {
-    if (at.has(i)) out[at.get(i)] = { depth, broken };
-    if (found.fenced.has(i) || skip.has(i)) return;
-    depth += (line.match(/<details[\s>]/gi) ?? []).length - (line.match(/<\/details\s*>/gi) ?? []).length;
-    if (depth < 0) [depth, broken] = [0, true];
-  });
-  return out;
+  const fences = found.quotes ? found : findBlocks(lines, true);
+  const seen = detailsBefore(lines, fences, { blocks: new Set(found.blocks.map((block) => block.open)), skip });
+  return found.blocks.map((block) => seen.get(block.open));
 }
 
 // cost: time O(n + b), heap O(b), stack O(1)
@@ -111,7 +105,7 @@ export function inspectFold(lines, found, mode) {
   const errors = strayMarks(lines, found, wrappers);
   const items = found.blocks.map((block, k) => ({ block, wrapper: wrappers[k], user: users[k], id: ids[k], ctx: contexts[k] }));
   for (const { block, wrapper, user } of items) {
-    if (mode === 'fold' && !wrapper && user.broken) errors.push({ line: block.open + 1, message: 'cannot tell whether this block is inside a <details> written by hand: a </details> earlier in the document has no matching <details>. Nothing was changed; fix the tags, or run without --fold' });
+    if (mode === 'fold' && !wrapper && user.broken) errors.push({ line: block.open + 1, message: `cannot tell whether this block is inside a <details> written by hand: the </details> on line ${user.brokenAt} has no matching <details> before it. Nothing was changed; fix the tags, or run without --fold` });
   }
   return { items, errors };
 }
