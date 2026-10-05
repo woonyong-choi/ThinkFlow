@@ -174,3 +174,25 @@ test('md_with_a_read_only_out_dir_exits_1_and_leaves_the_document_unchanged', (c
     assert.deepEqual(readdirSync(join(folder, 'out')), []);
   });
 });
+
+// 근거: 이슈 #39 완료 조건 "생성·쓰기 실패 시 접기 태그나 문서만 먼저 바뀌지 않는다". 접기와 접기 해제도 같은 쓰기 경로라 단계마다 실패해도 문서와 SVG가 함께 옛 상태다
+test('runMd_fold_and_unfold_leave_the_document_and_svgs_in_the_old_state_when_any_write_step_fails', async () => {
+  const steps = { 'the first svg write': (kind, target) => kind === 'write' && target.includes('doc-flow.svg'), 'the document temp file write': (kind, target) => kind === 'write' && target.includes('doc.md'), 'the document rename': (kind, target) => kind === 'rename' && target.endsWith('doc.md'), 'the second svg rename': (kind, target) => kind === 'rename' && target.endsWith('doc-bar.svg') };
+  for (const flag of ['fold', 'unfold']) {
+    for (const [step, fail] of Object.entries(steps)) {
+      await withFolder(async (folder) => {
+        writeFileSync(join(folder, 'doc.md'), DOC);
+        await runIn(folder, { flags: new Set(flag === 'unfold' ? ['fold'] : []) }, injected(() => false).io);
+        const before = Object.fromEntries(names(folder).map((name) => [name, readFileSync(join(folder, name), 'utf8')]));
+        writeFileSync(join(folder, 'doc.md'), before['doc.md'].replace('title "Latency"', 'title "Latency 2"').replace('title "Request path"', 'title "Path 2"'));
+        before['doc.md'] = readFileSync(join(folder, 'doc.md'), 'utf8');
+
+        const result = await runIn(folder, { flags: new Set([flag]) }, injected(fail).io);
+
+        assert.equal(result.status, 1, `${flag}, ${step}`);
+        assert.deepEqual(names(folder), Object.keys(before).sort(), `${flag}, ${step}: 새 파일도 임시 파일도 남지 않는다`);
+        for (const [name, text] of Object.entries(before)) assert.equal(readFileSync(join(folder, name), 'utf8'), text, `${flag}, ${step}: ${name}`);
+      });
+    }
+  }
+});

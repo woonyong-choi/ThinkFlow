@@ -6,21 +6,46 @@ export const IMAGE_MARK = '<!-- dap -->';
 const MARKED_IMAGE = /^\s*!\[.*\]\(.*\)<!-- (?:dap|muto) -->\s*$/;
 /** 옛 울타리 언어 이름. 계속 읽고 폐기 안내를 낸다. */
 export const LEGACY_FENCE = 'muto';
-const FENCE_OPEN = /^(\s*)(`{3,}|~{3,})(.*)$/;
+// 인용 표시(`>`)가 앞에 있어도 울타리를 읽는다. 1번 묶음은 인용 표시와 그 뒤 공백 하나, 2번은 목록 들여쓰기다.
+const FENCE_OPEN = /^((?:[ \t]*>[ \t]?)*)(\s*)(`{3,}|~{3,})(.*)$/;
 const BLOCK_NAME = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
 
 // cost: time O(1), heap O(1), stack O(1)
 // basis: estimate
-// 여는 울타리 줄. 백틱 울타리의 설명 글자에는 백틱이 없다(CommonMark).
-function openingFence(line) {
+// 여는 울타리 줄. 백틱 울타리의 설명 글자에는 백틱이 없다(CommonMark). leader는 인용 표시를 포함한 앞머리, quote는 인용 깊이, indent는 인용 뒤 들여쓰기다.
+function openingFence(line, quotes) {
   const match = FENCE_OPEN.exec(line);
-  if (!match || (match[2][0] === '`' && match[3].includes('`'))) return undefined;
-  return { indent: match[1], char: match[2][0], length: match[2].length, info: match[3].trim() };
+  if (!match || (match[1] && !quotes) || (match[3][0] === '`' && match[4].includes('`'))) return undefined;
+  const quote = (match[1].match(/>/g) ?? []).length;
+  return { leader: match[1], quote, indent: match[2], char: match[3][0], length: match[3].length, info: match[4].trim() };
 }
 
 // cost: time O(1), heap O(1), stack O(1)
 // basis: estimate
-// 닫는 울타리 줄이면 true. 같은 글자로 열 때보다 길거나 같고 뒤에는 공백만 있다.
+/**
+ * 블록이 놓인 문맥(인용과 들여쓰기)을 다루는 도구. rest는 인용 표시를 뗀 줄(인용 밖이면 undefined), content는 거기서 들여쓰기까지 뗀 글(들여쓰기가 모자라면 undefined),
+ * isBlank는 그 문맥에서 빈 줄인지(줄이 없어도 빈 줄), wrap은 새 줄 앞에 붙일 앞머리, blank는 새 빈 줄(인용 안에서는 `>`)이다.
+ */
+export function contextOf({ leader, quote, indent }) {
+  const strip = quote ? new RegExp(`^(?:[ \\t]*>[ \\t]?){${quote}}`) : undefined;
+  const rest = (line) => {
+    if (!strip) return line;
+    const found = strip.exec(line);
+    return found ? line.slice(found[0].length) : undefined;
+  };
+  const content = (line) => rest(line)?.startsWith(indent) ? rest(line).slice(indent.length) : undefined;
+  const isBlank = (line) => line === undefined || (rest(line) ?? line).trim() === '';
+  return { rest, content, isBlank, wrap: leader + indent, blank: leader.trimEnd() };
+}
+
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+/** 이 도구가 만든 이미지 줄이면 true. 인용 표시가 앞에 있어도 된다. */
+export const isMarkedImage = (line) => MARKED_IMAGE.test(line);
+
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+// 닫는 울타리 줄이면 true. 같은 글자로 열 때보다 길거나 같고 뒤에는 공백만 있다. line은 인용 표시를 뗀 줄이다.
 function closesFence(line, open) {
   const match = /^\s*(`{3,}|~{3,})\s*$/.exec(line);
   return Boolean(match) && match[1][0] === open.char && match[1].length >= open.length;
@@ -46,79 +71,61 @@ function parseInfo(info) {
 // cost: time O(b), heap O(b), stack O(1)
 // vars: b = 본문 줄 수
 // basis: estimate
-// 울타리 들여쓰기만큼 본문 줄 앞의 공백을 뗀다. 목록 안 블록도 같은 원본이 된다.
-const dedent = (lines, indent) => lines.map((line) => (line.startsWith(indent) ? line.slice(indent.length) : line.trimStart())).join('\n');
+// 인용 표시와 울타리 들여쓰기만큼 본문 줄 앞을 뗀다. 목록과 인용 안 블록도 같은 원본이 된다. 들여쓰기가 모자란 줄은 앞 공백을 모두 뗀다.
+function dedent(lines, ctx) {
+  return lines.map((line) => ctx.content(line) ?? ctx.rest(line).trimStart()).join('\n');
+}
+
+// cost: time O(b), heap O(b), stack O(1)
+// vars: b = 본문 줄 수
+// basis: estimate
+// 닫은 울타리 하나를 블록이나 오류로 모은다.
+function addBlock(found, open, { lines, close }) {
+  const info = parseInfo(open.info);
+  if (info?.error) found.errors.push({ line: open.at + 1, message: info.error });
+  else if (info) {
+    const { at, leader, quote, indent } = open;
+    found.blocks.push({ name: info.name, legacy: info.fence === LEGACY_FENCE, source: dedent(lines.slice(at + 1, close), open.ctx), open: at, close, indent, leader, quote });
+  }
+}
 
 // cost: time O(n), heap O(n), stack O(1)
 // vars: n = 문서 줄 수
 // basis: estimate
 /**
  * 문서에서 dap 코드 블록을 찾는다. 다른 울타리(`text` 등) 안의 dap 줄은 블록이 아니다.
- * @returns { blocks, errors, fenced }. blocks는 { name?, source, open, close, indent }(open, close는 0부터 센 줄 번호),
+ * quotes가 true일 때만 인용(`>`) 안 울타리를 읽는다(false면 인용 안 울타리는 울타리로도 보지 않는다). 인용 안 울타리는 인용이 끝나기 전에 닫혀야 한다. 인용 표시 없는 줄을 만나면 울타리를 닫은 것으로 읽지 않고 dap 울타리는 오류로 알린다.
+ * @returns { blocks, errors, fenced }. blocks는 { name?, source, open, close, indent, leader, quote }(open, close는 0부터 센 줄 번호, leader는 인용 표시를 포함한 앞머리, quote는 인용 깊이),
  *   errors는 { line, message }(1부터 센 줄), fenced는 울타리에 든 줄 번호 집합이다
  */
-export function findBlocks(lines) {
-  const blocks = [];
-  const errors = [];
-  const fenced = new Set();
+export function findBlocks(lines, quotes = false) {
+  const found = { blocks: [], errors: [], fenced: new Set(), quotes };
   let open;
-  let openAt = 0;
-  lines.forEach((line, index) => {
-    if (!open) {
-      open = openingFence(line);
-      openAt = index;
-      if (open) fenced.add(index);
-      return;
+  for (const [index, line] of lines.entries()) {
+    if (open && open.ctx.rest(line) === undefined) {
+      if (parseInfo(open.info)) found.errors.push({ line: open.at + 1, message: 'the dap fence inside a block quote ends before its closing fence. Close the fence on a line that still has the quote mark', quote: true });
+      open = undefined;
     }
-    fenced.add(index);
-    if (!closesFence(line, open)) return;
-    const info = parseInfo(open.info);
-    if (info?.error) errors.push({ line: openAt + 1, message: info.error });
-    else if (info) blocks.push({ name: info.name, legacy: info.fence === LEGACY_FENCE, source: dedent(lines.slice(openAt + 1, index), open.indent), open: openAt, close: index, indent: open.indent });
-    open = undefined;
-  });
-  const unclosed = open && parseInfo(open.info);
-  if (unclosed) errors.push({ line: openAt + 1, message: `the ${unclosed.fence ?? open.info.split(/\s+/)[0]} fence is never closed` });
-  return { blocks, errors, fenced };
-}
-
-// cost: time O(1), heap O(1), stack O(1)
-// basis: estimate
-/** 이미지 줄 하나. 대체 글의 줄 바꿈과 대괄호는 이미지 문법을 깨므로 바꾼다. */
-export function imageLine(indent, alt, href) {
-  const safeAlt = alt.replace(/\s+/g, ' ').replace(/[[\]\\]/g, (c) => `\\${c}`).trim();
-  return `${indent}![${safeAlt}](${href})${IMAGE_MARK}`;
-}
-
-// cost: time O(1), heap O(1), stack O(1)
-// basis: estimate
-// 닫는 울타리 뒤에 있던 이 도구의 이미지 줄(앞에 빈 줄 하나가 있어도 된다)이 차지한 줄 수. 없으면 0이다.
-function oldImageSpan(lines, from) {
-  if (MARKED_IMAGE.test(lines[from] ?? '')) return 1;
-  return lines[from]?.trim() === '' && MARKED_IMAGE.test(lines[from + 1] ?? '') ? 2 : 0;
-}
-
-// cost: time O(n), heap O(n), stack O(1)
-// vars: n = 문서 줄 수
-// basis: estimate
-/**
- * 블록마다 닫는 울타리 아래에 이미지 줄을 넣거나 바꾼다. 이미지 줄은 빈 줄 하나를 사이에 두고 붙고, 뒤에 글이 바로 이어지면 빈 줄을 하나 더 둔다.
- * 블록이 없어진 이미지 줄(표시가 있고 울타리 밖)은 지운다.
- * @param images 블록 순서대로 { alt, href }
- * @returns 새 줄 목록. 이미 맞으면 같은 내용이다(멱등)
- */
-export function applyImages(lines, { blocks, fenced }, images) {
-  const byClose = new Map(blocks.map((block, k) => [block.close, { indent: block.indent, ...images[k] }]));
-  const out = [];
-  for (let i = 0; i < lines.length; i++) {
-    const hit = byClose.get(i);
-    if (!hit) {
-      if (fenced.has(i) || !MARKED_IMAGE.test(lines[i])) out.push(lines[i]);
+    if (!open) {
+      open = openingFence(line, quotes);
+      if (open) Object.assign(open, { at: index, ctx: contextOf(open) });
+      if (open) found.fenced.add(index);
       continue;
     }
-    out.push(lines[i], '', imageLine(hit.indent, hit.alt, hit.href));
-    i += oldImageSpan(lines, i + 1);
-    if ((lines[i + 1] ?? '').trim() !== '') out.push('');
+    found.fenced.add(index);
+    if (!closesFence(open.ctx.rest(line), open)) continue;
+    addBlock(found, open, { lines, close: index });
+    open = undefined;
   }
-  return out;
+  const unclosed = open && parseInfo(open.info);
+  if (unclosed) found.errors.push({ line: open.at + 1, message: `the ${unclosed.fence ?? open.info.split(/\s+/)[0]} fence is never closed` });
+  return found;
+}
+
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+/** 이미지 줄 하나. wrap은 줄 앞머리(인용 표시와 들여쓰기)다. 대체 글의 줄 바꿈과 대괄호는 이미지 문법을 깨므로 바꾼다. */
+export function imageLine(wrap, alt, href) {
+  const safeAlt = alt.replace(/\s+/g, ' ').replace(/[[\]\\]/g, (c) => `\\${c}`).trim();
+  return `${wrap}![${safeAlt}](${href})${IMAGE_MARK}`;
 }

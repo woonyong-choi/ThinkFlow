@@ -4,7 +4,7 @@ import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { basename, dirname, extname, join, relative, sep } from 'node:path';
 import { buildReported, report } from './build-reported.js';
 import { fileHref } from './href.js';
-import { applyImages, findBlocks } from './md.js';
+import { findForMode, inspectFold, joinLines, layoutDocument } from './md-fold.js';
 import { acquireLocks } from './md-lock.js';
 import { ownerOf, ownership, realPath, svgMark } from './md-owner.js';
 import { commitWrites, FILE_IO } from './md-write.js';
@@ -104,12 +104,11 @@ function staleSvgs({ file, outDir, owner }, keep) {
     .filter((path) => ownership(path, owner).kind === 'mine');
 }
 
-// cost: time O(b·build + n), heap O(b·out), stack O(1), io 2b + n
-// vars: b = 블록 수, build = 블록 하나를 만드는 비용, out = SVG 글자 수, n = 문서 줄 수
+// cost: time O(n), heap O(n), stack O(1), io 1
+// vars: n = 문서 글자 수
 // basis: estimate
-// 문서 하나가 낼 파일 { files, stale }. 읽기 오류, 블록 형식 오류, 만들기 오류가 있으면 알리고 undefined다.
-async function planDocument(file, args, claimed) {
-  const json = args.flags.has('json');
+// 문서를 읽어 { lines, ends, eol }로 쪼갠다. ends는 줄마다 원래 줄바꿈(마지막 줄은 '')이라 줄바꿈이 섞인 문서도 블록 본문은 바이트 그대로 돌아간다. 새 줄은 문서에 CRLF가 하나라도 있으면 CRLF, 아니면 LF를 쓴다. 못 읽으면 알리고 undefined다.
+function readDocument(file, json) {
   let text;
   try {
     text = readFileSync(file, 'utf8');
@@ -117,24 +116,51 @@ async function planDocument(file, args, claimed) {
     report(file, [problem(`cannot read the file: ${error.code ?? error.message}`, 'io')], json);
     return undefined;
   }
-  // 줄바꿈이 CRLF인 문서는 CRLF로 다시 쓴다.
-  const eol = text.includes('\r\n') ? '\r\n' : '\n';
-  const lines = text.split(/\r?\n/);
-  const found = findBlocks(lines);
+  const parts = text.split(/(\r?\n)/);
+  return { lines: parts.filter((_, i) => i % 2 === 0), ends: [...parts.filter((_, i) => i % 2 === 1), ''], eol: text.includes('\r\n') ? '\r\n' : '\n' };
+}
+
+// cost: time O(b), heap O(b), stack O(1)
+// vars: b = 블록 수
+// basis: estimate
+// 블록 형식 오류와 옛 울타리 폐기 안내를 알린다.
+function reportBlocks(file, found, json) {
   report(file, found.errors.map(({ line, message }) => ({ ...problem(message), line })), json);
   report(file, found.blocks.filter((block) => block.legacy).map((block) => ({ ...makeDiagnostic({ severity: 'deprecated', line: block.open + 1, message: 'the code block language "muto" is now "dap". Write the fence as ```dap' }, { code: 'deprecated-fence' }) })), json);
+}
+
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+// 접기 옵션이 고른 방식: 'fold', 'unfold', 옵션이 없으면 'keep'(문서의 접힘 상태를 지킨다).
+const foldMode = (flags) => (flags.has('fold') ? 'fold' : flags.has('unfold') ? 'unfold' : 'keep');
+
+// cost: time O(b·build + n), heap O(b·out), stack O(1), io 2b + n
+// vars: b = 블록 수, build = 블록 하나를 만드는 비용, out = SVG 글자 수, n = 문서 줄 수
+// basis: estimate
+// 문서 하나가 낼 파일 { files, stale }. 읽기 오류, 블록 형식 오류, 접기 구조 오류, 만들기 오류가 있으면 알리고 undefined다.
+async function planDocument(file, args, claimed) {
+  const json = args.flags.has('json');
+  const doc = readDocument(file, json);
+  if (!doc) return undefined;
+  const mode = foldMode(args.flags);
+  const found = findForMode(doc.lines, mode);
+  reportBlocks(file, found, json);
+  const inspected = inspectFold(doc.lines, found, mode);
+  report(file, inspected.errors.map(({ line, message }) => ({ ...problem(message, 'md-fold'), line })), json);
   const outDir = args['out-dir'] ?? dirname(file);
   const targets = targetsOf(file, found.blocks, outDir);
   const unique = claimTargets(file, targets, { claimed, json });
   const owner = ownerOf(file, outDir);
   const owned = checkOwners(file, targets, { owner, json });
-  const built = found.errors.length || !unique || !owned ? undefined : await buildTargets(file, targets, args);
+  const broken = found.errors.length || inspected.errors.length || !unique || !owned;
+  const built = broken ? undefined : await buildTargets(file, targets, args);
   if (!built) return undefined;
   const images = built.map(({ label, svg, result }) => ({ alt: plainText(result.figure.title ?? label), href: hrefOf(file, svg) }));
   const files = [];
   for (const item of built) files.push({ path: item.svg, text: await svgText(item, { args, owner }) });
   // 문서는 SVG 뒤에 쓴다. 문서가 가리키는 SVG가 먼저 놓여 있어야 중간에 멈춰도 깨진 링크가 없다.
-  files.push({ path: file, text: applyImages(lines, found, images).join(eol), isDocument: true });
+  const text = joinLines(layoutDocument(doc, { ...inspected, fenced: found.fenced, quotes: found.quotes }, { mode, title: args['fold-title'], images }), doc.eol);
+  files.push({ path: file, text, isDocument: true });
   return { files, stale: staleSvgs({ file, outDir, owner }, new Set(built.map((item) => item.svg))) };
 }
 

@@ -17,14 +17,14 @@ const USAGE = [
   '  daphnis check <file.dap ...> [--strict] [--no-deprecated] [--require-data] [--require-ci] [--json]',
   '  daphnis gallery <dir> [--out dir] [--title "text"] [--strict] [--no-deprecated] [--require-data] [--require-ci]',
   '  daphnis migrate <file.dap ...> [--write] [--json]',
-  '  daphnis md <file.md ...> [--check] [--out-dir dir] [--static] [--strict] [--no-deprecated] [--require-data] [--require-ci] [--json]',
+  '  daphnis md <file.md ...> [--check] [--out-dir dir] [--fold [--fold-title "text"] | --unfold] [--static] [--strict] [--no-deprecated] [--require-data] [--require-ci] [--json]',
 ].join('\n');
 // gallery가 받는 옵션. --html은 gallery가 늘 HTML을 쓰므로 받기만 한다(옛 호출이 깨지지 않게).
 const GALLERY_FLAGS = ['html', 'strict', 'no-deprecated', 'require-data', 'require-ci'];
-const FLAGS = ['--html', '--static', '--strict', '--no-deprecated', '--require-data', '--require-ci', '--json', '--write', '--check'];
+const FLAGS = ['--html', '--static', '--strict', '--no-deprecated', '--require-data', '--require-ci', '--json', '--write', '--check', '--fold', '--unfold'];
 // md 명령이 받지 않는 옵션과 md 명령만 받는 옵션
 const MD_REFUSED = ['out', 'title', 'html', 'write'];
-const MD_ONLY = ['check', 'out-dir'];
+const MD_ONLY = ['check', 'out-dir', 'fold', 'unfold', 'fold-title'];
 // 판 표기 줄(`daphnis 1`). 목록 쪽 머리에서 종류 줄을 찾을 때 건너뛴다.
 const VERSION_LINE = /^\s*(?:daphnis|mutoscope)\s/;
 // 원본 확장자. `.muto`는 옛 확장자라 계속 읽고 폐기 안내를 낸다.
@@ -44,6 +44,17 @@ function misplacedOption({ command, flags, ...values }) {
   return undefined;
 }
 
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+// 접기 옵션을 잘못 쓴 오류 글이다. --fold와 --unfold는 함께 못 쓰고, 제목은 --fold와만 쓰며 비어 있거나 줄이 바뀌면 안 된다. 없으면 undefined다.
+function foldOptionError({ flags, ...values }) {
+  const title = values['fold-title'];
+  if (flags.has('fold') && flags.has('unfold')) return '--fold and --unfold cannot be used together';
+  if (title !== undefined && !flags.has('fold')) return '--fold-title needs --fold';
+  if (title !== undefined && (title.trim() === '' || /[\r\n]/.test(title))) return '--fold-title needs one line of text';
+  return undefined;
+}
+
 // cost: time O(a), heap O(a), stack O(1)
 // vars: a = 인자 수
 // basis: estimate
@@ -54,7 +65,7 @@ function parseArgs(argv) {
   const args = { command, inputs: [], out: undefined, title: undefined, flags: new Set() };
   for (let i = 0; i < rest.length; i++) {
     const arg = rest[i];
-    if (arg === '--out' || arg === '--title' || arg === '--out-dir') {
+    if (arg === '--out' || arg === '--title' || arg === '--out-dir' || arg === '--fold-title') {
       const value = rest[++i];
       if (value === undefined || value.startsWith('--')) return { error: `${arg} needs a value` };
       args[arg.slice(2)] = value;
@@ -66,6 +77,8 @@ function parseArgs(argv) {
   if (args.flags.has('write') && command !== 'migrate') return { error: `--write is only for migrate\n${USAGE}` };
   const misplaced = misplacedOption(args);
   if (misplaced) return { error: `${misplaced}\n${USAGE}` };
+  const folding = foldOptionError(args);
+  if (folding) return { error: `${folding}\n${USAGE}` };
   const refused = command === 'gallery' ? [...args.flags].find((flag) => !GALLERY_FLAGS.includes(flag)) : undefined;
   if (refused) return { error: `--${refused} is not for gallery\n${USAGE}` };
   return args;

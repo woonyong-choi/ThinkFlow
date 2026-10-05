@@ -14,6 +14,14 @@ inputs:
     description: '`true` also fails on warnings.'
     required: false
     default: 'false'
+  fold:
+    description: '`keep` leaves the folded state of each document as it is (new figures stay unfolded). `fold` puts the figure first and folds each dap block into a details section. `unfold` undoes only the folds daphnis made. Applies to the Markdown files in both modes.'
+    required: false
+    default: keep
+  fold-title:
+    description: 'Summary text of the folds that `fold` creates. Default `그림 원본`. Only with `fold: fold`.'
+    required: false
+    default: ''
 runs:
   using: composite
   steps:
@@ -29,11 +37,24 @@ runs:
         PATHS: ${{ inputs.paths }}
         MODE: ${{ inputs.mode }}
         STRICT: ${{ inputs.strict }}
+        FOLD: ${{ inputs.fold }}
+        FOLD_TITLE: ${{ inputs.fold-title }}
       run: |
         set -euo pipefail
         set -f
         case "$MODE" in check|render) ;; *) echo "::error::mode must be check or render, not '$MODE'"; exit 1 ;; esac
         case "$STRICT" in true) strict_flag=--strict ;; false) strict_flag= ;; *) echo "::error::strict must be true or false, not '$STRICT'"; exit 1 ;; esac
+        fold_flags=()
+        case "${FOLD:-keep}" in
+          keep) ;;
+          fold) fold_flags=(--fold) ;;
+          unfold) fold_flags=(--unfold) ;;
+          *) echo "::error::fold must be keep, fold, or unfold, not '${FOLD:-}'"; exit 1 ;;
+        esac
+        if [ -n "${FOLD_TITLE:-}" ]; then
+          if [ "${FOLD:-keep}" != fold ]; then echo "::error::fold-title needs fold: fold"; exit 1; fi
+          fold_flags+=(--fold-title "$FOLD_TITLE")
+        fi
         dap_files=()
         md_files=()
         # 경로는 NUL로 받는다. 줄 단위 출력은 Git이 한글 이름을 따옴표와 escape로 감싸고(core.quotepath), 공백과 줄바꿈이 든 이름을 가른다.
@@ -55,6 +76,6 @@ runs:
           node "$cli" "$dap_command" "${dap_files[@]}" $strict_flag || status=1
         fi
         if [ "${#md_files[@]}" -gt 0 ]; then
-          node "$cli" md "${md_files[@]}" $md_flag $strict_flag || status=1
+          node "$cli" md "${md_files[@]}" $md_flag $strict_flag ${fold_flags[@]+"${fold_flags[@]}"} || status=1
         fi
         exit "$status"
