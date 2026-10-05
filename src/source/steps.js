@@ -23,14 +23,14 @@ function emptyBeat(line) {
 // cost: time O(t), heap O(t), stack O(1)
 // vars: t = 문장 낱말 수
 // basis: estimate
-// `step "이름" ["설명"] [for=12s] [status="도형=종류"]`
+// `step "이름" ["설명"] [for=12s] [keep="값, 값"] [set="식, 식"] [status="도형=종류"]`
 function readStep({ tokens, line }, ctx) {
   const [, label, caption, extra] = tokens.filter((t) => t.type !== 'option');
   if (label?.type !== 'text' || (caption && caption.type !== 'text') || extra) {
-    ctx.problems.error(line, 'write a step as: step "name" ["caption"] [for=12s] [status=list]');
+    ctx.problems.error(line, 'write a step as: step "name" ["caption"] [for=12s] [keep=names] [set=exprs] [status=list]');
   }
-  const { forMs, status } = readStepOptions(tokens.filter((t) => t.type === 'option'), { line, ctx });
-  ctx.step = { label: label?.value ?? '', caption: caption?.type === 'text' ? caption.value : undefined, line, beats: [], tracks: [], forMs, status };
+  const { forMs, keep, sets, status } = readStepOptions(tokens.filter((t) => t.type === 'option'), { line, ctx });
+  ctx.step = { label: label?.value ?? '', caption: caption?.type === 'text' ? caption.value : undefined, line, beats: [], tracks: [], forMs, keep, sets, status };
   ctx.figure.steps.push(ctx.step);
 }
 

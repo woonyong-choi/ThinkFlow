@@ -95,6 +95,8 @@ function usedWords() {
       if (head.type === 'close') isInTable = false;
       const scopes = scopesOf({ head, second, isTimeline, isInTable });
       if (head.value === 'table' && tokens.at(-1).type === 'open') isInTable = true;
+      // 읽기 식(`대상:=원천`)은 문장 낱말이 아니라 식이라, 어느 줄이든 `:=`가 든 낱말이 있으면 쓴 것으로 센다. `on` 줄에서는 `대상:` 키의 선택 사항으로 읽힌다.
+      if (tokens.some((t) => t.type === 'option' && (t.value.includes(':=') || t.key.endsWith(':')))) used.heads.add(':=');
       if (head.type === 'word' && second?.type === 'arrow') used.heads.add(isTimeline ? 'hop' : 'edge');
       else if (head.type === 'word') used.heads.add(head.value);
       if (head.value === 'step') isTimeline = true;

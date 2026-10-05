@@ -6,8 +6,8 @@ import { readOptions } from './options.js';
 import { ID_PATTERN, NUMBER_PATTERN } from './words.js';
 
 const SIGNED_STEP = /^\d+(?:\.\d+)?$/;
-// 식의 연산자 자리: 값 이름 바로 뒤
-const OPERATOR = /^[+\-=]/;
+// 식의 연산자 자리: 값 이름 바로 뒤. `:=`는 다른 값을 읽어 오는 읽기 식이다.
+const OPERATOR = /^(?::=|[+\-=])/;
 // 소수 계산 오차(0.1 + 0.2)를 지우는 자릿수
 const DECIMALS = 6;
 
@@ -54,8 +54,8 @@ export function roundNumber(number) {
 // vars: e = 식 수, v = 값 수
 // basis: estimate
 /**
- * `set="식, 식"`을 식 목록으로 읽는다. 식은 `id+N`, `id-N`, `id=N`, `id=낱말`이고 뒤에 `@도형`을 붙일 수 있다. `=` 뒤는 언제나 값 글자(숫자나 공백 없는 낱말)이고 다른 값의 이름이어도 그 글자다. 다른 값을 따라가는 것은 `ref`가 맡는다.
- * @returns { id, op, operand, at, line }[]. op는 `+`, `-`, `=`다. 어긋난 식은 오류를 내고 뺀다
+ * `set="식, 식"`을 식 목록으로 읽는다. 식은 `id+N`, `id-N`, `id=N`, `id=낱말`, `id:=원천`이고 뒤에 `@도형`을 붙일 수 있다. `=` 뒤는 언제나 값 글자(숫자나 공백 없는 낱말)이고 다른 값의 이름이어도 그 글자다. 다른 값을 따라가는 것은 `ref`가 맡고, 값 하나를 다른 값으로 한 번 복사하는 것은 읽기 식(`:=`)이 맡는다.
+ * @returns { id, op, operand, at, line }[]. op는 `+`, `-`, `=`, `:=`다. `:=`의 operand는 읽을 값 이름이다. 읽기 식이 하나라도 있으면 그림 모형의 hasRead를 켠다. 어긋난 식은 오류를 내고 뺀다
  */
 export function readSets(text, { line, ctx }) {
   const ids = ctx.figure.values.map((v) => v.id).sort((a, b) => b.length - a.length);
@@ -78,9 +78,10 @@ function readExpression(raw, { ids, line, ctx }) {
     ctx.problems.error(line, `write a set expression as id+N, id-N, id=value, optionally followed by @node. Found "${raw}".${hint}`);
     return undefined;
   }
-  const op = body[id.length];
-  const operand = body.slice(id.length + 1);
+  const op = body.startsWith(':=', id.length) ? ':=' : body[id.length];
+  const operand = body.slice(id.length + op.length);
   const expression = { id, op, operand, at, line };
+  if (op === ':=') return readRead(expression, raw, { line, ctx });
   if (op !== '=') {
     if (!SIGNED_STEP.test(operand)) return fail(`"${raw}" needs a number after ${op}`, { line, ctx });
     // 차트 숫자와 같은 기준. 무한대가 되는 글과 1e15 이상은 글자로 쓸 수 없다.
@@ -89,6 +90,16 @@ function readExpression(raw, { ids, line, ctx }) {
   if (operand === '') return fail(`"${raw}" needs a value after =`, { line, ctx });
   const literal = readLiteral(operand, { line, key: 'a set value', ctx });
   return literal === undefined ? undefined : { ...expression, operand: literal };
+}
+
+// cost: time O(n), heap O(1), stack O(1)
+// vars: n = 값 이름 글자 수
+// basis: estimate
+// 읽기 식 하나. 원천은 값 이름 꼴이어야 하고, 그 이름이 선언됐는지는 value-check.js가 확인한다.
+function readRead(expression, raw, { line, ctx }) {
+  if (!ID_PATTERN.test(expression.operand)) return fail(`write a read as target:=source, where source is a value name. Found "${raw}"`, { line, ctx });
+  ctx.figure.hasRead = true;
+  return expression;
 }
 
 function fail(message, { line, ctx }) {

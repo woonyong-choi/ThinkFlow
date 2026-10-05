@@ -2,6 +2,8 @@
 import { readMoveOptions, readTime } from './move-options.js';
 import { readOptions } from './options.js';
 import { valueNames } from './grammar.js';
+import { readSets } from './value.js';
+import { ID_PATTERN } from './words.js';
 import { isOverTimeLimit, overLimitMessage, parseTime, TIME_LIMIT_MS } from './values.js';
 
 const TRACK_FORM = 'write a track as: track a, b -> c -> d ["text"] [at=time] [every=time] [time=time] [legs="time, -"] [tone=name] [set="id+1@node"] [lost=60%]';
@@ -9,13 +11,16 @@ const STATUS_FORM = 'write status as: status="node=ok, node=warn"';
 // 구간 시간의 합을 `time=`과 견주는 오차(ms). 소수 초(`1.1s`)를 밀리초로 바꾸며 생기는 부동소수점 오차를 같은 값으로 본다.
 const LEG_EPSILON_MS = 1e-6;
 
-// cost: time O(t), heap O(t), stack O(1)
-// vars: t = 선택 사항 수
+// cost: time O(t + k + e), heap O(t + k + e), stack O(1)
+// vars: t = 선택 사항 수, k = keep 항목 수, e = 식 수
 // basis: estimate
-/** 단계의 선택 사항(`for=`, `status=`)을 읽는다. forMs는 단계 길이(ms)이고 없거나 틀리면 undefined, status는 `{ node, kind }` 목록이다(없으면 빈 목록). */
+/**
+ * 단계의 선택 사항(`for=`, `keep=`, `set=`, `status=`)을 읽는다.
+ * @returns { forMs, keep, sets, status }. forMs는 단계 길이(ms)이고 없거나 틀리면 undefined, keep은 { id, line } 목록, sets는 단계 시작 재설정 식 목록, status는 `{ node, kind }` 목록이다(없으면 빈 목록)
+ */
 export function readStepOptions(options, { line, ctx }) {
   const found = readOptions(options, { scopes: ['step'], what: 'a step', line, ctx });
-  return { forMs: readStepLength(found.for, { line, ctx }), status: readStatus(found.status, { line, ctx }) };
+  return { forMs: readStepLength(found.for, { line, ctx }), keep: readKeep(found.keep, { line, ctx }), sets: readStepSets(found.set, { line, ctx }), status: readStatus(found.status, { line, ctx }) };
 }
 
 // cost: time O(1), heap O(1), stack O(1)
@@ -49,6 +54,38 @@ function readStatus(text, { line, ctx }) {
     else entries.push({ node, kind });
   }
   return entries;
+}
+
+// cost: time O(k), heap O(k), stack O(1)
+// vars: k = keep 항목 수
+// basis: estimate
+// `keep="값, 값"`. 값 이름 꼴이 아닌 항목, 같은 이름 두 번, 앞 단계가 없는 첫 단계의 keep은 오류다. 이름이 선언됐는지와 참조 값인지는 value-check.js가 확인한다.
+function readKeep(text, { line, ctx }) {
+  if (text === undefined) return [];
+  if (ctx.figure.kind !== 'flow') ctx.problems.error(line, 'keep belongs to flow figures only, where value lines declare what is kept');
+  if (!ctx.figure.steps.length) ctx.problems.error(line, 'keep carries values over from the step before, and the first step has none. Remove keep=, since the first step starts from from=');
+  const kept = [];
+  for (const id of text.split(',').map((item) => item.trim())) {
+    if (!ID_PATTERN.test(id)) ctx.problems.error(line, `keep is a list of value names such as keep="a, b". Found "${id}"`);
+    else if (kept.some((k) => k.id === id)) ctx.problems.error(line, `"${id}" is kept twice in one step. Write each value once`);
+    else kept.push({ id, line });
+  }
+  return kept;
+}
+
+// cost: time O(e), heap O(e), stack O(1)
+// vars: e = 식 수
+// basis: estimate
+// 단계 `set="식, 식"`. 단계가 시작할 때 값을 정하므로 `@도형`은 쓸 수 없다.
+function readStepSets(text, { line, ctx }) {
+  if (text === undefined) return [];
+  if (ctx.figure.kind !== 'flow') {
+    ctx.problems.error(line, 'set belongs to flow figures only, where value lines declare what changes');
+    return [];
+  }
+  const sets = readSets(text, { line, ctx });
+  if (sets.some((e) => e.at !== undefined)) ctx.problems.error(line, 'a step set applies when the step starts, so it takes no @node. Put @node in a set= of a move or track');
+  return sets;
 }
 
 // cost: time O(1), heap O(1), stack O(1)

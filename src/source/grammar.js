@@ -143,6 +143,8 @@ export const STATEMENTS = table({
   link: { ...V1, section: 'declare', kinds: ['chart'] },
   hop: { ...V1, section: 'timeline', kinds: ['flow', 'sequence', 'state', 'data'], display: 'a -> b' },
   track: { ...V1, section: 'timeline', kinds: ['flow'], display: 'track a, b -> c -> d' },
+  // 읽기 식 `대상:=원천`은 문장이 아니라 `set=`, `on` 줄, 단계 `set=` 안의 식이다. 줄 첫 낱말로 쓸 수 없는 이름이라 문장으로 읽히지 않고 문서 표에만 나온다.
+  ':=': { ...V1, section: 'timeline', kinds: ['flow'], display: '대상:=원천' },
   step: { ...V1, section: 'timeline', kinds: ALL_KINDS },
   show: { ...V1, section: 'timeline', kinds: ['flow', 'data'], scopes: ['show', 'graph'] },
   clear: { ...V1, section: 'timeline', kinds: ['flow', 'data'] },
@@ -174,6 +176,8 @@ export const OPTIONS = table({
   'edge.no': COUNT,
   'step.for': { ...V1, type: 'word', format: '시간' },
   'step.status': { ...TEXT, values: 'status' },
+  'step.keep': { ...TEXT, format: '값 이름 목록' },
+  'step.set': TEXT,
   'hop.time': { ...V1, type: 'word', format: '시간' },
   'hop.tone': { ...V1, type: 'word', values: 'tone' },
   'hop.set': TEXT,

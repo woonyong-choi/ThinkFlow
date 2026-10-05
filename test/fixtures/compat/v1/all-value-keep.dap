@@ -1,0 +1,25 @@
+flow right
+title "값 유지와 읽기"
+box web "웹"
+box api "API"
+store db "DB"
+queue jobs "대기열" slots=6
+value count "요청 수" on=api
+value last "마지막 값" on=api from=none
+value copy "복사본" on=db from=0
+value shown "화면 값" on=db ref=count
+on api count+1
+on db copy:=count, last:=copy
+web -> api
+api -> db
+api -> jobs
+
+step "처음" "첫 단계는 from에서 시작한다"
+  web -> api "요청" set="last=web, jobs:=count"
+  api -> db "저장" set="copy:=last"
+
+step "이어서" "keep한 값은 앞 단계가 끝난 값에서 시작한다" keep="count, last" set="copy=100, jobs=1"
+  web -> api "요청" set="last:=copy"
+
+step "재설정" "keep하지 않은 값은 from으로 돌아간다" set="count:=jobs"
+  api -> db "저장"

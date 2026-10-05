@@ -57,6 +57,41 @@ step "대화" "입력은 화면을 거쳐 엔진이 에이전트로 보낸다"
 2. 명령이 `saturn.dap:24: unknown node "cdex". Did you mean "codex"? Declared: cli, codex, db, engine, system, tui, user`를 내고 실패한다.
 3. AI가 이름을 고친다.
 
+### 단계 사이에 값을 이어 가기
+
+```text
+flow right
+title "값 유지와 읽기"
+box web "웹"
+box api "API"
+store db "DB"
+value sent "보낸 수" on=web
+value saved "저장한 수" on=db
+value mirror "복사본" on=api
+queue jobs "대기열" slots=4
+web -> api
+api -> db
+on api sent+1
+on db saved+1
+
+step "첫 요청" "모든 값이 from에서 시작한다"
+  web -> api "요청" set="mirror:=sent"
+  api -> db "저장" set="jobs+1"
+
+step "이어서" "keep한 값은 앞 단계가 끝난 값에서 시작한다" keep="sent, jobs" set="saved=10"
+  web -> api "요청" set="mirror:=saved"
+  api -> db "저장" set="jobs+1"
+
+step "맞바꿈" "읽기는 갱신을 시작할 때 값을 읽는다" keep="saved, mirror" set="sent=20"
+  web -> api "요청"
+  api -> db "바꿈" set="sent:=saved, saved:=sent"
+```
+
+1. 첫 단계는 모든 값이 `from`에서 시작한다. `web -> api`의 점이 `api`에 닿으면 `on` 줄로 `sent`가 1이 되고, 그 뒤에 `set=`의 `mirror:=sent`가 바뀐 `sent`를 읽어 `mirror`도 1이 된다.
+2. 둘째 단계는 `keep` 때문에 `sent`와 `jobs`가 1인 채로 시작한다. `mirror`는 `keep`하지 않아 `from`인 0에서 시작하고, `saved`는 단계 `set=`의 재설정이 정한 10에서 시작한다.
+3. 셋째 단계의 `saved`는 11, `mirror`는 10으로 이어지고 `sent`는 재설정으로 20에서 시작한다. `api -> db`의 점이 `db`에 닿는 순간 `on` 줄이 `saved`를 12로 올린 다음 `set="sent:=saved, saved:=sent"`가 두 값을 읽고 맞바꿔 `sent`는 12, `saved`는 21이 된다.
+4. 단계를 탭으로 바로 골라도 앞 단계를 다시 재생하지 않는다. 시간표가 단계마다 시작 값을 담고 있어서다.
+
 ### 잠금이 풀릴 때까지 기다리기
 
 ```text
@@ -335,8 +370,10 @@ step "소비자 하나가 느려진다" for=6s status="slow=warn"
 
 - 단계의 `keep="값, 값"`은 목록의 값이 단계 시작 때 앞 단계가 끝난 값에서 시작하게 한다. 목록은 쉼표로 나눈 값 이름(`value`의 id나 큐 이름)이다. 목록에 없는 값은 지금처럼 `from`으로 돌아간다. 값 이름은 안정적인 식별자라서 줄 순서와 카드 자리가 바뀌어도 같은 값을 가리킨다. 없는 이름, 참조 값(`ref`), 같은 이름의 중복은 그 줄의 오류다. 참조 값은 가리키는 값을 따르기 때문이다. 앞 단계가 없는 첫 단계의 `keep`도 오류다.
 - 단계의 `set="식, 식"`은 단계가 시작할 때 값을 정하는 재설정이다. 식 꼴은 이동의 `set=`과 같고 `@도형`만 쓸 수 없다. `keep`한 값에 적으면 재설정이 앞 단계의 값보다 우선하고, `keep`하지 않은 값에 적으면 `from` 대신 그 식의 결과에서 시작한다.
+- `keep`과 단계 `set=`은 값이 있는 흐름 그림(`flow`)에서만 쓴다. `keep`의 항목은 값 이름 꼴이 아니면 그 줄의 오류다.
 - `keep`이 넘기는 것은 값 글자뿐이다. 카드 내용, 밝힌 도형과 선, 도형 상태, 값 줄의 밝힘은 넘기지 않는다.
 - 읽기 식 `대상:=원천`은 값 `대상`을 이벤트를 처리하는 시점의 값 `원천`으로 바꾼다. 이동과 흐름의 `set=`, `on` 줄, 단계의 `set=`에 쓴다. `원천`은 값 이름이고 참조 값과 큐도 된다. `대상`은 참조 값일 수 없다. 큐는 정수만 받아서, 정수가 아닌 글을 읽어 큐에 넣으면 실행 때 `value-type` 오류다. 읽기와 쓰기의 순서는 [재생](playback.md#이벤트-순서)이 정한다.
+- 읽기 식의 `원천`이 선언하지 않은 값이면 그 줄의 오류다. 단계 `set=`의 읽기는 `keep`을 반영한 시작 값을 읽는다. 낱말을 담은 값을 읽는 값도 낱말을 담는 값으로 세므로, 그 값에 `+`, `-`를 쓰면 오류다.
 - `id=낱말`의 `=` 뒤는 어떤 낱말이든 값 글자로 읽어 온 원본이 있다. 그래서 읽기는 지금까지 오류였던 `:=`로 적고, 옛 원본의 값 글자는 바뀌지 않는다.
 
 ### 조건과 대기
@@ -398,14 +435,8 @@ step "소비자 하나가 느려진다" for=6s status="slow=warn"
 
 이 절의 문장과 선택 사항을 문법 표(`src/source/grammar.js`)의 꼴로 모은 표다. 모두 판 1이고 생략하면 지금과 같은 뜻이라 같은 판 안의 추가다. 구현이 항목을 문법 표에 넣으면 [호환 규칙](#호환-규칙)의 생성 표가 이 줄을 대신하고 이 표의 해당 줄을 지운다.
 
-| 부분 | 낱말 | 그림 종류 | 판 | 폐기 |
-|---|---|---|---|---|
-| 시간 흐름 | `대상:=원천`(`set=`, `on` 줄, 단계 `set=` 안의 읽기 식) | flow | 판 1 |  |
-
 | 선택 사항 | 값 | 판 | 폐기 |
 |---|---|---|---|
-| `step.keep` | 값 이름 목록 | 판 1 |  |
-| `step.set` | 글 | 판 1 |  |
 | `hop.when`, `track.when` | 조건 글 | 판 1 |  |
 | `hop.wait`, `track.wait` | 조건 글 | 판 1 |  |
 | `hop.timeout`, `track.timeout` | 시간 | 판 1 |  |
@@ -470,7 +501,7 @@ step "소비자 하나가 느려진다" for=6s status="slow=warn"
 | 선언 | `table` | data | 판 1 |  |
 | 선언 | `series`, `rule`, `missing`, `data`, `row`, `point`, `cell`, `link` | chart | 판 1 |  |
 | 시간 흐름 | `a -> b` | flow, sequence, state, data | 판 1 |  |
-| 시간 흐름 | `track a, b -> c -> d` | flow | 판 1 |  |
+| 시간 흐름 | `track a, b -> c -> d`, `대상:=원천` | flow | 판 1 |  |
 | 시간 흐름 | `step`, `say`, `wait` | 모든 그림 | 판 1 |  |
 | 시간 흐름 | `show`, `clear` | flow, data | 판 1 |  |
 | 시간 흐름 | `light` | flow, state, data, chart | 판 1 |  |
@@ -495,6 +526,8 @@ step "소비자 하나가 느려진다" for=6s status="slow=warn"
 | `edge.no` | 양의 정수 | 판 1 |  |
 | `step.for` | 시간 | 판 1 |  |
 | `step.status` | `ok`, `warn`, `fail`, `wait` | 판 1 |  |
+| `step.keep` | 값 이름 목록 | 판 1 |  |
+| `step.set` | 글 | 판 1 |  |
 | `hop.time` | 시간 | 판 1 |  |
 | `hop.tone` | `brand`, `purple`, `green`, `gray`, `red` | 판 1 |  |
 | `hop.set` | 글 | 판 1 |  |
@@ -557,8 +590,8 @@ step "소비자 하나가 느려진다" for=6s status="slow=warn"
 | 요구사항 | 검증 계획 |
 |---|---|
 | 문서의 모든 예시 원본이 오류와 경고 없이 읽힌다. | `test/grammar.test.js`의 `docExamples_every_design_doc_example_builds_without_errors_or_warnings`. 문서의 예시 원본을 뽑아 strict로 읽는다. 흐름 조건 예시는 첫 줄 주석을 지워 같은 시험에 넣는다 |
-| 조건식, `keep`, `lost`, `legs`, `status`, `else`의 틀린 값과 짝이 맞지 않는 선택 사항을 줄 번호와 함께 알린다. | 규칙마다 원본 하나로 줄 번호와 `code`(`syntax`, `value-type`, `leg-time`) 확인. 없는 값과 `1=1`, 낱말에 `<`, 첫 단계 `keep`, 항목 수가 다른 `legs`, 범위 밖 `lost`를 포함. 담당: [#118](https://github.com/woonyong-choi/daphnis/issues/118), [#119](https://github.com/woonyong-choi/daphnis/issues/119), [#120](https://github.com/woonyong-choi/daphnis/issues/120) #120 몫은 `test/lost-status-legs.test.js`의 `parseFigure_lost_accepts_0_to_100_percent_and_rejects_a_missing_percent_sign_or_a_value_out_of_range`, `parseFigure_lost_and_status_belong_to_flow_figures_only`, `parseFigure_legs_needs_one_entry_per_line_and_at_least_two_lines`, `parseFigure_legs_sum_against_time_reports_leg_time_on_the_track_line_at_the_boundaries`, `parseFigure_legs_entries_and_their_sum_over_one_hour_report_time_limit`, `buildFigure_legs_distance_times_over_one_hour_end_with_time_limit_on_the_track_line`, `parseFigure_status_rejects_unknown_kinds_duplicates_unknown_names_and_non_shape_targets` |
-| 새 기능을 쓰지 않는 원본의 시간표와 출력이 바뀌지 않는다. | 모든 예제와 `test/fixtures/compat/v1/`의 기존 파일을 이 설계 이전 출력과 바이트 비교. 새 낱말을 한 번씩 쓰는 `all-*` 파일을 묶음에 더해 읽힘 확인. 담당: [#118](https://github.com/woonyong-choi/daphnis/issues/118), [#119](https://github.com/woonyong-choi/daphnis/issues/119), [#120](https://github.com/woonyong-choi/daphnis/issues/120) #120은 `all-lost-status-legs.dap`를 묶음에 더해 `compat_v1_every_fixture_builds_without_errors_and_matches_the_structure_snapshot`와 `compat_v1_covers_every_word_option_and_value_in_the_grammar_table`가 읽힘과 문법 표 사용을 본다 |
+| 조건식, `keep`, `lost`, `legs`, `status`, `else`의 틀린 값과 짝이 맞지 않는 선택 사항을 줄 번호와 함께 알린다. | 규칙마다 원본 하나로 줄 번호와 `code`(`syntax`, `value-type`, `leg-time`) 확인. 없는 값과 `1=1`, 낱말에 `<`, 첫 단계 `keep`, 항목 수가 다른 `legs`, 범위 밖 `lost`를 포함. 담당: [#118](https://github.com/woonyong-choi/daphnis/issues/118), [#119](https://github.com/woonyong-choi/daphnis/issues/119), [#120](https://github.com/woonyong-choi/daphnis/issues/120) #120 몫은 `test/lost-status-legs.test.js`의 `parseFigure_lost_accepts_0_to_100_percent_and_rejects_a_missing_percent_sign_or_a_value_out_of_range`, `parseFigure_lost_and_status_belong_to_flow_figures_only`, `parseFigure_legs_needs_one_entry_per_line_and_at_least_two_lines`, `parseFigure_legs_sum_against_time_reports_leg_time_on_the_track_line_at_the_boundaries`, `parseFigure_legs_entries_and_their_sum_over_one_hour_report_time_limit`, `buildFigure_legs_distance_times_over_one_hour_end_with_time_limit_on_the_track_line`, `parseFigure_status_rejects_unknown_kinds_duplicates_unknown_names_and_non_shape_targets`. #118 몫(`keep`, `:=`, 단계 `set=`)은 `test/value-keep.test.js`의 `buildFigure_each_value_keep_and_read_mistake_is_a_syntax_error_on_its_own_line`, `buildFigure_keep_and_step_set_in_a_figure_without_values_are_errors`, `buildFigure_reading_a_non_integer_text_into_a_queue_is_a_value_type_error_at_run_time_on_that_line`, `main_render_with_a_keep_or_read_error_exits_1_with_the_line_and_code_and_writes_no_file`가 확인한다 |
+| 새 기능을 쓰지 않는 원본의 시간표와 출력이 바뀌지 않는다. | 모든 예제와 `test/fixtures/compat/v1/`의 기존 파일을 이 설계 이전 출력과 바이트 비교. 새 낱말을 한 번씩 쓰는 `all-*` 파일을 묶음에 더해 읽힘 확인. 담당: [#118](https://github.com/woonyong-choi/daphnis/issues/118), [#119](https://github.com/woonyong-choi/daphnis/issues/119), [#120](https://github.com/woonyong-choi/daphnis/issues/120) #120은 `all-lost-status-legs.dap`를 묶음에 더해 `compat_v1_every_fixture_builds_without_errors_and_matches_the_structure_snapshot`와 `compat_v1_covers_every_word_option_and_value_in_the_grammar_table`가 읽힘과 문법 표 사용을 본다. #118 몫은 `test/compat.test.js`의 `compat_v1_every_fixture_builds_without_errors_and_matches_the_structure_snapshot`(`all-value-keep.dap`)와 `compat_v1_covers_every_word_option_and_value_in_the_grammar_table`이 확인한다 |
 | 세 부분 순서, 낱말 공백, 이름 형식, 값 형식을 어긴 줄을 줄 번호와 함께 알린다. | `test/grammar.test.js`의 `parseFigure_malformed_source_reports_the_line_and_the_rule`. 규칙마다 원본 하나로 줄 번호와 오류 확인 |
 | 선언하지 않은 이름과 비슷한 이름을 함께 알린다. | `test/grammar.test.js`의 `parseFigure_unknown_name_suggests_the_nearest_declared_name`. `cdex`를 쓴 원본이 `codex`를 제안하는지 확인 |
 | 같은 방향 선 두 개, 자기 자신으로 가는 선, 그룹과 안 도형 사이 선을 막는다. | `test/grammar.test.js`의 `parseFigure_malformed_source_reports_the_line_and_the_rule`(선 행). 원본마다 오류 확인 |

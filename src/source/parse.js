@@ -92,7 +92,7 @@ function readVersion(statements, ctx) {
 /**
  * 비어 있는 그림 모형.
  * nodes: { id, shape, label, sub, parent, line, columns? }, groups: { id, label, direction, parent, line },
- * edges: { from, to, label, quiet, dashed, line, fromColumn?, toColumn? }, steps: { label, caption, line, beats, tracks, forMs }
+ * edges: { from, to, label, quiet, dashed, line, fromColumn?, toColumn? }, steps: { label, caption, line, beats, tracks, forMs, keep, sets }
  */
 function emptyFigure() {
   return {
@@ -117,6 +117,8 @@ function emptyFigure() {
     values: [],
     // `on` 줄로 선언한 도착 값 바꾸기 { node, sets, line }
     arrivals: [],
+    // 읽기 식(`:=`)을 하나라도 썼는지. 안 쓴 원본은 시간표가 읽기 처리를 거치지 않는다.
+    hasRead: false,
     start: undefined,
     finals: [],
     chart: { series: [], rules: [], missing: undefined, data: undefined, x: undefined, y: undefined, scale: VALUES.scale.default, scaleLine: undefined, zero: VALUES.zero.default, zeroLine: undefined, decimals: undefined, rows: [], links: [] },

@@ -94,6 +94,9 @@ export function buildTimeline(figure, deps) {
     seriesIds: chartSeriesIds(figure),
     tracks: [],
     values: [],
+    // 단계 사이로 넘길 값(`keep`)이 있는 그림만 단계가 끝난 값을 적어 둔다.
+    isKept: figure.steps.some((step) => step.keep?.length),
+    carry: new Map(),
   };
   const segs = figure.steps.flatMap((step, si) => stepSegs({ step, si }, run, deps));
   const extra = { ...(run.tracks.length ? { tracks: run.tracks } : {}), ...(run.values.length ? { values: run.values } : {}) };
@@ -109,9 +112,18 @@ function stepSegs({ step, si }, run, deps) {
   const { segs, moves } = step.tracks.length ? flowSeg({ step, si }, run, deps) : beatSegs({ step, si }, run, deps);
   if (!figure.values.length) return segs;
   const first = segs[0];
-  const rows = valueRows(figure, { moves, span: { si, t0: first.t0, t1: segs.at(-1).t1 } });
+  const rows = valueRows(figure, { moves, span: { si, t0: first.t0, t1: segs.at(-1).t1 }, start: startOf(step, run) });
+  if (run.isKept) run.carry = new Map(rows.map((row) => [row.id, row.changes.at(-1)?.[1] ?? row.initial]));
   run.values.push(...rows.map((row) => ({ ...row, card: first.cards[row.node] ?? first.cardsBefore[row.node] })));
   return segs;
+}
+
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+// 단계의 시작 값 { keep, carried, sets }. keep도 단계 set=도 없는 단계는 undefined라 값 처리가 옛 경로 그대로다.
+function startOf(step, run) {
+  if (!step.keep?.length && !step.sets?.length) return undefined;
+  return { keep: (step.keep ?? []).map((k) => k.id), carried: run.carry, sets: step.sets ?? [] };
 }
 
 // cost: time O(b·(h + e + k)), heap O(b·(e + k)), stack O(1)

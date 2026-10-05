@@ -21,7 +21,8 @@ export function checkFlow({ figure, timeline }, problems) {
       checkQueue(row, { figure, warned }, problems);
       continue;
     }
-    const long = row.changes.find(([, text]) => [...text].length > VALUE_MAX);
+    // 단계가 시작할 때의 값(initial)도 본다. 단계 `set=`의 재설정이 길거나 큰 값을 만들 수 있다.
+    const long = [[0, row.initial], ...row.changes].find(([, text]) => [...text].length > VALUE_MAX);
     if (long) problems.error(figure.values.find((v) => v.id === row.id).line, `[check 14] value "${row.id}" reaches "${long[1]}", over ${VALUE_MAX} characters. Its row has room for ${VALUE_MAX}. Use smaller + or - steps or a shorter value`);
   }
 }
@@ -32,7 +33,7 @@ export function checkFlow({ figure, timeline }, problems) {
 // 큐 값이 0칸 아래로 내려가거나 칸 수를 넘으면 경고한다. 그림은 음수를 0칸, 칸 수 초과를 가득 찬 칸으로 그린다. 큐마다 어긋난 쪽(아래, 위)에서 처음 닿은 값 하나만 알린다.
 function checkQueue(row, { figure, warned }, problems) {
   const line = figure.values.find((v) => v.id === row.id).line;
-  const reached = row.changes.map(([, text]) => text);
+  const reached = [row.initial, ...row.changes.map(([, text]) => text)];
   const below = reached.find((text) => Number(text) < 0);
   const over = reached.find((text) => Number(text) > row.slots);
   if (below !== undefined && !warned.has(`${row.id}<`)) {
