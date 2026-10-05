@@ -602,3 +602,21 @@ test('main_check_builds_a_figure_with_hundreds_of_waiting_dots_and_moving_text_i
     assert.equal(result.status, 0, result.stderr.slice(0, 400));
   });
 });
+
+// 근거: 이슈 #131 "내용이 같은 상자는 같은 크기로 그린다". 상태 알약은 상자 크기를 바꾸지 않고, 카드는 상자를 키우므로 대기 표시는 알약으로 적는다.
+test('buildFigure_the_lock_example_draws_both_workers_the_same_size_because_waiting_is_a_status_pill', async () => {
+  const { scene } = await buildFigure(exampleOf('mutex-wait'), { baseDir: 'examples' });
+  const size = (id) => scene.items.filter((item) => item.id === id).map(({ w, h }) => [w, h]);
+
+  assert.deepEqual(size('b'), size('a'), '카드가 없는 두 작업은 같은 크기');
+  assert.match(exampleOf('mutex-wait'), /status="b=wait"/);
+});
+
+// 근거: docs/design/figure-syntax.md 단계별 도형 상태 "알약은 도형 크기와 배치를 바꾸지 않는다"
+test('buildFigure_a_status_pill_in_one_step_leaves_the_box_the_size_of_its_twin', async () => {
+  const source = 'flow right\nbox a "작업 A"\nbox b "작업 B"\na -> b\nstep "하나"\n  a -> b "요청"\nstep "둘" status="b=wait"\n  a -> b "요청"\n';
+  const { scene } = await buildFigure(source);
+  const size = (id) => scene.items.filter((item) => item.id === id).map(({ w, h }) => [w, h]);
+
+  assert.deepEqual(size('b'), size('a'));
+});

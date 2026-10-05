@@ -13,10 +13,9 @@ a -> db
 b -> db
 
 step "A가 잠금을 쥔다" "잠금이 비어 있어 A가 바로 들어간다"
-  a -> lock "잠금 요청" set="holder=A" when="holder='none'"
+  a -> lock "요청" set="holder=A" when="holder='none'"
   a -> db "쓰기"
-step "B는 풀릴 때까지 기다린다" "A가 풀면 그 시각에 B의 요청이 출발한다" keep="holder"
-  show b "대기 중" tag="wait"
-  a -> lock "잠금 풀기" set="holder=none" & b -> lock "잠금 요청" wait="holder='none'" set="holder=B"
+step "B는 풀릴 때까지 기다린다" "A가 풀면 그 시각에 B의 요청이 출발한다" keep="holder" status="b=wait"
+  a -> lock "잠금 풀기" set="holder=none" & b -> lock "요청" wait="holder='none'" set="holder=B"
   say "B의 점은 잠금이 풀릴 때까지 출발하지 않는다"
   b -> db "쓰기"
