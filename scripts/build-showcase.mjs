@@ -1,4 +1,4 @@
-// docs/assets/showcase의 원본(*.dap)마다 라이트와 다크 SVG를 만든다. README의 <picture>가 둘 중 하나를 고른다.
+// docs/assets/showcase의 원본(*.dap)과 docs/assets/how-it-works.svg마다 라이트와 다크 SVG를 만든다. README의 <picture>가 둘 중 하나를 고른다.
 // 사용: node scripts/build-showcase.mjs
 import { readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { basename, join } from 'node:path';
@@ -7,6 +7,7 @@ import { buildFigure } from '../src/build.js';
 import { toSvg } from '../src/svg.js';
 
 export const SHOWCASE_DIR = fileURLToPath(new URL('../docs/assets/showcase/', import.meta.url));
+export const HOW_IT_WORKS_SVG = fileURLToPath(new URL('../docs/assets/how-it-works.svg', import.meta.url));
 const DARK_OPEN = '@media (prefers-color-scheme: dark) {';
 const DARK_ROOT = ":root:not([data-theme='light'])";
 
@@ -51,4 +52,11 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     writeFileSync(join(SHOWCASE_DIR, file.replace(/\.dap$/, '-light.svg')), light);
     writeFileSync(join(SHOWCASE_DIR, file.replace(/\.dap$/, '-dark.svg')), dark);
   }
+}
+
+if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
+  // how-it-works.svg는 `daphnis render`가 만든 시스템 테마 SVG이므로 그 결과를 나눈다. 먼저 render를 돌려야 한다.
+  const { light, dark } = themedSvgs(readFileSync(HOW_IT_WORKS_SVG, 'utf8'));
+  writeFileSync(HOW_IT_WORKS_SVG.replace(/\.svg$/, '-light.svg'), light);
+  writeFileSync(HOW_IT_WORKS_SVG.replace(/\.svg$/, '-dark.svg'), dark);
 }

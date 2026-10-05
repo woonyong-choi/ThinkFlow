@@ -1,3 +1,5 @@
+<br>
+
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="docs/assets/daphnis-lockup-dark.svg">
@@ -42,7 +44,10 @@ step "Chat" "Input goes through the screen to the engine"
   engine -> codex "turn" time=3s
 ```
 
-![Figure rendered from the source above: the developer's question moves from Screen to Engine, then to Codex CLI](docs/assets/how-it-works.svg)
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/assets/how-it-works-dark.svg">
+  <img src="docs/assets/how-it-works-light.svg" alt="Figure rendered from the source above: the developer's question moves from Screen to Engine, then to Codex CLI">
+</picture>
 
 1. You write the first line as the figure kind, then shapes and edges, then steps from `step` on.
 2. daphnis lays out the shapes inside `system` from top to bottom and the rest from left to right.

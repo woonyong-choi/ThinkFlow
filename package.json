@@ -46,7 +46,7 @@
     "check": "node scripts/build-tokens.mjs src/tokens.json --check && node scripts/check-tokens.mjs src && node scripts/check-cost-comments.mjs src test && node scripts/check-size.mjs src scripts",
     "examples": "node src/cli.js gallery examples --out examples/out --title \"예제\"",
     "showcase": "node scripts/build-showcase.mjs",
-    "figures": "npm run examples && npm run showcase && node src/cli.js render docs/assets/how-it-works.dap && node src/cli.js md $(git grep -l '^```dap' -- '*.md')"
+    "figures": "npm run examples && node src/cli.js render docs/assets/how-it-works.dap && npm run showcase && node src/cli.js md $(git grep -l '^```dap' -- '*.md')"
   },
   "engines": {
     "node": ">=20"

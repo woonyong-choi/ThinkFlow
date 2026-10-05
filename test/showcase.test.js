@@ -4,7 +4,7 @@ import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { test } from 'node:test';
 import { fileURLToPath } from 'node:url';
-import { SHOWCASE_DIR, showcaseSvgs } from '../scripts/build-showcase.mjs';
+import { HOW_IT_WORKS_SVG, SHOWCASE_DIR, showcaseSvgs, themedSvgs } from '../scripts/build-showcase.mjs';
 import { runCli } from './helpers.js';
 
 const ROOT = fileURLToPath(new URL('../', import.meta.url));
@@ -24,6 +24,18 @@ test('showcase_svgs_equal_the_rendering_of_their_sources', async () => {
 
     assert.equal(committed('light'), light, `run npm run showcase: ${file}`);
     assert.equal(committed('dark'), dark, `run npm run showcase: ${file}`);
+  }
+});
+
+// 근거: 이슈 #139 "How it works" 그림이 OS 다크 모드를 따라 npm 페이지에서 다크로 보였다: 라이트·다크 고정 SVG가 원본 SVG에서 나온 것과 같고 README가 <picture>로 고른다
+test('how_it_works_figure_is_pinned_per_theme_and_chosen_by_picture', () => {
+  const { light, dark } = themedSvgs(readFileSync(HOW_IT_WORKS_SVG, 'utf8'));
+
+  assert.equal(read('docs/assets/how-it-works-light.svg'), light, 'run npm run figures');
+  assert.equal(read('docs/assets/how-it-works-dark.svg'), dark, 'run npm run figures');
+  assert.ok(!light.includes('prefers-color-scheme') && !dark.includes('prefers-color-scheme'));
+  for (const readme of ['README.md', 'README.ko.md']) {
+    assert.match(read(readme), /<source media="\(prefers-color-scheme: dark\)" srcset="docs\/assets\/how-it-works-dark\.svg">\s*<img src="docs\/assets\/how-it-works-light\.svg"/);
   }
 });
 
