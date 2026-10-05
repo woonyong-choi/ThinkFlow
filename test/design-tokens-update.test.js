@@ -10,7 +10,7 @@ import { withFolder } from './helpers.js';
 
 const ROOT = fileURLToPath(new URL('..', import.meta.url));
 const SCRIPT = join(ROOT, 'scripts/update-design-tokens.mjs');
-const spec = (tag) => ({ dependencies: { '@woonyong-choi/design-tokens': `github:woonyong-choi/design-tokens#${tag}` } });
+const spec = (tag) => ({ devDependencies: { '@woonyong-choi/design-tokens': `github:woonyong-choi/design-tokens#${tag}` } });
 const tags = (...names) => names.map((name) => ({ name }));
 
 // 근거: 정기 확인은 "최신 태그 비교". 숫자로 비교해 v0.1.10이 v0.1.9보다 새롭고, 시험판과 다른 이름은 무시한다
@@ -37,7 +37,7 @@ test('decide_takes_the_requested_tag_with_or_without_v_and_rejects_a_tag_that_do
   assert.equal(decide({ manifest, tags: tags('v0.1.0', 'v0.1.1'), requested: 'v0.1.1' }).latest, 'v0.1.1');
   assert.throws(() => decide({ manifest, tags: tags('v0.1.0'), requested: '9.9.9' }), /does not exist/);
   assert.throws(() => decide({ manifest, tags: tags('nightly'), requested: '' }), /no vX\.Y\.Z tag/);
-  assert.throws(() => currentTag({ dependencies: { '@woonyong-choi/design-tokens': '^0.1.0' } }), /pinned to a vX\.Y\.Z tag/);
+  assert.throws(() => currentTag({ devDependencies: { '@woonyong-choi/design-tokens': '^0.1.0' } }), /pinned to a vX\.Y\.Z tag/);
 });
 
 // 근거: 스크립트 입구. 가짜 응답 파일과 REQUESTED로 `key=value` 줄이 나오고, GITHUB_OUTPUT에 그대로 붙일 수 있다

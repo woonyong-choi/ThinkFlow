@@ -39,3 +39,13 @@ test('package_manifest_is_public_and_installs_the_fonts_but_not_the_test_tools',
   for (const font of ['pretendard', 'jetbrains-mono']) assert.ok(manifest.dependencies[font], font);
   assert.equal(manifest.dependencies['playwright-core'], undefined);
 });
+
+// 근거: 이슈 #116 "런타임 의존성은 레지스트리 패키지만". git, GitHub 약칭, URL, 파일 경로 의존성이 있으면 설치할 때 git이나 GitHub, 로컬 경로가 필요해진다
+test('package_runtime_dependencies_are_registry_versions_only', () => {
+  const notRegistry = /^(git[+:@]|github:|gitlab:|bitbucket:|gist:|https?:|file:|link:|workspace:|[./~]|[\w.-]+\/[\w.-]+(#.*)?$)/;
+  const offending = Object.entries(manifest.dependencies).filter(([, spec]) => notRegistry.test(spec)).map(([name, spec]) => `${name}: ${spec}`);
+
+  assert.deepEqual(offending, []);
+  assert.equal(manifest.dependencies['@woonyong-choi/design-tokens'], undefined);
+  assert.match(manifest.devDependencies['@woonyong-choi/design-tokens'], /^github:woonyong-choi\/design-tokens#v\d+\.\d+\.\d+$/);
+});

@@ -77,7 +77,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git switch -c "chore/design-tokens-$LATEST"
-          npm install --save --ignore-scripts --no-audit --no-fund "github:woonyong-choi/design-tokens#$LATEST"
+          npm install --save-dev --ignore-scripts --no-audit --no-fund "github:woonyong-choi/design-tokens#$LATEST"
           sed -i 's|git+ssh://git@github.com/|git+https://github.com/|' package-lock.json
           npm ci --ignore-scripts --no-audit --no-fund
           npm run palette

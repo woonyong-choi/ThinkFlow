@@ -54,9 +54,9 @@ export function latestTag(tags) {
 // basis: estimate
 /** package.json의 design-tokens 태그(`github:woonyong-choi/design-tokens#v0.1.0`의 `v0.1.0`). 이 모양이 아니면 던진다. */
 export function currentTag(manifest) {
-  const spec = manifest.dependencies?.[DEPENDENCY];
+  const spec = manifest.devDependencies?.[DEPENDENCY];
   const tag = /#(v\d+\.\d+\.\d+)$/.exec(spec ?? '')?.[1];
-  if (!tag) throw new Error(`${DEPENDENCY} must be pinned to a vX.Y.Z tag in package.json dependencies: ${spec}`);
+  if (!tag) throw new Error(`${DEPENDENCY} must be pinned to a vX.Y.Z tag in package.json devDependencies: ${spec}`);
   return tag;
 }
 

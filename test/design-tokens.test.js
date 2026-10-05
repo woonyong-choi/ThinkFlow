@@ -22,7 +22,7 @@ test('package_json_pins_design_tokens_to_the_tag_of_the_installed_version', () =
   const manifest = JSON.parse(readFileSync(join(ROOT, 'package.json'), 'utf8'));
   const installed = JSON.parse(readFileSync(join(commonTokenPaths().light, '../../package.json'), 'utf8'));
 
-  assert.equal(manifest.dependencies[PACKAGE], `github:woonyong-choi/design-tokens#v${installed.version}`);
+  assert.equal(manifest.devDependencies[PACKAGE], `github:woonyong-choi/design-tokens#v${installed.version}`);
 });
 
 // 근거: 계약 "같은 이름을 daphnis가 다시 정의하면 검사가 실패한다". 지금 정본에는 겹치는 이름이 없다
