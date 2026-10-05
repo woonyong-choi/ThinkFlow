@@ -91,7 +91,7 @@ step "쓰기" "SVG를 쓰고 블록 아래 이미지 줄을 맞춘다"
 ### 명령
 
 ```text
-daphnis md <file.md ...> [--check] [--out-dir dir] [--fold [--fold-title "text"] | --unfold] [--static] [--strict] [--no-deprecated] [--require-data] [--require-ci] [--json]
+daphnis md <file.md ...> [--check] [--out-dir dir] [--fold [--fold-title "text"] | --unfold] [--static] [--strict] [--no-deprecated] [--require-data] [--require-ci] [--budget 이름=값 ...] [--json]
 ```
 
 | 옵션 | 뜻 |
@@ -102,7 +102,7 @@ daphnis md <file.md ...> [--check] [--out-dir dir] [--fold [--fold-title "text"]
 | `--fold-title "text"` | `--fold`가 새로 만드는 `<summary>` 글. 기본은 `그림 원본`. `--fold`와만 쓴다 |
 | `--unfold` | 이 도구가 만든 접기만 걷는다. `--fold`와 함께 쓰면 인자 오류 |
 | `--static` | 멈춘 SVG를 쓴다 |
-| `--strict`, `--no-deprecated`, `--require-data`, `--require-ci`, `--json` | `render`와 같은 뜻. 블록마다 적용한다 |
+| `--strict`, `--no-deprecated`, `--require-data`, `--require-ci`, `--budget`, `--json` | `render`와 같은 뜻. 블록마다 적용한다. 예산은 블록 하나의 그림마다 검사한다 |
 
 `render`의 `--out`, `--title`, `--html`, `--write`는 이 명령이 받지 않고, `--check`, `--out-dir`, `--fold`, `--fold-title`, `--unfold`는 다른 명령이 받지 않는다. 기존 명령의 동작은 바뀌지 않는다(명령 추가만).
 
@@ -226,6 +226,7 @@ GitHub 마크다운은 ` ```dap ` 블록을 코드로 보이고 아래 이미지
 | `strict` | `false` | `true`면 경고도 실패다 |
 | `fold` | `keep` | `.md`에만 적용하고 두 모드 모두에 쓴다. `keep`은 옵션 없이 돌리고, `fold`는 `--fold`, `unfold`는 `--unfold`를 넘긴다. 그 밖의 값은 실패다 |
 | `fold-title` | 빈 값 | `fold: fold`일 때 `--fold-title`로 넘기는 `<summary>` 글. 다른 `fold` 값과 쓰면 실패다 |
+| `budget` | 빈 값 | 생성 예산을 올리는 `이름=값` 목록(공백이나 쉼표로 나눈다). 예: `grid-elements=2000000`. `--budget`과 같은 해석이라 이름이 없거나 값이 양의 안전한 정수가 아니면 그림을 만들기 전에 실패한다. 이름과 기본 한도는 [칸 격자](grid.md#예산) |
 
 경로는 `git ls-files -z`의 NUL 구분 출력으로 모은다. 줄 단위 출력은 Git이 한글 이름을 따옴표와 escape로 감싸(`core.quotepath` 기본값) 확장자 분류에서 빠지기 때문이다. 한글, 공백, 줄바꿈이 든 이름도 같게 검사하고, 여러 글롭이 고른 같은 파일은 한 번만 검사한다. 사용자가 고른 파일은 이름이나 확장자 때문에 조용히 빠지지 않는다. 대상 파일이 하나도 없으면 실패한다. 빈 글롭이 조용히 통과하는 일을 막기 위해서다. `render` 모드는 파일을 쓸 뿐 커밋하지 않는다.
 

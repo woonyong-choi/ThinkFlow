@@ -433,6 +433,7 @@ step "소비자 하나가 느려진다" for=6s status="slow=warn"
 - 이름 오류에는 선언된 이름 목록을 알파벳순으로 붙이고, 편집 거리가 2 이하인 이름이 있으면 `Did you mean "{이름}"?`을 붙인다.
 - 오류가 하나라도 있으면 파일을 쓰지 않는다. 문법 오류, 글꼴에 없는 글자, `data` 읽기 오류는 한 번에 모두 알린다. 파일이 비었거나 첫 줄의 그림 종류를 모르면 거기서 멈춘다. 다음 줄을 읽을 규칙이 없기 때문이다.
 - [그림 검사](figure-check.md)는 배치가 끝나야 돌므로, 원본 오류가 없을 때만 그 오류를 알린다.
+- 생성 예산을 넘으면 `budget-exceeded` 오류다. 필요한 양, 지금 한도, 올리는 방법(`--budget 이름=값`, Action 입력 `budget`)을 적고 파일을 쓰기 전에 끝난다. 예산 이름과 기본 한도는 [칸 격자](grid.md#예산)가 정본이다. `--budget` 값이 틀리면 그림을 만들기 전에 사용법 오류(종료 2)다.
 - 경고와 폐기는 파일을 쓰고 표준 오류에 남긴다. `--strict`면 경고도 실패이고, `--no-deprecated`면 폐기도 실패다.
 - 문법 밖의 화면 오류(겹침, 넘침)는 [그림 검사](figure-check.md)가 같은 형식으로 알린다.
 
@@ -451,7 +452,7 @@ step "소비자 하나가 느려진다" for=6s status="slow=warn"
 | `warning` | 품질 문제 | 씀 | `--strict` |
 | `deprecated` | 옛 형식이고 계속 동작한다 | 씀 | `--no-deprecated` |
 
-- 진단 하나의 모양은 `{ severity, code, line, column, message, fix? }`이고 모든 진단이 쓴다. `--json`은 여기에 `file`을 더하고, 옛 필드 `lines`, `check`, `level`도 함께 내(폐기, 다음 판까지) 진단마다 한 줄을 표준 출력에 쓴다. `code`는 `syntax`(문법), `check-1`~`check-14`([그림 검사](figure-check.md) 번호), `time-limit`(시간 상한 초과), `time-precision`(출발 시각이 늘지 않는 시간 정밀도), `value-type`, `leg-time`, `wait-stalled`, `budget-exceeded`([추가 문법 표](#추가-문법-표)), `deprecated-statement`, `deprecated-option`, `deprecated-value`, `deprecated-kind`, `deprecated-extension`(옛 확장자 파일), `deprecated-fence`(마크다운 옛 울타리), `unsupported-version`, `invalid-version`, `version-required`, `layout`(배치 실패, [배치](layout.md#배치-실패)), `io`, `internal`이다. `column`은 줄 안 1부터 센 자리다. `fix`는 `{ line, column, length, text }`로, 그 줄의 `column`부터 `length`글자를 `text`로 바꾼다.
+- 진단 하나의 모양은 `{ severity, code, line, column, message, fix? }`이고 모든 진단이 쓴다. `--json`은 여기에 `file`을 더하고, 옛 필드 `lines`, `check`, `level`도 함께 내(폐기, 다음 판까지) 진단마다 한 줄을 표준 출력에 쓴다. `code`는 `syntax`(문법), `check-1`~`check-14`([그림 검사](figure-check.md) 번호), `time-limit`(시간 상한 초과), `time-precision`(출발 시각이 늘지 않는 시간 정밀도), `value-type`, `leg-time`, `wait-stalled`, `budget-exceeded`(생성 예산 초과, [추가 문법 표](#추가-문법-표), [칸 격자](grid.md#예산)), `deprecated-statement`, `deprecated-option`, `deprecated-value`, `deprecated-kind`, `deprecated-extension`(옛 확장자 파일), `deprecated-fence`(마크다운 옛 울타리), `unsupported-version`, `invalid-version`, `version-required`, `layout`(배치 실패, [배치](layout.md#배치-실패)), `io`, `internal`이다. `column`은 줄 안 1부터 센 자리다. `fix`는 `{ line, column, length, text }`로, 그 줄의 `column`부터 `length`글자를 `text`로 바꾼다.
 - `daphnis migrate 원본... [--write]`는 진단의 `fix`를 그대로 적용한다. 기본은 바뀔 줄만 `-`, `+`로 보여 주고, `--write`일 때만 파일을 고친다. 원본에 오류가 있거나 고친 글에 오류나 폐기가 남으면 아무것도 쓰지 않는다. 새 폐기 항목은 표에 `replace`만 적으면 된다.
 
 - CLI 출력과 옵션도 같은 규칙이다. 명령과 옵션 이름, 종료 코드, `--json` 필드는 추가만 하고, 옛 `--json` 필드(`lines`, `check`, `level`)는 `src/diagnostics.js` 표에 deprecated로 표시해 다음 판까지 함께 낸다.

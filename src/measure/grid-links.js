@@ -31,7 +31,7 @@ function groupBy(list, keyOf) {
  * 통로는 가로 흐름(나가는 선 동쪽, 들어오는 선 서쪽)에서 직접 연결이 없는 선 끝마다 잡는다. 세로 흐름은 남쪽·북쪽이 걸쳐 있으면 거기로, 아니면 같은 동쪽·서쪽 직접 연결이나 통로를 쓰므로 이 통로가 모든 방향의 상한이다.
  * @param grid { rows, cols, cells, links }. links는 { index, way, cell, isInner }[]이고 index는 선 번호, isInner는 같은 격자의 두 칸을 잇는 선이다
  * @param geo { pad, unitW, unitH, titleH, titleHalf }. titleHalf는 가장 긴 제목 줄 폭의 절반
- * @returns { w, h, rowTop, gutter, ends, inner }. ends는 `번호:way` → { LANE, EAST?, WEST?, SOUTH?, NORTH? }, 각 후보는 { side, port, lead }이고 lead는 칸 면에서 격자 테두리 위 port까지의 점이다. inner는 선 번호 → 점 목록이다
+ * @returns { w, h, rowTop, gutter, ends, inner }. rowTop은 행 번호 → 그 행 윗변의 y를 주는 함수다. ends는 `번호:way` → { LANE, EAST?, WEST?, SOUTH?, NORTH? }, 각 후보는 { side, port, lead }이고 lead는 칸 면에서 격자 테두리 위 port까지의 점이다. inner는 선 번호 → 점 목록이다
  */
 export function planGridLinks(grid, geo) {
   const { rows, cols, links } = grid;
@@ -42,7 +42,8 @@ export function planGridLinks(grid, geo) {
   const items = links.map((link) => describe(link, { cell: cells.get(link.cell), grid, geo, w }));
   assignSouthX(items);
   const { gutter, bottom, tracks } = assignTracks(items, { rows, w });
-  const rowTop = Array.from({ length: rows }, (_, r) => geo.titleH + r * (geo.unitH + gutter));
+  // 행 위치는 배열로 펼치지 않고 식으로 구한다. 큰 격자에서도 행 수만큼 할당하지 않기 위해서다.
+  const rowTop = (r) => geo.titleH + r * (geo.unitH + gutter);
   const h = geo.titleH + rows * geo.unitH + (rows - 1) * gutter + bottom;
   const frame = { w, h, rowTop, geo, padRight, gutter, links };
   for (const item of items) item.candidates = candidatesOf(item, frame, tracks);
@@ -125,7 +126,7 @@ const GAP_BOTTOM = SPACE['6'];
 // 선 끝 하나의 면 후보. 직접 연결은 걸친 면마다, 통로 연결(LANE)은 모든 선 끝에 둔다(필요 없으면 쓰지 않는다).
 function candidatesOf(item, frame, tracks) {
   const { cell } = item;
-  const top = frame.rowTop[cell.row];
+  const top = frame.rowTop(cell.row);
   const box = { ...item.box, y: top, h: cell.rows * frame.geo.unitH + (cell.rows - 1) * frame.gutter };
   const out = {};
   for (const side of item.direct) out[side] = directCandidate(item, side, { box, frame });
@@ -157,7 +158,7 @@ function directCandidate(item, side, { box, frame }) {
 function laneCandidate(item, { box, frame, track }) {
   const side = exitOf(item);
   const bottom = box.y + box.h;
-  const y = frame.rowTop[item.gutterRow] + frame.geo.unitH + (track + 1) * LANE_STEP;
+  const y = frame.rowTop(item.gutterRow) + frame.geo.unitH + (track + 1) * LANE_STEP;
   const exit = side === 'EAST' ? frame.w : 0;
   return { side, port: { x: exit, y }, lead: [{ x: item.southX, y: bottom }, { x: item.southX, y }, { x: exit, y }] };
 }

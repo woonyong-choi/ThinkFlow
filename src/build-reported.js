@@ -33,13 +33,13 @@ function shifted(diagnostics, lineOffset) {
 // basis: estimate
 /**
  * 원본 글을 만들고 진단을 알린다. 파일은 쓰지 않는다. 오류가 있으면 undefined다.
- * @param options { flags, baseDir, lineOffset? }. flags는 명령 옵션 집합(`strict`, `no-deprecated`, `require-data`, `require-ci`, `json`),
+ * @param options { flags, baseDir, lineOffset?, budget? }. budget은 올린 예산 { 이름: 값 }(src/budget.js)이고, flags는 명령 옵션 집합(`strict`, `no-deprecated`, `require-data`, `require-ci`, `json`),
  *   lineOffset은 이 글이 파일 안에서 시작하기 전 줄 수다(md 코드 블록)
  */
-export async function buildReported(source, file, { flags, baseDir, lineOffset = 0 }) {
+export async function buildReported(source, file, { flags, baseDir, lineOffset = 0, budget }) {
   const json = flags.has('json');
   try {
-    const result = await buildFigure(source, { baseDir, strict: flags.has('strict'), noDeprecated: flags.has('no-deprecated'), requireData: flags.has('require-data'), requireCi: flags.has('require-ci') });
+    const result = await buildFigure(source, { baseDir, strict: flags.has('strict'), noDeprecated: flags.has('no-deprecated'), requireData: flags.has('require-data'), requireCi: flags.has('require-ci'), budget });
     report(file, shifted([...result.warnings, ...result.deprecations].sort((a, b) => a.line - b.line), lineOffset), json);
     return result;
   } catch (error) {

@@ -29,7 +29,7 @@ const GOOD_DAP = 'flow right\nbox a "A"\n';
 // vars: f = 파일 수
 // basis: estimate
 // files({ 경로: 내용 })를 Git 인덱스에 올린 저장소에서 Action 스크립트를 돌린다. 이름에 줄바꿈이 들어갈 수 있어 경로는 NUL로 넘긴다.
-function runAction(folder, files, { paths = '**/*.dap **/*.md', mode = 'check', strict = 'false', fold, foldTitle } = {}) {
+function runAction(folder, files, { paths = '**/*.dap **/*.md', mode = 'check', strict = 'false', fold, foldTitle, budget = '' } = {}) {
   spawnSync('git', ['init', '-q'], { cwd: folder });
   for (const [name, text] of Object.entries(files)) {
     mkdirSync(dirname(join(folder, name)), { recursive: true });
@@ -37,7 +37,7 @@ function runAction(folder, files, { paths = '**/*.dap **/*.md', mode = 'check', 
   }
   const tracked = spawnSync('git', ['add', '-A', '--', ...Object.keys(files)], { cwd: folder, encoding: 'utf8' });
   assert.equal(tracked.status, 0, tracked.stderr);
-  const env = { ...process.env, GITHUB_ACTION_PATH: ROOT, PATHS: paths, MODE: mode, STRICT: strict, ...(fold === undefined ? {} : { FOLD: fold }), ...(foldTitle === undefined ? {} : { FOLD_TITLE: foldTitle }) };
+  const env = { ...process.env, GITHUB_ACTION_PATH: ROOT, PATHS: paths, MODE: mode, STRICT: strict, ...(fold === undefined ? {} : { FOLD: fold }), ...(foldTitle === undefined ? {} : { FOLD_TITLE: foldTitle }), BUDGET: budget };
   return spawnSync('bash', ['-c', actionScript()], { cwd: folder, env, encoding: 'utf8' });
 }
 
@@ -129,4 +129,17 @@ test('action_fold_input_rejects_other_values_and_a_title_without_fold', () => {
     assert.equal(title.status, 1);
     assert.match(title.stdout, /::error::fold-title needs fold: fold/);
   });
+});
+
+// 근거: 이슈 #28 구현 기준 "CLI와 Action에서 같은 예산을 명시적으로 높일 수 있고 조정값을 검증한다", action.yml 입력 budget
+test('action_budget_input_raises_the_limit_with_spaces_or_commas_and_rejects_bad_items', () => {
+  const grid = 'flow right\ngrid g "격자" rows=10 cols=10 {\n' + Array.from({ length: 100 }, (_, k) => `  item c${k} "${k % 10}" row=${Math.floor(k / 10)} col=${k % 10}`).join('\n') + '\n}\n';
+  const outcome = (budget) => withFolder((folder) => runAction(folder, { 'g.dap': grid, 'doc.md': `# 문서\n\n\`\`\`dap\n${grid}\`\`\`\n` }, { budget, mode: 'check' }));
+
+  assert.match(outcome('grid-elements=100').stderr, /g\.dap:2: this figure needs 502 SVG elements.*--budget grid-elements=502/);
+  assert.match(outcome('grid-elements=100').stderr, /doc\.md:5: this figure needs 502/);
+  assert.doesNotMatch(outcome('grid-elements=502,grid-path-commands=5').stderr, /budget/);
+  assert.doesNotMatch(outcome('  grid-elements=502 ,  grid-path-commands=5 ').stderr, /budget/);
+  assert.match(outcome('grid-elements=abc').stderr, /budget grid-elements is a positive whole number/);
+  assert.match(outcome('nope=1').stderr, /unknown budget "nope"/);
 });

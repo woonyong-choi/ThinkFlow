@@ -22,6 +22,10 @@ inputs:
     description: 'Summary text of the folds that `fold` creates. Default `그림 원본`. Only with `fold: fold`.'
     required: false
     default: ''
+  budget:
+    description: 'Raises generation budgets, as `name=value` items separated by spaces or commas, for example `grid-elements=2000000 grid-path-commands=4000000`. Each value is a positive whole number, and an unknown name or a bad value fails the step before any figure is built. Empty keeps the defaults.'
+    required: false
+    default: ''
 runs:
   using: composite
   steps:
@@ -39,6 +43,7 @@ runs:
         STRICT: ${{ inputs.strict }}
         FOLD: ${{ inputs.fold }}
         FOLD_TITLE: ${{ inputs.fold-title }}
+        BUDGET: ${{ inputs.budget }}
       run: |
         set -euo pipefail
         set -f
@@ -55,6 +60,10 @@ runs:
           if [ "${FOLD:-keep}" != fold ]; then echo "::error::fold-title needs fold: fold"; exit 1; fi
           fold_flags+=(--fold-title "$FOLD_TITLE")
         fi
+        # 예산은 공백이나 쉼표로 나눈 이름=값 목록이고, 값 검증은 CLI(--budget)가 한다.
+        budget_text="${BUDGET:-}"
+        budget_args=()
+        for item in ${budget_text//,/ }; do budget_args+=(--budget "$item"); done
         dap_files=()
         md_files=()
         # 경로는 NUL로 받는다. 줄 단위 출력은 Git이 한글 이름을 따옴표와 escape로 감싸고(core.quotepath), 공백과 줄바꿈이 든 이름을 가른다.
@@ -73,9 +82,9 @@ runs:
         cli="$GITHUB_ACTION_PATH/src/cli.js"
         status=0
         if [ "${#dap_files[@]}" -gt 0 ]; then
-          node "$cli" "$dap_command" "${dap_files[@]}" $strict_flag || status=1
+          node "$cli" "$dap_command" "${dap_files[@]}" $strict_flag ${budget_args[@]+"${budget_args[@]}"} || status=1
         fi
         if [ "${#md_files[@]}" -gt 0 ]; then
-          node "$cli" md "${md_files[@]}" $md_flag $strict_flag ${fold_flags[@]+"${fold_flags[@]}"} || status=1
+          node "$cli" md "${md_files[@]}" $md_flag $strict_flag ${fold_flags[@]+"${fold_flags[@]}"} ${budget_args[@]+"${budget_args[@]}"} || status=1
         fi
         exit "$status"

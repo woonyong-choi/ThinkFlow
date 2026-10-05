@@ -4,6 +4,7 @@
 import { mkdirSync, readdirSync, readFileSync, realpathSync } from 'node:fs';
 import { basename, dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { BUDGET_NAMES, parseBudgetList } from './budget.js';
 import { buildReported, report, writeOutput } from './build-reported.js';
 import { toDocument, toGallery, toHtml } from './html.js';
 import { migrateSource, previewDiff } from './migrate.js';
@@ -13,11 +14,12 @@ import { toSvg } from './svg.js';
 
 const USAGE = [
   'usage:',
-  '  daphnis render <file.dap ...> [--out dir] [--html] [--static] [--strict] [--no-deprecated] [--require-data] [--require-ci] [--json]',
-  '  daphnis check <file.dap ...> [--strict] [--no-deprecated] [--require-data] [--require-ci] [--json]',
-  '  daphnis gallery <dir> [--out dir] [--title "text"] [--strict] [--no-deprecated] [--require-data] [--require-ci]',
+  '  daphnis render <file.dap ...> [--out dir] [--html] [--static] [--strict] [--no-deprecated] [--require-data] [--require-ci] [--budget name=value ...] [--json]',
+  '  daphnis check <file.dap ...> [--strict] [--no-deprecated] [--require-data] [--require-ci] [--budget name=value ...] [--json]',
+  '  daphnis gallery <dir> [--out dir] [--title "text"] [--strict] [--no-deprecated] [--require-data] [--require-ci] [--budget name=value ...]',
   '  daphnis migrate <file.dap ...> [--write] [--json]',
-  '  daphnis md <file.md ...> [--check] [--out-dir dir] [--fold [--fold-title "text"] | --unfold] [--static] [--strict] [--no-deprecated] [--require-data] [--require-ci] [--json]',
+  '  daphnis md <file.md ...> [--check] [--out-dir dir] [--fold [--fold-title "text"] | --unfold] [--static] [--strict] [--no-deprecated] [--require-data] [--require-ci] [--budget name=value ...] [--json]',
+  `budget names: ${BUDGET_NAMES.join(', ')}`,
 ].join('\n');
 // gallery가 받는 옵션. --html은 gallery가 늘 HTML을 쓰므로 받기만 한다(옛 호출이 깨지지 않게).
 const GALLERY_FLAGS = ['html', 'strict', 'no-deprecated', 'require-data', 'require-ci'];
@@ -63,9 +65,14 @@ function parseArgs(argv) {
   const [command, ...rest] = argv;
   if (!['render', 'check', 'gallery', 'migrate', 'md'].includes(command)) return { error: USAGE };
   const args = { command, inputs: [], out: undefined, title: undefined, flags: new Set() };
+  const budgetItems = [];
   for (let i = 0; i < rest.length; i++) {
     const arg = rest[i];
-    if (arg === '--out' || arg === '--title' || arg === '--out-dir' || arg === '--fold-title') {
+    if (arg === '--budget') {
+      const value = rest[++i];
+      if (value === undefined || value.startsWith('--')) return { error: '--budget needs a value: --budget name=value' };
+      budgetItems.push(value);
+    } else if (arg === '--out' || arg === '--title' || arg === '--out-dir' || arg === '--fold-title') {
       const value = rest[++i];
       if (value === undefined || value.startsWith('--')) return { error: `${arg} needs a value` };
       args[arg.slice(2)] = value;
@@ -74,6 +81,10 @@ function parseArgs(argv) {
     else args.inputs.push(arg);
   }
   if (!args.inputs.length) return { error: USAGE };
+  const { budget, error } = parseBudgetList(budgetItems);
+  if (error) return { error };
+  if (budgetItems.length && command === 'migrate') return { error: `--budget is not for migrate\n${USAGE}` };
+  args.budget = budget;
   if (args.flags.has('write') && command !== 'migrate') return { error: `--write is only for migrate\n${USAGE}` };
   const misplaced = misplacedOption(args);
   if (misplaced) return { error: `${misplaced}\n${USAGE}` };
@@ -134,7 +145,7 @@ async function buildInput(input, args) {
     return undefined;
   }
   noteLegacyExtension(input, json);
-  return buildReported(source, input, { flags: args.flags, baseDir: dirname(input) });
+  return buildReported(source, input, { flags: args.flags, baseDir: dirname(input), budget: args.budget });
 }
 
 // cost: time O(out), heap O(out), stack O(1), io 3

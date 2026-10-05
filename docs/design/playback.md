@@ -250,6 +250,7 @@
 | `render 원본 --html` | `{이름}.svg`와 HTML 재생기 `{이름}.html`. `--static`과 함께 주면 SVG가 멈춘 SVG다 |
 | `migrate 원본` | 쓰지 않음. 옛 형식을 고칠 때 바뀔 줄을 표준 출력에 보인다. `--write`면 원본 파일을 고친다([그림 문법](figure-syntax.md#호환-규칙)) |
 | `md 문서` | [마크다운 반영과 배포](markdown.md)가 정한다. 블록마다 SVG `{문서 이름}-{이름 또는 순번}.svg`와 문서의 이미지 줄 |
+| `render`, `check`, `gallery`, `md`에 `--budget 이름=값` | 생성 예산을 올린다(여러 번 쓸 수 있다). 모든 그림 명령이 같은 뜻으로 받고, 이름이 없거나 값이 양의 안전한 정수가 아니면 사용법 오류(종료 2)다. 초과한 그림은 파일을 쓰지 않는다([칸 격자](grid.md#예산)) |
 | `gallery 폴더` | 폴더 안 `.dap` 원본(옛 `.muto`도 읽고 폐기 안내)마다 `{이름}.svg`와 `{이름}.html`, 목록 쪽 `index.html`, 문서 미리보기 `document.html`. 목록 쪽은 그림마다 HTML과 SVG를 잇는다. 원본이 하나도 없거나 하나라도 오류면 전체가 실패(종료 1)이고 아무 파일도 쓰지 않는다 |
 
 - 한 번의 실행은 `{이름}.svg`를 하나만 쓴다. 움직이는 SVG와 멈춘 SVG가 같은 이름을 다투지 않게 하기 위해서다.
@@ -261,7 +262,7 @@
 - 갤러리의 예약 파일은 목록 쪽 `index.html`과 문서 미리보기 `document.html`이고 이름은 그대로 둔다(이미 공유한 주소와 README가 가리키는 `index.html`을 깨지 않으려고 예약 이름을 바꾸지 않는다). 원본 이름이 `index`나 `document`(대소문자 무시, 대소문자를 가리지 않는 파일 시스템에서 같은 파일이므로)면 그 원본의 재생 화면만 `{이름}-player.html`로 쓰고 목록 카드가 그 파일을 가리킨다. SVG는 `{이름}.svg`로 겹치지 않아 그대로다. 그 밖의 원본 출력은 늘 `{이름}.html`이라 기존 결과와 같다.
 - 쓰기 전에 모든 출력 이름(`{이름}.svg`, 재생 화면, 예약 파일 둘)을 대소문자 없이 겹치는지 확인한다. 겹치면(예: `index.dap`와 `index-player.dap`) `{파일} would be written twice: for ... Rename one of the sources`를 stderr에 알리고 종료 1이며 아무 파일도 쓰지 않아 출력 폴더의 기존 파일이 그대로다.
 - 원본 파일 이름은 링크에서 늘 상대 경로로만 쓰인다. 목록 쪽과 문서 미리보기의 `href`, `src`는 경로 조각마다 `encodeURIComponent`(괄호도 인코딩)를 거친 뒤 `./`를 앞에 붙이고 HTML 속성 이스케이프를 한다. 그래서 `javascript:...` 같은 이름이 URL 스킴으로 읽혀 실행되지 않고, `#`, `?`, 공백, 한글이 든 이름도 그 이름의 출력 파일을 연다. 마크다운 이미지 줄도 같은 함수(`src/href.js`)로 조각을 인코딩한다(이미지 줄은 `:`가 인코딩되어 스킴이 될 수 없어 기존 주소 모양을 지키려고 `./`를 붙이지 않는다).
-- `gallery`가 받는 선택 사항은 `--out`, `--title`, `--strict`, `--no-deprecated`, `--require-data`, `--require-ci`이고 `--html`은 받기만 한다(늘 HTML을 쓴다). 그 밖의 선택 사항(`--static`, `--json`)은 사용법 오류(종료 2)다. `--strict`는 폴더의 모든 원본에 걸리고, 경고가 있는 원본이 하나라도 있으면 전체가 실패한다.
+- `gallery`가 받는 선택 사항은 `--out`, `--title`, `--strict`, `--no-deprecated`, `--require-data`, `--require-ci`, `--budget`이고 `--html`은 받기만 한다(늘 HTML을 쓴다). 그 밖의 선택 사항(`--static`, `--json`)은 사용법 오류(종료 2)다. `--strict`는 폴더의 모든 원본에 걸리고, 경고가 있는 원본이 하나라도 있으면 전체가 실패한다.
 - iframe 높이는 그림 쪽이 알린 본문 높이에 맞추고, 카드는 줄에서 가장 긴 카드 높이로 늘이지 않는다.
 - 위쪽에 테마 단추 "시스템 / 라이트 / 다크"가 있다. 고르면 목록 쪽과 모든 iframe 그림이 그 모드로 바뀐다.
 - 시스템은 루트에 `color-scheme: light dark`를 걸어 OS 설정을 따른다. 라이트와 다크는 루트에 `color-scheme`을 그 값으로 걸고 목록 쪽 자체 색은 토큰 CSS의 `data-theme`로 바꾼다. iframe 안 문서는 Chrome에서 부모의 `color-scheme`을 `prefers-color-scheme`에 안정적으로 받지 못해(OS 다크에서 라이트를 골라도 어둡게 남음), 목록 쪽이 iframe에 `{ theme }` 메시지를 보내고 iframe 문서가 자기 루트의 `data-theme`과 `color-scheme`을 바꾼다. 새로 뜬 iframe은 `themeRequest`로 현재 테마를 받는다.

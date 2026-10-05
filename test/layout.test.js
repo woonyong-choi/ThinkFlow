@@ -63,7 +63,8 @@ test('buildFigure_grid_positions_without_a_cell_stay_empty_and_every_cell_stays_
   const rects = [...grid.cells, ...grid.empties];
   const overlaps = (p, q) => p.x < q.x + q.w && q.x < p.x + p.w && p.y < q.y + q.h && q.y < p.y + p.h;
 
-  assert.equal(grid.empties.length, 3);
+  const unit = cellOf(scene, 'a');
+  assert.equal(grid.empties.reduce((sum, e) => sum + e.w * e.h, 0), 3 * unit.w * unit.h);
   assert.equal(cellOf(scene, 'g').kind, 'gap');
   for (const [i, rect] of rects.entries()) {
     assert.ok(rect.x >= 0 && rect.y >= 0 && rect.x + rect.w <= grid.w && rect.y + rect.h <= grid.h, `rect ${i} leaves the grid`);

@@ -70,7 +70,7 @@ function drawItem(it, i, paint) {
   for (const l of it.labelLines ?? []) glyphs.add(l, 'medium');
   for (const l of it.subLines ?? []) glyphs.add(l, 'regular');
   if (it.card) cardGlyphs(it.card.layouts, glyphs);
-  const shape = drawShape(it.stroke && !it.fill ? { ...it, fill: it.stroke } : it, stroke, paint);
+  const shape = drawShape(it.stroke && !it.fill ? { ...it, fill: it.stroke } : it, stroke, { ...paint, index: i });
   const decor = it.decor ? drawDecor(it.decor, { x: it.x + it.decor.x, y: it.y + it.decor.y, iconData: it.iconData }, glyphs) : '';
   const card = it.card ? drawCard(it.card, { box: cardBox(it), i }, paint) : '';
   return `${open}${halo}${shape}${decor}${HAS_OWN_LABELS.has(it.shape) ? '' : drawLabels(it)}${card}</g>`;

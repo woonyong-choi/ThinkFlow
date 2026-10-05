@@ -75,7 +75,7 @@ function checkOwners(file, targets, { owner, json }) {
 async function buildTargets(file, targets, args) {
   const built = [];
   for (const { block, label, svg } of targets) {
-    const result = await buildReported(block.source, file, { flags: args.flags, baseDir: dirname(file), lineOffset: block.open + 1 });
+    const result = await buildReported(block.source, file, { flags: args.flags, baseDir: dirname(file), lineOffset: block.open + 1, budget: args.budget });
     built.push(result && { label, svg, block, result });
   }
   return built.includes(undefined) ? undefined : built;

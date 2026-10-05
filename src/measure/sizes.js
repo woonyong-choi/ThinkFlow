@@ -1,4 +1,5 @@
 // 도형, 카드, 선 라벨 크기를 정한다. 여기서 정한 크기를 배치에 넘기고 그대로 그린다(docs/design/layout.md 도형 크기와 연결점).
+import { emptyRegions } from '../source/grid-space.js';
 import { values } from '../tokens.js';
 import { BADGE_STYLE, DECOR, STACK_STEP, groupDecor, nodeDecor } from './decor.js';
 import { measure, wrap } from './fonts.js';
@@ -48,7 +49,7 @@ export const GRID = Object.freeze({ pad: SPACE['6'], cellPadX: SPACE['4'], cellP
  * @param node 그림 모형의 도형. shape: person, box, external, store, queue, decision, state, table, grid, start, final
  * @param contents 시간 흐름에서 이 도형 카드에 보일 내용 목록. 내용은 카드 줄 목록이다
  * @param lineCounts 사람 몸통 높이를 정할 선 수 { out: 나가는 선 수, in: 들어오는 선 수 }와, 격자 칸에 이은 선 끝 cells(grid-links.js의 links)
- * @returns { w, h, marginTop, marginBottom, marginSide?, labelLines, subLines, card?: { w, h, layouts }, cells?, empties?, titleH? }. 격자의 cells는 { id, kind, x, y, w, h, lines, ... } 칸 목록이고 좌표는 격자 왼쪽 위가 원점이다
+ * @returns { w, h, marginTop, marginBottom, marginSide?, labelLines, subLines, card?: { w, h, layouts }, cells?, empties?, unit?, titleH? }. 격자의 cells는 { id, kind, x, y, w, h, lines, ... } 칸 목록이고 좌표는 격자 왼쪽 위가 원점이다. empties는 빈 자리를 묶은 구간 { row0, row1, col0, col1, x, y, w, h } 목록이고(행×열이 아니라 칸 수에 비례), unit은 단위 칸 하나의 { w, h, gutter, x, y }다
  */
 export function sizeNode(node, contents = [], lineCounts = { out: 0, in: 0 }) {
   if (node.shape === 'person') return sizePerson(node, contents, lineCounts);
@@ -133,23 +134,43 @@ function sizeTable(node, contents) {
   return { w, h, marginTop: 0, marginBottom: 0, labelLines: [node.label], subLines: [], card, rowH };
 }
 
-// cost: time O(c·n² + rows·cols + k·c), heap O(c + rows·cols + k), stack O(1)
-// vars: c = 칸 수, n = 칸 글자 수, rows·cols = 격자 크기, k = 칸에 이은 선 끝 수
+// cost: time O(c·n² + c log c + k·c), heap O(c + k), stack O(1)
+// vars: c = 칸 수, n = 칸 글자 수, k = 칸에 이은 선 끝 수
 // basis: estimate
 // 칸 격자: 제목 줄과 칸 묶음이 모두 배치 사각형 안이다. 칸 단위(가로, 세로)는 모든 칸이 글을 넣을 수 있는 가장 작은 크기이고, 칸은 차지한 단위 수만큼 커진다.
 // 칸에 이은 선이 안쪽 칸으로 돌아 나갈 통로가 있으면 행 사이가 벌어진다(grid-links.js).
 function sizeGrid(node, links = []) {
+  const { titleLines, titleW, unitW, lined } = gridLines(node);
+  const titleH = titleLines.length * STYLE.label.line + GRID.titlePad * 2;
+  const unitH = lined.reduce((tallest, c) => Math.max(tallest, Math.ceil((c.lines.length * STYLE.item.line + GRID.cellPadY * 2) / c.rows)), SIZE.grid.cell);
+  const plan = planGridLinks({ rows: node.rows, cols: node.cols, cells: node.cells, links }, { pad: GRID.pad, unitW, unitH, titleH, titleHalf: titleW / 2 });
+  const box = ({ row, col, rows, cols }) => ({ x: GRID.pad + col * unitW, y: plan.rowTop(row), w: cols * unitW, h: rows * unitH + (rows - 1) * plan.gutter });
+  const cells = lined.map(({ text, label, ...c }) => ({ ...c, ...box(c) }));
+  const empties = emptyRegions(node).map((r) => ({ ...r, ...box({ row: r.row0, col: r.col0, rows: r.row1 - r.row0, cols: r.col1 - r.col0 }) }));
+  const unit = { w: unitW, h: unitH, gutter: plan.gutter, x: GRID.pad, y: plan.rowTop(0) };
+  return { w: plan.w, h: plan.h, marginTop: 0, marginBottom: 0, labelLines: titleLines, subLines: [], cells, empties, unit, titleH, cellEnds: plan.ends, cellRoutes: plan.inner };
+}
+
+// 같은 격자의 줄 나눔을 크기 계산과 예산 세기가 다시 하지 않도록 담아 둔다. 칸 목록이 키다.
+const gridLinesMemo = new WeakMap();
+
+// cost: time O(c·n²), heap O(c·l), stack O(1)
+// vars: c = 칸 수, n = 칸 글자 수, l = 칸 글 줄 수
+// basis: estimate
+/**
+ * 칸 격자의 제목과 칸 글 줄 나눔. 칸 단위 너비는 모든 칸이 글을 넣을 수 있는 가장 작은 너비다. 크기를 정하는 쪽과 예산이 쓰는 요소 수가 같은 줄 수를 본다.
+ * @returns { titleLines, titleW, unitW, lined }. lined는 칸마다 `lines`를 더한 목록이다
+ */
+export function gridLines(node) {
+  if (gridLinesMemo.has(node.cells)) return gridLinesMemo.get(node.cells);
   const titleLines = wrap(node.label, GRID.textMax, STYLE.label);
   const titleW = Math.max(...titleLines.map((l) => measure(l, STYLE.label.size, STYLE.label.face)));
-  const titleH = titleLines.length * STYLE.label.line + GRID.titlePad * 2;
   const shown = node.cells.map((c) => ({ ...c, text: c.kind === 'gap' ? `${c.label} ×${c.count}` : c.label }));
   const unitW = gridUnitWidth(shown, { cols: node.cols, titleRoom: titleW + INNER_X * 2 - GRID.pad * 2 });
   const lined = shown.map((c) => ({ ...c, lines: wrap(c.text, c.cols * unitW - GRID.cellPadX * 2, STYLE.item) }));
-  const unitH = Math.max(SIZE.grid.cell, ...lined.map((c) => Math.ceil((c.lines.length * STYLE.item.line + GRID.cellPadY * 2) / c.rows)));
-  const plan = planGridLinks({ rows: node.rows, cols: node.cols, cells: node.cells, links }, { pad: GRID.pad, unitW, unitH, titleH, titleHalf: titleW / 2 });
-  const slot = (row, col) => ({ x: GRID.pad + col * unitW, y: plan.rowTop[row], w: unitW, h: unitH });
-  const cells = lined.map(({ text, label, ...c }) => ({ ...c, ...slot(c.row, c.col), w: c.cols * unitW, h: c.rows * unitH + (c.rows - 1) * plan.gutter }));
-  return { w: plan.w, h: plan.h, marginTop: 0, marginBottom: 0, labelLines: titleLines, subLines: [], cells, empties: emptySlots(node, slot), titleH, cellEnds: plan.ends, cellRoutes: plan.inner };
+  const result = { titleLines, titleW, unitW, lined };
+  gridLinesMemo.set(node.cells, result);
+  return result;
 }
 
 // cost: time O(c), heap O(c), stack O(1)
@@ -158,16 +179,7 @@ function sizeGrid(node, links = []) {
 // 칸 단위 너비: 칸마다 (글 폭 + 안쪽 간격)을 차지한 열 수로 나눈 값의 최댓값. 글이 짧아도 칸 최소 너비보다 좁아지지 않고, 제목이 격자보다 넓으면 제목이 들어갈 만큼 넓어진다.
 function gridUnitWidth(cells, { cols, titleRoom }) {
   const need = cells.map((c) => (Math.min(measure(c.text, STYLE.item.size, STYLE.item.face), GRID.textMax) + GRID.cellPadX * 2) / c.cols);
-  return Math.ceil(Math.max(SIZE.grid.cell, titleRoom / cols, ...need));
-}
-
-// cost: time O(rows·cols + c·a), heap O(rows·cols), stack O(1)
-// vars: rows·cols = 격자 크기, c = 칸 수, a = 칸이 차지한 단위 수
-// basis: estimate
-// 어느 칸에도 속하지 않은 단위 자리. 격자 크기에 비례해 걸리므로 큰 격자는 gap으로 접어 쓴다.
-function emptySlots(node, slot) {
-  const taken = new Set(node.cells.flatMap((c) => Array.from({ length: c.rows * c.cols }, (_, k) => (c.row + Math.floor(k / c.cols)) * node.cols + c.col + (k % c.cols))));
-  return Array.from({ length: node.rows * node.cols }, (_, k) => k).filter((k) => !taken.has(k)).map((k) => slot(Math.floor(k / node.cols), k % node.cols));
+  return Math.ceil(need.reduce((widest, n) => Math.max(widest, n), Math.max(SIZE.grid.cell, titleRoom / cols)));
 }
 
 // cost: time O(k·r·n²), heap O(k·r), stack O(1)

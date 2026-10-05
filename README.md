@@ -102,9 +102,10 @@ After the first npm release, `npm install --save-dev daphnis` adds the `daphnis`
        paths: "docs/**/*.dap docs/**/*.md README.md"
        mode: check   # check (default) or render
        strict: true  # also fail on warnings
+       budget: "grid-elements=2000000"  # optional: raise generation budgets
    ```
 
-   `paths` are git globs of tracked files. `mode: render` writes the SVG files and image lines but does not commit them. The step fails when no file matches.
+   `paths` are git globs of tracked files. `mode: render` writes the SVG files and image lines but does not commit them. The step fails when no file matches. `budget` takes `name=value` items separated by spaces or commas and raises the generation budgets (the same as `--budget`); a bad name or value fails the step before any figure is built.
 
 ## Figure kinds
 
@@ -172,7 +173,7 @@ The SVG animates without scripts. The HTML adds step tabs, pause, speed, fullscr
 node src/cli.js check examples/memory.dap --strict --json
 ```
 
-The command prints nothing and exits with 0 when the figure has no errors, warnings, or deprecated forms. `--strict` fails on warnings and `--no-deprecated` fails on deprecated forms. `--json` prints one `{ file, severity, code, line, column, message, fix? }` object per diagnostic.
+The command prints nothing and exits with 0 when the figure has no errors, warnings, or deprecated forms. `--strict` fails on warnings and `--no-deprecated` fails on deprecated forms. `--json` prints one `{ file, severity, code, line, column, message, fix? }` object per diagnostic. A figure that would generate more than a budget allows (for example a grid with hundreds of thousands of cells) fails with a `budget-exceeded` error before any file is written; `--budget grid-elements=2000000` raises it, and `render`, `check`, `gallery`, and `md` all take `--budget name=value`.
 
 ### Migrate old files
 

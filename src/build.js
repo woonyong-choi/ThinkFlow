@@ -1,6 +1,7 @@
 // 원본 하나를 장면과 시간표로 만든다. 읽기, 차트 값 읽기, 크기, 배치, 시간표(선 길이를 쓰려고 배치 뒤), 그림 검사를 차례로 부른다(docs/architecture.md 그림 만들기).
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
+import { resolveBudget } from './budget.js';
 import { checkChartFigure, checkFigure } from './check.js';
 import { CHIP_GAP, sizeChip } from './chip.js';
 import { planClashes } from './chip-clash.js';
@@ -14,6 +15,7 @@ import { layoutGraph } from './layout/graph.js';
 import { layoutSequence } from './layout/sequence.js';
 import { findMissingGlyph, wrap } from './measure/fonts.js';
 import { hasUnpairedBacktick } from './text.js';
+import { checkGridBudget, checkGridExtent } from './measure/grid-cost.js';
 import { countLines } from './measure/line-counts.js';
 import { STYLE, sizeNode } from './measure/sizes.js';
 import { INTERVAL_TYPES, checkChartLightTargets, checkChartRows, hasRowRule } from './source/chart-rules.js';
@@ -33,10 +35,12 @@ const LABEL_KEY = { bar: 'label', dumbbell: 'label', difference: 'label', box: '
  * @param baseDir `data` 경로의 기준 폴더
  * @param strict 경고도 오류로 올린다
  * @param noDeprecated 폐기 진단도 오류로 올린다
+ * @param budget 올린 예산 { 이름: 값 }. 이름 없는 예산은 기본 한도다(src/budget.js)
  * @returns { figure, scene, timeline, warnings, deprecations }. 차트면 scene 대신 chart가 있다
  * @throws FigureError 원본 오류나 그림 검사 오류가 있을 때. 모든 문제를 담는다
  */
-export async function buildFigure(source, { baseDir = '.', strict = false, noDeprecated = false, requireData = false, requireCi = false } = {}) {
+export async function buildFigure(source, { baseDir = '.', strict = false, noDeprecated = false, requireData = false, requireCi = false, budget } = {}) {
+  const limits = resolveBudget(budget);
   const problems = createProblems(source);
   const figure = readFigure(source, problems);
   if (figure.kind === 'chart' && figure.chart.data) loadChartData(figure, baseDir, problems);
@@ -51,7 +55,10 @@ export async function buildFigure(source, { baseDir = '.', strict = false, noDep
     checkChartFigure(chart, problems);
     return finish({ figure, chart, timeline }, problems, { strict, noDeprecated });
   }
+  checkGridBudget(figure, limits);
   const sizes = new Map(figure.nodes.map((n) => [n.id, sizeNode(n, cards.contents.get(n.id), figure.kind === 'sequence' ? undefined : countLines(figure, n.id))]));
+  checkGridExtent(figure, sizes, problems);
+  problems.throwIfAny();
   const { scene, timeline } = await placeScene(figure, { sizes, cards, source }, problems);
   return finish({ figure, scene, timeline }, problems, { strict, noDeprecated });
 }

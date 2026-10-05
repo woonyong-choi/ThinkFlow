@@ -13,8 +13,10 @@ const INTEGER_PATTERN = /^\d+$/;
  */
 export function readOptions(tokens, { scopes, what, line, ctx }) {
   const found = {};
+  // 범위 표는 낱말마다가 아니라 줄마다 한 번 만든다. 칸이 수십만 줄인 격자에서 줄마다 표를 다시 만드는 비용이 컸다.
+  const tables = scopes.map((s) => optionsOf(s));
   for (const t of tokens) {
-    const spec = t.type === 'option' ? scopes.map((s) => optionsOf(s)[t.key]).find(Boolean) : undefined;
+    const spec = t.type === 'option' ? tables.map((table) => table[t.key]).find(Boolean) : undefined;
     if (!spec) ctx.problems.error(line, `${what} takes ${listKeys(scopes)}. Found "${t.key ?? t.value}"`);
     else if (Object.hasOwn(found, t.key)) ctx.problems.error(line, `"${t.key}" is written twice`);
     else {
