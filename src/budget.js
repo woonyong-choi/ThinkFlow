@@ -12,6 +12,8 @@ export const BUDGETS = Object.freeze({
   // 흐름 조건과 대기를 계산하는 이벤트(docs/design/playback.md 이벤트 예산). 기본 한도는 같은 문서의 측정에서 정했다.
   events: { limit: 300_000, unit: 'events (departures, arrivals, value updates, wait evaluations and releases)' },
   chain: { limit: 5_000, unit: 'events at one moment' },
+  // 이동 글 상자 계획 하나의 공간 색인(docs/design/grid.md 예산). 기본 한도는 같은 문서의 측정에서 정했다.
+  'chip-index': { limit: 2_000_000, unit: 'entries in the spatial index of one moving-text plan' },
 });
 
 /** 예산 이름 목록 */
@@ -115,5 +117,19 @@ export function eventBudgetError(name, limit, { line, t, needed }) {
   const raise = needed ?? limit * 2;
   const cause = needed === undefined ? `the figure passes the budget ${name}=${limit} at ${t}ms, counting ${unit}` : `this figure needs ${needed} ${unit} counted from its departures, over the budget ${name}=${limit}`;
   const message = `${cause}. Raise it with --budget ${name}=${raise} (the Action input budget: ${name}=${raise}), or reduce the waits, tracks, and departures`;
+  return new FigureError([makeDiagnostic({ severity: 'error', line, message }, { code: 'budget-exceeded' })]);
+}
+
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+/**
+ * 글 상자 계획의 공간 색인이 예산 `chip-index`를 넘을 때의 오류. 색인을 만들기 전에 센 항목 수(needed)를 알리고, 파일을 쓰기 전에 끝난다.
+ * @param limit 지금 한도
+ * @param where { line, needed }. line은 계획을 세운 이동의 줄이다
+ * @returns FigureError (code `budget-exceeded`)
+ */
+export function indexBudgetError(limit, { line, needed }) {
+  const { unit } = BUDGETS['chip-index'];
+  const message = `this figure's moving text needs ${needed} ${unit}, over the budget chip-index=${limit}. Raise it with --budget chip-index=${needed} (the Action input budget: chip-index=${needed}), or reduce the shapes, lines, and cells that moving text must avoid`;
   return new FigureError([makeDiagnostic({ severity: 'error', line, message }, { code: 'budget-exceeded' })]);
 }

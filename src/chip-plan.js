@@ -1,6 +1,7 @@
 // 이동 하나의 글 상자 계획. 자리 바꿈을 가장 적게 하고, 꼭 바꿔야 하면 짧게 미끄러지고, 그것도 안 되면 그 구간만 흐리게 한다(docs/design/playback.md 이동 글).
 import { CHIP_GAP, chipCandidateAt, chipCandidates, descOf, sizeChip } from './chip.js';
-import { gridOf } from './chip-grid.js';
+import { resolveBudget, indexBudgetError } from './budget.js';
+import { gridOf, indexEntries } from './chip-grid.js';
 import { issuesOf, settle, simplify } from './chip-fade.js';
 import { cutPath, dotAt, NODE_MS, visibleShare } from './chip-motion.js';
 import { addSlides, SWITCH_COST } from './chip-slide.js';
@@ -38,14 +39,16 @@ const plannedIssues = new WeakMap();
 /**
  * 시간표의 글 상자 있는 이동마다 계획을 세워 hop.chipPath에 담는다. 같은 선, 글, 시간, 방향의 이동은 계획이 같아 한 번만 세운다.
  * 문제 목록은 hop 밖(plannedIssues)에 두어 시간표를 담는 HTML에 실리지 않게 한다.
+ * @param plan { avoid, limits }. avoid는 피할 사각형, limits는 올린 예산(없으면 기본 한도)
  */
-export function planHops(scene, timeline, avoid) {
+export function planHops(scene, timeline, plan) {
+  const { avoid, limits = resolveBudget() } = plan;
   const plans = new Map();
   for (const seg of timeline.segs) {
     for (const hop of seg.hops) {
       if (!hop.data) continue;
       const key = `${hop.track === undefined ? hop.edge : `t${hop.track}`}\u0000${hop.ms}\u0000${hop.isBack}\u0000${hop.data.join('\u0000')}${hop.pace ? `\u0000${JSON.stringify(hop.pace)}` : ''}`;
-      if (!plans.has(key)) plans.set(key, planChip(scene, hop.track === undefined ? hop : { ...hop, route: timeline.tracks[hop.track].route }, avoid));
+      if (!plans.has(key)) plans.set(key, planWithin(scene, hop.track === undefined ? hop : { ...hop, route: timeline.tracks[hop.track].route }, { avoid, limits }));
       hop.chipPath = hop.cut === undefined ? plans.get(key).path : cutPath(plans.get(key).path, hop);
       plannedIssues.set(hop, { scene, issues: hop.track === undefined ? plans.get(key).issues : reportedOf(plans.get(key).issues, hop) });
     }
@@ -80,13 +83,21 @@ export function issuesOfHop(scene, hop, avoid) {
  * @returns { path, issues }. path는 이동 진행 비율 at(오름차순)마다 [at, dx, dy, opacity]이고, issues는 지점마다 { at, isOutside, hits }다
  */
 export function planChip(scene, realHop, avoid) {
+  return planWithin(scene, realHop, { avoid, limits: resolveBudget() });
+}
+
+// cost: time O(n·k·m + L·n·b²·s·m), heap O(n·k), stack O(1)
+// vars: n = 계획 지점 수, k = 자리 종류 수, m = 글 상자 둘레 칸에 걸린 사각형 수, L = 미끄러짐 배수 수(3), b = BEAM, s = 미끄러짐 프레임 수
+// basis: measured npm run perf
+// planChip과 같고, 올린 예산(limits)으로 색인 예산을 검사한다. 그림을 만드는 쪽(planHops)이 쓴다.
+function planWithin(scene, realHop, { avoid, limits }) {
   const hop = realHop.ms > PLAN_MAX_MS ? { ...realHop, ms: PLAN_MAX_MS } : realHop;
-  const plan = planWith(scene, hop, { avoid, isRelaxed: false });
+  const plan = planWith(scene, hop, { avoid, limits, isRelaxed: false });
   if (hop.track !== undefined) return plan;
   const move = { route: hop.route ?? flattenRoute(scene.edges[hop.edge].points), hop, chip: sizeChip(hop.data) };
   if (visibleShare(move, plan.path) >= SHARE_MIN) return plan;
   // 박자 이동의 글은 정보라서, 깨끗한 자리가 모자라 숨는 시간이 길면 도형 이름을 가리더라도 점 옆에 보인다.
-  const shown = planWith(scene, hop, { avoid, isRelaxed: true });
+  const shown = planWith(scene, hop, { avoid, limits, isRelaxed: true });
   return visibleShare(move, shown.path) > visibleShare(move, plan.path) ? shown : plan;
 }
 
@@ -94,10 +105,11 @@ export function planChip(scene, realHop, avoid) {
 // vars: n = 계획 지점 수, k = 자리 종류 수, m = 글 상자 둘레 칸에 걸린 사각형 수, L = 미끄러짐 배수 수(3), b = BEAM, s = 미끄러짐 프레임 수
 // basis: measured npm run perf
 // 계획 한 번. isRelaxed면 선 라벨 알약만 가리면 안 되는 것으로 보고 도형과 글자는 가려도 숨기지 않는다.
-function planWith(scene, hop, { avoid, isRelaxed }) {
+function planWith(scene, hop, { avoid, limits, isRelaxed }) {
   const own = hop.edges ?? [hop.edge];
   const ctx = { scene, hop, isRelaxed, chip: sizeChip(hop.data), field: avoid.filter((o) => !own.includes(o.edge)), route: hop.route ?? flattenRoute(scene.edges[hop.edge].points), dots: new Map(), frames: new Map() };
   ctx.hard = ctx.field.filter((o) => !o.soft && (!isRelaxed || o.isPill));
+  checkIndexBudget(ctx, limits);
   ctx.hardIndex = gridOf(ctx.hard);
   ctx.index = gridOf(ctx.field);
   const times = nodeTimes(hop.ms);
@@ -112,6 +124,15 @@ function planWith(scene, hop, { avoid, isRelaxed }) {
   path[0][0] = 0;
   path.at(-1)[0] = 1;
   return { path, issues: issuesOf(rest, hop) };
+}
+
+// cost: time O(a), heap O(1), stack O(1)
+// vars: a = 피할 사각형 수
+// basis: estimate
+// 계획이 만들 두 색인(도형과 글자, 선까지 모두)의 항목 수를 만들기 전에 세어 예산 `chip-index`를 넘으면 막는다.
+function checkIndexBudget(ctx, limits) {
+  const needed = indexEntries(ctx.hard) + indexEntries(ctx.field);
+  if (needed > limits['chip-index']) throw indexBudgetError(limits['chip-index'], { line: ctx.hop.line, needed });
 }
 
 // cost: time O(n), heap O(n), stack O(1)

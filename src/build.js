@@ -100,7 +100,7 @@ async function attemptScene(figure, { sizes, cards, source, limits }) {
   const scene = figure.kind === 'sequence' ? layoutSequence(figure, sizes) : await layoutOrFail(figure, sizes, local);
   const timeline = buildTimeline(figure, { cards, chips: wrapChip, scene, limits });
   widenForChips(scene, timeline);
-  planChips(scene, timeline);
+  planChips(scene, timeline, limits);
   // 태그 색은 원본에 처음 나온 순서로 정한다(docs/design/figure-syntax.md 카드 줄).
   scene.tagOrder = figure.steps.flatMap((s) => s.beats.flatMap((b) => b.ops.filter((o) => o.row?.tag && !o.row.tone).map((o) => o.row.tag)));
   checkFigure({ figure, scene, timeline }, local);
@@ -143,9 +143,9 @@ function widenForChips(scene, timeline) {
 // vars: h = 글 상자 있는 이동 수, k = 재는 지점 수(21), p = 경로 점 수, a = 글자 사각형 수
 // basis: estimate
 // 글 상자 자리를 경로 지점마다 미리 정해 이동에 담고, 흐름에서 점끼리 글 상자가 겹치는 구간은 나중에 출발한 점의 글 상자를 숨긴다. 움직이는 SVG와 재생기는 이 계획을 그대로 걸어 같은 자리를 쓴다.
-function planChips(scene, timeline) {
+function planChips(scene, timeline, limits) {
   const avoid = [...chipObstacles(scene, timeline), ...chipLines(scene)];
-  planHops(scene, timeline, avoid);
+  planHops(scene, timeline, { avoid, limits });
   planClashes(scene, timeline);
 }
 

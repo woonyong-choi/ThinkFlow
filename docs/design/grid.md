@@ -173,13 +173,25 @@ step "조회" "페이지 1은 표의 둘째 행을 거쳐 프레임 7로 간다"
 |---|---|---|
 | `grid-elements` | 격자가 그리는 SVG 요소 수. 틀 사각형 1, 제목 글 줄마다 1, 칸마다 `item` 4(묶음, 사각형, 고리 묶음, 고리 사각형)와 `gap` 2에 칸 글 줄마다 1, 빈 자리가 있으면 3(무늬, 무늬 안 선, 경로). 글 줄은 그릴 때와 같은 줄 나눔(칸 폭에 따른 자동 줄 나눔)의 실제 결과다 | 500000 |
 | `grid-path-commands` | 빈 자리 경로의 명령 수(구간마다 5) | 1000000 |
+| `chip-index` | 이동 글 상자 계획 하나가 만드는 공간 색인의 칸 항목 수(도형과 글자 색인, 선과 틀까지 넣은 색인의 합). 색인을 만들기 전에 센다 | 2000000 |
 
 - 검사는 크기와 배치를 정하기 전에 한다. 글 줄 수는 칸 글을 칸 폭에 맞춰 나눈 결과라 이 검사가 줄 나눔(칸 글 길이에 비례한 비용)을 먼저 하고 크기 계산이 그 결과를 다시 쓴다. 따라서 세는 요소 수는 실제로 그리는 수와 같고, 검사가 칸 수나 글 길이를 넘는 큰 할당을 하지 않으며, 초과하면 크기, 배치, 그리기에 들어가지 않고 파일도 쓰지 않는다. 시간표 항목은 격자 크기로 늘지 않는다(`light`는 칸 하나를 가리키고 단계마다 줄 수만큼만 늘어난다)라 이 PR은 예산을 두지 않는다.
 - 초과 진단은 합계가 처음 한도를 넘은 격자의 줄에 붙고 필요한 양, 지금 한도, 올리는 방법을 적는다. 예: `this figure needs 502 SVG elements drawn by grids, over the budget grid-elements=100, and grid "g0" is where the total passes it. Raise it with --budget grid-elements=502 (the Action input budget: grid-elements=502), or shrink the grids`. 넘는 예산마다 진단 하나이고 `code`는 `budget`이다.
 - 올리는 방법: `render`, `check`, `gallery`, `md`가 `--budget 이름=값`을 받고(여러 번 쓸 수 있다), GitHub Action은 입력 `budget`(공백이나 쉼표로 나눈 `이름=값`)을 같은 해석으로 넘긴다. 값은 양의 안전한 정수이고, 모르는 이름이나 틀린 값은 그림을 만들기 전에 사용법 오류(종료 2)다.
 - 기본 한도는 현재 구현의 측정에서 정했다([측정](#측정)). 요소 500000은 빽빽한 316×316 격자(499282개)가 한 그림으로 5초, 최대 메모리 약 620MB, SVG 28MB에 끝나는 크기라, 브라우저가 한 번에 그릴 수 있는 크기와 기본 Node 힙 안에 든다. 경로 명령 1000000은 `gap` 칸 10만 개를 대각선 계단으로 놓은 입력(구간 20만 개, 명령 999990개, 요소 30만 개)이 같은 범위(최대 메모리 약 650MB)에 끝나는 크기다. 일반 문서의 격자(수십~수백 칸)는 한도의 0.1% 아래다.
+- `chip-index`는 이동 글 상자 계획([재생](playback.md))이 만드는 공간 색인의 크기를 막는다. 색인 크기는 칸 선언과 이동 수로 정해지고 논리 격자의 행×열과 무관하다([글 상자 계획의 공간 색인](#글-상자-계획의-공간-색인)). 그래도 선언 수가 크면 색인이 커지므로, 이 예산은 색인을 만들기 전에 항목 수를 세어 한도를 넘으면 `budget-exceeded`로 끝낸다. 진단 줄은 계획을 세운 이동의 줄이고, 필요한 항목 수와 `--budget chip-index=<N>`을 알린다. 기본 한도 200만은 색인 항목 100만 개당 약 58MB를 쓰는 측정에서, 가장 큰 빽빽한 격자(`grid-elements` 기본 한도 안의 316×316, 이동 글 하나, 25만 항목)의 여덟 배로 정했다.
 - `check-14`의 흐름 점 한도(800)는 이 인터페이스로 옮기지 않았고 동작과 진단이 그대로다.
 - 이벤트 예산 `events`와 `chain`(흐름 조건과 대기)도 같은 모듈과 `--budget`을 쓰고, 이름은 `parseBudgetPair`가 이 표와 함께 검사한다. 이 두 예산의 단위, 기본값, 측정은 [재생](playback.md#이벤트-예산)이 정한다.
+
+### 글 상자 계획의 공간 색인
+
+이동 글 상자는 후보 자리마다 도형, 글자, 선, 틀과 겹치는지 재므로, 계획은 피할 사각형을 담은 공간 색인(`src/chip-grid.js`)으로 글 상자 둘레의 것만 잰다. 색인은 큰 사각형을 면적만큼의 칸으로 펼치지 않는다.
+
+- 층별 격자: 칸 한 변이 64px인 층 0부터 한 층마다 4배씩 커지는 층이 있다. 사각형은 긴 쪽 변이 칸 한 변 이하인 가장 작은 층에 넣고, 그 층에서 걸치는 칸(최대 2×2) 항목만 만든다. 항목 수는 사각형 수의 네 배 이하이고 사각형의 크기와 논리 격자 면적에는 따르지 않는다. 격자 틀, 큰 합친 칸, 큰 빈 영역도 같다.
+- 찾기: 글 상자 둘레의 칸을 층마다 찾아 사각형 번호를 겹치지 않게 오름차순으로 돌려준다. 후보 상자는 작아서 층마다 몇 칸만 본다. 닿지 않는 사각형이 섞일 수 있고, 실제 겹침은 호출한 쪽이 사각형마다 다시 잰다. 그래서 색인이 없던 때와 같은 사각형을 같은 순서로 재고 결과가 같다.
+- 크기나 위치가 유한하지 않은 사각형은 칸에 넣지 않고 모든 질문의 후보로 낸다.
+- 고정 행·열 제한은 없다. 칸 선언과 이동 수가 같으면 격자가 10^10×10^10이어도 색인 항목 수가 같다.
+- 색인 항목은 만들기 전에 센다(`indexEntries`). 두 색인(도형과 글자만, 선과 틀까지)의 합이 `chip-index`를 넘으면 색인을 만들지 않고 끝낸다.
 
 ### 측정
 
@@ -208,6 +220,20 @@ step "조회" "페이지 1은 표의 둘째 행을 거쳐 프레임 7로 간다"
 - 희소 격자의 출력은 격자 크기와 무관하다. 빽빽한 격자의 출력은 구현 전과 바이트가 같고, 빽빽한 격자의 시간은 이전에 칸 수의 제곱으로 늘던 이름 중복 확인과 겹침 확인을 없애 줄었다(남은 시간은 줄마다 읽는 비용이다).
 - 초과 검사는 선언을 읽은 뒤에 하므로 메모리 하한은 선언한 칸 수에 비례한 입력 읽기 비용이다.
 
+이동 글을 붙인 희소 격자(`grid g rows=n cols=n`에 칸 하나, 상자 하나, 선 하나, 이동 하나)의 글 상자 계획 비용이다. 한 입력당 3회 재어 시간은 중앙값, 메모리는 최대 상주 메모리의 최댓값이고, 삽입 수는 `chip-grid.js` 안에서 일어난 `Map`의 새 키 삽입이다(칸 항목과 같은 칸 범위를 다시 묻지 않게 하는 답 저장 항목을 포함한다). 구현 전의 10000×10000은 삽입 10000회 상한과 힙 상한 1GB, 제한 시간 120초로 중단했고 실제 메모리 부족까지 돌리지 않았다.
+
+| 입력 | 전: 삽입 / 시간 / 메모리 | 후: 삽입 / 시간 / 메모리 |
+|---|---|---|
+| 희소 20×20 | 452 / 0.17초 / 170MB | 56 / 0.17초 / 170MB |
+| 희소 40×40 | 1440 / 0.23초 / 188MB | 60 / 0.23초 / 170MB |
+| 희소 80×80 | 5220 / 0.34초 / 190MB | 63 / 0.24초 / 170MB |
+| 희소 400×400 | 121860 / 1.4초 / 224MB | 63 / 0.23초 / 178MB |
+| 희소 10000×10000 | 10001에서 중단 | 18 / 0.23초 / 169MB |
+| 희소 10^9×10^9, 10^10×10^10 | 해당 없음 | 18 / 0.22초 / 168MB |
+| 빽빽 316×316, 이동 하나 | 해당 없음 | 항목 249648 / 2.9초 / 415MB |
+
+- 색인 항목 100만 개를 만드는 데 약 58MB와 0.07초가 든다(작은 사각형 100만 개, 두 색인 합계 468만 개까지 확인).
+
 ### 시간 흐름
 
 - `light 격자.칸`은 도형의 `light`와 같은 박자 규칙이다. 한 단계 안에서 밝힌 칸은 남고 다음 단계가 시작하면 꺼진다. 시간표의 `partsOn`에 `격자.칸` 이름으로 들어가고, HTML 재생기와 움직이는 SVG가 같은 값을 읽는다.
@@ -233,6 +259,10 @@ step "조회" "페이지 1은 표의 둘째 행을 거쳐 프레임 7로 간다"
 | 구간은 선언하지 않은 단위 칸을 정확히 한 번씩 덮고, 칸 겹침을 쓸기로 찾는다. | `test/grid-scale.test.js`의 `emptyRegions_cover_every_undeclared_unit_exactly_once`(무작위 300판을 단위 집합과 대조), `findOverlaps_pairs_each_later_cell_with_an_earlier_cell_it_overlaps` |
 | 예산은 모든 격자의 합계를 크기를 정하기 전에 검사하고, 한도와 같은 양은 통과하며, 초과는 필요한 양과 조정 방법을 알린다. | `test/grid-scale.test.js`의 `buildFigure_grid_over_budget_reports_the_needed_amount_and_how_to_raise_it`, `..._budget_accepts_exactly_the_needed_amount_and_rejects_one_less`, `..._budget_counts_all_grids_of_the_figure_and_names_the_grid_that_passes_it`, `..._budget_counts_the_path_commands_of_the_merged_empty_area_path`, `..._budget_is_checked_before_the_grid_is_sized`, `..._budget_counts_the_wrapped_text_lines_so_it_never_undercounts_the_drawn_elements`(여러 줄 글 격자에서 그린 요소 수와 계산값이 같고, 한도를 하나 낮추면 오류) |
 | 좌표 범위와 인덱스 합을 넘는 입력은 격자 줄의 오류이고 중단하지 않는다. | `test/grid-scale.test.js`의 `buildFigure_grid_beyond_the_exact_coordinate_range_is_a_line_error_not_a_crash`, `..._cell_index_sums_beyond_the_safe_integer_range_are_line_errors` |
+| 이동 글을 붙인 희소 격자의 공간 색인 삽입 수가 논리 격자 면적과 무관하다. 큰 사각형은 칸으로 펼치지 않는다. | `test/chip-index.test.js`의 `buildFigure_moving_text_in_a_sparse_grid_inserts_the_same_few_index_cells_whatever_the_grid_size`(20, 40, 80, 10000, 삽입 상한 보호), `gridOf_keeps_a_huge_rectangle_to_a_few_entries_and_still_finds_it`, `gridOf_offers_a_rectangle_of_unknown_size_for_every_box_without_spreading_it_over_cells` |
+| 색인은 닿는 사각형을 빠뜨리지 않고 오름차순으로 내며, 항목 수는 사각형 수의 네 배 이하다. | `test/chip-index.test.js`의 `gridOf_near_never_misses_a_touching_rectangle_and_lists_each_once_in_ascending_order`(무작위 사각형을 훑은 답과 대조), `indexEntries_equals_the_entries_gridOf_makes_and_stays_within_four_per_rectangle` |
+| 색인 항목은 만들기 전에 세고, `chip-index` 예산을 넘으면 색인을 만들지 않고 `budget-exceeded`로 끝낸다. 한도와 같은 양은 통과한다. | `test/chip-index.test.js`의 `buildFigure_moving_text_over_the_chip_index_budget_ends_with_budget_exceeded_before_any_index_is_built`(삽입 0회, 한도와 한도보다 하나 모자란 값), `main_render_with_a_small_chip_index_budget_exits_with_budget_exceeded_and_writes_no_file`, `parseBudgetPair_accepts_the_chip_index_budget`, `buildFigure_default_chip_index_budget_accepts_a_huge_sparse_grid_with_moving_text` |
+| 이동 글, 큰 합친 칸, 빈 영역, 여러 격자를 함께 써도 글 상자 후보와 계획이 색인 없이 잰 결과와 같다. | `test/chip-index.test.js`의 `chipCandidates_with_the_index_equal_the_linear_scan_beside_moving_text_big_merged_cells_empty_areas_and_several_grids`, `buildFigure_moving_text_plans_beside_big_merged_cells_and_empty_areas_equal_the_plans_made_before_the_range_index` |
 | `--budget`과 Action 입력 `budget`이 같은 해석이고, 모든 그림 명령이 받으며, 잘못된 값은 만들기 전에 끝나고, 초과는 파일을 쓰지 않는다. | `test/grid-scale.test.js`의 `main_budget_option_raises_the_limit_and_an_over_budget_figure_writes_no_file`, `main_every_figure_command_takes_budget_with_the_same_meaning`, `main_budget_option_with_a_bad_name_or_value_is_a_usage_error`, `parseBudgetPair_accepts_only_known_names_with_positive_safe_integers`, `test/action.test.js`의 `action_budget_input_raises_the_limit_with_spaces_or_commas_and_rejects_bad_items` |
 | 문서의 예시와 예제 그림이 오류와 경고 없이 만들어지고 움직임이 시간표와 같다. | `test/grammar.test.js`의 `docExamples_every_design_doc_example_builds_without_errors_or_warnings`, `test/motion.test.js`의 `toSvg_moving_packets_match_the_timeline_at_every_example`(`examples/address-bits.dap` 외 세 파일 포함) |
 | 올바른 무작위 구조 그림(칸 격자가 섞인)이 배치 오류나 그림 검사 오류가 되지 않는다. | `npm run fuzz`(구조 그림의 4분의 1이 칸 격자를 담는다). [배치](layout.md)의 요구사항 표와 같은 명령 |
