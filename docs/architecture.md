@@ -34,7 +34,7 @@
 
 ### 토큰 만들기
 
-1. 공통 토큰은 설치된 `@woonyong-choi/design-tokens`의 정본(`source`, `source-dark`)에서 읽는다. 버전은 `package.json`의 태그(`github:woonyong-choi/design-tokens#v0.1.0`)가 정한다.
+1. 공통 토큰은 설치된 `@woonyong-choi/design-tokens`의 정본(`source`, `source-dark`)에서 읽는다. 버전은 `package.json` `devDependencies`의 태그(`github:woonyong-choi/design-tokens#v0.1.1`)가 정한다.
 2. `scripts/build-tokens.mjs`가 그 정본과 `src/tokens.json`, `src/tokens.dark.json`을 합쳐 `src/tokens.css`, `src/tokens.js`를 만든다. `src/` 정본에는 그림 전용 구성 요소 토큰(`color.figure`, `color.paint`, `color.tag`, `color.palette`의 `amber`, `teal`, `navy`, `pink`, `sky`, `slate`, 그림과 재생기와 차트의 `size`, `duration`, `opacity`, `distance` 같은 값, 내장 글꼴 사슬 `font.figure-sans`, `font.figure-mono`)만 있다.
 3. `src/` 정본이 공통 토큰과 같은 이름을 다시 정의하면 `npm run check`(`build-tokens.mjs --check`)가 실패한다. 생성물이 낡았을 때도 같다.
 4. `npm run palette`가 이 저장소가 값을 갖는 팔레트 단계(`sky`와 `slate`의 면과 외곽선)를 공통 토큰의 면 위 대비 규칙으로 다시 계산해 `src/tokens.json`에 쓴다. 나머지 팔레트 단계는 공통 토큰을 가리키는 별칭이다.
