@@ -1,6 +1,7 @@
 // 재생기에 넘길 그림 내용: SVG 본문과 재생 데이터. 도형, 그룹, 계열은 번호로 바꿔 넘긴다.
 import { CHART_FACES, chartText } from '../chart/draw.js';
 import { drawScene } from '../draw/figure.js';
+import { drawStatusPills } from '../draw/status.js';
 import { drawTrackPaths } from '../draw/tracks.js';
 import { drawValues } from '../draw/values.js';
 import { STYLE } from '../measure/sizes.js';
@@ -39,8 +40,31 @@ export function figureContent(result, glyphs) {
   const { scene, timeline } = result;
   const itemIndex = new Map(scene.items.map((it, i) => [it.id, i]));
   const groupIndex = new Map(scene.groups.map((g, i) => [g.id, i]));
+  const segs = playerSegs(timeline, { scene, itemIndex, groupIndex });
+  const data = {
+    ...flowData(timeline),
+    segs,
+    steps: timeline.steps,
+    cardCounts: scene.items.map((it) => it.card?.layouts.length ?? 0),
+    edgeEnds: scene.edges.map((e) => [itemIndex.get(e.from.split('.')[0]) ?? -1, itemIndex.get(e.to.split('.')[0]) ?? -1]),
+    seriesCount: 0,
+    rowCount: 0,
+    metrics: timeline.tracks || timeline.values || timeline.segs.some((seg) => seg.hops.some((hop) => hop.tone)) ? { ...PLAYER_METRICS, ...FLOW_METRICS } : PLAYER_METRICS,
+  };
+  const { body: figure, pills } = drawScene(scene, () => '', glyphs);
+  const body = figure + drawTrackPaths(timeline) + drawValues(scene, timeline, { glyphs, windows: () => '' });
+  // 상태 알약은 점 층 위에 선 라벨 알약과 같은 층에 둔다. 켜고 끄는 것은 재생기가 구간의 status로 한다.
+  const status = drawStatusPills(scene, timeline, { glyphs, windows: () => '', index: itemIndex });
+  return { svg: body, pills: pills + status, width: scene.width, height: scene.height, data };
+}
+
+// cost: time O(b·(e + k)), heap O(b·(e + k)), stack O(1)
+// vars: b = 박자 수, e = 선 수, k = 카드 있는 도형 수
+// basis: estimate
+// 재생기가 읽는 구간 목록. 도형, 그룹 id는 번호로 바꾸고, 상태 알약은 `도형 번호-종류` 글로 넘긴다.
+function playerSegs(timeline, { scene, itemIndex, groupIndex }) {
   const toIndex = (map, obj) => Object.fromEntries(Object.entries(obj).map(([id, v]) => [map.get(id), v]));
-  const segs = timeline.segs.map((seg) => {
+  return timeline.segs.map((seg) => {
     const lit = litIds(seg, scene.edges);
     return {
       si: seg.si,
@@ -58,22 +82,10 @@ export function figureContent(result, glyphs) {
       series: [],
       growing: [],
       lights: [],
+      ...(seg.status ? { status: seg.status.map(({ node, kind }) => `${itemIndex.get(node)}-${kind}`) } : {}),
       ...timedLights(seg, { itemIndex, groupIndex }),
     };
   });
-  const data = {
-    ...flowData(timeline),
-    segs,
-    steps: timeline.steps,
-    cardCounts: scene.items.map((it) => it.card?.layouts.length ?? 0),
-    edgeEnds: scene.edges.map((e) => [itemIndex.get(e.from.split('.')[0]) ?? -1, itemIndex.get(e.to.split('.')[0]) ?? -1]),
-    seriesCount: 0,
-    rowCount: 0,
-    metrics: timeline.tracks || timeline.values || timeline.segs.some((seg) => seg.hops.some((hop) => hop.tone)) ? { ...PLAYER_METRICS, ...FLOW_METRICS } : PLAYER_METRICS,
-  };
-  const { body: figure, pills } = drawScene(scene, () => '', glyphs);
-  const body = figure + drawTrackPaths(timeline) + drawValues(scene, timeline, { glyphs, windows: () => '' });
-  return { svg: body, pills, width: scene.width, height: scene.height, data };
 }
 
 // cost: time O(e), heap O(e), stack O(1)

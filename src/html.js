@@ -5,6 +5,7 @@ import { canvasOf, fitCanvas } from './canvas.js';
 import { LUCIDE_ICONS } from './icons/lucide/icons.js';
 import { createGlyphSet, embedFonts } from './measure/fonts.js';
 import { paintCss } from './draw/paint.js';
+import { hasStatus } from './draw/status.js';
 import { DEFS, STYLES } from './styles.js';
 import { escapeXml, plainText, roundCoord as r } from './text.js';
 import { values } from './tokens.js';
@@ -14,10 +15,23 @@ import { roundedNumbers } from './format.js';
 
 // 브라우저 스크립트 파일(src/player/). 한 스크립트로 이어 붙여 HTML에 넣는다.
 const PLAYER_FILES = ['view', 'play', 'controls', 'stage', 'curve', 'values'];
+// 단계별 도형 상태와 구간별 이동 시간을 쓰는 그림에만 뒤에 붙는 재생기 파일. 앞 파일의 함수를 감싸서 이 기능을 쓰지 않는 그림의 재생기 글은 그대로다.
+const PLAYER_EXTRAS = { pace: 'pace', status: 'status' };
 // 조작부 아이콘: Lucide(ISC) 24 격자 외곽선 아이콘의 도형(src/icons/lucide/icons.js)을 재생기 스크립트 앞에 상수로 붙인다. 선 굵기와 끝 모양은 그리는 쪽(view.js)이 정한다.
 const UI_ICONS = LUCIDE_ICONS;
 const UI_ICON_SCRIPT = `const UI_ICONS = ${JSON.stringify(UI_ICONS).replace(/</g, '\\u003c')};\n`;
-const PLAYER = UI_ICON_SCRIPT + PLAYER_FILES.map((name) => readFileSync(new URL(`./player/${name}.js`, import.meta.url), 'utf8')).join('\n');
+const readPlayerFile = (name) => readFileSync(new URL(`./player/${name}.js`, import.meta.url), 'utf8');
+const PLAYER = UI_ICON_SCRIPT + PLAYER_FILES.map(readPlayerFile).join('\n');
+const PLAYER_EXTRA = Object.fromEntries(Object.entries(PLAYER_EXTRAS).map(([key, name]) => [key, readPlayerFile(name)]));
+
+// cost: time O(b·h), heap O(1), stack O(1)
+// vars: b = 구간 수, h = 구간의 이동 수
+// basis: estimate
+// 재생기 스크립트. 구간별 이동 시간(hop.pace)이나 단계별 도형 상태(seg.status)를 쓰는 시간표에만 그 파일을 뒤에 붙인다.
+function playerScript(timeline) {
+  const extras = [...(timeline.segs.some((seg) => seg.hops.some((hop) => hop.pace)) ? [PLAYER_EXTRA.pace] : []), ...(hasStatus(timeline) ? [PLAYER_EXTRA.status] : [])];
+  return [PLAYER, ...extras].join('\n');
+}
 // iframe 안에서 열리면 틀을 빼고, 목록 쪽이 iframe 높이를 맞추도록 본문 높이를 알린다. 문서(html) 높이는 iframe 창보다 작아지지 않아 쓰지 않는다.
 // 목록 쪽의 라이트·다크 선택은 iframe의 prefers-color-scheme에 안정적으로 전해지지 않아, 목록 쪽이 보내는 테마 메시지로 이 문서의 data-theme을 바꾼다. 처음에는 목록 쪽에 현재 테마를 물어본다.
 const EMBED_SCRIPT = `<script>if (window.self !== window.top) {
@@ -82,7 +96,7 @@ export async function toHtml(result, name) {
 ${faviconLinks()}
 ${EMBED_SCRIPT}
 <style>${fonts}
-${STYLES.tokens}${STYLES.control}${STYLES.player}${STYLES.figure}${paintCss(result.scene)}${STYLES.chart}${result.chart ? chartMotionCss(timeline.growMs, result.chart.dotAts) : ''}</style>
+${STYLES.tokens}${STYLES.control}${STYLES.player}${STYLES.figure}${paintCss(result.scene)}${STYLES.chart}${result.chart ? chartMotionCss(timeline.growMs, result.chart.dotAts) : ''}${hasStatus(timeline) ? STYLES.status : ''}</style>
 </head>
 <body>
 <figure class="fl-figure${result.chart ? ' fl-chart-page' : ''}" tabindex="0"${figure.width === 'wide' ? ` style="--figure-canvas: ${canvasOf(figure)}px"` : ''}>
@@ -94,7 +108,7 @@ ${VIEW_BUTTONS}
 </figcaption>
 </figure>
 <script>
-${PLAYER}
+${playerScript(timeline)}
 figurePlay(document.querySelector('.fl-figure'), ${JSON.stringify(content.data, roundedNumbers).replace(/</g, '\\u003c')});
 </script>
 </body>

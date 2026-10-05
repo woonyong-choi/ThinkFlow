@@ -114,7 +114,6 @@ step "서로 상대 것을 요청한다" keep="h1, h2" status="t1=wait, t2=wait"
 ### 느려진 소비자만 표시하기
 
 ```text
-# 흐름 조건 예시
 flow right
 title "느려진 소비자"
 
@@ -387,9 +386,10 @@ step "소비자 하나가 느려진다" for=6s status="slow=warn"
 | `ok` | `OK` | 체크 | `state.success` |
 | `warn` | `WARN` | 느낌표가 든 삼각형 | `state.warning` |
 | `fail` | `FAIL` | 가위표 | `state.error` |
-| `wait` | `WAIT` | 점 셋 | `border` |
+| `wait` | `WAIT` | 점 셋 | `outline` |
 
-- 알약은 글자와 기호를 늘 함께 그린다. 색을 구별하지 못해도 상태가 읽히게 하기 위해서다. 기호와 테두리는 그래픽 대비 3, 글자는 `fg` 4.5 이상이다([색 역할](docs-integration.md#색-역할)).
+- 알약은 글자와 기호를 늘 함께 그린다. 색을 구별하지 못해도 상태가 읽히게 하기 위해서다. 알약 면은 도형 면(`node`)이고 기호와 테두리는 종류의 색, 글자는 `fg`다. 기호와 테두리는 도형 면과 그림 바탕, 그룹 면 위에서 그래픽 대비 3, 글자는 `fg` 4.5 이상이다([색 역할](docs-integration.md#색-역할)). `wait`는 구분을 위해 중립색을 쓰는데 `border`는 `node` 위 대비가 라이트 1.27, 다크 1.08이라 기준에 못 미쳐 대비 3을 보장하는 `outline`을 쓴다.
+- 알약은 도형 이름과 글자, 다른 도형, 선 라벨, 그룹 제목을 가리지 않는다. 가리면 [그림 검사](figure-check.md) 2번이 상태를 적은 단계 줄의 오류로 알린다. 이동 글 상자도 상태 알약을 가리지 않는 자리를 고른다.
 - 알약은 도형 오른쪽 위 모서리에 걸쳐 그려서 도형 크기와 배치를 바꾸지 않는다.
 - 도형은 `box`, `external`, `store`, `person`, `queue`, `decision`이다. 그룹, 격자, 없는 이름, 한 단계 안에서 같은 도형의 중복, 모르는 종류는 오류다.
 - 상태는 그 단계에서만 적용하고 다음 단계는 도형의 선언 상태로 돌아간다. `keep`은 상태를 넘기지 않는다. 멈춘 SVG는 한 단계의 상태를 보이지 않으므로 알약을 그리지 않는다.
@@ -406,18 +406,11 @@ step "소비자 하나가 느려진다" for=6s status="slow=warn"
 |---|---|---|---|
 | `step.keep` | 값 이름 목록 | 판 1 |  |
 | `step.set` | 글 | 판 1 |  |
-| `step.status` | `도형=종류` 목록 | 판 1 |  |
 | `hop.when`, `track.when` | 조건 글 | 판 1 |  |
 | `hop.wait`, `track.wait` | 조건 글 | 판 1 |  |
 | `hop.timeout`, `track.timeout` | 시간 | 판 1 |  |
 | `hop.else`, `track.else` | 도형 이름 | 판 1 |  |
 | `hop.stuck`, `track.stuck` | 값 없음(낱말만) | 판 1 |  |
-| `hop.lost`, `track.lost` | 0 이상 100 이하 퍼센트 | 판 1 |  |
-| `track.legs` | 시간 또는 `-`의 목록 | 판 1 |  |
-
-| 값 목록 | 쓰는 곳 | 값 | 기본값 | 옛 값 → 읽는 값 |
-|---|---|---|---|---|
-| `status` | `step.status` | `ok`, `warn`, `fail`, `wait` | 없음 | 없음 |
 
 - 새 기능을 하나도 쓰지 않는 원본은 값 초기화, 이벤트 순서, 출력, 비용이 그대로다([재생](playback.md#기존-원본과의-호환)).
 - 새 낱말은 지금까지 오류였던 꼴(`:=`, 새 선택 사항 키)뿐이라 옛 원본이 새 뜻으로 바뀌지 않는다.
@@ -501,14 +494,18 @@ step "소비자 하나가 느려진다" for=6s status="slow=warn"
 | `queue.from` | 0 이상 slots 이하 정수 | 판 1 |  |
 | `edge.no` | 양의 정수 | 판 1 |  |
 | `step.for` | 시간 | 판 1 |  |
+| `step.status` | `ok`, `warn`, `fail`, `wait` | 판 1 |  |
 | `hop.time` | 시간 | 판 1 |  |
 | `hop.tone` | `brand`, `purple`, `green`, `gray`, `red` | 판 1 |  |
 | `hop.set` | 글 | 판 1 |  |
+| `hop.lost` | 0 이상 100 이하 퍼센트 | 판 1 |  |
 | `track.at` | 시간(0 가능) | 판 1 |  |
 | `track.every` | 시간 | 판 1 |  |
 | `track.time` | 시간 | 판 1 |  |
 | `track.tone` | `brand`, `purple`, `green`, `gray`, `red` | 판 1 |  |
 | `track.set` | 글 | 판 1 |  |
+| `track.lost` | 0 이상 100 이하 퍼센트 | 판 1 |  |
+| `track.legs` | 시간 또는 -의 목록 | 판 1 |  |
 | `value.on` | 도형 이름 | 판 1 |  |
 | `value.from` | 숫자 또는 낱말 | 판 1 |  |
 | `value.ref` | 값 이름 | 판 1 |  |
@@ -552,6 +549,7 @@ step "소비자 하나가 느려진다" for=6s status="slow=warn"
 | `shape` | `box.shape` | `rect`, `circle`, `tile` | `rect` | 없음 |
 | `width` | `width 값` | `standard`, `wide` | `standard` | 없음 |
 | `border` | `group.border` | `solid`, `dashed` | `solid` | 없음 |
+| `status` | `step.status` | `ok`, `warn`, `fail`, `wait` | 없음 | 없음 |
 <!-- grammar-table:end -->
 
 ### 요구사항
@@ -559,8 +557,8 @@ step "소비자 하나가 느려진다" for=6s status="slow=warn"
 | 요구사항 | 검증 계획 |
 |---|---|
 | 문서의 모든 예시 원본이 오류와 경고 없이 읽힌다. | `test/grammar.test.js`의 `docExamples_every_design_doc_example_builds_without_errors_or_warnings`. 문서의 예시 원본을 뽑아 strict로 읽는다. 흐름 조건 예시는 첫 줄 주석을 지워 같은 시험에 넣는다 |
-| 조건식, `keep`, `lost`, `legs`, `status`, `else`의 틀린 값과 짝이 맞지 않는 선택 사항을 줄 번호와 함께 알린다. | 규칙마다 원본 하나로 줄 번호와 `code`(`syntax`, `value-type`, `leg-time`) 확인. 없는 값과 `1=1`, 낱말에 `<`, 첫 단계 `keep`, 항목 수가 다른 `legs`, 범위 밖 `lost`를 포함. 담당: [#118](https://github.com/woonyong-choi/daphnis/issues/118), [#119](https://github.com/woonyong-choi/daphnis/issues/119), [#120](https://github.com/woonyong-choi/daphnis/issues/120) |
-| 새 기능을 쓰지 않는 원본의 시간표와 출력이 바뀌지 않는다. | 모든 예제와 `test/fixtures/compat/v1/`의 기존 파일을 이 설계 이전 출력과 바이트 비교. 새 낱말을 한 번씩 쓰는 `all-*` 파일을 묶음에 더해 읽힘 확인. 담당: [#118](https://github.com/woonyong-choi/daphnis/issues/118), [#119](https://github.com/woonyong-choi/daphnis/issues/119), [#120](https://github.com/woonyong-choi/daphnis/issues/120) |
+| 조건식, `keep`, `lost`, `legs`, `status`, `else`의 틀린 값과 짝이 맞지 않는 선택 사항을 줄 번호와 함께 알린다. | 규칙마다 원본 하나로 줄 번호와 `code`(`syntax`, `value-type`, `leg-time`) 확인. 없는 값과 `1=1`, 낱말에 `<`, 첫 단계 `keep`, 항목 수가 다른 `legs`, 범위 밖 `lost`를 포함. 담당: [#118](https://github.com/woonyong-choi/daphnis/issues/118), [#119](https://github.com/woonyong-choi/daphnis/issues/119), [#120](https://github.com/woonyong-choi/daphnis/issues/120) #120 몫은 `test/lost-status-legs.test.js`의 `parseFigure_lost_accepts_0_to_100_percent_and_rejects_a_missing_percent_sign_or_a_value_out_of_range`, `parseFigure_lost_and_status_belong_to_flow_figures_only`, `parseFigure_legs_needs_one_entry_per_line_and_at_least_two_lines`, `parseFigure_legs_sum_against_time_reports_leg_time_on_the_track_line_at_the_boundaries`, `parseFigure_legs_entries_and_their_sum_over_one_hour_report_time_limit`, `buildFigure_legs_distance_times_over_one_hour_end_with_time_limit_on_the_track_line`, `parseFigure_status_rejects_unknown_kinds_duplicates_unknown_names_and_non_shape_targets` |
+| 새 기능을 쓰지 않는 원본의 시간표와 출력이 바뀌지 않는다. | 모든 예제와 `test/fixtures/compat/v1/`의 기존 파일을 이 설계 이전 출력과 바이트 비교. 새 낱말을 한 번씩 쓰는 `all-*` 파일을 묶음에 더해 읽힘 확인. 담당: [#118](https://github.com/woonyong-choi/daphnis/issues/118), [#119](https://github.com/woonyong-choi/daphnis/issues/119), [#120](https://github.com/woonyong-choi/daphnis/issues/120) #120은 `all-lost-status-legs.dap`를 묶음에 더해 `compat_v1_every_fixture_builds_without_errors_and_matches_the_structure_snapshot`와 `compat_v1_covers_every_word_option_and_value_in_the_grammar_table`가 읽힘과 문법 표 사용을 본다 |
 | 세 부분 순서, 낱말 공백, 이름 형식, 값 형식을 어긴 줄을 줄 번호와 함께 알린다. | `test/grammar.test.js`의 `parseFigure_malformed_source_reports_the_line_and_the_rule`. 규칙마다 원본 하나로 줄 번호와 오류 확인 |
 | 선언하지 않은 이름과 비슷한 이름을 함께 알린다. | `test/grammar.test.js`의 `parseFigure_unknown_name_suggests_the_nearest_declared_name`. `cdex`를 쓴 원본이 `codex`를 제안하는지 확인 |
 | 같은 방향 선 두 개, 자기 자신으로 가는 선, 그룹과 안 도형 사이 선을 막는다. | `test/grammar.test.js`의 `parseFigure_malformed_source_reports_the_line_and_the_rule`(선 행). 원본마다 오류 확인 |

@@ -10,7 +10,7 @@ import { chipLines, chipObstacles } from '../draw/boxes.js';
 // 7번: 이동의 계획 지점(2프레임 간격)마다 정한 글 상자(점 위, 안 되면 아래)가 그림 안에 있고 도형 이름, 열, 그룹 제목, 도형 테두리, 선 라벨 알약을 가리지 않는다.
 // 글 상자가 그림보다 넓거나 위아래 어디에도 들어가지 않으면 오류, 위아래 어디에 두어도 글자를 가리면 경고다.
 export function checkChips({ scene, timeline }, problems) {
-  const avoid = [...chipObstacles(scene), ...chipLines(scene)];
+  const avoid = [...chipObstacles(scene, timeline), ...chipLines(scene)];
   const reported = new Set();
   for (const seg of timeline.segs) {
     for (const hop of seg.hops) {

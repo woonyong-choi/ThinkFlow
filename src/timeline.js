@@ -1,7 +1,9 @@
 // 시간 흐름을 시간표로 편다. 박자마다 상태를 완전히 적어서, 탭으로 건너뛰어도 앞 박자를 다시 계산하지 않는다(docs/design/playback.md).
 import { presentSlots, slotMiddle } from './chart/slots.js';
+import { arrivalOffsetMs } from './easing.js';
 import { roundToScale } from './format.js';
 import { hopMs } from './hop-ms.js';
+import { isPassed } from './lost.js';
 import { flowSeg } from './timeline-flow.js';
 import { createSeg } from './timeline-seg.js';
 import { valueRows } from './timeline-values.js';
@@ -118,9 +120,9 @@ function stepSegs({ step, si }, run, deps) {
 // 박자 단계의 구간들과, 값 바꾸기 식이 쓰는 이동 목록(박자 시작에 점이 출발해 이동 시간 뒤 도착한다).
 function beatSegs({ step, si }, run, deps) {
   // 단계 안에서 쌓이는 값: 지나간 선, 밝힌 대상, 차트 밝히기, 마지막 설명
-  const memory = { edgesOn: new Set(), lit: new Set(), lights: [], caption: step.caption ?? '' };
+  const memory = { edgesOn: new Set(), lost: new Set(), lit: new Set(), lights: [], caption: step.caption ?? '' };
   const segs = step.beats.map((beat, bi) => beatSeg({ step, si, beat, bi }, { memory, run }, deps));
-  const moves = step.beats.flatMap((beat, bi) => beat.hops.map((hop, hi) => ({ start: segs[bi].t0, ms: segs[bi].hops[hi].ms, nodes: [hop.from, hop.to].map((id) => id.split('.')[0]), fracs: [0, 1], sets: hop.sets })));
+  const moves = step.beats.flatMap((beat, bi) => beat.hops.map((hop, hi) => ({ start: segs[bi].t0, ms: segs[bi].hops[hi].ms, nodes: [hop.from, hop.to].map((id) => id.split('.')[0]), fracs: [0, 1], sets: hop.sets, lost: hop.lost })));
   return { segs, moves };
 }
 
@@ -132,15 +134,16 @@ function beatSeg({ step, si, beat, bi }, { memory, run }, { cards, chips, scene 
   const { figure, speed } = run;
   const hops = beat.hops.map((hop) => {
     const edge = figure.kind === 'sequence' ? run.messageIndex++ : hop.edge;
-    return { edge, isBack: Boolean(hop.isBack), ms: hop.timeMs ?? hopMs(scene.edges[edge].points, speed), to: hop.to.split('.')[0], data: hop.data !== undefined && figure.kind !== 'sequence' ? chips(hop.data) : undefined, ...(hop.tone ? { tone: hop.tone } : {}), line: hop.line };
+    const ms = hop.timeMs ?? hopMs(scene.edges[edge].points, speed);
+    return { edge, isBack: Boolean(hop.isBack), ms, ...(hop.lost === undefined ? {} : { cut: arrivalOffsetMs(hop.lost, ms) }), to: hop.to.split('.')[0], data: hop.data !== undefined && figure.kind !== 'sequence' ? chips(hop.data) : undefined, ...(hop.tone ? { tone: hop.tone } : {}), line: hop.line };
   });
-  for (const h of hops) memory.edgesOn.add(h.edge);
+  beat.hops.forEach((hop, hi) => lightMove(memory, hop, hops[hi]));
   for (const target of beat.light) memory.lit.add(target);
   memory.lights.push(...beat.chartLight.map((l) => (l.x !== undefined ? `x=${l.x}` : l.names.join('\u0000'))));
   const growing = run.hasReveal ? beat.reveal : bi === 0 && si === 0 ? run.seriesIds : [];
   run.revealed.push(...beat.reveal);
   if (beat.say !== undefined) memory.caption = beat.say;
-  const move = Math.max(0, ...hops.map((h) => h.ms));
+  const move = Math.max(0, ...hops.map((h) => h.cut ?? h.ms));
   const grow = growing.length ? speed : 0;
   const said = beat.say ?? (bi === 0 ? step.caption : undefined);
   const hold = dwellOf(said) + (bi === step.beats.length - 1 ? DWELL['step-end'] : 0);
@@ -160,7 +163,24 @@ function beatSeg({ step, si, beat, bi }, { memory, run }, { cards, chips, scene 
     caption: memory.caption,
     growing,
     lights: [...memory.lights],
+    status: step.status,
+    extra: memory.lost.size ? { edgesLost: [...memory.lost] } : undefined,
   });
+}
+
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+// 이동이 켜는 선과 도형을 박자의 기억에 더한다. 사라지는 점(lost)은 출발 지점을 지났을 때(0%가 아닐 때)만 선과 출발 도형을 켜고, 끝 도형은 켜지 않는다.
+// 선 양 끝을 켜는 규칙(litIds)에서 끝 도형을 빼려고 그 선을 lost에 적는다. 같은 단계에서 사라지지 않는 이동이 그 선을 지나면 선 전체가 켜진다.
+function lightMove(memory, hop, drawn) {
+  if (hop.lost === undefined) {
+    memory.edgesOn.add(drawn.edge);
+    memory.lost.delete(drawn.edge);
+  } else if (isPassed(0, hop.lost)) {
+    if (!memory.edgesOn.has(drawn.edge)) memory.lost.add(drawn.edge);
+    memory.edgesOn.add(drawn.edge);
+    memory.lit.add(hop.from.split('.')[0]);
+  }
 }
 
 // cost: time O(r·s), heap O(r), stack O(1)
@@ -189,7 +209,7 @@ function labelShiftsOf(figure, shown) {
 // 도착 규칙: 카드가 바뀌는 도형 가운데 이 박자에 점이 도착하는 도형은 가장 늦은 도착 시각에, 나머지는 0에 바뀐다.
 function cardTimes(hops, card) {
   const arrivals = new Map();
-  for (const h of hops) arrivals.set(h.to, Math.max(arrivals.get(h.to) ?? 0, h.ms));
+  for (const h of hops) if (h.cut === undefined) arrivals.set(h.to, Math.max(arrivals.get(h.to) ?? 0, h.ms));
   const changed = Object.keys({ ...card.before, ...card.after }).filter((id) => card.before[id] !== card.after[id]);
   return Object.fromEntries(changed.map((id) => [id, arrivals.get(id) ?? 0]));
 }
@@ -206,10 +226,11 @@ function dwellOf(said) {
 // cost: time O(e + l + k), heap O(e + l + k), stack O(1)
 // vars: e = 밝은 선 수, l = light 대상 수, k = 카드 있는 도형 수
 // basis: estimate
-/** 박자에서 밝은 도형과 그룹의 id. 밝은 선의 양 끝, light 대상, 카드가 찬 도형이다. HTML과 SVG가 같이 쓴다. */
+/** 박자에서 밝은 도형과 그룹의 id. 밝은 선의 양 끝(사라지는 점만 지난 선 `edgesLost`는 제외), light 대상, 카드가 찬 도형이다. HTML과 SVG가 같이 쓴다. */
 export function litIds(seg, edges) {
   const ids = new Set(seg.nodesOn);
   for (const j of seg.edgesOn) {
+    if (seg.edgesLost?.includes(j)) continue;
     ids.add(edges[j].from.split('.')[0]);
     ids.add(edges[j].to.split('.')[0]);
   }

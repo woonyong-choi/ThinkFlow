@@ -7,11 +7,12 @@ const DOTS_MAX = values.scale['flow-dots-max'];
 // cost: time O(h + t + r·c), heap O(t), stack O(1)
 // vars: h = 점 수, t = 흐름 수, r = 값 줄 수, c = 값이 바뀌는 횟수
 // basis: estimate
-// 14번: 흐름마다 점이 하나 이상 그려지고(오류), 한 그림의 점이 토큰 `scale.flow-dots-max` 이하이며(경고), 값이 바뀌어 간 글자가 `VALUE_MAX`자 이하이고(오류), 큐 값이 0 이상 칸 수 이하다(경고).
+// 14번: 흐름마다 점이 하나 이상 그려지고(오류, 사라짐 lost가 있는 흐름은 점이 없을 수 있어 제외), 한 그림의 점이 토큰 `scale.flow-dots-max` 이하이며(경고), 값이 바뀌어 간 글자가 `VALUE_MAX`자 이하이고(오류), 큐 값이 0 이상 칸 수 이하다(경고).
 export function checkFlow({ figure, timeline }, problems) {
   const dots = timeline.segs.flatMap((seg) => seg.hops.filter((hop) => hop.track !== undefined));
+  const hasLost = figure.steps.flatMap((step) => step.tracks).map((track) => track.lost !== undefined);
   (timeline.tracks ?? []).forEach((track, k) => {
-    if (!dots.some((hop) => hop.track === k)) problems.error(track.line, `[check 14] track ${track.names.join(' -> ')} draws no dot because its first dot would start after the step ends. Lengthen the step with for=, or start earlier with at=`);
+    if (!hasLost[k] && !dots.some((hop) => hop.track === k)) problems.error(track.line, `[check 14] track ${track.names.join(' -> ')} draws no dot because its first dot would start after the step ends. Lengthen the step with for=, or start earlier with at=`);
   });
   if (dots.length > DOTS_MAX) problems.warn(timeline.tracks[0].line, `[check 14] the flows draw ${dots.length} dots, over the limit of ${DOTS_MAX}. Raise every=, shorten for=, or remove a track`);
   const warned = new Set();

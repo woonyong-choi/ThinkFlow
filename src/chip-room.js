@@ -86,7 +86,7 @@ export async function widenForHiddenChips(figure, first, { attempt, failures }) 
   let best = first;
   let [current, asked] = [first, new Map()];
   for (let i = 0; i < TRIES && hidden(current); i++) {
-    asked = chipRoomNeeds({ ...current, avoid: [...chipObstacles(current.scene), ...chipLines(current.scene)], direction: figure.direction }, asked);
+    asked = chipRoomNeeds({ ...current, avoid: [...chipObstacles(current.scene, current.timeline), ...chipLines(current.scene)], direction: figure.direction }, asked);
     if (!asked.size) break;
     current = await attempt({ ...figure, chipRoom: asked });
     if (failures(current) <= failures(first) && hidden(current) < hidden(best)) best = current;

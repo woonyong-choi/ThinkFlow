@@ -3,6 +3,7 @@ import { FIGURE_PAD, canvasOf, fitCanvas } from './canvas.js';
 import { CHART_FACES, chartText } from './chart/draw.js';
 import { createAnimator } from './animate/animator.js';
 import { drawScene } from './draw/figure.js';
+import { hasStatus } from './draw/status.js';
 import { drawQueueStart } from './draw/values.js';
 import { paintCss } from './draw/paint.js';
 import { drawTrackPaths } from './draw/tracks.js';
@@ -43,7 +44,7 @@ export async function toSvg(result, { isStatic = false, name = '' } = {}) {
   return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="fl${content.className}" width="${r(shownWidth)}" height="${r(shownHeight)}" viewBox="0 0 ${r(width)} ${r(height)}" role="img">
 <title>${escapeXml(plainText(title))}</title>
 <style>${fonts}
-${STYLES.tokens}${STYLES.figure}${STYLES.animated}${paintCss(result.scene)}${result.chart ? STYLES.chart + chartMotionCss(timeline.growMs, result.chart.dotAts) : ''}
+${STYLES.tokens}${STYLES.figure}${STYLES.animated}${paintCss(result.scene)}${result.chart ? STYLES.chart + chartMotionCss(timeline.growMs, result.chart.dotAts) : ''}${!isStatic && hasStatus(timeline) ? STYLES.status : ''}
 ${animator.css.join('\n')}
 </style>
 <defs>${DEFS}</defs>
@@ -65,7 +66,8 @@ function drawFigureBody(result, animator, glyphs) {
   const { body, pills } = drawScene(scene, animator.decorate(scene), glyphs);
   const packets = timeline.segs.flatMap((seg, si) => seg.hops.map((hop, hi) => animator.packet({ seg, hop, name: `p${si}-${hi}` }, glyphs)));
   const tracks = animator.isStatic ? '' : drawTrackPaths(timeline);
-  return { svg: `${body}\n${tracks}${animator.values(scene, timeline, glyphs)}\n${packets.join('\n')}\n${pills}`, width: scene.width, height: scene.height, className: '' };
+  const status = animator.status(scene, timeline, glyphs);
+  return { svg: `${body}\n${tracks}${animator.values(scene, timeline, glyphs)}\n${packets.join('\n')}\n${pills}${status ? `\n${status}` : ''}`, width: scene.width, height: scene.height, className: '' };
 }
 
 // cost: time O(c), heap O(c), stack O(1)
@@ -110,5 +112,5 @@ function drawCaptions(timeline, { animator, glyphs }, { width, top }) {
 
 // 멈춘 SVG: 모든 선과 도형을 보이고 카드는 비운다. 움직임 class는 없다.
 function staticAnimator() {
-  return { css: [], decorate: () => () => '', packet: () => '', windows: () => '', chart: () => {}, values: (scene) => drawQueueStart(scene), isStatic: true };
+  return { css: [], decorate: () => () => '', packet: () => '', windows: () => '', chart: () => {}, values: (scene) => drawQueueStart(scene), status: () => '', isStatic: true };
 }

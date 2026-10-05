@@ -1,7 +1,7 @@
 // 점 하나가 한 박자 동안 선을 건너고, 실어 보내는 글은 점 위의 상자로 따라간다.
 // 점의 보임과 이동과 글 상자 옮김과 흐려짐은 모두 SMIL이라 한 시계로 돈다. 보임을 CSS에 두면 시계 둘이 따로 반복해, 한 바퀴가 돌아올 때 점이 끝 지점에 잠깐 보였다가 시작 지점으로 뛴다.
 import { CHIP_GAP, sizeChip } from '../chip.js';
-import { keySpline, MOVE, timeAt } from '../easing.js';
+import { keySpline, MOVE, timeAtPosition } from '../easing.js';
 import { discreteWindows } from './discrete.js';
 import { chipFadeAnimate, cutFadeAnimate, cutMotionKeys, visibleSpans } from './flow-packet.js';
 import { STYLE } from '../measure/sizes.js';
@@ -52,8 +52,9 @@ function drawChip(lines, { glyphs, color }) {
 
 // cost: time O(1), heap O(1), stack O(1)
 // basis: estimate
-// 보임 창. 이산 값이라 구간 끝에서 바로 바뀌고, 시작과 끝이 0이나 1이면 겹치는 keyTime을 만들지 않는다.
+// 보임 창. 이산 값이라 구간 끝에서 바로 바뀌고, 시작과 끝이 0이나 1이면 겹치는 keyTime을 만들지 않는다. 시작에서 바로 사라지는 점(사라짐 0%)은 한 번도 보이지 않는다.
 function showWindow(clock, from, to) {
+  if (to <= from) return `<animate attributeName="opacity" dur="${clock.duration}" repeatCount="indefinite" calcMode="discrete" keyTimes="0" values="0"/>`;
   const keys = [[0, 0], [from, 1], [to, 0]].filter(([at], i, all) => i === 0 || at > all[i - 1][0]);
   if (from === 0) keys.splice(0, 1, [0, 1]);
   return `<animate attributeName="opacity" dur="${clock.duration}" repeatCount="indefinite" calcMode="discrete" keyTimes="${keys.map(([at]) => at).join(';')}" values="${keys.map(([, on]) => on).join(';')}"/>`;
@@ -62,10 +63,11 @@ function showWindow(clock, from, to) {
 // cost: time O(1), heap O(1), stack O(1)
 // basis: estimate
 // 선을 따라 이동. 이동 전과 후에는 선의 시작과 끝에 머물고, 이동 구간만 이동 곡선을 쓴다. keyTimes는 줄지 않는다.
+// 곡선 일부만 지나는 이동(cut)과 구간별 이동 시간(pace)이 있는 이동은 곡선 하나로 그릴 수 없어 잰 지점을 선형으로 잇는다.
 function moveMotion(clock, [from, to], { hop, start: departure }) {
   const [start, end] = hop.isBack ? [1, 0] : [0, 1];
   const pathId = hop.track === undefined ? `p-${hop.edge}` : `tp-${hop.track}`;
-  if (hop.cut !== undefined) return linearMotion(clock, pathId, cutMotionKeys(clock, departure, hop));
+  if (hop.cut !== undefined || hop.pace) return linearMotion(clock, pathId, cutMotionKeys(clock, departure, hop));
   const keys = [[0, start, LINEAR], [from, start, MOVE_SPLINE], [to, end, LINEAR], [1, end]].filter(([at], i, all) => i === 0 || at > all[i - 1][0]);
   // 앞 키가 같은 시각이라 지워졌으면 이동 구간의 곡선이 첫 키로 옮겨 가야 한다.
   if (from === 0) keys[0][2] = MOVE_SPLINE;
@@ -94,7 +96,7 @@ function linearMotion(clock, pathId, keys) {
 // 글 상자가 점 위 기본 자리에서 벗어나거나 흐려지는 선이면, 시간표가 정해 둔 경로 지점별 옮김과 불투명도를 SMIL로 건다. 점이 그 지점에 닿는 시각은 이동 곡선을 거꾸로 풀어 구한다.
 function pushChip(clock, start, hop) {
   const path = hop.chipPath;
-  const at = (f) => clock.keyTime(start + timeAt(MOVE, f) * hop.ms);
+  const at = (f) => clock.keyTime(start + timeAtPosition(f, hop.pace) * hop.ms);
   const keys = [[0, path[0]], ...path.map((p) => [at(p[0]), p]), [1, path.at(-1)]].filter(([time], i, all) => i === 0 || (time > all[i - 1][0] && time <= 1));
   const keyTimes = keys.map(([time]) => time).join(';');
   const moves = path.some(([, dx, dy]) => dx !== 0 || dy !== 0) ? animateOf(clock, { name: 'transform', type: 'translate' }, { keyTimes, values: keys.map(([, [, dx, dy]]) => `${r(dx)} ${r(dy)}`) }) : '';

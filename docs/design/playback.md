@@ -44,6 +44,7 @@
 | `labelShifts` | 막대 차트 행마다 이름을 세로로 옮길 거리(px) 목록. 행의 보이는 막대 묶음 가운데로 맞춘다. 계열이 모두 보이면 0이고, 막대 차트가 아니거나 계열이 하나면 빈 목록 |
 | `caption` | 그 박자의 설명 |
 | `status` | 그 박자에 상태 알약을 단 도형과 종류 `{ node, kind }` 목록. ([단계별 도형 상태](#단계별-도형-상태)) |
+| `edgesLost` | 사라지는 점만 지나 켜진 선의 번호. 이 선의 끝 도형은 선이 켜져도 켜지지 않는다. 사라짐을 쓴 박자만 갖는다 |
 | `edgesAt`, `pulses` | 흐름 구간에서 점이 처음 닿는 선의 시각(구간 시작 뒤 ms)과, 점이 도형에 닿을 때마다의 `{ id, at }`. 선은 그 시각에 켜져 단계 끝까지 남고 도형은 `pulses`마다 후광만 깜빡인다. 흐름 구간은 `edgesOn`, `nodesOn`, `nodesAt`이 비어 있다 |
 
 - 시간표 전체 값은 박자 목록 `segs`, 전체 길이 `total`, 단계 이름 `steps`, 차트 계열이 자라는 시간 `growMs`다. 흐름이나 값을 쓰는 그림은 `tracks`(흐름이 지나는 이어 붙인 경로 `points`, 도형 이름 `names`, 도형 안을 지나는 길이 비율 `gaps`)와 `values`를 더 갖는다. 조건이나 대기를 쓰는 그림은 대기 기록 `waits`, 건너뛴 이동 `skips`, 끝나지 않는 대기 `stalls`, 처리한 이벤트 수 `events`를 더 갖는다([조건과 대기](#조건과-대기)). 새 기능을 쓰지 않는 그림에는 이 값들이 없다.
@@ -144,6 +145,8 @@
 - 사라지기 전에 통과한 도형의 효과(`on`, `set=`, 후광)만 적용한다. 도형에 닿는 지점(도착 연결점)의 길이 비율이 사라지는 비율보다 작을 때만 통과한 것이다. 같거나 크면 같은 시각의 도착이라도 적용하지 않는다. 그래서 `lost=100%`는 점이 끝 도형에 닿는 지점에서 사라지고 그 도형의 효과는 없다. `lost=0%`는 점이 출발 지점에서 사라져 아무것도 통과하지 않는다.
 - 선은 점이 들어서는 비율이 0보다 클 때 켜진다. 끝 도형은 효과가 적용될 때만 켜진다. 박자에서는 사라진 이동이 도착 규칙에서 빠져 도착 도형의 카드가 박자 시작에 바뀐다.
 - 화면과 값 변화는 같은 사건을 따른다. 사라진 점의 값 변화는 `values`에 담지 않고, SVG와 재생기는 `cut`까지만 점을 그린다.
+- 선이 켜지는 기준은 점이 그 선에 들어선 지점(첫 선은 0, 그다음 선은 도형 안 구간을 지난 비율)이 사라지는 비율보다 작은 것이다. 켜지는 시각은 점이 그 선의 앞 도형에 닿는 시각이다. 박자 이동은 선이 켜질 때 출발 도형만 켜고(`0%`이면 아무것도 켜지 않는다) 그 선을 `edgesLost`에 적는다. 같은 단계에서 사라지지 않는 이동이 같은 선을 지나면 선 전체가 켜진다.
+- `0%`로 사라지는 점은 `cut`이 0이라 한 번도 보이지 않는다. 비율 비교는 퍼센트 글을 비율로 바꾸며 생기는 1e-9 이내의 오차를 같은 값으로 본다.
 
 ### 구간별 이동 시간
 
@@ -157,6 +160,7 @@
 - 점이 도형에 닿는 시각과 글 상자 자리의 시각은 이동 곡선과 `pace`를 거꾸로 풀어 구하고, 값 변화 순서도 이 시각을 쓴다. 글 상자 계획은 진행 비율로 담기므로 `pace`가 있어도 계획 메모리는 이동 시간 20초(`PLAN_MAX_MS`)에서 멈춘다([HTML 재생기](#html-재생기)).
 - 도착 순서는 시각의 순서이고, 같은 시각이면 위 이벤트 순서를 따른다. 재생기 배속은 재생 시계에만 걸려서 구간 시간, 도착 순서, 값 결과를 바꾸지 않는다.
 - 구간 시간 각각과 합, `timeout=`은 시간 상한 검사 대상이다([시간 상한](#시간-상한)).
+- 시간표의 `pace` 값은 소수 다섯째 자리로 줄여 담는다. 움직이는 SVG는 `pace`가 있는 점의 이동을 구간 경계가 이동 곡선에 닿는 시각과 경계 사이마다 16개 지점에서 잰 길이 비율로 선형으로 잇는다(잘리는 점과 같은 방식이다). 재생기는 `pace`가 있는 그림에만 `pace`를 읽는 코드를 더해 점 위치와 글 상자 지점의 시각을 같은 꺾은선으로 푼다.
 
 ### 단계별 도형 상태
 
@@ -168,6 +172,7 @@
 
 - 새 문법을 하나도 쓰지 않은 원본은 이벤트 처리 단계를 거치지 않는다. 값 초기화(`from`), 값 갱신 순서, 시간표, SVG와 HTML이 바이트까지 지금과 같고 조건 처리에 드는 시간과 메모리가 붙지 않는다.
 - 새 문법을 쓴 원본만 위 처리를 거친다. 한 원본 안에서도 쓰지 않은 단계의 결과는 바뀌지 않는다.
+- 결과 파일의 재생기 스크립트와 스타일도 같다. 상태 알약의 글자 스타일과 재생기 코드는 `status`를 쓴 그림에만, `pace`를 읽는 재생기 코드는 `legs=`를 쓴 그림에만 붙는다.
 
 ### 박자 상태
 
@@ -279,16 +284,16 @@
 | 요구사항 | 검증 계획 |
 |---|---|
 | 박자 상태가 앞 박자와 상관없이 완전하다. | 아무 박자를 골라 시간표만으로 그린 상태와 처음부터 재생한 상태 비교 |
-| 같은 입력은 같은 이벤트 순서와 값 결과를 만들고, 일시정지, 배속, 재시작, 단계 직접 선택이 값 결과를 바꾸지 않는다. | 조건과 대기를 쓴 원본을 두 번 만들어 시간표를 비교하고, 재생기를 가짜 시계로 돌려 일시정지, 배속, 재시작, 단계 직접 선택 뒤의 값 글자를 처음부터 재생한 값과 비교. 담당: [#118](https://github.com/woonyong-choi/daphnis/issues/118), [#119](https://github.com/woonyong-choi/daphnis/issues/119), [#120](https://github.com/woonyong-choi/daphnis/issues/120) |
+| 같은 입력은 같은 이벤트 순서와 값 결과를 만들고, 일시정지, 배속, 재시작, 단계 직접 선택이 값 결과를 바꾸지 않는다. | 조건과 대기를 쓴 원본을 두 번 만들어 시간표를 비교하고, 재생기를 가짜 시계로 돌려 일시정지, 배속, 재시작, 단계 직접 선택 뒤의 값 글자를 처음부터 재생한 값과 비교. 담당: [#118](https://github.com/woonyong-choi/daphnis/issues/118), [#119](https://github.com/woonyong-choi/daphnis/issues/119), [#120](https://github.com/woonyong-choi/daphnis/issues/120) #120 몫은 `test/lost-status-legs.test.js`의 `buildTimeline_legs_and_lost_make_the_same_timeline_for_the_same_source`(같은 원본의 같은 시간표)와 `player_status_pills_follow_the_step_through_pause_rate_restart_and_direct_selection`(조작 뒤 단계 상태) |
 | `keep`한 값은 앞 단계가 끝난 값에서 시작하고 단계 `set=` 재설정이 우선하며, 첫 단계와 재시작은 `from`에서 시작한다. | 값을 바꾸는 두 단계 원본에서 둘째 단계의 `values[].initial` 확인. 재설정을 건 값, `keep`하지 않은 값, 첫 단계, 한 바퀴 뒤 재시작을 포함. 담당: [#118](https://github.com/woonyong-choi/daphnis/issues/118) |
 | 같은 시각의 읽기와 쓰기가 이벤트 순서 표를 따르고, 대기 해제 연쇄가 선언 순서로 풀린다. | `on`과 `set=`가 같은 시각인 원본, `set="a:=b, b:=a"` 맞바꿈 원본, 한 갱신에 대기 둘이 풀리는 원본에서 `values`와 `waits`의 순서 확인. 담당: [#118](https://github.com/woonyong-choi/daphnis/issues/118), [#119](https://github.com/woonyong-choi/daphnis/issues/119) |
 | `when`이 거짓인 이동은 점, 값, 선 켜짐 없이 건너뛰고 박자와 단계는 남는다. | 박자 단계의 이동 하나와 전부를 건너뛴 원본, 흐름 단계 원본에서 `skips`와 시간표의 박자 수 확인. 담당: [#119](https://github.com/woonyong-choi/daphnis/issues/119) |
 | 시간 초과 분기와 끝나지 않는 대기를 결과에 남기고, 교착은 경고와 `stalls`로 설명한다. | `timeout`과 `else`를 쓴 원본의 `waits[].end`와 분기 이동, 두 대기가 서로를 기다리는 원본의 `stalls`와 `wait-stalled` 메시지, `stuck`이면 경고 없음 확인. 담당: [#119](https://github.com/woonyong-choi/daphnis/issues/119) |
 | 이벤트 예산을 넘으면 오류로 끝나고 결과 파일이 없다. | 작은 `events`, `chain` 값을 주입해 끝없이 되풀이되는 대기와 대량 출발 원본이 제한 시간 안에 `budget-exceeded`로 끝나는지, 사전 검사가 시간표를 만들기 전에 막는지, 파일이 없는지 확인. 담당: [#119](https://github.com/woonyong-choi/daphnis/issues/119) |
-| 사라짐의 경계(0%, 100%, 도형에 닿는 비율과 같은 값)에서 도착 효과, 후광, 값 변화가 SVG와 재생기에서 같다. | `lost` 값마다 시간표의 `cut`, `values`, `pulses`를 읽고 움직이는 SVG의 SMIL 값과 재생기 상태를 25ms 간격으로 비교. 담당: [#120](https://github.com/woonyong-choi/daphnis/issues/120) |
-| 구간 시간이 직접 지정, 나머지 배분, 거리 기반 순서로 정해지고 합계 오류를 진단하며, 점 위치가 SVG와 재생기에서 같다. | `legs=`가 있는 원본의 `hops[].ms`, `pace`, 도착 시각을 계산값과 비교하고 `leg-time`을 내는 입력 확인. 담당: [#120](https://github.com/woonyong-choi/daphnis/issues/120) |
-| 단계 상태가 그 단계에서만 보이고 단계를 옮겨도 같으며 색 없이도 구분된다. | `status`를 건 단계와 다음 단계의 `segs[].status` 확인, 알약에 글자와 기호가 있는지 확인. 담당: [#120](https://github.com/woonyong-choi/daphnis/issues/120) |
-| 새 기능을 쓰지 않은 원본의 시간표와 출력이 바뀌지 않고 이벤트 처리 단계를 거치지 않는다. | 모든 예제의 시간표와 출력을 이 설계 이전과 비교하고, 이벤트 처리 함수 호출 수 확인. 담당: [#118](https://github.com/woonyong-choi/daphnis/issues/118), [#119](https://github.com/woonyong-choi/daphnis/issues/119), [#120](https://github.com/woonyong-choi/daphnis/issues/120) |
+| 사라짐의 경계(0%, 100%, 도형에 닿는 비율과 같은 값)에서 도착 효과, 후광, 값 변화가 SVG와 재생기에서 같다. | `test/lost-status-legs.test.js`의 `buildTimeline_lost_applies_only_the_shapes_passed_before_the_dot_is_lost_at_every_boundary`(`0%`, `100%`, 도형에 닿는 비율과 같은 값과 그 앞뒤 값마다 `cut`, `values`, `pulses`, 선 켜짐), `buildTimeline_lost_beat_move_cancels_the_value_change_and_the_card_arrival_and_keeps_the_end_shape_unlit`, `toSvg_dots_follow_the_pace_and_vanish_at_the_cut_time_at_every_25ms`와 `toSvg_a_dot_lost_at_0_percent_is_never_shown`(움직이는 SVG의 SMIL 값을 25ms 간격으로 풀어 시간표와 비교), `player_dot_position_and_vanish_time_match_the_timeline_at_every_25ms`(Chrome이 있을 때. 재생기 점 위치와 보임을 시간표와 비교) |
+| 구간 시간이 직접 지정, 나머지 배분, 거리 기반 순서로 정해지고 합계 오류를 진단하며, 점 위치가 SVG와 재생기에서 같다. | `test/lost-status-legs.test.js`의 `buildTimeline_legs_direct_times_come_first_and_the_rest_of_time_is_shared_by_length`, `buildTimeline_legs_without_time_use_the_distance_based_time_and_a_pace_close_to_the_identity`, `buildTimeline_legs_arrival_times_and_value_changes_follow_the_pace_inverse`(`hops[].ms`, `pace`, 도착 시각), `parseFigure_legs_sum_against_time_reports_leg_time_on_the_track_line_at_the_boundaries`와 `parseFigure_legs_entries_and_their_sum_over_one_hour_report_time_limit`(경계 입력의 `leg-time`, `time-limit`), `toSvg_dots_follow_the_pace_and_vanish_at_the_cut_time_at_every_25ms`와 `player_dot_position_and_vanish_time_match_the_timeline_at_every_25ms`(점 위치), `buildTimeline_legs_chip_plan_stops_at_the_plan_limit_however_long_the_move_is`(글 상자 계획 상한) |
+| 단계 상태가 그 단계에서만 보이고 단계를 옮겨도 같으며 색 없이도 구분된다. | `test/lost-status-legs.test.js`의 `buildTimeline_status_is_on_every_segment_of_its_step_only`(`segs[].status`), `toSvg_status_pills_are_on_exactly_while_the_timeline_status_has_them_at_every_25ms`(SMIL 값 비교), `player_status_pills_follow_the_step_through_pause_rate_restart_and_direct_selection`(Chrome이 있을 때. 일시정지, 배속, 재시작, 단계 직접 선택 뒤 상태), `toSvg_every_status_kind_draws_its_letters_and_a_symbol_next_to_the_colored_border`(글자와 기호), `contrast_status_pill_borders_and_symbols_reach_3_on_the_shape_face_the_figure_ground_and_group_faces_and_text_reaches_4_5`(라이트와 다크 대비), `checkLabels_status_pill_over_an_edge_label_a_name_or_another_node_is_a_check_2_error_on_the_step_line` |
+| 새 기능을 쓰지 않은 원본의 시간표와 출력이 바뀌지 않고 이벤트 처리 단계를 거치지 않는다. | 모든 예제의 시간표와 출력을 이 설계 이전과 비교하고, 이벤트 처리 함수 호출 수 확인. 담당: [#118](https://github.com/woonyong-choi/daphnis/issues/118), [#119](https://github.com/woonyong-choi/daphnis/issues/119), [#120](https://github.com/woonyong-choi/daphnis/issues/120) #120 몫은 `test/lost-status-legs.test.js`의 `buildTimeline_a_figure_without_the_new_words_has_no_status_pace_cut_or_lost_fields`(시간표)와 `toHtml_and_toSvg_add_status_and_pace_code_only_to_figures_that_use_them`(재생기 스크립트와 스타일)이고, 모든 예제와 호환 묶음의 SVG, HTML, 멈춘 SVG, `check --json`을 변경 전 출력과 바이트 비교한다 |
 | 잠금 획득과 해제, 풀리지 않는 교착, 큐 역압, 실패 횟수에 따른 회로 차단이 공통 기능만으로 표현된다. | 네 예제를 `examples/`에 두고 렌더해 값 변화, 대기 해제 시각, 멈춘 대기를 확인. 담당: [#119](https://github.com/woonyong-choi/daphnis/issues/119) |
 | 목록 쪽 테마 단추가 목록과 iframe 그림을 함께 바꾼다. | `test/pages.test.js`의 `gallery_theme_buttons_set_the_root_color_scheme_and_remember_the_choice`(Chrome이 있을 때). 시스템을 다크로 둔 브라우저에서 실제 자식 HTML을 iframe으로 연 목록 쪽의 라이트 단추를 눌러, 목록 루트와 자식 문서의 테마가 모두 라이트로 바뀌고 자식 문서가 로드를 마쳐 그림을 그렸는지 확인. 카드 전체가 그림과 같은 한 톤인지는 캡처로 본다 |
 | 재생기 안에는 그림 바탕 판이 없고, SVG 파일에만 있다. | `test/cli.test.js`의 `main_render_svg_keeps_the_rounded_plate_and_the_html_player_has_none` |

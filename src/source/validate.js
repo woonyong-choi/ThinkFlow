@@ -2,7 +2,7 @@
 import { walkUp } from './ancestry.js';
 import { checkChart } from './chart-rules.js';
 import { checkFlowStep } from './flow-check.js';
-import { CARD_SHAPES } from './grammar.js';
+import { CARD_SHAPES, STATUS_SHAPES } from './grammar.js';
 import { checkIcons } from './icons.js';
 import { unknownName } from './problems.js';
 import { checkValues } from './value-check.js';
@@ -149,6 +149,7 @@ function checkTimeline(figure, names, problems) {
   for (const step of figure.steps) {
     if (!step.beats.length && !step.tracks.length && !step.hasError) problems.error(step.line, `step "${step.label}" has no lines. Add a move, show, light, say, or wait`);
     checkFlowStep(step, { figure, names, problems, resolveHop, usedEdges });
+    for (const { node } of step.status ?? []) checkStatusTarget(node, { line: step.line, figure, names }, problems);
     for (const beat of step.beats) {
       for (const hop of beat.hops) resolveHop(hop, { figure, names, problems }, usedEdges);
       for (const op of beat.ops) checkCardTarget(op, { figure, names }, problems);
@@ -207,6 +208,16 @@ function checkCardTarget(op, { figure, names }, problems) {
   const target = names.get(op.node);
   if (!target && !figure.rejectedNames.has(op.node)) problems.error(op.line, unknownName('node', op.node, names.keys()));
   else if (target && !CARD_SHAPES.includes(target.shape)) problems.error(op.line, `a ${target.shape} has no card. Use show on ${CARD_SHAPES.slice(0, 4).join(', ')} or table`);
+}
+
+// cost: time O(k), heap O(k), stack O(1)
+// vars: k = 이름 수(없는 이름 메시지)
+// basis: estimate
+// 단계 상태(`status`) 대상: 구조 그림의 상자, 외부, 저장소, 사람, 큐, 갈림길. 그룹, 격자, 값 이름은 상태 알약을 달 도형이 아니다.
+function checkStatusTarget(id, { line, figure, names }, problems) {
+  const target = names.get(id);
+  if (!target && !figure.rejectedNames.has(id)) problems.error(line, unknownName('node', id, names.keys()));
+  else if (target && !STATUS_SHAPES.includes(target.shape)) problems.error(line, `a ${target.shape} takes no status. Use status on ${STATUS_SHAPES.join(', ')}`);
 }
 
 // cost: time O(k + c), heap O(k), stack O(1)

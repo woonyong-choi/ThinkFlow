@@ -103,6 +103,8 @@ function usedWords() {
         for (const scope of scopes) if (optionName !== undefined && `${scope}.${optionName}` in OPTIONS) used.options.add(`${scope}.${optionName}`);
         if (t.type === 'option') used.values.add(t.value);
         else if (t.type === 'word') used.words.add(t.value);
+        // 값 목록을 가진 글 선택 사항(`status="도형=종류"`)은 글 안의 `=` 뒤 낱말이 값이다.
+        if (t.type === 'option' && t.valueType === 'text' && scopes.some((scope) => OPTIONS[`${scope}.${t.key}`]?.values)) for (const [, kind] of t.value.matchAll(/=\s*([\w-]+)/g)) used.values.add(kind);
       }
     });
   }

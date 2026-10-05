@@ -15,6 +15,8 @@ const FLAG = { ...V1, type: 'flag' };
 const TEXT = { ...V1, type: 'text' };
 /** 칸 격자의 정수 선택 사항. min은 받는 가장 작은 값이다(칸 위치는 0, 크기와 개수는 1). */
 const COUNT = { ...V1, type: 'number', format: '양의 정수', min: 1 };
+/** 경로 길이의 비율. 숫자와 `%`를 붙여 쓴다(`60%`). */
+const PERCENT = { ...V1, type: 'word', format: '0 이상 100 이하 퍼센트' };
 const INDEX = { ...V1, type: 'number', format: '0 이상 정수', min: 0 };
 /** 아이콘 이름. 기본 세트의 이름(`server`)이거나 등록한 세트의 `세트:이름`이다. */
 const ICON = { ...V1, type: 'word', format: '이름 또는 세트:이름' };
@@ -44,6 +46,9 @@ export const KINDS = table({
 
 /** `decimals` 머리 줄이 받는 소수 자릿수의 상한. 값 글자의 자동 자릿수도 이 값까지만 쓴다. */
 export const DECIMALS_MAX = 6;
+
+/** 단계 상태(`status`)를 받는 도형. 원(`box shape=circle`)은 상자의 한 모양이다. 이름 순서는 오류 안내 글에 그대로 나온다. */
+export const STATUS_SHAPES = ['box', 'circle', 'external', 'store', 'person', 'queue', 'decision'];
 
 const ALL_KINDS = Object.keys(KINDS);
 const FLOW_SEQUENCE = ['flow', 'sequence'];
@@ -89,6 +94,7 @@ export const VALUES = {
   shape: { default: 'rect', items: table({ rect: V1, circle: V1, tile: V1 }) },
   width: { default: 'standard', items: table({ standard: V1, wide: V1 }) },
   border: { default: 'solid', items: table({ solid: V1, dashed: V1 }) },
+  status: { items: table({ ok: V1, warn: V1, fail: V1, wait: V1 }) },
 };
 
 /**
@@ -167,14 +173,18 @@ export const OPTIONS = table({
   'queue.from': { ...INDEX, format: '0 이상 slots 이하 정수' },
   'edge.no': COUNT,
   'step.for': { ...V1, type: 'word', format: '시간' },
+  'step.status': { ...TEXT, values: 'status' },
   'hop.time': { ...V1, type: 'word', format: '시간' },
   'hop.tone': { ...V1, type: 'word', values: 'tone' },
   'hop.set': TEXT,
+  'hop.lost': PERCENT,
   'track.at': { ...V1, type: 'word', format: '시간(0 가능)' },
   'track.every': { ...V1, type: 'word', format: '시간' },
   'track.time': { ...V1, type: 'word', format: '시간' },
   'track.tone': { ...V1, type: 'word', values: 'tone' },
   'track.set': TEXT,
+  'track.lost': PERCENT,
+  'track.legs': { ...TEXT, format: '시간 또는 -의 목록' },
   'value.on': { ...V1, type: 'word', format: '도형 이름' },
   'value.from': { ...V1, type: 'word', format: '숫자 또는 낱말' },
   'value.ref': { ...V1, type: 'word', format: '값 이름' },

@@ -23,14 +23,14 @@ function emptyBeat(line) {
 // cost: time O(t), heap O(t), stack O(1)
 // vars: t = 문장 낱말 수
 // basis: estimate
-// `step "이름" ["설명"] [for=12s]`
+// `step "이름" ["설명"] [for=12s] [status="도형=종류"]`
 function readStep({ tokens, line }, ctx) {
   const [, label, caption, extra] = tokens.filter((t) => t.type !== 'option');
   if (label?.type !== 'text' || (caption && caption.type !== 'text') || extra) {
-    ctx.problems.error(line, 'write a step as: step "name" ["caption"] [for=12s]');
+    ctx.problems.error(line, 'write a step as: step "name" ["caption"] [for=12s] [status=list]');
   }
-  const forMs = readStepOptions(tokens.filter((t) => t.type === 'option'), { line, ctx });
-  ctx.step = { label: label?.value ?? '', caption: caption?.type === 'text' ? caption.value : undefined, line, beats: [], tracks: [], forMs };
+  const { forMs, status } = readStepOptions(tokens.filter((t) => t.type === 'option'), { line, ctx });
+  ctx.step = { label: label?.value ?? '', caption: caption?.type === 'text' ? caption.value : undefined, line, beats: [], tracks: [], forMs, status };
   ctx.figure.steps.push(ctx.step);
 }
 
@@ -53,8 +53,8 @@ function readHops({ tokens, line }, ctx) {
       ctx.problems.error(line, 'write a move as: a -> b ["text"] [time=2s]');
       continue;
     }
-    const { timeMs, tone, sets } = readMoveOptions(rest.filter((t) => t.type === 'option'), { scope: 'hop', line, ctx });
-    const hop = { from: from.value, to: to.value, data: undefined, timeMs, dashed: false, tone, sets, line };
+    const { timeMs, tone, sets, lost } = readMoveOptions(rest.filter((t) => t.type === 'option'), { scope: 'hop', line, ctx });
+    const hop = { from: from.value, to: to.value, data: undefined, timeMs, dashed: false, tone, sets, lost, line };
     for (const t of rest.filter((w) => w.type !== 'option')) readHopWord(t, hop, { isSequence, line, ctx });
     if (isSequence && hop.data === undefined) ctx.problems.error(line, 'a sequence message needs text: a -> b "message"');
     beat.hops.push(hop);

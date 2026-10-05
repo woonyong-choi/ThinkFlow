@@ -1,6 +1,6 @@
 // 이동 글 상자 계획의 마무리. 겹치는 지점을 흐리게 하고, 60fps 프레임마다 다시 재고, 같은 직선 위의 지점을 줄이고, 그림 검사가 볼 문제를 모은다.
 import { boxAt, CHIP_FRAME_MS, CHIP_VISIBLE_MIN, dotAt, isHit, NODE_MS } from './chip-motion.js';
-import { MOVE, progressAt } from './easing.js';
+import { positionAt } from './easing.js';
 import { values } from './tokens.js';
 
 // 흐려짐 시간(토큰)
@@ -97,7 +97,7 @@ function isStraight(points, from, to) {
 // 흐름의 점이 도형 안을 지나는 구간(hop.gaps)은 점이 보이지 않아 글 상자도 보이지 않으므로, 흐려진 시간과 이동 시간 모두에서 뺀다.
 export function issuesOf(points, hop) {
   const issues = points.map((p) => {
-    const at = progressAt(MOVE, p.t / hop.ms);
+    const at = positionAt(p.t / hop.ms, hop.pace);
     return { at, isOutside: p.slot.isOutside, hits: p.slot.hits, isClean: p.slot.isClean, isInside: Boolean(hop.gaps?.some(([from, to]) => at > from && at < to)) };
   });
   const seen = issues.filter((issue) => !issue.isInside);

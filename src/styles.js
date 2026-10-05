@@ -19,6 +19,7 @@ export const STYLES = Object.freeze({
   gallery: readStyle('./styles/gallery.css'),
   document: readStyle('./styles/document.css'),
   chart: readStyle('./styles/chart.css'),
+  status: readStyle('./styles/status.css'),
 });
 
 /** 화살촉. 화살촉은 평소(`fl-arrow`), 밝힌 선(`fl-arrow-on`), 덤벨 main 계열(`fl-arrow-main`) 세 가지다. */

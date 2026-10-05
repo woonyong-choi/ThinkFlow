@@ -4,7 +4,7 @@ import { gridOf } from './chip-grid.js';
 import { issuesOf, settle, simplify } from './chip-fade.js';
 import { cutPath, dotAt, NODE_MS, visibleShare } from './chip-motion.js';
 import { addSlides, SWITCH_COST } from './chip-slide.js';
-import { MOVE, progressAt } from './easing.js';
+import { positionAt } from './easing.js';
 import { flattenRoute } from './route.js';
 import { values } from './tokens.js';
 
@@ -44,7 +44,7 @@ export function planHops(scene, timeline, avoid) {
   for (const seg of timeline.segs) {
     for (const hop of seg.hops) {
       if (!hop.data) continue;
-      const key = `${hop.track === undefined ? hop.edge : `t${hop.track}`}\u0000${hop.ms}\u0000${hop.isBack}\u0000${hop.data.join('\u0000')}`;
+      const key = `${hop.track === undefined ? hop.edge : `t${hop.track}`}\u0000${hop.ms}\u0000${hop.isBack}\u0000${hop.data.join('\u0000')}${hop.pace ? `\u0000${JSON.stringify(hop.pace)}` : ''}`;
       if (!plans.has(key)) plans.set(key, planChip(scene, hop.track === undefined ? hop : { ...hop, route: timeline.tracks[hop.track].route }, avoid));
       hop.chipPath = hop.cut === undefined ? plans.get(key).path : cutPath(plans.get(key).path, hop);
       plannedIssues.set(hop, { scene, issues: hop.track === undefined ? plans.get(key).issues : reportedOf(plans.get(key).issues, hop) });
@@ -107,7 +107,7 @@ function planWith(scene, hop, { avoid, isRelaxed }) {
   let chosen = stayCheapest(nodes);
   if (chosen.cost >= SWITCH_COST) chosen = chooseSlots(ctx, nodes);
   const rest = settle(ctx, chosen.rest);
-  const path = simplify(rest).map(({ t, dx, dy, opacity }) => [progressAt(MOVE, t / hop.ms), dx, dy, opacity]);
+  const path = simplify(rest).map(({ t, dx, dy, opacity }) => [positionAt(t / hop.ms, hop.pace), dx, dy, opacity]);
   // 이분 탐색의 오차를 없애 첫 지점은 정확히 0, 끝 지점은 정확히 1로 둔다.
   path[0][0] = 0;
   path.at(-1)[0] = 1;

@@ -2,6 +2,7 @@
 import { chartSeriesIds, litIds } from '../timeline.js';
 import { tokens } from '../tokens.js';
 import { animateChart } from './chart.js';
+import { drawStatusPills } from '../draw/status.js';
 import { drawValues } from '../draw/values.js';
 import { createClock } from './clock.js';
 import { discreteWindows } from './discrete.js';
@@ -14,7 +15,7 @@ import { createWindows } from './windows.js';
 /**
  * 움직이는 SVG의 움직임 만들기. 한 바퀴 시계 하나를 모든 요소가 나눠 쓴다.
  * @param timeline 시간표({ segs, total, growMs })
- * @returns { css, decorate, packet, windows, chart, values }. values(scene, timeline, glyphs)는 값 글자와 밝힘 테두리 요소다. decorate(scene)은 (kind, i, extra)로 요소의 켜짐 class를 돌려주는 함수를 만든다
+ * @returns { css, decorate, packet, windows, chart, values, status }. values(scene, timeline, glyphs)는 값 글자와 밝힘 테두리 요소, status(scene, timeline, glyphs)는 단계별 도형 상태 알약 층이다. decorate(scene)은 (kind, i, extra)로 요소의 켜짐 class를 돌려주는 함수를 만든다
  */
 export function createAnimator({ segs, total, growMs }) {
   const clock = createClock(total);
@@ -32,7 +33,8 @@ export function createAnimator({ segs, total, growMs }) {
   const chart = (figure, drawn) => animateChart({ clock, segs, growMs, css, windows, fadeFrames }, chartSeriesIds(figure), drawn);
   const packet = (move, glyphs) => drawPacket(clock, move, glyphs);
   const valueRows = (scene, timeline, glyphs) => drawValues(scene, timeline, { glyphs, windows: (spans) => discreteWindows(clock, spans) });
-  return { css, decorate, packet, windows, chart, values: valueRows };
+  const status = (scene, timeline, glyphs) => drawStatusPills(scene, timeline, { glyphs, windows: (spans) => discreteWindows(clock, spans), index: new Map(scene.items.map((it, i) => [it.id, i])) });
+  return { css, decorate, packet, windows, chart, values: valueRows, status };
 }
 
 // 켜지는 시각이 구간 안에 있는 요소(흐름 단계의 선과 도형)는 그 시각에 꺼짐에서 켜짐으로 바뀐다. 구간 처음부터 켜진 것은 그대로다.

@@ -1,6 +1,6 @@
 // 이동 하나의 글 상자를 시각마다 재는 도구. 계획(chip-plan.js)과 흐려짐(chip-fade.js), 테스트가 같은 점 위치와 보간을 쓴다.
 import { CHIP_GAP, isOutsideFigure, OVERLAP_SLACK, overlapArea } from './chip.js';
-import { MOVE, progressAt, timeAt } from './easing.js';
+import { positionAt, timeAtPosition } from './easing.js';
 import { values } from './tokens.js';
 import { pointAlong } from './route.js';
 
@@ -20,7 +20,7 @@ export const NODE_MS = PLAN_FRAMES * CHIP_FRAME_MS;
  */
 export function chipStateAt({ route, hop, chip }, path, t) {
   const point = dotAt({ route, hop }, t);
-  const [dx, dy, opacity] = offsetAt(path, hop.ms, t);
+  const [dx, dy, opacity] = offsetAt(path, hop, t);
   return { point, opacity, box: boxAt(point, chip, { dx, dy }) };
 }
 
@@ -32,7 +32,7 @@ export function visibleShare(move, path) {
   const { hop } = move;
   let [seen, shown] = [0, 0];
   for (let t = 0; t <= hop.ms; t += CHIP_FRAME_MS) {
-    const progress = progressAt(MOVE, Math.min(1, t / hop.ms));
+    const progress = positionAt(Math.min(1, t / hop.ms), hop.pace);
     if (hop.gaps?.some(([from, to]) => progress > from && progress < to)) continue;
     seen += 1;
     if (chipStateAt(move, path, t).opacity >= CHIP_VISIBLE_MIN) shown += 1;
@@ -54,7 +54,7 @@ export function boxAt(point, chip, { dx, dy }) {
 export function dotAt({ route, hop, dots }, t) {
   const key = Math.round(t * 1000);
   if (dots?.has(key)) return dots.get(key);
-  const progress = progressAt(MOVE, Math.min(1, t / hop.ms));
+  const progress = positionAt(Math.min(1, t / hop.ms), hop.pace);
   const point = pointAlong(route, hop.isBack ? 1 - progress : progress);
   dots?.set(key, point);
   return point;
@@ -63,14 +63,14 @@ export function dotAt({ route, hop, dots }, t) {
 // cost: time O(k), heap O(1), stack O(1)
 // vars: k = 경로 지점 수
 // basis: estimate
-// 시각 t의 [dx, dy, opacity]. 첫 지점 앞과 마지막 지점 뒤는 그 지점 값이다.
-function offsetAt(path, ms, t) {
+// 시각 t의 [dx, dy, opacity]. 첫 지점 앞과 마지막 지점 뒤는 그 지점 값이다. 지점은 경로 길이 비율이고, 점이 그 지점에 닿는 시각은 구간별 이동 시간(hop.pace)까지 거꾸로 푼다.
+function offsetAt(path, { ms, pace }, t) {
   const u = Math.min(1, Math.max(0, t / ms));
-  const progress = progressAt(MOVE, u);
+  const progress = positionAt(u, pace);
   const k = Math.min(Math.max(0, path.findLastIndex((p) => p[0] <= progress)), path.length - 2);
   if (path.length === 1) return path[0].slice(1);
   const [a, b] = [path[k], path[k + 1]];
-  const [ta, tb] = [timeAt(MOVE, a[0]), timeAt(MOVE, b[0])];
+  const [ta, tb] = [timeAtPosition(a[0], pace), timeAtPosition(b[0], pace)];
   const ratio = tb > ta ? Math.min(1, Math.max(0, (u - ta) / (tb - ta))) : 1;
   return [1, 2, 3].map((i) => a[i] + (b[i] - a[i]) * ratio);
 }
@@ -81,12 +81,13 @@ function offsetAt(path, ms, t) {
 /**
  * 단계 끝에서 잘리는 이동(hop.cut)의 글 상자 경로. 잘림 시각 앞의 지점만 남기고 잘림 시각의 보간 값을 마지막 지점으로 둔다. 움직이는 SVG와 재생기가 같은 시각에 끝나는 글 상자 키를 읽게 하는 한 곳이다.
  * @param path planChip이 돌려준 [진행 비율, dx, dy, opacity] 목록
- * @param { ms, cut } 이동 전체 시간과 그려지는 시간(ms)
+ * @param hop { ms, cut, pace? } 이동 전체 시간, 그려지는 시간(ms), 구간별 이동 시간 꺾은선
  */
-export function cutPath(path, { ms, cut }) {
+export function cutPath(path, hop) {
+  const { ms, cut, pace } = hop;
   if (path.length < 2) return path;
-  const kept = path.filter(([progress]) => timeAt(MOVE, progress) * ms < cut);
-  return [...kept, [progressAt(MOVE, cut / ms), ...offsetAt(path, ms, cut)]];
+  const kept = path.filter(([progress]) => timeAtPosition(progress, pace) * ms < cut);
+  return [...kept, [positionAt(cut / ms, pace), ...offsetAt(path, hop, cut)]];
 }
 
 // cost: time O(m), heap O(1), stack O(1)

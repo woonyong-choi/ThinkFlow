@@ -5,6 +5,7 @@ import { plainText } from '../text.js';
 import { values } from '../tokens.js';
 import { labelRows } from './figure.js';
 import { gridRows } from './grid.js';
+import { statusBoxes } from './status.js';
 
 const SPACE = values.space;
 const INNER_X = SPACE['9'];
@@ -17,7 +18,7 @@ const SIZE = values.size;
  * 장면의 글자 사각형 목록. 가로는 잰 글 폭이고 높이는 글자 크기에 위아래 `space.1`씩 더한 값이다(글자 위아래 내림과 올림).
  * @returns { x, y, w, h, name }[]. name은 알림 메시지에 쓸 표시 글이다
  */
-function textBoxes(scene) {
+export function textBoxes(scene) {
   const boxes = [];
   const add = ({ x, center, width }, style, name) => boxes.push({ x, y: center - style.size / 2 - SPACE['1'], w: width, h: style.size + SPACE['1'] * 2, name: plainText(name) });
   for (const it of scene.items) {
@@ -48,10 +49,19 @@ function textBoxes(scene) {
 // basis: estimate
 /**
  * 이동 글 상자가 피할 모든 사각형: 글자, 도형 테두리, 선 라벨 알약. 그룹 틀은 이동이 그 안에서 일어나므로 제목 글자만 피한다.
+ * 시간표(timeline)를 주면 단계별 도형 상태 알약도 선 라벨 알약처럼 어떤 경우에도 가리지 않는다.
  * @returns { x, y, w, h, name }[]
  */
-export function chipObstacles(scene) {
-  return [...textBoxes(scene), ...shapeBoxes(scene), ...pillBoxes(scene), ...decorBoxes(scene)];
+export function chipObstacles(scene, timeline) {
+  return [...textBoxes(scene), ...shapeBoxes(scene), ...pillBoxes(scene), ...decorBoxes(scene), ...(timeline ? statusObstacles(scene, timeline) : [])];
+}
+
+// cost: time O(s + p), heap O(p), stack O(1)
+// vars: s = 도형 수, p = 상태 알약 수
+// basis: estimate
+// 단계별 도형 상태 알약 사각형. 선 라벨 알약과 같이 어떤 자리에서도 가리지 않는다(isPill).
+function statusObstacles(scene, timeline) {
+  return statusBoxes(scene, timeline).map(({ x, y, w, h, name }) => ({ x, y, w, h, name, isPill: true }));
 }
 
 // cost: time O(s + g), heap O(s + g), stack O(1)

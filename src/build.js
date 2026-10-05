@@ -143,7 +143,7 @@ function widenForChips(scene, timeline) {
 // basis: estimate
 // 글 상자 자리를 경로 지점마다 미리 정해 이동에 담고, 흐름에서 점끼리 글 상자가 겹치는 구간은 나중에 출발한 점의 글 상자를 숨긴다. 움직이는 SVG와 재생기는 이 계획을 그대로 걸어 같은 자리를 쓴다.
 function planChips(scene, timeline) {
-  const avoid = [...chipObstacles(scene), ...chipLines(scene)];
+  const avoid = [...chipObstacles(scene, timeline), ...chipLines(scene)];
   planHops(scene, timeline, avoid);
   planClashes(scene, timeline);
 }

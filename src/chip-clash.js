@@ -2,7 +2,7 @@
 // 숨김은 이동마다 한 번 계산한 불투명도 키(hop.chipFade)로 시간표에 담고, 움직이는 SVG와 재생기와 그림 검사 7번이 그 키를 그대로 읽는다(docs/design/playback.md 이동 글).
 import { CHIP_FRAME_MS, CHIP_VISIBLE_MIN, chipStateAt } from './chip-motion.js';
 import { OVERLAP_SLACK, overlapArea, sizeChip } from './chip.js';
-import { MOVE, progressAt } from './easing.js';
+import { positionAt } from './easing.js';
 import { flattenRoute } from './route.js';
 import { values } from './tokens.js';
 
@@ -59,7 +59,7 @@ function motionOf(hop, { scene, timeline }, cache) {
 function chipAt(motion, local, { isFactored }) {
   const { hop } = motion;
   if (local < 0 || local > (hop.cut ?? hop.ms)) return undefined;
-  const progress = progressAt(MOVE, Math.min(1, local / hop.ms));
+  const progress = positionAt(Math.min(1, local / hop.ms), hop.pace);
   if (hop.gaps?.some(([from, to]) => progress > from && progress < to)) return undefined;
   const { box, opacity } = chipStateAt(motion, hop.chipPath, local);
   const shown = isFactored ? opacity * fadeAt(hop.chipFade, local) : opacity;

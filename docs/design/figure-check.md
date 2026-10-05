@@ -37,7 +37,7 @@
 | 번호 | code | 검사 | 등급 | 기준 |
 |---|---|---|---|---|
 | 1 | `check-1` | 글이 도형, 카드, 알약, 글 상자, 차트 이름 칸 안에 들어간다 | 오류 | 잰 글 폭과 줄 수가 칸의 안쪽 크기 이하 |
-| 2 | `check-2` | 글끼리 겹치지 않는다 | 오류 | 선 라벨, 그룹 제목, 도형 사각형(이름과 카드를 품음)끼리 겹친 넓이 0. 산점도 점 이름은 [차트](charts.md)가 위아래와 좌우로 비켜 놓은 뒤에도 서로 겹친 넓이 0 |
+| 2 | `check-2` | 글끼리 겹치지 않는다 | 오류 | 선 라벨, 그룹 제목, 도형 사각형(이름과 카드를 품음)끼리 겹친 넓이 0. 단계별 도형 상태 알약은 자기 도형을 뺀 도형 사각형(이름과 카드를 품음), 선 라벨, 그룹 제목과 겹친 넓이 0. 산점도 점 이름은 [차트](charts.md)가 위아래와 좌우로 비켜 놓은 뒤에도 서로 겹친 넓이 0 |
 | 3 | `check-3` | 선이 끝 도형이 아닌 도형과 격자 칸을 지나지 않는다 | 오류 | 경로 선분이 다른 도형과 그룹 사각형 안쪽을 지나지 않음. 선 끝이거나 선 끝을 품은 그룹(그 선이 드나드는 그룹)은 제외. 끝 격자 안에서도 어느 칸(빈 자리 제외)의 안쪽도 지나지 않음 |
 | 4 | `check-4` | 선 끝이 연결점 규칙 자리에 있다 | 오류 | [배치](layout.md)의 도형별 연결점 규칙과 0.5 이내로 일치. 격자 칸 끝은 그 칸의 테두리 |
 | 5 | `check-5` | 나란한 두 선이 붙지 않는다 | 오류 | 다른 두 선의 나란한 선분 사이가 토큰 `space.2-5` 이상. 같은 도형에서 함께 나가거나 함께 들어오는 두 선은 그 도형 쪽 끝 선분(경계에서 첫 꺾임까지)을 보지 않는다 |
@@ -49,7 +49,7 @@
 | 11 | `check-11` | 쓰지 않는 조용한 선 | 경고 | 시간 흐름에서 한 번도 지나지 않는 `quiet` 선 |
 | 12 | `check-12` | 순서 그림 메모가 겹치지 않는다 | 오류, 경고 | 메모가 그림 안에 있고 같은 행 메시지의 화살표와 라벨을 가리지 않으면 통과한다(오류). 다른 참여자의 생명선에 걸치면 경고 |
 | 13 | `check-13` | 선이 그룹 제목 줄을 지나지 않는다 | 오류 | 경로 선분이 그룹 제목 줄(제목 글, 아이콘, 배지를 감싼 사각형) 안쪽을 지나지 않음 |
-| 14 | `check-14` | 흐름이 점을 그리고 점 수, 값 글자, 큐 값이 상한 안에 있다 | 오류, 경고 | 흐름마다 점이 하나 이상 그려지면 통과한다(단계 끝까지 도착하지 못하면 오류). 한 그림의 점이 토큰 `scale.flow-dots-max` 이하이고(초과하면 경고). 출발 수를 `for`와 `every`에서 미리 세어 그림 전체가 `scale.flow-dots-max`의 열 배를 넘으면 시간표를 만들기 전에 오류다. 값이 바뀌어 간 글자가 8자 이하다(초과하면 오류). 큐 값이 0 이상 칸 수(`slots`) 이하다(음수나 칸 수 초과에 닿으면 경고. 그림은 음수를 0칸, 초과를 가득 찬 칸으로 그린다) |
+| 14 | `check-14` | 흐름이 점을 그리고 점 수, 값 글자, 큐 값이 상한 안에 있다 | 오류, 경고 | 흐름마다 점이 하나 이상 그려지면 통과한다(단계 끝까지 도착하지 못하면 오류. `lost`가 있는 흐름은 점이 없어도 오류가 아니다). 한 그림의 점이 토큰 `scale.flow-dots-max` 이하이고(초과하면 경고). 출발 수를 `for`와 `every`에서 미리 세어 그림 전체가 `scale.flow-dots-max`의 열 배를 넘으면 시간표를 만들기 전에 오류다. 값이 바뀌어 간 글자가 8자 이하다(초과하면 오류). 큐 값이 0 이상 칸 수(`slots`) 이하다(음수나 칸 수 초과에 닿으면 경고. 그림은 음수를 0칸, 초과를 가득 찬 칸으로 그린다) |
 <!-- check-table:end -->
 
 - 3번, 4번, 5번이 실패하면 구조 그림은 줄 바꿈 없는 안전 배치로 한 번 더 그려 실패가 줄면 그 배치를 쓰고, `aspect`를 적었다면 무시했다고 경고한다([배치](layout.md) 그림 비율). 10번 경고의 고치는 방법은 `aspect`를 적었으면 그 줄을 지우라고 알리고, 아니면 방향 `down`이나 그룹 방향을 권한다.
@@ -74,6 +74,8 @@
 |---|---|
 | 검사 항목마다 실패하는 원본에서 그 항목 메시지를 낸다. | `test/check.test.js`의 `checkFigure_each_item_reports_its_code_for_a_scene_that_breaks_it`(1, 2, 3, 4, 5, 6, 12번), `buildFigure_moving_text_taller_than_a_short_figure_is_a_check_7_error`(7번), `buildFigure_check_9_aspect_warning_suggests_what_the_source_can_change`(9번), `buildFigure_content_still_wider_than_the_canvas_after_shrinking_warns_check_10`(10번). 11번은 `test/compat.test.js`의 `compat_cli_json_keeps_the_old_fields_with_old_values_next_to_the_new_ones`. 나머지 항목은 일부러 실패하게 만든 원본으로 확인 |
 | 큐 값이 0 미만이거나 `slots`를 넘으면 14번 경고를 내고, 0과 `slots`는 경고하지 않는다. | `test/queue.test.js`의 `buildFigure_warns_check_14_when_a_queue_goes_below_zero_or_over_its_slots_and_stays_quiet_at_the_bounds` |
+| `lost`가 있는 흐름은 점이 하나도 그려지지 않아도 14번 오류가 없고, 없는 흐름은 오류다. | `test/lost-status-legs.test.js`의 `buildFigure_check_14_does_not_report_a_lost_flow_without_dots_and_still_reports_one_without_lost` |
+| 단계별 도형 상태 알약이 이름, 다른 도형, 선 라벨, 그룹 제목을 가리면 상태를 적은 단계 줄에 2번 오류를 낸다. | `test/lost-status-legs.test.js`의 `checkLabels_status_pill_over_an_edge_label_a_name_or_another_node_is_a_check_2_error_on_the_step_line` |
 | 모든 예제가 오류 없이 검사를 통과한다. | 예제 전체에 `check` 실행 |
 | 오류가 있으면 그림 파일을 쓰지 않는다. | `test/cli.test.js`의 `main_render_with_an_error_writes_no_file_and_reports_the_line`. 실패 원본에 `render` 뒤 결과 파일 없음 확인 |
 | `--json` 출력이 한 줄에 메시지 하나다. | `test/cli.test.js`의 `main_json_prints_one_message_per_line_with_the_documented_fields`. 출력 줄마다 JSON으로 읽히는지 확인 |
