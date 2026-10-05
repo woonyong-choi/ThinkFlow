@@ -72,7 +72,8 @@ function msOf(hop, { run, scene }) {
 // basis: estimate
 /**
  * 조건을 쓴 박자의 이동을 이벤트 처리에 넘겨 실제로 출발한 이동을 구한다. 박자 시작 시각(run.t)에 모든 이동이 출발 준비를 하고, `wait`가 거짓이면 풀릴 때까지 기다린다.
- * @returns { hop, at, isElse }[] 출발한 순서. at은 박자 시작 뒤 출발 ms(바로 출발했으면 0)다
+ * @returns { started, endMs }. started는 출발한 이동 { hop, at, isElse, ms }의 순서 목록이고 at은 박자 시작 뒤 출발 ms(바로 출발했으면 0)다.
+ *   endMs는 이벤트 처리가 마지막으로 소비한 시각(박자 시작 뒤 ms)이다. 점이 출발하지 않은 대기(시간 초과로 끝났는데 `else`가 없는 대기, 기다린 뒤 `when`이 거짓인 출발)의 끝도 들어 있다
  */
 export function startedHops(beat, { run, deps, engine }) {
   const { scene } = deps;
@@ -82,8 +83,9 @@ export function startedHops(beat, { run, deps, engine }) {
     const elsePlan = hop.elseLeg && { ms: hopMs(scene.edges[hop.elseLeg.edge].points, run.speed), nodes: [base(hop.from), base(hop.condition.elseNode)], fracs: [0, 1], sets: [] };
     return { order: hi, line: hop.line, node: hop.from, text: `${hop.from} -> ${hop.to}`, when, wait, timeoutMs, isStuck, readyAt: run.t, plan: { ms: msOf(hop, { run, scene }), nodes: [base(hop.from), base(hop.to)], fracs: [0, 1], lost: hop.lost, sets: hop.sets }, elsePlan, hop };
   });
-  const { started } = engine.runLaunches({ launches, tEnd: Infinity });
-  return started.map(({ launch, at, isElse }) => ({ hop: launch.hop, at: at - run.t === 0 ? 0 : roundToScale(at - run.t, 100000), isElse, ms: (isElse ? launch.elsePlan : launch.plan).ms }));
+  const { started, lastT } = engine.runLaunches({ launches, tEnd: Infinity });
+  const entries = started.map(({ launch, at, isElse }) => ({ hop: launch.hop, at: at - run.t === 0 ? 0 : roundToScale(at - run.t, 100000), isElse, ms: (isElse ? launch.elsePlan : launch.plan).ms }));
+  return { started: entries, endMs: Math.max(0, lastT - run.t) };
 }
 
 // cost: time O(1), heap O(1), stack O(1)

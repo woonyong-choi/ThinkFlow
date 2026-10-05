@@ -141,7 +141,10 @@ function beatSegs({ step, si, engine }, run, deps) {
   // 단계 안에서 쌓이는 값: 지나간 선, 밝힌 대상, 차트 밝히기, 마지막 설명
   const memory = { edgesOn: new Set(), lost: new Set(), lit: new Set(), lights: [], caption: step.caption ?? '' };
   // 조건을 쓴 단계는 박자마다 이벤트를 처리해 실제로 출발한 이동과 출발 시각을 먼저 정한다. 앞 박자가 끝난 뒤의 값을 읽는다.
-  const segs = step.beats.map((beat, bi) => beatSeg({ step, si, beat, bi, timed: engine && beat.hops.length ? startedHops(beat, { run, deps, engine }) : undefined }, { memory, run }, deps));
+  const segs = step.beats.map((beat, bi) => {
+    const { started, endMs } = engine && beat.hops.length ? startedHops(beat, { run, deps, engine }) : {};
+    return beatSeg({ step, si, beat, bi, timed: started, endMs }, { memory, run }, deps);
+  });
   if (engine) return { segs, moves: [] };
   const moves = step.beats.flatMap((beat, bi) => beat.hops.map((hop, hi) => ({ start: segs[bi].t0, ms: segs[bi].hops[hi].ms, nodes: [hop.from, hop.to].map((id) => id.split('.')[0]), fracs: [0, 1], sets: hop.sets, lost: hop.lost })));
   return { segs, moves };
@@ -163,8 +166,8 @@ function plainHops(beat, { run, chips, scene }) {
 // cost: time O(h + e + k), heap O(e + k), stack O(1)
 // vars: h = 박자의 이동 수, e = 선 수, k = 카드 있는 도형 수
 // basis: estimate
-// 박자 하나의 상태. 시각 t를 이 박자 길이만큼 앞으로 보낸다. timed는 조건을 쓴 단계에서 이벤트 처리가 정한 이 박자의 출발 목록이다(건너뛴 이동은 없고, 대기가 풀린 뒤 출발한 이동은 `at`을 갖는다).
-function beatSeg({ step, si, beat, bi, timed }, { memory, run }, { cards, chips, scene }) {
+// 박자 하나의 상태. 시각 t를 이 박자 길이만큼 앞으로 보낸다. timed는 조건을 쓴 단계에서 이벤트 처리가 정한 이 박자의 출발 목록이다(건너뛴 이동은 없고, 대기가 풀린 뒤 출발한 이동은 `at`을 갖는다). endMs는 이벤트 처리가 소비한 끝 시각(박자 시작 뒤 ms)이라 점이 출발하지 않은 대기의 끝도 박자 길이에 든다.
+function beatSeg({ step, si, beat, bi, timed, endMs = 0 }, { memory, run }, { cards, chips, scene }) {
   const { figure, speed } = run;
   const hops = timed ? timed.map((entry) => timedHop(entry, { chips })) : plainHops(beat, { run, chips, scene });
   const at = lightBeat(memory, { beat, hops, timed, scene });
@@ -181,7 +184,7 @@ function beatSeg({ step, si, beat, bi, timed }, { memory, run }, { cards, chips,
     line: beat.line,
     si,
     bi,
-    length: Math.max(move, grow) + beat.waitMs + hold,
+    length: Math.max(move, grow, endMs) + beat.waitMs + hold,
     labelShifts: run.hasReveal ? labelShiftsOf(figure, [...run.revealed]) : [],
     move,
     hops,
