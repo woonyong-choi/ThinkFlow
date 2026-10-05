@@ -1,11 +1,12 @@
 // 흐름 단계(`track`)를 시간표 구간 하나로 만든다. 박자가 끝나야 다음 박자가 시작하는 시계와 달리, 흐름은 단계 길이 안에서 서로 기다리지 않고 각자 출발한다(docs/design/playback.md 흐름 단계).
 import { arrivalOffsetMs } from './easing.js';
-import { DIGITS, ratio, roundTo } from './format.js';
+import { ratio } from './format.js';
 import { hopMs, lengthMs } from './hop-ms.js';
 import { isPassed } from './lost.js';
 import { flattenRoute, routeLength } from './route.js';
 import { makeDiagnostic, FigureError } from './source/problems.js';
 import { TIME_LIMIT_MS } from './source/values.js';
+import { checkMoveInputs, gridPlan, inputTicks, msOfTicks, TICKS_PER_MS } from './time-grid.js';
 import { createSeg } from './timeline-seg.js';
 import { values } from './tokens.js';
 
@@ -125,6 +126,18 @@ function departures(track, lengthMs) {
   return starts;
 }
 
+// cost: time O(n), heap O(n), stack O(1)
+// vars: n = 출발 수
+// basis: estimate
+// 조건을 쓴 흐름 하나의 출발 눈금 번호(단계 안). `at`과 `every`가 눈금의 정수배가 아니면 `time-precision` 오류이고, 정수배면 `at + i·every`가 정수라 늘 엄격히 늘고 단계 길이보다 작다.
+function departureTicks(track, lengthTicks) {
+  const at = inputTicks(track.atMs, { line: track.line, key: 'at' });
+  const every = track.everyMs === undefined ? undefined : inputTicks(track.everyMs, { line: track.line, key: 'every' });
+  if (at >= lengthTicks) return [];
+  if (every === undefined) return [at];
+  return Array.from({ length: Math.floor((lengthTicks - at - 1) / every) + 1 }, (_, i) => at + i * every);
+}
+
 // cost: time O(d·(l + p)), heap O(d·p), stack O(1)
 // vars: d = 흐름의 출발 수, l = 흐름의 구간 수, p = 경로의 도형 수
 // basis: estimate
@@ -134,10 +147,12 @@ function departures(track, lengthMs) {
  * 선은 점이 그 선에 들어선 지점(첫 선은 0, 그다음은 도형 안 구간을 지난 비율)이 사라지는 비율보다 앞일 때만 켜진다.
  */
 function trackEvents(plan, { track, index, length, chips, starts }, { hops, edgesAt, pulses }) {
+  // 눈금에 올린 이동(plan.arrivals)은 닿는 시각도 눈금 번호로 더해 이벤트 처리와 같은 시각을 쓴다
+  const arrival = (at, k) => (plan.arrivals ? msOfTicks(Math.round(at * TICKS_PER_MS) + plan.arrivals[k]) : at + arrivalOffsetMs(plan.fracs[k], plan.ms, plan.pace));
   const lostMs = track.lost === undefined ? Infinity : arrivalOffsetMs(track.lost, plan.ms, plan.pace);
   for (const at of starts) hops.push({ track: index, edges: plan.edges, gaps: plan.gaps, isBack: false, at, ms: plan.ms, ...cutOf(Math.min(lostMs, at + plan.ms > length ? length - at : Infinity)), ...(plan.pace ? { pace: plan.pace } : {}), to: plan.nodes.at(-1), data: track.data === undefined ? undefined : chips(track.data), ...(track.tone ? { tone: track.tone } : {}), line: track.line });
-  for (const at of starts) plan.nodes.slice(1).forEach((id, k) => isPassed(plan.fracs[k + 1], track.lost) && pulses.push({ id, at: at + arrivalOffsetMs(plan.fracs[k + 1], plan.ms, plan.pace) }));
-  if (starts.length) plan.legEdges.forEach((edge, k) => isPassed(k === 0 ? 0 : plan.gaps[k - 1][1], track.lost) && (edgesAt[edge] = Math.min(edgesAt[edge] ?? Infinity, starts[0] + arrivalOffsetMs(plan.fracs[k], plan.ms, plan.pace))));
+  for (const at of starts) plan.nodes.slice(1).forEach((id, k) => isPassed(plan.fracs[k + 1], track.lost) && pulses.push({ id, at: arrival(at, k + 1) }));
+  if (starts.length) plan.legEdges.forEach((edge, k) => isPassed(k === 0 ? 0 : plan.gaps[k - 1][1], track.lost) && (edgesAt[edge] = Math.min(edgesAt[edge] ?? Infinity, arrival(starts[0], k))));
 }
 
 // 그려지는 시간(cut) 필드. 단계 끝이나 사라짐으로 잘리지 않으면(Infinity) 필드가 없다.
@@ -153,21 +168,22 @@ const cutOf = (cut) => (cut === Infinity ? {} : { cut });
 function conditionalTracks(plans, { step, first, length, chips, run, scene, engine }, out) {
   const t0 = run.t;
   const base = (id) => id.split('.')[0];
+  const lengthTicks = inputTicks(length, { line: step.line, key: 'for' });
   let order = 0;
   const launches = plans.flatMap((plan, i) => {
     const track = step.tracks[i];
     const { when, wait, timeoutMs, isStuck } = track.condition ?? {};
-    const elsePlan = track.elseLeg && { ms: hopMs(scene.edges[track.elseLeg.edge].points, run.speed), nodes: [base(track.source), base(track.condition.elseNode)], fracs: [0, 1], sets: [] };
-    return departures(track, length).map((rel) => ({ order: order++, line: track.line, node: track.source, text: track.path.join(' -> '), when, wait, timeoutMs, isStuck, readyAt: t0 + rel, rel, track: i, plan: { ms: plan.ms, nodes: plan.nodes, fracs: plan.fracs, pace: plan.pace, lost: track.lost, sets: track.sets }, elsePlan }));
+    const elsePlan = track.elseLeg && { ...gridPlan({ ms: hopMs(scene.edges[track.elseLeg.edge].points, run.speed), nodes: [base(track.source), base(track.condition.elseNode)], fracs: [0, 1] }, { line: track.line }), sets: [] };
+    const timeoutTicks = timeoutMs === undefined ? undefined : inputTicks(timeoutMs, { line: track.line, key: 'timeout' });
+    return departureTicks(track, lengthTicks).map((rel) => ({ order: order++, line: track.line, node: track.source, text: track.path.join(' -> '), when, wait, timeoutTicks, isStuck, rel, track: i, plan: { ms: plan.ms, nodes: plan.nodes, fracs: plan.fracs, arrivals: plan.arrivals, pace: plan.pace, lost: track.lost, sets: track.sets }, elsePlan }));
   });
-  const { started } = engine.runLaunches({ launches, tEnd: t0 + length });
+  const { started } = engine.runLaunches({ launches, start: t0, lengthTicks });
   const starts = plans.map(() => []);
   const branches = [];
   for (const { launch, at, via, isElse } of started) {
-    const rel = via === 'direct' ? launch.rel : roundTo(at - t0, DIGITS.ratio);
-    if (rel >= length) continue;
-    if (isElse) branches.push({ launch, rel });
-    else starts[launch.track].push(rel);
+    if (at >= lengthTicks) continue;
+    if (isElse) branches.push({ launch, rel: msOfTicks(at) });
+    else starts[launch.track].push(msOfTicks(at));
   }
   plans.forEach((plan, i) => trackEvents(plan, { track: step.tracks[i], index: first + i, length, chips, starts: starts[i].sort((a, b) => a - b) }, out));
   for (const { launch, rel } of branches) branchEvents(step.tracks[launch.track], { plan: launch.elsePlan, rel, length, chips }, out);
@@ -180,7 +196,7 @@ function branchEvents(track, { plan, rel, length, chips }, { hops, edgesAt, puls
   const { edge, isBack } = track.elseLeg;
   hops.push({ edge, isBack: Boolean(isBack), at: rel, ms: plan.ms, ...cutOf(rel + plan.ms > length ? length - rel : Infinity), to: plan.nodes.at(-1), data: track.data === undefined ? undefined : chips(track.data), ...(track.tone ? { tone: track.tone } : {}), line: track.line });
   edgesAt[edge] = Math.min(edgesAt[edge] ?? Infinity, rel);
-  pulses.push({ id: plan.nodes.at(-1), at: rel + plan.ms });
+  pulses.push({ id: plan.nodes.at(-1), at: msOfTicks(Math.round(rel * TICKS_PER_MS) + plan.arrivals.at(-1)) });
 }
 
 // cost: time O(t·(d + l)), heap O(t·d + e), stack O(1)
@@ -195,7 +211,12 @@ function branchEvents(track, { plan, rel, length, chips }, { hops, edgesAt, puls
  * @returns { segs, moves }. segs는 구간 하나의 목록, moves는 값 바꾸기 식이 쓰는 이동 목록이다
  */
 export function flowSeg({ step, si, engine }, run, { scene, cards, chips, dotsLimit = DOTS_LIMIT }) {
-  const plans = step.tracks.map((track) => planTrack(track, { scene, speed: run.speed }));
+  const plans = step.tracks.map((track) => {
+    const plan = planTrack(track, { scene, speed: run.speed });
+    if (!engine) return plan;
+    checkMoveInputs(track, track.line);
+    return gridPlan(plan, { line: track.line });
+  });
   const first = run.tracks.length;
   run.tracks.push(...plans.map((plan, i) => ({ parts: plan.parts, route: plan.route, names: plan.names, gaps: plan.gaps, line: step.tracks[i].line })));
   const length = step.forMs ?? FLOW_STEP_MS;

@@ -1,20 +1,20 @@
 // 흐름 조건과 대기(`when`, `wait`, `timeout`, `else`)의 이벤트 처리. 값, 조건, 대기를 시간표를 만들 때 한 번 계산한다(docs/design/playback.md 이벤트 순서).
 // 실제 시계, 난수, 재생 상태를 읽지 않는다. 조건을 쓰지 않는 단계는 이 파일을 거치지 않는다(createStepEngine이 불리지 않는다).
 import { eventBudgetError } from './budget.js';
-import { arrivalOffsetMs } from './easing.js';
 import { EventHeap, setTargets, stepReads, timeLimitError, typeError } from './event-support.js';
-import { DIGITS, roundTo } from './format.js';
 import { isPassed } from './lost.js';
 import { evalCondition } from './source/condition.js';
 import { TIME_LIMIT_MS } from './source/values.js';
+import { msOfTicks, TICKS_PER_MS } from './time-grid.js';
 import { noteRowChanges, resetWriters, runUpdate, spansOf, startValues } from './timeline-values.js';
 import { rootOf, valueTable } from './values.js';
 
 /** 이벤트 처리를 시작한 단계 수. 조건을 쓰지 않는 그림에서 0이어야 한다(호출 수 시험이 읽는다). */
 export const engineStats = { steps: 0 };
 
-// 같은 값이어야 같은 시각으로 세는 시각 정밀도(시간표가 담는 자릿수와 같다)
-const roundTime = (ms) => roundTo(ms, DIGITS.ratio);
+// 이벤트 시각은 시간표 눈금(0.00001ms)의 정수 번호다. 같은 번호여야 같은 시각이고 반올림하지 않는다(src/time-grid.js).
+// 시간표에 담는 값(변화, 대기, 건너뜀, 교착의 시각)만 ms로 바꾼다.
+const TICK_LIMIT = TIME_LIMIT_MS * TICKS_PER_MS;
 
 /**
  * 흐름 단계나 박자 단계의 값과 조건을 시각 순서로 처리하는 그릇. 한 시각의 이벤트는 순위(갱신, 풀린 대기, 출발) 순으로 처리한다.
@@ -37,7 +37,7 @@ class StepEngine {
   // basis: estimate
   /** @param args { figure, step, si, t0, start, run }. t0는 단계 시작 시각(그림 전체 ms), start는 단계 시작 값(`keep`, 단계 `set=`), run은 시간표를 지나며 이어지는 값 { limits, conditions, writers }다 */
   constructor({ figure, step, si, t0, start, run }) {
-    Object.assign(this, { figure, step, si, run, lastT: t0 });
+    Object.assign(this, { figure, step, si, run, lastT: Math.round(t0 * TICKS_PER_MS) });
     this.byId = valueTable(figure);
     this.state = new Map(figure.values.filter((v) => v.ref === undefined).map((v) => [v.id, v.from]));
     this.followers = new Map();
@@ -55,8 +55,8 @@ class StepEngine {
     const { limits, conditions } = this.run;
     conditions.events += n;
     this.chain += n;
-    if (conditions.events > limits.events) throw eventBudgetError('events', limits.events, { line, t: roundTime(t) });
-    if (this.chain > limits.chain) throw eventBudgetError('chain', limits.chain, { line, t: roundTime(t) });
+    if (conditions.events > limits.events) throw eventBudgetError('events', limits.events, { line, t: msOfTicks(t) });
+    if (this.chain > limits.chain) throw eventBudgetError('chain', limits.chain, { line, t: msOfTicks(t) });
   }
 
   // cost: time O(n), heap O(1), stack O(d)
@@ -79,7 +79,7 @@ class StepEngine {
    */
   scheduleArrivals(plan, { launch, startAt }) {
     const { heap, figure, isMerged } = this;
-    const at = (k) => Math.max(roundTime(startAt + arrivalOffsetMs(plan.fracs[k], plan.ms, plan.pace)), roundTime(startAt));
+    const at = (k) => startAt + plan.arrivals[k];
     const push = ({ k, order, ei = 0 }, { kind, exprs, line }) => heap.push({ key: [at(k), 0, kind, launch.order, order, ei], kind: 'update', exprs, line, isMerged });
     for (let k = 1; k < plan.nodes.length && isPassed(plan.fracs[k], plan.lost); k++) {
       push({ k, order: k }, { kind: 2, exprs: [], line: launch.line });
@@ -106,7 +106,7 @@ class StepEngine {
     if (launch.when) {
       this.count(1, { line: launch.line, t });
       if (!this.test(launch.when, 'when', launch)) {
-        this.run.conditions.skips.push({ si: this.si, line: launch.line, node: launch.node, cond: launch.when.text, t });
+        this.run.conditions.skips.push({ si: this.si, line: launch.line, node: launch.node, cond: launch.when.text, t: msOfTicks(t) });
         return;
       }
     }
@@ -121,7 +121,7 @@ class StepEngine {
     const { launch } = entry;
     entry.isDone = true;
     this.pending.splice(this.pending.indexOf(entry), 1);
-    this.run.conditions.waits.push({ si: this.si, line: launch.line, node: launch.node, cond: launch.wait.text, t0: entry.t0, t1: t, end });
+    this.run.conditions.waits.push({ si: this.si, line: launch.line, node: launch.node, cond: launch.wait.text, t0: msOfTicks(entry.t0), t1: msOfTicks(t), end });
   }
 
   // cost: time O(r), heap O(r), stack O(1)
@@ -132,7 +132,7 @@ class StepEngine {
     const { launch } = entry;
     const written = (id) => this.run.writers.get(this.root(id));
     const refs = launch.wait.refs.map((id) => ({ id, text: this.textOf(id), line: written(id).line, at: written(id).at }));
-    this.run.conditions.stalls.push({ si: this.si, line: launch.line, node: launch.node, move: launch.text, cond: launch.wait.text, t, refs, ...(launch.isStuck ? { stuck: true } : {}) });
+    this.run.conditions.stalls.push({ si: this.si, line: launch.line, node: launch.node, move: launch.text, cond: launch.wait.text, t: msOfTicks(t), refs, ...(launch.isStuck ? { stuck: true } : {}) });
   }
 
   // cost: time O(1), heap O(1), stack O(1)
@@ -141,7 +141,7 @@ class StepEngine {
   noteWrite(t) {
     return (e) => {
       const root = this.root(e.id);
-      this.run.writers.set(root, { line: e.line, at: t, isSet: true });
+      this.run.writers.set(root, { line: e.line, at: msOfTicks(t), isSet: true });
       if (!this.prior.has(root)) this.prior.set(root, this.state.get(root));
       this.count(this.followers.get(root) ?? 0, { line: e.line, t });
     };
@@ -158,7 +158,7 @@ class StepEngine {
       this.count(1, { line, t });
       for (const group of isMerged ? [exprs] : exprs.map((e) => [e])) {
         runUpdate(group, { state, textOf, byId, onWrite: this.noteWrite(t) });
-        noteRowChanges(rows, textOf, { t, isMerged });
+        noteRowChanges(rows, textOf, { t: msOfTicks(t), isMerged });
       }
     }
     return new Set([...this.prior].filter(([id, text]) => state.get(id) !== text).map(([id]) => id));
@@ -204,7 +204,7 @@ class StepEngine {
   // basis: estimate
   // `wait`가 거짓인 출발을 대기에 올린다. 제한 시간이 있으면 그 시각을 깨울 이벤트를 하나 넣는다.
   holdDeparture(launch, t) {
-    const deadline = launch.timeoutMs === undefined ? Infinity : roundTime(t + launch.timeoutMs);
+    const deadline = launch.timeoutTicks === undefined ? Infinity : t + launch.timeoutTicks;
     const roots = [...new Set(launch.wait.refs.map((id) => this.root(id)))];
     const entry = { launch, t0: t, deadline, seq: this.waitSeq++, roots, isDone: false };
     this.pending.push(entry);
@@ -217,7 +217,7 @@ class StepEngine {
   // 한 시각의 이벤트를 위 표의 순위(갱신, 풀린 대기, 출발)로 처리한다. 출발 도형에 닿는 것으로 정한 `@도형` 갱신은 출발과 같은 시각이라,
   // 처리가 새 이벤트를 같은 시각에 더하면 같은 시각을 한 번 더 돈다. 이 연쇄는 chain 예산이 끊는다.
   processSlot(t) {
-    if (t > TIME_LIMIT_MS) throw timeLimitError(this.heap.peek(), this.step);
+    if (t > TICK_LIMIT) throw timeLimitError(this.heap.peek(), this.step);
     this.chain = 0;
     this.lastT = t;
     do {
@@ -243,21 +243,24 @@ class StepEngine {
   // vars: n = 처리한 이벤트 수
   // basis: estimate
   /**
-   * 출발(launch) 목록을 처리한다. 박자 단계는 박자마다 한 번(tEnd 무한), 흐름 단계는 단계 하나를 한 번(tEnd는 단계 끝) 부른다.
-   * launch는 { order, line, node, text, when?, wait?, timeoutMs?, isStuck, readyAt, plan, elsePlan? }이고 plan은 { ms, nodes, fracs, pace?, lost?, sets }다.
+   * 출발(launch) 목록을 처리한다. 박자 단계는 박자마다 한 번(lengthTicks 없음), 흐름 단계는 단계 하나를 한 번(lengthTicks는 단계 길이) 부른다.
+   * launch는 { order, line, node, text, when?, wait?, timeoutTicks?, isStuck, rel, plan, elsePlan? }이고 rel은 start 뒤 출발 눈금 번호, plan은 { ms, nodes, fracs, arrivals, pace?, lost?, sets }다(arrivals는 time-grid.js의 gridPlan이 정한다).
    * 단계 끝까지 풀리지 않는 대기는 `step-end`, 처리할 이벤트가 하나도 없는 대기는 `stalled`로 끝나 `stalls`에 남는다.
-   * @returns { started, lastT }. started는 출발한 점 { launch, at, via, isElse }의 처리 순서 목록이다
+   * @param args { launches, start, lengthTicks }. start는 이 처리의 시작 시각(그림 전체 ms)이고 눈금 번호 하나로 바뀐다
+   * @returns { started, endTicks }. started는 출발한 점 { launch, at, via, isElse }의 처리 순서 목록이고 at은 start 뒤 눈금 번호다. endTicks는 이벤트 처리가 마지막으로 소비한 시각의 start 뒤 눈금 번호(0 이상)다
    */
-  runLaunches({ launches, tEnd }) {
+  runLaunches({ launches, start, lengthTicks = Infinity }) {
+    const origin = Math.round(start * TICKS_PER_MS);
+    const tEnd = origin + lengthTicks;
     this.started = [];
-    for (const launch of launches) this.heap.push({ key: [roundTime(launch.readyAt), 2, launch.order, 0, 0, 0], kind: 'depart', launch });
+    for (const launch of launches) this.heap.push({ key: [origin + launch.rel, 2, launch.order, 0, 0, 0], kind: 'depart', launch });
     while (this.dropStale() && this.heap.peek().key[0] <= tEnd) this.processSlot(this.heap.peek().key[0]);
     const isStepEnd = this.dropStale();
     for (const entry of [...this.pending]) {
       this.endWait(entry, { t: isStepEnd ? tEnd : this.lastT, end: isStepEnd ? 'step-end' : 'stalled' });
       if (!isStepEnd) this.noteStall(entry, this.lastT);
     }
-    return { started: this.started, lastT: this.lastT };
+    return { started: this.started.map((item) => ({ ...item, at: item.at - origin })), endTicks: Math.max(0, this.lastT - origin) };
   }
 
   // cost: time O(w), heap O(w), stack O(1)

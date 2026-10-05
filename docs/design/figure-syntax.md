@@ -204,7 +204,7 @@ step "소비자 하나가 느려진다" for=6s status="slow=warn"
 |---|---|
 | 계열 이름, `x`, `y`, `min`, `q1`, `median`, `q3`, `max`, `계열.low`, `계열.high` | 숫자. 막대 계열 값만 빠진 값 `-`도 된다 |
 
-- 시간은 `900ms`나 `2s`이고 0보다 크다. 단위 없는 숫자는 시간이 아니다. 시간 값 하나는 1시간(`3600s`, 3600000ms)을 넘을 수 없고, 넘으면 그 줄의 오류다(`code`는 `time-limit`). `speed`, `for`, `wait`, `time=`, `at=`, `every=`, `timeout=`, `legs=`의 항목 모두 같다. 단계 하나의 길이와 그림 전체 시간에도 같은 상한이 있다([재생](playback.md#시간-상한)).
+- 시간은 `900ms`나 `2s`이고 0보다 크다. 단위 없는 숫자는 시간이 아니다. 시간 값 하나는 1시간(`3600s`, 3600000ms)을 넘을 수 없고, 넘으면 그 줄의 오류다(`code`는 `time-limit`). `speed`, `for`, `wait`, `time=`, `at=`, `every=`, `timeout=`, `legs=`의 항목 모두 같다. 단계 하나의 길이와 그림 전체 시간에도 같은 상한이 있다([재생](playback.md#시간-상한)). `when`이나 `wait`를 쓰는 단계는 시간 값이 0.00001ms의 정수배여야 하고, `0.000001ms`처럼 더 가는 값은 그 줄의 오류다(`code`는 `time-precision`, [재생](playback.md#시간-정밀도)).
 - 숫자는 `-`와 소수점만 쓰는 십진수다(`-3`, `91.4`). 천 단위 쉼표와 지수 표기는 오류다. 음수를 쓸 수 있는 자리는 [차트](charts.md)의 값 축 표가 정한다.
 - 글 값은 늘 따옴표 안에 쓴다. `tag=you`는 오류다.
 
@@ -466,7 +466,7 @@ step "소비자 하나가 느려진다" for=6s status="slow=warn"
 | `warning` | 품질 문제 | 씀 | `--strict` |
 | `deprecated` | 옛 형식이고 계속 동작한다 | 씀 | `--no-deprecated` |
 
-- 진단 하나의 모양은 `{ severity, code, line, column, message, fix? }`이고 모든 진단이 쓴다. `--json`은 여기에 `file`을 더하고, 옛 필드 `lines`, `check`, `level`도 함께 내(폐기, 다음 판까지) 진단마다 한 줄을 표준 출력에 쓴다. `code`는 `syntax`(문법), `check-1`~`check-14`([그림 검사](figure-check.md) 번호), `time-limit`(시간 상한 초과), `time-precision`(출발 시각이 늘지 않는 시간 정밀도), `value-type`, `leg-time`, `wait-stalled`, `budget-exceeded`(생성 예산 초과, [새 기능의 호환과 진단 code](#새-기능의-호환과-진단-code), [칸 격자](grid.md#예산), [이벤트 예산](playback.md#이벤트-예산)), `deprecated-statement`, `deprecated-option`, `deprecated-value`, `deprecated-kind`, `deprecated-extension`(옛 확장자 파일), `deprecated-fence`(마크다운 옛 울타리), `unsupported-version`, `invalid-version`, `version-required`, `layout`(배치 실패, [배치](layout.md#배치-실패)), `io`, `internal`이다. `column`은 줄 안 1부터 센 자리다. `fix`는 `{ line, column, length, text }`로, 그 줄의 `column`부터 `length`글자를 `text`로 바꾼다.
+- 진단 하나의 모양은 `{ severity, code, line, column, message, fix? }`이고 모든 진단이 쓴다. `--json`은 여기에 `file`을 더하고, 옛 필드 `lines`, `check`, `level`도 함께 내(폐기, 다음 판까지) 진단마다 한 줄을 표준 출력에 쓴다. `code`는 `syntax`(문법), `check-1`~`check-14`([그림 검사](figure-check.md) 번호), `time-limit`(시간 상한 초과), `time-precision`(출발 시각이 늘지 않거나 조건을 쓰는 단계의 시간이 0.00001ms 눈금에 맞지 않는 시간 정밀도), `value-type`, `leg-time`, `wait-stalled`, `budget-exceeded`(생성 예산 초과, [새 기능의 호환과 진단 code](#새-기능의-호환과-진단-code), [칸 격자](grid.md#예산), [이벤트 예산](playback.md#이벤트-예산)), `deprecated-statement`, `deprecated-option`, `deprecated-value`, `deprecated-kind`, `deprecated-extension`(옛 확장자 파일), `deprecated-fence`(마크다운 옛 울타리), `unsupported-version`, `invalid-version`, `version-required`, `layout`(배치 실패, [배치](layout.md#배치-실패)), `io`, `internal`이다. `column`은 줄 안 1부터 센 자리다. `fix`는 `{ line, column, length, text }`로, 그 줄의 `column`부터 `length`글자를 `text`로 바꾼다.
 - `daphnis migrate 원본... [--write]`는 진단의 `fix`를 그대로 적용한다. 기본은 바뀔 줄만 `-`, `+`로 보여 주고, `--write`일 때만 파일을 고친다. 원본에 오류가 있거나 고친 글에 오류나 폐기가 남으면 아무것도 쓰지 않는다. 새 폐기 항목은 표에 `replace`만 적으면 된다.
 
 - CLI 출력과 옵션도 같은 규칙이다. 명령과 옵션 이름, 종료 코드, `--json` 필드는 추가만 하고, 옛 `--json` 필드(`lines`, `check`, `level`)는 `src/diagnostics.js` 표에 deprecated로 표시해 다음 판까지 함께 낸다.
