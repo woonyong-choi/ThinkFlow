@@ -51,15 +51,15 @@ test('readmes_use_the_figures_of_their_own_language_and_the_same_set', () => {
   for (const name of [...english, ...korean]) assert.ok(readFileSync(join(SHOWCASE_DIR, name)), name);
 });
 
-// 근거: 이슈 #61 완료 조건 "첫 화면에 움직이는 그림": 로고 다음 첫 그림이 대표 구성도의 라이트와 다크 SVG다
-test('readme_first_figure_after_the_logo_is_the_animated_cloud_architecture_in_both_themes', () => {
+// 근거: 이슈 #61 완료 조건 "첫 화면에 움직이는 그림": 로고 다음 첫 그림이 여러 흐름이 동시에 오가는 비동기 그림의 라이트와 다크 SVG다. 이슈 #127이 대표 그림을 구성도에서 바꿨다
+test('readme_first_figure_after_the_logo_is_the_animated_async_orders_in_both_themes', () => {
   for (const [readme, lang] of [['README.md', 'en'], ['README.ko.md', 'ko']]) {
     const [, second] = read(readme).split('<picture>').slice(0, 3);
     const hero = read(readme).split('<picture>')[2];
 
     assert.ok(second.includes('daphnis-lockup-light.svg'));
-    assert.ok(hero.includes(`cloud-architecture-${lang}-dark.svg`) && hero.includes(`cloud-architecture-${lang}-light.svg`));
-    assert.match(readFileSync(join(SHOWCASE_DIR, `cloud-architecture-${lang}-light.svg`), 'utf8'), /<animate|animation/);
+    assert.ok(hero.includes(`async-orders-${lang}-dark.svg`) && hero.includes(`async-orders-${lang}-light.svg`));
+    assert.match(readFileSync(join(SHOWCASE_DIR, `async-orders-${lang}-light.svg`), 'utf8'), /<animate|animation/);
   }
 });
 
