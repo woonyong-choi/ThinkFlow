@@ -1,178 +1,228 @@
 {
   "color": {
-    "$type": "color",
     "figure": {
       "icon": {
-        "$value": "{color.blue.dark-stroke}"
+        "$value": "{color.blue.dark-stroke}",
+        "$type": "color"
       },
       "icon-tile": {
-        "$value": "{color.blue.dark-fill}"
+        "$value": "{color.blue.dark-fill}",
+        "$type": "color"
       },
       "queue-fill": {
-        "$value": "{color.blue.dark-stroke}"
+        "$value": "{color.blue.dark-stroke}",
+        "$type": "color"
       },
       "queue-empty": {
-        "$value": "{color.gray.910}"
+        "$value": "{color.gray.910}",
+        "$type": "color"
       }
     },
     "paint": {
       "red": {
         "fill": {
-          "$value": "{color.red.dark-fill}"
+          "$value": "{color.red.dark-fill}",
+          "$type": "color"
         },
         "stroke": {
-          "$value": "{color.red.dark-stroke}"
+          "$value": "{color.red.dark-stroke}",
+          "$type": "color"
         },
         "outline": {
-          "$value": "{color.red.dark-outline}"
+          "$value": "{color.red.dark-outline}",
+          "$type": "color"
         },
         "ink": {
-          "$value": "{color.red.dark-ink}"
+          "$value": "{color.red.dark-ink}",
+          "$type": "color"
         },
         "dot": {
-          "$value": "{color.red.dark-dot}"
+          "$value": "{color.red.dark-dot}",
+          "$type": "color"
         }
       },
       "amber": {
         "fill": {
-          "$value": "{color.palette.amber.dark-fill}"
+          "$value": "{color.palette.amber.dark-fill}",
+          "$type": "color"
         },
         "stroke": {
-          "$value": "{color.palette.amber.dark-stroke}"
+          "$value": "{color.palette.amber.dark-stroke}",
+          "$type": "color"
         },
         "outline": {
-          "$value": "{color.palette.amber.dark-outline}"
+          "$value": "{color.palette.amber.dark-outline}",
+          "$type": "color"
         },
         "ink": {
-          "$value": "{color.palette.amber.dark-ink}"
+          "$value": "{color.palette.amber.dark-ink}",
+          "$type": "color"
         }
       },
       "green": {
         "fill": {
-          "$value": "{color.green.dark-fill}"
+          "$value": "{color.green.dark-fill}",
+          "$type": "color"
         },
         "stroke": {
-          "$value": "{color.green.dark-stroke}"
+          "$value": "{color.green.dark-stroke}",
+          "$type": "color"
         },
         "outline": {
-          "$value": "{color.green.dark-outline}"
+          "$value": "{color.green.dark-outline}",
+          "$type": "color"
         },
         "ink": {
-          "$value": "{color.green.dark-ink}"
+          "$value": "{color.green.dark-ink}",
+          "$type": "color"
         },
         "dot": {
-          "$value": "{color.green.dark-dot}"
+          "$value": "{color.green.dark-dot}",
+          "$type": "color"
         }
       },
       "teal": {
         "fill": {
-          "$value": "{color.palette.teal.dark-fill}"
+          "$value": "{color.palette.teal.dark-fill}",
+          "$type": "color"
         },
         "stroke": {
-          "$value": "{color.palette.teal.dark-stroke}"
+          "$value": "{color.palette.teal.dark-stroke}",
+          "$type": "color"
         },
         "outline": {
-          "$value": "{color.palette.teal.dark-outline}"
+          "$value": "{color.palette.teal.dark-outline}",
+          "$type": "color"
         },
         "ink": {
-          "$value": "{color.palette.teal.dark-ink}"
+          "$value": "{color.palette.teal.dark-ink}",
+          "$type": "color"
         },
         "dot": {
-          "$value": "{color.palette.teal.dark-dot}"
+          "$value": "{color.palette.teal.dark-dot}",
+          "$type": "color"
         }
       },
       "navy": {
         "fill": {
-          "$value": "{color.palette.navy.dark-fill}"
+          "$value": "{color.palette.navy.dark-fill}",
+          "$type": "color"
         },
         "stroke": {
-          "$value": "{color.palette.navy.dark-stroke}"
+          "$value": "{color.palette.navy.dark-stroke}",
+          "$type": "color"
         },
         "outline": {
-          "$value": "{color.palette.navy.dark-outline}"
+          "$value": "{color.palette.navy.dark-outline}",
+          "$type": "color"
         },
         "ink": {
-          "$value": "{color.palette.navy.dark-ink}"
+          "$value": "{color.palette.navy.dark-ink}",
+          "$type": "color"
         }
       },
       "purple": {
         "fill": {
-          "$value": "{color.purple.dark-fill}"
+          "$value": "{color.purple.dark-fill}",
+          "$type": "color"
         },
         "stroke": {
-          "$value": "{color.purple.dark-stroke}"
+          "$value": "{color.purple.dark-stroke}",
+          "$type": "color"
         },
         "outline": {
-          "$value": "{color.purple.dark-outline}"
+          "$value": "{color.purple.dark-outline}",
+          "$type": "color"
         },
         "ink": {
-          "$value": "{color.purple.dark-ink}"
+          "$value": "{color.purple.dark-ink}",
+          "$type": "color"
         },
         "dot": {
-          "$value": "{color.purple.dark-dot}"
+          "$value": "{color.purple.dark-dot}",
+          "$type": "color"
         },
         "group-1": {
-          "$value": "{color.purple.dark-tint-1}"
+          "$value": "{color.purple.dark-tint-1}",
+          "$type": "color"
         },
         "group-2": {
-          "$value": "{color.purple.dark-tint-2}"
+          "$value": "{color.purple.dark-tint-2}",
+          "$type": "color"
         },
         "group-3": {
-          "$value": "{color.purple.dark-tint-3}"
+          "$value": "{color.purple.dark-tint-3}",
+          "$type": "color"
         }
       },
       "pink": {
         "fill": {
-          "$value": "{color.palette.pink.dark-fill}"
+          "$value": "{color.palette.pink.dark-fill}",
+          "$type": "color"
         },
         "stroke": {
-          "$value": "{color.palette.pink.dark-stroke}"
+          "$value": "{color.palette.pink.dark-stroke}",
+          "$type": "color"
         },
         "outline": {
-          "$value": "{color.palette.pink.dark-outline}"
+          "$value": "{color.palette.pink.dark-outline}",
+          "$type": "color"
         },
         "ink": {
-          "$value": "{color.palette.pink.dark-ink}"
+          "$value": "{color.palette.pink.dark-ink}",
+          "$type": "color"
         }
       },
       "sky": {
         "fill": {
-          "$value": "{color.palette.sky.dark-fill}"
+          "$value": "{color.palette.sky.dark-fill}",
+          "$type": "color"
         },
         "stroke": {
-          "$value": "{color.palette.sky.dark-stroke}"
+          "$value": "{color.palette.sky.dark-stroke}",
+          "$type": "color"
         },
         "outline": {
-          "$value": "{color.palette.sky.dark-outline}"
+          "$value": "{color.palette.sky.dark-outline}",
+          "$type": "color"
         },
         "ink": {
-          "$value": "{color.palette.sky.dark-ink}"
+          "$value": "{color.palette.sky.dark-ink}",
+          "$type": "color"
         },
         "group-1": {
-          "$value": "{color.palette.sky.dark-tint-1}"
+          "$value": "{color.palette.sky.dark-tint-1}",
+          "$type": "color"
         },
         "group-2": {
-          "$value": "{color.palette.sky.dark-tint-2}"
+          "$value": "{color.palette.sky.dark-tint-2}",
+          "$type": "color"
         },
         "group-3": {
-          "$value": "{color.palette.sky.dark-tint-3}"
+          "$value": "{color.palette.sky.dark-tint-3}",
+          "$type": "color"
         }
       },
       "gray": {
         "fill": {
-          "$value": "{color.palette.slate.dark-fill}"
+          "$value": "{color.palette.slate.dark-fill}",
+          "$type": "color"
         },
         "stroke": {
-          "$value": "{color.palette.slate.dark-stroke}"
+          "$value": "{color.palette.slate.dark-stroke}",
+          "$type": "color"
         },
         "outline": {
-          "$value": "{color.palette.slate.dark-outline}"
+          "$value": "{color.palette.slate.dark-outline}",
+          "$type": "color"
         },
         "ink": {
-          "$value": "{color.palette.slate.dark-ink}"
+          "$value": "{color.palette.slate.dark-ink}",
+          "$type": "color"
         },
         "dot": {
-          "$value": "{color.palette.slate.dark-dot}"
+          "$value": "{color.palette.slate.dark-dot}",
+          "$type": "color"
         }
       }
     }

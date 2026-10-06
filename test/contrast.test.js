@@ -1,3 +1,4 @@
+import { verifyTheme } from '../scripts/theme-snapshot.mjs';
 // 색과 대비: 글자 4.5, 그래픽 3, 꾸밈 요소 1.5와 1.3(docs/design/docs-integration.md 대비 기준 표). 토큰 정본(tokens.json, tokens.dark.json)에서 라이트와 다크 색을 풀어 잰다.
 import assert from 'node:assert/strict';
 import { readdirSync, readFileSync } from 'node:fs';
@@ -69,8 +70,9 @@ const HEX_VALUE = /^#[0-9a-f]{6}$/;
 // basis: estimate
 // src 아래 코드와 CSS 파일. 토큰 정본과 생성물은 뺀다.
 function codeFiles() {
+  verifyTheme();
   return readdirSync(SRC, { recursive: true })
-    .filter((name) => /\.(js|css)$/.test(name) && !GENERATED_OR_SOURCE.has(name))
+    .filter((name) => /\.(js|css)$/.test(name) && !GENERATED_OR_SOURCE.has(name) && !name.startsWith('design-theme/'))
     .map((name) => ({ name, text: readFileSync(new URL(name, SRC), 'utf8') }));
 }
 

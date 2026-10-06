@@ -1,33 +1,32 @@
 {
-  "id": "technical",
+  "id": "base",
   "schemaVersion": 1,
-  "extends": "base",
   "modes": [
     "light",
     "dark"
   ],
   "defaultMode": "light",
-  "description": "Neutral architecture surfaces with a blue accent",
-  "fonts": "bundled-by-renderer",
+  "description": "Blue accents, neutral surfaces and shared document and diagram typography",
   "source": {
     "repository": "https://github.com/woonyong-choi/design-tokens",
-    "path": "themes/technical",
+    "path": "themes/base",
     "version": "0.1.1"
   },
   "files": {
-    "assets/fonts/443896d591e4f761-s.p.woff2": "2c935ccea0efa74f1d034628790a2aebfe2ccb6f5d60e8f5b224366066e10188",
-    "assets/fonts/4c9affa5bc8f420e-s.p.woff2": "e310b55a7fd9677f5e3555e6c6c4d064fa1f1d24393f0ddbe217cea12a8c432f",
-    "assets/fonts/e4af272ccee01ff0-s.p.woff2": "c940764593d0fe5d596be327ca7558855e018039fb78509aa21921fd3644c3e4",
-    "diagram.tokens.dark.json": "9538de372d795eb4b7e9e67831fd99a42052b28e3992f98c00fa08c0a588e545",
-    "diagram.tokens.json": "3169274bb14249fab9e4922f9a115cc33c667c321ab3fdca268e2ef93884dc57",
+    "assets/fonts/jetbrains-mono-license.txt": "c8d5fa5b71c563a50b2645296729024e4503f626319baf1e09c2bcde0ea79d33",
+    "assets/fonts/jetbrains-mono-regular.woff2": "bceff0710e3a7fe5b3622265c48b6fbc055cf071df80ef5f36ffc69550296664",
+    "assets/fonts/pretendard-license.txt": "b04538c9abec39a3db75108cf0af0fd9c77032fe8aa2cf38345b4d250e98e38e",
+    "assets/fonts/pretendard-variable.woff2": "9599f12fd42fc0bce1cd50b47a0c022e108d7aa64dd0d1bb0ed44f3282d900b4",
+    "diagram.tokens.dark.json": "860a58ed9c3164b87355294a53e1e48d779a033695be5c5c299b377031983ece",
+    "diagram.tokens.json": "77af7fc1b310098360e4299bf7c8292fba443d0d402a175f36fb0cc3e2bd58df",
     "renderer.tokens.dark.json": "1acb99221e9cef8517e01f4652dfb28bc9af82ddfe98bb7edefa2473e2379c87",
     "renderer.tokens.json": "73259cd5a54d71dd128169267608a9f4122d37cb2e60c34670df33dab50c2dc4",
-    "styles.css": "e1a42dcb6c8bd46117c8d14f96d431f3d7e1a7bb31fbc6fd8bfcf0574f1bd4ee",
-    "styles.source.css": "e1a42dcb6c8bd46117c8d14f96d431f3d7e1a7bb31fbc6fd8bfcf0574f1bd4ee",
-    "theme.css": "94a404b4ef0b7cdf0989a4a0ca25a5f6f766e45d62022b178420e5fafbb924a4",
-    "tokens.dark.json": "1fe2801b57d1efc7309c0e5d3288a16859d79487f14622cf3542b9f2f4f63410",
-    "tokens.json": "9b1841db11564b5d0f4d67d7d3eeae712859f170a97f411c98ef4ddbeea5021a",
-    "tokens.light.json": "9b1841db11564b5d0f4d67d7d3eeae712859f170a97f411c98ef4ddbeea5021a"
+    "styles.css": "b856ff8f3bd48cb6dedf1eb6b23deeabb4340dadfb15b8944ba58b288dc36478",
+    "styles.source.css": "4f824a4f200755432a116e8acccc93eefaeee1cdbf4eb47add2a1e0d1687f39e",
+    "theme.css": "98a3f25957757b89738f97bc5bc7461894de31c137b0d2b3acb5a5bd12727edc",
+    "tokens.dark.json": "b5406d301c5486a04160bc498bfffc415f406defc70828a2185246ecfa772e4d",
+    "tokens.json": "b7bbf715675d19ff85a5ea807bbbd5fd52a61b5c9550fe5d17cb58e43492b7be",
+    "tokens.light.json": "b7bbf715675d19ff85a5ea807bbbd5fd52a61b5c9550fe5d17cb58e43492b7be"
   },
-  "contentHash": "82b1c0af7974359505307dda133ebba7676d9565dd6d4d2ce884939365825896"
+  "contentHash": "547fe104d7475e457bb2f5ae0a2237038af2794a15b3e8b47e5ecbd6797d1054"
 }

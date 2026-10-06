@@ -9,7 +9,7 @@ import { readJson } from './read-json.mjs';
 /** 해시 검증을 통과한 공통 토큰 파일 경로 둘을 반환한다. */
 export function commonTokenPaths() {
   const meta = verifyTheme();
-  if (meta.id !== 'technical') throw new Error('daphnis requires the technical theme');
+  if (meta.id !== 'base') throw new Error('daphnis requires the base theme');
   return {
     light: fileURLToPath(new URL('../../src/design-theme/renderer.tokens.json', import.meta.url)),
     dark: fileURLToPath(new URL('../../src/design-theme/renderer.tokens.dark.json', import.meta.url)),

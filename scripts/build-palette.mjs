@@ -22,7 +22,7 @@ function main(argv) {
   for (const [name, steps] of Object.entries(palette)) {
     for (const [step, hex] of Object.entries(steps)) layer.get(name).get(step).set('$value', hex);
   }
-  if (serializeJson(light) !== readFileSync(path, 'utf8')) throw new Error('imported palette is stale: regenerate it in design-tokens and sync the technical theme');
+  if (serializeJson(light) !== readFileSync(path, 'utf8')) throw new Error('imported palette is stale: regenerate it in design-tokens and sync the base theme');
   return 0;
 }
 
