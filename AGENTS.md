@@ -45,6 +45,6 @@ npm run check
 - elkjs 경로 점 수정 금지. 예외는 `docs/design/layout.md` 선 그리기 절의 선 끝 계단 펴기 하나
 - 오류가 있으면 결과 파일을 쓰지 않음
 - `src/player/`는 시간표를 읽기만 하고 상태를 다시 계산하지 않음
-- 화면 값은 토큰만 사용. 공통 토큰(색 역할, 기본 색 단계, 간격, 반지름, 글자 크기)은 `@woonyong-choi/design-tokens`가 정본이고 `src/tokens.json`에는 그림 전용 토큰만 둔다. 같은 이름을 다시 정의하지 않는다
+- 화면 값은 토큰만 사용. 공통 토큰(색 역할, 기본 색 단계, 간격, 반지름, 글자 크기)은 `@woonyong-choi/design-tokens`가 정본이고 `src/tokens.json`은 technical 테마의 그림 전용 토큰을 가져온 사본이다. 공통 정본은 design-tokens의 themes/technical에서 수정한다. 같은 이름을 다시 정의하지 않는다
 - design-tokens 버전은 `package.json`의 `devDependencies` 태그로 고정하고, 올릴 때는 `design-tokens-update` 워크플로가 만드는 PR을 쓴다. 손으로 올리면 `npm run palette`, `npm run tokens`, `npm run figures`를 같은 PR에서 돌린다
 - `tokens.css`, `tokens.js` 직접 수정 금지

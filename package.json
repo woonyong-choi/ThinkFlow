@@ -43,10 +43,11 @@
     "checkdoc": "node scripts/build-check-doc.mjs",
     "palette": "node scripts/build-palette.mjs",
     "tokens": "node scripts/build-tokens.mjs src/tokens.json --out src",
-    "check": "node scripts/build-tokens.mjs src/tokens.json --check && node scripts/check-tokens.mjs src && node scripts/check-cost-comments.mjs src test && node scripts/check-size.mjs src scripts",
-    "examples": "node src/cli.js gallery examples --out examples/out --title \"예제\"",
+    "check": "node scripts/sync-theme.mjs --check && node scripts/build-tokens.mjs src/tokens.json --check && node scripts/check-tokens.mjs src && node scripts/check-cost-comments.mjs src test && node scripts/check-size.mjs src scripts",
+    "examples": "node src/cli.js gallery examples --out examples/out --title \"\uc608\uc81c\"",
     "showcase": "node scripts/build-showcase.mjs",
-    "figures": "npm run examples && node src/cli.js render docs/assets/how-it-works.dap && npm run showcase && node src/cli.js md $(git grep -l '^```dap' -- '*.md')"
+    "figures": "npm run examples && node src/cli.js render docs/assets/how-it-works.dap && npm run showcase && node src/cli.js md $(git grep -l '^```dap' -- '*.md')",
+    "theme:sync": "node scripts/sync-theme.mjs"
   },
   "engines": {
     "node": ">=20"

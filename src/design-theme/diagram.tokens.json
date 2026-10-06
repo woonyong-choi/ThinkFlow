@@ -1,0 +1,940 @@
+{
+  "$description": "daphnis 화면 값 정본. 색은 원색 층(color.palette)과 역할 층으로 나누고, 코드와 CSS는 역할 색만 쓴다. 간격은 2px 단위 단계(space.n = 2n px)다.",
+  "color": {
+    "$type": "color",
+    "palette": {
+      "$description": "그림 문법의 색 이름 층. 이 저장소가 값(hex)을 갖는 것은 sky의 옅은 면과 외곽선, slate의 옅은 면과 외곽선뿐이고(scripts/build-palette.mjs가 계산) 나머지는 design-tokens의 기본 색 단계를 가리키는 별칭이다. 코드와 CSS는 이 층을 직접 쓰지 않고 color.paint.*를 쓴다.",
+      "amber": {
+        "$description": "주의 주황. design-tokens의 orange 단계다.",
+        "light-fill": {
+          "$value": "{color.orange.light-fill}"
+        },
+        "light-stroke": {
+          "$value": "{color.orange.light-stroke}"
+        },
+        "light-ink": {
+          "$value": "{color.orange.light-ink}"
+        },
+        "light-outline": {
+          "$value": "{color.orange.light-outline}"
+        },
+        "dark-fill": {
+          "$value": "{color.orange.dark-fill}"
+        },
+        "dark-stroke": {
+          "$value": "{color.orange.dark-stroke}"
+        },
+        "dark-ink": {
+          "$value": "{color.orange.dark-ink}"
+        },
+        "dark-outline": {
+          "$value": "{color.orange.dark-outline}"
+        }
+      },
+      "teal": {
+        "$description": "초록 범주. design-tokens의 green 단계다.",
+        "light-fill": {
+          "$value": "{color.green.light-fill}"
+        },
+        "light-stroke": {
+          "$value": "{color.green.light-stroke}"
+        },
+        "light-ink": {
+          "$value": "{color.green.light-ink}"
+        },
+        "light-dot": {
+          "$value": "{color.green.light-dot}"
+        },
+        "light-outline": {
+          "$value": "{color.green.light-outline}"
+        },
+        "dark-fill": {
+          "$value": "{color.green.dark-fill}"
+        },
+        "dark-stroke": {
+          "$value": "{color.green.dark-stroke}"
+        },
+        "dark-ink": {
+          "$value": "{color.green.dark-ink}"
+        },
+        "dark-dot": {
+          "$value": "{color.green.dark-dot}"
+        },
+        "dark-outline": {
+          "$value": "{color.green.dark-outline}"
+        }
+      },
+      "navy": {
+        "$description": "파랑 범주. design-tokens의 blue 단계다.",
+        "light-fill": {
+          "$value": "{color.blue.light-fill}"
+        },
+        "light-stroke": {
+          "$value": "{color.blue.light-stroke}"
+        },
+        "light-ink": {
+          "$value": "{color.blue.light-ink}"
+        },
+        "light-outline": {
+          "$value": "{color.blue.light-outline}"
+        },
+        "dark-fill": {
+          "$value": "{color.blue.dark-fill}"
+        },
+        "dark-stroke": {
+          "$value": "{color.blue.dark-stroke}"
+        },
+        "dark-ink": {
+          "$value": "{color.blue.dark-ink}"
+        },
+        "dark-outline": {
+          "$value": "{color.blue.dark-outline}"
+        }
+      },
+      "pink": {
+        "$description": "보라 범주. design-tokens의 purple 단계다.",
+        "light-fill": {
+          "$value": "{color.purple.light-fill}"
+        },
+        "light-stroke": {
+          "$value": "{color.purple.light-stroke}"
+        },
+        "light-ink": {
+          "$value": "{color.purple.light-ink}"
+        },
+        "light-outline": {
+          "$value": "{color.purple.light-outline}"
+        },
+        "dark-fill": {
+          "$value": "{color.purple.dark-fill}"
+        },
+        "dark-stroke": {
+          "$value": "{color.purple.dark-stroke}"
+        },
+        "dark-ink": {
+          "$value": "{color.purple.dark-ink}"
+        },
+        "dark-outline": {
+          "$value": "{color.purple.dark-outline}"
+        }
+      },
+      "sky": {
+        "$description": "파랑 강조 그룹용 옅은 면. 면과 외곽선은 scripts/build-palette.mjs가 계산한 값이고 나머지는 design-tokens의 blue 단계다.",
+        "light-fill": {
+          "$value": "#e9f1fe"
+        },
+        "light-stroke": {
+          "$value": "{color.blue.light-stroke}"
+        },
+        "light-ink": {
+          "$value": "{color.blue.light-ink}"
+        },
+        "light-tint-1": {
+          "$value": "{color.blue.light-tint-1}"
+        },
+        "light-tint-2": {
+          "$value": "{color.blue.light-tint-2}"
+        },
+        "light-tint-3": {
+          "$value": "{color.blue.light-tint-3}"
+        },
+        "light-outline": {
+          "$value": "#628ad3"
+        },
+        "dark-fill": {
+          "$value": "#1c2a43"
+        },
+        "dark-stroke": {
+          "$value": "{color.blue.dark-stroke}"
+        },
+        "dark-ink": {
+          "$value": "{color.blue.dark-ink}"
+        },
+        "dark-tint-1": {
+          "$value": "{color.blue.dark-tint-1}"
+        },
+        "dark-tint-2": {
+          "$value": "{color.blue.dark-tint-2}"
+        },
+        "dark-tint-3": {
+          "$value": "{color.blue.dark-tint-3}"
+        },
+        "dark-outline": {
+          "$value": "#6789c4"
+        }
+      },
+      "slate": {
+        "$description": "gray 범주의 회색. 면과 외곽선은 값을 갖고(scripts/build-palette.mjs가 계산), 선과 글자와 점은 design-tokens의 회색 단계다.",
+        "light-fill": {
+          "$value": "#e7e7e7"
+        },
+        "light-stroke": {
+          "$value": "{color.gray.635}"
+        },
+        "light-ink": {
+          "$value": "{color.gray.635}"
+        },
+        "light-dot": {
+          "$value": "{color.gray.545}"
+        },
+        "dark-fill": {
+          "$value": "{color.gray.788}"
+        },
+        "dark-stroke": {
+          "$value": "{color.gray.333}"
+        },
+        "dark-ink": {
+          "$value": "{color.gray.333}"
+        },
+        "dark-dot": {
+          "$value": "{color.gray.220}"
+        },
+        "light-outline": {
+          "$value": "#848484"
+        },
+        "dark-outline": {
+          "$value": "#888888"
+        }
+      }
+    },
+    "figure": {
+      "$description": "그림 안 장식 색. 지금 일어나는 것(state)과 구별되는 별도 역할이다.",
+      "icon": {
+        "$value": "{color.blue.light-stroke}",
+        "$description": "도형과 그룹의 아이콘. 단색 파랑이고 모든 그림 면 위 대비 3 이상. 켜져도 바뀌지 않는다. 지금 일어나는 것은 테두리 굵기(border.strong)로 알린다"
+      },
+      "icon-tile": {
+        "$value": "{color.blue.light-fill}",
+        "$description": "아이콘 둥근 타일 바탕"
+      },
+      "queue-fill": {
+        "$value": "{color.blue.light-stroke}",
+        "$description": "큐의 찬 칸. 브랜드 파랑이고 도형 면 위 대비 3 이상, 빈 칸과도 3 이상"
+      },
+      "queue-empty": {
+        "$value": "{color.gray.161}",
+        "$description": "큐의 빈 칸 면. 무채색이고 찬 칸(queue-fill)과 대비 3 이상. 외곽선은 color.outline(도형 면 위 대비 3)"
+      }
+    },
+    "paint": {
+      "$description": "도형 면, 테두리와 카드 바탕에 원본이 고르는 색(`fill=`, `stroke=`, `card=`). 이름은 문법 표의 값 목록(paint)이다. fill은 옅은 면, stroke는 그래픽, ink는 글자 단계이고 단계마다 라이트와 다크 값이 있다. 파랑(지금)과 주황(비교)은 고르지 못한다",
+      "red": {
+        "fill": {
+          "$value": "{color.red.light-fill}",
+          "$description": "옅은 면. 그림 면과 구별되고 fg, muted 글자 4.5, border 3 이상"
+        },
+        "stroke": {
+          "$value": "{color.red.light-stroke}",
+          "$description": "테두리. 그림 면, 판, 모든 색의 fill 위 대비 3 이상"
+        },
+        "outline": {
+          "$value": "{color.red.light-outline}",
+          "$description": "외곽선. 면(fill)과 진한 선(stroke)을 OKLab에서 반씩 섞은 값. 면을 칠한 도형의 1px 외곽선"
+        },
+        "ink": {
+          "$value": "{color.red.light-ink}",
+          "$description": "글자와 갈래색 면. 그림 면과 모든 색의 fill 위 대비 4.5 이상"
+        },
+        "dot": {
+          "$value": "{color.red.light-dot}"
+        }
+      },
+      "amber": {
+        "fill": {
+          "$value": "{color.palette.amber.light-fill}"
+        },
+        "stroke": {
+          "$value": "{color.palette.amber.light-stroke}"
+        },
+        "outline": {
+          "$value": "{color.palette.amber.light-outline}",
+          "$description": "외곽선. 면(fill)과 진한 선(stroke)을 OKLab에서 반씩 섞은 값. 면을 칠한 도형의 1px 외곽선"
+        },
+        "ink": {
+          "$value": "{color.palette.amber.light-ink}"
+        }
+      },
+      "green": {
+        "fill": {
+          "$value": "{color.green.light-fill}"
+        },
+        "stroke": {
+          "$value": "{color.green.light-stroke}"
+        },
+        "outline": {
+          "$value": "{color.green.light-outline}",
+          "$description": "외곽선. 면(fill)과 진한 선(stroke)을 OKLab에서 반씩 섞은 값. 면을 칠한 도형의 1px 외곽선"
+        },
+        "ink": {
+          "$value": "{color.green.light-ink}"
+        },
+        "dot": {
+          "$value": "{color.green.light-dot}"
+        }
+      },
+      "teal": {
+        "fill": {
+          "$value": "{color.palette.teal.light-fill}"
+        },
+        "stroke": {
+          "$value": "{color.palette.teal.light-stroke}"
+        },
+        "outline": {
+          "$value": "{color.palette.teal.light-outline}",
+          "$description": "외곽선. 면(fill)과 진한 선(stroke)을 OKLab에서 반씩 섞은 값. 면을 칠한 도형의 1px 외곽선"
+        },
+        "ink": {
+          "$value": "{color.palette.teal.light-ink}"
+        },
+        "dot": {
+          "$value": "{color.palette.teal.light-dot}"
+        }
+      },
+      "navy": {
+        "fill": {
+          "$value": "{color.palette.navy.light-fill}"
+        },
+        "stroke": {
+          "$value": "{color.palette.navy.light-stroke}"
+        },
+        "outline": {
+          "$value": "{color.palette.navy.light-outline}",
+          "$description": "외곽선. 면(fill)과 진한 선(stroke)을 OKLab에서 반씩 섞은 값. 면을 칠한 도형의 1px 외곽선"
+        },
+        "ink": {
+          "$value": "{color.palette.navy.light-ink}"
+        }
+      },
+      "purple": {
+        "fill": {
+          "$value": "{color.purple.light-fill}"
+        },
+        "stroke": {
+          "$value": "{color.purple.light-stroke}"
+        },
+        "outline": {
+          "$value": "{color.purple.light-outline}",
+          "$description": "외곽선. 면(fill)과 진한 선(stroke)을 OKLab에서 반씩 섞은 값. 면을 칠한 도형의 1px 외곽선"
+        },
+        "ink": {
+          "$value": "{color.purple.light-ink}"
+        },
+        "dot": {
+          "$value": "{color.purple.light-dot}"
+        },
+        "group-1": {
+          "$value": "{color.purple.light-tint-1}"
+        },
+        "group-2": {
+          "$value": "{color.purple.light-tint-2}"
+        },
+        "group-3": {
+          "$value": "{color.purple.light-tint-3}"
+        }
+      },
+      "pink": {
+        "fill": {
+          "$value": "{color.palette.pink.light-fill}"
+        },
+        "stroke": {
+          "$value": "{color.palette.pink.light-stroke}"
+        },
+        "outline": {
+          "$value": "{color.palette.pink.light-outline}",
+          "$description": "외곽선. 면(fill)과 진한 선(stroke)을 OKLab에서 반씩 섞은 값. 면을 칠한 도형의 1px 외곽선"
+        },
+        "ink": {
+          "$value": "{color.palette.pink.light-ink}"
+        }
+      },
+      "sky": {
+        "fill": {
+          "$value": "{color.palette.sky.light-fill}",
+          "$description": "하늘색 면(그룹 강조, 라이트 #e8f1fe). 파랑과 같은 색상각 257"
+        },
+        "stroke": {
+          "$value": "{color.palette.sky.light-stroke}"
+        },
+        "outline": {
+          "$value": "{color.palette.sky.light-outline}"
+        },
+        "ink": {
+          "$value": "{color.palette.sky.light-ink}"
+        },
+        "group-1": {
+          "$value": "{color.palette.sky.light-tint-1}"
+        },
+        "group-2": {
+          "$value": "{color.palette.sky.light-tint-2}"
+        },
+        "group-3": {
+          "$value": "{color.palette.sky.light-tint-3}"
+        }
+      },
+      "gray": {
+        "fill": {
+          "$value": "{color.palette.slate.light-fill}"
+        },
+        "stroke": {
+          "$value": "{color.palette.slate.light-stroke}"
+        },
+        "outline": {
+          "$value": "{color.palette.slate.light-outline}",
+          "$description": "외곽선. 면(fill)과 진한 선(stroke)을 OKLab에서 반씩 섞은 값. 면을 칠한 도형의 1px 외곽선"
+        },
+        "ink": {
+          "$value": "{color.palette.slate.light-ink}"
+        },
+        "dot": {
+          "$value": "{color.palette.slate.light-dot}"
+        }
+      }
+    },
+    "tag": {
+      "$description": "카드 태그 범주색. 갈래를 나누는 색이다. 자동 배정은 purple, green, gray 순이고 brand(지금의 파랑)와 red(오류)는 tone으로 고를 때만 쓴다. 글자는 fg이고 이 색은 옅은 바탕 띠(opacity.tag)로만 전한다",
+      "purple": {
+        "$value": "{color.paint.purple.stroke}",
+        "group-1": {
+          "$value": "{color.purple.light-tint-1}"
+        },
+        "group-2": {
+          "$value": "{color.purple.light-tint-2}"
+        },
+        "group-3": {
+          "$value": "{color.purple.light-tint-3}"
+        }
+      },
+      "green": {
+        "$value": "{color.paint.green.stroke}"
+      },
+      "gray": {
+        "$value": "{color.paint.gray.stroke}"
+      },
+      "red": {
+        "$value": "{color.paint.red.stroke}"
+      },
+      "brand": {
+        "$value": "{color.state.active}"
+      }
+    }
+  },
+  "font": {
+    "$type": "fontFamily",
+    "figure-sans": {
+      "$value": [
+        "FigSans",
+        "FigSansSym",
+        "FigSansMath",
+        "Pretendard",
+        "Pretendard Variable",
+        "-apple-system",
+        "BlinkMacSystemFont",
+        "Apple SD Gothic Neo",
+        "sans-serif"
+      ],
+      "$description": "본문 글꼴 사슬. 그림에 잘라 넣는 내장 글꼴 이름(FigSans, FigSansSym, FigSansMath, 순서는 src/measure/fonts.js의 대체 사슬과 같다) 뒤에 design-tokens의 font.sans 목록이 그대로 이어진다"
+    },
+    "figure-mono": {
+      "$value": [
+        "FigMono",
+        "FigSans",
+        "FigSansSym",
+        "FigSansMath",
+        "ui-monospace",
+        "SFMono-Regular",
+        "Menlo",
+        "monospace"
+      ],
+      "$description": "고정폭 글꼴 사슬. 그림에 잘라 넣는 내장 글꼴 이름(FigMono와 대체 사슬) 뒤에 design-tokens의 font.mono 목록이 이어진다. design-tokens의 `JetBrains Mono` 이름은 FigMono가 같은 글꼴이라 뺀다"
+    }
+  },
+  "size": {
+    "$type": "dimension",
+    "control": {
+      "outer": {
+        "$value": 36,
+        "$description": "둥근 버튼 지름"
+      },
+      "inner": {
+        "$value": 28,
+        "$description": "분할 조작(테마 묶음, 재생기 탭) 안 단추 높이. 바깥 높이 control(36)에서 둘레 여백 3과 테두리 1을 뺀 값"
+      },
+      "icon": {
+        "$value": 16,
+        "$description": "지름 36 둥근 단추 안 아이콘 크기. 조작부는 Lucide 24 격자 외곽선 아이콘을 단색 선으로 쓴다"
+      },
+      "icon-stroke": {
+        "$value": 1.75,
+        "$description": "조작부 아이콘 선 굵기(Lucide 24 격자 단위). Obsidian 기본 아이콘 선 굵기(1.75)와 같아 같은 아이콘 묶음으로 읽힌다"
+      }
+    },
+    "pill": {
+      "height": {
+        "$value": 18,
+        "$description": "선 라벨 알약 높이"
+      }
+    },
+    "icon": {
+      "node": {
+        "$value": 20,
+        "$description": "도형 윗줄 아이콘 크기(정사각)"
+      },
+      "group": {
+        "$value": 18,
+        "$description": "그룹 제목 탭 아이콘 크기(정사각). 탭(size.group.title 정사각) 가운데에 놓인다"
+      },
+      "tile": {
+        "$value": 32,
+        "$description": "타일(shape=tile) 아이콘 크기(정사각). 아이콘이 이름보다 먼저 읽힌다"
+      },
+      "tile-gap": {
+        "$value": 6,
+        "$description": "타일 아이콘과 그 아래 이름 사이 간격"
+      }
+    },
+    "tag": {
+      "height": {
+        "$value": 14,
+        "$description": "카드 태그 알약 높이"
+      }
+    },
+    "packet": {
+      "radius": {
+        "$value": 4.5,
+        "$description": "점 반지름"
+      },
+      "halo": {
+        "$value": 10,
+        "$description": "점 둘레 반지름"
+      },
+      "hop-ref": {
+        "$value": 300,
+        "$description": "점 이동 시간의 기준 길이(px). 선 길이가 이 값일 때 duration.hop이 걸리고 길이에 비례해 시간이 달라진다"
+      },
+      "chip-reach": {
+        "$value": 16,
+        "$description": "이동 글 상자(흐름과 박자 모두) 가장자리와 점 중심 사이 최대 거리. 글 상자 간격(space.6)에 도형 옆으로 비킨 여백(space.2)을 더한 수준이라, 글 상자가 자기 점에서 떨어져 뜨지 않는다"
+      }
+    },
+    "arrow": {
+      "head": {
+        "$value": 5,
+        "$description": "화살촉"
+      },
+      "head-lit": {
+        "$value": 4,
+        "$description": "밝힌 선 화살촉"
+      }
+    },
+    "node": {
+      "card-width": {
+        "$value": 176,
+        "$description": "카드가 있는 도형 최소 너비"
+      },
+      "min-width": {
+        "$value": 100
+      },
+      "max-width": {
+        "$value": 210
+      },
+      "min-height": {
+        "$value": 46
+      },
+      "store-cap": {
+        "$value": 12,
+        "$description": "원통 윗면 높이의 절반"
+      },
+      "state-dot": {
+        "$value": 14,
+        "$description": "상태 그림 처음 점 지름"
+      },
+      "table-row": {
+        "$value": 26,
+        "$description": "테이블 열 한 줄 높이"
+      },
+      "circle": {
+        "$value": 40,
+        "$description": "원 도형(합류 연산 ⊕)의 최소 지름. 글이 크면 글 폭에 안쪽 간격을 더한 값까지 커진다"
+      },
+      "tile-width": {
+        "$value": 80,
+        "$description": "타일(shape=tile) 최소 너비. 가로로 퍼지는 구성도가 캔버스에 들도록 일반 도형(min-width)보다 좁다"
+      },
+      "tile-pad": {
+        "$value": 8,
+        "$description": "타일 이름 글 양옆 안쪽 간격. 일반 도형(space.9)보다 좁아 가로 구성도의 열 폭이 줄어든다"
+      }
+    },
+    "grid": {
+      "cell": {
+        "$value": 32,
+        "$description": "칸 격자 칸의 최소 너비와 높이. 칸 단위는 글에 필요한 크기와 이 값 가운데 큰 쪽이라 글이 짧은 칸도 눌리지 않는다"
+      }
+    },
+    "figure-canvas": {
+      "$value": 960,
+      "$description": "표준 캔버스 폭. 모든 그림의 표시 폭이다. 더 좁은 내용은 판만 넓히고 가운데에 두며, 더 넓은 내용은 viewBox를 그대로 두고 표시 폭만 이 값으로 줄인다. 차트 너비(chart-width), 문서 본문 폭(document-column), 목록 카드 한 칸 폭(gallery-column)과 같다"
+    },
+    "figure-canvas-wide": {
+      "$value": 1440,
+      "$description": "넓은 캔버스 폭(그림 머리 `width wide`). 데스크톱 문서 본문 폭(1440 화면)이다. 재생기와 목록은 이 폭 아래로 줄이지 않고 가로로 스크롤하며, 문서(README 이미지)는 본문 폭에 맞춰 줄인다. 최소 글자 검사도 이 폭 기준이다"
+    },
+    "chip": {
+      "max-width": {
+        "$value": 210,
+        "$description": "글 상자 줄바꿈 너비"
+      }
+    },
+    "player": {
+      "caption-max": {
+        "$value": 720
+      },
+      "embedded-chrome": {
+        "$value": 150,
+        "$description": "iframe 안에서 뺄 조작 막대 몫"
+      }
+    },
+    "gallery": {
+      "column": {
+        "$value": "{size.figure-canvas}",
+        "$description": "목록 쪽 카드 한 칸의 최소 너비. 카드 안쪽 폭이 표준 캔버스 폭이라 그림이 줄지 않는다. 카드 테두리는 레이아웃 폭을 차지하지 않는 고리(box-shadow)다"
+      },
+      "frame": {
+        "$value": 820
+      }
+    },
+    "document": {
+      "column": {
+        "$value": "{size.figure-canvas}",
+        "$description": "문서 미리보기 본문 너비. 표준 캔버스 폭과 같아 문서 미리보기, 목록 카드, 재생기가 같은 그림을 같은 폭으로 보인다(좁은 화면에서는 세 곳 모두 화면 폭에서 같은 바깥 여백 `space.16`을 뺀 폭이다)"
+      }
+    },
+    "chart": {
+      "width": {
+        "$value": "{size.figure-canvas}",
+        "$description": "차트 너비. 표준 캔버스 폭과 같아 모든 차트가 가로를 꽉 채운다"
+      },
+      "label": {
+        "$value": 140,
+        "$description": "차트 왼쪽 항목 이름 칸 너비"
+      },
+      "label-max": {
+        "$value": 240,
+        "$description": "차트 항목 이름 칸의 최대 너비. 이름이 이보다 길면 그림 검사 1번 오류"
+      },
+      "bar": {
+        "$value": 12,
+        "$description": "막대 차트 막대 두께"
+      },
+      "row": {
+        "$value": 40,
+        "$description": "화살표 차트 한 줄 높이"
+      },
+      "dot": {
+        "$value": 5,
+        "$description": "화살표 차트 점 반지름"
+      },
+      "plot-h": {
+        "$value": 260,
+        "$description": "산점도와 선 차트 그림 영역 높이"
+      },
+      "axis": {
+        "$value": 48,
+        "$description": "산점도와 선 차트 세로축 눈금 칸 너비"
+      },
+      "cell": {
+        "$value": 40,
+        "$description": "히트맵 칸 높이. 칸 너비는 남은 폭을 열 수로 나눈 값이라 토큰이 없다"
+      },
+      "cap": {
+        "$value": 8,
+        "$description": "선 차트에서 신뢰구간이 한 점뿐일 때 세로 오차 막대 끝 캡 길이"
+      },
+      "range": {
+        "$value": 6,
+        "$description": "덤벨 점 뒤 범위 막대기 두께"
+      },
+      "arrow-min": {
+        "$value": 16,
+        "$description": "덤벨 연결 화살표를 그리는 최소 길이(두 점 가장자리 사이). 이보다 가까우면 화살표만 빼고 두 점은 그대로 둔다"
+      }
+    },
+    "queue": {
+      "slot-width": {
+        "$value": 16,
+        "$description": "큐 칸 하나의 너비. 칸 수(최대 32)만큼 큐가 넓어진다"
+      },
+      "slot-height": {
+        "$value": 14,
+        "$description": "큐 칸 하나의 높이"
+      },
+      "slot-gap": {
+        "$value": 4,
+        "$description": "큐 칸 사이 간격"
+      }
+    },
+    "person": {
+      "width": {
+        "$value": 56,
+        "$description": "사람 모양 몸통 너비"
+      },
+      "head": {
+        "$value": 20,
+        "$description": "사람 머리 지름"
+      },
+      "shoulder": {
+        "$value": 14,
+        "$description": "사람 어깨 곡선 높이. 배치 바깥 여백"
+      },
+      "body": {
+        "$value": 22,
+        "$description": "사람 몸통의 곧은 옆면 높이. 배치에 넘기는 높이"
+      }
+    },
+    "sequence": {
+      "row": {
+        "$value": 44,
+        "$description": "순서 그림 메시지 한 행 높이"
+      }
+    },
+    "group": {
+      "title": {
+        "$value": 28,
+        "$description": "그룹 제목 줄 높이"
+      }
+    }
+  },
+  "tracking": {
+    "$type": "dimension",
+    "tag": {
+      "$value": {
+        "value": 0.03,
+        "unit": "em"
+      }
+    },
+    "frame": {
+      "$value": {
+        "value": 0.04,
+        "unit": "em"
+      }
+    }
+  },
+  "radius": {
+    "$type": "dimension",
+    "route": {
+      "$value": 22,
+      "$description": "선 꺾이는 모서리"
+    }
+  },
+  "border": {
+    "$type": "dimension",
+    "lifeline": {
+      "$value": 1.25
+    },
+    "tag": {
+      "$value": 1.5
+    },
+    "edge": {
+      "$value": 1.75
+    },
+    "casing": {
+      "$value": 4.5,
+      "$description": "막대 위 신뢰구간 선 둘레 바탕색 테두리 두께. 선(border.tag) 양옆에 선 굵기만큼 바탕이 비어 막대 색과 선이 갈린다"
+    },
+    "halo": {
+      "$value": 8,
+      "$description": "값 글자 둘레 바탕색 테두리 두께. 뒤의 기준선 점선을 글자 둘레에서 끊는다"
+    }
+  },
+  "dash": {
+    "$type": "number",
+    "line": {
+      "$value": 5,
+      "$description": "점선 칸 길이, 사이는 dash.gap"
+    },
+    "gap": {
+      "$value": 4
+    },
+    "card": {
+      "$value": 3
+    }
+  },
+  "opacity": {
+    "$type": "number",
+    "tag": {
+      "$value": 0.15
+    },
+    "halo": {
+      "$value": 0.2
+    },
+    "dim": {
+      "$value": 0.3,
+      "$description": "차트 light에서 밝히지 않은 행의 면(막대, 점, 히트맵 칸)의 불투명도"
+    },
+    "dim-ink": {
+      "$value": 0.9,
+      "$description": "차트 light에서 밝히지 않은 행의 글자 불투명도. 값 글자(fg), 보조 글자(muted), 히트맵 칸 숫자 모두 바탕과 대비 4.5 이상이다"
+    },
+    "band": {
+      "$value": 0.22,
+      "$description": "선 차트 신뢰구간 띠. 두 계열 띠가 겹쳐도 읽히게 낮게 둔다"
+    },
+    "range": {
+      "$value": 0.4,
+      "$description": "덤벨 신뢰구간 범위 막대기. 두께가 얇아 띠보다 진하게 두고, 그림 바탕과 대비 1.5 이상이다"
+    },
+    "chip-visible-min": {
+      "$value": 0.1,
+      "$description": "글 상자가 이 불투명도 미만이면 보이지 않는 것으로 본다. 겹침 검사는 보이는 프레임만 센다"
+    }
+  },
+  "distance": {
+    "$type": "number",
+    "$description": "OKLab 거리 기준. 색을 갈라 보이게 하는 최소와 최대 차이다",
+    "card": {
+      "min": {
+        "$value": 0.015,
+        "$description": "카드 기본 바탕과 도형 바탕(node)의 가장 작은 거리. 이보다 가까우면 카드 틀이 면으로 보이지 않는다"
+      },
+      "max": {
+        "$value": 0.04,
+        "$description": "같은 거리의 가장 큰 값. 이보다 멀면 카드가 도형 위에 떠서 다른 도형처럼 읽힌다"
+      }
+    },
+    "flow": {
+      "$value": 0.1,
+      "$description": "갈래색(흐름 점) 이름끼리, 그리고 지금(파랑)과 비교(주황)와의 가장 작은 OKLab 거리. 적록 색각 이상(protanopia, deuteranopia) 시뮬레이션에서도 같다"
+    },
+    "neighbor": {
+      "$value": 0.06,
+      "$description": "색상 순서로 이웃한 팔레트 색의 가장 작은 OKLab 거리(보통 시각). 같은 밝기와 채도에서 색상만 돌린 색은 이 이상 벌리기 어렵다"
+    },
+    "neighbor-cvd": {
+      "$value": 0.025,
+      "$description": "같은 이웃 쌍의 적록 색각 이상(protanopia, deuteranopia) 시뮬레이션 거리 기준. 색상만 다른 색은 두 시각에서 가까워져 이 값이 보통 시각보다 낮다. 그림은 색 하나로 뜻을 전하지 않고 이름과 글이 함께 간다"
+    },
+    "fill": {
+      "$value": 0.015,
+      "$description": "팔레트 면 단계와 도형 바탕(node)의 가장 작은 거리. 이보다 가까우면 칠한 면이 칠하지 않은 면과 같아 보인다"
+    },
+    "fill-dark": {
+      "$description": "다크 모드 팔레트 면(fill)의 가장 작은 OKLab 거리. 어두운 면은 판 바탕과 도형 바탕에 묻혀 사람 도형이 비어 보이기 쉬워 따로 둔다",
+      "bg": {
+        "$value": 0.07,
+        "$description": "다크 fill과 그림 바탕(bg). 가장 가까운 gray가 0.075다"
+      },
+      "node": {
+        "$value": 0.03,
+        "$description": "다크 fill과 도형 바탕(node). 채도가 없는 gray가 한계라 낮다"
+      }
+    }
+  },
+  "duration": {
+    "$type": "duration",
+    "hop": {
+      "$value": 3750,
+      "$description": "점이 기준 길이(size.hop-ref)의 선을 지나는 기본 시간. 원본 speed가 바꾼다"
+    },
+    "caption-fade": {
+      "$value": 200,
+      "$description": "설명 글과 단계 이름이 바뀔 때 앞 글이 사라지는 시간이자 뒤 글이 나타나는 시간. 앞 글이 다 사라진 뒤 뒤 글이 나타난다"
+    },
+    "hop-min": {
+      "$value": 500,
+      "$description": "점이 아주 짧은 선을 지날 때도 보장하는 최소 시간"
+    },
+    "chip-slide": {
+      "$value": 300,
+      "$description": "이동 글 상자가 가리는 것을 피해 자리를 바꿀 때 미끄러지는 최소 시간. 거리가 멀면 속도 상한에 맞춰 늘어난다"
+    },
+    "chip-fade": {
+      "$value": 150,
+      "$description": "미끄러져도 피할 길이 없어 이동 글 상자가 흐려질 때 사라지고 나타나는 시간"
+    },
+    "dwell": {
+      "$value": 700,
+      "$description": "점이 도착한 뒤 멈추는 기본 시간"
+    },
+    "dwell-per-char": {
+      "$value": 45
+    },
+    "dwell-max": {
+      "$value": 3200
+    },
+    "step-end": {
+      "$value": 1600
+    },
+    "chart-cycle": {
+      "$value": 7000,
+      "$description": "차트가 자라고 머물렀다 다시 자라는 한 바퀴 시간"
+    },
+    "reveal": {
+      "$value": 900,
+      "$description": "차트 계열이 자라는 기본 시간"
+    },
+    "value-flash": {
+      "$value": 700,
+      "$description": "값이 바뀔 때 그 카드 줄을 밝혀 두는 시간. 바뀐 줄이 눈에 들어올 만큼 길고 다음 변화와 겹쳐도 읽힌다"
+    },
+    "pulse": {
+      "$value": 450,
+      "$description": "흐름 단계에서 점이 도형에 닿을 때 후광이 한 번 깜빡이는 시간. 도형을 지속해서 밝히지 않고 닿은 순간만 알린다"
+    },
+    "chip-frame": {
+      "$value": 16.666666666666668,
+      "$description": "글 상자 계획과 검증이 재는 프레임 하나의 길이(60fps)"
+    },
+    "flow-step": {
+      "$value": 12000,
+      "$description": "흐름(track) 단계에 for를 적지 않았을 때의 단계 길이"
+    },
+    "cut-fade": {
+      "$value": 600,
+      "$description": "단계 끝까지 도착하지 못하는 흐름의 점이 단계 끝에서 서서히 사라지는 시간"
+    }
+  },
+  "scale": {
+    "$type": "number",
+    "$description": "배율",
+    "zoom-max": {
+      "$value": 6,
+      "$description": "전체 화면에서 확대할 수 있는 최대 배율"
+    },
+    "aspect-fit-max": {
+      "$value": 1.6,
+      "$description": "알맞은 가로 비율의 한도. 데스크톱 가로 화면(1400x900)의 비율이다. 이보다 가로로 넓은 그림은 모바일에서 가로로 오래 스크롤해야 해, 자동 맞춤은 이 값 이하인 배치를 먼저 고른다. 세로로 긴 쪽은 두 화면 모두 페이지 스크롤로 읽혀 aspect-max의 역수까지 알맞다고 본다"
+    },
+    "fold-aspect": {
+      "$value": "{scale.aspect-fit-max}",
+      "$description": "배치가 캔버스 폭보다 넓을 때 자동으로 접는 가로세로 비율(aspect 머리 줄이 없을 때)"
+    },
+    "fold-step": {
+      "$value": 0.75,
+      "$description": "자동 접기에서 그래도 넓을 때 비율에 곱해 다시 배치하는 값"
+    },
+    "aspect-max": {
+      "$value": 3,
+      "$description": "그림 가로세로 비율의 한도. 이 값이나 역수를 넘으면 검사가 경고하고, 자동 접기는 그런 배치를 고르지 않는다"
+    },
+    "zoom-step": {
+      "$value": 1.25,
+      "$description": "휠 한 칸이나 단추 한 번에 바뀌는 배율"
+    },
+    "flow-dots-max": {
+      "$value": 80,
+      "$description": "한 그림의 흐름(track)이 그리는 점 수의 한도. 점마다 SVG 요소 하나와 글 상자가 생겨 파일이 커지고 그림 검사 14번이 경고한다"
+    },
+    "chip-visible-share": {
+      "$value": 0.6,
+      "$description": "박자 이동 하나에서 점이 보이는 시간 중 글 상자가 보여야 하는 비율의 하한. 글이 정보라서 이동 내내 숨기지 않는다. 못 넘으면 도형 이름과 글자를 가리더라도 점 옆에 보인다(선 라벨 알약은 가리지 않는다)"
+    },
+    "chip-room-tries": {
+      "$value": 4,
+      "$description": "흐름 글 상자가 이름을 가려 25% 넘게 숨는 그림을 선 사이 간격을 넓혀 다시 배치해 보는 최대 횟수. 배치 시간이 이 횟수만큼 늘 수 있다"
+    },
+    "chip-room-step": {
+      "$value": 16,
+      "$description": "다시 배치할 때마다 숨는 글 상자가 지나는 선의 간격 요구(글 상자 폭)에 더하는 px. 첫 시도는 글 상자 폭만큼이다"
+    }
+  }
+}

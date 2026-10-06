@@ -1,0 +1,180 @@
+{
+  "color": {
+    "$type": "color",
+    "figure": {
+      "icon": {
+        "$value": "{color.blue.dark-stroke}"
+      },
+      "icon-tile": {
+        "$value": "{color.blue.dark-fill}"
+      },
+      "queue-fill": {
+        "$value": "{color.blue.dark-stroke}"
+      },
+      "queue-empty": {
+        "$value": "{color.gray.910}"
+      }
+    },
+    "paint": {
+      "red": {
+        "fill": {
+          "$value": "{color.red.dark-fill}"
+        },
+        "stroke": {
+          "$value": "{color.red.dark-stroke}"
+        },
+        "outline": {
+          "$value": "{color.red.dark-outline}"
+        },
+        "ink": {
+          "$value": "{color.red.dark-ink}"
+        },
+        "dot": {
+          "$value": "{color.red.dark-dot}"
+        }
+      },
+      "amber": {
+        "fill": {
+          "$value": "{color.palette.amber.dark-fill}"
+        },
+        "stroke": {
+          "$value": "{color.palette.amber.dark-stroke}"
+        },
+        "outline": {
+          "$value": "{color.palette.amber.dark-outline}"
+        },
+        "ink": {
+          "$value": "{color.palette.amber.dark-ink}"
+        }
+      },
+      "green": {
+        "fill": {
+          "$value": "{color.green.dark-fill}"
+        },
+        "stroke": {
+          "$value": "{color.green.dark-stroke}"
+        },
+        "outline": {
+          "$value": "{color.green.dark-outline}"
+        },
+        "ink": {
+          "$value": "{color.green.dark-ink}"
+        },
+        "dot": {
+          "$value": "{color.green.dark-dot}"
+        }
+      },
+      "teal": {
+        "fill": {
+          "$value": "{color.palette.teal.dark-fill}"
+        },
+        "stroke": {
+          "$value": "{color.palette.teal.dark-stroke}"
+        },
+        "outline": {
+          "$value": "{color.palette.teal.dark-outline}"
+        },
+        "ink": {
+          "$value": "{color.palette.teal.dark-ink}"
+        },
+        "dot": {
+          "$value": "{color.palette.teal.dark-dot}"
+        }
+      },
+      "navy": {
+        "fill": {
+          "$value": "{color.palette.navy.dark-fill}"
+        },
+        "stroke": {
+          "$value": "{color.palette.navy.dark-stroke}"
+        },
+        "outline": {
+          "$value": "{color.palette.navy.dark-outline}"
+        },
+        "ink": {
+          "$value": "{color.palette.navy.dark-ink}"
+        }
+      },
+      "purple": {
+        "fill": {
+          "$value": "{color.purple.dark-fill}"
+        },
+        "stroke": {
+          "$value": "{color.purple.dark-stroke}"
+        },
+        "outline": {
+          "$value": "{color.purple.dark-outline}"
+        },
+        "ink": {
+          "$value": "{color.purple.dark-ink}"
+        },
+        "dot": {
+          "$value": "{color.purple.dark-dot}"
+        },
+        "group-1": {
+          "$value": "{color.purple.dark-tint-1}"
+        },
+        "group-2": {
+          "$value": "{color.purple.dark-tint-2}"
+        },
+        "group-3": {
+          "$value": "{color.purple.dark-tint-3}"
+        }
+      },
+      "pink": {
+        "fill": {
+          "$value": "{color.palette.pink.dark-fill}"
+        },
+        "stroke": {
+          "$value": "{color.palette.pink.dark-stroke}"
+        },
+        "outline": {
+          "$value": "{color.palette.pink.dark-outline}"
+        },
+        "ink": {
+          "$value": "{color.palette.pink.dark-ink}"
+        }
+      },
+      "sky": {
+        "fill": {
+          "$value": "{color.palette.sky.dark-fill}"
+        },
+        "stroke": {
+          "$value": "{color.palette.sky.dark-stroke}"
+        },
+        "outline": {
+          "$value": "{color.palette.sky.dark-outline}"
+        },
+        "ink": {
+          "$value": "{color.palette.sky.dark-ink}"
+        },
+        "group-1": {
+          "$value": "{color.palette.sky.dark-tint-1}"
+        },
+        "group-2": {
+          "$value": "{color.palette.sky.dark-tint-2}"
+        },
+        "group-3": {
+          "$value": "{color.palette.sky.dark-tint-3}"
+        }
+      },
+      "gray": {
+        "fill": {
+          "$value": "{color.palette.slate.dark-fill}"
+        },
+        "stroke": {
+          "$value": "{color.palette.slate.dark-stroke}"
+        },
+        "outline": {
+          "$value": "{color.palette.slate.dark-outline}"
+        },
+        "ink": {
+          "$value": "{color.palette.slate.dark-ink}"
+        },
+        "dot": {
+          "$value": "{color.palette.slate.dark-dot}"
+        }
+      }
+    }
+  }
+}

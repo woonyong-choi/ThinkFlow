@@ -1,21 +1,19 @@
-// design-tokens 패키지(공통 의미·기본 토큰)의 정본을 읽고, daphnis 정본과 이름이 겹치는지 찾는다.
-// 설치가 안 되어 있으면 읽지 못하므로 `npm ci`부터 한다.
-import { createRequire } from 'node:module';
+// 검증된 테마 배포본을 읽고 렌더러 토큰과 이름이 겹치는지 찾는다.
+import { fileURLToPath } from 'node:url';
+import { verifyTheme } from '../theme-snapshot.mjs';
 import { readJson } from './read-json.mjs';
 
-const PACKAGE = '@woonyong-choi/design-tokens';
-
-// cost: time O(1), heap O(1), stack O(1), io 1
+// cost: time O(n), heap O(n), stack O(1), io f
+// vars: n = 테마 바이트 수, f = 테마 파일 수
 // basis: estimate
-/** 설치된 패키지의 정본 파일 경로 둘. 설치가 없으면 안내와 함께 오류를 던진다. */
+/** 해시 검증을 통과한 공통 토큰 파일 경로 둘을 반환한다. */
 export function commonTokenPaths() {
-  const require = createRequire(import.meta.url);
-  try {
-    return { light: require.resolve(`${PACKAGE}/source`), dark: require.resolve(`${PACKAGE}/source-dark`) };
-  } catch (error) {
-    if (error.code !== 'MODULE_NOT_FOUND') throw error;
-    throw new Error(`${PACKAGE} is not installed: run npm ci`);
-  }
+  const meta = verifyTheme();
+  if (meta.id !== 'technical') throw new Error('daphnis requires the technical theme');
+  return {
+    light: fileURLToPath(new URL('../../src/design-theme/renderer.tokens.json', import.meta.url)),
+    dark: fileURLToPath(new URL('../../src/design-theme/renderer.tokens.dark.json', import.meta.url)),
+  };
 }
 
 // cost: time O(n), heap O(n), stack O(d), io 2

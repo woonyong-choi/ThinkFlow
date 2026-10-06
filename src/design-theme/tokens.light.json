@@ -1,0 +1,2820 @@
+{
+  "$extensions": {
+    "com.refero.extraction": {
+      "url": "https://supabase.com",
+      "siteName": "Supabase",
+      "extractedAt": "2026-06-03T15:08:05.355Z",
+      "variant": "extended"
+    },
+    "theme": {
+      "fontFaces": [
+        "@font-face { font-family: Manrope; src: url(\"assets/fonts/4c9affa5bc8f420e-s.p.woff2\") format(\"woff2\"); font-style: normal; font-weight: 200 800; font-display: swap; }",
+        "@font-face { font-family: Inter; src: url(\"assets/fonts/e4af272ccee01ff0-s.p.woff2\") format(\"woff2\"); font-style: normal; font-weight: 100 900; font-display: swap; }",
+        "@font-face { font-family: \"Source Code Pro\"; src: url(\"assets/fonts/443896d591e4f761-s.p.woff2\") format(\"woff2\"); font-style: normal; font-weight: 200 900; font-display: swap; }"
+      ],
+      "fontFallbacks": {
+        "sans": [
+          "ui-sans-serif",
+          "system-ui",
+          "-apple-system",
+          "BlinkMacSystemFont",
+          "Segoe UI",
+          "Roboto",
+          "sans-serif"
+        ],
+        "mono": [
+          "ui-monospace",
+          "SFMono-Regular",
+          "Menlo",
+          "Monaco",
+          "Consolas",
+          "monospace"
+        ]
+      }
+    }
+  },
+  "color": {
+    "phosphor-green": {
+      "$value": "#3ecf8e",
+      "$type": "color",
+      "$description": "Phosphor Green — Green supporting accent for decorative details and low-frequency emphasis. Do not promote it to the primary CTA color"
+    },
+    "mint-pulse": {
+      "$value": "#00c573",
+      "$type": "color",
+      "$description": "Mint Pulse — Link text and inline accent — a slightly cooler green variant for textual references that shouldn't compete with primary CTAs"
+    },
+    "forest-depth": {
+      "$value": "#1f4b37",
+      "$type": "color",
+      "$description": "Forest Depth — Hover and pressed borders on green CTAs — keeps the button identifiable when the fill darkens on interaction"
+    },
+    "midnight-emerald": {
+      "$value": "#006239",
+      "$type": "color",
+      "$description": "Midnight Emerald — Deepest green surface — for low-key brand-tinted backgrounds, subtle section washes, and disabled-brand states"
+    },
+    "snow": {
+      "$value": "#fafafa",
+      "$type": "color",
+      "$description": "Snow — Primary text, icon strokes, button labels — the dominant foreground across the entire interface"
+    },
+    "silver-mist": {
+      "$value": "#b4b4b4",
+      "$type": "color",
+      "$description": "Silver Mist — Secondary headings, nav items, body emphasis — readable but never competing with Snow"
+    },
+    "smoke": {
+      "$value": "#898989",
+      "$type": "color",
+      "$description": "Smoke — Tertiary text, captions, helper text, muted icon fills — the voice of metadata and annotations"
+    },
+    "graphite": {
+      "$value": "#4d4d4d",
+      "$type": "color",
+      "$description": "Graphite — Icon outlines, low-emphasis borders, divider lines, and stroke color for illustrative line work"
+    },
+    "slate": {
+      "$value": "#393939",
+      "$type": "color",
+      "$description": "Slate — Input borders, subtle dividers, hairline separators between nav and content"
+    },
+    "charcoal": {
+      "$value": "#2e2e2e",
+      "$type": "color",
+      "$description": "Charcoal — Card and component borders — the most-used border color, giving surfaces their defined edge without a visible shadow"
+    },
+    "ash": {
+      "$value": "#242424",
+      "$type": "color",
+      "$description": "Ash — Elevated surface tier for nested cards, hover states, and popover backgrounds"
+    },
+    "obsidian": {
+      "$value": "#121212",
+      "$type": "color",
+      "$description": "Obsidian — Page canvas — the deep near-black foundation behind every section and card"
+    },
+    "accent": {
+      "$value": "{color.blue.light-stroke}",
+      "$type": "color",
+      "$description": "Accent for emphasis that is not a state. The brand blue. Meets 3:1 on every surface."
+    },
+    "link": {
+      "$value": "{color.mint-pulse}",
+      "$type": "color",
+      "$description": "기존 간격·색상·반지름에서 파생"
+    },
+    "action-hover": {
+      "$value": "{color.forest-depth}",
+      "$type": "color",
+      "$description": "기존 간격·색상·반지름에서 파생"
+    },
+    "action": {
+      "$value": "{color.midnight-emerald}",
+      "$type": "color",
+      "$description": "기존 간격·색상·반지름에서 파생"
+    },
+    "text-primary": {
+      "$value": "{color.snow}",
+      "$type": "color",
+      "$description": "기존 간격·색상·반지름에서 파생"
+    },
+    "text-secondary": {
+      "$value": "{color.silver-mist}",
+      "$type": "color",
+      "$description": "기존 간격·색상·반지름에서 파생"
+    },
+    "text-muted": {
+      "$value": "{color.smoke}",
+      "$type": "color",
+      "$description": "기존 간격·색상·반지름에서 파생"
+    },
+    "border-hover": {
+      "$value": "{color.graphite}",
+      "$type": "color",
+      "$description": "기존 간격·색상·반지름에서 파생"
+    },
+    "border-strong": {
+      "$value": "{color.slate}",
+      "$type": "color",
+      "$description": "기존 간격·색상·반지름에서 파생"
+    },
+    "border": {
+      "$value": "{color.gray.106}",
+      "$type": "color",
+      "$description": "Hairline border. Meets 3:1 on every surface except where documented as decorative."
+    },
+    "surface-raised": {
+      "$value": "{color.ash}",
+      "$type": "color",
+      "$description": "기존 간격·색상·반지름에서 파생"
+    },
+    "canvas": {
+      "$value": "{color.obsidian}",
+      "$type": "color",
+      "$description": "기존 간격·색상·반지름에서 파생"
+    },
+    "syntax-string": {
+      "$value": "{color.silver-mist}",
+      "$type": "color",
+      "$description": "코드 강조색을 별도 팔레트 대신 원본 색상으로 통일"
+    },
+    "syntax-function": {
+      "$value": "{color.snow}",
+      "$type": "color",
+      "$description": "코드 강조색을 별도 팔레트 대신 원본 색상으로 통일"
+    },
+    "syntax-number": {
+      "$value": "{color.mint-pulse}",
+      "$type": "color",
+      "$description": "코드 강조색을 별도 팔레트 대신 원본 색상으로 통일"
+    },
+    "dialog-backdrop": {
+      "$value": "{primitive.color.dialog-backdrop}",
+      "$type": "color",
+      "$description": "기존 간격·색상·반지름에서 파생"
+    },
+    "$type": "color",
+    "$description": "Colors. Primitive hues and grays hold hex values. Semantic tokens (everything outside the hue and gray groups) reference primitives only.",
+    "gray": {
+      "0": {
+        "$value": "#ffffff"
+      },
+      "27": {
+        "$value": "#f8f8f8"
+      },
+      "43": {
+        "$value": "#f4f4f4"
+      },
+      "59": {
+        "$value": "#f0f0f0"
+      },
+      "71": {
+        "$value": "#ededed"
+      },
+      "106": {
+        "$value": "#e4e4e4"
+      },
+      "118": {
+        "$value": "#e1e1e1"
+      },
+      "145": {
+        "$value": "#dadada"
+      },
+      "161": {
+        "$value": "#d6d6d6"
+      },
+      "212": {
+        "$value": "#c9c9c9"
+      },
+      "220": {
+        "$value": "#c7c7c7"
+      },
+      "282": {
+        "$value": "#b7b7b7"
+      },
+      "333": {
+        "$value": "#aaaaaa"
+      },
+      "467": {
+        "$value": "#888888"
+      },
+      "529": {
+        "$value": "#787878"
+      },
+      "545": {
+        "$value": "#747474"
+      },
+      "635": {
+        "$value": "#5d5d5d"
+      },
+      "651": {
+        "$value": "#595959"
+      },
+      "757": {
+        "$value": "#3e3e3e"
+      },
+      "776": {
+        "$value": "#393939"
+      },
+      "788": {
+        "$value": "#363636"
+      },
+      "796": {
+        "$value": "#343434"
+      },
+      "835": {
+        "$value": "#2a2a2a"
+      },
+      "875": {
+        "$value": "#202020"
+      },
+      "878": {
+        "$value": "#1f1f1f"
+      },
+      "910": {
+        "$value": "#171717"
+      },
+      "929": {
+        "$value": "#121212"
+      },
+      "933": {
+        "$value": "#111111"
+      },
+      "1000": {
+        "$value": "#000000"
+      },
+      "$description": "Neutral scale. The step is the darkness in thousandths: (255 - channel) / 255 * 1000, rounded. 0 is white and 1000 is black. Every step has R=G=B."
+    },
+    "blue": {
+      "$description": "Brand blue (#125DE6) and its steps. Used for what is happening now, the main data series and controls. The anchor is the only hand-picked value. Every other step is computed from it by scripts/palette.mjs against the contrast rules.",
+      "anchor": {
+        "$value": "#125de6",
+        "$description": "Hand-picked light anchor."
+      },
+      "light-fill": {
+        "$value": "#edf4ff"
+      },
+      "light-stroke": {
+        "$value": "#125de6"
+      },
+      "light-ink": {
+        "$value": "#0151d9"
+      },
+      "light-heat-low": {
+        "$value": "#b7cdf5"
+      },
+      "light-heat-high": {
+        "$value": "#004dd2"
+      },
+      "light-outline": {
+        "$value": "#658dd5"
+      },
+      "light-tint-1": {
+        "$value": "#e5eefc"
+      },
+      "light-tint-2": {
+        "$value": "#d7e2f4"
+      },
+      "light-tint-3": {
+        "$value": "#cad7ed"
+      },
+      "dark-fill": {
+        "$value": "#1c2a43"
+      },
+      "dark-stroke": {
+        "$value": "#70a3ff"
+      },
+      "dark-ink": {
+        "$value": "#78a9ff"
+      },
+      "dark-heat-low": {
+        "$value": "#293751"
+      },
+      "dark-heat-high": {
+        "$value": "#4474cc"
+      },
+      "dark-outline": {
+        "$value": "#6789c4"
+      },
+      "dark-tint-1": {
+        "$value": "#1a202b"
+      },
+      "dark-tint-2": {
+        "$value": "#222a38"
+      },
+      "dark-tint-3": {
+        "$value": "#2a3446"
+      }
+    },
+    "purple": {
+      "$description": "Purple for rare emphasis. The anchor is the only hand-picked value. Every other step is computed from it by scripts/palette.mjs against the contrast rules.",
+      "anchor": {
+        "$value": "#b28fd1",
+        "$description": "Hand-picked light anchor."
+      },
+      "light-fill": {
+        "$value": "#f7f0ff"
+      },
+      "light-stroke": {
+        "$value": "#8c6aaa"
+      },
+      "light-ink": {
+        "$value": "#704f8c"
+      },
+      "light-dot": {
+        "$value": "#704f8c"
+      },
+      "light-outline": {
+        "$value": "#9884ac"
+      },
+      "light-tint-1": {
+        "$value": "#f1eaf9"
+      },
+      "light-tint-2": {
+        "$value": "#e6ddf0"
+      },
+      "light-tint-3": {
+        "$value": "#dcd1e8"
+      },
+      "dark-fill": {
+        "$value": "#31233d"
+      },
+      "dark-stroke": {
+        "$value": "#b693d6"
+      },
+      "dark-ink": {
+        "$value": "#be9ade"
+      },
+      "dark-dot": {
+        "$value": "#9c7abb"
+      },
+      "dark-outline": {
+        "$value": "#977eae"
+      },
+      "dark-tint-1": {
+        "$value": "#231d28"
+      },
+      "dark-tint-2": {
+        "$value": "#2e2635"
+      },
+      "dark-tint-3": {
+        "$value": "#393042"
+      }
+    },
+    "red": {
+      "$description": "Red for errors. The anchor is the only hand-picked value. Every other step is computed from it by scripts/palette.mjs against the contrast rules.",
+      "anchor": {
+        "$value": "#ef0f0f",
+        "$description": "Hand-picked light anchor."
+      },
+      "light-fill": {
+        "$value": "#ffefed"
+      },
+      "light-stroke": {
+        "$value": "#c70005"
+      },
+      "light-ink": {
+        "$value": "#be0004"
+      },
+      "light-dot": {
+        "$value": "#6c0001"
+      },
+      "light-outline": {
+        "$value": "#cd7367"
+      },
+      "dark-fill": {
+        "$value": "#40201c"
+      },
+      "dark-stroke": {
+        "$value": "#fc7182"
+      },
+      "dark-ink": {
+        "$value": "#ff8390"
+      },
+      "dark-dot": {
+        "$value": "#e25971"
+      },
+      "dark-outline": {
+        "$value": "#c56f73"
+      }
+    },
+    "green": {
+      "$description": "Green for normal and success states. The anchor is the only hand-picked value. Every other step is computed from it by scripts/palette.mjs against the contrast rules.",
+      "anchor": {
+        "$value": "#09c72c",
+        "$description": "Hand-picked light anchor."
+      },
+      "light-fill": {
+        "$value": "#eaf8e9"
+      },
+      "light-stroke": {
+        "$value": "#008c1a"
+      },
+      "light-ink": {
+        "$value": "#006d12"
+      },
+      "light-dot": {
+        "$value": "#006d12"
+      },
+      "light-outline": {
+        "$value": "#629a61"
+      },
+      "dark-fill": {
+        "$value": "#1a301a"
+      },
+      "dark-stroke": {
+        "$value": "#58bf5a"
+      },
+      "dark-ink": {
+        "$value": "#58bf5a"
+      },
+      "dark-dot": {
+        "$value": "#62c963"
+      },
+      "dark-outline": {
+        "$value": "#5a9659"
+      }
+    },
+    "orange": {
+      "$description": "Orange for the comparison series and caution only. The anchor is the only hand-picked value. Every other step is computed from it by scripts/palette.mjs against the contrast rules.",
+      "anchor": {
+        "$value": "#e65200",
+        "$description": "Hand-picked light anchor."
+      },
+      "light-fill": {
+        "$value": "#fff0ea"
+      },
+      "light-stroke": {
+        "$value": "#d44b00"
+      },
+      "light-ink": {
+        "$value": "#a63900"
+      },
+      "light-outline": {
+        "$value": "#c47a5f"
+      },
+      "dark-fill": {
+        "$value": "#3f2116"
+      },
+      "dark-stroke": {
+        "$value": "#fa7a49"
+      },
+      "dark-ink": {
+        "$value": "#ff875a"
+      },
+      "dark-outline": {
+        "$value": "#c37356"
+      }
+    },
+    "fg": {
+      "$value": "{color.gray.878}",
+      "$description": "Body text. Meets 4.5:1 on every surface."
+    },
+    "muted": {
+      "$value": "{color.gray.635}",
+      "$description": "Secondary text. Meets 4.5:1 on every surface."
+    },
+    "group-title": {
+      "$value": "{color.gray.651}",
+      "$description": "Title text of a grouped region. Meets 4.5:1 on the three depth surfaces."
+    },
+    "bg": {
+      "$value": "{color.gray.27}",
+      "$description": "Base surface (the board). Depth 0 of the neutral hierarchy."
+    },
+    "group-1": {
+      "$value": "{color.gray.71}",
+      "$description": "Surface of the first nesting depth. One step stronger than bg, fully neutral (R=G=B)."
+    },
+    "group-2": {
+      "$value": "{color.gray.118}",
+      "$description": "Surface of the second nesting depth. One step stronger than group-1, fully neutral."
+    },
+    "group-3": {
+      "$value": "{color.gray.161}",
+      "$description": "Surface of the third and deeper nesting depths. Fully neutral."
+    },
+    "node": {
+      "$value": "{color.gray.0}",
+      "$description": "Surface of a shape or card placed on bg."
+    },
+    "surface": {
+      "$value": "{color.gray.59}",
+      "$description": "Quiet surface for omitted or secondary regions. Slightly off bg."
+    },
+    "card": {
+      "$value": "{color.gray.43}",
+      "$description": "Default card surface. Within a small OKLab distance of node."
+    },
+    "card-on": {
+      "$value": "{color.blue.light-fill}",
+      "$description": "Card surface when active, tinted with the brand blue fill."
+    },
+    "page": {
+      "$value": "{color.gray.0}",
+      "$description": "Document page surface behind a board."
+    },
+    "outline": {
+      "$value": "{color.gray.529}",
+      "$description": "Outline of shapes. Meets 3:1 on bg, the depth surfaces, node and card."
+    },
+    "plate-border": {
+      "$value": "{color.gray.145}",
+      "$description": "Edge of the board against the page. Decorative, 1.3:1 or more."
+    },
+    "line": {
+      "$value": "{color.gray.282}",
+      "$description": "Lines and dashed borders. Decorative."
+    },
+    "state": {
+      "active": {
+        "$value": "{color.blue.light-stroke}",
+        "$description": "What is happening now: lit lines, dots and borders. The brand blue. Meets 3:1 on every surface."
+      },
+      "active-fill": {
+        "$value": "{color.blue.light-ink}",
+        "$description": "Face of what is happening now. Meets 4.5:1 with on-active text."
+      },
+      "active-text": {
+        "$value": "{color.blue.light-ink}",
+        "$description": "Text that points at what is happening now. Meets 4.5:1 on bg, node and page."
+      },
+      "on-active": {
+        "$value": "{color.gray.0}",
+        "$description": "Text on active-fill and on flow tone faces. Meets 4.5:1."
+      },
+      "error": {
+        "$value": "{color.red.light-stroke}",
+        "$description": "Error or failure. Graphic use only, 3:1 on every surface."
+      },
+      "success": {
+        "$value": "{color.green.light-stroke}",
+        "$description": "Success or normal. Graphic use only, 3:1 on every surface."
+      },
+      "warning": {
+        "$value": "{color.orange.light-stroke}",
+        "$description": "Warning or caution. The orange. Graphic use only, 3:1 on every surface."
+      },
+      "glow": {
+        "$value": "{color.blue.light-fill}",
+        "$description": "Pale halo around what is lit."
+      }
+    },
+    "flow": {
+      "brand": {
+        "$value": "{color.blue.light-stroke}",
+        "$description": "First flow tone, the brand blue."
+      },
+      "purple": {
+        "$value": "{color.purple.light-dot}",
+        "$description": "Flow tone for a rare accent."
+      },
+      "green": {
+        "$value": "{color.green.light-dot}",
+        "$description": "Flow tone for normal paths."
+      },
+      "gray": {
+        "$value": "{color.gray.545}",
+        "$description": "Flow tone for the third and later flows."
+      },
+      "red": {
+        "$value": "{color.red.light-dot}",
+        "$description": "Flow tone for error paths."
+      }
+    },
+    "ui": {
+      "link": {
+        "$value": "{color.blue.light-ink}",
+        "$description": "Link text. Meets 4.5:1."
+      },
+      "focus": {
+        "$value": "{color.blue.light-stroke}",
+        "$description": "Focus ring. Meets 3:1."
+      },
+      "progress": {
+        "$value": "{color.blue.light-stroke}",
+        "$description": "Progress ring. Meets 3:1."
+      },
+      "control-on": {
+        "$value": "{color.gray.0}",
+        "$description": "Face of a selected segmented control."
+      }
+    },
+    "data": {
+      "main": {
+        "$value": "{color.blue.light-stroke}",
+        "$description": "Series the chart argues for (new, improved). The brand blue."
+      },
+      "compare": {
+        "$value": "{color.orange.light-stroke}",
+        "$description": "Baseline series (old). Orange is for comparison and caution only."
+      },
+      "heat-low": {
+        "$value": "{color.blue.light-heat-low}",
+        "$description": "Low end of the heat scale."
+      },
+      "heat-high": {
+        "$value": "{color.blue.light-heat-high}",
+        "$description": "High end of the heat scale. Meets 4.5:1 with heat-ink-on text."
+      },
+      "heat-ink": {
+        "$value": "{color.gray.1000}",
+        "$description": "Dark ink on heat cells."
+      },
+      "heat-ink-on": {
+        "$value": "{color.gray.0}",
+        "$description": "Light ink on dark heat cells."
+      },
+      "grid": {
+        "$value": "{color.gray.212}",
+        "$description": "Grid and axis lines. Decorative, 1.5:1 or more."
+      }
+    }
+  },
+  "font": {
+    "sans": {
+      "$value": [
+        "Pretendard",
+        "Pretendard Variable",
+        "-apple-system",
+        "BlinkMacSystemFont",
+        "Apple SD Gothic Neo",
+        "sans-serif"
+      ],
+      "$type": "fontFamily",
+      "$description": "Body and numbers."
+    },
+    "mono": {
+      "$value": [
+        "JetBrains Mono",
+        "ui-monospace",
+        "SFMono-Regular",
+        "Menlo",
+        "monospace"
+      ],
+      "$type": "fontFamily",
+      "$description": "Code only."
+    },
+    "heading": {
+      "$value": "Manrope, var(--font-sans)",
+      "$type": "fontFamily",
+      "$description": "Circular 파일이 없어 현재 설치된 폰트를 사용하는 역할별 스택. 원본 Circular를 대체하지 않고 폴백에 유지"
+    },
+    "document": {
+      "$value": "Inter, var(--font-sans)",
+      "$type": "fontFamily",
+      "$description": "Circular 파일이 없어 현재 설치된 폰트를 사용하는 역할별 스택. 원본 Circular를 대체하지 않고 폴백에 유지"
+    },
+    "$type": "fontFamily"
+  },
+  "typography": {
+    "xs": {
+      "$value": {
+        "fontFamily": "Circular",
+        "fontSize": "12px",
+        "fontWeight": 400,
+        "lineHeight": 1.33,
+        "letterSpacing": "0em"
+      },
+      "$type": "typography",
+      "$description": "Typography step xs at 12px"
+    },
+    "xs-2": {
+      "$value": {
+        "fontFamily": "Source Code Pro",
+        "fontSize": "12px",
+        "fontWeight": 400,
+        "lineHeight": 1.33,
+        "letterSpacing": "0.1em"
+      },
+      "$type": "typography",
+      "$description": "Typography step xs-2 at 12px"
+    },
+    "sm": {
+      "$value": {
+        "fontFamily": "Circular",
+        "fontSize": "14px",
+        "fontWeight": 500,
+        "lineHeight": 1.43,
+        "letterSpacing": "0em"
+      },
+      "$type": "typography",
+      "$description": "Typography step sm at 14px"
+    },
+    "sm-2": {
+      "$value": {
+        "fontFamily": "Circular",
+        "fontSize": "14px",
+        "fontWeight": 500,
+        "lineHeight": 1,
+        "letterSpacing": "0em"
+      },
+      "$type": "typography",
+      "$description": "Typography step sm-2 at 14px"
+    },
+    "sm-3": {
+      "$value": {
+        "fontFamily": "Circular",
+        "fontSize": "14px",
+        "fontWeight": 500,
+        "lineHeight": 1.38,
+        "letterSpacing": "0em"
+      },
+      "$type": "typography",
+      "$description": "Typography step sm-3 at 14px"
+    },
+    "sm-4": {
+      "$value": {
+        "fontFamily": "Circular",
+        "fontSize": "14px",
+        "fontWeight": 400,
+        "lineHeight": 1.43,
+        "letterSpacing": "0em"
+      },
+      "$type": "typography",
+      "$description": "Typography step sm-4 at 14px"
+    },
+    "base": {
+      "$value": {
+        "fontFamily": "Circular",
+        "fontSize": "16px",
+        "fontWeight": 400,
+        "lineHeight": 1.5,
+        "letterSpacing": "0em"
+      },
+      "$type": "typography",
+      "$description": "Typography step base at 16px"
+    },
+    "lg": {
+      "$value": {
+        "fontFamily": "Circular",
+        "fontSize": "18px",
+        "fontWeight": 400,
+        "lineHeight": 1.56,
+        "letterSpacing": "0em"
+      },
+      "$type": "typography",
+      "$description": "Typography step lg at 18px"
+    },
+    "2xl": {
+      "$value": {
+        "fontFamily": "Circular",
+        "fontSize": "24px",
+        "fontWeight": 400,
+        "lineHeight": 1.33,
+        "letterSpacing": "-0.007em"
+      },
+      "$type": "typography",
+      "$description": "Typography step 2xl at 24px"
+    },
+    "4xl": {
+      "$value": {
+        "fontFamily": "Circular",
+        "fontSize": "36px",
+        "fontWeight": 400,
+        "lineHeight": 1.25,
+        "letterSpacing": "0em"
+      },
+      "$type": "typography",
+      "$description": "Typography step 4xl at 36px"
+    },
+    "4xl-2": {
+      "$value": {
+        "fontFamily": "Circular",
+        "fontSize": "36px",
+        "fontWeight": 400,
+        "lineHeight": 1.2,
+        "letterSpacing": "0em"
+      },
+      "$type": "typography",
+      "$description": "Typography step 4xl-2 at 36px"
+    },
+    "4xl-3": {
+      "$value": {
+        "fontFamily": "Circular",
+        "fontSize": "36px",
+        "fontWeight": 400,
+        "lineHeight": 1.11,
+        "letterSpacing": "0em"
+      },
+      "$type": "typography",
+      "$description": "Typography step 4xl-3 at 36px"
+    },
+    "5xl": {
+      "$value": {
+        "fontFamily": "Circular",
+        "fontSize": "72px",
+        "fontWeight": 400,
+        "lineHeight": 1,
+        "letterSpacing": "0em"
+      },
+      "$type": "typography",
+      "$description": "Typography step 5xl at 72px"
+    }
+  },
+  "spacing": {
+    "8": {
+      "$value": "8px",
+      "$type": "dimension",
+      "$description": "Spacing 8px"
+    },
+    "16": {
+      "$value": "16px",
+      "$type": "dimension",
+      "$description": "Spacing 16px"
+    },
+    "24": {
+      "$value": "24px",
+      "$type": "dimension",
+      "$description": "Spacing 24px"
+    },
+    "32": {
+      "$value": "32px",
+      "$type": "dimension",
+      "$description": "Spacing 32px"
+    },
+    "40": {
+      "$value": "40px",
+      "$type": "dimension",
+      "$description": "Spacing 40px"
+    },
+    "48": {
+      "$value": "48px",
+      "$type": "dimension",
+      "$description": "Spacing 48px"
+    },
+    "64": {
+      "$value": "64px",
+      "$type": "dimension",
+      "$description": "Spacing 64px"
+    },
+    "80": {
+      "$value": "80px",
+      "$type": "dimension",
+      "$description": "Spacing 80px"
+    },
+    "96": {
+      "$value": "96px",
+      "$type": "dimension",
+      "$description": "Spacing 96px"
+    },
+    "112": {
+      "$value": "112px",
+      "$type": "dimension",
+      "$description": "Spacing 112px"
+    },
+    "128": {
+      "$value": "128px",
+      "$type": "dimension",
+      "$description": "Spacing 128px"
+    },
+    "224": {
+      "$value": "224px",
+      "$type": "dimension",
+      "$description": "Spacing 224px"
+    },
+    "unit": {
+      "$value": "8px",
+      "$type": "dimension",
+      "$description": "Base spacing unit"
+    }
+  },
+  "radius": {
+    "lg": {
+      "$value": {
+        "value": 8,
+        "unit": "px"
+      },
+      "$type": "dimension",
+      "$description": "Border radius lg"
+    },
+    "lg-2": {
+      "$value": "11px",
+      "$type": "dimension",
+      "$description": "Border radius lg-2"
+    },
+    "2xl": {
+      "$value": {
+        "value": 14,
+        "unit": "px"
+      },
+      "$type": "dimension",
+      "$description": "Border radius 2xl"
+    },
+    "full": {
+      "$value": {
+        "value": 999,
+        "unit": "px"
+      },
+      "$type": "dimension",
+      "$description": "Border radius full"
+    },
+    "inputs": {
+      "$value": "{radius.lg}",
+      "$type": "dimension",
+      "$description": "원본 반지름의 역할별 참조"
+    },
+    "buttons": {
+      "$value": "{radius.full}",
+      "$type": "dimension",
+      "$description": "원본 반지름의 역할별 참조"
+    },
+    "cards": {
+      "$value": "{radius.2xl}",
+      "$type": "dimension",
+      "$description": "원본 반지름의 역할별 참조"
+    },
+    "tags": {
+      "$value": "{radius.full}",
+      "$type": "dimension",
+      "$description": "원본 반지름의 역할별 참조"
+    },
+    "control": {
+      "$value": "calc({radius.lg} / 2)",
+      "$type": "dimension",
+      "$description": "기존 간격·색상·반지름에서 파생"
+    },
+    "icon": {
+      "$value": "calc({radius.lg} / 4)",
+      "$type": "number",
+      "$description": "기존 간격·색상·반지름에서 파생"
+    },
+    "$type": "dimension",
+    "sm": {
+      "$value": {
+        "value": 4,
+        "unit": "px"
+      }
+    },
+    "md": {
+      "$value": {
+        "value": 6,
+        "unit": "px"
+      }
+    },
+    "xl": {
+      "$value": {
+        "value": 10,
+        "unit": "px"
+      }
+    }
+  },
+  "shadow": {
+    "sm": {
+      "$value": "rgba(0, 0, 0, 0.1) 0px 4px 6px -1px, rgba(0, 0, 0, 0.1) 0px 2px 4px -2px",
+      "$type": "shadow",
+      "$description": "Shadow elevation sm"
+    },
+    "overlay": {
+      "$value": "{shadow.sm}",
+      "$type": "shadow",
+      "$description": "기존 간격·색상·반지름에서 파생"
+    }
+  },
+  "surface": {
+    "obsidian-canvas": {
+      "$value": "{color.obsidian}",
+      "$type": "color",
+      "$description": "Surface level 0: Page background — the base layer every surface sits on"
+    },
+    "ash-card": {
+      "$value": "{color.ash}",
+      "$type": "color",
+      "$description": "Surface level 1: Nested or elevated card surfaces one tier above the canvas"
+    },
+    "charcoal-border": {
+      "$value": "{color.charcoal}",
+      "$type": "color",
+      "$description": "기존 5자리 HEX 오기를 원본 charcoal 색상 참조로 교정"
+    }
+  },
+  "text": {
+    "caption": {
+      "$value": "{typography.xs.fontSize}",
+      "$type": "dimension",
+      "$description": "caption 타이포그래피의 fontSize 재사용"
+    },
+    "body-sm": {
+      "$value": "{typography.sm-4.fontSize}",
+      "$type": "dimension",
+      "$description": "body-sm 타이포그래피의 fontSize 재사용"
+    },
+    "body": {
+      "$value": "{typography.base.fontSize}",
+      "$type": "dimension",
+      "$description": "body 타이포그래피의 fontSize 재사용"
+    },
+    "subheading": {
+      "$value": "{typography.lg.fontSize}",
+      "$type": "dimension",
+      "$description": "subheading 타이포그래피의 fontSize 재사용"
+    },
+    "heading-sm": {
+      "$value": "{typography.2xl.fontSize}",
+      "$type": "dimension",
+      "$description": "heading-sm 타이포그래피의 fontSize 재사용"
+    },
+    "heading": {
+      "$value": "{typography.4xl-2.fontSize}",
+      "$type": "dimension",
+      "$description": "heading 타이포그래피의 fontSize 재사용"
+    },
+    "display": {
+      "$value": "{typography.5xl.fontSize}",
+      "$type": "dimension",
+      "$description": "display 타이포그래피의 fontSize 재사용"
+    }
+  },
+  "leading": {
+    "caption": {
+      "$value": "{typography.xs.lineHeight}",
+      "$type": "number",
+      "$description": "caption 타이포그래피의 lineHeight 재사용"
+    },
+    "body-sm": {
+      "$value": "{typography.sm-4.lineHeight}",
+      "$type": "number",
+      "$description": "body-sm 타이포그래피의 lineHeight 재사용"
+    },
+    "body": {
+      "$value": "{typography.base.lineHeight}",
+      "$type": "number",
+      "$description": "body 타이포그래피의 lineHeight 재사용"
+    },
+    "subheading": {
+      "$value": "{typography.lg.lineHeight}",
+      "$type": "number",
+      "$description": "subheading 타이포그래피의 lineHeight 재사용"
+    },
+    "heading-sm": {
+      "$value": "{typography.2xl.lineHeight}",
+      "$type": "number",
+      "$description": "heading-sm 타이포그래피의 lineHeight 재사용"
+    },
+    "heading": {
+      "$value": "{typography.4xl-2.lineHeight}",
+      "$type": "number",
+      "$description": "heading 타이포그래피의 lineHeight 재사용"
+    },
+    "display": {
+      "$value": "{typography.5xl.lineHeight}",
+      "$type": "number",
+      "$description": "display 타이포그래피의 lineHeight 재사용"
+    },
+    "command": {
+      "$value": 2,
+      "$type": "number",
+      "$description": "터미널 명령 여러 줄 사이의 판독 간격. 본문 줄 높이와 구분"
+    },
+    "navigation": {
+      "$value": "calc({text.body-sm} * {leading.body-sm})",
+      "$type": "dimension",
+      "$description": "사이드바와 보조 조작 줄 높이는 본문 소형 척도에서 계산"
+    },
+    "article": {
+      "$value": "calc({text.body} * {leading.body})",
+      "$type": "dimension",
+      "$description": "문서 본문 줄 높이는 원본 본문 척도에서 계산"
+    },
+    "$type": "number",
+    "normal": {
+      "$value": 1.5,
+      "$description": "Line height ratio for paragraphs."
+    },
+    "snug": {
+      "$value": 1.35,
+      "$description": "Line height ratio for short lines such as labels and cards."
+    }
+  },
+  "tracking": {
+    "caption": {
+      "$value": "{typography.xs.letterSpacing}",
+      "$type": "dimension",
+      "$description": "caption 타이포그래피의 letterSpacing 재사용"
+    },
+    "body-sm": {
+      "$value": "{typography.sm-4.letterSpacing}",
+      "$type": "dimension",
+      "$description": "body-sm 타이포그래피의 letterSpacing 재사용"
+    },
+    "body": {
+      "$value": "{typography.base.letterSpacing}",
+      "$type": "dimension",
+      "$description": "body 타이포그래피의 letterSpacing 재사용"
+    },
+    "subheading": {
+      "$value": "{typography.lg.letterSpacing}",
+      "$type": "dimension",
+      "$description": "subheading 타이포그래피의 letterSpacing 재사용"
+    },
+    "heading-sm": {
+      "$value": "{typography.2xl.letterSpacing}",
+      "$type": "dimension",
+      "$description": "heading-sm 타이포그래피의 letterSpacing 재사용"
+    },
+    "heading": {
+      "$value": "{typography.4xl-2.letterSpacing}",
+      "$type": "dimension",
+      "$description": "heading 타이포그래피의 letterSpacing 재사용"
+    },
+    "display": {
+      "$value": "{typography.5xl.letterSpacing}",
+      "$type": "dimension",
+      "$description": "display 타이포그래피의 letterSpacing 재사용"
+    },
+    "navigation": {
+      "$value": ".04em",
+      "$type": "dimension",
+      "$description": "문서 UI의 tracking.navigation 역할. 원본에 해당 역할의 치수·동작 정의가 없어 추가"
+    },
+    "actions": {
+      "$value": ".06em",
+      "$type": "dimension",
+      "$description": "문서 UI의 tracking.actions 역할. 원본에 해당 역할의 치수·동작 정의가 없어 추가"
+    },
+    "$type": "dimension",
+    "text": {
+      "$value": {
+        "value": -0.3,
+        "unit": "px"
+      },
+      "$description": "Letter spacing of body and number text. Not applied to code."
+    }
+  },
+  "font-weight": {
+    "regular": {
+      "$value": "{typography.base.fontWeight}",
+      "$type": "fontWeight",
+      "$description": "원본 타이포그래피 굵기 재사용"
+    },
+    "medium": {
+      "$value": "{typography.sm.fontWeight}",
+      "$type": "fontWeight",
+      "$description": "원본 타이포그래피 굵기 재사용"
+    }
+  },
+  "page": {
+    "max-width": {
+      "$value": "1200px",
+      "$type": "dimension",
+      "$description": "홈 콘텐츠 최대 폭. 기존 variables.css의 화면 계약을 이전"
+    }
+  },
+  "ratio": {
+    "heading-adjustment": {
+      "$value": 2,
+      "$type": "number",
+      "$description": "모바일 제목 보정에 사용하는 기존 간격의 나눗수"
+    },
+    "toc-viewport": {
+      "$value": 0.3,
+      "$type": "number",
+      "$description": "문서 UI의 ratio.toc-viewport 역할. 원본에 해당 역할의 치수·동작 정의가 없어 추가"
+    },
+    "sidebar-anchor": {
+      "$value": 3,
+      "$type": "number",
+      "$description": "문서 UI의 ratio.sidebar-anchor 역할. 원본에 해당 역할의 치수·동작 정의가 없어 추가"
+    },
+    "toc-gaps": {
+      "$value": 2,
+      "$type": "number",
+      "$description": "문서 UI의 ratio.toc-gaps 역할. 원본에 해당 역할의 치수·동작 정의가 없어 추가"
+    }
+  },
+  "primitive": {
+    "color": {
+      "dialog-backdrop": {
+        "$value": "color-mix(in srgb, {color.obsidian} 70%, transparent)",
+        "$type": "color",
+        "$description": "기존 간격·색상·반지름에서 파생"
+      }
+    }
+  },
+  "breakpoint": {
+    "desktop": {
+      "$value": "1100px",
+      "$type": "dimension",
+      "$description": "문서 UI의 breakpoint.desktop 역할. 원본에 해당 역할의 치수·동작 정의가 없어 추가"
+    },
+    "tablet": {
+      "$value": "800px",
+      "$type": "dimension",
+      "$description": "문서 UI의 breakpoint.tablet 역할. 원본에 해당 역할의 치수·동작 정의가 없어 추가"
+    },
+    "mobile": {
+      "$value": "560px",
+      "$type": "dimension",
+      "$description": "문서 UI의 breakpoint.mobile 역할. 원본에 해당 역할의 치수·동작 정의가 없어 추가"
+    }
+  },
+  "size": {
+    "scrollbar": {
+      "$value": "calc({spacing.unit} * 0.75)",
+      "$type": "dimension",
+      "$description": "기존 간격·색상·반지름에서 파생"
+    },
+    "skip-hidden-offset": {
+      "$value": "-160%",
+      "$type": "number",
+      "$description": "문서 UI의 size.skip-hidden-offset 역할. 원본에 해당 역할의 치수·동작 정의가 없어 추가"
+    },
+    "chevron": {
+      "$value": "5px",
+      "$type": "dimension",
+      "$description": "문서 UI의 size.chevron 역할. 원본에 해당 역할의 치수·동작 정의가 없어 추가"
+    },
+    "chevron-rotation": {
+      "$value": "45deg",
+      "$type": "number",
+      "$description": "문서 UI의 size.chevron-rotation 역할. 원본에 해당 역할의 치수·동작 정의가 없어 추가"
+    },
+    "popover": {
+      "$value": "190px",
+      "$type": "dimension",
+      "$description": "문서 UI의 size.popover 역할. 원본에 해당 역할의 치수·동작 정의가 없어 추가"
+    },
+    "search-icon": {
+      "$value": "calc({spacing.unit} * 1.5)",
+      "$type": "dimension",
+      "$description": "기존 간격·색상·반지름에서 파생"
+    },
+    "search-stroke": {
+      "$value": "1.5px",
+      "$type": "dimension",
+      "$description": "문서 UI의 size.search-stroke 역할. 원본에 해당 역할의 치수·동작 정의가 없어 추가"
+    },
+    "mobile-menu": {
+      "$value": "232px",
+      "$type": "dimension",
+      "$description": "문서 UI의 size.mobile-menu 역할. 원본에 해당 역할의 치수·동작 정의가 없어 추가"
+    },
+    "hero-command": {
+      "$value": "476px",
+      "$type": "dimension",
+      "$description": "문서 UI의 size.hero-command 역할. 원본에 해당 역할의 치수·동작 정의가 없어 추가"
+    },
+    "hero-height": {
+      "$value": "312px",
+      "$type": "dimension",
+      "$description": "문서 UI의 size.hero-height 역할. 원본에 해당 역할의 치수·동작 정의가 없어 추가"
+    },
+    "hero-mark": {
+      "$value": "{spacing.96}",
+      "$type": "dimension",
+      "$description": "기존 간격·색상·반지름에서 파생"
+    },
+    "hero-description": {
+      "$value": "530px",
+      "$type": "dimension",
+      "$description": "문서 UI의 size.hero-description 역할. 원본에 해당 역할의 치수·동작 정의가 없어 추가"
+    },
+    "command-min-height": {
+      "$value": "184px",
+      "$type": "dimension",
+      "$description": "문서 UI의 size.command-min-height 역할. 원본에 해당 역할의 치수·동작 정의가 없어 추가"
+    },
+    "card-canvas-mix": {
+      "$value": "60%",
+      "$type": "number",
+      "$description": "문서 UI의 size.card-canvas-mix 역할. 원본에 해당 역할의 치수·동작 정의가 없어 추가"
+    },
+    "command-header": {
+      "$value": "calc({spacing.unit} * 5.5)",
+      "$type": "dimension",
+      "$description": "기존 간격·색상·반지름에서 파생"
+    },
+    "command-collapsed": {
+      "$value": "140px",
+      "$type": "dimension",
+      "$description": "문서 UI의 size.command-collapsed 역할. 원본에 해당 역할의 치수·동작 정의가 없어 추가"
+    },
+    "section-description": {
+      "$value": "392px",
+      "$type": "dimension",
+      "$description": "문서 UI의 size.section-description 역할. 원본에 해당 역할의 치수·동작 정의가 없어 추가"
+    },
+    "section-summary": {
+      "$value": "365px",
+      "$type": "dimension",
+      "$description": "문서 UI의 size.section-summary 역할. 원본에 해당 역할의 치수·동작 정의가 없어 추가"
+    },
+    "link-columns": {
+      "$value": 3,
+      "$type": "number",
+      "$description": "문서 UI의 size.link-columns 역할. 원본에 해당 역할의 치수·동작 정의가 없어 추가"
+    },
+    "product-icon": {
+      "$value": "18px",
+      "$type": "dimension",
+      "$description": "문서 UI의 size.product-icon 역할. 원본에 해당 역할의 치수·동작 정의가 없어 추가"
+    },
+    "pair-columns": {
+      "$value": 2,
+      "$type": "number",
+      "$description": "문서 UI의 size.pair-columns 역할. 원본에 해당 역할의 치수·동작 정의가 없어 추가"
+    },
+    "product-min-height": {
+      "$value": "136px",
+      "$type": "dimension",
+      "$description": "문서 UI의 size.product-min-height 역할. 원본에 해당 역할의 치수·동작 정의가 없어 추가"
+    },
+    "grid-end": {
+      "$value": -1,
+      "$type": "number",
+      "$description": "문서 UI의 size.grid-end 역할. 원본에 해당 역할의 치수·동작 정의가 없어 추가"
+    },
+    "resource-min-height": {
+      "$value": "118px",
+      "$type": "dimension",
+      "$description": "문서 UI의 size.resource-min-height 역할. 원본에 해당 역할의 치수·동작 정의가 없어 추가"
+    },
+    "privacy-dialog": {
+      "$value": "440px",
+      "$type": "dimension",
+      "$description": "문서 UI의 size.privacy-dialog 역할. 원본에 해당 역할의 치수·동작 정의가 없어 추가"
+    },
+    "privacy-backdrop-mix": {
+      "$value": "70%",
+      "$type": "number",
+      "$description": "문서 UI의 size.privacy-backdrop-mix 역할. 원본에 해당 역할의 치수·동작 정의가 없어 추가"
+    },
+    "sidebar": {
+      "$value": "340px",
+      "$type": "dimension",
+      "$description": "문서 UI의 size.sidebar 역할. 원본에 해당 역할의 치수·동작 정의가 없어 추가"
+    },
+    "header": {
+      "$value": "50px",
+      "$type": "dimension",
+      "$description": "문서 UI의 size.header 역할. 원본에 해당 역할의 치수·동작 정의가 없어 추가"
+    },
+    "document-columns": {
+      "$value": 12,
+      "$type": "number",
+      "$description": "문서 UI의 size.document-columns 역할. 원본에 해당 역할의 치수·동작 정의가 없어 추가"
+    },
+    "document-max": {
+      "$value": "1152px",
+      "$type": "dimension",
+      "$description": "문서 UI의 size.document-max 역할. 원본에 해당 역할의 치수·동작 정의가 없어 추가"
+    },
+    "viewport": {
+      "$value": "100dvh",
+      "$type": "dimension",
+      "$description": "문서 UI의 size.viewport 역할. 원본에 해당 역할의 치수·동작 정의가 없어 추가"
+    },
+    "chevron-open-rotation": {
+      "$value": "225deg",
+      "$type": "number",
+      "$description": "문서 UI의 size.chevron-open-rotation 역할. 원본에 해당 역할의 치수·동작 정의가 없어 추가"
+    },
+    "article-columns": {
+      "$value": 8,
+      "$type": "number",
+      "$description": "문서 UI의 size.article-columns 역할. 원본에 해당 역할의 치수·동작 정의가 없어 추가"
+    },
+    "code-canvas-mix": {
+      "$value": "80%",
+      "$type": "number",
+      "$description": "문서 UI의 size.code-canvas-mix 역할. 원본에 해당 역할의 치수·동작 정의가 없어 추가"
+    },
+    "code-line": {
+      "$value": "1.5em",
+      "$type": "dimension",
+      "$description": "문서 UI의 size.code-line 역할. 원본에 해당 역할의 치수·동작 정의가 없어 추가"
+    },
+    "feedback-control": {
+      "$value": "calc({spacing.unit} * 3.5)",
+      "$type": "dimension",
+      "$description": "기존 간격·색상·반지름에서 파생"
+    },
+    "prompt-collapsed": {
+      "$value": "calc({spacing.128} + {spacing.48})",
+      "$type": "dimension",
+      "$description": "기존 간격·색상·반지름에서 파생"
+    },
+    "center-offset": {
+      "$value": "-50%",
+      "$type": "number",
+      "$description": "문서 UI의 size.center-offset 역할. 원본에 해당 역할의 치수·동작 정의가 없어 추가"
+    },
+    "note-icon": {
+      "$value": "calc({spacing.unit} * 2.5)",
+      "$type": "dimension",
+      "$description": "기존 간격·색상·반지름에서 파생"
+    },
+    "search-dialog": {
+      "$value": "620px",
+      "$type": "dimension",
+      "$description": "문서 UI의 size.search-dialog 역할. 원본에 해당 역할의 치수·동작 정의가 없어 추가"
+    },
+    "search-max-height": {
+      "$value": "70vh",
+      "$type": "dimension",
+      "$description": "문서 UI의 size.search-max-height 역할. 원본에 해당 역할의 치수·동작 정의가 없어 추가"
+    },
+    "sidebar-compact": {
+      "$value": "240px",
+      "$type": "dimension",
+      "$description": "문서 UI의 size.sidebar-compact 역할. 원본에 해당 역할의 치수·동작 정의가 없어 추가"
+    },
+    "document-compact": {
+      "$value": "760px",
+      "$type": "dimension",
+      "$description": "문서 UI의 size.document-compact 역할. 원본에 해당 역할의 치수·동작 정의가 없어 추가"
+    },
+    "hero-command-ratio": {
+      "$value": "42%",
+      "$type": "number",
+      "$description": "문서 UI의 size.hero-command-ratio 역할. 원본에 해당 역할의 치수·동작 정의가 없어 추가"
+    },
+    "section-description-ratio": {
+      "$value": "32%",
+      "$type": "number",
+      "$description": "문서 UI의 size.section-description-ratio 역할. 원본에 해당 역할의 치수·동작 정의가 없어 추가"
+    },
+    "sidebar-mobile": {
+      "$value": "320px",
+      "$type": "dimension",
+      "$description": "문서 UI의 size.sidebar-mobile 역할. 원본에 해당 역할의 치수·동작 정의가 없어 추가"
+    },
+    "hero-title-mobile": {
+      "$value": "230px",
+      "$type": "dimension",
+      "$description": "문서 UI의 size.hero-title-mobile 역할. 원본에 해당 역할의 치수·동작 정의가 없어 추가"
+    },
+    "reference-chevron-rotation": {
+      "$value": "90deg",
+      "$type": "number",
+      "$description": "문서 UI의 size.reference-chevron-rotation 역할. 원본에 해당 역할의 치수·동작 정의가 없어 추가"
+    },
+    "toc-threshold": {
+      "$value": 240,
+      "$type": "dimension",
+      "$description": "문서 UI의 size.toc-threshold 역할. 원본에 해당 역할의 치수·동작 정의가 없어 추가"
+    },
+    "scroll-epsilon": {
+      "$value": 2,
+      "$type": "dimension",
+      "$description": "문서 UI의 size.scroll-epsilon 역할. 원본에 해당 역할의 치수·동작 정의가 없어 추가"
+    },
+    "code-icon": {
+      "$value": 14,
+      "$type": "dimension",
+      "$description": "문서 UI의 size.code-icon 역할. 원본에 해당 역할의 치수·동작 정의가 없어 추가"
+    },
+    "text": {
+      "9": {
+        "$value": {
+          "value": 9,
+          "unit": "px"
+        },
+        "$description": "Smallest text: tags and column marks."
+      },
+      "11": {
+        "$value": {
+          "value": 11,
+          "unit": "px"
+        },
+        "$description": "Secondary text: subtitles, legends, ticks, values."
+      },
+      "13": {
+        "$value": {
+          "value": 13,
+          "unit": "px"
+        },
+        "$description": "Body text and item names."
+      },
+      "15": {
+        "$value": {
+          "value": 15,
+          "unit": "px"
+        },
+        "$description": "Headings and titles."
+      },
+      "22": {
+        "$value": {
+          "value": 22,
+          "unit": "px"
+        },
+        "$description": "Page title."
+      },
+      "$type": "dimension",
+      "$description": "Text sizes in px."
+    }
+  },
+  "border": {
+    "thin": {
+      "$value": {
+        "value": 1,
+        "unit": "px"
+      },
+      "$type": "dimension",
+      "$description": "문서 UI의 border.thin 역할. 원본에 해당 역할의 치수·동작 정의가 없어 추가"
+    },
+    "icon": {
+      "$value": 1.5,
+      "$type": "number",
+      "$description": "문서 UI의 border.icon 역할. 원본에 해당 역할의 치수·동작 정의가 없어 추가"
+    },
+    "$type": "dimension",
+    "hair": {
+      "$value": {
+        "value": 0.75,
+        "unit": "px"
+      },
+      "$description": "Hairline for decorative borders."
+    },
+    "strong": {
+      "$value": {
+        "value": 2.5,
+        "unit": "px"
+      },
+      "$description": "Emphasis stroke."
+    }
+  },
+  "space": {
+    "1": {
+      "$value": {
+        "value": 2,
+        "unit": "px"
+      }
+    },
+    "2": {
+      "$value": {
+        "value": 4,
+        "unit": "px"
+      }
+    },
+    "3": {
+      "$value": {
+        "value": 6,
+        "unit": "px"
+      }
+    },
+    "4": {
+      "$value": {
+        "value": 8,
+        "unit": "px"
+      }
+    },
+    "5": {
+      "$value": {
+        "value": 10,
+        "unit": "px"
+      }
+    },
+    "6": {
+      "$value": {
+        "value": 12,
+        "unit": "px"
+      }
+    },
+    "7": {
+      "$value": {
+        "value": 14,
+        "unit": "px"
+      }
+    },
+    "8": {
+      "$value": {
+        "value": 16,
+        "unit": "px"
+      }
+    },
+    "9": {
+      "$value": {
+        "value": 18,
+        "unit": "px"
+      }
+    },
+    "11": {
+      "$value": {
+        "value": 22,
+        "unit": "px"
+      }
+    },
+    "12": {
+      "$value": {
+        "value": 24,
+        "unit": "px"
+      }
+    },
+    "14": {
+      "$value": {
+        "value": 28,
+        "unit": "px"
+      }
+    },
+    "15": {
+      "$value": {
+        "value": 30,
+        "unit": "px"
+      }
+    },
+    "16": {
+      "$value": {
+        "value": 32,
+        "unit": "px"
+      }
+    },
+    "20": {
+      "$value": {
+        "value": 40,
+        "unit": "px"
+      }
+    },
+    "22": {
+      "$value": {
+        "value": 44,
+        "unit": "px"
+      }
+    },
+    "30": {
+      "$value": {
+        "value": 60,
+        "unit": "px"
+      }
+    },
+    "focus-offset": {
+      "$value": "calc({spacing.unit} * 0.375)",
+      "$type": "dimension",
+      "$description": "기존 간격·색상·반지름에서 파생"
+    },
+    "chevron-offset": {
+      "$value": "calc({spacing.unit} * -0.375)",
+      "$type": "dimension",
+      "$description": "기존 간격·색상·반지름에서 파생"
+    },
+    "negative-direction": {
+      "$value": -1,
+      "$type": "number",
+      "$description": "문서 UI의 space.negative-direction 역할. 원본에 해당 역할의 치수·동작 정의가 없어 추가"
+    },
+    "search-handle-x": {
+      "$value": "calc({spacing.unit} * -0.5)",
+      "$type": "dimension",
+      "$description": "기존 간격·색상·반지름에서 파생"
+    },
+    "search-handle-y": {
+      "$value": "calc({spacing.unit} * -0.25)",
+      "$type": "dimension",
+      "$description": "기존 간격·색상·반지름에서 파생"
+    },
+    "search-stroke": {
+      "$value": "calc({spacing.unit} * 0.1875)",
+      "$type": "dimension",
+      "$description": "기존 간격·색상·반지름에서 파생"
+    },
+    "active-tab-offset": {
+      "$value": "calc({spacing.unit} * -0.125)",
+      "$type": "dimension",
+      "$description": "기존 간격·색상·반지름에서 파생"
+    },
+    "compact": {
+      "$value": "calc({spacing.unit} * 0.25)",
+      "$type": "dimension",
+      "$description": "기존 간격·색상·반지름에서 파생"
+    },
+    "small": {
+      "$value": "calc({spacing.unit} * 0.5)",
+      "$type": "dimension",
+      "$description": "기존 간격·색상·반지름에서 파생"
+    },
+    "medium": {
+      "$value": "calc({spacing.unit} * 1.5)",
+      "$type": "dimension",
+      "$description": "기존 간격·색상·반지름에서 파생"
+    },
+    "paragraph": {
+      "$value": "{spacing.24}",
+      "$type": "dimension",
+      "$description": "기존 간격·색상·반지름에서 파생"
+    },
+    "section-heading": {
+      "$value": "calc({spacing.unit} * 5.5)",
+      "$type": "dimension",
+      "$description": "기존 간격·색상·반지름에서 파생"
+    },
+    "list-indent": {
+      "$value": "calc({spacing.unit} * 2.5)",
+      "$type": "dimension",
+      "$description": "기존 간격·색상·반지름에서 파생"
+    },
+    "reference-top": {
+      "$value": "calc({spacing.unit} * 7.5)",
+      "$type": "dimension",
+      "$description": "기존 간격·색상·반지름에서 파생"
+    },
+    "reference-title-bottom": {
+      "$value": "calc({spacing.unit} * 7)",
+      "$type": "dimension",
+      "$description": "기존 간격·색상·반지름에서 파생"
+    },
+    "heading-bottom": {
+      "$value": "calc({spacing.unit} * 2.75)",
+      "$type": "dimension",
+      "$description": "기존 간격·색상·반지름에서 파생"
+    },
+    "search-top": {
+      "$value": "15vh",
+      "$type": "dimension",
+      "$description": "문서 UI의 space.search-top 역할. 원본에 해당 역할의 치수·동작 정의가 없어 추가"
+    },
+    "action-gap": {
+      "$value": "calc({spacing.unit} * 0.75)",
+      "$type": "dimension",
+      "$description": "기존 간격·색상·반지름에서 파생"
+    },
+    "reference-heading": {
+      "$value": "calc({spacing.unit} * 2.25)",
+      "$type": "dimension",
+      "$description": "기존 간격·색상·반지름에서 파생"
+    },
+    "$type": "dimension",
+    "$description": "Spacing in 2px units: space.n is 2n px. The half steps 0-5, 1-5 and 2-5 are 1px, 3px and 5px for fine optical alignment.",
+    "0-5": {
+      "$value": {
+        "value": 1,
+        "unit": "px"
+      }
+    },
+    "1-5": {
+      "$value": {
+        "value": 3,
+        "unit": "px"
+      }
+    },
+    "2-5": {
+      "$value": {
+        "value": 5,
+        "unit": "px"
+      }
+    }
+  },
+  "z": {
+    "skip": {
+      "$value": 30,
+      "$type": "number",
+      "$description": "문서 UI의 z.skip 역할. 원본에 해당 역할의 치수·동작 정의가 없어 추가"
+    },
+    "header": {
+      "$value": 20,
+      "$type": "number",
+      "$description": "문서 UI의 z.header 역할. 원본에 해당 역할의 치수·동작 정의가 없어 추가"
+    },
+    "mobile-menu": {
+      "$value": 21,
+      "$type": "number",
+      "$description": "문서 UI의 z.mobile-menu 역할. 원본에 해당 역할의 치수·동작 정의가 없어 추가"
+    },
+    "sidebar": {
+      "$value": 3,
+      "$type": "number",
+      "$description": "문서 UI의 z.sidebar 역할. 원본에 해당 역할의 치수·동작 정의가 없어 추가"
+    },
+    "toc": {
+      "$value": 2,
+      "$type": "number",
+      "$description": "문서 UI의 z.toc 역할. 원본에 해당 역할의 치수·동작 정의가 없어 추가"
+    },
+    "sidebar-mobile": {
+      "$value": 18,
+      "$type": "number",
+      "$description": "문서 UI의 z.sidebar-mobile 역할. 원본에 해당 역할의 치수·동작 정의가 없어 추가"
+    },
+    "$type": "number",
+    "raised": {
+      "$value": 2
+    },
+    "overlay": {
+      "$value": 10
+    }
+  },
+  "opacity": {
+    "disabled": {
+      "$value": 0.5,
+      "$type": "number",
+      "$description": "문서 UI의 opacity.disabled 역할. 원본에 해당 역할의 치수·동작 정의가 없어 추가"
+    },
+    "artwork": {
+      "$value": 0.993,
+      "$type": "number",
+      "$description": "문서 UI의 opacity.artwork 역할. 원본에 해당 역할의 치수·동작 정의가 없어 추가"
+    }
+  },
+  "duration": {
+    "disclosure": {
+      "$value": ".15s",
+      "$type": "duration",
+      "$description": "문서 UI의 duration.disclosure 역할. 원본에 해당 역할의 치수·동작 정의가 없어 추가"
+    },
+    "feedback": {
+      "$value": 1600,
+      "$type": "duration",
+      "$description": "문서 UI의 duration.feedback 역할. 원본에 해당 역할의 치수·동작 정의가 없어 추가"
+    },
+    "$type": "duration",
+    "fast": {
+      "$value": {
+        "value": 200,
+        "unit": "ms"
+      },
+      "$description": "Short transitions."
+    }
+  },
+  "illustration": {
+    "paint": {
+      "neutral-11": {
+        "$value": "#ffffff",
+        "$type": "color",
+        "$description": "외부 로고 또는 히어로 도형의 고유 표현. 원본 UI 팔레트로 바꾸면 해당 자산의 표현이 달라져 보존"
+      },
+      "green-01": {
+        "$value": "#249361",
+        "$type": "color",
+        "$description": "외부 로고 또는 히어로 도형의 고유 표현. 원본 UI 팔레트로 바꾸면 해당 자산의 표현이 달라져 보존"
+      },
+      "neutral-04": {
+        "$value": "#1f1f1f",
+        "$type": "color",
+        "$description": "외부 로고 또는 히어로 도형의 고유 표현. 원본 UI 팔레트로 바꾸면 해당 자산의 표현이 달라져 보존"
+      },
+      "neutral-05": {
+        "$value": "#212121",
+        "$type": "color",
+        "$description": "외부 로고 또는 히어로 도형의 고유 표현. 원본 UI 팔레트로 바꾸면 해당 자산의 표현이 달라져 보존"
+      },
+      "neutral-10": {
+        "$value": "#868585",
+        "$type": "color",
+        "$description": "외부 로고 또는 히어로 도형의 고유 표현. 원본 UI 팔레트로 바꾸면 해당 자산의 표현이 달라져 보존"
+      },
+      "neutral-09": {
+        "$value": "#838383",
+        "$type": "color",
+        "$description": "외부 로고 또는 히어로 도형의 고유 표현. 원본 UI 팔레트로 바꾸면 해당 자산의 표현이 달라져 보존"
+      },
+      "neutral-06": {
+        "$value": "#5a5a5a",
+        "$type": "color",
+        "$description": "외부 로고 또는 히어로 도형의 고유 표현. 원본 UI 팔레트로 바꾸면 해당 자산의 표현이 달라져 보존"
+      },
+      "green-03": {
+        "$value": "#6db33f",
+        "$type": "color",
+        "$description": "외부 로고 또는 히어로 도형의 고유 표현. 원본 UI 팔레트로 바꾸면 해당 자산의 표현이 달라져 보존"
+      },
+      "red-02": {
+        "$value": "#d30001",
+        "$type": "color",
+        "$description": "외부 로고 또는 히어로 도형의 고유 표현. 원본 UI 팔레트로 바꾸면 해당 자산의 표현이 달라져 보존"
+      },
+      "blue-18": {
+        "$value": "#76b3e1",
+        "$type": "color",
+        "$description": "외부 로고 또는 히어로 도형의 고유 표현. 원본 UI 팔레트로 바꾸면 해당 자산의 표현이 달라져 보존"
+      },
+      "blue-19": {
+        "$value": "#dcf2fd",
+        "$type": "color",
+        "$description": "외부 로고 또는 히어로 도형의 고유 표현. 원본 UI 팔레트로 바꾸면 해당 자산의 표현이 달라져 보존"
+      },
+      "blue-14": {
+        "$value": "#4377bb",
+        "$type": "color",
+        "$description": "외부 로고 또는 히어로 도형의 고유 표현. 원본 UI 팔레트로 바꾸면 해당 자산의 표현이 달라져 보존"
+      },
+      "blue-06": {
+        "$value": "#1f3b77",
+        "$type": "color",
+        "$description": "외부 로고 또는 히어로 도형의 고유 표현. 원본 UI 팔레트로 바꾸면 해당 자산의 표현이 달라져 보존"
+      },
+      "blue-11": {
+        "$value": "#315aa9",
+        "$type": "color",
+        "$description": "외부 로고 또는 히어로 도형의 고유 표현. 원본 UI 팔레트로 바꾸면 해당 자산의 표현이 달라져 보존"
+      },
+      "blue-15": {
+        "$value": "#518ac8",
+        "$type": "color",
+        "$description": "외부 로고 또는 히어로 도형의 고유 표현. 원본 UI 팔레트로 바꾸면 해당 자산의 표현이 달라져 보존"
+      },
+      "blue-03": {
+        "$value": "#1a336b",
+        "$type": "color",
+        "$description": "외부 로고 또는 히어로 도형의 고유 표현. 원본 UI 팔레트로 바꾸면 해당 자산의 표현이 달라져 보존"
+      },
+      "blue-04": {
+        "$value": "#1a476f",
+        "$type": "color",
+        "$description": "외부 로고 또는 히어로 도형의 고유 표현. 원본 UI 팔레트로 바꾸면 해당 자산의 표현이 달라져 보존"
+      },
+      "blue-08": {
+        "$value": "#1f5b98",
+        "$type": "color",
+        "$description": "외부 로고 또는 히어로 도형의 고유 표현. 원본 UI 팔레트로 바꾸면 해당 자산의 표현이 달라져 보존"
+      },
+      "blue-12": {
+        "$value": "#2d72b8",
+        "$type": "color",
+        "$description": "외부 로고 또는 히어로 도형의 고유 표현. 원본 UI 팔레트로 바꾸면 해당 자산의 표현이 달라져 보존"
+      },
+      "blue-16": {
+        "$value": "#5294cf",
+        "$type": "color",
+        "$description": "외부 로고 또는 히어로 도형의 고유 표현. 원본 UI 팔레트로 바꾸면 해당 자산의 표현이 달라져 보존"
+      },
+      "blue-02": {
+        "$value": "#17191e",
+        "$type": "color",
+        "$description": "외부 로고 또는 히어로 도형의 고유 표현. 원본 UI 팔레트로 바꾸면 해당 자산의 표현이 달라져 보존"
+      },
+      "yellow-03": {
+        "$value": "#eeebd4",
+        "$type": "color",
+        "$description": "외부 로고 또는 히어로 도형의 고유 표현. 원본 UI 팔레트로 바꾸면 해당 자산의 표현이 달라져 보존"
+      },
+      "neutral-03": {
+        "$value": "#111111",
+        "$type": "color",
+        "$description": "외부 로고 또는 히어로 도형의 고유 표현. 원본 UI 팔레트로 바꾸면 해당 자산의 표현이 달라져 보존"
+      },
+      "neutral-01": {
+        "$value": "#000000",
+        "$type": "color",
+        "$description": "외부 로고 또는 히어로 도형의 고유 표현. 원본 UI 팔레트로 바꾸면 해당 자산의 표현이 달라져 보존"
+      },
+      "red-07": {
+        "$value": "#ff2d20",
+        "$type": "color",
+        "$description": "외부 로고 또는 히어로 도형의 고유 표현. 원본 UI 팔레트로 바꾸면 해당 자산의 표현이 달라져 보존"
+      },
+      "neutral-02": {
+        "$value": "#0c0d0d",
+        "$type": "color",
+        "$description": "외부 로고 또는 히어로 도형의 고유 표현. 원본 UI 팔레트로 바꾸면 해당 자산의 표현이 달라져 보존"
+      },
+      "purple-01": {
+        "$value": "#7e57c2",
+        "$type": "color",
+        "$description": "외부 로고 또는 히어로 도형의 고유 표현. 원본 UI 팔레트로 바꾸면 해당 자산의 표현이 달라져 보존"
+      },
+      "cyan-05": {
+        "$value": "#61dafb",
+        "$type": "color",
+        "$description": "외부 로고 또는 히어로 도형의 고유 표현. 원본 UI 팔레트로 바꾸면 해당 자산의 표현이 달라져 보존"
+      },
+      "blue-01": {
+        "$value": "#110f1f",
+        "$type": "color",
+        "$description": "외부 로고 또는 히어로 도형의 고유 표현. 원본 UI 팔레트로 바꾸면 해당 자산의 표현이 달라져 보존"
+      },
+      "cyan-04": {
+        "$value": "#44d1fd",
+        "$type": "color",
+        "$description": "외부 로고 또는 히어로 도형의 고유 표현. 원본 UI 팔레트로 바꾸면 해당 자산의 표현이 달라져 보존"
+      },
+      "blue-07": {
+        "$value": "#08589c",
+        "$type": "color",
+        "$description": "외부 로고 또는 히어로 도형의 고유 표현. 원본 UI 팔레트로 바꾸면 해당 자산의 표현이 달라져 보존"
+      },
+      "cyan-03": {
+        "$value": "#1fbcfd",
+        "$type": "color",
+        "$description": "외부 로고 또는 히어로 도형의 고유 표현. 원본 UI 팔레트로 바꾸면 해당 자산의 표현이 달라져 보존"
+      },
+      "neutral-07": {
+        "$value": "#616161",
+        "$type": "color",
+        "$description": "외부 로고 또는 히어로 도형의 고유 표현. 원본 UI 팔레트로 바꾸면 해당 자산의 표현이 달라져 보존"
+      },
+      "orange-05": {
+        "$value": "#ff5b11",
+        "$type": "color",
+        "$description": "외부 로고 또는 히어로 도형의 고유 표현. 원본 UI 팔레트로 바꾸면 해당 자산의 표현이 달라져 보존"
+      },
+      "orange-09": {
+        "$value": "#ff9758",
+        "$type": "color",
+        "$description": "외부 로고 또는 히어로 도형의 고유 표현. 원본 UI 팔레트로 바꾸면 해당 자산의 표현이 달라져 보존"
+      },
+      "blue-09": {
+        "$value": "#0277bd",
+        "$type": "color",
+        "$description": "외부 로고 또는 히어로 도형의 고유 표현. 원본 UI 팔레트로 바꾸면 해당 자산의 표현이 달라져 보존"
+      },
+      "green-02": {
+        "$value": "#00dc82",
+        "$type": "color",
+        "$description": "외부 로고 또는 히어로 도형의 고유 표현. 원본 UI 팔레트로 바꾸면 해당 자산의 표현이 달라져 보존"
+      },
+      "green-04": {
+        "$value": "#41b883",
+        "$type": "color",
+        "$description": "외부 로고 또는 히어로 도형의 고유 표현. 원본 UI 팔레트로 바꾸면 해당 자산의 표현이 달라져 보존"
+      },
+      "blue-05": {
+        "$value": "#34495e",
+        "$type": "color",
+        "$description": "외부 로고 또는 히어로 도형의 고유 표현. 원본 UI 팔레트로 바꾸면 해당 자산의 표현이 달라져 보존"
+      },
+      "orange-08": {
+        "$value": "#faae42",
+        "$type": "color",
+        "$description": "외부 로고 또는 히어로 도형의 고유 표현. 원본 UI 팔레트로 바꾸면 해당 자산의 표현이 달라져 보존"
+      },
+      "red-08": {
+        "$value": "#ef3e31",
+        "$type": "color",
+        "$description": "외부 로고 또는 히어로 도형의 고유 표현. 원본 UI 팔레트로 바꾸면 해당 자산의 표현이 달라져 보존"
+      },
+      "orange-06": {
+        "$value": "#e39f3a",
+        "$type": "color",
+        "$description": "외부 로고 또는 히어로 도형의 고유 표현. 원본 UI 팔레트로 바꾸면 해당 자산의 표현이 달라져 보존"
+      },
+      "red-05": {
+        "$value": "#d33929",
+        "$type": "color",
+        "$description": "외부 로고 또는 히어로 도형의 고유 표현. 원본 UI 팔레트로 바꾸면 해당 자산의 표현이 달라져 보존"
+      },
+      "yellow-02": {
+        "$value": "#ffe052",
+        "$type": "color",
+        "$description": "외부 로고 또는 히어로 도형의 고유 표현. 원본 UI 팔레트로 바꾸면 해당 자산의 표현이 달라져 보존"
+      },
+      "orange-07": {
+        "$value": "#ffc331",
+        "$type": "color",
+        "$description": "외부 로고 또는 히어로 도형의 고유 표현. 원본 UI 팔레트로 바꾸면 해당 자산의 표현이 달라져 보존"
+      },
+      "blue-13": {
+        "$value": "#387eb8",
+        "$type": "color",
+        "$description": "외부 로고 또는 히어로 도형의 고유 표현. 원본 UI 팔레트로 바꾸면 해당 자산의 표현이 달라져 보존"
+      },
+      "blue-10": {
+        "$value": "#366994",
+        "$type": "color",
+        "$description": "외부 로고 또는 히어로 도형의 고유 표현. 원본 UI 팔레트로 바꾸면 해당 자산의 표현이 달라져 보존"
+      },
+      "neutral-08": {
+        "$value": "#666666",
+        "$type": "color",
+        "$description": "외부 로고 또는 히어로 도형의 고유 표현. 원본 UI 팔레트로 바꾸면 해당 자산의 표현이 달라져 보존"
+      },
+      "red-06": {
+        "$value": "#ff3e00",
+        "$type": "color",
+        "$description": "외부 로고 또는 히어로 도형의 고유 표현. 원본 UI 팔레트로 바꾸면 해당 자산의 표현이 달라져 보존"
+      },
+      "cyan-01": {
+        "$value": "#00796b",
+        "$type": "color",
+        "$description": "외부 로고 또는 히어로 도형의 고유 표현. 원본 UI 팔레트로 바꾸면 해당 자산의 표현이 달라져 보존"
+      },
+      "orange-03": {
+        "$value": "#f57f17",
+        "$type": "color",
+        "$description": "외부 로고 또는 히어로 도형의 고유 표현. 원본 UI 팔레트로 바꾸면 해당 자산의 표현이 달라져 보존"
+      },
+      "orange-01": {
+        "$value": "#ff9100",
+        "$type": "color",
+        "$description": "외부 로고 또는 히어로 도형의 고유 표현. 원본 UI 팔레트로 바꾸면 해당 자산의 표현이 달라져 보존"
+      },
+      "yellow-01": {
+        "$value": "#ffc400",
+        "$type": "color",
+        "$description": "외부 로고 또는 히어로 도형의 고유 표현. 원본 UI 팔레트로 바꾸면 해당 자산의 표현이 달라져 보존"
+      },
+      "red-03": {
+        "$value": "#dd2c00",
+        "$type": "color",
+        "$description": "외부 로고 또는 히어로 도형의 고유 표현. 원본 UI 팔레트로 바꾸면 해당 자산의 표현이 달라져 보존"
+      },
+      "cyan-06": {
+        "$value": "#cfd8dc",
+        "$type": "color",
+        "$description": "외부 로고 또는 히어로 도형의 고유 표현. 원본 UI 팔레트로 바꾸면 해당 자산의 표현이 달라져 보존"
+      },
+      "red-01": {
+        "$value": "#b71c1c",
+        "$type": "color",
+        "$description": "외부 로고 또는 히어로 도형의 고유 표현. 원본 UI 팔레트로 바꾸면 해당 자산의 표현이 달라져 보존"
+      },
+      "green-05": {
+        "$value": "#46e7aa",
+        "$type": "color",
+        "$description": "외부 로고 또는 히어로 도형의 고유 표현. 원본 UI 팔레트로 바꾸면 해당 자산의 표현이 달라져 보존"
+      },
+      "red-04": {
+        "$value": "#bf4722",
+        "$type": "color",
+        "$description": "외부 로고 또는 히어로 도형의 고유 표현. 원본 UI 팔레트로 바꾸면 해당 자산의 표현이 달라져 보존"
+      },
+      "pink-01": {
+        "$value": "#c757bc",
+        "$type": "color",
+        "$description": "외부 로고 또는 히어로 도형의 고유 표현. 원본 UI 팔레트로 바꾸면 해당 자산의 표현이 달라져 보존"
+      },
+      "pink-02": {
+        "$value": "#cd5ca9",
+        "$type": "color",
+        "$description": "외부 로고 또는 히어로 도형의 고유 표현. 원본 UI 팔레트로 바꾸면 해당 자산의 표현이 달라져 보존"
+      },
+      "red-09": {
+        "$value": "#e8744f",
+        "$type": "color",
+        "$description": "외부 로고 또는 히어로 도형의 고유 표현. 원본 UI 팔레트로 바꾸면 해당 자산의 표현이 달라져 보존"
+      },
+      "orange-04": {
+        "$value": "#f88316",
+        "$type": "color",
+        "$description": "외부 로고 또는 히어로 도형의 고유 표현. 원본 UI 팔레트로 바꾸면 해당 자산의 표현이 달라져 보존"
+      },
+      "orange-02": {
+        "$value": "#ff8900",
+        "$type": "color",
+        "$description": "외부 로고 또는 히어로 도형의 고유 표현. 원본 UI 팔레트로 바꾸면 해당 자산의 표현이 달라져 보존"
+      },
+      "cyan-02": {
+        "$value": "#00afff",
+        "$type": "color",
+        "$description": "외부 로고 또는 히어로 도형의 고유 표현. 원본 UI 팔레트로 바꾸면 해당 자산의 표현이 달라져 보존"
+      },
+      "blue-17": {
+        "$value": "#5282ff",
+        "$type": "color",
+        "$description": "외부 로고 또는 히어로 도형의 고유 표현. 원본 UI 팔레트로 바꾸면 해당 자산의 표현이 달라져 보존"
+      },
+      "purple-02": {
+        "$value": "#945dff",
+        "$type": "color",
+        "$description": "외부 로고 또는 히어로 도형의 고유 표현. 원본 UI 팔레트로 바꾸면 해당 자산의 표현이 달라져 보존"
+      }
+    },
+    "fill-opacity": {
+      "mark": {
+        "$value": "0.2",
+        "$type": "number",
+        "$description": "외부 로고 또는 히어로 도형의 고유 표현. 원본 UI 팔레트로 바꾸면 해당 자산의 표현이 달라져 보존"
+      }
+    },
+    "rx": {
+      "library-1": {
+        "$value": "1.92",
+        "$type": "number",
+        "$description": "외부 로고 또는 히어로 도형의 고유 표현. 원본 UI 팔레트로 바꾸면 해당 자산의 표현이 달라져 보존"
+      },
+      "queues-2": {
+        "$value": "2",
+        "$type": "number",
+        "$description": "외부 로고 또는 히어로 도형의 고유 표현. 원본 UI 팔레트로 바꾸면 해당 자산의 표현이 달라져 보존"
+      }
+    },
+    "stroke-width": {
+      "library-1": {
+        "$value": "1.28",
+        "$type": "number",
+        "$description": "외부 로고 또는 히어로 도형의 고유 표현. 원본 UI 팔레트로 바꾸면 해당 자산의 표현이 달라져 보존"
+      },
+      "hero-2": {
+        "$value": "0.7",
+        "$type": "number",
+        "$description": "외부 로고 또는 히어로 도형의 고유 표현. 원본 UI 팔레트로 바꾸면 해당 자산의 표현이 달라져 보존"
+      },
+      "hero-3": {
+        "$value": "1.09591",
+        "$type": "number",
+        "$description": "외부 로고 또는 히어로 도형의 고유 표현. 원본 UI 팔레트로 바꾸면 해당 자산의 표현이 달라져 보존"
+      },
+      "cron-4": {
+        "$value": "2",
+        "$type": "number",
+        "$description": "외부 로고 또는 히어로 도형의 고유 표현. 원본 UI 팔레트로 바꾸면 해당 자산의 표현이 달라져 보존"
+      },
+      "emblem-outline": {
+        "$value": "6",
+        "$type": "number",
+        "$description": "외부 로고 또는 히어로 도형의 고유 표현. 원본 UI 팔레트로 바꾸면 해당 자산의 표현이 달라져 보존"
+      },
+      "toolbar": {
+        "$value": "1.5",
+        "$type": "number",
+        "$description": "외부 로고 또는 히어로 도형의 고유 표현. 원본 UI 팔레트로 바꾸면 해당 자산의 표현이 달라져 보존"
+      }
+    },
+    "stroke-opacity": {
+      "hero-1": {
+        "$value": "0.5",
+        "$type": "number",
+        "$description": "외부 로고 또는 히어로 도형의 고유 표현. 원본 UI 팔레트로 바꾸면 해당 자산의 표현이 달라져 보존"
+      },
+      "hero-2": {
+        "$value": "0.1",
+        "$type": "number",
+        "$description": "외부 로고 또는 히어로 도형의 고유 표현. 원본 UI 팔레트로 바꾸면 해당 자산의 표현이 달라져 보존"
+      }
+    },
+    "stop-opacity": {
+      "hero-1": {
+        "$value": "0.5",
+        "$type": "number",
+        "$description": "외부 로고 또는 히어로 도형의 고유 표현. 원본 UI 팔레트로 바꾸면 해당 자산의 표현이 달라져 보존"
+      },
+      "hero-2": {
+        "$value": "0.1",
+        "$type": "number",
+        "$description": "외부 로고 또는 히어로 도형의 고유 표현. 원본 UI 팔레트로 바꾸면 해당 자산의 표현이 달라져 보존"
+      },
+      "hero-3": {
+        "$value": "0.3",
+        "$type": "number",
+        "$description": "외부 로고 또는 히어로 도형의 고유 표현. 원본 UI 팔레트로 바꾸면 해당 자산의 표현이 달라져 보존"
+      },
+      "hero-4": {
+        "$value": "0.12",
+        "$type": "number",
+        "$description": "외부 로고 또는 히어로 도형의 고유 표현. 원본 UI 팔레트로 바꾸면 해당 자산의 표현이 달라져 보존"
+      },
+      "shadow-soft": {
+        "$value": "0.15",
+        "$type": "number",
+        "$description": "외부 로고 또는 히어로 도형의 고유 표현. 원본 UI 팔레트로 바꾸면 해당 자산의 표현이 달라져 보존"
+      },
+      "shadow-faint": {
+        "$value": "0.01",
+        "$type": "number",
+        "$description": "외부 로고 또는 히어로 도형의 고유 표현. 원본 UI 팔레트로 바꾸면 해당 자산의 표현이 달라져 보존"
+      },
+      "shadow-strong": {
+        "$value": "0.26",
+        "$type": "number",
+        "$description": "외부 로고 또는 히어로 도형의 고유 표현. 원본 UI 팔레트로 바꾸면 해당 자산의 표현이 달라져 보존"
+      }
+    },
+    "opacity": {
+      "folded-layer": {
+        "$value": ".3",
+        "$type": "number",
+        "$description": "외부 로고 또는 히어로 도형의 고유 표현. 원본 UI 팔레트로 바꾸면 해당 자산의 표현이 달라져 보존"
+      }
+    },
+    "ry": {
+      "copy-as-markdown-1": {
+        "$value": "2",
+        "$type": "number",
+        "$description": "외부 로고 또는 히어로 도형의 고유 표현. 원본 UI 팔레트로 바꾸면 해당 자산의 표현이 달라져 보존"
+      }
+    }
+  },
+  "asset": {
+    "paint": {
+      "symbol-layer-01": {
+        "$value": "{illustration.paint.neutral-11}",
+        "$type": "color",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      },
+      "symbol-layer-02": {
+        "$value": "{color.phosphor-green}",
+        "$type": "color",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      },
+      "symbol-layer-03": {
+        "$value": "{illustration.paint.green-01}",
+        "$type": "color",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      },
+      "symbol-layer-04": {
+        "$value": "{illustration.paint.neutral-04}",
+        "$type": "color",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      },
+      "symbol-layer-05": {
+        "$value": "{color.silver-mist}",
+        "$type": "color",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      },
+      "symbol-layer-06": {
+        "$value": "{color.smoke}",
+        "$type": "color",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      },
+      "symbol-layer-07": {
+        "$value": "{color.phosphor-green}",
+        "$type": "color",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      },
+      "symbol-layer-08": {
+        "$value": "{illustration.paint.neutral-05}",
+        "$type": "color",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      },
+      "symbol-layer-09": {
+        "$value": "{illustration.paint.neutral-10}",
+        "$type": "color",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      },
+      "symbol-layer-10": {
+        "$value": "{illustration.paint.neutral-09}",
+        "$type": "color",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      },
+      "symbol-layer-11": {
+        "$value": "{illustration.paint.neutral-06}",
+        "$type": "color",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      },
+      "symbol-layer-12": {
+        "$value": "{illustration.paint.green-03}",
+        "$type": "color",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      },
+      "symbol-layer-13": {
+        "$value": "{illustration.paint.red-02}",
+        "$type": "color",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      },
+      "symbol-layer-14": {
+        "$value": "{illustration.paint.blue-18}",
+        "$type": "color",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      },
+      "symbol-layer-15": {
+        "$value": "{illustration.paint.blue-19}",
+        "$type": "color",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      },
+      "symbol-layer-16": {
+        "$value": "{illustration.paint.blue-14}",
+        "$type": "color",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      },
+      "symbol-layer-17": {
+        "$value": "{illustration.paint.blue-06}",
+        "$type": "color",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      },
+      "symbol-layer-18": {
+        "$value": "{illustration.paint.blue-11}",
+        "$type": "color",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      },
+      "symbol-layer-19": {
+        "$value": "{illustration.paint.blue-15}",
+        "$type": "color",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      },
+      "symbol-layer-20": {
+        "$value": "{illustration.paint.blue-03}",
+        "$type": "color",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      },
+      "symbol-layer-21": {
+        "$value": "{illustration.paint.blue-04}",
+        "$type": "color",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      },
+      "symbol-layer-22": {
+        "$value": "{illustration.paint.blue-08}",
+        "$type": "color",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      },
+      "symbol-layer-23": {
+        "$value": "{illustration.paint.blue-12}",
+        "$type": "color",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      },
+      "symbol-layer-24": {
+        "$value": "{illustration.paint.blue-16}",
+        "$type": "color",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      },
+      "symbol-layer-25": {
+        "$value": "{illustration.paint.blue-02}",
+        "$type": "color",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      },
+      "symbol-layer-26": {
+        "$value": "{illustration.paint.yellow-03}",
+        "$type": "color",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      },
+      "symbol-layer-27": {
+        "$value": "{illustration.paint.neutral-03}",
+        "$type": "color",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      },
+      "symbol-layer-28": {
+        "$value": "{illustration.paint.neutral-01}",
+        "$type": "color",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      },
+      "symbol-layer-29": {
+        "$value": "{illustration.paint.red-07}",
+        "$type": "color",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      },
+      "symbol-layer-30": {
+        "$value": "{illustration.paint.neutral-11}",
+        "$type": "color",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      },
+      "symbol-layer-31": {
+        "$value": "{illustration.paint.neutral-02}",
+        "$type": "color",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      },
+      "symbol-layer-32": {
+        "$value": "{illustration.paint.purple-01}",
+        "$type": "color",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      },
+      "symbol-layer-33": {
+        "$value": "{illustration.paint.cyan-05}",
+        "$type": "color",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      },
+      "symbol-layer-34": {
+        "$value": "{illustration.paint.blue-01}",
+        "$type": "color",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      },
+      "symbol-layer-35": {
+        "$value": "{illustration.paint.cyan-04}",
+        "$type": "color",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      },
+      "symbol-layer-36": {
+        "$value": "{illustration.paint.blue-07}",
+        "$type": "color",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      },
+      "symbol-layer-37": {
+        "$value": "{illustration.paint.cyan-03}",
+        "$type": "color",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      },
+      "symbol-layer-38": {
+        "$value": "{illustration.paint.neutral-07}",
+        "$type": "color",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      },
+      "symbol-layer-39": {
+        "$value": "{illustration.paint.orange-05}",
+        "$type": "color",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      },
+      "symbol-layer-40": {
+        "$value": "{illustration.paint.orange-09}",
+        "$type": "color",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      },
+      "symbol-layer-41": {
+        "$value": "{illustration.paint.blue-09}",
+        "$type": "color",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      },
+      "symbol-layer-42": {
+        "$value": "{illustration.paint.green-02}",
+        "$type": "color",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      },
+      "symbol-layer-43": {
+        "$value": "{illustration.paint.green-04}",
+        "$type": "color",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      },
+      "symbol-layer-44": {
+        "$value": "{illustration.paint.blue-05}",
+        "$type": "color",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      },
+      "symbol-layer-45": {
+        "$value": "{illustration.paint.neutral-11}",
+        "$type": "color",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      },
+      "symbol-layer-46": {
+        "$value": "{illustration.paint.orange-08}",
+        "$type": "color",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      },
+      "symbol-layer-47": {
+        "$value": "{illustration.paint.red-08}",
+        "$type": "color",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      },
+      "symbol-layer-48": {
+        "$value": "{illustration.paint.orange-06}",
+        "$type": "color",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      },
+      "symbol-layer-49": {
+        "$value": "{illustration.paint.red-05}",
+        "$type": "color",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      },
+      "symbol-layer-50": {
+        "$value": "{illustration.paint.yellow-02}",
+        "$type": "color",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      },
+      "symbol-layer-51": {
+        "$value": "{illustration.paint.orange-07}",
+        "$type": "color",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      },
+      "symbol-layer-52": {
+        "$value": "{illustration.paint.blue-13}",
+        "$type": "color",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      },
+      "symbol-layer-53": {
+        "$value": "{illustration.paint.blue-10}",
+        "$type": "color",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      },
+      "symbol-layer-54": {
+        "$value": "{illustration.paint.neutral-11}",
+        "$type": "color",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      },
+      "symbol-layer-55": {
+        "$value": "{illustration.paint.neutral-08}",
+        "$type": "color",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      },
+      "symbol-layer-56": {
+        "$value": "{illustration.paint.neutral-01}",
+        "$type": "color",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      },
+      "symbol-layer-57": {
+        "$value": "{illustration.paint.neutral-01}",
+        "$type": "color",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      },
+      "symbol-layer-58": {
+        "$value": "{illustration.paint.red-06}",
+        "$type": "color",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      },
+      "symbol-layer-59": {
+        "$value": "{illustration.paint.cyan-01}",
+        "$type": "color",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      },
+      "symbol-layer-60": {
+        "$value": "{illustration.paint.orange-03}",
+        "$type": "color",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      },
+      "symbol-layer-61": {
+        "$value": "{illustration.paint.orange-01}",
+        "$type": "color",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      },
+      "symbol-layer-62": {
+        "$value": "{illustration.paint.yellow-01}",
+        "$type": "color",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      },
+      "symbol-layer-63": {
+        "$value": "{illustration.paint.red-03}",
+        "$type": "color",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      },
+      "symbol-layer-64": {
+        "$value": "{illustration.paint.cyan-06}",
+        "$type": "color",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      },
+      "symbol-layer-65": {
+        "$value": "{illustration.paint.red-01}",
+        "$type": "color",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      },
+      "symbol-layer-66": {
+        "$value": "{illustration.paint.green-05}",
+        "$type": "color",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      },
+      "symbol-layer-67": {
+        "$value": "{illustration.paint.red-04}",
+        "$type": "color",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      },
+      "symbol-layer-68": {
+        "$value": "{illustration.paint.pink-01}",
+        "$type": "color",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      },
+      "symbol-layer-69": {
+        "$value": "{illustration.paint.pink-02}",
+        "$type": "color",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      },
+      "symbol-layer-70": {
+        "$value": "{illustration.paint.red-09}",
+        "$type": "color",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      },
+      "symbol-layer-71": {
+        "$value": "{illustration.paint.orange-04}",
+        "$type": "color",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      },
+      "symbol-layer-72": {
+        "$value": "{illustration.paint.orange-02}",
+        "$type": "color",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      },
+      "symbol-layer-73": {
+        "$value": "{illustration.paint.cyan-02}",
+        "$type": "color",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      },
+      "symbol-layer-74": {
+        "$value": "{illustration.paint.blue-17}",
+        "$type": "color",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      },
+      "symbol-layer-75": {
+        "$value": "{illustration.paint.purple-02}",
+        "$type": "color",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      }
+    },
+    "fill-opacity": {
+      "mark": {
+        "$value": "{illustration.fill-opacity.mark}",
+        "$type": "number",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      }
+    },
+    "rx": {
+      "library-1": {
+        "$value": "{illustration.rx.library-1}",
+        "$type": "number",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      },
+      "queues-2": {
+        "$value": "{illustration.rx.queues-2}",
+        "$type": "number",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      }
+    },
+    "stroke-width": {
+      "library-1": {
+        "$value": "{illustration.stroke-width.library-1}",
+        "$type": "number",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      },
+      "hero-2": {
+        "$value": "{illustration.stroke-width.hero-2}",
+        "$type": "number",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      },
+      "hero-3": {
+        "$value": "{illustration.stroke-width.hero-3}",
+        "$type": "number",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      },
+      "cron-4": {
+        "$value": "{illustration.stroke-width.cron-4}",
+        "$type": "number",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      },
+      "emblem-outline": {
+        "$value": "{illustration.stroke-width.emblem-outline}",
+        "$type": "number",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      },
+      "toolbar": {
+        "$value": "{illustration.stroke-width.toolbar}",
+        "$type": "number",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      }
+    },
+    "stroke-opacity": {
+      "hero-1": {
+        "$value": "{illustration.stroke-opacity.hero-1}",
+        "$type": "number",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      },
+      "hero-2": {
+        "$value": "{illustration.stroke-opacity.hero-2}",
+        "$type": "number",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      }
+    },
+    "stop-opacity": {
+      "hero-1": {
+        "$value": "{illustration.stop-opacity.hero-1}",
+        "$type": "number",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      },
+      "hero-2": {
+        "$value": "{illustration.stop-opacity.hero-2}",
+        "$type": "number",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      },
+      "hero-3": {
+        "$value": "{illustration.stop-opacity.hero-3}",
+        "$type": "number",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      },
+      "hero-4": {
+        "$value": "{illustration.stop-opacity.hero-4}",
+        "$type": "number",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      },
+      "shadow-soft": {
+        "$value": "{illustration.stop-opacity.shadow-soft}",
+        "$type": "number",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      },
+      "shadow-faint": {
+        "$value": "{illustration.stop-opacity.shadow-faint}",
+        "$type": "number",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      },
+      "shadow-strong": {
+        "$value": "{illustration.stop-opacity.shadow-strong}",
+        "$type": "number",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      }
+    },
+    "opacity": {
+      "folded-layer": {
+        "$value": "{illustration.opacity.folded-layer}",
+        "$type": "number",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      }
+    },
+    "ry": {
+      "copy-as-markdown-1": {
+        "$value": "{illustration.ry.copy-as-markdown-1}",
+        "$type": "number",
+        "$description": "SVG에서 사용하는 역할 참조. 같은 색·선은 정본에서 재사용"
+      }
+    }
+  },
+  "$description": "design-tokens source of truth, light and common values (DTCG 2025.10). Dark values that differ live in tokens.dark.json.",
+  "weight": {
+    "$type": "fontWeight",
+    "medium": {
+      "$value": 500
+    },
+    "semibold": {
+      "$value": 600
+    }
+  },
+  "easing": {
+    "$type": "cubicBezier",
+    "move": {
+      "$value": [
+        0.455,
+        0.03,
+        0.515,
+        0.955
+      ],
+      "$description": "Slow start and end."
+    },
+    "reveal": {
+      "$value": [
+        0,
+        0,
+        0.58,
+        1
+      ],
+      "$description": "Slow end."
+    }
+  }
+}

@@ -1,0 +1,172 @@
+{
+  "color": {
+    "fg": {
+      "$value": "{color.gray.59}",
+      "$type": "color"
+    },
+    "muted": {
+      "$value": "{color.gray.333}",
+      "$type": "color"
+    },
+    "group-title": {
+      "$value": "{color.gray.333}",
+      "$type": "color"
+    },
+    "bg": {
+      "$value": "{color.gray.910}",
+      "$type": "color"
+    },
+    "group-1": {
+      "$value": "{color.gray.875}",
+      "$type": "color"
+    },
+    "group-2": {
+      "$value": "{color.gray.835}",
+      "$type": "color"
+    },
+    "group-3": {
+      "$value": "{color.gray.796}",
+      "$type": "color"
+    },
+    "node": {
+      "$value": "{color.gray.757}",
+      "$type": "color"
+    },
+    "surface": {
+      "$value": "{color.gray.788}",
+      "$type": "color"
+    },
+    "card": {
+      "$value": "{color.gray.788}",
+      "$type": "color"
+    },
+    "card-on": {
+      "$value": "{color.blue.dark-fill}",
+      "$type": "color"
+    },
+    "page": {
+      "$value": "{color.gray.929}",
+      "$type": "color"
+    },
+    "outline": {
+      "$value": "{color.gray.467}",
+      "$type": "color"
+    },
+    "border": {
+      "$value": "{color.gray.776}",
+      "$type": "color"
+    },
+    "plate-border": {
+      "$value": "{color.gray.788}",
+      "$type": "color"
+    },
+    "line": {
+      "$value": "{color.gray.651}",
+      "$type": "color"
+    },
+    "state": {
+      "active": {
+        "$value": "{color.blue.dark-stroke}",
+        "$type": "color"
+      },
+      "active-fill": {
+        "$value": "{color.blue.dark-stroke}",
+        "$type": "color"
+      },
+      "active-text": {
+        "$value": "{color.blue.dark-ink}",
+        "$type": "color"
+      },
+      "on-active": {
+        "$value": "{color.gray.933}",
+        "$type": "color"
+      },
+      "error": {
+        "$value": "{color.red.dark-stroke}",
+        "$type": "color"
+      },
+      "success": {
+        "$value": "{color.green.dark-stroke}",
+        "$type": "color"
+      },
+      "warning": {
+        "$value": "{color.orange.dark-stroke}",
+        "$type": "color"
+      },
+      "glow": {
+        "$value": "{color.blue.dark-fill}",
+        "$type": "color"
+      }
+    },
+    "flow": {
+      "brand": {
+        "$value": "{color.blue.dark-stroke}",
+        "$type": "color"
+      },
+      "purple": {
+        "$value": "{color.purple.dark-dot}",
+        "$type": "color"
+      },
+      "green": {
+        "$value": "{color.green.dark-dot}",
+        "$type": "color"
+      },
+      "gray": {
+        "$value": "{color.gray.220}",
+        "$type": "color"
+      },
+      "red": {
+        "$value": "{color.red.dark-dot}",
+        "$type": "color"
+      }
+    },
+    "ui": {
+      "link": {
+        "$value": "{color.blue.dark-ink}",
+        "$type": "color"
+      },
+      "focus": {
+        "$value": "{color.blue.dark-stroke}",
+        "$type": "color"
+      },
+      "progress": {
+        "$value": "{color.blue.dark-stroke}",
+        "$type": "color"
+      },
+      "control-on": {
+        "$value": "{color.gray.776}",
+        "$type": "color"
+      }
+    },
+    "data": {
+      "main": {
+        "$value": "{color.blue.dark-stroke}",
+        "$type": "color"
+      },
+      "compare": {
+        "$value": "{color.orange.dark-stroke}",
+        "$type": "color"
+      },
+      "heat-low": {
+        "$value": "{color.blue.dark-heat-low}",
+        "$type": "color"
+      },
+      "heat-high": {
+        "$value": "{color.blue.dark-heat-high}",
+        "$type": "color"
+      },
+      "heat-ink": {
+        "$value": "{color.gray.0}",
+        "$type": "color"
+      },
+      "grid": {
+        "$value": "{color.gray.776}",
+        "$type": "color"
+      }
+    },
+    "accent": {
+      "$value": "{color.blue.dark-stroke}",
+      "$type": "color"
+    }
+  }
+}

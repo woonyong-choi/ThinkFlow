@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
 import { copyFileSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
+import { createRequire } from 'node:module';
 import { test } from 'node:test';
 import { fileURLToPath } from 'node:url';
 import { commonTokenPaths, findRedefined, readCommonTokens } from '../scripts/lib/design-tokens.mjs';
@@ -20,7 +21,7 @@ const run = (script, args) => spawnSync(process.execPath, [script, ...args], { c
 // 근거: 계약 "의존성: github:woonyong-choi/design-tokens#v0.1.0". package.json의 태그와 설치된 패키지 버전이 같다
 test('package_json_pins_design_tokens_to_the_tag_of_the_installed_version', () => {
   const manifest = JSON.parse(readFileSync(join(ROOT, 'package.json'), 'utf8'));
-  const installed = JSON.parse(readFileSync(join(commonTokenPaths().light, '../../package.json'), 'utf8'));
+  const installed = JSON.parse(readFileSync(createRequire(import.meta.url).resolve(`${PACKAGE}/package.json`), 'utf8'));
 
   assert.equal(manifest.devDependencies[PACKAGE], `github:woonyong-choi/design-tokens#v${installed.version}`);
 });

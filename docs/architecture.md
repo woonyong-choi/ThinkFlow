@@ -71,3 +71,11 @@
 | 결과 형식 | SVG, HTML | SVG는 README와 설계 문서에 이미지로 들어가고, HTML은 미리보기와 목록 쪽에서 열린다. 둘 다 추가 프로그램이 필요 없다. |
 | 공통 토큰 | `@woonyong-choi/design-tokens`(Git 태그로 설치) | 색 역할, 색 단계, 간격, 반지름, 글자 크기를 여러 프로젝트가 같은 값으로 쓰려고 별도 패키지가 정본을 갖는다. 이 저장소는 그림 전용 값만 두고 같은 이름을 다시 정의하지 못한다. npm 배포 전이라 태그로 설치하고, 배포되면 버전 범위로 바꾼다. |
 | 실행 환경 | Node.js 20 이상 | elkjs와 글꼴 처리를 브라우저 없이 돌린다. |
+
+## 선택 테마 가져오기
+
+테마 선택은 루트 theme.config.json의 technical이다. design-tokens의 dist/technical 완성본을 src/design-theme에 커밋한다. scripts/theme-snapshot.mjs가 모든 파일의 해시를 검사한다. scripts/lib/design-tokens.mjs는 이 사본의 renderer.tokens.json과 renderer.tokens.dark.json을 읽는다. src/tokens.json과 src/tokens.dark.json은 그림 전용 토큰의 호환 사본이다. 계산 알고리즘과 기존 생성 CSS·JS 값은 유지한다.
+
+공통 정본에서 수정한 다음 `npm run theme:sync -- --from <design-tokens-root>`, `npm run tokens`, `npm run check`, `npm test` 순서로 확인한다. theme:sync는 기존 사본의 수동 수정을 발견하면 중단한다. 자동 업데이트 워크플로도 새 패키지 설치 후 같은 명령으로 technical을 가져온다. Git 태그 개발 의존성은 업데이트 감지용이며 실행 시에는 커밋된 사본과 생성물을 사용한다.
+
+현재 연결은 technical의 두 모드와 기존 글꼴을 보존한다. 다른 테마는 renderer 계약과 그림 전용 값, 실제 측정 글꼴을 갖추고 검사한 뒤 연결한다. npm 사용자에게 테마 원본을 다시 다운로드하도록 요구하지 않는다.

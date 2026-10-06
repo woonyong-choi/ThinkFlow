@@ -1,0 +1,33 @@
+{
+  "id": "technical",
+  "schemaVersion": 1,
+  "extends": "base",
+  "modes": [
+    "light",
+    "dark"
+  ],
+  "defaultMode": "light",
+  "description": "Neutral architecture surfaces with a blue accent",
+  "fonts": "bundled-by-renderer",
+  "source": {
+    "repository": "https://github.com/woonyong-choi/design-tokens",
+    "path": "themes/technical",
+    "version": "0.1.1"
+  },
+  "files": {
+    "assets/fonts/443896d591e4f761-s.p.woff2": "2c935ccea0efa74f1d034628790a2aebfe2ccb6f5d60e8f5b224366066e10188",
+    "assets/fonts/4c9affa5bc8f420e-s.p.woff2": "e310b55a7fd9677f5e3555e6c6c4d064fa1f1d24393f0ddbe217cea12a8c432f",
+    "assets/fonts/e4af272ccee01ff0-s.p.woff2": "c940764593d0fe5d596be327ca7558855e018039fb78509aa21921fd3644c3e4",
+    "diagram.tokens.dark.json": "9538de372d795eb4b7e9e67831fd99a42052b28e3992f98c00fa08c0a588e545",
+    "diagram.tokens.json": "3169274bb14249fab9e4922f9a115cc33c667c321ab3fdca268e2ef93884dc57",
+    "renderer.tokens.dark.json": "1acb99221e9cef8517e01f4652dfb28bc9af82ddfe98bb7edefa2473e2379c87",
+    "renderer.tokens.json": "73259cd5a54d71dd128169267608a9f4122d37cb2e60c34670df33dab50c2dc4",
+    "styles.css": "e1a42dcb6c8bd46117c8d14f96d431f3d7e1a7bb31fbc6fd8bfcf0574f1bd4ee",
+    "styles.source.css": "e1a42dcb6c8bd46117c8d14f96d431f3d7e1a7bb31fbc6fd8bfcf0574f1bd4ee",
+    "theme.css": "94a404b4ef0b7cdf0989a4a0ca25a5f6f766e45d62022b178420e5fafbb924a4",
+    "tokens.dark.json": "1fe2801b57d1efc7309c0e5d3288a16859d79487f14622cf3542b9f2f4f63410",
+    "tokens.json": "9b1841db11564b5d0f4d67d7d3eeae712859f170a97f411c98ef4ddbeea5021a",
+    "tokens.light.json": "9b1841db11564b5d0f4d67d7d3eeae712859f170a97f411c98ef4ddbeea5021a"
+  },
+  "contentHash": "82b1c0af7974359505307dda133ebba7676d9565dd6d4d2ce884939365825896"
+}
