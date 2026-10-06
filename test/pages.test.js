@@ -100,7 +100,7 @@ describe('pages', { skip: SKIP }, () => {
     });
   });
 
-  // 근거: #157. 카드와 도형 표면의 그림자가 실제로 보이고 글자·선에는 적용되지 않아야 한다.
+  // 근거: #161. 문서와 설명 판을 구분하고 내부 도형에만 깊이를 둔다. 글자·선에는 그림자가 없다.
   test('simple2_surface_depth_and_filled_play_icon_are_rendered_in_both_modes', async () => {
     const html = await toHtml(await buildFigure(CODE_FIGURE), 'depth');
     await withPage(browser, html, async (page) => {
@@ -118,7 +118,7 @@ describe('pages', { skip: SKIP }, () => {
             border: read('.fl-rate').borderWidth,
           };
         });
-        assert.notEqual(style.card, 'none');
+        assert.equal(style.card, 'none');
         assert.match(style.node, /drop-shadow/);
         assert.equal(style.text, 'none');
         assert.equal(style.edge, 'none');
@@ -130,8 +130,8 @@ describe('pages', { skip: SKIP }, () => {
       }
     });
     await withPage(browser, toGallery(FIGURES, '예제'), async (page) => {
-      assert.notEqual(await page.locator('section').evaluate((el) => getComputedStyle(el).boxShadow), 'none');
-      assert.equal(await page.locator('section').evaluate((el) => getComputedStyle(el).borderRadius), '18px');
+      assert.equal(await page.locator('section').evaluate((el) => getComputedStyle(el).boxShadow), 'none');
+      assert.equal(await page.locator('section').evaluate((el) => getComputedStyle(el).borderRadius), '0px');
     });
   });
 

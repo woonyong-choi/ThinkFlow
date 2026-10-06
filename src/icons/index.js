@@ -36,7 +36,7 @@ export function splitIconRef(ref) {
 export function loadIcon(ref, sets, baseDir) {
   const file = ref.set === DEFAULT_SET ? fileURLToPath(new URL(`${ICON_NAMES[ref.name]}.svg`, BUNDLED)) : resolve(baseDir, sets.find((s) => s.name === ref.set).path, `${ref.name}.svg`);
   if (!cache.has(file)) cache.set(file, sanitizeIcon(readFileSync(file, 'utf8')));
-  return cache.get(file);
+  return { ...cache.get(file), role: iconRole(ref), name: ref.set === DEFAULT_SET ? ref.name : undefined };
 }
 
 // cost: time O(n·f), heap O(n), stack O(1), io n
@@ -55,4 +55,16 @@ export function attachIcons(figure, baseDir, problems) {
       problems.error(item.line, `cannot use icon "${item.icon}": ${error.code === 'ENOENT' ? 'the file does not exist' : error.message}`);
     }
   }
+}
+
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+// 이름 계약은 유지하고 역할색만 고른다. 사용자 세트와 브랜드는 제품 의미를 추측하지 않는다.
+function iconRole({ set, name }) {
+  if (set !== DEFAULT_SET) return 'custom';
+  if (ICON_NAMES[name].startsWith('simple-icons/')) return 'brand';
+  if (['db', 'block', 'cache', 'object', 'mq', 'logsearch'].includes(name)) return 'data';
+  if (['admin', 'bastion', 'ddos', 'firewall', 'key', 'subnet', 'vpn'].includes(name)) return 'access';
+  if (['user', 'notify'].includes(name)) return 'person';
+  return 'service';
 }

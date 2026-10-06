@@ -142,6 +142,16 @@
   --color-data-heat-ink-on: var(--color-gray-0);
   --color-data-grid: var(--color-gray-212);
   --color-accent: var(--color-blue-light-stroke);
+  --color-figure-icon-service-ink: var(--color-blue-light-ink);
+  --color-figure-icon-service-surface: var(--color-blue-light-heat-low);
+  --color-figure-icon-data-ink: var(--color-purple-light-ink);
+  --color-figure-icon-data-surface: var(--color-purple-light-tint-3);
+  --color-figure-icon-access-ink: var(--color-orange-light-ink);
+  --color-figure-icon-access-surface: var(--color-orange-light-fill);
+  --color-figure-icon-person-ink: var(--color-green-light-ink);
+  --color-figure-icon-person-surface: var(--color-green-light-fill);
+  --color-figure-icon-brand-ink: var(--color-gray-467);
+  --color-figure-icon-brand-surface: var(--color-gray-59);
   --font-sans: FigSans, Pretendard, ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Apple SD Gothic Neo', sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
   --size-text-9: 9px;
@@ -212,9 +222,13 @@
   --simple2-node-stroke: 1px;
   --simple2-heading-weight: 700;
   --simple2-progress-stroke: 2px;
+  --simple2-node-corner: 8px;
+  --simple2-separator: var(--primitive-simple2-plate-border);
+  --simple2-canvas-corner: 28px;
+  --simple2-canvas-fill: var(--primitive-simple2-canvas);
+  --simple2-symbol-stroke: 1.75px;
   --primitive-simple2-fg: #303336;
   --primitive-simple2-muted: #505b69;
-  --primitive-simple2-group-title: #505b69;
   --primitive-simple2-bg: #f2f5f7;
   --primitive-simple2-page: #ffffff;
   --primitive-simple2-node: #ffffff;
@@ -225,7 +239,9 @@
   --primitive-simple2-shadow: 0 2px 8px rgba(0,0,0,.10), 0 0 2px rgba(0,0,0,.10);
   --primitive-simple2-play-fill: #4f91fb;
   --primitive-simple2-play-ink: #ffffff;
-  --primitive-simple2-node-shadow: drop-shadow(0px 2px 2px rgba(0,0,0,.08));
+  --primitive-simple2-node-shadow: drop-shadow(0px 1px 1px rgba(0,0,0,.07));
+  --primitive-simple2-group-title: #505b69;
+  --primitive-simple2-canvas: #edeef2;
   --color-palette-amber-light-fill: var(--color-orange-light-fill);
   --color-palette-amber-light-stroke: var(--color-orange-light-stroke);
   --color-palette-amber-light-ink: var(--color-orange-light-ink);
@@ -493,9 +509,21 @@
     --color-data-heat-ink: var(--color-gray-0);
     --color-data-grid: var(--color-gray-776);
     --color-accent: var(--color-blue-dark-stroke);
+    --color-figure-icon-service-ink: var(--color-blue-dark-ink);
+    --color-figure-icon-service-surface: var(--color-blue-dark-fill);
+    --color-figure-icon-data-ink: var(--color-purple-dark-ink);
+    --color-figure-icon-data-surface: var(--color-purple-dark-fill);
+    --color-figure-icon-access-ink: var(--color-orange-dark-ink);
+    --color-figure-icon-access-surface: var(--color-orange-dark-fill);
+    --color-figure-icon-person-ink: var(--color-green-dark-ink);
+    --color-figure-icon-person-surface: var(--color-green-dark-fill);
+    --color-figure-icon-brand-ink: var(--color-gray-220);
+    --color-figure-icon-brand-surface: var(--color-gray-835);
     --simple2-play-fill: var(--color-blue-dark-stroke);
     --simple2-play-ink: var(--color-gray-933);
     --simple2-node-shadow: var(--primitive-simple2-node-shadow);
+    --simple2-separator: var(--color-gray-635);
+    --simple2-canvas-fill: var(--color-gray-910);
     --color-figure-icon: var(--color-blue-dark-stroke);
     --color-figure-icon-tile: var(--color-blue-dark-fill);
     --color-figure-queue-fill: var(--color-blue-dark-stroke);
@@ -590,9 +618,21 @@
   --color-data-heat-ink: var(--color-gray-0);
   --color-data-grid: var(--color-gray-776);
   --color-accent: var(--color-blue-dark-stroke);
+  --color-figure-icon-service-ink: var(--color-blue-dark-ink);
+  --color-figure-icon-service-surface: var(--color-blue-dark-fill);
+  --color-figure-icon-data-ink: var(--color-purple-dark-ink);
+  --color-figure-icon-data-surface: var(--color-purple-dark-fill);
+  --color-figure-icon-access-ink: var(--color-orange-dark-ink);
+  --color-figure-icon-access-surface: var(--color-orange-dark-fill);
+  --color-figure-icon-person-ink: var(--color-green-dark-ink);
+  --color-figure-icon-person-surface: var(--color-green-dark-fill);
+  --color-figure-icon-brand-ink: var(--color-gray-220);
+  --color-figure-icon-brand-surface: var(--color-gray-835);
   --simple2-play-fill: var(--color-blue-dark-stroke);
   --simple2-play-ink: var(--color-gray-933);
   --simple2-node-shadow: var(--primitive-simple2-node-shadow);
+  --simple2-separator: var(--color-gray-635);
+  --simple2-canvas-fill: var(--color-gray-910);
   --color-figure-icon: var(--color-blue-dark-stroke);
   --color-figure-icon-tile: var(--color-blue-dark-fill);
   --color-figure-queue-fill: var(--color-blue-dark-stroke);
@@ -816,7 +856,7 @@
 }
 
 .fl .col-line {
-  stroke: var(--color-outline);
+  stroke: var(--simple2-separator);
   stroke-width: var(--border-hair);
 }
 
@@ -865,12 +905,8 @@
   color: var(--color-figure-icon);
 }
 
-.fl .icon-tile {
-  fill: var(--color-figure-icon-tile);
-}
-
-.fl .fl-icon.in-tile {
-  color: var(--color-figure-icon);
+.fl .fl-symbol .fl-icon {
+  color: inherit;
 }
 
 /* 선 번호 원. 라벨 알약과 달리 켜져도 색이 바뀌지 않아 정지 그림과 같은 순서로 읽힌다. */
@@ -886,7 +922,11 @@
 }
 
 /* 표면에만 그림자를 두어 글자·아이콘·선의 가장자리는 선명하게 유지한다. */
-.fl :where(.fl-node) > .fl-stroke:not([fill="none"]) {
+.fl :where(.fl-node) > .fl-stroke {
+  stroke-width: var(--simple2-node-stroke);
+}
+
+.fl :where(.fl-shape-rect, .fl-shape-box, .fl-shape-tile, .fl-shape-external, .fl-shape-store, .fl-shape-table, .fl-shape-grid, .fl-shape-queue) > .fl-stroke:not([fill="none"]) {
   stroke-width: var(--simple2-node-stroke);
   filter: var(--simple2-node-shadow);
 }
@@ -896,6 +936,65 @@
   vector-effect: non-scaling-stroke;
   stroke-linecap: round;
   stroke-linejoin: round;
+}
+
+/* 조작 아이콘과 달리 의미 아이콘은 실루엣 안에 면과 세부 윤곽을 함께 가진다. */
+.fl .fl-symbol-glyph {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: var(--simple2-symbol-stroke);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.fl .symbol-solid {
+  fill: currentColor;
+  stroke: none;
+}
+
+.fl .symbol-cut {
+  fill: none;
+  stroke: var(--color-node);
+}
+
+.fl .fl-symbol-service {
+  color: var(--color-figure-icon-service-ink);
+}
+
+.fl .fl-symbol-service .symbol-face {
+  fill: var(--color-figure-icon-service-surface);
+}
+
+.fl .fl-symbol-data {
+  color: var(--color-figure-icon-data-ink);
+}
+
+.fl .fl-symbol-data .symbol-face {
+  fill: var(--color-figure-icon-data-surface);
+}
+
+.fl .fl-symbol-access {
+  color: var(--color-figure-icon-access-ink);
+}
+
+.fl .fl-symbol-access .symbol-face {
+  fill: var(--color-figure-icon-access-surface);
+}
+
+.fl .fl-symbol-person {
+  color: var(--color-figure-icon-person-ink);
+}
+
+.fl .fl-symbol-person .symbol-face {
+  fill: var(--color-figure-icon-person-surface);
+}
+
+.fl .fl-symbol-brand {
+  color: var(--color-figure-icon-brand-ink);
+}
+
+.fl .fl-symbol-brand .symbol-face {
+  fill: var(--color-figure-icon-brand-surface);
 }
 /* 움직이는 SVG에만 있는 단계 이름과 설명 줄 */
 .fl .steplabel {
@@ -945,10 +1044,10 @@
 .fl .a14 { animation: a14 13.745s infinite linear; }
 </style>
 <defs><marker id="fl-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-line)"/></marker><marker id="fl-arrow-on" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-state-active)"/></marker><marker id="fl-arrow-main" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-data-main)"/></marker></defs>
-<rect x="0.5" y="0.5" width="959" height="417" rx="10" fill="var(--color-bg)" stroke="var(--color-plate-border)" stroke-width="1"/>
+<rect x="0.5" y="0.5" width="959" height="417" rx="28" fill="var(--simple2-canvas-fill)"/>
 <g transform="translate(184 0)">
-<g id="n-0" class="fl-node" data-id="va"><g class="fl-halo a1" fill="none" opacity="0"><rect x="28" y="28" width="536" height="74" rx="10" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="28" y="28" width="536" height="74" rx="10" fill="var(--color-node)" class="fl-stroke a0"/><text x="296" y="47.7" class="label">가상 주소 (16비트)</text><g class="fl-part" data-part="va.vpn"><rect x="40" y="58" width="320" height="32" class="grid-cell a2"/><text x="200" y="78.7" class="item">VPN (10비트)</text></g><g class="fl-part" data-part="va.offset"><rect x="360" y="58" width="192" height="32" class="grid-cell a3"/><text x="456" y="78.7" class="item">오프셋 (6비트)</text></g><g class="fl-part" data-part="va.vpn"><rect x="40.9" y="58.9" width="318.3" height="30.3" class="grid-ring a4"/></g><g class="fl-part" data-part="va.offset"><rect x="360.9" y="58.9" width="190.3" height="30.3" class="grid-ring a5"/></g></g>
-<g id="n-1" class="fl-node" data-id="pa"><g class="fl-halo a1" fill="none" opacity="0"><rect x="28" y="240" width="536" height="74" rx="10" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="28" y="240" width="536" height="74" rx="10" fill="var(--color-node)" class="fl-stroke a0"/><text x="296" y="259.7" class="label">물리 주소 (16비트)</text><g class="fl-part" data-part="pa.pfn"><rect x="40" y="270" width="320" height="32" class="grid-cell a6"/><text x="200" y="290.7" class="item">PFN (10비트)</text></g><g class="fl-part" data-part="pa.offset"><rect x="360" y="270" width="192" height="32" class="grid-cell a7"/><text x="456" y="290.7" class="item">오프셋 (6비트)</text></g><g class="fl-part" data-part="pa.pfn"><rect x="40.9" y="270.9" width="318.3" height="30.3" class="grid-ring a8"/></g><g class="fl-part" data-part="pa.offset"><rect x="360.9" y="270.9" width="190.3" height="30.3" class="grid-ring a9"/></g></g>
+<g id="n-0" class="fl-node fl-shape-grid" data-id="va"><g class="fl-halo a1" fill="none" opacity="0"><rect x="28" y="28" width="536" height="74" rx="8" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="28" y="28" width="536" height="74" rx="8" fill="var(--color-node)" class="fl-stroke a0"/><text x="296" y="47.7" class="label">가상 주소 (16비트)</text><g class="fl-part" data-part="va.vpn"><rect x="40" y="58" width="320" height="32" class="grid-cell a2"/><text x="200" y="78.7" class="item">VPN (10비트)</text></g><g class="fl-part" data-part="va.offset"><rect x="360" y="58" width="192" height="32" class="grid-cell a3"/><text x="456" y="78.7" class="item">오프셋 (6비트)</text></g><g class="fl-part" data-part="va.vpn"><rect x="40.9" y="58.9" width="318.3" height="30.3" class="grid-ring a4"/></g><g class="fl-part" data-part="va.offset"><rect x="360.9" y="58.9" width="190.3" height="30.3" class="grid-ring a5"/></g></g>
+<g id="n-1" class="fl-node fl-shape-grid" data-id="pa"><g class="fl-halo a1" fill="none" opacity="0"><rect x="28" y="240" width="536" height="74" rx="8" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="28" y="240" width="536" height="74" rx="8" fill="var(--color-node)" class="fl-stroke a0"/><text x="296" y="259.7" class="label">물리 주소 (16비트)</text><g class="fl-part" data-part="pa.pfn"><rect x="40" y="270" width="320" height="32" class="grid-cell a6"/><text x="200" y="290.7" class="item">PFN (10비트)</text></g><g class="fl-part" data-part="pa.offset"><rect x="360" y="270" width="192" height="32" class="grid-cell a7"/><text x="456" y="290.7" class="item">오프셋 (6비트)</text></g><g class="fl-part" data-part="pa.pfn"><rect x="40.9" y="270.9" width="318.3" height="30.3" class="grid-ring a8"/></g><g class="fl-part" data-part="pa.offset"><rect x="360.9" y="270.9" width="190.3" height="30.3" class="grid-ring a9"/></g></g>
 <g id="e-0" class="fl-edge"><path id="p-0" d="M 296 102 L 296 240" class="fl-path a10" marker-end="url(#fl-arrow)"/></g>
 
 <g class="p2-0" opacity="0"><circle r="10" fill="var(--color-state-active)" opacity="0.2"/><circle r="4.5" fill="var(--color-state-active)"/><g><rect x="-44.3" y="-35" width="88.6" height="23" rx="8" fill="var(--color-state-active-fill)"/><text x="0" y="-20" class="chip">VPN을 PFN으로</text><animate attributeName="opacity" dur="13.745s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.55475;0.60567;0.6081;0.6178;0.64205;0.65175;0.65418;0.68025;1" values="1;1;1;0.9;0;0;0.9;1;1;1"/></g><animate attributeName="opacity" dur="13.745s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.55475;0.68025" values="0;1;0"/><animateMotion dur="13.745s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.55475;0.68025;1" keySplines="0 0 1 1;0.455 0.03 0.515 0.955;0 0 1 1" keyPoints="0;0;1;1"><mpath href="#p-0" xlink:href="#p-0"/></animateMotion></g>

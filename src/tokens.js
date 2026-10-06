@@ -164,6 +164,22 @@ export const tokens = freeze({
       "grid": "var(--color-data-grid)"
     },
     "accent": "var(--color-accent)",
+    "figure": {
+      "icon-service-ink": "var(--color-figure-icon-service-ink)",
+      "icon-service-surface": "var(--color-figure-icon-service-surface)",
+      "icon-data-ink": "var(--color-figure-icon-data-ink)",
+      "icon-data-surface": "var(--color-figure-icon-data-surface)",
+      "icon-access-ink": "var(--color-figure-icon-access-ink)",
+      "icon-access-surface": "var(--color-figure-icon-access-surface)",
+      "icon-person-ink": "var(--color-figure-icon-person-ink)",
+      "icon-person-surface": "var(--color-figure-icon-person-surface)",
+      "icon-brand-ink": "var(--color-figure-icon-brand-ink)",
+      "icon-brand-surface": "var(--color-figure-icon-brand-surface)",
+      "icon": "var(--color-figure-icon)",
+      "icon-tile": "var(--color-figure-icon-tile)",
+      "queue-fill": "var(--color-figure-queue-fill)",
+      "queue-empty": "var(--color-figure-queue-empty)"
+    },
     "palette": {
       "amber": {
         "light-fill": "var(--color-palette-amber-light-fill)",
@@ -235,12 +251,6 @@ export const tokens = freeze({
         "light-outline": "var(--color-palette-slate-light-outline)",
         "dark-outline": "var(--color-palette-slate-dark-outline)"
       }
-    },
-    "figure": {
-      "icon": "var(--color-figure-icon)",
-      "icon-tile": "var(--color-figure-icon-tile)",
-      "queue-fill": "var(--color-figure-queue-fill)",
-      "queue-empty": "var(--color-figure-queue-empty)"
     },
     "paint": {
       "red": {
@@ -527,13 +537,17 @@ export const tokens = freeze({
     "card-gap": "var(--simple2-card-gap)",
     "node-stroke": "var(--simple2-node-stroke)",
     "heading-weight": "var(--simple2-heading-weight)",
-    "progress-stroke": "var(--simple2-progress-stroke)"
+    "progress-stroke": "var(--simple2-progress-stroke)",
+    "node-corner": "var(--simple2-node-corner)",
+    "separator": "var(--simple2-separator)",
+    "canvas-corner": "var(--simple2-canvas-corner)",
+    "canvas-fill": "var(--simple2-canvas-fill)",
+    "symbol-stroke": "var(--simple2-symbol-stroke)"
   },
   "primitive": {
     "simple2": {
       "fg": "var(--primitive-simple2-fg)",
       "muted": "var(--primitive-simple2-muted)",
-      "group-title": "var(--primitive-simple2-group-title)",
       "bg": "var(--primitive-simple2-bg)",
       "page": "var(--primitive-simple2-page)",
       "node": "var(--primitive-simple2-node)",
@@ -544,7 +558,9 @@ export const tokens = freeze({
       "shadow": "var(--primitive-simple2-shadow)",
       "play-fill": "var(--primitive-simple2-play-fill)",
       "play-ink": "var(--primitive-simple2-play-ink)",
-      "node-shadow": "var(--primitive-simple2-node-shadow)"
+      "node-shadow": "var(--primitive-simple2-node-shadow)",
+      "group-title": "var(--primitive-simple2-group-title)",
+      "canvas": "var(--primitive-simple2-canvas)"
     }
   },
   "dash": {
@@ -749,6 +765,22 @@ export const values = freeze({
       "grid": "#c9c9c9"
     },
     "accent": "#1e66d8",
+    "figure": {
+      "icon-service-ink": "#0a57c8",
+      "icon-service-surface": "#b3cbf2",
+      "icon-data-ink": "#704f8c",
+      "icon-data-surface": "#dcd1e8",
+      "icon-access-ink": "#a63900",
+      "icon-access-surface": "#fff0ea",
+      "icon-person-ink": "#006d12",
+      "icon-person-surface": "#eaf8e9",
+      "icon-brand-ink": "#888888",
+      "icon-brand-surface": "#f0f0f0",
+      "icon": "#1e66d8",
+      "icon-tile": "#edf4ff",
+      "queue-fill": "#1e66d8",
+      "queue-empty": "#d6d6d6"
+    },
     "palette": {
       "amber": {
         "light-fill": "#fff0ea",
@@ -820,12 +852,6 @@ export const values = freeze({
         "light-outline": "#848484",
         "dark-outline": "#888888"
       }
-    },
-    "figure": {
-      "icon": "#1e66d8",
-      "icon-tile": "#edf4ff",
-      "queue-fill": "#1e66d8",
-      "queue-empty": "#d6d6d6"
     },
     "paint": {
       "red": {
@@ -1105,20 +1131,24 @@ export const values = freeze({
     "shadow": "0 2px 8px rgba(0,0,0,.10), 0 0 2px rgba(0,0,0,.10)",
     "play-fill": "#4f91fb",
     "play-ink": "#ffffff",
-    "node-shadow": "drop-shadow(0px 2px 2px rgba(0,0,0,.08))",
+    "node-shadow": "drop-shadow(0px 1px 1px rgba(0,0,0,.07))",
     "play-face": 36,
     "corner": 18,
     "control-radius": 6,
     "card-gap": 48,
     "node-stroke": 1,
     "heading-weight": 700,
-    "progress-stroke": 2
+    "progress-stroke": 2,
+    "node-corner": 8,
+    "separator": "#d1d7de",
+    "canvas-corner": 28,
+    "canvas-fill": "#edeef2",
+    "symbol-stroke": 1.75
   },
   "primitive": {
     "simple2": {
       "fg": "#303336",
       "muted": "#505b69",
-      "group-title": "#505b69",
       "bg": "#f2f5f7",
       "page": "#ffffff",
       "node": "#ffffff",
@@ -1129,7 +1159,9 @@ export const values = freeze({
       "shadow": "0 2px 8px rgba(0,0,0,.10), 0 0 2px rgba(0,0,0,.10)",
       "play-fill": "#4f91fb",
       "play-ink": "#ffffff",
-      "node-shadow": "drop-shadow(0px 2px 2px rgba(0,0,0,.08))"
+      "node-shadow": "drop-shadow(0px 1px 1px rgba(0,0,0,.07))",
+      "group-title": "#505b69",
+      "canvas": "#edeef2"
     }
   },
   "dash": {

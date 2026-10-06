@@ -24,10 +24,10 @@ const geometry = {
     ];
   },
   circle: (it) => [`<circle cx="${r(it.x + it.w / 2)}" cy="${r(it.y + it.h / 2)}" r="${r(it.w / 2)}"`],
-  queue: (it) => [`<rect x="${r(it.x)}" y="${r(it.y)}" width="${r(it.w)}" height="${r(it.h)}" rx="${RADIUS['2xl']}"`],
+  queue: (it) => [`<rect x="${r(it.x)}" y="${r(it.y)}" width="${r(it.w)}" height="${r(it.h)}" rx="${values.simple2['node-corner']}"`],
   rect: (it) => {
     const { x, y, w, h } = bodyOf(it);
-    return [`<rect x="${r(x)}" y="${r(y)}" width="${r(w)}" height="${r(h)}" rx="${RADIUS.xl}"`];
+    return [`<rect x="${r(x)}" y="${r(y)}" width="${r(w)}" height="${r(h)}" rx="${values.simple2['node-corner']}"`];
   },
 };
 
@@ -84,7 +84,7 @@ function drawBox(it, stroke, fill) {
 // 테이블: 머리 칸, 열마다 이름과 표시(PK, FK, UNQ), 타입. 열 줄은 밝히기 대상이다.
 function drawTable(it, stroke, { decorate, glyphs }) {
   const rowH = it.rowH;
-  const frame = `<rect x="${r(it.x)}" y="${r(it.y)}" width="${r(it.w)}" height="${r(it.h)}" rx="${RADIUS.xl}" fill="${tokens.color.node}" ${stroke}/>`;
+  const frame = `<rect x="${r(it.x)}" y="${r(it.y)}" width="${r(it.w)}" height="${r(it.h)}" rx="${values.simple2['node-corner']}" fill="${tokens.color.node}" ${stroke}/>`;
   glyphs.add(it.label, 'medium');
   const header = `<text x="${r(it.x + it.w / 2)}" y="${r(centerBaseline(it.y + rowH / 2, STYLE.label.size))}" class="label">${renderRich(it.label)}</text>`;
   const rows = it.columns.map((c, k) => {

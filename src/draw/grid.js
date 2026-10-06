@@ -3,8 +3,6 @@ import { STYLE } from '../measure/sizes.js';
 import { centerBaseline, escapeXml, renderRich, roundCoord as r } from '../text.js';
 import { tokens, values } from '../tokens.js';
 
-const RADIUS = values.radius;
-
 // cost: time O(l), heap O(l), stack O(1)
 // vars: l = 글 줄 수
 // basis: estimate
@@ -59,7 +57,7 @@ function boxOf(it, { x, y, w, h }) {
  * @param paint { decorate, glyphs, index }. index는 장면 도형 번호이고 빈 자리 무늬의 이름(`ge-번호`)을 만든다
  */
 export function drawGrid(it, stroke, { decorate, glyphs, index }) {
-  const frame = `<rect x="${r(it.x)}" y="${r(it.y)}" width="${r(it.w)}" height="${r(it.h)}" rx="${RADIUS.xl}" fill="${tokens.color.node}" ${stroke}/>`;
+  const frame = `<rect x="${r(it.x)}" y="${r(it.y)}" width="${r(it.w)}" height="${r(it.h)}" rx="${values.simple2['node-corner']}" fill="${tokens.color.node}" ${stroke}/>`;
   const title = titleRows(it).map((row) => drawText(row, glyphs));
   const empties = drawEmpties(it, index);
   const cells = it.cells.map((cell) => {

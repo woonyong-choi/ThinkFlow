@@ -169,7 +169,7 @@
 }
 
 .fl .col-line {
-  stroke: var(--color-outline);
+  stroke: var(--simple2-separator);
   stroke-width: var(--border-hair);
 }
 
@@ -218,12 +218,8 @@
   color: var(--color-figure-icon);
 }
 
-.fl .icon-tile {
-  fill: var(--color-figure-icon-tile);
-}
-
-.fl .fl-icon.in-tile {
-  color: var(--color-figure-icon);
+.fl .fl-symbol .fl-icon {
+  color: inherit;
 }
 
 /* 선 번호 원. 라벨 알약과 달리 켜져도 색이 바뀌지 않아 정지 그림과 같은 순서로 읽힌다. */
@@ -239,7 +235,11 @@
 }
 
 /* 표면에만 그림자를 두어 글자·아이콘·선의 가장자리는 선명하게 유지한다. */
-.fl :where(.fl-node) > .fl-stroke:not([fill="none"]) {
+.fl :where(.fl-node) > .fl-stroke {
+  stroke-width: var(--simple2-node-stroke);
+}
+
+.fl :where(.fl-shape-rect, .fl-shape-box, .fl-shape-tile, .fl-shape-external, .fl-shape-store, .fl-shape-table, .fl-shape-grid, .fl-shape-queue) > .fl-stroke:not([fill="none"]) {
   stroke-width: var(--simple2-node-stroke);
   filter: var(--simple2-node-shadow);
 }
@@ -249,4 +249,63 @@
   vector-effect: non-scaling-stroke;
   stroke-linecap: round;
   stroke-linejoin: round;
+}
+
+/* 조작 아이콘과 달리 의미 아이콘은 실루엣 안에 면과 세부 윤곽을 함께 가진다. */
+.fl .fl-symbol-glyph {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: var(--simple2-symbol-stroke);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.fl .symbol-solid {
+  fill: currentColor;
+  stroke: none;
+}
+
+.fl .symbol-cut {
+  fill: none;
+  stroke: var(--color-node);
+}
+
+.fl .fl-symbol-service {
+  color: var(--color-figure-icon-service-ink);
+}
+
+.fl .fl-symbol-service .symbol-face {
+  fill: var(--color-figure-icon-service-surface);
+}
+
+.fl .fl-symbol-data {
+  color: var(--color-figure-icon-data-ink);
+}
+
+.fl .fl-symbol-data .symbol-face {
+  fill: var(--color-figure-icon-data-surface);
+}
+
+.fl .fl-symbol-access {
+  color: var(--color-figure-icon-access-ink);
+}
+
+.fl .fl-symbol-access .symbol-face {
+  fill: var(--color-figure-icon-access-surface);
+}
+
+.fl .fl-symbol-person {
+  color: var(--color-figure-icon-person-ink);
+}
+
+.fl .fl-symbol-person .symbol-face {
+  fill: var(--color-figure-icon-person-surface);
+}
+
+.fl .fl-symbol-brand {
+  color: var(--color-figure-icon-brand-ink);
+}
+
+.fl .fl-symbol-brand .symbol-face {
+  fill: var(--color-figure-icon-brand-surface);
 }

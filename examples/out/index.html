@@ -145,6 +145,16 @@
   --color-data-heat-ink-on: var(--color-gray-0);
   --color-data-grid: var(--color-gray-212);
   --color-accent: var(--color-blue-light-stroke);
+  --color-figure-icon-service-ink: var(--color-blue-light-ink);
+  --color-figure-icon-service-surface: var(--color-blue-light-heat-low);
+  --color-figure-icon-data-ink: var(--color-purple-light-ink);
+  --color-figure-icon-data-surface: var(--color-purple-light-tint-3);
+  --color-figure-icon-access-ink: var(--color-orange-light-ink);
+  --color-figure-icon-access-surface: var(--color-orange-light-fill);
+  --color-figure-icon-person-ink: var(--color-green-light-ink);
+  --color-figure-icon-person-surface: var(--color-green-light-fill);
+  --color-figure-icon-brand-ink: var(--color-gray-467);
+  --color-figure-icon-brand-surface: var(--color-gray-59);
   --font-sans: FigSans, Pretendard, ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Apple SD Gothic Neo', sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
   --size-text-9: 9px;
@@ -215,9 +225,13 @@
   --simple2-node-stroke: 1px;
   --simple2-heading-weight: 700;
   --simple2-progress-stroke: 2px;
+  --simple2-node-corner: 8px;
+  --simple2-separator: var(--primitive-simple2-plate-border);
+  --simple2-canvas-corner: 28px;
+  --simple2-canvas-fill: var(--primitive-simple2-canvas);
+  --simple2-symbol-stroke: 1.75px;
   --primitive-simple2-fg: #303336;
   --primitive-simple2-muted: #505b69;
-  --primitive-simple2-group-title: #505b69;
   --primitive-simple2-bg: #f2f5f7;
   --primitive-simple2-page: #ffffff;
   --primitive-simple2-node: #ffffff;
@@ -228,7 +242,9 @@
   --primitive-simple2-shadow: 0 2px 8px rgba(0,0,0,.10), 0 0 2px rgba(0,0,0,.10);
   --primitive-simple2-play-fill: #4f91fb;
   --primitive-simple2-play-ink: #ffffff;
-  --primitive-simple2-node-shadow: drop-shadow(0px 2px 2px rgba(0,0,0,.08));
+  --primitive-simple2-node-shadow: drop-shadow(0px 1px 1px rgba(0,0,0,.07));
+  --primitive-simple2-group-title: #505b69;
+  --primitive-simple2-canvas: #edeef2;
   --color-palette-amber-light-fill: var(--color-orange-light-fill);
   --color-palette-amber-light-stroke: var(--color-orange-light-stroke);
   --color-palette-amber-light-ink: var(--color-orange-light-ink);
@@ -496,9 +512,21 @@
     --color-data-heat-ink: var(--color-gray-0);
     --color-data-grid: var(--color-gray-776);
     --color-accent: var(--color-blue-dark-stroke);
+    --color-figure-icon-service-ink: var(--color-blue-dark-ink);
+    --color-figure-icon-service-surface: var(--color-blue-dark-fill);
+    --color-figure-icon-data-ink: var(--color-purple-dark-ink);
+    --color-figure-icon-data-surface: var(--color-purple-dark-fill);
+    --color-figure-icon-access-ink: var(--color-orange-dark-ink);
+    --color-figure-icon-access-surface: var(--color-orange-dark-fill);
+    --color-figure-icon-person-ink: var(--color-green-dark-ink);
+    --color-figure-icon-person-surface: var(--color-green-dark-fill);
+    --color-figure-icon-brand-ink: var(--color-gray-220);
+    --color-figure-icon-brand-surface: var(--color-gray-835);
     --simple2-play-fill: var(--color-blue-dark-stroke);
     --simple2-play-ink: var(--color-gray-933);
     --simple2-node-shadow: var(--primitive-simple2-node-shadow);
+    --simple2-separator: var(--color-gray-635);
+    --simple2-canvas-fill: var(--color-gray-910);
     --color-figure-icon: var(--color-blue-dark-stroke);
     --color-figure-icon-tile: var(--color-blue-dark-fill);
     --color-figure-queue-fill: var(--color-blue-dark-stroke);
@@ -593,9 +621,21 @@
   --color-data-heat-ink: var(--color-gray-0);
   --color-data-grid: var(--color-gray-776);
   --color-accent: var(--color-blue-dark-stroke);
+  --color-figure-icon-service-ink: var(--color-blue-dark-ink);
+  --color-figure-icon-service-surface: var(--color-blue-dark-fill);
+  --color-figure-icon-data-ink: var(--color-purple-dark-ink);
+  --color-figure-icon-data-surface: var(--color-purple-dark-fill);
+  --color-figure-icon-access-ink: var(--color-orange-dark-ink);
+  --color-figure-icon-access-surface: var(--color-orange-dark-fill);
+  --color-figure-icon-person-ink: var(--color-green-dark-ink);
+  --color-figure-icon-person-surface: var(--color-green-dark-fill);
+  --color-figure-icon-brand-ink: var(--color-gray-220);
+  --color-figure-icon-brand-surface: var(--color-gray-835);
   --simple2-play-fill: var(--color-blue-dark-stroke);
   --simple2-play-ink: var(--color-gray-933);
   --simple2-node-shadow: var(--primitive-simple2-node-shadow);
+  --simple2-separator: var(--color-gray-635);
+  --simple2-canvas-fill: var(--color-gray-910);
   --color-figure-icon: var(--color-blue-dark-stroke);
   --color-figure-icon-tile: var(--color-blue-dark-fill);
   --color-figure-queue-fill: var(--color-blue-dark-stroke);
@@ -725,7 +765,7 @@ body {
   font-family: var(--font-sans);
   letter-spacing: var(--tracking-text);
   color: var(--color-fg);
-  background: var(--color-bg);
+  background: var(--color-page);
 }
 
 .top {
@@ -765,12 +805,10 @@ main {
   align-items: start;
 }
 
-/* 그림 카드의 흰 면과 그림자로 캔버스에서 높이를 구분한다. */
+/* 제목과 조작은 문서 면에 놓고, 설명 그림만 별도 판을 가진다. */
 section {
   overflow: hidden;
-  background: var(--color-node);
-  border-radius: var(--simple2-corner);
-  box-shadow: var(--simple2-shadow);
+  background: var(--color-page);
 }
 
 header {

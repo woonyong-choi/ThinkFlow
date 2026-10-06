@@ -164,6 +164,16 @@
   --color-data-heat-ink-on: var(--color-gray-0);
   --color-data-grid: var(--color-gray-212);
   --color-accent: var(--color-blue-light-stroke);
+  --color-figure-icon-service-ink: var(--color-blue-light-ink);
+  --color-figure-icon-service-surface: var(--color-blue-light-heat-low);
+  --color-figure-icon-data-ink: var(--color-purple-light-ink);
+  --color-figure-icon-data-surface: var(--color-purple-light-tint-3);
+  --color-figure-icon-access-ink: var(--color-orange-light-ink);
+  --color-figure-icon-access-surface: var(--color-orange-light-fill);
+  --color-figure-icon-person-ink: var(--color-green-light-ink);
+  --color-figure-icon-person-surface: var(--color-green-light-fill);
+  --color-figure-icon-brand-ink: var(--color-gray-467);
+  --color-figure-icon-brand-surface: var(--color-gray-59);
   --font-sans: FigSans, Pretendard, ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Apple SD Gothic Neo', sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
   --size-text-9: 9px;
@@ -234,9 +244,13 @@
   --simple2-node-stroke: 1px;
   --simple2-heading-weight: 700;
   --simple2-progress-stroke: 2px;
+  --simple2-node-corner: 8px;
+  --simple2-separator: var(--primitive-simple2-plate-border);
+  --simple2-canvas-corner: 28px;
+  --simple2-canvas-fill: var(--primitive-simple2-canvas);
+  --simple2-symbol-stroke: 1.75px;
   --primitive-simple2-fg: #303336;
   --primitive-simple2-muted: #505b69;
-  --primitive-simple2-group-title: #505b69;
   --primitive-simple2-bg: #f2f5f7;
   --primitive-simple2-page: #ffffff;
   --primitive-simple2-node: #ffffff;
@@ -247,7 +261,9 @@
   --primitive-simple2-shadow: 0 2px 8px rgba(0,0,0,.10), 0 0 2px rgba(0,0,0,.10);
   --primitive-simple2-play-fill: #4f91fb;
   --primitive-simple2-play-ink: #ffffff;
-  --primitive-simple2-node-shadow: drop-shadow(0px 2px 2px rgba(0,0,0,.08));
+  --primitive-simple2-node-shadow: drop-shadow(0px 1px 1px rgba(0,0,0,.07));
+  --primitive-simple2-group-title: #505b69;
+  --primitive-simple2-canvas: #edeef2;
   --color-palette-amber-light-fill: var(--color-orange-light-fill);
   --color-palette-amber-light-stroke: var(--color-orange-light-stroke);
   --color-palette-amber-light-ink: var(--color-orange-light-ink);
@@ -515,9 +531,21 @@
     --color-data-heat-ink: var(--color-gray-0);
     --color-data-grid: var(--color-gray-776);
     --color-accent: var(--color-blue-dark-stroke);
+    --color-figure-icon-service-ink: var(--color-blue-dark-ink);
+    --color-figure-icon-service-surface: var(--color-blue-dark-fill);
+    --color-figure-icon-data-ink: var(--color-purple-dark-ink);
+    --color-figure-icon-data-surface: var(--color-purple-dark-fill);
+    --color-figure-icon-access-ink: var(--color-orange-dark-ink);
+    --color-figure-icon-access-surface: var(--color-orange-dark-fill);
+    --color-figure-icon-person-ink: var(--color-green-dark-ink);
+    --color-figure-icon-person-surface: var(--color-green-dark-fill);
+    --color-figure-icon-brand-ink: var(--color-gray-220);
+    --color-figure-icon-brand-surface: var(--color-gray-835);
     --simple2-play-fill: var(--color-blue-dark-stroke);
     --simple2-play-ink: var(--color-gray-933);
     --simple2-node-shadow: var(--primitive-simple2-node-shadow);
+    --simple2-separator: var(--color-gray-635);
+    --simple2-canvas-fill: var(--color-gray-910);
     --color-figure-icon: var(--color-blue-dark-stroke);
     --color-figure-icon-tile: var(--color-blue-dark-fill);
     --color-figure-queue-fill: var(--color-blue-dark-stroke);
@@ -612,9 +640,21 @@
   --color-data-heat-ink: var(--color-gray-0);
   --color-data-grid: var(--color-gray-776);
   --color-accent: var(--color-blue-dark-stroke);
+  --color-figure-icon-service-ink: var(--color-blue-dark-ink);
+  --color-figure-icon-service-surface: var(--color-blue-dark-fill);
+  --color-figure-icon-data-ink: var(--color-purple-dark-ink);
+  --color-figure-icon-data-surface: var(--color-purple-dark-fill);
+  --color-figure-icon-access-ink: var(--color-orange-dark-ink);
+  --color-figure-icon-access-surface: var(--color-orange-dark-fill);
+  --color-figure-icon-person-ink: var(--color-green-dark-ink);
+  --color-figure-icon-person-surface: var(--color-green-dark-fill);
+  --color-figure-icon-brand-ink: var(--color-gray-220);
+  --color-figure-icon-brand-surface: var(--color-gray-835);
   --simple2-play-fill: var(--color-blue-dark-stroke);
   --simple2-play-ink: var(--color-gray-933);
   --simple2-node-shadow: var(--primitive-simple2-node-shadow);
+  --simple2-separator: var(--color-gray-635);
+  --simple2-canvas-fill: var(--color-gray-910);
   --color-figure-icon: var(--color-blue-dark-stroke);
   --color-figure-icon-tile: var(--color-blue-dark-fill);
   --color-figure-queue-fill: var(--color-blue-dark-stroke);
@@ -742,13 +782,13 @@ body {
   font-family: var(--font-sans);
   letter-spacing: var(--tracking-text);
   color: var(--color-fg);
-  background: var(--color-bg);
+  background: var(--color-page);
 }
 
 /* 목록 쪽 카드 안은 틀이 카드 너비를 다 채워 양옆이 비치지 않게 하고, 바탕은 재생기 쪽과 같은 색으로 둔다. */
 html.embedded body {
   padding: 0;
-  background: var(--color-bg);
+  background: var(--color-page);
 }
 
 .fl-figure {
@@ -757,9 +797,8 @@ html.embedded body {
   margin: 0 auto;
   overflow: clip;
   color: var(--color-fg);
-  background: var(--color-bg);
-  border-radius: var(--radius-2xl);
-  box-shadow: var(--simple2-shadow);
+  background: var(--color-page);
+  border-radius: 0;
 }
 
 html.embedded .fl-figure {
@@ -771,7 +810,8 @@ html.embedded .fl-figure {
 /* 그림의 바탕은 SVG와 같고, 조작 줄은 카드의 흰 면으로 구분한다. */
 .fl-canvas {
   padding: var(--space-6) 0;
-  background: var(--color-bg);
+  background: var(--simple2-canvas-fill);
+  border-radius: var(--simple2-canvas-corner);
   overflow: auto;
 }
 
@@ -794,7 +834,7 @@ html.embedded .fl-figure {
   gap: var(--space-6);
   justify-items: center;
   padding: var(--simple2-page-gutter);
-  background: var(--color-node);
+  background: var(--color-page);
 }
 
 /* 양쪽 칸 너비가 같아(1fr) 배속 글자가 바뀌어도 탭 묶음이 설명과 같은 축에 있다. */
@@ -1257,7 +1297,7 @@ html.embedded .fl-figure {
 }
 
 .fl .col-line {
-  stroke: var(--color-outline);
+  stroke: var(--simple2-separator);
   stroke-width: var(--border-hair);
 }
 
@@ -1306,12 +1346,8 @@ html.embedded .fl-figure {
   color: var(--color-figure-icon);
 }
 
-.fl .icon-tile {
-  fill: var(--color-figure-icon-tile);
-}
-
-.fl .fl-icon.in-tile {
-  color: var(--color-figure-icon);
+.fl .fl-symbol .fl-icon {
+  color: inherit;
 }
 
 /* 선 번호 원. 라벨 알약과 달리 켜져도 색이 바뀌지 않아 정지 그림과 같은 순서로 읽힌다. */
@@ -1327,7 +1363,11 @@ html.embedded .fl-figure {
 }
 
 /* 표면에만 그림자를 두어 글자·아이콘·선의 가장자리는 선명하게 유지한다. */
-.fl :where(.fl-node) > .fl-stroke:not([fill="none"]) {
+.fl :where(.fl-node) > .fl-stroke {
+  stroke-width: var(--simple2-node-stroke);
+}
+
+.fl :where(.fl-shape-rect, .fl-shape-box, .fl-shape-tile, .fl-shape-external, .fl-shape-store, .fl-shape-table, .fl-shape-grid, .fl-shape-queue) > .fl-stroke:not([fill="none"]) {
   stroke-width: var(--simple2-node-stroke);
   filter: var(--simple2-node-shadow);
 }
@@ -1337,6 +1377,65 @@ html.embedded .fl-figure {
   vector-effect: non-scaling-stroke;
   stroke-linecap: round;
   stroke-linejoin: round;
+}
+
+/* 조작 아이콘과 달리 의미 아이콘은 실루엣 안에 면과 세부 윤곽을 함께 가진다. */
+.fl .fl-symbol-glyph {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: var(--simple2-symbol-stroke);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.fl .symbol-solid {
+  fill: currentColor;
+  stroke: none;
+}
+
+.fl .symbol-cut {
+  fill: none;
+  stroke: var(--color-node);
+}
+
+.fl .fl-symbol-service {
+  color: var(--color-figure-icon-service-ink);
+}
+
+.fl .fl-symbol-service .symbol-face {
+  fill: var(--color-figure-icon-service-surface);
+}
+
+.fl .fl-symbol-data {
+  color: var(--color-figure-icon-data-ink);
+}
+
+.fl .fl-symbol-data .symbol-face {
+  fill: var(--color-figure-icon-data-surface);
+}
+
+.fl .fl-symbol-access {
+  color: var(--color-figure-icon-access-ink);
+}
+
+.fl .fl-symbol-access .symbol-face {
+  fill: var(--color-figure-icon-access-surface);
+}
+
+.fl .fl-symbol-person {
+  color: var(--color-figure-icon-person-ink);
+}
+
+.fl .fl-symbol-person .symbol-face {
+  fill: var(--color-figure-icon-person-surface);
+}
+
+.fl .fl-symbol-brand {
+  color: var(--color-figure-icon-brand-ink);
+}
+
+.fl .fl-symbol-brand .symbol-face {
+  fill: var(--color-figure-icon-brand-surface);
 }
 
 .fl .fl-node .fl-stroke.ps-green {
@@ -1648,23 +1747,23 @@ html.embedded .fl-figure {
 <button type="button" class="fl-round fl-full"></button><div class="fl-zoom"><button type="button" class="fl-round" data-zoom="in" aria-label="확대"></button><button type="button" class="fl-round" data-zoom="out" aria-label="축소"></button><button type="button" class="fl-round" data-zoom="fit" aria-label="전체 보기"></button></div>
 <div class="fl-canvas"><svg xmlns="http://www.w3.org/2000/svg" class="fl" width="1440" height="2131" style="aspect-ratio: 1440 / 2131" viewBox="-413.8 0 1440 2131" role="img"><title>복잡한 구성도</title><defs><marker id="fl-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-line)"/></marker><marker id="fl-arrow-on" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-state-active)"/></marker><marker id="fl-arrow-main" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-data-main)"/></marker></defs><g id="g-0" class="fl-group" data-id="clients"><rect x="169" y="28" width="344" height="182" rx="18" class="frame-box fl-stroke "/><text x="187" y="46" class="frame">클라이언트</text></g>
 <g id="g-1" class="fl-group" data-id="edge"><rect x="142" y="348" width="192" height="364" rx="18" class="frame-box fl-stroke "/><text x="160" y="366" class="frame">엣지</text></g>
-<g id="g-2" class="fl-group tabbed" data-id="service"><rect x="44" y="850" width="354" height="678" rx="18" class="frame-box fl-stroke ps-sky tint-sky-1 "/><rect x="52" y="854" width="20" height="20" rx="6" class="icon-tile"/><g class="fl-icon in-tile" transform="translate(55.8 857.8) scale(0.3875)"><g fill="currentColor"><circle cx="9" cy="6" r="1"/><path d="M26,10H6A2.0021,2.0021,0,0,1,4,8V4A2.0021,2.0021,0,0,1,6,2H26a2.0021,2.0021,0,0,1,2,2V8A2.0021,2.0021,0,0,1,26,10ZM6,4V8H26V4Z"/><circle cx="9" cy="16" r="1"/><path d="M26,20H6a2.0021,2.0021,0,0,1-2-2V14a2.0021,2.0021,0,0,1,2-2H26a2.0021,2.0021,0,0,1,2,2v4A2.0021,2.0021,0,0,1,26,20ZM6,14v4H26V14Z"/><circle cx="9" cy="26" r="1"/><path d="M26,30H6a2.0021,2.0021,0,0,1-2-2V24a2.0021,2.0021,0,0,1,2-2H26a2.0021,2.0021,0,0,1,2,2v4A2.0021,2.0021,0,0,1,26,30ZM6,24v4H26V24Z"/></g></g><text x="90" y="868" class="frame gt-sky">주문 서비스</text></g>
+<g id="g-2" class="fl-group tabbed" data-id="service"><rect x="44" y="850" width="354" height="678" rx="18" class="frame-box fl-stroke ps-sky tint-sky-1 "/><g class="fl-symbol fl-symbol-service"><g class="fl-symbol-glyph" transform="translate(52 854) scale(0.83333)"><rect class="symbol-face" x="4" y="3" width="16" height="18" rx="3"/><path d="M4 9h16M4 15h16"/><path class="symbol-solid" d="M7 6h2v1H7zM7 12h2v1H7zM7 18h2v1H7z"/></g></g><text x="90" y="868" class="frame gt-sky">주문 서비스</text></g>
 <g id="g-3" class="fl-group" data-id="jobs"><rect x="68" y="1154" width="197.6" height="350" rx="18" class="frame-box fl-stroke d2 tint-sky-2 "/><text x="86" y="1172" class="frame">작업 처리</text></g>
 <g id="g-4" class="fl-group" data-id="exec"><rect x="92" y="1335" width="149.6" height="145" rx="18" class="frame-box fl-stroke d3 tint-sky-3 "/><text x="110" y="1353" class="frame">실행기</text></g>
 <g id="g-5" class="fl-group" data-id="data"><rect x="28" y="1666" width="319.1" height="437" rx="18" class="frame-box fl-stroke "/><text x="46" y="1684" class="frame">데이터</text></g>
 <g id="g-6" class="fl-group" data-id="outer"><rect x="379.1" y="1666" width="165" height="340" rx="18" class="frame-box fl-stroke dashed ps-purple tint-purple-1 " stroke-dasharray="5 4"/><text x="397.1" y="1684" class="frame gt-purple">외부</text></g>
-<g id="n-0" class="fl-node" data-id="web"><g class="fl-halo " fill="none" opacity="0"><rect x="193" y="68" width="100" height="81" rx="10" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="193" y="68" width="100" height="81" rx="10" fill="var(--color-node)" class="fl-stroke "/><rect x="233" y="80" width="20" height="20" rx="6" class="icon-tile"/><g class="fl-icon in-tile" transform="translate(236.8 83.8) scale(0.3875)"><g fill="currentColor"><path d="M28,4H4A2,2,0,0,0,2,6V22a2,2,0,0,0,2,2h8v4H8v2H24V28H20V24h8a2,2,0,0,0,2-2V6A2,2,0,0,0,28,4ZM18,28H14V24h4Zm10-6H4V6H28Z"/></g></g><text x="243" y="117.7" class="label">웹</text><text x="243" y="133.5" class="sub">브라우저</text></g>
-<g id="n-1" class="fl-node" data-id="app"><g class="fl-halo " fill="none" opacity="0"><rect x="313" y="68" width="176" height="118" rx="10" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="313" y="68" width="176" height="118" rx="10" fill="var(--color-node)" class="fl-stroke "/><rect x="391" y="80" width="20" height="20" rx="6" class="icon-tile"/><g class="fl-icon in-tile" transform="translate(394.8 83.8) scale(0.3875)"><g fill="currentColor"><path d="M22,4H10A2.002,2.002,0,0,0,8,6V28a2.0023,2.0023,0,0,0,2,2H22a2.0027,2.0027,0,0,0,2-2V6A2.0023,2.0023,0,0,0,22,4Zm0,2,0,2H10V6ZM10,28V10H22l0,18Z"/></g></g><text x="401" y="117.7" class="label">앱</text><text x="401" y="133.5" class="sub">iOS, Android</text><rect x="323" y="149" width="156" height="27" rx="6" fill="var(--color-card)" stroke="var(--color-outline)" stroke-dasharray="3 3" opacity="0" class="fl-card "/><g id="n-1-c0" opacity="0" class="fl-layer "><text x="331" y="166" class="row">앱 화면 재고</text></g></g>
-<g id="n-2" class="fl-node" data-id="gw"><g class="fl-halo " fill="none" opacity="0"><rect x="210" y="388" width="100" height="81" rx="10" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="210" y="388" width="100" height="81" rx="10" fill="var(--color-node)" class="fl-stroke "/><rect x="232" y="400" width="20" height="20" rx="6" class="icon-tile"/><g class="fl-icon in-tile" transform="translate(235.8 403.8) scale(0.3875)"><g fill="currentColor"><path d="M17,18.1841V13.8159a3.0007,3.0007,0,1,0-2,0v4.3687a3,3,0,1,0,2,0ZM16,10a1,1,0,1,1-1,1A1.0009,1.0009,0,0,1,16,10Zm0,12a1,1,0,1,1,1-1A1.0009,1.0009,0,0,1,16,22Z"/><path d="M30.4141,17.4141a1.9995,1.9995,0,0,0,0-2.8282L24.6272,8.7993l2.9006-2.8628a2.0018,2.0018,0,1,0-1.4416-1.3872L23.2129,7.3848,17.4141,1.5859a1.9995,1.9995,0,0,0-2.8282,0L8.7993,7.3726,5.9368,4.4717A2.002,2.002,0,1,0,4.55,5.9136l2.835,2.8735L1.5859,14.5859a1.9995,1.9995,0,0,0,0,2.8282l5.7989,5.7988L4.55,26.0864a1.9977,1.9977,0,1,0,1.387,1.4419l2.8625-2.9009,5.7866,5.7867a1.9995,1.9995,0,0,0,2.8282,0l5.7988-5.7989,2.8733,2.8355a1.998,1.998,0,1,0,1.4416-1.3872l-2.9006-2.8628ZM16,29,3,16,16,3,29,16Z"/></g></g><g class="fl-badge"><rect x="256" y="401" width="32" height="18" rx="9" class="badge-pill"/><text x="272" y="414" class="badge">GW</text></g><text x="260" y="437.7" class="label">게이트웨이</text><text x="260" y="453.5" class="sub">인증, 라우팅</text></g>
-<g id="n-3" class="fl-node" data-id="cdn"><g class="fl-halo " fill="none" opacity="0"><rect x="166" y="607" width="100" height="81" rx="10" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="166" y="607" width="100" height="81" rx="10" fill="var(--color-node)" class="fl-stroke "/><rect x="206" y="619" width="20" height="20" rx="6" class="icon-tile"/><g class="fl-icon in-tile" transform="translate(209.8 622.8) scale(0.3875)"><g fill="currentColor"><circle cx="21" cy="21" r="2"/><circle cx="7" cy="7" r="2"/><path d="M27,31a4,4,0,1,1,4-4A4.0118,4.0118,0,0,1,27,31Zm0-6a2,2,0,1,0,2,2A2.0059,2.0059,0,0,0,27,25Z"/><path d="M30,16A14.0412,14.0412,0,0,0,16,2,13.0426,13.0426,0,0,0,9.2,3.8l1.1,1.7a24.4254,24.4254,0,0,1,2.4-1A25.1349,25.1349,0,0,0,10,15H4a11.1489,11.1489,0,0,1,1.4-4.7L3.9,9A13.8418,13.8418,0,0,0,2,16,13.9983,13.9983,0,0,0,16,30a13.3656,13.3656,0,0,0,5.2-1l-.6-1.9a11.4416,11.4416,0,0,1-5.2.9h0A21.0713,21.0713,0,0,1,12,17H29.9A3.4019,3.4019,0,0,0,30,16ZM12.8,27.6h0a13.02,13.02,0,0,1-5.3-3.1A12.5053,12.5053,0,0,1,4,17h6A25.0022,25.0022,0,0,0,12.8,27.6ZM12,15A21.4461,21.4461,0,0,1,15.3,4h1.4A21.4461,21.4461,0,0,1,20,15Zm10,0A23.2777,23.2777,0,0,0,19.2,4.4,12.0919,12.0919,0,0,1,27.9,15Z"/></g></g><text x="216" y="656.7" class="label">CDN</text><text x="216" y="672.5" class="sub">정적 캐시</text></g>
-<g id="n-4" class="fl-node" data-id="api"><g class="fl-halo " fill="none" opacity="0"><rect x="190" y="890" width="176" height="118" rx="10" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="198" y="898" width="176" height="118" rx="10" fill="var(--color-node)" class="fl-stroke "/><rect x="194" y="894" width="176" height="118" rx="10" fill="var(--color-node)" class="fl-stroke "/><rect x="190" y="890" width="176" height="118" rx="10" fill="var(--color-node)" class="fl-stroke "/><rect x="251.9" y="902" width="20" height="20" rx="6" class="icon-tile"/><g class="fl-icon in-tile" transform="translate(255.7 905.8) scale(0.3875)"><g fill="currentColor"><circle cx="9" cy="6" r="1"/><path d="M26,10H6A2.0021,2.0021,0,0,1,4,8V4A2.0021,2.0021,0,0,1,6,2H26a2.0021,2.0021,0,0,1,2,2V8A2.0021,2.0021,0,0,1,26,10ZM6,4V8H26V4Z"/><circle cx="9" cy="16" r="1"/><path d="M26,20H6a2.0021,2.0021,0,0,1-2-2V14a2.0021,2.0021,0,0,1,2-2H26a2.0021,2.0021,0,0,1,2,2v4A2.0021,2.0021,0,0,1,26,20ZM6,14v4H26V14Z"/><circle cx="9" cy="26" r="1"/><path d="M26,30H6a2.0021,2.0021,0,0,1-2-2V24a2.0021,2.0021,0,0,1,2-2H26a2.0021,2.0021,0,0,1,2,2v4A2.0021,2.0021,0,0,1,26,30ZM6,24v4H26V24Z"/></g></g><g class="fl-badge"><rect x="275.9" y="903" width="28.3" height="18" rx="9" class="badge-pill"/><text x="290" y="916" class="badge">(3)</text></g><text x="278" y="939.7" class="label">주문 API</text><text x="278" y="955.5" class="sub">지금 처리 중</text><rect x="200" y="971" width="156" height="27" rx="6" fill="var(--color-card)" stroke="var(--color-outline)" stroke-dasharray="3 3" opacity="0" class="fl-card "/><g id="n-4-c0" opacity="0" class="fl-layer "><text x="208" y="988" class="row">처리 중</text></g></g>
-<g id="n-5" class="fl-node" data-id="queue"><g class="fl-halo " fill="none" opacity="0"><rect x="117" y="1194" width="100" height="81" rx="10" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="117" y="1194" width="100" height="81" rx="10" fill="var(--color-node)" class="fl-stroke "/><rect x="157" y="1206" width="20" height="20" rx="6" class="icon-tile"/><g class="fl-icon in-tile" transform="translate(160.8 1209.8) scale(0.3875)"><g fill="currentColor"><path d="M28,28H4a2.0021,2.0021,0,0,1-2-2V21H4v5H28V21h2v5A2.0021,2.0021,0,0,1,28,28Z"/><path d="M7 21H25V23H7z"/><path d="M7 16H25V18H7z"/><path d="M7 11H25V13H7z"/><path d="M7 6H25V8H7z"/></g></g><text x="167" y="1243.7" class="label">큐</text><text x="167" y="1259.5" class="sub">대기</text></g>
-<g id="n-6" class="fl-node" data-id="worker"><g class="fl-halo " fill="none" opacity="0"><rect x="116" y="1375" width="101.6" height="81" rx="10" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="116" y="1375" width="101.6" height="81" rx="10" fill="var(--color-node)" class="fl-stroke "/><rect x="134" y="1387" width="20" height="20" rx="6" class="icon-tile"/><g class="fl-icon in-tile" transform="translate(137.8 1390.8) scale(0.3875)"><g fill="currentColor"><path d="M22,28H12V26H22V10H6V20H4V10A2.0021,2.0021,0,0,1,6,8H22a2.0021,2.0021,0,0,1,2,2V26A2.0021,2.0021,0,0,1,22,28Z"/><path d="M28,22H26V20h2V4H12V6H10V4a2.0021,2.0021,0,0,1,2-2H28a2.0021,2.0021,0,0,1,2,2V20A2.0021,2.0021,0,0,1,28,22Z"/><path d="M10 14 10 16 14.586 16 3 27.586 4.414 29 16 17.414 16 22 18 22 18 14 10 14z"/></g></g><g class="fl-badge"><rect x="158" y="1388" width="41.6" height="18" rx="9" class="badge-pill"/><text x="178.8" y="1401" class="badge">비동기</text></g><text x="166.8" y="1424.7" class="label">워커</text><text x="166.8" y="1440.5" class="sub">결제, 재고</text></g>
-<g id="n-7" class="fl-node" data-id="db"><g class="fl-halo " fill="none" opacity="0"><path d="M52 1718 a 88 12 0 0 1 176 0 v 130 a 88 12 0 0 1 -176 0 z" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><path d="M52 1718 a 88 12 0 0 1 176 0 v 130 a 88 12 0 0 1 -176 0 z" fill="var(--color-node)" class="fl-stroke "/><path d="M52 1718 a 88 12 0 0 0 176 0" fill="none" class="fl-stroke "/><rect x="130" y="1742" width="20" height="20" rx="6" class="icon-tile"/><g class="fl-icon in-tile" transform="translate(133.8 1745.8) scale(0.3875)"><g fill="currentColor"><path d="M24,3H8A2,2,0,0,0,6,5V27a2,2,0,0,0,2,2H24a2,2,0,0,0,2-2V5A2,2,0,0,0,24,3Zm0,2v6H8V5ZM8,19V13H24v6Zm0,8V21H24v6Z"/><circle cx="11" cy="8" r="1"/><circle cx="11" cy="16" r="1"/><circle cx="11" cy="24" r="1"/></g></g><text x="140" y="1779.7" class="label">주 DB</text><text x="140" y="1795.5" class="sub">쓰기</text><rect x="62" y="1811" width="156" height="27" rx="6" fill="var(--color-card)" stroke="var(--color-outline)" stroke-dasharray="3 3" opacity="0" class="fl-card "/><g id="n-7-c0" opacity="0" class="fl-layer "><text x="70" y="1828" class="row">재고</text></g></g>
-<g id="n-8" class="fl-node" data-id="replica"><g class="fl-halo  ph-green" fill="none" opacity="0"><path d="M78 2010 a 52.1 12 0 0 1 104.1 0 v 57 a 52.1 12 0 0 1 -104.1 0 z" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><path d="M78 2010 a 52.1 12 0 0 1 104.1 0 v 57 a 52.1 12 0 0 1 -104.1 0 z" fill="var(--color-paint-green-fill)" class="fl-stroke ps-green "/><path d="M78 2010 a 52.1 12 0 0 0 104.1 0" fill="none" class="fl-stroke ps-green "/><text x="130.1" y="2035.7" class="label">복제 DB</text><text x="130.1" y="2051.5" class="sub">정상, 지연 0.2초</text></g>
-<g id="n-9" class="fl-node" data-id="cache"><g class="fl-halo  ph-amber" fill="none" opacity="0"><path d="M215 2010 a 54 12 0 0 1 108.1 0 v 57 a 54 12 0 0 1 -108.1 0 z" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><path d="M215 2010 a 54 12 0 0 1 108.1 0 v 57 a 54 12 0 0 1 -108.1 0 z" fill="var(--color-paint-amber-fill)" class="fl-stroke ps-amber "/><path d="M215 2010 a 54 12 0 0 0 108.1 0" fill="none" class="fl-stroke ps-amber "/><text x="269" y="2035.7" class="label">캐시</text><text x="269" y="2051.5" class="sub">적중률 하락 72%</text></g>
-<g id="n-10" class="fl-node" data-id="pay"><g class="fl-halo  ph-red" fill="none" opacity="0"><rect x="403.1" y="1706" width="100" height="57" rx="10" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="403.1" y="1706" width="100" height="57" rx="10" fill="var(--color-paint-red-fill)" class="fl-stroke ps-red ext " stroke-dasharray="5 4"/><text x="453.1" y="1731.7" class="label">결제사</text><text x="453.1" y="1747.5" class="sub">승인 오류 503</text></g>
-<g id="n-11" class="fl-node" data-id="mon"><g class="fl-halo " fill="none" opacity="0"><rect x="420.1" y="1901" width="100" height="81" rx="10" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="420.1" y="1901" width="100" height="81" rx="10" fill="var(--color-node)" class="fl-stroke "/><rect x="460.1" y="1913" width="20" height="20" rx="6" class="icon-tile"/><g class="fl-icon in-tile" transform="translate(463.9 1916.8) scale(0.3875)"><g fill="currentColor"><path d="M28,16v6H4V6h7V4H4A2,2,0,0,0,2,6V22a2,2,0,0,0,2,2h8v4H8v2H24V28H20V24h8a2,2,0,0,0,2-2V16ZM18,28H14V24h4Z"/><path d="M18,18h-.01a1,1,0,0,1-.9511-.7253L15.2456,11H11V9h5a1,1,0,0,1,.9615.7252l1.0742,3.7589,3.0088-9.7783A1.0142,1.0142,0,0,1,22,3a.98.98,0,0,1,.9487.6838L24.7207,9H30v2H24a1,1,0,0,1-.9487-.6838l-1.0132-3.04L18.9556,17.2942A1,1,0,0,1,18,18Z"/></g></g><text x="470.1" y="1950.7" class="label">모니터링</text><text x="470.1" y="1966.5" class="sub">지표, 알림</text></g>
+<g id="n-0" class="fl-node fl-shape-box" data-id="web"><g class="fl-halo " fill="none" opacity="0"><rect x="193" y="68" width="100" height="81" rx="8" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="193" y="68" width="100" height="81" rx="8" fill="var(--color-node)" class="fl-stroke "/><g class="fl-symbol fl-symbol-service"><g class="fl-symbol-glyph" transform="translate(233 80) scale(0.83333)"><rect class="symbol-face" x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></g></g><text x="243" y="117.7" class="label">웹</text><text x="243" y="133.5" class="sub">브라우저</text></g>
+<g id="n-1" class="fl-node fl-shape-box" data-id="app"><g class="fl-halo " fill="none" opacity="0"><rect x="313" y="68" width="176" height="118" rx="8" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="313" y="68" width="176" height="118" rx="8" fill="var(--color-node)" class="fl-stroke "/><g class="fl-symbol fl-symbol-service"><g class="fl-symbol-glyph" transform="translate(391 80) scale(0.83333)"><rect class="symbol-face" x="6" y="2" width="12" height="20" rx="3"/><path d="M10 5h4M10 19h4"/></g></g><text x="401" y="117.7" class="label">앱</text><text x="401" y="133.5" class="sub">iOS, Android</text><rect x="323" y="149" width="156" height="27" rx="6" fill="var(--color-card)" stroke="var(--color-outline)" stroke-dasharray="3 3" opacity="0" class="fl-card "/><g id="n-1-c0" opacity="0" class="fl-layer "><text x="331" y="166" class="row">앱 화면 재고</text></g></g>
+<g id="n-2" class="fl-node fl-shape-box" data-id="gw"><g class="fl-halo " fill="none" opacity="0"><rect x="210" y="388" width="100" height="81" rx="8" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="210" y="388" width="100" height="81" rx="8" fill="var(--color-node)" class="fl-stroke "/><g class="fl-symbol fl-symbol-service"><g class="fl-symbol-glyph" transform="translate(232 400) scale(0.83333)"><path class="symbol-face" d="M4 21V5l8-3 8 3v16Z"/><path d="M8 21V10h8v11M2 15h5m10 0h5"/></g></g><g class="fl-badge"><rect x="256" y="401" width="32" height="18" rx="9" class="badge-pill"/><text x="272" y="414" class="badge">GW</text></g><text x="260" y="437.7" class="label">게이트웨이</text><text x="260" y="453.5" class="sub">인증, 라우팅</text></g>
+<g id="n-3" class="fl-node fl-shape-box" data-id="cdn"><g class="fl-halo " fill="none" opacity="0"><rect x="166" y="607" width="100" height="81" rx="8" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="166" y="607" width="100" height="81" rx="8" fill="var(--color-node)" class="fl-stroke "/><g class="fl-symbol fl-symbol-service"><g class="fl-symbol-glyph" transform="translate(206 619) scale(0.83333)"><circle class="symbol-face" cx="12" cy="12" r="9"/><ellipse cx="12" cy="12" rx="4" ry="9"/><path d="M3 12h18M5 6h14M5 18h14"/></g></g><text x="216" y="656.7" class="label">CDN</text><text x="216" y="672.5" class="sub">정적 캐시</text></g>
+<g id="n-4" class="fl-node fl-shape-box" data-id="api"><g class="fl-halo " fill="none" opacity="0"><rect x="190" y="890" width="176" height="118" rx="8" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="198" y="898" width="176" height="118" rx="8" fill="var(--color-node)" class="fl-stroke "/><rect x="194" y="894" width="176" height="118" rx="8" fill="var(--color-node)" class="fl-stroke "/><rect x="190" y="890" width="176" height="118" rx="8" fill="var(--color-node)" class="fl-stroke "/><g class="fl-symbol fl-symbol-service"><g class="fl-symbol-glyph" transform="translate(251.9 902) scale(0.83333)"><rect class="symbol-face" x="4" y="3" width="16" height="18" rx="3"/><path d="M4 9h16M4 15h16"/><path class="symbol-solid" d="M7 6h2v1H7zM7 12h2v1H7zM7 18h2v1H7z"/></g></g><g class="fl-badge"><rect x="275.9" y="903" width="28.3" height="18" rx="9" class="badge-pill"/><text x="290" y="916" class="badge">(3)</text></g><text x="278" y="939.7" class="label">주문 API</text><text x="278" y="955.5" class="sub">지금 처리 중</text><rect x="200" y="971" width="156" height="27" rx="6" fill="var(--color-card)" stroke="var(--color-outline)" stroke-dasharray="3 3" opacity="0" class="fl-card "/><g id="n-4-c0" opacity="0" class="fl-layer "><text x="208" y="988" class="row">처리 중</text></g></g>
+<g id="n-5" class="fl-node fl-shape-box" data-id="queue"><g class="fl-halo " fill="none" opacity="0"><rect x="117" y="1194" width="100" height="81" rx="8" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="117" y="1194" width="100" height="81" rx="8" fill="var(--color-node)" class="fl-stroke "/><g class="fl-symbol fl-symbol-data"><g class="fl-symbol-glyph" transform="translate(157 1206) scale(0.83333)"><rect class="symbol-face" x="2" y="5" width="20" height="14" rx="3"/><path d="M8 5v14M15 5v14"/></g></g><text x="167" y="1243.7" class="label">큐</text><text x="167" y="1259.5" class="sub">대기</text></g>
+<g id="n-6" class="fl-node fl-shape-box" data-id="worker"><g class="fl-halo " fill="none" opacity="0"><rect x="116" y="1375" width="101.6" height="81" rx="8" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="116" y="1375" width="101.6" height="81" rx="8" fill="var(--color-node)" class="fl-stroke "/><g class="fl-symbol fl-symbol-service"><g class="fl-symbol-glyph" transform="translate(134 1387) scale(0.83333)"><rect class="symbol-face" x="2" y="12" width="10" height="10" rx="2"/><path d="M8 3h13v13M21 3 10 14"/></g></g><g class="fl-badge"><rect x="158" y="1388" width="41.6" height="18" rx="9" class="badge-pill"/><text x="178.8" y="1401" class="badge">비동기</text></g><text x="166.8" y="1424.7" class="label">워커</text><text x="166.8" y="1440.5" class="sub">결제, 재고</text></g>
+<g id="n-7" class="fl-node fl-shape-store" data-id="db"><g class="fl-halo " fill="none" opacity="0"><path d="M52 1718 a 88 12 0 0 1 176 0 v 130 a 88 12 0 0 1 -176 0 z" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><path d="M52 1718 a 88 12 0 0 1 176 0 v 130 a 88 12 0 0 1 -176 0 z" fill="var(--color-node)" class="fl-stroke "/><path d="M52 1718 a 88 12 0 0 0 176 0" fill="none" class="fl-stroke "/><g class="fl-symbol fl-symbol-data"><g class="fl-symbol-glyph" transform="translate(130 1742) scale(0.83333)"><path class="symbol-face" d="M4 6v12c0 4 16 4 16 0V6Z"/><ellipse class="symbol-face" cx="12" cy="6" rx="8" ry="3"/><path d="M4 12c0 4 16 4 16 0M4 17c0 4 16 4 16 0"/></g></g><text x="140" y="1779.7" class="label">주 DB</text><text x="140" y="1795.5" class="sub">쓰기</text><rect x="62" y="1811" width="156" height="27" rx="6" fill="var(--color-card)" stroke="var(--color-outline)" stroke-dasharray="3 3" opacity="0" class="fl-card "/><g id="n-7-c0" opacity="0" class="fl-layer "><text x="70" y="1828" class="row">재고</text></g></g>
+<g id="n-8" class="fl-node fl-shape-store" data-id="replica"><g class="fl-halo  ph-green" fill="none" opacity="0"><path d="M78 2010 a 52.1 12 0 0 1 104.1 0 v 57 a 52.1 12 0 0 1 -104.1 0 z" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><path d="M78 2010 a 52.1 12 0 0 1 104.1 0 v 57 a 52.1 12 0 0 1 -104.1 0 z" fill="var(--color-paint-green-fill)" class="fl-stroke ps-green "/><path d="M78 2010 a 52.1 12 0 0 0 104.1 0" fill="none" class="fl-stroke ps-green "/><text x="130.1" y="2035.7" class="label">복제 DB</text><text x="130.1" y="2051.5" class="sub">정상, 지연 0.2초</text></g>
+<g id="n-9" class="fl-node fl-shape-store" data-id="cache"><g class="fl-halo  ph-amber" fill="none" opacity="0"><path d="M215 2010 a 54 12 0 0 1 108.1 0 v 57 a 54 12 0 0 1 -108.1 0 z" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><path d="M215 2010 a 54 12 0 0 1 108.1 0 v 57 a 54 12 0 0 1 -108.1 0 z" fill="var(--color-paint-amber-fill)" class="fl-stroke ps-amber "/><path d="M215 2010 a 54 12 0 0 0 108.1 0" fill="none" class="fl-stroke ps-amber "/><text x="269" y="2035.7" class="label">캐시</text><text x="269" y="2051.5" class="sub">적중률 하락 72%</text></g>
+<g id="n-10" class="fl-node fl-shape-external" data-id="pay"><g class="fl-halo  ph-red" fill="none" opacity="0"><rect x="403.1" y="1706" width="100" height="57" rx="8" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="403.1" y="1706" width="100" height="57" rx="8" fill="var(--color-paint-red-fill)" class="fl-stroke ps-red ext " stroke-dasharray="5 4"/><text x="453.1" y="1731.7" class="label">결제사</text><text x="453.1" y="1747.5" class="sub">승인 오류 503</text></g>
+<g id="n-11" class="fl-node fl-shape-box" data-id="mon"><g class="fl-halo " fill="none" opacity="0"><rect x="420.1" y="1901" width="100" height="81" rx="8" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="420.1" y="1901" width="100" height="81" rx="8" fill="var(--color-node)" class="fl-stroke "/><g class="fl-symbol fl-symbol-service"><g class="fl-symbol-glyph" transform="translate(460.1 1913) scale(0.83333)"><rect class="symbol-face" x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/><path d="m5 11 4-4 4 6 5-5"/></g></g><text x="470.1" y="1950.7" class="label">모니터링</text><text x="470.1" y="1966.5" class="sub">지표, 알림</text></g>
 <g id="e-0" class="fl-edge"><path id="p-0" d="M 243 149 L 243 388" class="fl-path " marker-end="url(#fl-arrow)"/></g>
 <g id="e-1" class="fl-edge"><path id="p-1" d="M 401 186 L 401 282 Q 401 304, 379 304 L 299 304 Q 277 304, 277 326 L 277 388" class="fl-path " marker-end="url(#fl-arrow)"/></g>
 <g id="e-2" class="fl-edge"><path id="p-2" d="M 243 469 L 243 477 Q 243 485, 235 485 L 229.5 485 Q 216 485, 216 498.5 L 216 607" class="fl-path " marker-end="url(#fl-arrow)"/></g>

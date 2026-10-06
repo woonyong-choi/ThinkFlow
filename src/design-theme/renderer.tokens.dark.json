@@ -167,6 +167,48 @@
     "accent": {
       "$value": "{color.blue.dark-stroke}",
       "$type": "color"
+    },
+    "figure": {
+      "icon-service-ink": {
+        "$value": "{color.blue.dark-ink}",
+        "$type": "color"
+      },
+      "icon-service-surface": {
+        "$value": "{color.blue.dark-fill}",
+        "$type": "color"
+      },
+      "icon-data-ink": {
+        "$value": "{color.purple.dark-ink}",
+        "$type": "color"
+      },
+      "icon-data-surface": {
+        "$value": "{color.purple.dark-fill}",
+        "$type": "color"
+      },
+      "icon-access-ink": {
+        "$value": "{color.orange.dark-ink}",
+        "$type": "color"
+      },
+      "icon-access-surface": {
+        "$value": "{color.orange.dark-fill}",
+        "$type": "color"
+      },
+      "icon-person-ink": {
+        "$value": "{color.green.dark-ink}",
+        "$type": "color"
+      },
+      "icon-person-surface": {
+        "$value": "{color.green.dark-fill}",
+        "$type": "color"
+      },
+      "icon-brand-ink": {
+        "$value": "{color.gray.220}",
+        "$type": "color"
+      },
+      "icon-brand-surface": {
+        "$value": "{color.gray.835}",
+        "$type": "color"
+      }
     }
   },
   "simple2": {
@@ -181,6 +223,14 @@
     "node-shadow": {
       "$value": "{primitive.simple2.node-shadow}",
       "$type": "string"
+    },
+    "separator": {
+      "$value": "{color.gray.635}",
+      "$type": "color"
+    },
+    "canvas-fill": {
+      "$value": "{color.gray.910}",
+      "$type": "color"
     }
   }
 }

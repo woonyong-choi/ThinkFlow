@@ -136,7 +136,7 @@ test('main_render_svg_keeps_the_rounded_plate_and_the_html_player_has_none', () 
     const html = readFileSync(join(folder, 'b.html'), 'utf8');
 
     assert.equal(result.status, 0, result.stderr);
-    assert.match(svg, /<rect x="[\d.]+" y="[\d.]+" width="[\d.]+" height="[\d.]+" rx="\d+" fill="var\(--color-bg\)" stroke="var\(--color-plate-border\)"/);
+    assert.match(svg, /<rect x="[\d.]+" y="[\d.]+" width="[\d.]+" height="[\d.]+" rx="\d+" fill="var\(--simple2-canvas-fill\)"/);
     assert.ok(!html.includes('<rect width="100%" height="100%"'));
     for (const text of [svg, html]) assert.ok(!text.includes('fl-dots'));
   });

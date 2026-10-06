@@ -1,4 +1,6 @@
 // 도형 윗줄과 그룹 제목 줄의 장식(아이콘, 글자 배지, 복제 개수 알약)을 그린다. 크기와 자리는 measure/decor.js가 정한 그대로다.
+import { ratio } from '../format.js';
+import { SYMBOLS } from '../icons/symbols.js';
 import { BADGE_STYLE } from '../measure/decor.js';
 import { centerBaseline, escapeXml, roundCoord as r } from '../text.js';
 import { values } from '../tokens.js';
@@ -21,14 +23,14 @@ export function drawDecor(decor, place, glyphs) {
 
 // 아이콘. 파일의 viewBox를 정사각 칸 안에 가운데로 맞춰 넣는다. 색은 class의 currentColor가 정한다.
 function drawIcon(item, { x, y, iconData }) {
-  return tileIcon(iconData, { x: x + item.x, y: y + item.y, size: item.w });
+  return drawSymbol(iconData, { x: x + item.x, y: y + item.y, size: item.w });
 }
 
-// 옅은 파랑 바탕 둥근 타일 위에 아이콘을 얹는다. 타일은 칸 전체이고 글자 모양은 칸의 ICON_SHARE만 쓴다.
-const ICON_SHARE = 0.62;
-function tileIcon(iconData, { x, y, size }) {
-  const inner = size * ICON_SHARE;
-  return `<rect x="${r(x)}" y="${r(y)}" width="${r(size)}" height="${r(size)}" rx="${r(size * 0.3)}" class="icon-tile"/>${iconAt(iconData, { x: x + (size - inner) / 2, y: y + (size - inner) / 2, size: inner, className: 'fl-icon in-tile' })}`;
+// 의미 아이콘은 자신의 실루엣에 면과 윤곽을 갖는다. 브랜드와 사용자 SVG에는 임의 배경을 붙이지 않는다.
+function drawSymbol(iconData, { x, y, size }) {
+  const body = SYMBOLS[iconData.name];
+  if (!body) return `<g class="fl-symbol fl-symbol-${iconData.role}">${iconAt(iconData, { x, y, size })}</g>`;
+  return `<g class="fl-symbol fl-symbol-${iconData.role}">${iconAt({ viewBox: [0, 0, 24, 24], body }, { x, y, size, className: 'fl-symbol-glyph' })}</g>`;
 }
 
 // 정사각 칸(왼쪽 위 x, y, 한 변 size) 안에 아이콘을 가운데 맞춰 그린다.
@@ -37,7 +39,7 @@ function iconAt(iconData, { x, y, size, className = 'fl-icon' }) {
   const scale = size / Math.max(vw, vh);
   const tx = x + (size - vw * scale) / 2 - vx * scale;
   const ty = y + (size - vh * scale) / 2 - vy * scale;
-  return `<g class="${className}" transform="translate(${r(tx)} ${r(ty)}) scale(${r(scale * 1000) / 1000})">${iconData.body}</g>`;
+  return `<g class="${className}" transform="translate(${r(tx)} ${r(ty)}) scale(${ratio(scale)})">${iconData.body}</g>`;
 }
 
 // cost: time O(1), heap O(out), stack O(1)
@@ -49,7 +51,7 @@ function iconAt(iconData, { x, y, size, className = 'fl-icon' }) {
  */
 export function drawGroupTab(g) {
   const size = values.size.group.title - values.space['4'];
-  return tileIcon(g.iconData, { x: g.x + values.space['4'], y: g.y + values.space['2'], size });
+  return drawSymbol(g.iconData, { x: g.x + values.space['4'], y: g.y + values.space['2'], size });
 }
 
 // 글자 알약. 배지와 복제 개수가 같은 모양이다.

@@ -142,6 +142,16 @@
   --color-data-heat-ink-on: var(--color-gray-0);
   --color-data-grid: var(--color-gray-212);
   --color-accent: var(--color-blue-light-stroke);
+  --color-figure-icon-service-ink: var(--color-blue-light-ink);
+  --color-figure-icon-service-surface: var(--color-blue-light-heat-low);
+  --color-figure-icon-data-ink: var(--color-purple-light-ink);
+  --color-figure-icon-data-surface: var(--color-purple-light-tint-3);
+  --color-figure-icon-access-ink: var(--color-orange-light-ink);
+  --color-figure-icon-access-surface: var(--color-orange-light-fill);
+  --color-figure-icon-person-ink: var(--color-green-light-ink);
+  --color-figure-icon-person-surface: var(--color-green-light-fill);
+  --color-figure-icon-brand-ink: var(--color-gray-467);
+  --color-figure-icon-brand-surface: var(--color-gray-59);
   --font-sans: FigSans, Pretendard, ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Apple SD Gothic Neo', sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
   --size-text-9: 9px;
@@ -212,9 +222,13 @@
   --simple2-node-stroke: 1px;
   --simple2-heading-weight: 700;
   --simple2-progress-stroke: 2px;
+  --simple2-node-corner: 8px;
+  --simple2-separator: var(--primitive-simple2-plate-border);
+  --simple2-canvas-corner: 28px;
+  --simple2-canvas-fill: var(--primitive-simple2-canvas);
+  --simple2-symbol-stroke: 1.75px;
   --primitive-simple2-fg: #303336;
   --primitive-simple2-muted: #505b69;
-  --primitive-simple2-group-title: #505b69;
   --primitive-simple2-bg: #f2f5f7;
   --primitive-simple2-page: #ffffff;
   --primitive-simple2-node: #ffffff;
@@ -225,7 +239,9 @@
   --primitive-simple2-shadow: 0 2px 8px rgba(0,0,0,.10), 0 0 2px rgba(0,0,0,.10);
   --primitive-simple2-play-fill: #4f91fb;
   --primitive-simple2-play-ink: #ffffff;
-  --primitive-simple2-node-shadow: drop-shadow(0px 2px 2px rgba(0,0,0,.08));
+  --primitive-simple2-node-shadow: drop-shadow(0px 1px 1px rgba(0,0,0,.07));
+  --primitive-simple2-group-title: #505b69;
+  --primitive-simple2-canvas: #edeef2;
   --color-palette-amber-light-fill: var(--color-orange-light-fill);
   --color-palette-amber-light-stroke: var(--color-orange-light-stroke);
   --color-palette-amber-light-ink: var(--color-orange-light-ink);
@@ -493,9 +509,21 @@
   --color-data-heat-ink: var(--color-gray-0);
   --color-data-grid: var(--color-gray-776);
   --color-accent: var(--color-blue-dark-stroke);
+  --color-figure-icon-service-ink: var(--color-blue-dark-ink);
+  --color-figure-icon-service-surface: var(--color-blue-dark-fill);
+  --color-figure-icon-data-ink: var(--color-purple-dark-ink);
+  --color-figure-icon-data-surface: var(--color-purple-dark-fill);
+  --color-figure-icon-access-ink: var(--color-orange-dark-ink);
+  --color-figure-icon-access-surface: var(--color-orange-dark-fill);
+  --color-figure-icon-person-ink: var(--color-green-dark-ink);
+  --color-figure-icon-person-surface: var(--color-green-dark-fill);
+  --color-figure-icon-brand-ink: var(--color-gray-220);
+  --color-figure-icon-brand-surface: var(--color-gray-835);
   --simple2-play-fill: var(--color-blue-dark-stroke);
   --simple2-play-ink: var(--color-gray-933);
   --simple2-node-shadow: var(--primitive-simple2-node-shadow);
+  --simple2-separator: var(--color-gray-635);
+  --simple2-canvas-fill: var(--color-gray-910);
   --color-figure-icon: var(--color-blue-dark-stroke);
   --color-figure-icon-tile: var(--color-blue-dark-fill);
   --color-figure-queue-fill: var(--color-blue-dark-stroke);
@@ -719,7 +747,7 @@
 }
 
 .fl .col-line {
-  stroke: var(--color-outline);
+  stroke: var(--simple2-separator);
   stroke-width: var(--border-hair);
 }
 
@@ -768,12 +796,8 @@
   color: var(--color-figure-icon);
 }
 
-.fl .icon-tile {
-  fill: var(--color-figure-icon-tile);
-}
-
-.fl .fl-icon.in-tile {
-  color: var(--color-figure-icon);
+.fl .fl-symbol .fl-icon {
+  color: inherit;
 }
 
 /* 선 번호 원. 라벨 알약과 달리 켜져도 색이 바뀌지 않아 정지 그림과 같은 순서로 읽힌다. */
@@ -789,7 +813,11 @@
 }
 
 /* 표면에만 그림자를 두어 글자·아이콘·선의 가장자리는 선명하게 유지한다. */
-.fl :where(.fl-node) > .fl-stroke:not([fill="none"]) {
+.fl :where(.fl-node) > .fl-stroke {
+  stroke-width: var(--simple2-node-stroke);
+}
+
+.fl :where(.fl-shape-rect, .fl-shape-box, .fl-shape-tile, .fl-shape-external, .fl-shape-store, .fl-shape-table, .fl-shape-grid, .fl-shape-queue) > .fl-stroke:not([fill="none"]) {
   stroke-width: var(--simple2-node-stroke);
   filter: var(--simple2-node-shadow);
 }
@@ -799,6 +827,65 @@
   vector-effect: non-scaling-stroke;
   stroke-linecap: round;
   stroke-linejoin: round;
+}
+
+/* 조작 아이콘과 달리 의미 아이콘은 실루엣 안에 면과 세부 윤곽을 함께 가진다. */
+.fl .fl-symbol-glyph {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: var(--simple2-symbol-stroke);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.fl .symbol-solid {
+  fill: currentColor;
+  stroke: none;
+}
+
+.fl .symbol-cut {
+  fill: none;
+  stroke: var(--color-node);
+}
+
+.fl .fl-symbol-service {
+  color: var(--color-figure-icon-service-ink);
+}
+
+.fl .fl-symbol-service .symbol-face {
+  fill: var(--color-figure-icon-service-surface);
+}
+
+.fl .fl-symbol-data {
+  color: var(--color-figure-icon-data-ink);
+}
+
+.fl .fl-symbol-data .symbol-face {
+  fill: var(--color-figure-icon-data-surface);
+}
+
+.fl .fl-symbol-access {
+  color: var(--color-figure-icon-access-ink);
+}
+
+.fl .fl-symbol-access .symbol-face {
+  fill: var(--color-figure-icon-access-surface);
+}
+
+.fl .fl-symbol-person {
+  color: var(--color-figure-icon-person-ink);
+}
+
+.fl .fl-symbol-person .symbol-face {
+  fill: var(--color-figure-icon-person-surface);
+}
+
+.fl .fl-symbol-brand {
+  color: var(--color-figure-icon-brand-ink);
+}
+
+.fl .fl-symbol-brand .symbol-face {
+  fill: var(--color-figure-icon-brand-surface);
 }
 /* 움직이는 SVG에만 있는 단계 이름과 설명 줄 */
 .fl .steplabel {
@@ -872,16 +959,16 @@
 .fl .a26 { animation: a26 19.55s infinite linear; }
 </style>
 <defs><marker id="fl-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-line)"/></marker><marker id="fl-arrow-on" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-state-active)"/></marker><marker id="fl-arrow-main" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-data-main)"/></marker></defs>
-<rect x="0.5" y="0.5" width="959" height="877" rx="10" fill="var(--color-bg)" stroke="var(--color-plate-border)" stroke-width="1"/>
+<rect x="0.5" y="0.5" width="959" height="877" rx="28" fill="var(--simple2-canvas-fill)"/>
 <g transform="translate(336 0)">
-<g id="n-0" class="fl-node" data-id="__start"><g class="fl-halo a1" fill="none" opacity="0"><rect x="203" y="28" width="14" height="14" rx="10" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><circle cx="210" cy="35" r="7" fill="var(--color-fg)" class="fl-stroke a0"/></g>
-<g id="n-1" class="fl-node" data-id="created"><g class="fl-halo a3" fill="none" opacity="0"><rect x="160" y="102" width="100" height="46" rx="10" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="160" y="102" width="100" height="46" rx="10" fill="var(--color-node)" class="fl-stroke a2"/><text x="210" y="129.7" class="label">생성됨</text></g>
-<g id="n-2" class="fl-node" data-id="paid"><g class="fl-halo a3" fill="none" opacity="0"><rect x="67.7" y="286" width="100" height="46" rx="10" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="67.7" y="286" width="100" height="46" rx="10" fill="var(--color-node)" class="fl-stroke a2"/><text x="117.7" y="313.7" class="label">결제됨</text></g>
-<g id="n-3" class="fl-node" data-id="shipped"><g class="fl-halo a5" fill="none" opacity="0"><rect x="28" y="470" width="100" height="46" rx="10" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="28" y="470" width="100" height="46" rx="10" fill="var(--color-node)" class="fl-stroke a4"/><text x="78" y="497.7" class="label">배송 중</text></g>
-<g id="n-4" class="fl-node" data-id="delivered"><g class="fl-halo a7" fill="none" opacity="0"><rect x="28" y="654" width="100" height="46" rx="10" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="28" y="654" width="100" height="46" rx="10" fill="var(--color-node)" class="fl-stroke a6"/><text x="78" y="681.7" class="label">배송 완료</text></g>
-<g id="n-5" class="fl-node" data-id="cancelled"><g class="fl-halo a9" fill="none" opacity="0"><rect x="160" y="470" width="100" height="46" rx="10" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="160" y="470" width="100" height="46" rx="10" fill="var(--color-node)" class="fl-stroke a8"/><text x="210" y="497.7" class="label">취소됨</text></g>
-<g id="n-6" class="fl-node" data-id="__final0"><g class="fl-halo a1" fill="none" opacity="0"><rect x="71" y="760" width="14" height="14" rx="10" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><circle cx="78" cy="767" r="7" fill="none" class="fl-stroke a0"/><circle cx="78" cy="767" r="3.5" fill="var(--color-fg)"/></g>
-<g id="n-7" class="fl-node" data-id="__final1"><g class="fl-halo a1" fill="none" opacity="0"><rect x="203" y="576" width="14" height="14" rx="10" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><circle cx="210" cy="583" r="7" fill="none" class="fl-stroke a0"/><circle cx="210" cy="583" r="3.5" fill="var(--color-fg)"/></g>
+<g id="n-0" class="fl-node fl-shape-start" data-id="__start"><g class="fl-halo a1" fill="none" opacity="0"><rect x="203" y="28" width="14" height="14" rx="8" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><circle cx="210" cy="35" r="7" fill="var(--color-fg)" class="fl-stroke a0"/></g>
+<g id="n-1" class="fl-node fl-shape-state" data-id="created"><g class="fl-halo a3" fill="none" opacity="0"><rect x="160" y="102" width="100" height="46" rx="8" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="160" y="102" width="100" height="46" rx="8" fill="var(--color-node)" class="fl-stroke a2"/><text x="210" y="129.7" class="label">생성됨</text></g>
+<g id="n-2" class="fl-node fl-shape-state" data-id="paid"><g class="fl-halo a3" fill="none" opacity="0"><rect x="67.7" y="286" width="100" height="46" rx="8" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="67.7" y="286" width="100" height="46" rx="8" fill="var(--color-node)" class="fl-stroke a2"/><text x="117.7" y="313.7" class="label">결제됨</text></g>
+<g id="n-3" class="fl-node fl-shape-state" data-id="shipped"><g class="fl-halo a5" fill="none" opacity="0"><rect x="28" y="470" width="100" height="46" rx="8" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="28" y="470" width="100" height="46" rx="8" fill="var(--color-node)" class="fl-stroke a4"/><text x="78" y="497.7" class="label">배송 중</text></g>
+<g id="n-4" class="fl-node fl-shape-state" data-id="delivered"><g class="fl-halo a7" fill="none" opacity="0"><rect x="28" y="654" width="100" height="46" rx="8" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="28" y="654" width="100" height="46" rx="8" fill="var(--color-node)" class="fl-stroke a6"/><text x="78" y="681.7" class="label">배송 완료</text></g>
+<g id="n-5" class="fl-node fl-shape-state" data-id="cancelled"><g class="fl-halo a9" fill="none" opacity="0"><rect x="160" y="470" width="100" height="46" rx="8" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="160" y="470" width="100" height="46" rx="8" fill="var(--color-node)" class="fl-stroke a8"/><text x="210" y="497.7" class="label">취소됨</text></g>
+<g id="n-6" class="fl-node fl-shape-final" data-id="__final0"><g class="fl-halo a1" fill="none" opacity="0"><rect x="71" y="760" width="14" height="14" rx="8" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><circle cx="78" cy="767" r="7" fill="none" class="fl-stroke a0"/><circle cx="78" cy="767" r="3.5" fill="var(--color-fg)"/></g>
+<g id="n-7" class="fl-node fl-shape-final" data-id="__final1"><g class="fl-halo a1" fill="none" opacity="0"><rect x="203" y="576" width="14" height="14" rx="8" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><circle cx="210" cy="583" r="7" fill="none" class="fl-stroke a0"/><circle cx="210" cy="583" r="3.5" fill="var(--color-fg)"/></g>
 <g id="e-0" class="fl-edge"><path id="p-0" d="M 193.3 148 L 193.3 156 Q 193.3 164, 185.3 164 L 139.7 164 Q 117.7 164, 117.7 186 L 117.7 286" class="fl-path a10" marker-end="url(#fl-arrow)"/></g>
 <g id="e-1" class="fl-edge"><path id="p-1" d="M 101 332 L 101 340 Q 101 348, 93 348 L 89.5 348 Q 78 348, 78 359.5 L 78 470" class="fl-path a11" marker-end="url(#fl-arrow)"/></g>
 <g id="e-2" class="fl-edge"><path id="p-2" d="M 78 516 L 78 654" class="fl-path a12" marker-end="url(#fl-arrow)"/></g>

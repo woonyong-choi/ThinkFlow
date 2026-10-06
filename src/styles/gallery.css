@@ -9,7 +9,7 @@ body {
   font-family: var(--font-sans);
   letter-spacing: var(--tracking-text);
   color: var(--color-fg);
-  background: var(--color-bg);
+  background: var(--color-page);
 }
 
 .top {
@@ -49,12 +49,10 @@ main {
   align-items: start;
 }
 
-/* 그림 카드의 흰 면과 그림자로 캔버스에서 높이를 구분한다. */
+/* 제목과 조작은 문서 면에 놓고, 설명 그림만 별도 판을 가진다. */
 section {
   overflow: hidden;
-  background: var(--color-node);
-  border-radius: var(--simple2-corner);
-  box-shadow: var(--simple2-shadow);
+  background: var(--color-page);
 }
 
 header {

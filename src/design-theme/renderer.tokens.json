@@ -567,6 +567,48 @@
     "accent": {
       "$value": "{color.blue.light-stroke}",
       "$type": "color"
+    },
+    "figure": {
+      "icon-service-ink": {
+        "$value": "{color.blue.light-ink}",
+        "$type": "color"
+      },
+      "icon-service-surface": {
+        "$value": "{color.blue.light-heat-low}",
+        "$type": "color"
+      },
+      "icon-data-ink": {
+        "$value": "{color.purple.light-ink}",
+        "$type": "color"
+      },
+      "icon-data-surface": {
+        "$value": "{color.purple.light-tint-3}",
+        "$type": "color"
+      },
+      "icon-access-ink": {
+        "$value": "{color.orange.light-ink}",
+        "$type": "color"
+      },
+      "icon-access-surface": {
+        "$value": "{color.orange.light-fill}",
+        "$type": "color"
+      },
+      "icon-person-ink": {
+        "$value": "{color.green.light-ink}",
+        "$type": "color"
+      },
+      "icon-person-surface": {
+        "$value": "{color.green.light-fill}",
+        "$type": "color"
+      },
+      "icon-brand-ink": {
+        "$value": "{color.gray.467}",
+        "$type": "color"
+      },
+      "icon-brand-surface": {
+        "$value": "{color.gray.59}",
+        "$type": "color"
+      }
     }
   },
   "font": {
@@ -1007,6 +1049,26 @@
     "progress-stroke": {
       "$value": 2,
       "$type": "dimension"
+    },
+    "node-corner": {
+      "$value": 8,
+      "$type": "dimension"
+    },
+    "separator": {
+      "$value": "{primitive.simple2.plate-border}",
+      "$type": "color"
+    },
+    "canvas-corner": {
+      "$value": 28,
+      "$type": "dimension"
+    },
+    "canvas-fill": {
+      "$value": "{primitive.simple2.canvas}",
+      "$type": "color"
+    },
+    "symbol-stroke": {
+      "$value": 1.75,
+      "$type": "dimension"
     }
   },
   "primitive": {
@@ -1016,10 +1078,6 @@
         "$type": "color"
       },
       "muted": {
-        "$value": "#505b69",
-        "$type": "color"
-      },
-      "group-title": {
         "$value": "#505b69",
         "$type": "color"
       },
@@ -1064,8 +1122,16 @@
         "$type": "color"
       },
       "node-shadow": {
-        "$value": "drop-shadow(0px 2px 2px rgba(0,0,0,.08))",
+        "$value": "drop-shadow(0px 1px 1px rgba(0,0,0,.07))",
         "$type": "string"
+      },
+      "group-title": {
+        "$value": "#505b69",
+        "$type": "color"
+      },
+      "canvas": {
+        "$value": "#edeef2",
+        "$type": "color"
       }
     }
   }

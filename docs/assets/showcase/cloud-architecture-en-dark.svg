@@ -142,6 +142,16 @@
   --color-data-heat-ink-on: var(--color-gray-0);
   --color-data-grid: var(--color-gray-212);
   --color-accent: var(--color-blue-light-stroke);
+  --color-figure-icon-service-ink: var(--color-blue-light-ink);
+  --color-figure-icon-service-surface: var(--color-blue-light-heat-low);
+  --color-figure-icon-data-ink: var(--color-purple-light-ink);
+  --color-figure-icon-data-surface: var(--color-purple-light-tint-3);
+  --color-figure-icon-access-ink: var(--color-orange-light-ink);
+  --color-figure-icon-access-surface: var(--color-orange-light-fill);
+  --color-figure-icon-person-ink: var(--color-green-light-ink);
+  --color-figure-icon-person-surface: var(--color-green-light-fill);
+  --color-figure-icon-brand-ink: var(--color-gray-467);
+  --color-figure-icon-brand-surface: var(--color-gray-59);
   --font-sans: FigSans, Pretendard, ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Apple SD Gothic Neo', sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
   --size-text-9: 9px;
@@ -212,9 +222,13 @@
   --simple2-node-stroke: 1px;
   --simple2-heading-weight: 700;
   --simple2-progress-stroke: 2px;
+  --simple2-node-corner: 8px;
+  --simple2-separator: var(--primitive-simple2-plate-border);
+  --simple2-canvas-corner: 28px;
+  --simple2-canvas-fill: var(--primitive-simple2-canvas);
+  --simple2-symbol-stroke: 1.75px;
   --primitive-simple2-fg: #303336;
   --primitive-simple2-muted: #505b69;
-  --primitive-simple2-group-title: #505b69;
   --primitive-simple2-bg: #f2f5f7;
   --primitive-simple2-page: #ffffff;
   --primitive-simple2-node: #ffffff;
@@ -225,7 +239,9 @@
   --primitive-simple2-shadow: 0 2px 8px rgba(0,0,0,.10), 0 0 2px rgba(0,0,0,.10);
   --primitive-simple2-play-fill: #4f91fb;
   --primitive-simple2-play-ink: #ffffff;
-  --primitive-simple2-node-shadow: drop-shadow(0px 2px 2px rgba(0,0,0,.08));
+  --primitive-simple2-node-shadow: drop-shadow(0px 1px 1px rgba(0,0,0,.07));
+  --primitive-simple2-group-title: #505b69;
+  --primitive-simple2-canvas: #edeef2;
   --color-palette-amber-light-fill: var(--color-orange-light-fill);
   --color-palette-amber-light-stroke: var(--color-orange-light-stroke);
   --color-palette-amber-light-ink: var(--color-orange-light-ink);
@@ -493,9 +509,21 @@
     --color-data-heat-ink: var(--color-gray-0);
     --color-data-grid: var(--color-gray-776);
     --color-accent: var(--color-blue-dark-stroke);
+    --color-figure-icon-service-ink: var(--color-blue-dark-ink);
+    --color-figure-icon-service-surface: var(--color-blue-dark-fill);
+    --color-figure-icon-data-ink: var(--color-purple-dark-ink);
+    --color-figure-icon-data-surface: var(--color-purple-dark-fill);
+    --color-figure-icon-access-ink: var(--color-orange-dark-ink);
+    --color-figure-icon-access-surface: var(--color-orange-dark-fill);
+    --color-figure-icon-person-ink: var(--color-green-dark-ink);
+    --color-figure-icon-person-surface: var(--color-green-dark-fill);
+    --color-figure-icon-brand-ink: var(--color-gray-220);
+    --color-figure-icon-brand-surface: var(--color-gray-835);
     --simple2-play-fill: var(--color-blue-dark-stroke);
     --simple2-play-ink: var(--color-gray-933);
     --simple2-node-shadow: var(--primitive-simple2-node-shadow);
+    --simple2-separator: var(--color-gray-635);
+    --simple2-canvas-fill: var(--color-gray-910);
     --color-figure-icon: var(--color-blue-dark-stroke);
     --color-figure-icon-tile: var(--color-blue-dark-fill);
     --color-figure-queue-fill: var(--color-blue-dark-stroke);
@@ -590,9 +618,21 @@
   --color-data-heat-ink: var(--color-gray-0);
   --color-data-grid: var(--color-gray-776);
   --color-accent: var(--color-blue-dark-stroke);
+  --color-figure-icon-service-ink: var(--color-blue-dark-ink);
+  --color-figure-icon-service-surface: var(--color-blue-dark-fill);
+  --color-figure-icon-data-ink: var(--color-purple-dark-ink);
+  --color-figure-icon-data-surface: var(--color-purple-dark-fill);
+  --color-figure-icon-access-ink: var(--color-orange-dark-ink);
+  --color-figure-icon-access-surface: var(--color-orange-dark-fill);
+  --color-figure-icon-person-ink: var(--color-green-dark-ink);
+  --color-figure-icon-person-surface: var(--color-green-dark-fill);
+  --color-figure-icon-brand-ink: var(--color-gray-220);
+  --color-figure-icon-brand-surface: var(--color-gray-835);
   --simple2-play-fill: var(--color-blue-dark-stroke);
   --simple2-play-ink: var(--color-gray-933);
   --simple2-node-shadow: var(--primitive-simple2-node-shadow);
+  --simple2-separator: var(--color-gray-635);
+  --simple2-canvas-fill: var(--color-gray-910);
   --color-figure-icon: var(--color-blue-dark-stroke);
   --color-figure-icon-tile: var(--color-blue-dark-fill);
   --color-figure-queue-fill: var(--color-blue-dark-stroke);
@@ -816,7 +856,7 @@
 }
 
 .fl .col-line {
-  stroke: var(--color-outline);
+  stroke: var(--simple2-separator);
   stroke-width: var(--border-hair);
 }
 
@@ -865,12 +905,8 @@
   color: var(--color-figure-icon);
 }
 
-.fl .icon-tile {
-  fill: var(--color-figure-icon-tile);
-}
-
-.fl .fl-icon.in-tile {
-  color: var(--color-figure-icon);
+.fl .fl-symbol .fl-icon {
+  color: inherit;
 }
 
 /* 선 번호 원. 라벨 알약과 달리 켜져도 색이 바뀌지 않아 정지 그림과 같은 순서로 읽힌다. */
@@ -886,7 +922,11 @@
 }
 
 /* 표면에만 그림자를 두어 글자·아이콘·선의 가장자리는 선명하게 유지한다. */
-.fl :where(.fl-node) > .fl-stroke:not([fill="none"]) {
+.fl :where(.fl-node) > .fl-stroke {
+  stroke-width: var(--simple2-node-stroke);
+}
+
+.fl :where(.fl-shape-rect, .fl-shape-box, .fl-shape-tile, .fl-shape-external, .fl-shape-store, .fl-shape-table, .fl-shape-grid, .fl-shape-queue) > .fl-stroke:not([fill="none"]) {
   stroke-width: var(--simple2-node-stroke);
   filter: var(--simple2-node-shadow);
 }
@@ -896,6 +936,65 @@
   vector-effect: non-scaling-stroke;
   stroke-linecap: round;
   stroke-linejoin: round;
+}
+
+/* 조작 아이콘과 달리 의미 아이콘은 실루엣 안에 면과 세부 윤곽을 함께 가진다. */
+.fl .fl-symbol-glyph {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: var(--simple2-symbol-stroke);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.fl .symbol-solid {
+  fill: currentColor;
+  stroke: none;
+}
+
+.fl .symbol-cut {
+  fill: none;
+  stroke: var(--color-node);
+}
+
+.fl .fl-symbol-service {
+  color: var(--color-figure-icon-service-ink);
+}
+
+.fl .fl-symbol-service .symbol-face {
+  fill: var(--color-figure-icon-service-surface);
+}
+
+.fl .fl-symbol-data {
+  color: var(--color-figure-icon-data-ink);
+}
+
+.fl .fl-symbol-data .symbol-face {
+  fill: var(--color-figure-icon-data-surface);
+}
+
+.fl .fl-symbol-access {
+  color: var(--color-figure-icon-access-ink);
+}
+
+.fl .fl-symbol-access .symbol-face {
+  fill: var(--color-figure-icon-access-surface);
+}
+
+.fl .fl-symbol-person {
+  color: var(--color-figure-icon-person-ink);
+}
+
+.fl .fl-symbol-person .symbol-face {
+  fill: var(--color-figure-icon-person-surface);
+}
+
+.fl .fl-symbol-brand {
+  color: var(--color-figure-icon-brand-ink);
+}
+
+.fl .fl-symbol-brand .symbol-face {
+  fill: var(--color-figure-icon-brand-surface);
 }
 /* 움직이는 SVG에만 있는 단계 이름과 설명 줄 */
 .fl .steplabel {
@@ -1003,34 +1102,34 @@
 .fl .a43 { animation: a43 66.905s infinite linear; }
 </style>
 <defs><marker id="fl-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-line)"/></marker><marker id="fl-arrow-on" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-state-active)"/></marker><marker id="fl-arrow-main" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-data-main)"/></marker></defs>
-<rect x="0.5" y="0.5" width="1439" height="1170" rx="10" fill="var(--color-bg)" stroke="var(--color-plate-border)" stroke-width="1"/>
+<rect x="0.5" y="0.5" width="1439" height="1170" rx="28" fill="var(--simple2-canvas-fill)"/>
 <g transform="translate(0 0)">
-<g id="g-0" class="fl-group tabbed" data-id="users"><rect x="28" y="167" width="128" height="144" rx="18" class="frame-box fl-stroke dashed a0" stroke-dasharray="5 4"/><rect x="36" y="171" width="20" height="20" rx="6" class="icon-tile"/><g class="fl-icon in-tile" transform="translate(39.8 174.8) scale(0.3875)"><g fill="currentColor"><path d="M6,30H26V25a7.0082,7.0082,0,0,0-7-7H13a7.0082,7.0082,0,0,0-7,7Z"/><path d="M9,9a7,7,0,1,0,7-7A7,7,0,0,0,9,9Z"/></g></g><text x="74" y="185" class="frame">Users</text></g>
-<g id="g-1" class="fl-group tabbed" data-id="admins"><rect x="232" y="723" width="144" height="344" rx="18" class="frame-box fl-stroke dashed a0" stroke-dasharray="5 4"/><rect x="240" y="727" width="20" height="20" rx="6" class="icon-tile"/><g class="fl-icon in-tile" transform="translate(243.8 730.8) scale(0.3875)"><g fill="currentColor"><path d="M12,4A5,5,0,1,1,7,9a5,5,0,0,1,5-5m0-2a7,7,0,1,0,7,7A7,7,0,0,0,12,2Z"/><path d="M22,30H20V25a5,5,0,0,0-5-5H9a5,5,0,0,0-5,5v5H2V25a7,7,0,0,1,7-7h6a7,7,0,0,1,7,7Z"/><path d="M25 16.18 22.41 13.59 21 15 25 19 32 12 30.59 10.59 25 16.18z"/></g></g><text x="278" y="741" class="frame">Admins</text></g>
-<g id="g-2" class="fl-group tabbed" data-id="net"><rect x="216" y="207" width="160" height="484" rx="18" class="frame-box fl-stroke dashed a0" stroke-dasharray="5 4"/><rect x="224" y="211" width="20" height="20" rx="6" class="icon-tile"/><g class="fl-icon in-tile" transform="translate(227.8 214.8) scale(0.3875)"><g fill="currentColor"><circle cx="21" cy="21" r="2"/><circle cx="7" cy="7" r="2"/><path d="M27,31a4,4,0,1,1,4-4A4.0118,4.0118,0,0,1,27,31Zm0-6a2,2,0,1,0,2,2A2.0059,2.0059,0,0,0,27,25Z"/><path d="M30,16A14.0412,14.0412,0,0,0,16,2,13.0426,13.0426,0,0,0,9.2,3.8l1.1,1.7a24.4254,24.4254,0,0,1,2.4-1A25.1349,25.1349,0,0,0,10,15H4a11.1489,11.1489,0,0,1,1.4-4.7L3.9,9A13.8418,13.8418,0,0,0,2,16,13.9983,13.9983,0,0,0,16,30a13.3656,13.3656,0,0,0,5.2-1l-.6-1.9a11.4416,11.4416,0,0,1-5.2.9h0A21.0713,21.0713,0,0,1,12,17H29.9A3.4019,3.4019,0,0,0,30,16ZM12.8,27.6h0a13.02,13.02,0,0,1-5.3-3.1A12.5053,12.5053,0,0,1,4,17h6A25.0022,25.0022,0,0,0,12.8,27.6ZM12,15A21.4461,21.4461,0,0,1,15.3,4h1.4A21.4461,21.4461,0,0,1,20,15Zm10,0A23.2777,23.2777,0,0,0,19.2,4.4,12.0919,12.0919,0,0,1,27.9,15Z"/></g></g><text x="262" y="225" class="frame">Internet</text></g>
-<g id="g-3" class="fl-group tabbed" data-id="cloud"><rect x="436" y="28" width="771.9" height="836" rx="18" class="frame-box fl-stroke a1"/><rect x="444" y="32" width="20" height="20" rx="6" class="icon-tile"/><g class="fl-icon in-tile" transform="translate(447.8 35.8) scale(0.3875)"><g fill="currentColor"><path d="M16,7h0a7.66,7.66,0,0,1,1.51.15,8,8,0,0,1,6.35,6.34l.26,1.35,1.35.24a5.5,5.5,0,0,1-1,10.92H7.5a5.5,5.5,0,0,1-1-10.92l1.34-.24.26-1.35A8,8,0,0,1,16,7m0-2a10,10,0,0,0-9.83,8.12A7.5,7.5,0,0,0,7.49,28h17a7.5,7.5,0,0,0,1.32-14.88,10,10,0,0,0-7.94-7.94A10.27,10.27,0,0,0,16,5Z"/></g></g><text x="482" y="46" class="frame">Cloud</text></g>
-<g id="g-4" class="fl-group tabbed" data-id="vpc"><rect x="460" y="68" width="723.9" height="772" rx="18" class="frame-box fl-stroke d2 dashed a0" stroke-dasharray="5 4"/><rect x="468" y="72" width="20" height="20" rx="6" class="icon-tile"/><g class="fl-icon in-tile" transform="translate(471.8 75.8) scale(0.3875)"><g fill="currentColor"><path d="M20,20V17a4,4,0,0,0-8,0v3a2.0025,2.0025,0,0,0-2,2v6a2.0025,2.0025,0,0,0,2,2h8a2.0025,2.0025,0,0,0,2-2V22A2.0025,2.0025,0,0,0,20,20Zm-6-3a2,2,0,0,1,4,0v3H14ZM12,28V22h8l.0012,6Z"/><path d="M25.8288,10.1152A10.0067,10.0067,0,0,0,17.89,2.1816,10.0025,10.0025,0,0,0,6.17,10.1152,7.502,7.502,0,0,0,7.4912,25H8V23H7.4953a5.5019,5.5019,0,0,1-.9694-10.9165l1.3488-.2441.2591-1.3457a8.0109,8.0109,0,0,1,15.7312,0l.259,1.3457,1.3489.2441A5.5019,5.5019,0,0,1,24.5076,23H24v2h.5076a7.502,7.502,0,0,0,1.3212-14.8848Z"/></g></g><text x="506" y="86" class="frame">VPC</text></g>
-<g id="g-5" class="fl-group tabbed" data-id="pub"><rect x="484" y="547" width="129.5" height="244" rx="18" class="frame-box fl-stroke d3 a1"/><rect x="492" y="551" width="20" height="20" rx="6" class="icon-tile"/><g class="fl-icon in-tile" transform="translate(495.8 554.8) scale(0.3875)"><g fill="currentColor"><path d="M25.41,14.59C25.04,14.21,24.53,14,24,14	h-2V8c0-1.59-0.63-3.12-1.76-4.24C19.12,2.63,17.59,2,16,2s-3.12,0.63-4.24,1.76C10.63,4.88,10,6.41,10,8v6H8	c-0.53,0-1.04,0.21-1.41,0.59C6.21,14.96,6,15.47,6,16v12c0,0.53,0.21,1.04,0.59,1.41C6.96,29.79,7.47,30,8,30h16	c0.53,0,1.04-0.21,1.41-0.59C25.79,29.04,26,28.53,26,28V16C26,15.47,25.79,14.96,25.41,14.59z M20,14h-8V8	c0-1.06,0.42-2.08,1.17-2.83S14.94,4,16,4s2.08,0.42,2.83,1.17S20,6.94,20,8V14z" fill-rule="evenodd" clip-rule="evenodd"/></g></g><text x="530" y="565" class="frame">Public subnet</text></g>
-<g id="g-6" class="fl-group tabbed" data-id="scaling"><rect x="673.5" y="543" width="136.5" height="152" rx="18" class="frame-box fl-stroke d3 dashed a0" stroke-dasharray="5 4"/><rect x="681.5" y="547" width="20" height="20" rx="6" class="icon-tile"/><g class="fl-icon in-tile" transform="translate(685.3 550.8) scale(0.3875)"><g fill="currentColor"><path d="M22,28H12V26H22V10H6V20H4V10A2.0021,2.0021,0,0,1,6,8H22a2.0021,2.0021,0,0,1,2,2V26A2.0021,2.0021,0,0,1,22,28Z"/><path d="M28,22H26V20h2V4H12V6H10V4a2.0021,2.0021,0,0,1,2-2H28a2.0021,2.0021,0,0,1,2,2V20A2.0021,2.0021,0,0,1,28,22Z"/><path d="M10 14 10 16 14.586 16 3 27.586 4.414 29 16 17.414 16 22 18 22 18 14 10 14z"/></g></g><text x="719.5" y="561" class="frame">Scaling group</text></g>
-<g id="g-7" class="fl-group tabbed" data-id="priv"><rect x="869.9" y="108" width="290" height="708" rx="18" class="frame-box fl-stroke d3 a1"/><rect x="877.9" y="112" width="20" height="20" rx="6" class="icon-tile"/><g class="fl-icon in-tile" transform="translate(881.7 115.8) scale(0.3875)"><g fill="currentColor"><path d="M25.41,14.59C25.04,14.21,24.53,14,24,14	h-2V8c0-1.59-0.63-3.12-1.76-4.24C19.12,2.63,17.59,2,16,2s-3.12,0.63-4.24,1.76C10.63,4.88,10,6.41,10,8v6H8	c-0.53,0-1.04,0.21-1.41,0.59C6.21,14.96,6,15.47,6,16v12c0,0.53,0.21,1.04,0.59,1.41C6.96,29.79,7.47,30,8,30h16	c0.53,0,1.04-0.21,1.41-0.59C25.79,29.04,26,28.53,26,28V16C26,15.47,25.79,14.96,25.41,14.59z M20,14h-8V8	c0-1.06,0.42-2.08,1.17-2.83S14.94,4,16,4s2.08,0.42,2.83,1.17S20,6.94,20,8V14z" fill-rule="evenodd" clip-rule="evenodd"/></g></g><text x="915.9" y="126" class="frame">Private subnet</text></g>
-<g id="g-8" class="fl-group tabbed" data-id="ops"><rect x="1267.9" y="591" width="144" height="364" rx="18" class="frame-box fl-stroke dashed a0" stroke-dasharray="5 4"/><rect x="1275.9" y="595" width="20" height="20" rx="6" class="icon-tile"/><g class="fl-icon in-tile" transform="translate(1279.7 598.8) scale(0.3875)"><g fill="currentColor"><path d="M28,16v6H4V6h7V4H4A2,2,0,0,0,2,6V22a2,2,0,0,0,2,2h8v4H8v2H24V28H20V24h8a2,2,0,0,0,2-2V16ZM18,28H14V24h4Z"/><path d="M18,18h-.01a1,1,0,0,1-.9511-.7253L15.2456,11H11V9h5a1,1,0,0,1,.9615.7252l1.0742,3.7589,3.0088-9.7783A1.0142,1.0142,0,0,1,22,3a.98.98,0,0,1,.9487.6838L24.7207,9H30v2H24a1,1,0,0,1-.9487-.6838l-1.0132-3.04L18.9556,17.2942A1,1,0,0,1,18,18Z"/></g></g><text x="1313.9" y="609" class="frame">Operations</text></g>
-<g id="n-0" class="fl-node" data-id="client"><g class="fl-halo a3" fill="none" opacity="0"><rect x="52" y="207" width="80" height="80" rx="10" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="52" y="207" width="80" height="80" rx="10" fill="var(--color-node)" class="fl-stroke a2"/><rect x="76" y="219" width="32" height="32" rx="9.6" class="icon-tile"/><g class="fl-icon in-tile" transform="translate(82.1 225.1) scale(0.62)"><g fill="currentColor"><path d="M28,4H4A2,2,0,0,0,2,6V22a2,2,0,0,0,2,2h8v4H8v2H24V28H20V24h8a2,2,0,0,0,2-2V6A2,2,0,0,0,28,4ZM18,28H14V24h4Zm10-6H4V6H28Z"/></g></g><text x="92" y="270.7" class="label">Web user</text></g>
-<g id="n-1" class="fl-node" data-id="admin"><g class="fl-halo a5" fill="none" opacity="0"><rect x="256" y="763" width="80" height="80" rx="10" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="256" y="763" width="80" height="80" rx="10" fill="var(--color-node)" class="fl-stroke a4"/><rect x="280" y="775" width="32" height="32" rx="9.6" class="icon-tile"/><g class="fl-icon in-tile" transform="translate(286.1 781.1) scale(0.62)"><g fill="currentColor"><path d="M12,4A5,5,0,1,1,7,9a5,5,0,0,1,5-5m0-2a7,7,0,1,0,7,7A7,7,0,0,0,12,2Z"/><path d="M22,30H20V25a5,5,0,0,0-5-5H9a5,5,0,0,0-5,5v5H2V25a7,7,0,0,1,7-7h6a7,7,0,0,1,7,7Z"/><path d="M25 16.18 22.41 13.59 21 15 25 19 32 12 30.59 10.59 25 16.18z"/></g></g><text x="296" y="826.7" class="label">Operator</text></g>
-<g id="n-2" class="fl-node" data-id="vpn"><g class="fl-halo a7" fill="none" opacity="0"><rect x="256" y="903" width="80" height="80" rx="10" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="256" y="903" width="80" height="80" rx="10" fill="var(--color-node)" class="fl-stroke a6"/><rect x="280" y="915" width="32" height="32" rx="9.6" class="icon-tile"/><g class="fl-icon in-tile" transform="translate(286.1 921.1) scale(0.62)"><g fill="currentColor"><path d="M20,14.2783V12a4,4,0,0,0-8,0v2.2783A1.9929,1.9929,0,0,0,11,16v5a2.0023,2.0023,0,0,0,2,2h6a2.0023,2.0023,0,0,0,2-2V16A1.9929,1.9929,0,0,0,20,14.2783ZM16,10a2.0023,2.0023,0,0,1,2,2v2H14V12A2.0023,2.0023,0,0,1,16,10Zm3,11H13V16h6Z"/><path d="M30.4141,17.4141a1.9995,1.9995,0,0,0,0-2.8282L24.6272,8.7993l2.9006-2.8628a2.0018,2.0018,0,1,0-1.4416-1.3872L23.2129,7.3848,17.4141,1.5859a1.9995,1.9995,0,0,0-2.8282,0L8.7993,7.3726,5.9368,4.4717A2.002,2.002,0,1,0,4.55,5.9136l2.835,2.8735L1.5859,14.5859a1.9995,1.9995,0,0,0,0,2.8282l5.7989,5.7988L4.55,26.0864a1.9977,1.9977,0,1,0,1.387,1.4419l2.8625-2.9009,5.7866,5.7867a1.9995,1.9995,0,0,0,2.8282,0l5.7988-5.7989,2.8733,2.8355a1.998,1.998,0,1,0,1.4416-1.3872l-2.9006-2.8628ZM16,29,3,16,16,3,29,16Z"/></g></g><text x="296" y="966.7" class="label">VPN</text></g>
-<g id="n-3" class="fl-node" data-id="dns"><g class="fl-halo a3" fill="none" opacity="0"><rect x="256" y="307" width="80" height="80" rx="10" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="256" y="307" width="80" height="80" rx="10" fill="var(--color-node)" class="fl-stroke a2"/><rect x="280" y="319" width="32" height="32" rx="9.6" class="icon-tile"/><g class="fl-icon in-tile" transform="translate(286.1 325.1) scale(0.62)"><g fill="currentColor"><path d="M20 20H30V22H20z"/><path d="M20 24H26V26H20z"/><path d="M30,17V16A13.9871,13.9871,0,1,0,19.23,29.625l-.46-1.9463A12.0419,12.0419,0,0,1,16,28c-.19,0-.375-.0186-.563-.0273A20.3044,20.3044,0,0,1,12.0259,17Zm-2.0415-2H21.9751A24.2838,24.2838,0,0,0,19.2014,4.4414,12.0228,12.0228,0,0,1,27.9585,15ZM16.563,4.0273A20.3044,20.3044,0,0,1,19.9741,15H12.0259A20.3044,20.3044,0,0,1,15.437,4.0273C15.625,4.0186,15.81,4,16,4S16.375,4.0186,16.563,4.0273Zm-3.7644.4141A24.2838,24.2838,0,0,0,10.0249,15H4.0415A12.0228,12.0228,0,0,1,12.7986,4.4414Zm0,23.1172A12.0228,12.0228,0,0,1,4.0415,17h5.9834A24.2838,24.2838,0,0,0,12.7986,27.5586Z"/></g></g><text x="296" y="370.7" class="label">DNS</text></g>
-<g id="n-4" class="fl-node" data-id="cdn"><g class="fl-halo a9" fill="none" opacity="0"><rect x="256" y="447" width="80" height="80" rx="10" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="256" y="447" width="80" height="80" rx="10" fill="var(--color-node)" class="fl-stroke a8"/><rect x="280" y="459" width="32" height="32" rx="9.6" class="icon-tile"/><g class="fl-icon in-tile" transform="translate(286.1 465.1) scale(0.62)"><g fill="currentColor"><circle cx="21" cy="21" r="2"/><circle cx="7" cy="7" r="2"/><path d="M27,31a4,4,0,1,1,4-4A4.0118,4.0118,0,0,1,27,31Zm0-6a2,2,0,1,0,2,2A2.0059,2.0059,0,0,0,27,25Z"/><path d="M30,16A14.0412,14.0412,0,0,0,16,2,13.0426,13.0426,0,0,0,9.2,3.8l1.1,1.7a24.4254,24.4254,0,0,1,2.4-1A25.1349,25.1349,0,0,0,10,15H4a11.1489,11.1489,0,0,1,1.4-4.7L3.9,9A13.8418,13.8418,0,0,0,2,16,13.9983,13.9983,0,0,0,16,30a13.3656,13.3656,0,0,0,5.2-1l-.6-1.9a11.4416,11.4416,0,0,1-5.2.9h0A21.0713,21.0713,0,0,1,12,17H29.9A3.4019,3.4019,0,0,0,30,16ZM12.8,27.6h0a13.02,13.02,0,0,1-5.3-3.1A12.5053,12.5053,0,0,1,4,17h6A25.0022,25.0022,0,0,0,12.8,27.6ZM12,15A21.4461,21.4461,0,0,1,15.3,4h1.4A21.4461,21.4461,0,0,1,20,15Zm10,0A23.2777,23.2777,0,0,0,19.2,4.4,12.0919,12.0919,0,0,1,27.9,15Z"/></g></g><text x="296" y="510.7" class="label">CDN</text></g>
-<g id="n-5" class="fl-node" data-id="storage"><g class="fl-halo a11" fill="none" opacity="0"><rect x="256" y="587" width="80" height="80" rx="10" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="256" y="587" width="80" height="80" rx="10" fill="var(--color-node)" class="fl-stroke a10"/><rect x="280" y="599" width="32" height="32" rx="9.6" class="icon-tile"/><g class="fl-icon in-tile" transform="translate(286.1 605.1) scale(0.62)"><g fill="currentColor"><path d="M28,20H26v2h2v6H4V22H14V20H4a2.0023,2.0023,0,0,0-2,2v6a2.0023,2.0023,0,0,0,2,2H28a2.0023,2.0023,0,0,0,2-2V22A2.0023,2.0023,0,0,0,28,20Z"/><circle cx="7" cy="25" r="1"/><path d="M30,8H22v6H16v8h8V16h6ZM22,20H18V16h4Zm6-6H24V10h4Z"/><path d="M18,10H10V2h8ZM12,8h4V4H12Z"/></g></g><text x="296" y="650.7" class="label">Storage</text></g>
-<g id="n-6" class="fl-node" data-id="lb"><g class="fl-halo a13" fill="none" opacity="0"><rect x="508" y="587" width="80" height="80" rx="10" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="508" y="587" width="80" height="80" rx="10" fill="var(--color-node)" class="fl-stroke a12"/><rect x="532" y="599" width="32" height="32" rx="9.6" class="icon-tile"/><g class="fl-icon in-tile" transform="translate(538.1 605.1) scale(0.62)"><g fill="currentColor"><path d="M25,16H17V12H15v4H7a2.0023,2.0023,0,0,0-2,2v4H7V18h8v4h2V18h8v4h2V18A2.0023,2.0023,0,0,0,25,16Z"/><path d="M20,10V2H12v8h8ZM14,8V4h4V8Z"/><path d="M26,24a2.9948,2.9948,0,0,0-2.8157,2H18.8157a2.982,2.982,0,0,0-5.6314,0H8.8157a3,3,0,1,0,0,2h4.3686a2.982,2.982,0,0,0,5.6314,0h4.3686A2.9947,2.9947,0,1,0,26,24ZM6,28a1,1,0,1,1,1-1A1.0009,1.0009,0,0,1,6,28Zm10,0a1,1,0,1,1,1-1A1.0009,1.0009,0,0,1,16,28Zm10,0a1,1,0,1,1,1-1A1.0009,1.0009,0,0,1,26,28Z"/></g></g><text x="548" y="650.7" class="label">Balancer</text></g>
-<g id="n-7" class="fl-node" data-id="bastion"><g class="fl-halo a15" fill="none" opacity="0"><rect x="508" y="687" width="80" height="80" rx="10" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="508" y="687" width="80" height="80" rx="10" fill="var(--color-node)" class="fl-stroke a14"/><rect x="532" y="699" width="32" height="32" rx="9.6" class="icon-tile"/><g class="fl-icon in-tile" transform="translate(538.1 705.1) scale(0.62)"><g fill="currentColor"><path d="M27.5273,2.709A1.9955,1.9955,0,0,0,26,2H23.3091a1.5,1.5,0,0,0-1.3419.8294L21.3818,4H20V3.5A1.5,1.5,0,0,0,18.5,2h-5A1.5,1.5,0,0,0,12,3.5V4H10.6182l-.585-1.17A1.5017,1.5017,0,0,0,8.69,2H6A2,2,0,0,0,4.0283,4.333L4.7324,8.5A3,3,0,0,0,7.69,11H8V23a3.0033,3.0033,0,0,0-3,3v4H27V26a3.0033,3.0033,0,0,0-3-3V11h.31a3,3,0,0,0,2.9579-2.5l.7041-4.167A1.994,1.994,0,0,0,27.5273,2.709ZM25,26v2H7V26a1.0009,1.0009,0,0,1,1-1H24A1.0009,1.0009,0,0,1,25,26Zm-3-3H10V11H22ZM25.2959,8.167A.9976.9976,0,0,1,24.31,9H7.69a.9976.9976,0,0,1-.9863-.8335L6,4H8.3818l1,2H14V4h4V6h4.6172l1.001-2H26Z"/></g></g><text x="548" y="750.7" class="label">Bastion</text></g>
-<g id="n-8" class="fl-node" data-id="web"><g class="fl-halo a17" fill="none" opacity="0"><rect x="697.5" y="583" width="80.5" height="80" rx="10" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="705.5" y="591" width="80.5" height="80" rx="10" fill="var(--color-node)" class="fl-stroke a16"/><rect x="701.5" y="587" width="80.5" height="80" rx="10" fill="var(--color-node)" class="fl-stroke a16"/><rect x="697.5" y="583" width="80.5" height="80" rx="10" fill="var(--color-node)" class="fl-stroke a16"/><rect x="705.5" y="595" width="32" height="32" rx="9.6" class="icon-tile"/><g class="fl-icon in-tile" transform="translate(711.6 601.1) scale(0.62)"><g fill="currentColor"><circle cx="9" cy="6" r="1"/><path d="M26,10H6A2.0021,2.0021,0,0,1,4,8V4A2.0021,2.0021,0,0,1,6,2H26a2.0021,2.0021,0,0,1,2,2V8A2.0021,2.0021,0,0,1,26,10ZM6,4V8H26V4Z"/><circle cx="9" cy="16" r="1"/><path d="M26,20H6a2.0021,2.0021,0,0,1-2-2V14a2.0021,2.0021,0,0,1,2-2H26a2.0021,2.0021,0,0,1,2,2v4A2.0021,2.0021,0,0,1,26,20ZM6,14v4H26V14Z"/><circle cx="9" cy="26" r="1"/><path d="M26,30H6a2.0021,2.0021,0,0,1-2-2V24a2.0021,2.0021,0,0,1,2-2H26a2.0021,2.0021,0,0,1,2,2v4A2.0021,2.0021,0,0,1,26,30ZM6,24v4H26V24Z"/></g></g><g class="fl-badge"><rect x="741.5" y="602" width="28.3" height="18" rx="9" class="badge-pill"/><text x="755.7" y="615" class="badge">(3)</text></g><text x="737.7" y="646.7" class="label">Web server</text></g>
-<g id="n-9" class="fl-node" data-id="app"><g class="fl-halo a19" fill="none" opacity="0"><rect x="893.9" y="674" width="80" height="80" rx="10" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="893.9" y="674" width="80" height="80" rx="10" fill="var(--color-node)" class="fl-stroke a18"/><rect x="917.9" y="686" width="32" height="32" rx="9.6" class="icon-tile"/><g class="fl-icon in-tile" transform="translate(924 692.1) scale(0.62)"><g fill="currentColor"><circle cx="9" cy="6" r="1"/><path d="M26,10H6A2.0021,2.0021,0,0,1,4,8V4A2.0021,2.0021,0,0,1,6,2H26a2.0021,2.0021,0,0,1,2,2V8A2.0021,2.0021,0,0,1,26,10ZM6,4V8H26V4Z"/><circle cx="9" cy="16" r="1"/><path d="M26,20H6a2.0021,2.0021,0,0,1-2-2V14a2.0021,2.0021,0,0,1,2-2H26a2.0021,2.0021,0,0,1,2,2v4A2.0021,2.0021,0,0,1,26,20ZM6,14v4H26V14Z"/><circle cx="9" cy="26" r="1"/><path d="M26,30H6a2.0021,2.0021,0,0,1-2-2V24a2.0021,2.0021,0,0,1,2-2H26a2.0021,2.0021,0,0,1,2,2v4A2.0021,2.0021,0,0,1,26,30ZM6,24v4H26V24Z"/></g></g><text x="933.9" y="737.7" class="label">App server</text></g>
-<g id="n-10" class="fl-node" data-id="db"><g class="fl-halo a21" fill="none" opacity="0"><path d="M1035.9 160 a 50 12 0 0 1 100 0 v 78 a 50 12 0 0 1 -100 0 z" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><path d="M1035.9 160 a 50 12 0 0 1 100 0 v 78 a 50 12 0 0 1 -100 0 z" fill="var(--color-node)" class="fl-stroke a20"/><path d="M1035.9 160 a 50 12 0 0 0 100 0" fill="none" class="fl-stroke a20"/><rect x="1058.4" y="184" width="20" height="20" rx="6" class="icon-tile"/><g class="fl-icon in-tile" transform="translate(1062.2 187.8) scale(0.3875)"><g fill="currentColor"><path d="M24,3H8A2,2,0,0,0,6,5V27a2,2,0,0,0,2,2H24a2,2,0,0,0,2-2V5A2,2,0,0,0,24,3Zm0,2v6H8V5ZM8,19V13H24v6Zm0,8V21H24v6Z"/><circle cx="11" cy="8" r="1"/><circle cx="11" cy="16" r="1"/><circle cx="11" cy="24" r="1"/></g></g><g class="fl-badge"><rect x="1082.4" y="185" width="30.9" height="18" rx="9" class="badge-pill"/><text x="1097.9" y="198" class="badge">RW</text></g><text x="1085.9" y="221.7" class="label">DB primary</text></g>
-<g id="n-11" class="fl-node" data-id="dbro"><g class="fl-halo a23" fill="none" opacity="0"><path d="M1035.9 294 a 50 12 0 0 1 100 0 v 78 a 50 12 0 0 1 -100 0 z" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><path d="M1035.9 294 a 50 12 0 0 1 100 0 v 78 a 50 12 0 0 1 -100 0 z" fill="var(--color-node)" class="fl-stroke a22"/><path d="M1035.9 294 a 50 12 0 0 0 100 0" fill="none" class="fl-stroke a22"/><rect x="1059.7" y="318" width="20" height="20" rx="6" class="icon-tile"/><g class="fl-icon in-tile" transform="translate(1063.5 321.8) scale(0.3875)"><g fill="currentColor"><path d="M24,3H8A2,2,0,0,0,6,5V27a2,2,0,0,0,2,2H24a2,2,0,0,0,2-2V5A2,2,0,0,0,24,3Zm0,2v6H8V5ZM8,19V13H24v6Zm0,8V21H24v6Z"/><circle cx="11" cy="8" r="1"/><circle cx="11" cy="16" r="1"/><circle cx="11" cy="24" r="1"/></g></g><g class="fl-badge"><rect x="1083.7" y="319" width="28.4" height="18" rx="9" class="badge-pill"/><text x="1097.9" y="332" class="badge">RO</text></g><text x="1085.9" y="355.7" class="label">DB replica</text></g>
-<g id="n-12" class="fl-node" data-id="cache"><g class="fl-halo a25" fill="none" opacity="0"><path d="M1035.9 428 a 50 12 0 0 1 100 0 v 78 a 50 12 0 0 1 -100 0 z" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><path d="M1035.9 428 a 50 12 0 0 1 100 0 v 78 a 50 12 0 0 1 -100 0 z" fill="var(--color-node)" class="fl-stroke a24"/><path d="M1035.9 428 a 50 12 0 0 0 100 0" fill="none" class="fl-stroke a24"/><rect x="1058.4" y="452" width="20" height="20" rx="6" class="icon-tile"/><g class="fl-icon in-tile" transform="translate(1062.2 455.8) scale(0.3875)"><g fill="currentColor"><path d="M11.61,29.92a1,1,0,0,1-.6-1.07L12.83,17H8a1,1,0,0,1-1-1.23l3-13A1,1,0,0,1,11,2H21a1,1,0,0,1,.78.37,1,1,0,0,1,.2.85L20.25,11H25a1,1,0,0,1,.9.56,1,1,0,0,1-.11,1l-13,17A1,1,0,0,1,12,30,1.09,1.09,0,0,1,11.61,29.92ZM17.75,13l2-9H11.8L9.26,15h5.91L13.58,25.28,23,13Z"/></g></g><g class="fl-badge"><rect x="1082.4" y="453" width="30.9" height="18" rx="9" class="badge-pill"/><text x="1097.9" y="466" class="badge">RW</text></g><text x="1085.9" y="489.7" class="label">Cache</text></g>
-<g id="n-13" class="fl-node" data-id="cachero"><g class="fl-halo a11" fill="none" opacity="0"><path d="M1035.9 562 a 50 12 0 0 1 100 0 v 78 a 50 12 0 0 1 -100 0 z" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><path d="M1035.9 562 a 50 12 0 0 1 100 0 v 78 a 50 12 0 0 1 -100 0 z" fill="var(--color-node)" class="fl-stroke a10"/><path d="M1035.9 562 a 50 12 0 0 0 100 0" fill="none" class="fl-stroke a10"/><rect x="1059.7" y="586" width="20" height="20" rx="6" class="icon-tile"/><g class="fl-icon in-tile" transform="translate(1063.5 589.8) scale(0.3875)"><g fill="currentColor"><path d="M11.61,29.92a1,1,0,0,1-.6-1.07L12.83,17H8a1,1,0,0,1-1-1.23l3-13A1,1,0,0,1,11,2H21a1,1,0,0,1,.78.37,1,1,0,0,1,.2.85L20.25,11H25a1,1,0,0,1,.9.56,1,1,0,0,1-.11,1l-13,17A1,1,0,0,1,12,30,1.09,1.09,0,0,1,11.61,29.92ZM17.75,13l2-9H11.8L9.26,15h5.91L13.58,25.28,23,13Z"/></g></g><g class="fl-badge"><rect x="1083.7" y="587" width="28.4" height="18" rx="9" class="badge-pill"/><text x="1097.9" y="600" class="badge">RO</text></g><text x="1085.9" y="623.7" class="label">Cache RO</text></g>
-<g id="n-14" class="fl-node" data-id="mq"><g class="fl-halo a25" fill="none" opacity="0"><rect x="1035.9" y="684" width="80" height="80" rx="10" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="1035.9" y="684" width="80" height="80" rx="10" fill="var(--color-node)" class="fl-stroke a24"/><rect x="1059.9" y="696" width="32" height="32" rx="9.6" class="icon-tile"/><g class="fl-icon in-tile" transform="translate(1066 702.1) scale(0.62)"><g fill="currentColor"><path d="M28,28H4a2.0021,2.0021,0,0,1-2-2V21H4v5H28V21h2v5A2.0021,2.0021,0,0,1,28,28Z"/><path d="M7 21H25V23H7z"/><path d="M7 16H25V18H7z"/><path d="M7 11H25V13H7z"/><path d="M7 6H25V8H7z"/></g></g><text x="1075.9" y="747.7" class="label">Queue</text></g>
-<g id="n-15" class="fl-node" data-id="monitor"><g class="fl-halo a11" fill="none" opacity="0"><rect x="1307.9" y="691" width="80" height="80" rx="10" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="1307.9" y="691" width="80" height="80" rx="10" fill="var(--color-node)" class="fl-stroke a10"/><rect x="1331.9" y="703" width="32" height="32" rx="9.6" class="icon-tile"/><g class="fl-icon in-tile" transform="translate(1338 709.1) scale(0.62)"><g fill="currentColor"><path d="M28,16v6H4V6h7V4H4A2,2,0,0,0,2,6V22a2,2,0,0,0,2,2h8v4H8v2H24V28H20V24h8a2,2,0,0,0,2-2V16ZM18,28H14V24h4Z"/><path d="M18,18h-.01a1,1,0,0,1-.9511-.7253L15.2456,11H11V9h5a1,1,0,0,1,.9615.7252l1.0742,3.7589,3.0088-9.7783A1.0142,1.0142,0,0,1,22,3a.98.98,0,0,1,.9487.6838L24.7207,9H30v2H24a1,1,0,0,1-.9487-.6838l-1.0132-3.04L18.9556,17.2942A1,1,0,0,1,18,18Z"/></g></g><text x="1347.9" y="754.7" class="label">Monitoring</text></g>
-<g id="n-16" class="fl-node" data-id="logs"><g class="fl-halo a11" fill="none" opacity="0"><rect x="1307.9" y="851" width="80" height="80" rx="10" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="1307.9" y="851" width="80" height="80" rx="10" fill="var(--color-node)" class="fl-stroke a10"/><rect x="1331.9" y="863" width="32" height="32" rx="9.6" class="icon-tile"/><g class="fl-icon in-tile" transform="translate(1338 869.1) scale(0.62)"><g fill="currentColor"><path d="M28,16v6H4V6H15V4H4A2,2,0,0,0,2,6V22a2,2,0,0,0,2,2h8v4H8v2H24V28H20V24h8a2,2,0,0,0,2-2V16ZM18,28H14V24h4Z"/><path d="M18 4H30V6H18z"/><path d="M18 8H30V10H18z"/><path d="M18 12H24V14H18z"/></g></g><text x="1347.9" y="914.7" class="label">Log search</text></g>
+<g id="g-0" class="fl-group tabbed" data-id="users"><rect x="28" y="167" width="128" height="144" rx="18" class="frame-box fl-stroke dashed a0" stroke-dasharray="5 4"/><g class="fl-symbol fl-symbol-person"><g class="fl-symbol-glyph" transform="translate(36 171) scale(0.83333)"><circle class="symbol-solid" cx="12" cy="7" r="4"/><path class="symbol-solid" d="M4 21v-3a8 6 0 0 1 16 0v3Z"/></g></g><text x="74" y="185" class="frame">Users</text></g>
+<g id="g-1" class="fl-group tabbed" data-id="admins"><rect x="232" y="723" width="144" height="344" rx="18" class="frame-box fl-stroke dashed a0" stroke-dasharray="5 4"/><g class="fl-symbol fl-symbol-access"><g class="fl-symbol-glyph" transform="translate(240 727) scale(0.83333)"><circle class="symbol-solid" cx="12" cy="7" r="4"/><path class="symbol-solid" d="M4 21v-3a8 6 0 0 1 16 0v3Z"/><path class="symbol-cut" d="m8 17 3 3 5-5"/></g></g><text x="278" y="741" class="frame">Admins</text></g>
+<g id="g-2" class="fl-group tabbed" data-id="net"><rect x="216" y="207" width="160" height="484" rx="18" class="frame-box fl-stroke dashed a0" stroke-dasharray="5 4"/><g class="fl-symbol fl-symbol-service"><g class="fl-symbol-glyph" transform="translate(224 211) scale(0.83333)"><circle class="symbol-face" cx="12" cy="12" r="9"/><ellipse cx="12" cy="12" rx="4" ry="9"/><path d="M3 12h18M5 6h14M5 18h14"/></g></g><text x="262" y="225" class="frame">Internet</text></g>
+<g id="g-3" class="fl-group tabbed" data-id="cloud"><rect x="436" y="28" width="771.9" height="836" rx="18" class="frame-box fl-stroke a1"/><g class="fl-symbol fl-symbol-service"><g class="fl-symbol-glyph" transform="translate(444 32) scale(0.83333)"><path class="symbol-face" d="M7 19a5 5 0 0 1-1-10 6 6 0 0 1 11-2 6 6 0 0 1 1 12Z"/></g></g><text x="482" y="46" class="frame">Cloud</text></g>
+<g id="g-4" class="fl-group tabbed" data-id="vpc"><rect x="460" y="68" width="723.9" height="772" rx="18" class="frame-box fl-stroke d2 dashed a0" stroke-dasharray="5 4"/><g class="fl-symbol fl-symbol-service"><g class="fl-symbol-glyph" transform="translate(468 72) scale(0.83333)"><path class="symbol-face" d="M7 19a5 5 0 0 1-1-10 6 6 0 0 1 11-2 6 6 0 0 1 1 12Z"/><path d="m8 13 3 3 5-6"/></g></g><text x="506" y="86" class="frame">VPC</text></g>
+<g id="g-5" class="fl-group tabbed" data-id="pub"><rect x="484" y="547" width="129.5" height="244" rx="18" class="frame-box fl-stroke d3 a1"/><g class="fl-symbol fl-symbol-access"><g class="fl-symbol-glyph" transform="translate(492 551) scale(0.83333)"><path d="M7 10V7a5 5 0 0 1 10 0v3"/><rect class="symbol-solid" x="4" y="10" width="16" height="12" rx="3"/><path class="symbol-cut" d="M12 14v4"/></g></g><text x="530" y="565" class="frame">Public subnet</text></g>
+<g id="g-6" class="fl-group tabbed" data-id="scaling"><rect x="673.5" y="543" width="136.5" height="152" rx="18" class="frame-box fl-stroke d3 dashed a0" stroke-dasharray="5 4"/><g class="fl-symbol fl-symbol-service"><g class="fl-symbol-glyph" transform="translate(681.5 547) scale(0.83333)"><rect class="symbol-face" x="2" y="12" width="10" height="10" rx="2"/><path d="M8 3h13v13M21 3 10 14"/></g></g><text x="719.5" y="561" class="frame">Scaling group</text></g>
+<g id="g-7" class="fl-group tabbed" data-id="priv"><rect x="869.9" y="108" width="290" height="708" rx="18" class="frame-box fl-stroke d3 a1"/><g class="fl-symbol fl-symbol-access"><g class="fl-symbol-glyph" transform="translate(877.9 112) scale(0.83333)"><path d="M7 10V7a5 5 0 0 1 10 0v3"/><rect class="symbol-solid" x="4" y="10" width="16" height="12" rx="3"/><path class="symbol-cut" d="M12 14v4"/></g></g><text x="915.9" y="126" class="frame">Private subnet</text></g>
+<g id="g-8" class="fl-group tabbed" data-id="ops"><rect x="1267.9" y="591" width="144" height="364" rx="18" class="frame-box fl-stroke dashed a0" stroke-dasharray="5 4"/><g class="fl-symbol fl-symbol-service"><g class="fl-symbol-glyph" transform="translate(1275.9 595) scale(0.83333)"><rect class="symbol-face" x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/><path d="m5 11 4-4 4 6 5-5"/></g></g><text x="1313.9" y="609" class="frame">Operations</text></g>
+<g id="n-0" class="fl-node fl-shape-box" data-id="client"><g class="fl-halo a3" fill="none" opacity="0"><rect x="52" y="207" width="80" height="80" rx="8" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="52" y="207" width="80" height="80" rx="8" fill="var(--color-node)" class="fl-stroke a2"/><g class="fl-symbol fl-symbol-service"><g class="fl-symbol-glyph" transform="translate(76 219) scale(1.33333)"><rect class="symbol-face" x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/></g></g><text x="92" y="270.7" class="label">Web user</text></g>
+<g id="n-1" class="fl-node fl-shape-box" data-id="admin"><g class="fl-halo a5" fill="none" opacity="0"><rect x="256" y="763" width="80" height="80" rx="8" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="256" y="763" width="80" height="80" rx="8" fill="var(--color-node)" class="fl-stroke a4"/><g class="fl-symbol fl-symbol-access"><g class="fl-symbol-glyph" transform="translate(280 775) scale(1.33333)"><circle class="symbol-solid" cx="12" cy="7" r="4"/><path class="symbol-solid" d="M4 21v-3a8 6 0 0 1 16 0v3Z"/><path class="symbol-cut" d="m8 17 3 3 5-5"/></g></g><text x="296" y="826.7" class="label">Operator</text></g>
+<g id="n-2" class="fl-node fl-shape-box" data-id="vpn"><g class="fl-halo a7" fill="none" opacity="0"><rect x="256" y="903" width="80" height="80" rx="8" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="256" y="903" width="80" height="80" rx="8" fill="var(--color-node)" class="fl-stroke a6"/><g class="fl-symbol fl-symbol-access"><g class="fl-symbol-glyph" transform="translate(280 915) scale(1.33333)"><path class="symbol-face" d="M12 2 21 6v6c0 5-5 8-9 10-4-2-9-5-9-10V6Z"/><path d="m8 12 3 3 5-6"/></g></g><text x="296" y="966.7" class="label">VPN</text></g>
+<g id="n-3" class="fl-node fl-shape-box" data-id="dns"><g class="fl-halo a3" fill="none" opacity="0"><rect x="256" y="307" width="80" height="80" rx="8" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="256" y="307" width="80" height="80" rx="8" fill="var(--color-node)" class="fl-stroke a2"/><g class="fl-symbol fl-symbol-service"><g class="fl-symbol-glyph" transform="translate(280 319) scale(1.33333)"><circle class="symbol-face" cx="12" cy="12" r="9"/><ellipse cx="12" cy="12" rx="4" ry="9"/><path d="M3 12h18M5 6h14M5 18h14"/></g></g><text x="296" y="370.7" class="label">DNS</text></g>
+<g id="n-4" class="fl-node fl-shape-box" data-id="cdn"><g class="fl-halo a9" fill="none" opacity="0"><rect x="256" y="447" width="80" height="80" rx="8" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="256" y="447" width="80" height="80" rx="8" fill="var(--color-node)" class="fl-stroke a8"/><g class="fl-symbol fl-symbol-service"><g class="fl-symbol-glyph" transform="translate(280 459) scale(1.33333)"><circle class="symbol-face" cx="12" cy="12" r="9"/><ellipse cx="12" cy="12" rx="4" ry="9"/><path d="M3 12h18M5 6h14M5 18h14"/></g></g><text x="296" y="510.7" class="label">CDN</text></g>
+<g id="n-5" class="fl-node fl-shape-box" data-id="storage"><g class="fl-halo a11" fill="none" opacity="0"><rect x="256" y="587" width="80" height="80" rx="8" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="256" y="587" width="80" height="80" rx="8" fill="var(--color-node)" class="fl-stroke a10"/><g class="fl-symbol fl-symbol-data"><g class="fl-symbol-glyph" transform="translate(280 599) scale(1.33333)"><path class="symbol-face" d="m3 7 9-5 9 5v11l-9 4-9-4Z"/><path d="m3 7 9 5 9-5M12 12v10M7 4l10 5v5"/></g></g><text x="296" y="650.7" class="label">Storage</text></g>
+<g id="n-6" class="fl-node fl-shape-box" data-id="lb"><g class="fl-halo a13" fill="none" opacity="0"><rect x="508" y="587" width="80" height="80" rx="8" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="508" y="587" width="80" height="80" rx="8" fill="var(--color-node)" class="fl-stroke a12"/><g class="fl-symbol fl-symbol-service"><g class="fl-symbol-glyph" transform="translate(532 599) scale(1.33333)"><rect class="symbol-face" x="8" y="2" width="8" height="6" rx="2"/><path d="M12 8v5M5 17v-4h14v4"/><rect class="symbol-solid" x="2" y="17" width="6" height="5" rx="1"/><rect class="symbol-solid" x="16" y="17" width="6" height="5" rx="1"/></g></g><text x="548" y="650.7" class="label">Balancer</text></g>
+<g id="n-7" class="fl-node fl-shape-box" data-id="bastion"><g class="fl-halo a15" fill="none" opacity="0"><rect x="508" y="687" width="80" height="80" rx="8" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="508" y="687" width="80" height="80" rx="8" fill="var(--color-node)" class="fl-stroke a14"/><g class="fl-symbol fl-symbol-access"><g class="fl-symbol-glyph" transform="translate(532 699) scale(1.33333)"><path class="symbol-face" d="M12 2 21 6v6c0 5-5 8-9 10-4-2-9-5-9-10V6Z"/><path d="M9 16V9h6v7Z"/></g></g><text x="548" y="750.7" class="label">Bastion</text></g>
+<g id="n-8" class="fl-node fl-shape-box" data-id="web"><g class="fl-halo a17" fill="none" opacity="0"><rect x="697.5" y="583" width="80.5" height="80" rx="8" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="705.5" y="591" width="80.5" height="80" rx="8" fill="var(--color-node)" class="fl-stroke a16"/><rect x="701.5" y="587" width="80.5" height="80" rx="8" fill="var(--color-node)" class="fl-stroke a16"/><rect x="697.5" y="583" width="80.5" height="80" rx="8" fill="var(--color-node)" class="fl-stroke a16"/><g class="fl-symbol fl-symbol-service"><g class="fl-symbol-glyph" transform="translate(705.5 595) scale(1.33333)"><rect class="symbol-face" x="4" y="3" width="16" height="18" rx="3"/><path d="M4 9h16M4 15h16"/><path class="symbol-solid" d="M7 6h2v1H7zM7 12h2v1H7zM7 18h2v1H7z"/></g></g><g class="fl-badge"><rect x="741.5" y="602" width="28.3" height="18" rx="9" class="badge-pill"/><text x="755.7" y="615" class="badge">(3)</text></g><text x="737.7" y="646.7" class="label">Web server</text></g>
+<g id="n-9" class="fl-node fl-shape-box" data-id="app"><g class="fl-halo a19" fill="none" opacity="0"><rect x="893.9" y="674" width="80" height="80" rx="8" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="893.9" y="674" width="80" height="80" rx="8" fill="var(--color-node)" class="fl-stroke a18"/><g class="fl-symbol fl-symbol-service"><g class="fl-symbol-glyph" transform="translate(917.9 686) scale(1.33333)"><rect class="symbol-face" x="4" y="3" width="16" height="18" rx="3"/><path d="M4 9h16M4 15h16"/><path class="symbol-solid" d="M7 6h2v1H7zM7 12h2v1H7zM7 18h2v1H7z"/></g></g><text x="933.9" y="737.7" class="label">App server</text></g>
+<g id="n-10" class="fl-node fl-shape-store" data-id="db"><g class="fl-halo a21" fill="none" opacity="0"><path d="M1035.9 160 a 50 12 0 0 1 100 0 v 78 a 50 12 0 0 1 -100 0 z" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><path d="M1035.9 160 a 50 12 0 0 1 100 0 v 78 a 50 12 0 0 1 -100 0 z" fill="var(--color-node)" class="fl-stroke a20"/><path d="M1035.9 160 a 50 12 0 0 0 100 0" fill="none" class="fl-stroke a20"/><g class="fl-symbol fl-symbol-data"><g class="fl-symbol-glyph" transform="translate(1058.4 184) scale(0.83333)"><path class="symbol-face" d="M4 6v12c0 4 16 4 16 0V6Z"/><ellipse class="symbol-face" cx="12" cy="6" rx="8" ry="3"/><path d="M4 12c0 4 16 4 16 0M4 17c0 4 16 4 16 0"/></g></g><g class="fl-badge"><rect x="1082.4" y="185" width="30.9" height="18" rx="9" class="badge-pill"/><text x="1097.9" y="198" class="badge">RW</text></g><text x="1085.9" y="221.7" class="label">DB primary</text></g>
+<g id="n-11" class="fl-node fl-shape-store" data-id="dbro"><g class="fl-halo a23" fill="none" opacity="0"><path d="M1035.9 294 a 50 12 0 0 1 100 0 v 78 a 50 12 0 0 1 -100 0 z" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><path d="M1035.9 294 a 50 12 0 0 1 100 0 v 78 a 50 12 0 0 1 -100 0 z" fill="var(--color-node)" class="fl-stroke a22"/><path d="M1035.9 294 a 50 12 0 0 0 100 0" fill="none" class="fl-stroke a22"/><g class="fl-symbol fl-symbol-data"><g class="fl-symbol-glyph" transform="translate(1059.7 318) scale(0.83333)"><path class="symbol-face" d="M4 6v12c0 4 16 4 16 0V6Z"/><ellipse class="symbol-face" cx="12" cy="6" rx="8" ry="3"/><path d="M4 12c0 4 16 4 16 0M4 17c0 4 16 4 16 0"/></g></g><g class="fl-badge"><rect x="1083.7" y="319" width="28.4" height="18" rx="9" class="badge-pill"/><text x="1097.9" y="332" class="badge">RO</text></g><text x="1085.9" y="355.7" class="label">DB replica</text></g>
+<g id="n-12" class="fl-node fl-shape-store" data-id="cache"><g class="fl-halo a25" fill="none" opacity="0"><path d="M1035.9 428 a 50 12 0 0 1 100 0 v 78 a 50 12 0 0 1 -100 0 z" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><path d="M1035.9 428 a 50 12 0 0 1 100 0 v 78 a 50 12 0 0 1 -100 0 z" fill="var(--color-node)" class="fl-stroke a24"/><path d="M1035.9 428 a 50 12 0 0 0 100 0" fill="none" class="fl-stroke a24"/><g class="fl-symbol fl-symbol-data"><g class="fl-symbol-glyph" transform="translate(1058.4 452) scale(0.83333)"><path class="symbol-solid" d="M14 2 4 14h7l-1 8 10-13h-7Z"/></g></g><g class="fl-badge"><rect x="1082.4" y="453" width="30.9" height="18" rx="9" class="badge-pill"/><text x="1097.9" y="466" class="badge">RW</text></g><text x="1085.9" y="489.7" class="label">Cache</text></g>
+<g id="n-13" class="fl-node fl-shape-store" data-id="cachero"><g class="fl-halo a11" fill="none" opacity="0"><path d="M1035.9 562 a 50 12 0 0 1 100 0 v 78 a 50 12 0 0 1 -100 0 z" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><path d="M1035.9 562 a 50 12 0 0 1 100 0 v 78 a 50 12 0 0 1 -100 0 z" fill="var(--color-node)" class="fl-stroke a10"/><path d="M1035.9 562 a 50 12 0 0 0 100 0" fill="none" class="fl-stroke a10"/><g class="fl-symbol fl-symbol-data"><g class="fl-symbol-glyph" transform="translate(1059.7 586) scale(0.83333)"><path class="symbol-solid" d="M14 2 4 14h7l-1 8 10-13h-7Z"/></g></g><g class="fl-badge"><rect x="1083.7" y="587" width="28.4" height="18" rx="9" class="badge-pill"/><text x="1097.9" y="600" class="badge">RO</text></g><text x="1085.9" y="623.7" class="label">Cache RO</text></g>
+<g id="n-14" class="fl-node fl-shape-box" data-id="mq"><g class="fl-halo a25" fill="none" opacity="0"><rect x="1035.9" y="684" width="80" height="80" rx="8" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="1035.9" y="684" width="80" height="80" rx="8" fill="var(--color-node)" class="fl-stroke a24"/><g class="fl-symbol fl-symbol-data"><g class="fl-symbol-glyph" transform="translate(1059.9 696) scale(1.33333)"><rect class="symbol-face" x="2" y="5" width="20" height="14" rx="3"/><path d="M8 5v14M15 5v14"/></g></g><text x="1075.9" y="747.7" class="label">Queue</text></g>
+<g id="n-15" class="fl-node fl-shape-box" data-id="monitor"><g class="fl-halo a11" fill="none" opacity="0"><rect x="1307.9" y="691" width="80" height="80" rx="8" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="1307.9" y="691" width="80" height="80" rx="8" fill="var(--color-node)" class="fl-stroke a10"/><g class="fl-symbol fl-symbol-service"><g class="fl-symbol-glyph" transform="translate(1331.9 703) scale(1.33333)"><rect class="symbol-face" x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/><path d="m5 11 4-4 4 6 5-5"/></g></g><text x="1347.9" y="754.7" class="label">Monitoring</text></g>
+<g id="n-16" class="fl-node fl-shape-box" data-id="logs"><g class="fl-halo a11" fill="none" opacity="0"><rect x="1307.9" y="851" width="80" height="80" rx="8" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="1307.9" y="851" width="80" height="80" rx="8" fill="var(--color-node)" class="fl-stroke a10"/><g class="fl-symbol fl-symbol-data"><g class="fl-symbol-glyph" transform="translate(1331.9 863) scale(1.33333)"><path class="symbol-face" d="M4 2h10l5 5v14H4Z"/><path d="M14 2v6h5M7 12h8M7 16h5"/></g></g><text x="1347.9" y="914.7" class="label">Log search</text></g>
 <g id="e-0" class="fl-edge"><path id="p-0" d="M 132 247 L 218 247 Q 240 247, 240 269 L 240 339 Q 240 347, 248 347 L 256 347" class="fl-path a26" marker-end="url(#fl-arrow)"/></g>
 <g id="e-1" class="fl-edge"><path id="p-1" d="M 296 387 L 296 447" class="fl-path a27" marker-end="url(#fl-arrow)"/></g>
 <g id="e-2" class="fl-edge"><path id="p-2" d="M 336 487 L 344 487 Q 352 487, 352 495 L 352 605 Q 352 627, 374 627 L 508 627" class="fl-path a28" marker-end="url(#fl-arrow)"/></g>

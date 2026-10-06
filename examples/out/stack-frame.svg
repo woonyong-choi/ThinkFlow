@@ -142,6 +142,16 @@
   --color-data-heat-ink-on: var(--color-gray-0);
   --color-data-grid: var(--color-gray-212);
   --color-accent: var(--color-blue-light-stroke);
+  --color-figure-icon-service-ink: var(--color-blue-light-ink);
+  --color-figure-icon-service-surface: var(--color-blue-light-heat-low);
+  --color-figure-icon-data-ink: var(--color-purple-light-ink);
+  --color-figure-icon-data-surface: var(--color-purple-light-tint-3);
+  --color-figure-icon-access-ink: var(--color-orange-light-ink);
+  --color-figure-icon-access-surface: var(--color-orange-light-fill);
+  --color-figure-icon-person-ink: var(--color-green-light-ink);
+  --color-figure-icon-person-surface: var(--color-green-light-fill);
+  --color-figure-icon-brand-ink: var(--color-gray-467);
+  --color-figure-icon-brand-surface: var(--color-gray-59);
   --font-sans: FigSans, Pretendard, ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Apple SD Gothic Neo', sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
   --size-text-9: 9px;
@@ -212,9 +222,13 @@
   --simple2-node-stroke: 1px;
   --simple2-heading-weight: 700;
   --simple2-progress-stroke: 2px;
+  --simple2-node-corner: 8px;
+  --simple2-separator: var(--primitive-simple2-plate-border);
+  --simple2-canvas-corner: 28px;
+  --simple2-canvas-fill: var(--primitive-simple2-canvas);
+  --simple2-symbol-stroke: 1.75px;
   --primitive-simple2-fg: #303336;
   --primitive-simple2-muted: #505b69;
-  --primitive-simple2-group-title: #505b69;
   --primitive-simple2-bg: #f2f5f7;
   --primitive-simple2-page: #ffffff;
   --primitive-simple2-node: #ffffff;
@@ -225,7 +239,9 @@
   --primitive-simple2-shadow: 0 2px 8px rgba(0,0,0,.10), 0 0 2px rgba(0,0,0,.10);
   --primitive-simple2-play-fill: #4f91fb;
   --primitive-simple2-play-ink: #ffffff;
-  --primitive-simple2-node-shadow: drop-shadow(0px 2px 2px rgba(0,0,0,.08));
+  --primitive-simple2-node-shadow: drop-shadow(0px 1px 1px rgba(0,0,0,.07));
+  --primitive-simple2-group-title: #505b69;
+  --primitive-simple2-canvas: #edeef2;
   --color-palette-amber-light-fill: var(--color-orange-light-fill);
   --color-palette-amber-light-stroke: var(--color-orange-light-stroke);
   --color-palette-amber-light-ink: var(--color-orange-light-ink);
@@ -493,9 +509,21 @@
     --color-data-heat-ink: var(--color-gray-0);
     --color-data-grid: var(--color-gray-776);
     --color-accent: var(--color-blue-dark-stroke);
+    --color-figure-icon-service-ink: var(--color-blue-dark-ink);
+    --color-figure-icon-service-surface: var(--color-blue-dark-fill);
+    --color-figure-icon-data-ink: var(--color-purple-dark-ink);
+    --color-figure-icon-data-surface: var(--color-purple-dark-fill);
+    --color-figure-icon-access-ink: var(--color-orange-dark-ink);
+    --color-figure-icon-access-surface: var(--color-orange-dark-fill);
+    --color-figure-icon-person-ink: var(--color-green-dark-ink);
+    --color-figure-icon-person-surface: var(--color-green-dark-fill);
+    --color-figure-icon-brand-ink: var(--color-gray-220);
+    --color-figure-icon-brand-surface: var(--color-gray-835);
     --simple2-play-fill: var(--color-blue-dark-stroke);
     --simple2-play-ink: var(--color-gray-933);
     --simple2-node-shadow: var(--primitive-simple2-node-shadow);
+    --simple2-separator: var(--color-gray-635);
+    --simple2-canvas-fill: var(--color-gray-910);
     --color-figure-icon: var(--color-blue-dark-stroke);
     --color-figure-icon-tile: var(--color-blue-dark-fill);
     --color-figure-queue-fill: var(--color-blue-dark-stroke);
@@ -590,9 +618,21 @@
   --color-data-heat-ink: var(--color-gray-0);
   --color-data-grid: var(--color-gray-776);
   --color-accent: var(--color-blue-dark-stroke);
+  --color-figure-icon-service-ink: var(--color-blue-dark-ink);
+  --color-figure-icon-service-surface: var(--color-blue-dark-fill);
+  --color-figure-icon-data-ink: var(--color-purple-dark-ink);
+  --color-figure-icon-data-surface: var(--color-purple-dark-fill);
+  --color-figure-icon-access-ink: var(--color-orange-dark-ink);
+  --color-figure-icon-access-surface: var(--color-orange-dark-fill);
+  --color-figure-icon-person-ink: var(--color-green-dark-ink);
+  --color-figure-icon-person-surface: var(--color-green-dark-fill);
+  --color-figure-icon-brand-ink: var(--color-gray-220);
+  --color-figure-icon-brand-surface: var(--color-gray-835);
   --simple2-play-fill: var(--color-blue-dark-stroke);
   --simple2-play-ink: var(--color-gray-933);
   --simple2-node-shadow: var(--primitive-simple2-node-shadow);
+  --simple2-separator: var(--color-gray-635);
+  --simple2-canvas-fill: var(--color-gray-910);
   --color-figure-icon: var(--color-blue-dark-stroke);
   --color-figure-icon-tile: var(--color-blue-dark-fill);
   --color-figure-queue-fill: var(--color-blue-dark-stroke);
@@ -816,7 +856,7 @@
 }
 
 .fl .col-line {
-  stroke: var(--color-outline);
+  stroke: var(--simple2-separator);
   stroke-width: var(--border-hair);
 }
 
@@ -865,12 +905,8 @@
   color: var(--color-figure-icon);
 }
 
-.fl .icon-tile {
-  fill: var(--color-figure-icon-tile);
-}
-
-.fl .fl-icon.in-tile {
-  color: var(--color-figure-icon);
+.fl .fl-symbol .fl-icon {
+  color: inherit;
 }
 
 /* 선 번호 원. 라벨 알약과 달리 켜져도 색이 바뀌지 않아 정지 그림과 같은 순서로 읽힌다. */
@@ -886,7 +922,11 @@
 }
 
 /* 표면에만 그림자를 두어 글자·아이콘·선의 가장자리는 선명하게 유지한다. */
-.fl :where(.fl-node) > .fl-stroke:not([fill="none"]) {
+.fl :where(.fl-node) > .fl-stroke {
+  stroke-width: var(--simple2-node-stroke);
+}
+
+.fl :where(.fl-shape-rect, .fl-shape-box, .fl-shape-tile, .fl-shape-external, .fl-shape-store, .fl-shape-table, .fl-shape-grid, .fl-shape-queue) > .fl-stroke:not([fill="none"]) {
   stroke-width: var(--simple2-node-stroke);
   filter: var(--simple2-node-shadow);
 }
@@ -896,6 +936,65 @@
   vector-effect: non-scaling-stroke;
   stroke-linecap: round;
   stroke-linejoin: round;
+}
+
+/* 조작 아이콘과 달리 의미 아이콘은 실루엣 안에 면과 세부 윤곽을 함께 가진다. */
+.fl .fl-symbol-glyph {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: var(--simple2-symbol-stroke);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.fl .symbol-solid {
+  fill: currentColor;
+  stroke: none;
+}
+
+.fl .symbol-cut {
+  fill: none;
+  stroke: var(--color-node);
+}
+
+.fl .fl-symbol-service {
+  color: var(--color-figure-icon-service-ink);
+}
+
+.fl .fl-symbol-service .symbol-face {
+  fill: var(--color-figure-icon-service-surface);
+}
+
+.fl .fl-symbol-data {
+  color: var(--color-figure-icon-data-ink);
+}
+
+.fl .fl-symbol-data .symbol-face {
+  fill: var(--color-figure-icon-data-surface);
+}
+
+.fl .fl-symbol-access {
+  color: var(--color-figure-icon-access-ink);
+}
+
+.fl .fl-symbol-access .symbol-face {
+  fill: var(--color-figure-icon-access-surface);
+}
+
+.fl .fl-symbol-person {
+  color: var(--color-figure-icon-person-ink);
+}
+
+.fl .fl-symbol-person .symbol-face {
+  fill: var(--color-figure-icon-person-surface);
+}
+
+.fl .fl-symbol-brand {
+  color: var(--color-figure-icon-brand-ink);
+}
+
+.fl .fl-symbol-brand .symbol-face {
+  fill: var(--color-figure-icon-brand-surface);
 }
 /* 움직이는 SVG에만 있는 단계 이름과 설명 줄 */
 .fl .steplabel {
@@ -945,10 +1044,10 @@
 .fl .a14 { animation: a14 11.435s infinite linear; }
 </style>
 <defs><marker id="fl-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-line)"/></marker><marker id="fl-arrow-on" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-state-active)"/></marker><marker id="fl-arrow-main" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-data-main)"/></marker></defs>
-<rect x="0.5" y="0.5" width="959" height="333" rx="10" fill="var(--color-bg)" stroke="var(--color-plate-border)" stroke-width="1"/>
+<rect x="0.5" y="0.5" width="959" height="333" rx="28" fill="var(--simple2-canvas-fill)"/>
 <g transform="translate(245.9 0)">
-<g id="n-0" class="fl-node" data-id="caller"><g class="fl-halo a1" fill="none" opacity="0"><rect x="28" y="100.5" width="104.5" height="57" rx="10" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="28" y="100.5" width="104.5" height="57" rx="10" fill="var(--color-node)" class="fl-stroke a0"/><text x="80.2" y="126.2" class="label">호출하는 코드</text><text x="80.2" y="142" class="sub">foo(n)</text></g>
-<g id="n-1" class="fl-node" data-id="stack"><g class="fl-halo a1" fill="none" opacity="0"><rect x="299.3" y="28" width="141" height="202" rx="10" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="299.3" y="28" width="141" height="202" rx="10" fill="var(--color-node)" class="fl-stroke a0"/><text x="369.8" y="47.7" class="label">스택 (위가 낮은 주소)</text><g class="fl-part" data-part="stack.local"><rect x="311.3" y="58" width="117" height="32" class="grid-cell a2"/><text x="369.8" y="78.7" class="item">지역 변수 buf</text></g><g class="fl-part" data-part="stack.saved"><rect x="311.3" y="90" width="117" height="32" class="grid-cell a3"/><text x="369.8" y="110.7" class="item">저장된 rbp</text></g><g class="fl-part" data-part="stack.ret"><rect x="311.3" y="122" width="117" height="32" class="grid-cell a4"/><text x="369.8" y="142.7" class="item">반환 주소</text></g><g class="fl-part" data-part="stack.arg"><rect x="311.3" y="154" width="117" height="32" class="grid-cell a5"/><text x="369.8" y="174.7" class="item">인자 n</text></g><g><rect x="311.3" y="186" width="117" height="32" class="grid-cell gap"/><text x="369.8" y="206.7" class="item gap">이전 프레임 ×12</text></g><g class="fl-part" data-part="stack.local"><rect x="312.2" y="58.9" width="115.3" height="30.3" class="grid-ring a6"/></g><g class="fl-part" data-part="stack.saved"><rect x="312.2" y="90.9" width="115.3" height="30.3" class="grid-ring a7"/></g><g class="fl-part" data-part="stack.ret"><rect x="312.2" y="122.9" width="115.3" height="30.3" class="grid-ring a8"/></g><g class="fl-part" data-part="stack.arg"><rect x="312.2" y="154.9" width="115.3" height="30.3" class="grid-ring a9"/></g></g>
+<g id="n-0" class="fl-node fl-shape-box" data-id="caller"><g class="fl-halo a1" fill="none" opacity="0"><rect x="28" y="100.5" width="104.5" height="57" rx="8" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="28" y="100.5" width="104.5" height="57" rx="8" fill="var(--color-node)" class="fl-stroke a0"/><text x="80.2" y="126.2" class="label">호출하는 코드</text><text x="80.2" y="142" class="sub">foo(n)</text></g>
+<g id="n-1" class="fl-node fl-shape-grid" data-id="stack"><g class="fl-halo a1" fill="none" opacity="0"><rect x="299.3" y="28" width="141" height="202" rx="8" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="299.3" y="28" width="141" height="202" rx="8" fill="var(--color-node)" class="fl-stroke a0"/><text x="369.8" y="47.7" class="label">스택 (위가 낮은 주소)</text><g class="fl-part" data-part="stack.local"><rect x="311.3" y="58" width="117" height="32" class="grid-cell a2"/><text x="369.8" y="78.7" class="item">지역 변수 buf</text></g><g class="fl-part" data-part="stack.saved"><rect x="311.3" y="90" width="117" height="32" class="grid-cell a3"/><text x="369.8" y="110.7" class="item">저장된 rbp</text></g><g class="fl-part" data-part="stack.ret"><rect x="311.3" y="122" width="117" height="32" class="grid-cell a4"/><text x="369.8" y="142.7" class="item">반환 주소</text></g><g class="fl-part" data-part="stack.arg"><rect x="311.3" y="154" width="117" height="32" class="grid-cell a5"/><text x="369.8" y="174.7" class="item">인자 n</text></g><g><rect x="311.3" y="186" width="117" height="32" class="grid-cell gap"/><text x="369.8" y="206.7" class="item gap">이전 프레임 ×12</text></g><g class="fl-part" data-part="stack.local"><rect x="312.2" y="58.9" width="115.3" height="30.3" class="grid-ring a6"/></g><g class="fl-part" data-part="stack.saved"><rect x="312.2" y="90.9" width="115.3" height="30.3" class="grid-ring a7"/></g><g class="fl-part" data-part="stack.ret"><rect x="312.2" y="122.9" width="115.3" height="30.3" class="grid-ring a8"/></g><g class="fl-part" data-part="stack.arg"><rect x="312.2" y="154.9" width="115.3" height="30.3" class="grid-ring a9"/></g></g>
 <g id="e-0" class="fl-edge"><path id="p-0" d="M 132.5 129 L 299.3 129" class="fl-path a10" marker-end="url(#fl-arrow)"/></g>
 
 <g class="p0-0" opacity="0"><circle r="10" fill="var(--color-state-active)" opacity="0.2"/><circle r="4.5" fill="var(--color-state-active)"/><g><rect x="-43.7" y="-35" width="87.4" height="23" rx="8" fill="var(--color-state-active-fill)"/><text x="0" y="-20" class="chip">인자와 반환 주소</text><animateTransform attributeName="transform" type="translate" dur="11.435s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.00292;0.00583;0.00875;0.01166;0.01458;0.01749;0.02041;0.02332;0.02624;0.02915;0.03207;0.03498;0.0379;0.04081;0.04373;0.04664;0.04956;0.05247;0.05539;0.16033;0.16324;0.16616;0.16907;0.17199;0.1749;0.17782;0.18233;1" values="47.7 0;47.4 0;47.1 0;46.6 0;45.9 0;45.1 0;44.2 0;43.1 0;41.8 0;40.4 0;38.7 0;37 0;35 0;32.8 0;30.4 0;27.9 0;25.1 0;22.2 0;19 0;15.6 0;0.8 0;-0.3 0;-1.3 0;-2.2 0;-2.9 0;-3.5 0;-4 0;-4.5 0;-4.5 0"/></g><animate attributeName="opacity" dur="11.435s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.18233" values="1;0"/><animateMotion dur="11.435s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.18233;1" keySplines="0.455 0.03 0.515 0.955;0 0 1 1" keyPoints="0;1;1"><mpath href="#p-0" xlink:href="#p-0"/></animateMotion></g>

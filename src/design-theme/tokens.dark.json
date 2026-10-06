@@ -924,6 +924,46 @@
         "$type": "color",
         "$value": "{color.gray.910}",
         "$description": "큐의 빈 칸 면. 무채색이고 찬 칸(queue-fill)과 대비 3 이상. 외곽선은 color.outline(도형 면 위 대비 3)"
+      },
+      "icon-service-ink": {
+        "$type": "color",
+        "$value": "{color.blue.dark-ink}"
+      },
+      "icon-service-surface": {
+        "$type": "color",
+        "$value": "{color.blue.dark-fill}"
+      },
+      "icon-data-ink": {
+        "$type": "color",
+        "$value": "{color.purple.dark-ink}"
+      },
+      "icon-data-surface": {
+        "$type": "color",
+        "$value": "{color.purple.dark-fill}"
+      },
+      "icon-access-ink": {
+        "$type": "color",
+        "$value": "{color.orange.dark-ink}"
+      },
+      "icon-access-surface": {
+        "$type": "color",
+        "$value": "{color.orange.dark-fill}"
+      },
+      "icon-person-ink": {
+        "$type": "color",
+        "$value": "{color.green.dark-ink}"
+      },
+      "icon-person-surface": {
+        "$type": "color",
+        "$value": "{color.green.dark-fill}"
+      },
+      "icon-brand-ink": {
+        "$type": "color",
+        "$value": "{color.gray.220}"
+      },
+      "icon-brand-surface": {
+        "$type": "color",
+        "$value": "{color.gray.835}"
       }
     },
     "paint": {
@@ -1830,7 +1870,11 @@
       },
       "node-shadow": {
         "$type": "string",
-        "$value": "drop-shadow(0px 2px 2px rgba(0,0,0,.08))"
+        "$value": "drop-shadow(0px 1px 1px rgba(0,0,0,.07))"
+      },
+      "canvas": {
+        "$type": "color",
+        "$value": "#edeef2"
       }
     }
   },
@@ -4111,6 +4155,27 @@
     "progress-stroke": {
       "$type": "dimension",
       "$value": 2
+    },
+    "node-corner": {
+      "$type": "dimension",
+      "$value": 8
+    },
+    "separator": {
+      "$type": "color",
+      "$value": "{color.gray.635}",
+      "$description": "Decorative rules inside named data surfaces; outer shape outline retains semantic contrast."
+    },
+    "canvas-corner": {
+      "$type": "dimension",
+      "$value": 28
+    },
+    "canvas-fill": {
+      "$type": "color",
+      "$value": "{color.gray.910}"
+    },
+    "symbol-stroke": {
+      "$type": "dimension",
+      "$value": 1.75
     }
   }
 }

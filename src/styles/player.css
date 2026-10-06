@@ -7,13 +7,13 @@ body {
   font-family: var(--font-sans);
   letter-spacing: var(--tracking-text);
   color: var(--color-fg);
-  background: var(--color-bg);
+  background: var(--color-page);
 }
 
 /* 목록 쪽 카드 안은 틀이 카드 너비를 다 채워 양옆이 비치지 않게 하고, 바탕은 재생기 쪽과 같은 색으로 둔다. */
 html.embedded body {
   padding: 0;
-  background: var(--color-bg);
+  background: var(--color-page);
 }
 
 .fl-figure {
@@ -22,9 +22,8 @@ html.embedded body {
   margin: 0 auto;
   overflow: clip;
   color: var(--color-fg);
-  background: var(--color-bg);
-  border-radius: var(--radius-2xl);
-  box-shadow: var(--simple2-shadow);
+  background: var(--color-page);
+  border-radius: 0;
 }
 
 html.embedded .fl-figure {
@@ -36,7 +35,8 @@ html.embedded .fl-figure {
 /* 그림의 바탕은 SVG와 같고, 조작 줄은 카드의 흰 면으로 구분한다. */
 .fl-canvas {
   padding: var(--space-6) 0;
-  background: var(--color-bg);
+  background: var(--simple2-canvas-fill);
+  border-radius: var(--simple2-canvas-corner);
   overflow: auto;
 }
 
@@ -59,7 +59,7 @@ html.embedded .fl-figure {
   gap: var(--space-6);
   justify-items: center;
   padding: var(--simple2-page-gutter);
-  background: var(--color-node);
+  background: var(--color-page);
 }
 
 /* 양쪽 칸 너비가 같아(1fr) 배속 글자가 바뀌어도 탭 묶음이 설명과 같은 축에 있다. */

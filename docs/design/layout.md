@@ -140,7 +140,7 @@
   - 범용 개념(`server`, `lb`, `db`, `igw` …): IBM Carbon icons(Apache-2.0) 29개, `src/icons/carbon/`. 상표 로고(`logo--*`)와 쿠버네티스는 넣지 않는다.
   - 기술 브랜드(`git`, `postgresql`, `kubernetes` …): Simple Icons 16.33.0의 32개, `src/icons/simple-icons/`. 라이브러리는 CC0 1.0이지만 아이콘마다 라이선스가 따로 있을 수 있어, 공유 조건이 붙은 것(Rust, Jenkins)과 삭제됐거나 없는 것(Java, OpenAI, Apache HTTP Server), 공급자 서비스 아이콘(AWS, Azure, Google Cloud)은 넣지 않는다. 자기 라이선스가 있는 `git`(CC BY 3.0)과 `kafka`(Apache-2.0)는 `NOTICE`에 저작자를 적는다.
   - 파일은 루트 요소에 `fill="currentColor"`만 더했고 모양은 그대로다(`NOTICE`와 `LICENSE`에 "modified: color only"). 브랜드 고유색은 쓰지 않는다. 상표는 각 소유자의 것이고 이 저장소는 식별 목적으로만 표시한다(`NOTICE`).
-- 색은 `currentColor`가 정하고 그림은 `.fl-icon { color: color.figure.icon }`다(단색 브랜드 파랑, 라이트 `#1e66d8`, 다크 `#6ca4ff`). 파일 안 색은 없고 브랜드 고유색도 쓰지 않는다. 켜진 도형은 `state.active` 파랑이 테두리 색과 두께(`border.strong`)로 나타나고 아이콘은 그대로여서, 두 파랑은 색상과 두께로 갈린다([문서 연동](docs-integration.md) 색 역할 표).
+- 기본 개념 이름은 `src/icons/symbols.js`의 24 격자 면 아이콘으로 그린다. Carbon 원본은 이름 계약과 호환 자산으로 유지한다. 브랜드·사용자 아이콘 파일은 `currentColor`만 쓴다. 기본 세트의 서비스는 파랑, 데이터는 보라, 접근 제어는 주황, 사용자·알림은 초록의 의미 색과 옅은 면을 쓴다. 브랜드는 무채색으로 두어 진행·성공 상태로 오해하지 않게 한다. `color.figure.icon-{역할}-{ink,surface}`가 색을 정한다. 사용자 세트는 타일 없이 원래 모양을 보존한다. 조작 아이콘은 이 역할색을 사용하지 않는다.
 - 재생기 조작 아이콘(전체 화면 열기와 닫기, 확대, 축소, 맞춤, 재생, 일시정지)은 구성도 아이콘과 따로 Lucide(ISC, `src/icons/lucide/`)의 24 격자 외곽선 아이콘을 그대로 쓴다. Obsidian 기본 아이콘과 같은 묶음이라 사용자의 Obsidian 도구의 복사, 확대 아이콘과 한 모양으로 읽힌다. 대응은 `maximize-2`, `minimize-2`, `zoom-in`, `zoom-out`, `scan`, `play`, `pause`이고 색은 단추 글자색, 선 굵기는 `size.control.icon-stroke`(1.75), 끝은 둥글다.
 - 사용자 세트: `icons 이름 "폴더"`로 등록하고 `icon=이름:파일이름`으로 쓴다. 저장소에는 넣지 않는다(라이선스가 불명확한 세트를 사용자가 직접 쓰는 경우). 렌더 때 파일을 읽어 `g`, `path`, `circle`, `ellipse`, `rect`, `line`, `polyline`, `polygon`과 좌표, 변환, 칠하기 속성만 다시 쓰고(색은 모두 `currentColor`나 `none`) 나머지(script, image, style, use, 그라디언트 등)는 오류다. 64KB, 요소 600개 상한이다.
 
@@ -265,3 +265,9 @@
 
 - 그룹 안 도형이 그룹 바깥의 앞쪽 층이 아니라 뒤쪽 층 도형과 이어질 때(되돌아가는 선) 연결점 면 규칙으로 선이 도형을 돌아가는가. 예제로 측정해 면 규칙을 정한다.
 - 글꼴 조각을 넣은 SVG 크기가 문서 스킬의 그림 크기 기준 안에 드는가. 예제 그림으로 측정한다.
+
+### 표면 위계
+
+HTML은 흰 문서 면 위에 제목과 조작을 놓는다. 설명 그림 판만 `simple2.canvas-fill`과 28px 모서리를 가지며 바깥 그림자는 없다. SVG 판도 같은 면과 모서리를 쓴다. 내부 상자·큐·표·격자는 `simple2.node-corner` 8px와 얕은 `simple2.node-shadow`를 쓴다. 시작·끝·갈림길·사람·원은 의미 기호이므로 표면 그림자를 붙이지 않는다. 글자·선·점에도 그림자를 붙이지 않는다. 표 내부 구분선은 `simple2.separator`로 낮추고 의미를 구분하는 바깥 윤곽과 격자 경계는 기존 대비를 유지한다.
+
+도형의 글자는 내장 Pretendard로 측정하고 같은 파일의 부분 글꼴로 출력한다. Things 웹의 시스템 글꼴 자체를 재배포하지 않는다. 이름 13px medium, 보조 글 11px regular, 그룹 11px semibold의 위계를 유지하며 조작부는 15px다.

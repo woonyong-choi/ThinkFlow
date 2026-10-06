@@ -4,7 +4,8 @@ import { existsSync, readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { test } from 'node:test';
 import { buildFigure } from '../src/build.js';
-import { ICON_NAMES } from '../src/icons/index.js';
+import { ICON_NAMES, loadIcon } from '../src/icons/index.js';
+import { SYMBOLS } from '../src/icons/symbols.js';
 import { sanitizeIcon } from '../src/icons/sanitize.js';
 import { withFolder } from './helpers.js';
 
@@ -55,4 +56,25 @@ test('buildFigure_user_icon_set_loads_the_file_and_reports_a_missing_one_at_its_
     assert.ok(scene.items[0].decor.items.some((i) => i.kind === 'icon'));
     await assert.rejects(buildFigure(source('none'), { baseDir: folder }), (e) => e.problems[0].line === 3 && /the file does not exist/.test(e.problems[0].message));
   });
+});
+
+// 근거: #161. 기본 이름은 그대로 읽고 역할만 구분한다. 브랜드에 성공·실패색을 부여하지 않는다.
+test('loadIcon_separates_semantic_roles_without_changing_bundled_shapes', () => {
+  for (const [name, role] of Object.entries({ server: 'service', db: 'data', key: 'access', user: 'person', git: 'brand' })) {
+    const icon = loadIcon({ set: 'builtin', name }, [], '.');
+    assert.equal(icon.role, role);
+    const original = sanitizeIcon(readFileSync(new URL(`${ICON_NAMES[name]}.svg`, ICONS), 'utf8'));
+    assert.equal(icon.body, original.body);
+    assert.deepEqual(icon.viewBox, original.viewBox);
+  }
+});
+
+// 근거: #161. 범용 개념은 모두 면 아이콘이 있고 기술 브랜드는 원래 실루엣을 쓴다.
+test('symbols_cover_every_concept_name_without_replacing_brand_marks', () => {
+  const concepts = Object.entries(ICON_NAMES).filter(([, file]) => file.startsWith('carbon/')).map(([name]) => name);
+  assert.deepEqual(Object.keys(SYMBOLS).sort(), concepts.sort());
+  for (const body of Object.values(SYMBOLS)) {
+    assert.match(body, /symbol-face|symbol-solid/);
+    assert.doesNotMatch(body, /#[a-f0-9]{6}|<script|<image|href=/i);
+  }
 });

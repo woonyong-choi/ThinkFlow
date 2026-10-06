@@ -48,7 +48,7 @@ ${STYLES.tokens}${STYLES.figure}${STYLES.animated}${paintCss(result.scene)}${res
 ${animator.css.join('\n')}
 </style>
 <defs>${DEFS}</defs>
-<rect x="${values.border.thin / 2}" y="${values.border.thin / 2}" width="${r(width - values.border.thin)}" height="${r(height - values.border.thin)}" rx="${values.radius.xl}" fill="${tokens.color.bg}" stroke="${tokens.color['plate-border']}" stroke-width="${values.border.thin}"/>
+<rect x="${values.border.thin / 2}" y="${values.border.thin / 2}" width="${r(width - values.border.thin)}" height="${r(height - values.border.thin)}" rx="${values.simple2['canvas-corner']}" fill="${tokens.simple2['canvas-fill']}"/>
 <g transform="translate(${r((width - content.width) / 2)} 0)">
 ${content.svg}
 </g>
