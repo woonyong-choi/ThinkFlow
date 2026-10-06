@@ -56,25 +56,25 @@
   --color-gray-929: #121212;
   --color-gray-933: #111111;
   --color-gray-1000: #000000;
-  --color-blue-anchor: #125de6;
+  --color-blue-anchor: #1e66d8;
   --color-blue-light-fill: #edf4ff;
-  --color-blue-light-stroke: #125de6;
-  --color-blue-light-ink: #0151d9;
-  --color-blue-light-heat-low: #b7cdf5;
-  --color-blue-light-heat-high: #004dd2;
-  --color-blue-light-outline: #658dd5;
+  --color-blue-light-stroke: #1e66d8;
+  --color-blue-light-ink: #0a57c8;
+  --color-blue-light-heat-low: #b3cbf2;
+  --color-blue-light-heat-high: #0352c3;
+  --color-blue-light-outline: #678dcb;
   --color-blue-light-tint-1: #e5eefc;
   --color-blue-light-tint-2: #d7e2f4;
-  --color-blue-light-tint-3: #cad7ed;
-  --color-blue-dark-fill: #1c2a43;
-  --color-blue-dark-stroke: #70a3ff;
-  --color-blue-dark-ink: #78a9ff;
-  --color-blue-dark-heat-low: #293751;
-  --color-blue-dark-heat-high: #4474cc;
-  --color-blue-dark-outline: #6789c4;
+  --color-blue-light-tint-3: #c9d7ed;
+  --color-blue-dark-fill: #1b2a43;
+  --color-blue-dark-stroke: #6ca4ff;
+  --color-blue-dark-ink: #74a9ff;
+  --color-blue-dark-heat-low: #283851;
+  --color-blue-dark-heat-high: #4075cc;
+  --color-blue-dark-outline: #6489c3;
   --color-blue-dark-tint-1: #1a202b;
   --color-blue-dark-tint-2: #222a38;
-  --color-blue-dark-tint-3: #2a3446;
+  --color-blue-dark-tint-3: #2a3546;
   --color-purple-anchor: #b28fd1;
   --color-purple-light-fill: #f7f0ff;
   --color-purple-light-stroke: #8c6aaa;
@@ -123,21 +123,21 @@
   --color-orange-dark-stroke: #fa7a49;
   --color-orange-dark-ink: #ff875a;
   --color-orange-dark-outline: #c37356;
-  --color-fg: var(--color-gray-878);
-  --color-muted: var(--color-gray-635);
-  --color-group-title: var(--color-gray-651);
-  --color-bg: var(--color-gray-27);
+  --color-fg: var(--primitive-simple2-fg);
+  --color-muted: var(--primitive-simple2-muted);
+  --color-group-title: var(--primitive-simple2-group-title);
+  --color-bg: var(--primitive-simple2-bg);
   --color-group-1: var(--color-gray-71);
   --color-group-2: var(--color-gray-118);
   --color-group-3: var(--color-gray-161);
-  --color-node: var(--color-gray-0);
-  --color-surface: var(--color-gray-59);
-  --color-card: var(--color-gray-43);
+  --color-node: var(--primitive-simple2-node);
+  --color-surface: var(--primitive-simple2-surface);
+  --color-card: var(--primitive-simple2-card);
   --color-card-on: var(--color-blue-light-fill);
-  --color-page: var(--color-gray-0);
+  --color-page: var(--primitive-simple2-page);
   --color-outline: var(--color-gray-529);
-  --color-border: var(--color-gray-106);
-  --color-plate-border: var(--color-gray-145);
+  --color-border: var(--primitive-simple2-border);
+  --color-plate-border: var(--primitive-simple2-plate-border);
   --color-line: var(--color-gray-282);
   --color-state-active: var(--color-blue-light-stroke);
   --color-state-active-fill: var(--color-blue-light-ink);
@@ -164,7 +164,7 @@
   --color-data-heat-ink-on: var(--color-gray-0);
   --color-data-grid: var(--color-gray-212);
   --color-accent: var(--color-blue-light-stroke);
-  --font-sans: Pretendard, 'Pretendard Variable', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif;
+  --font-sans: ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Apple SD Gothic Neo', sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
   --size-text-9: 9px;
   --size-text-11: 11px;
@@ -200,7 +200,7 @@
   --radius-md: 6px;
   --radius-lg: 8px;
   --radius-xl: 10px;
-  --radius-2xl: 14px;
+  --radius-2xl: 12px;
   --radius-full: 999px;
   --border-hair: 0.75px;
   --border-thin: 1px;
@@ -210,6 +210,31 @@
   --duration-fast: 200ms;
   --easing-move: cubic-bezier(0.455, 0.03, 0.515, 0.955);
   --easing-reveal: cubic-bezier(0, 0, 0.58, 1);
+  --simple2-heading: 36px;
+  --simple2-subheading: 27px;
+  --simple2-body: 18px;
+  --simple2-control: 15px;
+  --simple2-caption: 13px;
+  --simple2-page-gutter: 24px;
+  --simple2-page-gap: 48px;
+  --simple2-page-width: 1180px;
+  --simple2-reading-width: 948px;
+  --simple2-control-gap: 8px;
+  --simple2-focus-width: 3px;
+  --simple2-leading: 1.6;
+  --simple2-title-leading: 1.2;
+  --simple2-shadow: var(--primitive-simple2-shadow);
+  --primitive-simple2-fg: #303336;
+  --primitive-simple2-muted: #505b69;
+  --primitive-simple2-group-title: #505b69;
+  --primitive-simple2-bg: #f2f5f7;
+  --primitive-simple2-page: #ffffff;
+  --primitive-simple2-node: #ffffff;
+  --primitive-simple2-card: #f6f7fa;
+  --primitive-simple2-surface: #edeef1;
+  --primitive-simple2-plate-border: #d1d7de;
+  --primitive-simple2-border: #838b96;
+  --primitive-simple2-shadow: 0 2px 8px rgba(0,0,0,.10), 0 0 2px rgba(0,0,0,.10);
   --color-palette-amber-light-fill: var(--color-orange-light-fill);
   --color-palette-amber-light-stroke: var(--color-orange-light-stroke);
   --color-palette-amber-light-ink: var(--color-orange-light-ink);
@@ -244,20 +269,20 @@
   --color-palette-pink-dark-stroke: var(--color-purple-dark-stroke);
   --color-palette-pink-dark-ink: var(--color-purple-dark-ink);
   --color-palette-pink-dark-outline: var(--color-purple-dark-outline);
-  --color-palette-sky-light-fill: #e9f1fe;
+  --color-palette-sky-light-fill: #e8f1fe;
   --color-palette-sky-light-stroke: var(--color-blue-light-stroke);
   --color-palette-sky-light-ink: var(--color-blue-light-ink);
   --color-palette-sky-light-tint-1: var(--color-blue-light-tint-1);
   --color-palette-sky-light-tint-2: var(--color-blue-light-tint-2);
   --color-palette-sky-light-tint-3: var(--color-blue-light-tint-3);
-  --color-palette-sky-light-outline: #628ad3;
-  --color-palette-sky-dark-fill: #1c2a43;
+  --color-palette-sky-light-outline: #648bca;
+  --color-palette-sky-dark-fill: #1b2a43;
   --color-palette-sky-dark-stroke: var(--color-blue-dark-stroke);
   --color-palette-sky-dark-ink: var(--color-blue-dark-ink);
   --color-palette-sky-dark-tint-1: var(--color-blue-dark-tint-1);
   --color-palette-sky-dark-tint-2: var(--color-blue-dark-tint-2);
   --color-palette-sky-dark-tint-3: var(--color-blue-dark-tint-3);
-  --color-palette-sky-dark-outline: #6789c4;
+  --color-palette-sky-dark-outline: #6489c3;
   --color-palette-slate-light-fill: #e7e7e7;
   --color-palette-slate-light-stroke: var(--color-gray-635);
   --color-palette-slate-light-ink: var(--color-gray-635);
@@ -324,11 +349,11 @@
   --color-tag-gray: var(--color-paint-gray-stroke);
   --color-tag-red: var(--color-paint-red-stroke);
   --color-tag-brand: var(--color-state-active);
-  --font-figure-sans: FigSans, FigSansSym, FigSansMath, Pretendard, 'Pretendard Variable', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif;
+  --font-figure-sans: FigSans, FigSansSym, FigSansMath, Pretendard, 'Pretendard Variable', ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Apple SD Gothic Neo', sans-serif;
   --font-figure-mono: FigMono, FigSans, FigSansSym, FigSansMath, ui-monospace, SFMono-Regular, Menlo, monospace;
-  --size-control-outer: 36px;
-  --size-control-inner: 28px;
-  --size-control-icon: 16px;
+  --size-control-outer: 52px;
+  --size-control-inner: 44px;
+  --size-control-icon: 20px;
   --size-control-icon-stroke: 1.75px;
   --size-pill-height: 18px;
   --size-icon-node: 20px;
@@ -450,7 +475,7 @@
     --color-card-on: var(--color-blue-dark-fill);
     --color-page: var(--color-gray-929);
     --color-outline: var(--color-gray-467);
-    --color-border: var(--color-gray-776);
+    --color-border: var(--primitive-simple2-border);
     --color-plate-border: var(--color-gray-788);
     --color-line: var(--color-gray-651);
     --color-state-active: var(--color-blue-dark-stroke);
@@ -544,7 +569,7 @@
   --color-card-on: var(--color-blue-dark-fill);
   --color-page: var(--color-gray-929);
   --color-outline: var(--color-gray-467);
-  --color-border: var(--color-gray-776);
+  --color-border: var(--primitive-simple2-border);
   --color-plate-border: var(--color-gray-788);
   --color-line: var(--color-gray-651);
   --color-state-active: var(--color-blue-dark-stroke);
@@ -624,16 +649,10 @@
   --color-paint-gray-dot: var(--color-palette-slate-dark-dot);
 }
 /* 조작 단추의 공통 모양과 상태. 재생기(원 단추, 탭), 목록 쪽과 문서 미리보기(테마 묶음)가 모두 이 파일 하나를 쓴다. */
-.fl-round:hover,
-.fl-tabs button:hover,
-.theme button:hover {
-  color: var(--color-fg);
-}
-
 .fl-round:focus-visible,
 .fl-tabs button:focus-visible,
 .theme button:focus-visible {
-  outline: var(--border-tag) solid var(--color-ui-focus);
+  outline: var(--simple2-focus-width) solid var(--color-ui-focus);
   outline-offset: var(--space-1);
 }
 
@@ -644,15 +663,16 @@
   box-sizing: border-box;
   min-height: var(--size-control-outer);
   padding: var(--space-1-5);
-  background: var(--color-bg);
-  border: var(--border-thin) solid var(--color-border);
+  background: var(--color-surface);
+  border: var(--border-thin) solid var(--color-plate-border);
   border-radius: var(--radius-full);
 }
 
 .fl-tabs button,
 .theme button {
   min-height: var(--size-control-inner);
-  font: var(--size-text-13) var(--font-figure-sans);
+  min-width: var(--size-control-inner);
+  font: var(--simple2-control) var(--font-sans);
   color: var(--color-muted);
   cursor: pointer;
   background: transparent;
@@ -664,21 +684,44 @@
   padding: 0 var(--space-6);
 }
 
-/* segmented 방식: 켜진 항목은 꽉 찬 알약(ui.control-on)이다. 켜짐 표시는 묶음 바탕과 대비 3인 border 색 고리다. */
+/* 켜진 탭은 독립된 면과 파란 글자, 그림자로 묶음 바탕에서 구분한다. */
 .fl-tabs button.on,
 .theme button[aria-pressed='true'] {
   font-weight: var(--weight-semibold);
-  color: var(--color-fg);
+  color: var(--color-state-active-text);
   background: var(--color-ui-control-on);
-  box-shadow: 0 0 0 var(--border-thin) var(--color-border);
+  box-shadow: var(--simple2-shadow);
+}
+
+/* 같은 조작의 hover와 pressed를 재생기와 목록에서 공유한다. */
+.fl-round:hover,
+.fl-tabs button:hover,
+.theme button:hover {
+  color: var(--color-state-active-text);
+  background: var(--color-card-on);
+}
+
+.fl-round:active,
+.fl-tabs button:active,
+.theme button:active {
+  color: var(--color-state-on-active);
+  background: var(--color-state-active-fill);
+}
+
+.fl-round:disabled,
+.fl-tabs button:disabled,
+.theme button:disabled {
+  color: var(--color-muted);
+  background: var(--color-surface);
+  cursor: default;
 }
 /* 재생기 틀과 조작 막대. iframe 안(html.embedded)에서는 테두리와 바깥 여백을 뺀다. */
-/* 그림 표시 폭 규칙: 문서 미리보기, 목록 카드, 재생기가 같다. 컨테이너 폭은 화면 폭에서 좌우 바깥 여백(space-16)을 뺀 값이고,
+/* 그림 표시 폭 규칙: 문서 미리보기, 목록 카드, 재생기가 같다. 컨테이너 폭은 화면 폭에서 좌우 바깥 여백(simple2.page-gutter)을 뺀 값이고,
    그림 폭은 min(표준 캔버스 폭, 컨테이너 폭)이다. 컨테이너 안쪽에는 좌우 여백과 레이아웃을 차지하는 테두리를 두지 않아 세 곳의 그림 폭이 같다. */
 body {
   margin: 0;
-  padding: var(--space-12) var(--space-16);
-  font-family: var(--font-figure-sans);
+  padding: var(--simple2-page-gap) var(--simple2-page-gutter);
+  font-family: var(--font-sans);
   letter-spacing: var(--tracking-text);
   color: var(--color-fg);
   background: var(--color-page);
@@ -732,7 +775,7 @@ html.embedded .fl-figure {
   display: grid;
   gap: var(--space-6);
   justify-items: center;
-  padding: var(--space-8);
+  padding: var(--simple2-page-gutter);
   background: var(--color-bg);
   border-top: var(--border-thin) solid var(--color-plate-border);
 }
@@ -740,8 +783,9 @@ html.embedded .fl-figure {
 /* 양쪽 칸 너비가 같아(1fr) 배속 글자가 바뀌어도 탭 묶음이 설명과 같은 축에 있다. */
 .fl-bar {
   display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  gap: var(--space-5);
+  grid-template-columns: minmax(var(--size-control-outer), 1fr) minmax(0, auto) minmax(var(--size-control-outer), 1fr);
+  max-width: 100%;
+  gap: var(--simple2-control-gap);
   align-items: center;
 }
 
@@ -783,12 +827,12 @@ html.embedded .fl-figure {
   min-width: var(--size-control-outer);
   height: var(--size-control-outer);
   padding: 0 var(--space-2);
-  font: var(--size-text-13) var(--font-figure-sans);
+  font: var(--simple2-control) var(--font-sans);
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
-  color: var(--color-muted);
+  color: var(--color-state-active-text);
   background: var(--color-node);
-  border: var(--border-thin) solid var(--color-border);
+  border: var(--border-thin) solid var(--color-plate-border);
   border-radius: var(--radius-full);
   cursor: pointer;
 }
@@ -1480,7 +1524,7 @@ html.embedded .fl-figure {
 <g class="fl-value"><rect x="458.8" y="89" width="148" height="19" rx="4" fill="none" stroke="var(--color-state-active)" stroke-width="1.75" opacity="0" data-vf="1"></rect><text x="602.8" y="102" class="value" opacity="0" data-v="1" data-t="0">0</text></g>
 <g class="fl-value"><rect x="458.8" y="89" width="148" height="19" rx="4" fill="none" stroke="var(--color-state-active)" stroke-width="1.75" opacity="0" data-vf="2"></rect><text x="602.8" y="102" class="value" opacity="0" data-v="2" data-t="0">0</text></g><g class="fl-packets"></g><g class="fl-status-pills"><g class="fl-status" data-st="2-ok" opacity="0"><rect x="586.1" y="14" width="40.7" height="18" rx="9" fill="var(--color-node)" stroke="var(--color-state-success)" stroke-width="1.75"/><path d="M 593.6 23 L 596.3 25.8 L 601.1 20" fill="none" stroke="var(--color-state-success)" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/><text x="606.1" y="27" class="status-text">OK</text></g><g class="fl-status" data-st="1-warn" opacity="0"><rect x="285.3" y="38" width="57.1" height="18" rx="9" fill="var(--color-node)" stroke="var(--color-state-warning)" stroke-width="1.75"/><path d="M 296.3 42.4 L 301.3 51 L 291.3 51 Z" fill="none" stroke="var(--color-state-warning)" stroke-width="1.75" stroke-linejoin="round"/><path d="M 296.3 45.8 L 296.3 48" fill="none" stroke="var(--color-state-warning)" stroke-width="1.75" stroke-linecap="round"/><text x="305.3" y="51" class="status-text">WARN</text></g><g class="fl-status" data-st="2-wait" opacity="0"><rect x="574.7" y="14" width="52.2" height="18" rx="9" fill="var(--color-node)" stroke="var(--color-outline)" stroke-width="1.75"/><circle cx="582.5" cy="23" r="1.3" fill="var(--color-outline)"/><circle cx="585.7" cy="23" r="1.3" fill="var(--color-outline)"/><circle cx="588.9" cy="23" r="1.3" fill="var(--color-outline)"/><text x="594.7" y="27" class="status-text">WAIT</text></g></g></svg></div>
 <figcaption class="fl-foot">
-<div class="fl-bar"><button type="button" class="fl-round fl-pause"><svg class="fl-ring" viewBox="0 0 36 36" aria-hidden="true"><circle class="fl-ring-fill" cx="18" cy="18" r="17.125" stroke-width="1.75" transform="rotate(-90 18 18)"/></svg><span class="fl-pause-icon"></span></button><div class="fl-tabs" role="tablist"></div><button type="button" class="fl-round fl-rate" aria-label="배속">1×</button></div>
+<div class="fl-bar"><button type="button" class="fl-round fl-pause"><svg class="fl-ring" viewBox="0 0 52 52" aria-hidden="true"><circle class="fl-ring-fill" cx="26" cy="26" r="25.125" stroke-width="1.75" transform="rotate(-90 26 26)"/></svg><span class="fl-pause-icon"></span></button><div class="fl-tabs" role="tablist"></div><button type="button" class="fl-round fl-rate" aria-label="배속">1×</button></div>
 <p class="fl-caption" aria-live="polite"></p>
 </figcaption>
 </figure>
@@ -2345,7 +2389,7 @@ function paceProgress(pace, length) {
   };
 }
 
-figurePlay(document.querySelector('.fl-figure'), {"trackCount":3,"values":[{"si":0,"periods":[[0,1298.7304,"0"],[1298.7304,3298.7304,"1"],[3298.7304,5298.7304,"2"],[5298.7304,7298.7304,"3"],[7298.7304,8000,"4"]],"flashes":[[1298.7304,1998.7304],[3298.7304,3998.7304],[5298.7304,5998.7304],[7298.7304,7998.7304]]},{"si":1,"periods":[[8000,16000,"0"]],"flashes":[]},{"si":2,"periods":[[16000,20000,"0"]],"flashes":[]}],"segs":[{"si":0,"t0":0,"t1":8000,"hops":[{"track":0,"edges":[0,1,2],"gaps":[[0.18032,0.34664],[0.52696,0.81968]],"isBack":false,"at":0,"ms":4000,"pace":[[0,0],[0.125,0.34664],[0.375,0.81968],[1,1]],"to":"db","data":["요청"],"tone":"brand","line":16,"chipPath":[[0,22.20684,0,1],[0.03827,0,0,1],[0.08276,0,0,1],[0.09385,0,0,0.88889],[0.1459,0,0,0],[0.38859,0,0,0],[0.42528,0,0,0.44444],[0.44456,0,0,0.44444],[0.48497,0,0,0],[0.85128,0,0,0],[0.86869,0,0,0.88889],[0.87299,0,0,1],[0.94961,0,0,1],[1,-22.20684,0,1]]},{"track":0,"edges":[0,1,2],"gaps":[[0.18032,0.34664],[0.52696,0.81968]],"isBack":false,"at":2000,"ms":4000,"pace":[[0,0],[0.125,0.34664],[0.375,0.81968],[1,1]],"to":"db","data":["요청"],"tone":"brand","line":16,"chipPath":[[0,22.20684,0,1],[0.03827,0,0,1],[0.08276,0,0,1],[0.09385,0,0,0.88889],[0.1459,0,0,0],[0.38859,0,0,0],[0.42528,0,0,0.44444],[0.44456,0,0,0.44444],[0.48497,0,0,0],[0.85128,0,0,0],[0.86869,0,0,0.88889],[0.87299,0,0,1],[0.94961,0,0,1],[1,-22.20684,0,1]]},{"track":0,"edges":[0,1,2],"gaps":[[0.18032,0.34664],[0.52696,0.81968]],"isBack":false,"at":4000,"ms":4000,"pace":[[0,0],[0.125,0.34664],[0.375,0.81968],[1,1]],"to":"db","data":["요청"],"tone":"brand","line":16,"chipPath":[[0,22.20684,0,1],[0.03827,0,0,1],[0.08276,0,0,1],[0.09385,0,0,0.88889],[0.1459,0,0,0],[0.38859,0,0,0],[0.42528,0,0,0.44444],[0.44456,0,0,0.44444],[0.48497,0,0,0],[0.85128,0,0,0],[0.86869,0,0,0.88889],[0.87299,0,0,1],[0.94961,0,0,1],[1,-22.20684,0,1]]},{"track":0,"edges":[0,1,2],"gaps":[[0.18032,0.34664],[0.52696,0.81968]],"isBack":false,"at":6000,"ms":4000,"cut":2000,"pace":[[0,0],[0.125,0.34664],[0.375,0.81968],[1,1]],"to":"db","data":["요청"],"tone":"brand","line":16,"chipPath":[[0,22.20684,0,1],[0.03827,0,0,1],[0.08276,0,0,1],[0.09385,0,0,0.88889],[0.1459,0,0,0],[0.38859,0,0,0],[0.42528,0,0,0.44444],[0.44456,0,0,0.44444],[0.48497,0,0,0],[0.85128,0,0,0],[0.86001,0,0,0.44444]]}],"edgesOn":[],"nodesOn":[],"groupsOn":[],"partsOn":[],"cards":{"2":0},"cardsBefore":{"2":0},"cardsAt":{},"caption":"요청이 구간마다 정한 시간으로 DB까지 간다","series":[],"growing":[],"lights":[],"status":["2-ok"],"edgesAt":{"0":0,"1":707.30723,"2":1298.7304},"nodesAt":{},"groupsAt":{},"pulses":[{"n":1,"at":707.30723},{"n":2,"at":1298.7304},{"n":1,"at":2707.30723},{"n":2,"at":3298.7304},{"n":3,"at":4000},{"n":1,"at":4707.30723},{"n":2,"at":5298.7304},{"n":3,"at":6000},{"n":1,"at":6707.30723},{"n":2,"at":7298.7304}]},{"si":1,"t0":8000,"t1":16000,"hops":[{"track":1,"edges":[0,1,2],"gaps":[[0.18032,0.34664],[0.52696,0.81968]],"isBack":false,"at":0,"ms":4000,"cut":1967.39201,"to":"db","data":["요청"],"tone":"brand","line":18,"chipPath":[[0,22.20684,0,1],[0.00065,21.81416,0,1],[0.00152,21.29518,0,1],[0.00259,20.64739,0,1],[0.00389,19.86825,0,1],[0.00541,18.95515,0,1],[0.00715,17.90547,0,1],[0.03384,0,47,1],[0.10444,0,47,1],[0.11233,0,47,0.88889],[0.14717,0,47,0],[0.3799,0,47,0],[0.42424,0,47,0.66667],[0.43923,0,47,0.66667],[0.48454,0,47,0],[0.5,0,47,0]]},{"track":1,"edges":[0,1,2],"gaps":[[0.18032,0.34664],[0.52696,0.81968]],"isBack":false,"at":2000,"ms":4000,"cut":1967.39201,"to":"db","data":["요청"],"tone":"brand","line":18,"chipPath":[[0,22.20684,0,1],[0.00065,21.81416,0,1],[0.00152,21.29518,0,1],[0.00259,20.64739,0,1],[0.00389,19.86825,0,1],[0.00541,18.95515,0,1],[0.00715,17.90547,0,1],[0.03384,0,47,1],[0.10444,0,47,1],[0.11233,0,47,0.88889],[0.14717,0,47,0],[0.3799,0,47,0],[0.42424,0,47,0.66667],[0.43923,0,47,0.66667],[0.48454,0,47,0],[0.5,0,47,0]]},{"track":1,"edges":[0,1,2],"gaps":[[0.18032,0.34664],[0.52696,0.81968]],"isBack":false,"at":4000,"ms":4000,"cut":1967.39201,"to":"db","data":["요청"],"tone":"brand","line":18,"chipPath":[[0,22.20684,0,1],[0.00065,21.81416,0,1],[0.00152,21.29518,0,1],[0.00259,20.64739,0,1],[0.00389,19.86825,0,1],[0.00541,18.95515,0,1],[0.00715,17.90547,0,1],[0.03384,0,47,1],[0.10444,0,47,1],[0.11233,0,47,0.88889],[0.14717,0,47,0],[0.3799,0,47,0],[0.42424,0,47,0.66667],[0.43923,0,47,0.66667],[0.48454,0,47,0],[0.5,0,47,0]]},{"track":1,"edges":[0,1,2],"gaps":[[0.18032,0.34664],[0.52696,0.81968]],"isBack":false,"at":6000,"ms":4000,"cut":1967.39201,"to":"db","data":["요청"],"tone":"brand","line":18,"chipPath":[[0,22.20684,0,1],[0.00065,21.81416,0,1],[0.00152,21.29518,0,1],[0.00259,20.64739,0,1],[0.00389,19.86825,0,1],[0.00541,18.95515,0,1],[0.00715,17.90547,0,1],[0.03384,0,47,1],[0.10444,0,47,1],[0.11233,0,47,0.88889],[0.14717,0,47,0],[0.3799,0,47,0],[0.42424,0,47,0.66667],[0.43923,0,47,0.66667],[0.48454,0,47,0],[0.5,0,47,0]]}],"edgesOn":[],"nodesOn":[],"groupsOn":[],"partsOn":[],"cards":{"2":0},"cardsBefore":{"2":0},"cardsAt":{},"caption":"요청이 API에 닿기 전에 사라지고 받은 요청이 늘지 않는다","series":[],"growing":[],"lights":[],"status":["1-warn","2-wait"],"edgesAt":{"0":0,"1":1178.08584},"nodesAt":{},"groupsAt":{},"pulses":[{"n":1,"at":1178.08584},{"n":1,"at":3178.08584},{"n":1,"at":5178.08584},{"n":1,"at":7178.08584}]},{"si":2,"t0":16000,"t1":20000,"hops":[{"track":2,"edges":[0,1,2],"gaps":[[0.18032,0.34664],[0.52696,0.81968]],"isBack":false,"at":0,"ms":3000,"to":"db","data":["요청"],"tone":"brand","line":20,"chipPath":[[0,22.20684,0,1],[0.00092,21.65532,0,1],[0.00221,20.87779,0,1],[0.00389,19.86825,0,1],[0.03811,0,0,1],[0.092,0,0,1],[0.10188,0,0,0.88889],[0.14717,0,0,0],[0.39455,0,0,0],[0.43423,0,0,0.44444],[0.4543,0,0,0.44444],[0.49463,0,0,0],[0.85025,0,0,0],[0.89363,0,0,0.88889],[0.90317,0,0,1],[0.92074,0,0,1],[1,-22.20684,0,1]]},{"track":2,"edges":[0,1,2],"gaps":[[0.18032,0.34664],[0.52696,0.81968]],"isBack":false,"at":2000,"ms":3000,"cut":2000,"to":"db","data":["요청"],"tone":"brand","line":20,"chipPath":[[0,22.20684,0,1],[0.00092,21.65532,0,1],[0.00221,20.87779,0,1],[0.00389,19.86825,0,1],[0.03811,0,0,1],[0.092,0,0,1],[0.10188,0,0,0.88889],[0.14717,0,0,0],[0.39455,0,0,0],[0.43423,0,0,0.44444],[0.4543,0,0,0.44444],[0.49463,0,0,0],[0.78395,0,0,0]]}],"edgesOn":[],"nodesOn":[],"groupsOn":[],"partsOn":[],"cards":{"2":0},"cardsBefore":{"2":0},"cardsAt":{},"caption":"","series":[],"growing":[],"lights":[],"edgesAt":{"0":0,"1":883.56438,"2":1520.18339},"nodesAt":{},"groupsAt":{},"pulses":[{"n":1,"at":883.56438},{"n":2,"at":1520.18339},{"n":1,"at":2883.56438},{"n":3,"at":3000},{"n":2,"at":3520.18339}]}],"steps":["정상","유실","복구"],"cardCounts":[0,0,1,0],"edgeEnds":[[0,1],[1,2],[2,3]],"seriesCount":0,"rowCount":0,"metrics":{"active":"var(--color-state-active)","chipFill":"var(--color-state-active-fill)","halo":10,"haloOpacity":0.2,"packet":4.5,"chipRadius":8,"pulseMs":450,"chipLine":15,"chipPadX":18,"chipPadY":8,"chipGap":12,"icon":16,"iconStroke":1.75,"zoomMax":6,"zoomStep":1.25,"move":[0.455,0.03,0.515,0.955],"tones":{"brand":"var(--color-flow-brand)","purple":"var(--color-flow-purple)","green":"var(--color-flow-green)","gray":"var(--color-flow-gray)","red":"var(--color-flow-red)"},"chipStroke":1.75,"cutFadeMs":600}});
+figurePlay(document.querySelector('.fl-figure'), {"trackCount":3,"values":[{"si":0,"periods":[[0,1298.7304,"0"],[1298.7304,3298.7304,"1"],[3298.7304,5298.7304,"2"],[5298.7304,7298.7304,"3"],[7298.7304,8000,"4"]],"flashes":[[1298.7304,1998.7304],[3298.7304,3998.7304],[5298.7304,5998.7304],[7298.7304,7998.7304]]},{"si":1,"periods":[[8000,16000,"0"]],"flashes":[]},{"si":2,"periods":[[16000,20000,"0"]],"flashes":[]}],"segs":[{"si":0,"t0":0,"t1":8000,"hops":[{"track":0,"edges":[0,1,2],"gaps":[[0.18032,0.34664],[0.52696,0.81968]],"isBack":false,"at":0,"ms":4000,"pace":[[0,0],[0.125,0.34664],[0.375,0.81968],[1,1]],"to":"db","data":["요청"],"tone":"brand","line":16,"chipPath":[[0,22.20684,0,1],[0.03827,0,0,1],[0.08276,0,0,1],[0.09385,0,0,0.88889],[0.1459,0,0,0],[0.38859,0,0,0],[0.42528,0,0,0.44444],[0.44456,0,0,0.44444],[0.48497,0,0,0],[0.85128,0,0,0],[0.86869,0,0,0.88889],[0.87299,0,0,1],[0.94961,0,0,1],[1,-22.20684,0,1]]},{"track":0,"edges":[0,1,2],"gaps":[[0.18032,0.34664],[0.52696,0.81968]],"isBack":false,"at":2000,"ms":4000,"pace":[[0,0],[0.125,0.34664],[0.375,0.81968],[1,1]],"to":"db","data":["요청"],"tone":"brand","line":16,"chipPath":[[0,22.20684,0,1],[0.03827,0,0,1],[0.08276,0,0,1],[0.09385,0,0,0.88889],[0.1459,0,0,0],[0.38859,0,0,0],[0.42528,0,0,0.44444],[0.44456,0,0,0.44444],[0.48497,0,0,0],[0.85128,0,0,0],[0.86869,0,0,0.88889],[0.87299,0,0,1],[0.94961,0,0,1],[1,-22.20684,0,1]]},{"track":0,"edges":[0,1,2],"gaps":[[0.18032,0.34664],[0.52696,0.81968]],"isBack":false,"at":4000,"ms":4000,"pace":[[0,0],[0.125,0.34664],[0.375,0.81968],[1,1]],"to":"db","data":["요청"],"tone":"brand","line":16,"chipPath":[[0,22.20684,0,1],[0.03827,0,0,1],[0.08276,0,0,1],[0.09385,0,0,0.88889],[0.1459,0,0,0],[0.38859,0,0,0],[0.42528,0,0,0.44444],[0.44456,0,0,0.44444],[0.48497,0,0,0],[0.85128,0,0,0],[0.86869,0,0,0.88889],[0.87299,0,0,1],[0.94961,0,0,1],[1,-22.20684,0,1]]},{"track":0,"edges":[0,1,2],"gaps":[[0.18032,0.34664],[0.52696,0.81968]],"isBack":false,"at":6000,"ms":4000,"cut":2000,"pace":[[0,0],[0.125,0.34664],[0.375,0.81968],[1,1]],"to":"db","data":["요청"],"tone":"brand","line":16,"chipPath":[[0,22.20684,0,1],[0.03827,0,0,1],[0.08276,0,0,1],[0.09385,0,0,0.88889],[0.1459,0,0,0],[0.38859,0,0,0],[0.42528,0,0,0.44444],[0.44456,0,0,0.44444],[0.48497,0,0,0],[0.85128,0,0,0],[0.86001,0,0,0.44444]]}],"edgesOn":[],"nodesOn":[],"groupsOn":[],"partsOn":[],"cards":{"2":0},"cardsBefore":{"2":0},"cardsAt":{},"caption":"요청이 구간마다 정한 시간으로 DB까지 간다","series":[],"growing":[],"lights":[],"status":["2-ok"],"edgesAt":{"0":0,"1":707.30723,"2":1298.7304},"nodesAt":{},"groupsAt":{},"pulses":[{"n":1,"at":707.30723},{"n":2,"at":1298.7304},{"n":1,"at":2707.30723},{"n":2,"at":3298.7304},{"n":3,"at":4000},{"n":1,"at":4707.30723},{"n":2,"at":5298.7304},{"n":3,"at":6000},{"n":1,"at":6707.30723},{"n":2,"at":7298.7304}]},{"si":1,"t0":8000,"t1":16000,"hops":[{"track":1,"edges":[0,1,2],"gaps":[[0.18032,0.34664],[0.52696,0.81968]],"isBack":false,"at":0,"ms":4000,"cut":1967.39201,"to":"db","data":["요청"],"tone":"brand","line":18,"chipPath":[[0,22.20684,0,1],[0.00065,21.81416,0,1],[0.00152,21.29518,0,1],[0.00259,20.64739,0,1],[0.00389,19.86825,0,1],[0.00541,18.95515,0,1],[0.00715,17.90547,0,1],[0.03384,0,47,1],[0.10444,0,47,1],[0.11233,0,47,0.88889],[0.14717,0,47,0],[0.3799,0,47,0],[0.42424,0,47,0.66667],[0.43923,0,47,0.66667],[0.48454,0,47,0],[0.5,0,47,0]]},{"track":1,"edges":[0,1,2],"gaps":[[0.18032,0.34664],[0.52696,0.81968]],"isBack":false,"at":2000,"ms":4000,"cut":1967.39201,"to":"db","data":["요청"],"tone":"brand","line":18,"chipPath":[[0,22.20684,0,1],[0.00065,21.81416,0,1],[0.00152,21.29518,0,1],[0.00259,20.64739,0,1],[0.00389,19.86825,0,1],[0.00541,18.95515,0,1],[0.00715,17.90547,0,1],[0.03384,0,47,1],[0.10444,0,47,1],[0.11233,0,47,0.88889],[0.14717,0,47,0],[0.3799,0,47,0],[0.42424,0,47,0.66667],[0.43923,0,47,0.66667],[0.48454,0,47,0],[0.5,0,47,0]]},{"track":1,"edges":[0,1,2],"gaps":[[0.18032,0.34664],[0.52696,0.81968]],"isBack":false,"at":4000,"ms":4000,"cut":1967.39201,"to":"db","data":["요청"],"tone":"brand","line":18,"chipPath":[[0,22.20684,0,1],[0.00065,21.81416,0,1],[0.00152,21.29518,0,1],[0.00259,20.64739,0,1],[0.00389,19.86825,0,1],[0.00541,18.95515,0,1],[0.00715,17.90547,0,1],[0.03384,0,47,1],[0.10444,0,47,1],[0.11233,0,47,0.88889],[0.14717,0,47,0],[0.3799,0,47,0],[0.42424,0,47,0.66667],[0.43923,0,47,0.66667],[0.48454,0,47,0],[0.5,0,47,0]]},{"track":1,"edges":[0,1,2],"gaps":[[0.18032,0.34664],[0.52696,0.81968]],"isBack":false,"at":6000,"ms":4000,"cut":1967.39201,"to":"db","data":["요청"],"tone":"brand","line":18,"chipPath":[[0,22.20684,0,1],[0.00065,21.81416,0,1],[0.00152,21.29518,0,1],[0.00259,20.64739,0,1],[0.00389,19.86825,0,1],[0.00541,18.95515,0,1],[0.00715,17.90547,0,1],[0.03384,0,47,1],[0.10444,0,47,1],[0.11233,0,47,0.88889],[0.14717,0,47,0],[0.3799,0,47,0],[0.42424,0,47,0.66667],[0.43923,0,47,0.66667],[0.48454,0,47,0],[0.5,0,47,0]]}],"edgesOn":[],"nodesOn":[],"groupsOn":[],"partsOn":[],"cards":{"2":0},"cardsBefore":{"2":0},"cardsAt":{},"caption":"요청이 API에 닿기 전에 사라지고 받은 요청이 늘지 않는다","series":[],"growing":[],"lights":[],"status":["1-warn","2-wait"],"edgesAt":{"0":0,"1":1178.08584},"nodesAt":{},"groupsAt":{},"pulses":[{"n":1,"at":1178.08584},{"n":1,"at":3178.08584},{"n":1,"at":5178.08584},{"n":1,"at":7178.08584}]},{"si":2,"t0":16000,"t1":20000,"hops":[{"track":2,"edges":[0,1,2],"gaps":[[0.18032,0.34664],[0.52696,0.81968]],"isBack":false,"at":0,"ms":3000,"to":"db","data":["요청"],"tone":"brand","line":20,"chipPath":[[0,22.20684,0,1],[0.00092,21.65532,0,1],[0.00221,20.87779,0,1],[0.00389,19.86825,0,1],[0.03811,0,0,1],[0.092,0,0,1],[0.10188,0,0,0.88889],[0.14717,0,0,0],[0.39455,0,0,0],[0.43423,0,0,0.44444],[0.4543,0,0,0.44444],[0.49463,0,0,0],[0.85025,0,0,0],[0.89363,0,0,0.88889],[0.90317,0,0,1],[0.92074,0,0,1],[1,-22.20684,0,1]]},{"track":2,"edges":[0,1,2],"gaps":[[0.18032,0.34664],[0.52696,0.81968]],"isBack":false,"at":2000,"ms":3000,"cut":2000,"to":"db","data":["요청"],"tone":"brand","line":20,"chipPath":[[0,22.20684,0,1],[0.00092,21.65532,0,1],[0.00221,20.87779,0,1],[0.00389,19.86825,0,1],[0.03811,0,0,1],[0.092,0,0,1],[0.10188,0,0,0.88889],[0.14717,0,0,0],[0.39455,0,0,0],[0.43423,0,0,0.44444],[0.4543,0,0,0.44444],[0.49463,0,0,0],[0.78395,0,0,0]]}],"edgesOn":[],"nodesOn":[],"groupsOn":[],"partsOn":[],"cards":{"2":0},"cardsBefore":{"2":0},"cardsAt":{},"caption":"","series":[],"growing":[],"lights":[],"edgesAt":{"0":0,"1":883.56438,"2":1520.18339},"nodesAt":{},"groupsAt":{},"pulses":[{"n":1,"at":883.56438},{"n":2,"at":1520.18339},{"n":1,"at":2883.56438},{"n":3,"at":3000},{"n":2,"at":3520.18339}]}],"steps":["정상","유실","복구"],"cardCounts":[0,0,1,0],"edgeEnds":[[0,1],[1,2],[2,3]],"seriesCount":0,"rowCount":0,"metrics":{"active":"var(--color-state-active)","chipFill":"var(--color-state-active-fill)","halo":10,"haloOpacity":0.2,"packet":4.5,"chipRadius":8,"pulseMs":450,"chipLine":15,"chipPadX":18,"chipPadY":8,"chipGap":12,"icon":20,"iconStroke":1.75,"zoomMax":6,"zoomStep":1.25,"move":[0.455,0.03,0.515,0.955],"tones":{"brand":"var(--color-flow-brand)","purple":"var(--color-flow-purple)","green":"var(--color-flow-green)","gray":"var(--color-flow-gray)","red":"var(--color-flow-red)"},"chipStroke":1.75,"cutFadeMs":600}});
 </script>
 </body>
 </html>

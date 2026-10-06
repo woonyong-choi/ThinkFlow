@@ -121,6 +121,14 @@ describe('pages', { skip: SKIP }, () => {
       assert.ok(style.on.weight >= SEMIBOLD && style.off.weight < SEMIBOLD, '켜진 탭만 굵은 글');
       assert.notEqual(style.on.background, style.group, '켜진 탭은 묶음 바탕과 다른 알약 면');
       assert.notEqual(style.on.color, style.off.color);
+      const targets = await page.locator('.fl-bar button').evaluateAll((buttons) => buttons.map((button) => {
+        const { width, height } = button.getBoundingClientRect();
+        return { width, height };
+      }));
+      assert.ok(targets.every(({ width, height }) => width >= 44 && height >= 44), '모든 재생 조작은 44px 이상의 영역이다');
+      await page.locator('.fl-pause').focus();
+      assert.equal(await page.locator('.fl-pause').evaluate((button) => getComputedStyle(button).outlineWidth), '3px');
+
     });
   });
 

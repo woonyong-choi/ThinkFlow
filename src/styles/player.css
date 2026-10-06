@@ -1,10 +1,10 @@
 /* 재생기 틀과 조작 막대. iframe 안(html.embedded)에서는 테두리와 바깥 여백을 뺀다. */
-/* 그림 표시 폭 규칙: 문서 미리보기, 목록 카드, 재생기가 같다. 컨테이너 폭은 화면 폭에서 좌우 바깥 여백(space-16)을 뺀 값이고,
+/* 그림 표시 폭 규칙: 문서 미리보기, 목록 카드, 재생기가 같다. 컨테이너 폭은 화면 폭에서 좌우 바깥 여백(simple2.page-gutter)을 뺀 값이고,
    그림 폭은 min(표준 캔버스 폭, 컨테이너 폭)이다. 컨테이너 안쪽에는 좌우 여백과 레이아웃을 차지하는 테두리를 두지 않아 세 곳의 그림 폭이 같다. */
 body {
   margin: 0;
-  padding: var(--space-12) var(--space-16);
-  font-family: var(--font-figure-sans);
+  padding: var(--simple2-page-gap) var(--simple2-page-gutter);
+  font-family: var(--font-sans);
   letter-spacing: var(--tracking-text);
   color: var(--color-fg);
   background: var(--color-page);
@@ -58,7 +58,7 @@ html.embedded .fl-figure {
   display: grid;
   gap: var(--space-6);
   justify-items: center;
-  padding: var(--space-8);
+  padding: var(--simple2-page-gutter);
   background: var(--color-bg);
   border-top: var(--border-thin) solid var(--color-plate-border);
 }
@@ -66,8 +66,9 @@ html.embedded .fl-figure {
 /* 양쪽 칸 너비가 같아(1fr) 배속 글자가 바뀌어도 탭 묶음이 설명과 같은 축에 있다. */
 .fl-bar {
   display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  gap: var(--space-5);
+  grid-template-columns: minmax(var(--size-control-outer), 1fr) minmax(0, auto) minmax(var(--size-control-outer), 1fr);
+  max-width: 100%;
+  gap: var(--simple2-control-gap);
   align-items: center;
 }
 
@@ -109,12 +110,12 @@ html.embedded .fl-figure {
   min-width: var(--size-control-outer);
   height: var(--size-control-outer);
   padding: 0 var(--space-2);
-  font: var(--size-text-13) var(--font-figure-sans);
+  font: var(--simple2-control) var(--font-sans);
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
-  color: var(--color-muted);
+  color: var(--color-state-active-text);
   background: var(--color-node);
-  border: var(--border-thin) solid var(--color-border);
+  border: var(--border-thin) solid var(--color-plate-border);
   border-radius: var(--radius-full);
   cursor: pointer;
 }

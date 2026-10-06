@@ -120,7 +120,7 @@
     },
     "blue": {
       "anchor": {
-        "$value": "#125de6",
+        "$value": "#1e66d8",
         "$type": "color"
       },
       "light-fill": {
@@ -128,23 +128,23 @@
         "$type": "color"
       },
       "light-stroke": {
-        "$value": "#125de6",
+        "$value": "#1e66d8",
         "$type": "color"
       },
       "light-ink": {
-        "$value": "#0151d9",
+        "$value": "#0a57c8",
         "$type": "color"
       },
       "light-heat-low": {
-        "$value": "#b7cdf5",
+        "$value": "#b3cbf2",
         "$type": "color"
       },
       "light-heat-high": {
-        "$value": "#004dd2",
+        "$value": "#0352c3",
         "$type": "color"
       },
       "light-outline": {
-        "$value": "#658dd5",
+        "$value": "#678dcb",
         "$type": "color"
       },
       "light-tint-1": {
@@ -156,31 +156,31 @@
         "$type": "color"
       },
       "light-tint-3": {
-        "$value": "#cad7ed",
+        "$value": "#c9d7ed",
         "$type": "color"
       },
       "dark-fill": {
-        "$value": "#1c2a43",
+        "$value": "#1b2a43",
         "$type": "color"
       },
       "dark-stroke": {
-        "$value": "#70a3ff",
+        "$value": "#6ca4ff",
         "$type": "color"
       },
       "dark-ink": {
-        "$value": "#78a9ff",
+        "$value": "#74a9ff",
         "$type": "color"
       },
       "dark-heat-low": {
-        "$value": "#293751",
+        "$value": "#283851",
         "$type": "color"
       },
       "dark-heat-high": {
-        "$value": "#4474cc",
+        "$value": "#4075cc",
         "$type": "color"
       },
       "dark-outline": {
-        "$value": "#6789c4",
+        "$value": "#6489c3",
         "$type": "color"
       },
       "dark-tint-1": {
@@ -192,7 +192,7 @@
         "$type": "color"
       },
       "dark-tint-3": {
-        "$value": "#2a3446",
+        "$value": "#2a3546",
         "$type": "color"
       }
     },
@@ -397,19 +397,19 @@
       }
     },
     "fg": {
-      "$value": "{color.gray.878}",
+      "$value": "{primitive.simple2.fg}",
       "$type": "color"
     },
     "muted": {
-      "$value": "{color.gray.635}",
+      "$value": "{primitive.simple2.muted}",
       "$type": "color"
     },
     "group-title": {
-      "$value": "{color.gray.651}",
+      "$value": "{primitive.simple2.group-title}",
       "$type": "color"
     },
     "bg": {
-      "$value": "{color.gray.27}",
+      "$value": "{primitive.simple2.bg}",
       "$type": "color"
     },
     "group-1": {
@@ -425,15 +425,15 @@
       "$type": "color"
     },
     "node": {
-      "$value": "{color.gray.0}",
+      "$value": "{primitive.simple2.node}",
       "$type": "color"
     },
     "surface": {
-      "$value": "{color.gray.59}",
+      "$value": "{primitive.simple2.surface}",
       "$type": "color"
     },
     "card": {
-      "$value": "{color.gray.43}",
+      "$value": "{primitive.simple2.card}",
       "$type": "color"
     },
     "card-on": {
@@ -441,7 +441,7 @@
       "$type": "color"
     },
     "page": {
-      "$value": "{color.gray.0}",
+      "$value": "{primitive.simple2.page}",
       "$type": "color"
     },
     "outline": {
@@ -449,11 +449,11 @@
       "$type": "color"
     },
     "border": {
-      "$value": "{color.gray.106}",
+      "$value": "{primitive.simple2.border}",
       "$type": "color"
     },
     "plate-border": {
-      "$value": "{color.gray.145}",
+      "$value": "{primitive.simple2.plate-border}",
       "$type": "color"
     },
     "line": {
@@ -572,10 +572,11 @@
   "font": {
     "sans": {
       "$value": [
-        "Pretendard",
-        "Pretendard Variable",
+        "ui-sans-serif",
         "-apple-system",
         "BlinkMacSystemFont",
+        "Segoe UI",
+        "Roboto",
         "Apple SD Gothic Neo",
         "sans-serif"
       ],
@@ -833,7 +834,7 @@
     },
     "2xl": {
       "$value": {
-        "value": 14,
+        "value": 12,
         "unit": "px"
       },
       "$type": "dimension"
@@ -906,6 +907,112 @@
         1
       ],
       "$type": "cubicBezier"
+    }
+  },
+  "simple2": {
+    "heading": {
+      "$value": 36,
+      "$type": "dimension"
+    },
+    "subheading": {
+      "$value": 27,
+      "$type": "dimension"
+    },
+    "body": {
+      "$value": 18,
+      "$type": "dimension"
+    },
+    "control": {
+      "$value": 15,
+      "$type": "dimension"
+    },
+    "caption": {
+      "$value": 13,
+      "$type": "dimension"
+    },
+    "page-gutter": {
+      "$value": 24,
+      "$type": "dimension"
+    },
+    "page-gap": {
+      "$value": 48,
+      "$type": "dimension"
+    },
+    "page-width": {
+      "$value": 1180,
+      "$type": "dimension"
+    },
+    "reading-width": {
+      "$value": 948,
+      "$type": "dimension"
+    },
+    "control-gap": {
+      "$value": 8,
+      "$type": "dimension"
+    },
+    "focus-width": {
+      "$value": 3,
+      "$type": "dimension"
+    },
+    "leading": {
+      "$value": 1.6,
+      "$type": "number"
+    },
+    "title-leading": {
+      "$value": 1.2,
+      "$type": "number"
+    },
+    "shadow": {
+      "$value": "{primitive.simple2.shadow}",
+      "$type": "string"
+    }
+  },
+  "primitive": {
+    "simple2": {
+      "fg": {
+        "$value": "#303336",
+        "$type": "color"
+      },
+      "muted": {
+        "$value": "#505b69",
+        "$type": "color"
+      },
+      "group-title": {
+        "$value": "#505b69",
+        "$type": "color"
+      },
+      "bg": {
+        "$value": "#f2f5f7",
+        "$type": "color"
+      },
+      "page": {
+        "$value": "#ffffff",
+        "$type": "color"
+      },
+      "node": {
+        "$value": "#ffffff",
+        "$type": "color"
+      },
+      "card": {
+        "$value": "#f6f7fa",
+        "$type": "color"
+      },
+      "surface": {
+        "$value": "#edeef1",
+        "$type": "color"
+      },
+      "plate-border": {
+        "$value": "#d1d7de",
+        "$type": "color"
+      },
+      "border": {
+        "$value": "#838b96",
+        "$type": "color"
+      },
+      "shadow": {
+        "$value": "0 2px 8px rgba(0,0,0,.10), 0 0 2px rgba(0,0,0,.10)",
+        "$type": "string"
+      }
     }
   }
 }

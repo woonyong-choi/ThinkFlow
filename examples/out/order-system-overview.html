@@ -56,25 +56,25 @@
   --color-gray-929: #121212;
   --color-gray-933: #111111;
   --color-gray-1000: #000000;
-  --color-blue-anchor: #125de6;
+  --color-blue-anchor: #1e66d8;
   --color-blue-light-fill: #edf4ff;
-  --color-blue-light-stroke: #125de6;
-  --color-blue-light-ink: #0151d9;
-  --color-blue-light-heat-low: #b7cdf5;
-  --color-blue-light-heat-high: #004dd2;
-  --color-blue-light-outline: #658dd5;
+  --color-blue-light-stroke: #1e66d8;
+  --color-blue-light-ink: #0a57c8;
+  --color-blue-light-heat-low: #b3cbf2;
+  --color-blue-light-heat-high: #0352c3;
+  --color-blue-light-outline: #678dcb;
   --color-blue-light-tint-1: #e5eefc;
   --color-blue-light-tint-2: #d7e2f4;
-  --color-blue-light-tint-3: #cad7ed;
-  --color-blue-dark-fill: #1c2a43;
-  --color-blue-dark-stroke: #70a3ff;
-  --color-blue-dark-ink: #78a9ff;
-  --color-blue-dark-heat-low: #293751;
-  --color-blue-dark-heat-high: #4474cc;
-  --color-blue-dark-outline: #6789c4;
+  --color-blue-light-tint-3: #c9d7ed;
+  --color-blue-dark-fill: #1b2a43;
+  --color-blue-dark-stroke: #6ca4ff;
+  --color-blue-dark-ink: #74a9ff;
+  --color-blue-dark-heat-low: #283851;
+  --color-blue-dark-heat-high: #4075cc;
+  --color-blue-dark-outline: #6489c3;
   --color-blue-dark-tint-1: #1a202b;
   --color-blue-dark-tint-2: #222a38;
-  --color-blue-dark-tint-3: #2a3446;
+  --color-blue-dark-tint-3: #2a3546;
   --color-purple-anchor: #b28fd1;
   --color-purple-light-fill: #f7f0ff;
   --color-purple-light-stroke: #8c6aaa;
@@ -123,21 +123,21 @@
   --color-orange-dark-stroke: #fa7a49;
   --color-orange-dark-ink: #ff875a;
   --color-orange-dark-outline: #c37356;
-  --color-fg: var(--color-gray-878);
-  --color-muted: var(--color-gray-635);
-  --color-group-title: var(--color-gray-651);
-  --color-bg: var(--color-gray-27);
+  --color-fg: var(--primitive-simple2-fg);
+  --color-muted: var(--primitive-simple2-muted);
+  --color-group-title: var(--primitive-simple2-group-title);
+  --color-bg: var(--primitive-simple2-bg);
   --color-group-1: var(--color-gray-71);
   --color-group-2: var(--color-gray-118);
   --color-group-3: var(--color-gray-161);
-  --color-node: var(--color-gray-0);
-  --color-surface: var(--color-gray-59);
-  --color-card: var(--color-gray-43);
+  --color-node: var(--primitive-simple2-node);
+  --color-surface: var(--primitive-simple2-surface);
+  --color-card: var(--primitive-simple2-card);
   --color-card-on: var(--color-blue-light-fill);
-  --color-page: var(--color-gray-0);
+  --color-page: var(--primitive-simple2-page);
   --color-outline: var(--color-gray-529);
-  --color-border: var(--color-gray-106);
-  --color-plate-border: var(--color-gray-145);
+  --color-border: var(--primitive-simple2-border);
+  --color-plate-border: var(--primitive-simple2-plate-border);
   --color-line: var(--color-gray-282);
   --color-state-active: var(--color-blue-light-stroke);
   --color-state-active-fill: var(--color-blue-light-ink);
@@ -164,7 +164,7 @@
   --color-data-heat-ink-on: var(--color-gray-0);
   --color-data-grid: var(--color-gray-212);
   --color-accent: var(--color-blue-light-stroke);
-  --font-sans: Pretendard, 'Pretendard Variable', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif;
+  --font-sans: ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Apple SD Gothic Neo', sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
   --size-text-9: 9px;
   --size-text-11: 11px;
@@ -200,7 +200,7 @@
   --radius-md: 6px;
   --radius-lg: 8px;
   --radius-xl: 10px;
-  --radius-2xl: 14px;
+  --radius-2xl: 12px;
   --radius-full: 999px;
   --border-hair: 0.75px;
   --border-thin: 1px;
@@ -210,6 +210,31 @@
   --duration-fast: 200ms;
   --easing-move: cubic-bezier(0.455, 0.03, 0.515, 0.955);
   --easing-reveal: cubic-bezier(0, 0, 0.58, 1);
+  --simple2-heading: 36px;
+  --simple2-subheading: 27px;
+  --simple2-body: 18px;
+  --simple2-control: 15px;
+  --simple2-caption: 13px;
+  --simple2-page-gutter: 24px;
+  --simple2-page-gap: 48px;
+  --simple2-page-width: 1180px;
+  --simple2-reading-width: 948px;
+  --simple2-control-gap: 8px;
+  --simple2-focus-width: 3px;
+  --simple2-leading: 1.6;
+  --simple2-title-leading: 1.2;
+  --simple2-shadow: var(--primitive-simple2-shadow);
+  --primitive-simple2-fg: #303336;
+  --primitive-simple2-muted: #505b69;
+  --primitive-simple2-group-title: #505b69;
+  --primitive-simple2-bg: #f2f5f7;
+  --primitive-simple2-page: #ffffff;
+  --primitive-simple2-node: #ffffff;
+  --primitive-simple2-card: #f6f7fa;
+  --primitive-simple2-surface: #edeef1;
+  --primitive-simple2-plate-border: #d1d7de;
+  --primitive-simple2-border: #838b96;
+  --primitive-simple2-shadow: 0 2px 8px rgba(0,0,0,.10), 0 0 2px rgba(0,0,0,.10);
   --color-palette-amber-light-fill: var(--color-orange-light-fill);
   --color-palette-amber-light-stroke: var(--color-orange-light-stroke);
   --color-palette-amber-light-ink: var(--color-orange-light-ink);
@@ -244,20 +269,20 @@
   --color-palette-pink-dark-stroke: var(--color-purple-dark-stroke);
   --color-palette-pink-dark-ink: var(--color-purple-dark-ink);
   --color-palette-pink-dark-outline: var(--color-purple-dark-outline);
-  --color-palette-sky-light-fill: #e9f1fe;
+  --color-palette-sky-light-fill: #e8f1fe;
   --color-palette-sky-light-stroke: var(--color-blue-light-stroke);
   --color-palette-sky-light-ink: var(--color-blue-light-ink);
   --color-palette-sky-light-tint-1: var(--color-blue-light-tint-1);
   --color-palette-sky-light-tint-2: var(--color-blue-light-tint-2);
   --color-palette-sky-light-tint-3: var(--color-blue-light-tint-3);
-  --color-palette-sky-light-outline: #628ad3;
-  --color-palette-sky-dark-fill: #1c2a43;
+  --color-palette-sky-light-outline: #648bca;
+  --color-palette-sky-dark-fill: #1b2a43;
   --color-palette-sky-dark-stroke: var(--color-blue-dark-stroke);
   --color-palette-sky-dark-ink: var(--color-blue-dark-ink);
   --color-palette-sky-dark-tint-1: var(--color-blue-dark-tint-1);
   --color-palette-sky-dark-tint-2: var(--color-blue-dark-tint-2);
   --color-palette-sky-dark-tint-3: var(--color-blue-dark-tint-3);
-  --color-palette-sky-dark-outline: #6789c4;
+  --color-palette-sky-dark-outline: #6489c3;
   --color-palette-slate-light-fill: #e7e7e7;
   --color-palette-slate-light-stroke: var(--color-gray-635);
   --color-palette-slate-light-ink: var(--color-gray-635);
@@ -324,11 +349,11 @@
   --color-tag-gray: var(--color-paint-gray-stroke);
   --color-tag-red: var(--color-paint-red-stroke);
   --color-tag-brand: var(--color-state-active);
-  --font-figure-sans: FigSans, FigSansSym, FigSansMath, Pretendard, 'Pretendard Variable', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif;
+  --font-figure-sans: FigSans, FigSansSym, FigSansMath, Pretendard, 'Pretendard Variable', ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Apple SD Gothic Neo', sans-serif;
   --font-figure-mono: FigMono, FigSans, FigSansSym, FigSansMath, ui-monospace, SFMono-Regular, Menlo, monospace;
-  --size-control-outer: 36px;
-  --size-control-inner: 28px;
-  --size-control-icon: 16px;
+  --size-control-outer: 52px;
+  --size-control-inner: 44px;
+  --size-control-icon: 20px;
   --size-control-icon-stroke: 1.75px;
   --size-pill-height: 18px;
   --size-icon-node: 20px;
@@ -450,7 +475,7 @@
     --color-card-on: var(--color-blue-dark-fill);
     --color-page: var(--color-gray-929);
     --color-outline: var(--color-gray-467);
-    --color-border: var(--color-gray-776);
+    --color-border: var(--primitive-simple2-border);
     --color-plate-border: var(--color-gray-788);
     --color-line: var(--color-gray-651);
     --color-state-active: var(--color-blue-dark-stroke);
@@ -544,7 +569,7 @@
   --color-card-on: var(--color-blue-dark-fill);
   --color-page: var(--color-gray-929);
   --color-outline: var(--color-gray-467);
-  --color-border: var(--color-gray-776);
+  --color-border: var(--primitive-simple2-border);
   --color-plate-border: var(--color-gray-788);
   --color-line: var(--color-gray-651);
   --color-state-active: var(--color-blue-dark-stroke);
@@ -624,16 +649,10 @@
   --color-paint-gray-dot: var(--color-palette-slate-dark-dot);
 }
 /* 조작 단추의 공통 모양과 상태. 재생기(원 단추, 탭), 목록 쪽과 문서 미리보기(테마 묶음)가 모두 이 파일 하나를 쓴다. */
-.fl-round:hover,
-.fl-tabs button:hover,
-.theme button:hover {
-  color: var(--color-fg);
-}
-
 .fl-round:focus-visible,
 .fl-tabs button:focus-visible,
 .theme button:focus-visible {
-  outline: var(--border-tag) solid var(--color-ui-focus);
+  outline: var(--simple2-focus-width) solid var(--color-ui-focus);
   outline-offset: var(--space-1);
 }
 
@@ -644,15 +663,16 @@
   box-sizing: border-box;
   min-height: var(--size-control-outer);
   padding: var(--space-1-5);
-  background: var(--color-bg);
-  border: var(--border-thin) solid var(--color-border);
+  background: var(--color-surface);
+  border: var(--border-thin) solid var(--color-plate-border);
   border-radius: var(--radius-full);
 }
 
 .fl-tabs button,
 .theme button {
   min-height: var(--size-control-inner);
-  font: var(--size-text-13) var(--font-figure-sans);
+  min-width: var(--size-control-inner);
+  font: var(--simple2-control) var(--font-sans);
   color: var(--color-muted);
   cursor: pointer;
   background: transparent;
@@ -664,21 +684,44 @@
   padding: 0 var(--space-6);
 }
 
-/* segmented 방식: 켜진 항목은 꽉 찬 알약(ui.control-on)이다. 켜짐 표시는 묶음 바탕과 대비 3인 border 색 고리다. */
+/* 켜진 탭은 독립된 면과 파란 글자, 그림자로 묶음 바탕에서 구분한다. */
 .fl-tabs button.on,
 .theme button[aria-pressed='true'] {
   font-weight: var(--weight-semibold);
-  color: var(--color-fg);
+  color: var(--color-state-active-text);
   background: var(--color-ui-control-on);
-  box-shadow: 0 0 0 var(--border-thin) var(--color-border);
+  box-shadow: var(--simple2-shadow);
+}
+
+/* 같은 조작의 hover와 pressed를 재생기와 목록에서 공유한다. */
+.fl-round:hover,
+.fl-tabs button:hover,
+.theme button:hover {
+  color: var(--color-state-active-text);
+  background: var(--color-card-on);
+}
+
+.fl-round:active,
+.fl-tabs button:active,
+.theme button:active {
+  color: var(--color-state-on-active);
+  background: var(--color-state-active-fill);
+}
+
+.fl-round:disabled,
+.fl-tabs button:disabled,
+.theme button:disabled {
+  color: var(--color-muted);
+  background: var(--color-surface);
+  cursor: default;
 }
 /* 재생기 틀과 조작 막대. iframe 안(html.embedded)에서는 테두리와 바깥 여백을 뺀다. */
-/* 그림 표시 폭 규칙: 문서 미리보기, 목록 카드, 재생기가 같다. 컨테이너 폭은 화면 폭에서 좌우 바깥 여백(space-16)을 뺀 값이고,
+/* 그림 표시 폭 규칙: 문서 미리보기, 목록 카드, 재생기가 같다. 컨테이너 폭은 화면 폭에서 좌우 바깥 여백(simple2.page-gutter)을 뺀 값이고,
    그림 폭은 min(표준 캔버스 폭, 컨테이너 폭)이다. 컨테이너 안쪽에는 좌우 여백과 레이아웃을 차지하는 테두리를 두지 않아 세 곳의 그림 폭이 같다. */
 body {
   margin: 0;
-  padding: var(--space-12) var(--space-16);
-  font-family: var(--font-figure-sans);
+  padding: var(--simple2-page-gap) var(--simple2-page-gutter);
+  font-family: var(--font-sans);
   letter-spacing: var(--tracking-text);
   color: var(--color-fg);
   background: var(--color-page);
@@ -732,7 +775,7 @@ html.embedded .fl-figure {
   display: grid;
   gap: var(--space-6);
   justify-items: center;
-  padding: var(--space-8);
+  padding: var(--simple2-page-gutter);
   background: var(--color-bg);
   border-top: var(--border-thin) solid var(--color-plate-border);
 }
@@ -740,8 +783,9 @@ html.embedded .fl-figure {
 /* 양쪽 칸 너비가 같아(1fr) 배속 글자가 바뀌어도 탭 묶음이 설명과 같은 축에 있다. */
 .fl-bar {
   display: grid;
-  grid-template-columns: 1fr auto 1fr;
-  gap: var(--space-5);
+  grid-template-columns: minmax(var(--size-control-outer), 1fr) minmax(0, auto) minmax(var(--size-control-outer), 1fr);
+  max-width: 100%;
+  gap: var(--simple2-control-gap);
   align-items: center;
 }
 
@@ -783,12 +827,12 @@ html.embedded .fl-figure {
   min-width: var(--size-control-outer);
   height: var(--size-control-outer);
   padding: 0 var(--space-2);
-  font: var(--size-text-13) var(--font-figure-sans);
+  font: var(--simple2-control) var(--font-sans);
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
-  color: var(--color-muted);
+  color: var(--color-state-active-text);
   background: var(--color-node);
-  border: var(--border-thin) solid var(--color-border);
+  border: var(--border-thin) solid var(--color-plate-border);
   border-radius: var(--radius-full);
   cursor: pointer;
 }
@@ -1526,13 +1570,13 @@ html.embedded .fl-figure {
 <body>
 <figure class="fl-figure" tabindex="0" style="--figure-canvas: 1440px">
 <button type="button" class="fl-round fl-full"></button><div class="fl-zoom"><button type="button" class="fl-round" data-zoom="in" aria-label="확대"></button><button type="button" class="fl-round" data-zoom="out" aria-label="축소"></button><button type="button" class="fl-round" data-zoom="fit" aria-label="전체 보기"></button></div>
-<div class="fl-canvas"><svg xmlns="http://www.w3.org/2000/svg" class="fl" width="1440" height="2131" style="aspect-ratio: 1440 / 2131" viewBox="-413.8 0 1440 2131" role="img"><title>복잡한 구성도</title><defs><marker id="fl-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-line)"/></marker><marker id="fl-arrow-on" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-state-active)"/></marker><marker id="fl-arrow-main" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-data-main)"/></marker></defs><g id="g-0" class="fl-group" data-id="clients"><rect x="169" y="28" width="344" height="182" rx="14" class="frame-box fl-stroke "/><text x="187" y="46" class="frame">클라이언트</text></g>
-<g id="g-1" class="fl-group" data-id="edge"><rect x="142" y="348" width="192" height="364" rx="14" class="frame-box fl-stroke "/><text x="160" y="366" class="frame">엣지</text></g>
-<g id="g-2" class="fl-group tabbed" data-id="service"><rect x="44" y="850" width="354" height="678" rx="14" class="frame-box fl-stroke ps-sky tint-sky-1 "/><rect x="52" y="854" width="20" height="20" rx="6" class="icon-tile"/><g class="fl-icon in-tile" transform="translate(55.8 857.8) scale(0.3875)"><g fill="currentColor"><circle cx="9" cy="6" r="1"/><path d="M26,10H6A2.0021,2.0021,0,0,1,4,8V4A2.0021,2.0021,0,0,1,6,2H26a2.0021,2.0021,0,0,1,2,2V8A2.0021,2.0021,0,0,1,26,10ZM6,4V8H26V4Z"/><circle cx="9" cy="16" r="1"/><path d="M26,20H6a2.0021,2.0021,0,0,1-2-2V14a2.0021,2.0021,0,0,1,2-2H26a2.0021,2.0021,0,0,1,2,2v4A2.0021,2.0021,0,0,1,26,20ZM6,14v4H26V14Z"/><circle cx="9" cy="26" r="1"/><path d="M26,30H6a2.0021,2.0021,0,0,1-2-2V24a2.0021,2.0021,0,0,1,2-2H26a2.0021,2.0021,0,0,1,2,2v4A2.0021,2.0021,0,0,1,26,30ZM6,24v4H26V24Z"/></g></g><text x="90" y="868" class="frame gt-sky">주문 서비스</text></g>
-<g id="g-3" class="fl-group" data-id="jobs"><rect x="68" y="1154" width="197.6" height="350" rx="14" class="frame-box fl-stroke d2 tint-sky-2 "/><text x="86" y="1172" class="frame">작업 처리</text></g>
-<g id="g-4" class="fl-group" data-id="exec"><rect x="92" y="1335" width="149.6" height="145" rx="14" class="frame-box fl-stroke d3 tint-sky-3 "/><text x="110" y="1353" class="frame">실행기</text></g>
-<g id="g-5" class="fl-group" data-id="data"><rect x="28" y="1666" width="319.1" height="437" rx="14" class="frame-box fl-stroke "/><text x="46" y="1684" class="frame">데이터</text></g>
-<g id="g-6" class="fl-group" data-id="outer"><rect x="379.1" y="1666" width="165" height="340" rx="14" class="frame-box fl-stroke dashed ps-purple tint-purple-1 " stroke-dasharray="5 4"/><text x="397.1" y="1684" class="frame gt-purple">외부</text></g>
+<div class="fl-canvas"><svg xmlns="http://www.w3.org/2000/svg" class="fl" width="1440" height="2131" style="aspect-ratio: 1440 / 2131" viewBox="-413.8 0 1440 2131" role="img"><title>복잡한 구성도</title><defs><marker id="fl-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-line)"/></marker><marker id="fl-arrow-on" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-state-active)"/></marker><marker id="fl-arrow-main" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-data-main)"/></marker></defs><g id="g-0" class="fl-group" data-id="clients"><rect x="169" y="28" width="344" height="182" rx="12" class="frame-box fl-stroke "/><text x="187" y="46" class="frame">클라이언트</text></g>
+<g id="g-1" class="fl-group" data-id="edge"><rect x="142" y="348" width="192" height="364" rx="12" class="frame-box fl-stroke "/><text x="160" y="366" class="frame">엣지</text></g>
+<g id="g-2" class="fl-group tabbed" data-id="service"><rect x="44" y="850" width="354" height="678" rx="12" class="frame-box fl-stroke ps-sky tint-sky-1 "/><rect x="52" y="854" width="20" height="20" rx="6" class="icon-tile"/><g class="fl-icon in-tile" transform="translate(55.8 857.8) scale(0.3875)"><g fill="currentColor"><circle cx="9" cy="6" r="1"/><path d="M26,10H6A2.0021,2.0021,0,0,1,4,8V4A2.0021,2.0021,0,0,1,6,2H26a2.0021,2.0021,0,0,1,2,2V8A2.0021,2.0021,0,0,1,26,10ZM6,4V8H26V4Z"/><circle cx="9" cy="16" r="1"/><path d="M26,20H6a2.0021,2.0021,0,0,1-2-2V14a2.0021,2.0021,0,0,1,2-2H26a2.0021,2.0021,0,0,1,2,2v4A2.0021,2.0021,0,0,1,26,20ZM6,14v4H26V14Z"/><circle cx="9" cy="26" r="1"/><path d="M26,30H6a2.0021,2.0021,0,0,1-2-2V24a2.0021,2.0021,0,0,1,2-2H26a2.0021,2.0021,0,0,1,2,2v4A2.0021,2.0021,0,0,1,26,30ZM6,24v4H26V24Z"/></g></g><text x="90" y="868" class="frame gt-sky">주문 서비스</text></g>
+<g id="g-3" class="fl-group" data-id="jobs"><rect x="68" y="1154" width="197.6" height="350" rx="12" class="frame-box fl-stroke d2 tint-sky-2 "/><text x="86" y="1172" class="frame">작업 처리</text></g>
+<g id="g-4" class="fl-group" data-id="exec"><rect x="92" y="1335" width="149.6" height="145" rx="12" class="frame-box fl-stroke d3 tint-sky-3 "/><text x="110" y="1353" class="frame">실행기</text></g>
+<g id="g-5" class="fl-group" data-id="data"><rect x="28" y="1666" width="319.1" height="437" rx="12" class="frame-box fl-stroke "/><text x="46" y="1684" class="frame">데이터</text></g>
+<g id="g-6" class="fl-group" data-id="outer"><rect x="379.1" y="1666" width="165" height="340" rx="12" class="frame-box fl-stroke dashed ps-purple tint-purple-1 " stroke-dasharray="5 4"/><text x="397.1" y="1684" class="frame gt-purple">외부</text></g>
 <g id="n-0" class="fl-node" data-id="web"><g class="fl-halo " fill="none" opacity="0"><rect x="193" y="68" width="100" height="81" rx="10" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="193" y="68" width="100" height="81" rx="10" fill="var(--color-node)" class="fl-stroke "/><rect x="233" y="80" width="20" height="20" rx="6" class="icon-tile"/><g class="fl-icon in-tile" transform="translate(236.8 83.8) scale(0.3875)"><g fill="currentColor"><path d="M28,4H4A2,2,0,0,0,2,6V22a2,2,0,0,0,2,2h8v4H8v2H24V28H20V24h8a2,2,0,0,0,2-2V6A2,2,0,0,0,28,4ZM18,28H14V24h4Zm10-6H4V6H28Z"/></g></g><text x="243" y="117.7" class="label">웹</text><text x="243" y="133.5" class="sub">브라우저</text></g>
 <g id="n-1" class="fl-node" data-id="app"><g class="fl-halo " fill="none" opacity="0"><rect x="313" y="68" width="176" height="118" rx="10" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="313" y="68" width="176" height="118" rx="10" fill="var(--color-node)" class="fl-stroke "/><rect x="391" y="80" width="20" height="20" rx="6" class="icon-tile"/><g class="fl-icon in-tile" transform="translate(394.8 83.8) scale(0.3875)"><g fill="currentColor"><path d="M22,4H10A2.002,2.002,0,0,0,8,6V28a2.0023,2.0023,0,0,0,2,2H22a2.0027,2.0027,0,0,0,2-2V6A2.0023,2.0023,0,0,0,22,4Zm0,2,0,2H10V6ZM10,28V10H22l0,18Z"/></g></g><text x="401" y="117.7" class="label">앱</text><text x="401" y="133.5" class="sub">iOS, Android</text><rect x="323" y="149" width="156" height="27" rx="6" fill="var(--color-card)" stroke="var(--color-outline)" stroke-dasharray="3 3" opacity="0" class="fl-card "/><g id="n-1-c0" opacity="0" class="fl-layer "><text x="331" y="166" class="row">앱 화면 재고</text></g></g>
 <g id="n-2" class="fl-node" data-id="gw"><g class="fl-halo " fill="none" opacity="0"><rect x="210" y="388" width="100" height="81" rx="10" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="210" y="388" width="100" height="81" rx="10" fill="var(--color-node)" class="fl-stroke "/><rect x="232" y="400" width="20" height="20" rx="6" class="icon-tile"/><g class="fl-icon in-tile" transform="translate(235.8 403.8) scale(0.3875)"><g fill="currentColor"><path d="M17,18.1841V13.8159a3.0007,3.0007,0,1,0-2,0v4.3687a3,3,0,1,0,2,0ZM16,10a1,1,0,1,1-1,1A1.0009,1.0009,0,0,1,16,10Zm0,12a1,1,0,1,1,1-1A1.0009,1.0009,0,0,1,16,22Z"/><path d="M30.4141,17.4141a1.9995,1.9995,0,0,0,0-2.8282L24.6272,8.7993l2.9006-2.8628a2.0018,2.0018,0,1,0-1.4416-1.3872L23.2129,7.3848,17.4141,1.5859a1.9995,1.9995,0,0,0-2.8282,0L8.7993,7.3726,5.9368,4.4717A2.002,2.002,0,1,0,4.55,5.9136l2.835,2.8735L1.5859,14.5859a1.9995,1.9995,0,0,0,0,2.8282l5.7989,5.7988L4.55,26.0864a1.9977,1.9977,0,1,0,1.387,1.4419l2.8625-2.9009,5.7866,5.7867a1.9995,1.9995,0,0,0,2.8282,0l5.7988-5.7989,2.8733,2.8355a1.998,1.998,0,1,0,1.4416-1.3872l-2.9006-2.8628ZM16,29,3,16,16,3,29,16Z"/></g></g><g class="fl-badge"><rect x="256" y="401" width="32" height="18" rx="9" class="badge-pill"/><text x="272" y="414" class="badge">GW</text></g><text x="260" y="437.7" class="label">게이트웨이</text><text x="260" y="453.5" class="sub">인증, 라우팅</text></g>
@@ -1567,7 +1611,7 @@ html.embedded .fl-figure {
 <g class="fl-value"><rect x="327" y="153" width="148" height="19" rx="4" fill="none" stroke="var(--color-state-active)" stroke-width="1.75" opacity="0" data-vf="7"></rect><text x="471" y="166" class="value" opacity="0" data-v="7" data-t="120">120</text></g>
 <g class="fl-value"><rect x="204" y="975" width="148" height="19" rx="4" fill="none" stroke="var(--color-state-active)" stroke-width="1.75" opacity="0" data-vf="8"></rect><text x="348" y="988" class="value" opacity="0" data-v="8" data-t="0">0</text></g><g class="fl-packets"></g><g class="fl-pills"><g id="l-0" class="fl-edge"><g class="fl-pill"><rect x="220" y="270" width="45.4" height="18" rx="9" class="pill "/><rect x="222" y="272" width="14" height="14" rx="7" class="number-pill"/><text x="229" y="283" class="number">1</text><text x="249.2" y="283" class="edgelabel ">주문</text></g></g><g id="l-1" class="fl-edge"><g class="fl-pill"><rect x="378" y="270" width="45.7" height="18" rx="9" class="pill "/><rect x="380" y="271.8" width="14.3" height="14.3" rx="7.2" class="number-pill"/><text x="387.2" y="283" class="number">2</text><text x="407.5" y="283" class="edgelabel ">주문</text></g></g><g id="l-2" class="fl-edge"><g class="fl-pill"><rect x="192" y="529" width="46.1" height="18" rx="9" class="pill "/><rect x="194" y="530.7" width="14.7" height="14.7" rx="7.3" class="number-pill"/><text x="201.3" y="542" class="number">3</text><text x="221.9" y="542" class="edgelabel ">정적</text></g></g><g id="l-3" class="fl-edge"><g class="fl-pill"><rect x="242.5" y="772" width="78.8" height="18" rx="9" class="pill "/><rect x="244.5" y="773.6" width="14.8" height="14.8" rx="7.4" class="number-pill"/><text x="251.9" y="785" class="number">4</text><text x="288.8" y="785" class="edgelabel ">인증 뒤 전달</text></g></g><g id="l-4" class="fl-edge"><g class="fl-pill"><rect x="144" y="1076" width="45.9" height="18" rx="9" class="pill "/><rect x="146" y="1077.8" width="14.5" height="14.5" rx="7.2" class="number-pill"/><text x="153.2" y="1089" class="number">5</text><text x="173.7" y="1089" class="edgelabel ">작업</text></g></g><g id="l-5" class="fl-edge"><g class="fl-pill"><rect x="159.7" y="1317.7" width="14.7" height="14.7" rx="7.3" class="number-pill"/><text x="167" y="1329" class="number">6</text></g></g><g id="l-6" class="fl-edge"><g class="fl-pill"><rect x="496.5" y="1588" width="45.4" height="18" rx="9" class="pill "/><rect x="498.5" y="1590" width="14" height="14" rx="7" class="number-pill"/><text x="505.5" y="1601" class="number">7</text><text x="525.7" y="1601" class="edgelabel ">차감</text></g></g><g id="l-7" class="fl-edge"><g class="fl-pill"><rect x="126.5" y="1588" width="46.1" height="18" rx="9" class="pill "/><rect x="128.5" y="1589.7" width="14.6" height="14.6" rx="7.3" class="number-pill"/><text x="135.8" y="1601" class="number">8</text><text x="156.3" y="1601" class="edgelabel ">기록</text></g></g><g id="l-8" class="fl-edge"><g class="fl-pill"><rect x="113" y="1920" width="32.4" height="18" rx="9" class="pill "/><text x="129.2" y="1933" class="edgelabel ">복제</text></g></g><g id="l-9" class="fl-edge"><g class="fl-pill"><rect x="248" y="1920" width="41.6" height="18" rx="9" class="pill "/><text x="268.8" y="1933" class="edgelabel ">무효화</text></g></g><g id="l-10" class="fl-edge"><g class="fl-pill"><rect x="419.6" y="1588" width="66.9" height="18" rx="9" class="pill "/><rect x="421.6" y="1589.7" width="14.7" height="14.7" rx="7.3" class="number-pill"/><text x="428.9" y="1601" class="number">9</text><text x="459.9" y="1601" class="edgelabel ">승인 요청</text></g></g><g id="l-11" class="fl-edge"><g class="fl-pill"><rect x="551.9" y="1588" width="32.4" height="18" rx="9" class="pill "/><text x="568.1" y="1601" class="edgelabel ">지표</text></g></g><g id="l-12" class="fl-edge"><g class="fl-pill"><rect x="432.1" y="1823" width="41.6" height="18" rx="9" class="pill "/><text x="452.9" y="1836" class="edgelabel ">오류율</text></g></g></g></svg></div>
 <figcaption class="fl-foot">
-<div class="fl-bar"><button type="button" class="fl-round fl-pause"><svg class="fl-ring" viewBox="0 0 36 36" aria-hidden="true"><circle class="fl-ring-fill" cx="18" cy="18" r="17.125" stroke-width="1.75" transform="rotate(-90 18 18)"/></svg><span class="fl-pause-icon"></span></button><div class="fl-tabs" role="tablist"></div><button type="button" class="fl-round fl-rate" aria-label="배속">1×</button></div>
+<div class="fl-bar"><button type="button" class="fl-round fl-pause"><svg class="fl-ring" viewBox="0 0 52 52" aria-hidden="true"><circle class="fl-ring-fill" cx="26" cy="26" r="25.125" stroke-width="1.75" transform="rotate(-90 26 26)"/></svg><span class="fl-pause-icon"></span></button><div class="fl-tabs" role="tablist"></div><button type="button" class="fl-round fl-rate" aria-label="배속">1×</button></div>
 <p class="fl-caption" aria-live="polite"></p>
 </figcaption>
 </figure>
@@ -2384,7 +2428,7 @@ function drawValueState(stage, seg, t) {
   });
 }
 
-figurePlay(document.querySelector('.fl-figure'), {"trackCount":4,"values":[{"si":0,"periods":[[0,29521,"120"],[29521,31821,"119"]],"flashes":[[29521,30221]]},{"si":0,"periods":[[0,29521,"120"],[29521,31821,"119"]],"flashes":[[29521,30221]]},{"si":0,"periods":[[0,10408,"0"],[10408,29521,"1"],[29521,31821,"0"]],"flashes":[[10408,11108],[29521,30221]]},{"si":1,"periods":[[31821,35946,"120"],[35946,36946,"119"],[36946,37946,"118"],[37946,38946,"117"],[38946,39821,"116"]],"flashes":[[35946,36646],[36946,37646],[37946,38646],[38946,39646]]},{"si":1,"periods":[[31821,35946,"120"],[35946,36946,"119"],[36946,37946,"118"],[37946,38946,"117"],[38946,39821,"116"]],"flashes":[[35946,36646],[36946,37646],[37946,38646],[38946,39646]]},{"si":1,"periods":[[31821,35946,"0"],[35946,36946,"-1"],[36946,37946,"-2"],[37946,38946,"-3"],[38946,39388.11363,"-4"],[39388.11363,39821,"-3"]],"flashes":[[35946,36646],[36946,37646],[37946,38646],[38946,39821]]},{"si":2,"periods":[[39821,50227,"120"]],"flashes":[]},{"si":2,"periods":[[39821,50227,"120"]],"flashes":[]},{"si":2,"periods":[[39821,50227,"0"]],"flashes":[]}],"segs":[{"si":0,"t0":0,"t1":5145,"hops":[{"edge":0,"isBack":false,"ms":2988,"to":"gw","tone":"brand","line":54}],"edgesOn":[0],"nodesOn":[0,2,7,1,4],"groupsOn":[],"partsOn":[],"cards":{"1":0,"4":0,"7":0},"cardsBefore":{"1":0,"4":0,"7":0},"cardsAt":{},"caption":"웹 주문 하나가 게이트웨이와 API를 거쳐 재고를 줄인다","series":[],"growing":[],"lights":[]},{"si":0,"t0":5145,"t1":11108,"hops":[{"edge":3,"isBack":false,"ms":5263,"to":"api","line":55}],"edgesOn":[0,3],"nodesOn":[0,2,4,7,1],"groupsOn":[],"partsOn":[],"cards":{"1":0,"4":0,"7":0},"cardsBefore":{"1":0,"4":0,"7":0},"cardsAt":{},"caption":"웹 주문 하나가 게이트웨이와 API를 거쳐 재고를 줄인다","series":[],"growing":[],"lights":[]},{"si":0,"t0":11108,"t1":11808,"hops":[],"edgesOn":[0,3],"nodesOn":[4,0,2,7,1],"groupsOn":[],"partsOn":[],"cards":{"1":0,"4":0,"7":0},"cardsBefore":{"1":0,"4":0,"7":0},"cardsAt":{},"caption":"웹 주문 하나가 게이트웨이와 API를 거쳐 재고를 줄인다","series":[],"growing":[],"lights":[]},{"si":0,"t0":11808,"t1":13473,"hops":[],"edgesOn":[0,3],"nodesOn":[4,0,2,7,1],"groupsOn":[],"partsOn":[],"cards":{"1":0,"4":0,"7":0},"cardsBefore":{"1":0,"4":0,"7":0},"cardsAt":{},"caption":"API가 주문을 받으면 처리 중이 늘고 앱 화면 재고도 따라 바뀐다","series":[],"growing":[],"lights":[]},{"si":0,"t0":13473,"t1":31821,"hops":[{"edge":6,"isBack":false,"ms":16048,"to":"db","tone":"brand","line":58}],"edgesOn":[0,3,6],"nodesOn":[4,0,2,7,1],"groupsOn":[],"partsOn":[],"cards":{"1":0,"4":0,"7":0},"cardsBefore":{"1":0,"4":0,"7":0},"cardsAt":{},"caption":"API가 주문을 받으면 처리 중이 늘고 앱 화면 재고도 따라 바뀐다","series":[],"growing":[],"lights":[]},{"si":1,"t0":31821,"t1":39821,"hops":[{"track":0,"edges":[0,3,6],"gaps":[[0.11066,0.15229],[0.34722,0.40556]],"isBack":false,"at":0,"ms":24299,"cut":8000,"to":"db","tone":"brand","line":60},{"track":0,"edges":[0,3,6],"gaps":[[0.11066,0.15229],[0.34722,0.40556]],"isBack":false,"at":900,"ms":24299,"cut":7100,"to":"db","tone":"brand","line":60},{"track":0,"edges":[0,3,6],"gaps":[[0.11066,0.15229],[0.34722,0.40556]],"isBack":false,"at":1800,"ms":24299,"cut":6200,"to":"db","tone":"brand","line":60},{"track":0,"edges":[0,3,6],"gaps":[[0.11066,0.15229],[0.34722,0.40556]],"isBack":false,"at":2700,"ms":24299,"cut":5300,"to":"db","tone":"brand","line":60},{"track":0,"edges":[0,3,6],"gaps":[[0.11066,0.15229],[0.34722,0.40556]],"isBack":false,"at":3600,"ms":24299,"cut":4400,"to":"db","tone":"brand","line":60},{"track":0,"edges":[0,3,6],"gaps":[[0.11066,0.15229],[0.34722,0.40556]],"isBack":false,"at":4500,"ms":24299,"cut":3500,"to":"db","tone":"brand","line":60},{"track":0,"edges":[0,3,6],"gaps":[[0.11066,0.15229],[0.34722,0.40556]],"isBack":false,"at":5400,"ms":24299,"cut":2600,"to":"db","tone":"brand","line":60},{"track":0,"edges":[0,3,6],"gaps":[[0.11066,0.15229],[0.34722,0.40556]],"isBack":false,"at":6300,"ms":24299,"cut":1700,"to":"db","tone":"brand","line":60},{"track":0,"edges":[0,3,6],"gaps":[[0.11066,0.15229],[0.34722,0.40556]],"isBack":false,"at":7200,"ms":24299,"cut":800,"to":"db","tone":"brand","line":60},{"track":1,"edges":[1,3,4,5],"gaps":[[0.2271,0.28667],[0.59569,0.69415],[0.86714,0.9266]],"isBack":false,"at":300,"ms":13326,"cut":7700,"to":"worker","tone":"purple","line":61},{"track":1,"edges":[1,3,4,5],"gaps":[[0.2271,0.28667],[0.59569,0.69415],[0.86714,0.9266]],"isBack":false,"at":1100,"ms":13326,"cut":6900,"to":"worker","tone":"purple","line":61},{"track":1,"edges":[1,3,4,5],"gaps":[[0.2271,0.28667],[0.59569,0.69415],[0.86714,0.9266]],"isBack":false,"at":1900,"ms":13326,"cut":6100,"to":"worker","tone":"purple","line":61},{"track":1,"edges":[1,3,4,5],"gaps":[[0.2271,0.28667],[0.59569,0.69415],[0.86714,0.9266]],"isBack":false,"at":2700,"ms":13326,"cut":5300,"to":"worker","tone":"purple","line":61},{"track":1,"edges":[1,3,4,5],"gaps":[[0.2271,0.28667],[0.59569,0.69415],[0.86714,0.9266]],"isBack":false,"at":3500,"ms":13326,"cut":4500,"to":"worker","tone":"purple","line":61},{"track":1,"edges":[1,3,4,5],"gaps":[[0.2271,0.28667],[0.59569,0.69415],[0.86714,0.9266]],"isBack":false,"at":4300,"ms":13326,"cut":3700,"to":"worker","tone":"purple","line":61},{"track":1,"edges":[1,3,4,5],"gaps":[[0.2271,0.28667],[0.59569,0.69415],[0.86714,0.9266]],"isBack":false,"at":5100,"ms":13326,"cut":2900,"to":"worker","tone":"purple","line":61},{"track":1,"edges":[1,3,4,5],"gaps":[[0.2271,0.28667],[0.59569,0.69415],[0.86714,0.9266]],"isBack":false,"at":5900,"ms":13326,"cut":2100,"to":"worker","tone":"purple","line":61},{"track":1,"edges":[1,3,4,5],"gaps":[[0.2271,0.28667],[0.59569,0.69415],[0.86714,0.9266]],"isBack":false,"at":6700,"ms":13326,"cut":1300,"to":"worker","tone":"purple","line":61},{"track":1,"edges":[1,3,4,5],"gaps":[[0.2271,0.28667],[0.59569,0.69415],[0.86714,0.9266]],"isBack":false,"at":7500,"ms":13326,"cut":500,"to":"worker","tone":"purple","line":61},{"track":2,"edges":[2],"gaps":[],"isBack":false,"at":500,"ms":1961,"to":"cdn","tone":"green","line":62},{"track":2,"edges":[2],"gaps":[],"isBack":false,"at":1600,"ms":1961,"to":"cdn","tone":"green","line":62},{"track":2,"edges":[2],"gaps":[],"isBack":false,"at":2700,"ms":1961,"to":"cdn","tone":"green","line":62},{"track":2,"edges":[2],"gaps":[],"isBack":false,"at":3800,"ms":1961,"to":"cdn","tone":"green","line":62},{"track":2,"edges":[2],"gaps":[],"isBack":false,"at":4900,"ms":1961,"to":"cdn","tone":"green","line":62},{"track":2,"edges":[2],"gaps":[],"isBack":false,"at":6000,"ms":1961,"to":"cdn","tone":"green","line":62},{"track":2,"edges":[2],"gaps":[],"isBack":false,"at":7100,"ms":1961,"cut":900,"to":"cdn","tone":"green","line":62},{"track":3,"edges":[7],"gaps":[],"isBack":false,"at":1000,"ms":3125,"to":"db","tone":"gray","line":63},{"track":3,"edges":[7],"gaps":[],"isBack":false,"at":2000,"ms":3125,"to":"db","tone":"gray","line":63},{"track":3,"edges":[7],"gaps":[],"isBack":false,"at":3000,"ms":3125,"to":"db","tone":"gray","line":63},{"track":3,"edges":[7],"gaps":[],"isBack":false,"at":4000,"ms":3125,"to":"db","tone":"gray","line":63},{"track":3,"edges":[7],"gaps":[],"isBack":false,"at":5000,"ms":3125,"cut":3000,"to":"db","tone":"gray","line":63},{"track":3,"edges":[7],"gaps":[],"isBack":false,"at":6000,"ms":3125,"cut":2000,"to":"db","tone":"gray","line":63},{"track":3,"edges":[7],"gaps":[],"isBack":false,"at":7000,"ms":3125,"cut":1000,"to":"db","tone":"gray","line":63}],"edgesOn":[],"nodesOn":[],"groupsOn":[],"partsOn":[],"cards":{"1":0,"4":0,"7":0},"cardsBefore":{"1":0,"4":0,"7":0},"cardsAt":{},"caption":"웹과 앱에서 주문이 끊이지 않고 들어와 큐와 DB로 쏟아진다","series":[],"growing":[],"lights":[],"edgesAt":{"0":0,"1":300,"2":500,"3":4691.26061,"4":7567.11363,"5":10141.54024,"6":9867.31041,"7":1000},"nodesAt":{},"groupsAt":{},"pulses":[{"n":3,"at":2461},{"n":3,"at":3561},{"n":7,"at":4125},{"n":3,"at":4661},{"n":2,"at":4691.26061},{"n":7,"at":5125},{"n":2,"at":5491.26061},{"n":2,"at":5627.65257},{"n":3,"at":5761},{"n":7,"at":6125},{"n":2,"at":6291.26061},{"n":2,"at":6527.65257},{"n":3,"at":6861},{"n":2,"at":7091.26061},{"n":7,"at":7125},{"n":2,"at":7427.65257},{"n":4,"at":7567.11363},{"n":2,"at":7891.26061},{"n":3,"at":7961}]},{"si":2,"t0":39821,"t1":47227,"hops":[{"edge":10,"isBack":false,"ms":6281,"to":"pay","line":65}],"edgesOn":[10],"nodesOn":[6,10,7,1,4],"groupsOn":[],"partsOn":[],"cards":{"1":0,"4":0,"7":0},"cardsBefore":{"1":0,"4":0,"7":0},"cardsAt":{},"caption":"워커가 결제사에 승인을 요청하지만 오류가 난다","series":[],"growing":[],"lights":[]},{"si":2,"t0":47227,"t1":47927,"hops":[],"edgesOn":[10],"nodesOn":[10,6,7,1,4],"groupsOn":[],"partsOn":[],"cards":{"1":0,"4":0,"7":0},"cardsBefore":{"1":0,"4":0,"7":0},"cardsAt":{},"caption":"워커가 결제사에 승인을 요청하지만 오류가 난다","series":[],"growing":[],"lights":[]},{"si":2,"t0":47927,"t1":50227,"hops":[],"edgesOn":[10],"nodesOn":[10,6,7,1,4],"groupsOn":[],"partsOn":[],"cards":{"1":0,"4":0,"7":0},"cardsBefore":{"1":0,"4":0,"7":0},"cardsAt":{},"caption":"결제사가 503을 돌려준다","series":[],"growing":[],"lights":[]}],"steps":["주문 하나","주문이 몰릴 때","결제 오류"],"cardCounts":[0,1,0,0,1,0,0,1,0,0,0,0],"edgeEnds":[[0,2],[1,2],[2,3],[2,4],[4,5],[5,6],[4,7],[6,7],[7,8],[7,9],[6,10],[4,11],[10,11]],"seriesCount":0,"rowCount":0,"metrics":{"active":"var(--color-state-active)","chipFill":"var(--color-state-active-fill)","halo":10,"haloOpacity":0.2,"packet":4.5,"chipRadius":8,"pulseMs":450,"chipLine":15,"chipPadX":18,"chipPadY":8,"chipGap":12,"icon":16,"iconStroke":1.75,"zoomMax":6,"zoomStep":1.25,"move":[0.455,0.03,0.515,0.955],"tones":{"brand":"var(--color-flow-brand)","purple":"var(--color-flow-purple)","green":"var(--color-flow-green)","gray":"var(--color-flow-gray)","red":"var(--color-flow-red)"},"chipStroke":1.75,"cutFadeMs":600}});
+figurePlay(document.querySelector('.fl-figure'), {"trackCount":4,"values":[{"si":0,"periods":[[0,29521,"120"],[29521,31821,"119"]],"flashes":[[29521,30221]]},{"si":0,"periods":[[0,29521,"120"],[29521,31821,"119"]],"flashes":[[29521,30221]]},{"si":0,"periods":[[0,10408,"0"],[10408,29521,"1"],[29521,31821,"0"]],"flashes":[[10408,11108],[29521,30221]]},{"si":1,"periods":[[31821,35946,"120"],[35946,36946,"119"],[36946,37946,"118"],[37946,38946,"117"],[38946,39821,"116"]],"flashes":[[35946,36646],[36946,37646],[37946,38646],[38946,39646]]},{"si":1,"periods":[[31821,35946,"120"],[35946,36946,"119"],[36946,37946,"118"],[37946,38946,"117"],[38946,39821,"116"]],"flashes":[[35946,36646],[36946,37646],[37946,38646],[38946,39646]]},{"si":1,"periods":[[31821,35946,"0"],[35946,36946,"-1"],[36946,37946,"-2"],[37946,38946,"-3"],[38946,39388.11363,"-4"],[39388.11363,39821,"-3"]],"flashes":[[35946,36646],[36946,37646],[37946,38646],[38946,39821]]},{"si":2,"periods":[[39821,50227,"120"]],"flashes":[]},{"si":2,"periods":[[39821,50227,"120"]],"flashes":[]},{"si":2,"periods":[[39821,50227,"0"]],"flashes":[]}],"segs":[{"si":0,"t0":0,"t1":5145,"hops":[{"edge":0,"isBack":false,"ms":2988,"to":"gw","tone":"brand","line":54}],"edgesOn":[0],"nodesOn":[0,2,7,1,4],"groupsOn":[],"partsOn":[],"cards":{"1":0,"4":0,"7":0},"cardsBefore":{"1":0,"4":0,"7":0},"cardsAt":{},"caption":"웹 주문 하나가 게이트웨이와 API를 거쳐 재고를 줄인다","series":[],"growing":[],"lights":[]},{"si":0,"t0":5145,"t1":11108,"hops":[{"edge":3,"isBack":false,"ms":5263,"to":"api","line":55}],"edgesOn":[0,3],"nodesOn":[0,2,4,7,1],"groupsOn":[],"partsOn":[],"cards":{"1":0,"4":0,"7":0},"cardsBefore":{"1":0,"4":0,"7":0},"cardsAt":{},"caption":"웹 주문 하나가 게이트웨이와 API를 거쳐 재고를 줄인다","series":[],"growing":[],"lights":[]},{"si":0,"t0":11108,"t1":11808,"hops":[],"edgesOn":[0,3],"nodesOn":[4,0,2,7,1],"groupsOn":[],"partsOn":[],"cards":{"1":0,"4":0,"7":0},"cardsBefore":{"1":0,"4":0,"7":0},"cardsAt":{},"caption":"웹 주문 하나가 게이트웨이와 API를 거쳐 재고를 줄인다","series":[],"growing":[],"lights":[]},{"si":0,"t0":11808,"t1":13473,"hops":[],"edgesOn":[0,3],"nodesOn":[4,0,2,7,1],"groupsOn":[],"partsOn":[],"cards":{"1":0,"4":0,"7":0},"cardsBefore":{"1":0,"4":0,"7":0},"cardsAt":{},"caption":"API가 주문을 받으면 처리 중이 늘고 앱 화면 재고도 따라 바뀐다","series":[],"growing":[],"lights":[]},{"si":0,"t0":13473,"t1":31821,"hops":[{"edge":6,"isBack":false,"ms":16048,"to":"db","tone":"brand","line":58}],"edgesOn":[0,3,6],"nodesOn":[4,0,2,7,1],"groupsOn":[],"partsOn":[],"cards":{"1":0,"4":0,"7":0},"cardsBefore":{"1":0,"4":0,"7":0},"cardsAt":{},"caption":"API가 주문을 받으면 처리 중이 늘고 앱 화면 재고도 따라 바뀐다","series":[],"growing":[],"lights":[]},{"si":1,"t0":31821,"t1":39821,"hops":[{"track":0,"edges":[0,3,6],"gaps":[[0.11066,0.15229],[0.34722,0.40556]],"isBack":false,"at":0,"ms":24299,"cut":8000,"to":"db","tone":"brand","line":60},{"track":0,"edges":[0,3,6],"gaps":[[0.11066,0.15229],[0.34722,0.40556]],"isBack":false,"at":900,"ms":24299,"cut":7100,"to":"db","tone":"brand","line":60},{"track":0,"edges":[0,3,6],"gaps":[[0.11066,0.15229],[0.34722,0.40556]],"isBack":false,"at":1800,"ms":24299,"cut":6200,"to":"db","tone":"brand","line":60},{"track":0,"edges":[0,3,6],"gaps":[[0.11066,0.15229],[0.34722,0.40556]],"isBack":false,"at":2700,"ms":24299,"cut":5300,"to":"db","tone":"brand","line":60},{"track":0,"edges":[0,3,6],"gaps":[[0.11066,0.15229],[0.34722,0.40556]],"isBack":false,"at":3600,"ms":24299,"cut":4400,"to":"db","tone":"brand","line":60},{"track":0,"edges":[0,3,6],"gaps":[[0.11066,0.15229],[0.34722,0.40556]],"isBack":false,"at":4500,"ms":24299,"cut":3500,"to":"db","tone":"brand","line":60},{"track":0,"edges":[0,3,6],"gaps":[[0.11066,0.15229],[0.34722,0.40556]],"isBack":false,"at":5400,"ms":24299,"cut":2600,"to":"db","tone":"brand","line":60},{"track":0,"edges":[0,3,6],"gaps":[[0.11066,0.15229],[0.34722,0.40556]],"isBack":false,"at":6300,"ms":24299,"cut":1700,"to":"db","tone":"brand","line":60},{"track":0,"edges":[0,3,6],"gaps":[[0.11066,0.15229],[0.34722,0.40556]],"isBack":false,"at":7200,"ms":24299,"cut":800,"to":"db","tone":"brand","line":60},{"track":1,"edges":[1,3,4,5],"gaps":[[0.2271,0.28667],[0.59569,0.69415],[0.86714,0.9266]],"isBack":false,"at":300,"ms":13326,"cut":7700,"to":"worker","tone":"purple","line":61},{"track":1,"edges":[1,3,4,5],"gaps":[[0.2271,0.28667],[0.59569,0.69415],[0.86714,0.9266]],"isBack":false,"at":1100,"ms":13326,"cut":6900,"to":"worker","tone":"purple","line":61},{"track":1,"edges":[1,3,4,5],"gaps":[[0.2271,0.28667],[0.59569,0.69415],[0.86714,0.9266]],"isBack":false,"at":1900,"ms":13326,"cut":6100,"to":"worker","tone":"purple","line":61},{"track":1,"edges":[1,3,4,5],"gaps":[[0.2271,0.28667],[0.59569,0.69415],[0.86714,0.9266]],"isBack":false,"at":2700,"ms":13326,"cut":5300,"to":"worker","tone":"purple","line":61},{"track":1,"edges":[1,3,4,5],"gaps":[[0.2271,0.28667],[0.59569,0.69415],[0.86714,0.9266]],"isBack":false,"at":3500,"ms":13326,"cut":4500,"to":"worker","tone":"purple","line":61},{"track":1,"edges":[1,3,4,5],"gaps":[[0.2271,0.28667],[0.59569,0.69415],[0.86714,0.9266]],"isBack":false,"at":4300,"ms":13326,"cut":3700,"to":"worker","tone":"purple","line":61},{"track":1,"edges":[1,3,4,5],"gaps":[[0.2271,0.28667],[0.59569,0.69415],[0.86714,0.9266]],"isBack":false,"at":5100,"ms":13326,"cut":2900,"to":"worker","tone":"purple","line":61},{"track":1,"edges":[1,3,4,5],"gaps":[[0.2271,0.28667],[0.59569,0.69415],[0.86714,0.9266]],"isBack":false,"at":5900,"ms":13326,"cut":2100,"to":"worker","tone":"purple","line":61},{"track":1,"edges":[1,3,4,5],"gaps":[[0.2271,0.28667],[0.59569,0.69415],[0.86714,0.9266]],"isBack":false,"at":6700,"ms":13326,"cut":1300,"to":"worker","tone":"purple","line":61},{"track":1,"edges":[1,3,4,5],"gaps":[[0.2271,0.28667],[0.59569,0.69415],[0.86714,0.9266]],"isBack":false,"at":7500,"ms":13326,"cut":500,"to":"worker","tone":"purple","line":61},{"track":2,"edges":[2],"gaps":[],"isBack":false,"at":500,"ms":1961,"to":"cdn","tone":"green","line":62},{"track":2,"edges":[2],"gaps":[],"isBack":false,"at":1600,"ms":1961,"to":"cdn","tone":"green","line":62},{"track":2,"edges":[2],"gaps":[],"isBack":false,"at":2700,"ms":1961,"to":"cdn","tone":"green","line":62},{"track":2,"edges":[2],"gaps":[],"isBack":false,"at":3800,"ms":1961,"to":"cdn","tone":"green","line":62},{"track":2,"edges":[2],"gaps":[],"isBack":false,"at":4900,"ms":1961,"to":"cdn","tone":"green","line":62},{"track":2,"edges":[2],"gaps":[],"isBack":false,"at":6000,"ms":1961,"to":"cdn","tone":"green","line":62},{"track":2,"edges":[2],"gaps":[],"isBack":false,"at":7100,"ms":1961,"cut":900,"to":"cdn","tone":"green","line":62},{"track":3,"edges":[7],"gaps":[],"isBack":false,"at":1000,"ms":3125,"to":"db","tone":"gray","line":63},{"track":3,"edges":[7],"gaps":[],"isBack":false,"at":2000,"ms":3125,"to":"db","tone":"gray","line":63},{"track":3,"edges":[7],"gaps":[],"isBack":false,"at":3000,"ms":3125,"to":"db","tone":"gray","line":63},{"track":3,"edges":[7],"gaps":[],"isBack":false,"at":4000,"ms":3125,"to":"db","tone":"gray","line":63},{"track":3,"edges":[7],"gaps":[],"isBack":false,"at":5000,"ms":3125,"cut":3000,"to":"db","tone":"gray","line":63},{"track":3,"edges":[7],"gaps":[],"isBack":false,"at":6000,"ms":3125,"cut":2000,"to":"db","tone":"gray","line":63},{"track":3,"edges":[7],"gaps":[],"isBack":false,"at":7000,"ms":3125,"cut":1000,"to":"db","tone":"gray","line":63}],"edgesOn":[],"nodesOn":[],"groupsOn":[],"partsOn":[],"cards":{"1":0,"4":0,"7":0},"cardsBefore":{"1":0,"4":0,"7":0},"cardsAt":{},"caption":"웹과 앱에서 주문이 끊이지 않고 들어와 큐와 DB로 쏟아진다","series":[],"growing":[],"lights":[],"edgesAt":{"0":0,"1":300,"2":500,"3":4691.26061,"4":7567.11363,"5":10141.54024,"6":9867.31041,"7":1000},"nodesAt":{},"groupsAt":{},"pulses":[{"n":3,"at":2461},{"n":3,"at":3561},{"n":7,"at":4125},{"n":3,"at":4661},{"n":2,"at":4691.26061},{"n":7,"at":5125},{"n":2,"at":5491.26061},{"n":2,"at":5627.65257},{"n":3,"at":5761},{"n":7,"at":6125},{"n":2,"at":6291.26061},{"n":2,"at":6527.65257},{"n":3,"at":6861},{"n":2,"at":7091.26061},{"n":7,"at":7125},{"n":2,"at":7427.65257},{"n":4,"at":7567.11363},{"n":2,"at":7891.26061},{"n":3,"at":7961}]},{"si":2,"t0":39821,"t1":47227,"hops":[{"edge":10,"isBack":false,"ms":6281,"to":"pay","line":65}],"edgesOn":[10],"nodesOn":[6,10,7,1,4],"groupsOn":[],"partsOn":[],"cards":{"1":0,"4":0,"7":0},"cardsBefore":{"1":0,"4":0,"7":0},"cardsAt":{},"caption":"워커가 결제사에 승인을 요청하지만 오류가 난다","series":[],"growing":[],"lights":[]},{"si":2,"t0":47227,"t1":47927,"hops":[],"edgesOn":[10],"nodesOn":[10,6,7,1,4],"groupsOn":[],"partsOn":[],"cards":{"1":0,"4":0,"7":0},"cardsBefore":{"1":0,"4":0,"7":0},"cardsAt":{},"caption":"워커가 결제사에 승인을 요청하지만 오류가 난다","series":[],"growing":[],"lights":[]},{"si":2,"t0":47927,"t1":50227,"hops":[],"edgesOn":[10],"nodesOn":[10,6,7,1,4],"groupsOn":[],"partsOn":[],"cards":{"1":0,"4":0,"7":0},"cardsBefore":{"1":0,"4":0,"7":0},"cardsAt":{},"caption":"결제사가 503을 돌려준다","series":[],"growing":[],"lights":[]}],"steps":["주문 하나","주문이 몰릴 때","결제 오류"],"cardCounts":[0,1,0,0,1,0,0,1,0,0,0,0],"edgeEnds":[[0,2],[1,2],[2,3],[2,4],[4,5],[5,6],[4,7],[6,7],[7,8],[7,9],[6,10],[4,11],[10,11]],"seriesCount":0,"rowCount":0,"metrics":{"active":"var(--color-state-active)","chipFill":"var(--color-state-active-fill)","halo":10,"haloOpacity":0.2,"packet":4.5,"chipRadius":8,"pulseMs":450,"chipLine":15,"chipPadX":18,"chipPadY":8,"chipGap":12,"icon":20,"iconStroke":1.75,"zoomMax":6,"zoomStep":1.25,"move":[0.455,0.03,0.515,0.955],"tones":{"brand":"var(--color-flow-brand)","purple":"var(--color-flow-purple)","green":"var(--color-flow-green)","gray":"var(--color-flow-gray)","red":"var(--color-flow-red)"},"chipStroke":1.75,"cutFadeMs":600}});
 </script>
 </body>
 </html>

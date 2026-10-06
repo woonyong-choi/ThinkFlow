@@ -5,8 +5,8 @@
 
 body {
   margin: 0;
-  padding: var(--space-12) var(--space-16);
-  font-family: var(--font-figure-sans);
+  padding: var(--simple2-page-gap) var(--simple2-page-gutter);
+  font-family: var(--font-sans);
   letter-spacing: var(--tracking-text);
   color: var(--color-fg);
   background: var(--color-page);
@@ -16,6 +16,8 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--simple2-page-gutter);
   max-width: var(--size-document-column);
   margin: 0 auto var(--space-12);
 }
@@ -28,15 +30,15 @@ body {
 article {
   max-width: var(--size-document-column);
   margin: 0 auto;
-  font-size: var(--size-text-15);
-  line-height: var(--leading-normal);
+  font-size: var(--simple2-body);
+  line-height: var(--simple2-leading);
 }
 
 h1 {
   padding-bottom: var(--space-3);
-  font-size: var(--size-text-22);
+  font-size: var(--simple2-heading);
   font-weight: var(--weight-semibold);
-  border-bottom: var(--border-thin) solid var(--color-plate-border);
+  line-height: var(--simple2-title-leading);
 }
 
 h2 {
@@ -45,7 +47,7 @@ h2 {
   gap: var(--space-1) var(--space-3);
   align-items: baseline;
   margin-top: var(--space-16);
-  font: var(--weight-semibold) var(--size-text-15) var(--font-figure-sans);
+  font: var(--weight-semibold) var(--simple2-subheading) var(--font-sans);
 }
 
 /* 백틱으로 감싼 글은 코드 글꼴로 그린다. */

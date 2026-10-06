@@ -202,14 +202,14 @@ test('palette_graphic_text_and_outline_colors_are_the_closest_step_that_reaches_
   }
 });
 
-// 근거: 사용자 결정 "NHN 아키텍처 자료처럼 간다": 기준 파랑은 NHN 브랜드 파랑 #125DE6이고, 주황은 NHN에 없어 비교와 주의에만 남는다(색상 50도 근처)
-test('palette_blue_is_the_nhn_brand_blue_and_orange_stays_near_hue_50_with_the_blue_chroma', () => {
-  const RESUME_BLUE = '#125de6';
-  const [, blueC] = oklchOf(RESUME_BLUE);
+// 근거: simple2의 파란 강조를 사용하며 주황은 비교와 주의 역할을 유지한다.
+test('palette_blue_uses_simple2_anchor_and_orange_keeps_its_comparison_role', () => {
+  const SIMPLE2_BLUE = '#1e66d8';
+  const [, blueC] = oklchOf(SIMPLE2_BLUE);
   const [, orangeC, orangeHue] = oklchOf(color('light', 'orange.light-stroke'));
 
-  assert.equal(color('light', 'state.active'), RESUME_BLUE);
-  assert.equal(color('light', 'data.main'), RESUME_BLUE);
+  assert.equal(color('light', 'state.active'), SIMPLE2_BLUE);
+  assert.equal(color('light', 'data.main'), SIMPLE2_BLUE);
   assert.ok(Math.abs(orangeHue - ORANGE_HUE) <= ORANGE_HUE_TOLERANCE, `orange h ${orangeHue.toFixed(1)}`);
   assert.ok(Math.abs(orangeC - blueC) <= CHROMA_TOLERANCE, `orange C ${orangeC.toFixed(3)} / blue C ${blueC.toFixed(3)}`);
   assert.equal(color('light', 'data.compare'), color('light', 'orange.light-stroke'));

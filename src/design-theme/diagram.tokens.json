@@ -147,7 +147,7 @@
       },
       "sky": {
         "light-fill": {
-          "$value": "#e9f1fe",
+          "$value": "#e8f1fe",
           "$type": "color"
         },
         "light-stroke": {
@@ -171,11 +171,11 @@
           "$type": "color"
         },
         "light-outline": {
-          "$value": "#628ad3",
+          "$value": "#648bca",
           "$type": "color"
         },
         "dark-fill": {
-          "$value": "#1c2a43",
+          "$value": "#1b2a43",
           "$type": "color"
         },
         "dark-stroke": {
@@ -199,7 +199,7 @@
           "$type": "color"
         },
         "dark-outline": {
-          "$value": "#6789c4",
+          "$value": "#6489c3",
           "$type": "color"
         }
       },
@@ -503,8 +503,11 @@
         "FigSansMath",
         "Pretendard",
         "Pretendard Variable",
+        "ui-sans-serif",
         "-apple-system",
         "BlinkMacSystemFont",
+        "Segoe UI",
+        "Roboto",
         "Apple SD Gothic Neo",
         "sans-serif"
       ],
@@ -527,15 +530,15 @@
   "size": {
     "control": {
       "outer": {
-        "$value": 36,
+        "$value": 52,
         "$type": "dimension"
       },
       "inner": {
-        "$value": 28,
+        "$value": 44,
         "$type": "dimension"
       },
       "icon": {
-        "$value": 16,
+        "$value": 20,
         "$type": "dimension"
       },
       "icon-stroke": {

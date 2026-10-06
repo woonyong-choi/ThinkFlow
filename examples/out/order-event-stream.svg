@@ -34,25 +34,25 @@
   --color-gray-929: #121212;
   --color-gray-933: #111111;
   --color-gray-1000: #000000;
-  --color-blue-anchor: #125de6;
+  --color-blue-anchor: #1e66d8;
   --color-blue-light-fill: #edf4ff;
-  --color-blue-light-stroke: #125de6;
-  --color-blue-light-ink: #0151d9;
-  --color-blue-light-heat-low: #b7cdf5;
-  --color-blue-light-heat-high: #004dd2;
-  --color-blue-light-outline: #658dd5;
+  --color-blue-light-stroke: #1e66d8;
+  --color-blue-light-ink: #0a57c8;
+  --color-blue-light-heat-low: #b3cbf2;
+  --color-blue-light-heat-high: #0352c3;
+  --color-blue-light-outline: #678dcb;
   --color-blue-light-tint-1: #e5eefc;
   --color-blue-light-tint-2: #d7e2f4;
-  --color-blue-light-tint-3: #cad7ed;
-  --color-blue-dark-fill: #1c2a43;
-  --color-blue-dark-stroke: #70a3ff;
-  --color-blue-dark-ink: #78a9ff;
-  --color-blue-dark-heat-low: #293751;
-  --color-blue-dark-heat-high: #4474cc;
-  --color-blue-dark-outline: #6789c4;
+  --color-blue-light-tint-3: #c9d7ed;
+  --color-blue-dark-fill: #1b2a43;
+  --color-blue-dark-stroke: #6ca4ff;
+  --color-blue-dark-ink: #74a9ff;
+  --color-blue-dark-heat-low: #283851;
+  --color-blue-dark-heat-high: #4075cc;
+  --color-blue-dark-outline: #6489c3;
   --color-blue-dark-tint-1: #1a202b;
   --color-blue-dark-tint-2: #222a38;
-  --color-blue-dark-tint-3: #2a3446;
+  --color-blue-dark-tint-3: #2a3546;
   --color-purple-anchor: #b28fd1;
   --color-purple-light-fill: #f7f0ff;
   --color-purple-light-stroke: #8c6aaa;
@@ -101,21 +101,21 @@
   --color-orange-dark-stroke: #fa7a49;
   --color-orange-dark-ink: #ff875a;
   --color-orange-dark-outline: #c37356;
-  --color-fg: var(--color-gray-878);
-  --color-muted: var(--color-gray-635);
-  --color-group-title: var(--color-gray-651);
-  --color-bg: var(--color-gray-27);
+  --color-fg: var(--primitive-simple2-fg);
+  --color-muted: var(--primitive-simple2-muted);
+  --color-group-title: var(--primitive-simple2-group-title);
+  --color-bg: var(--primitive-simple2-bg);
   --color-group-1: var(--color-gray-71);
   --color-group-2: var(--color-gray-118);
   --color-group-3: var(--color-gray-161);
-  --color-node: var(--color-gray-0);
-  --color-surface: var(--color-gray-59);
-  --color-card: var(--color-gray-43);
+  --color-node: var(--primitive-simple2-node);
+  --color-surface: var(--primitive-simple2-surface);
+  --color-card: var(--primitive-simple2-card);
   --color-card-on: var(--color-blue-light-fill);
-  --color-page: var(--color-gray-0);
+  --color-page: var(--primitive-simple2-page);
   --color-outline: var(--color-gray-529);
-  --color-border: var(--color-gray-106);
-  --color-plate-border: var(--color-gray-145);
+  --color-border: var(--primitive-simple2-border);
+  --color-plate-border: var(--primitive-simple2-plate-border);
   --color-line: var(--color-gray-282);
   --color-state-active: var(--color-blue-light-stroke);
   --color-state-active-fill: var(--color-blue-light-ink);
@@ -142,7 +142,7 @@
   --color-data-heat-ink-on: var(--color-gray-0);
   --color-data-grid: var(--color-gray-212);
   --color-accent: var(--color-blue-light-stroke);
-  --font-sans: Pretendard, 'Pretendard Variable', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif;
+  --font-sans: ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Apple SD Gothic Neo', sans-serif;
   --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
   --size-text-9: 9px;
   --size-text-11: 11px;
@@ -178,7 +178,7 @@
   --radius-md: 6px;
   --radius-lg: 8px;
   --radius-xl: 10px;
-  --radius-2xl: 14px;
+  --radius-2xl: 12px;
   --radius-full: 999px;
   --border-hair: 0.75px;
   --border-thin: 1px;
@@ -188,6 +188,31 @@
   --duration-fast: 200ms;
   --easing-move: cubic-bezier(0.455, 0.03, 0.515, 0.955);
   --easing-reveal: cubic-bezier(0, 0, 0.58, 1);
+  --simple2-heading: 36px;
+  --simple2-subheading: 27px;
+  --simple2-body: 18px;
+  --simple2-control: 15px;
+  --simple2-caption: 13px;
+  --simple2-page-gutter: 24px;
+  --simple2-page-gap: 48px;
+  --simple2-page-width: 1180px;
+  --simple2-reading-width: 948px;
+  --simple2-control-gap: 8px;
+  --simple2-focus-width: 3px;
+  --simple2-leading: 1.6;
+  --simple2-title-leading: 1.2;
+  --simple2-shadow: var(--primitive-simple2-shadow);
+  --primitive-simple2-fg: #303336;
+  --primitive-simple2-muted: #505b69;
+  --primitive-simple2-group-title: #505b69;
+  --primitive-simple2-bg: #f2f5f7;
+  --primitive-simple2-page: #ffffff;
+  --primitive-simple2-node: #ffffff;
+  --primitive-simple2-card: #f6f7fa;
+  --primitive-simple2-surface: #edeef1;
+  --primitive-simple2-plate-border: #d1d7de;
+  --primitive-simple2-border: #838b96;
+  --primitive-simple2-shadow: 0 2px 8px rgba(0,0,0,.10), 0 0 2px rgba(0,0,0,.10);
   --color-palette-amber-light-fill: var(--color-orange-light-fill);
   --color-palette-amber-light-stroke: var(--color-orange-light-stroke);
   --color-palette-amber-light-ink: var(--color-orange-light-ink);
@@ -222,20 +247,20 @@
   --color-palette-pink-dark-stroke: var(--color-purple-dark-stroke);
   --color-palette-pink-dark-ink: var(--color-purple-dark-ink);
   --color-palette-pink-dark-outline: var(--color-purple-dark-outline);
-  --color-palette-sky-light-fill: #e9f1fe;
+  --color-palette-sky-light-fill: #e8f1fe;
   --color-palette-sky-light-stroke: var(--color-blue-light-stroke);
   --color-palette-sky-light-ink: var(--color-blue-light-ink);
   --color-palette-sky-light-tint-1: var(--color-blue-light-tint-1);
   --color-palette-sky-light-tint-2: var(--color-blue-light-tint-2);
   --color-palette-sky-light-tint-3: var(--color-blue-light-tint-3);
-  --color-palette-sky-light-outline: #628ad3;
-  --color-palette-sky-dark-fill: #1c2a43;
+  --color-palette-sky-light-outline: #648bca;
+  --color-palette-sky-dark-fill: #1b2a43;
   --color-palette-sky-dark-stroke: var(--color-blue-dark-stroke);
   --color-palette-sky-dark-ink: var(--color-blue-dark-ink);
   --color-palette-sky-dark-tint-1: var(--color-blue-dark-tint-1);
   --color-palette-sky-dark-tint-2: var(--color-blue-dark-tint-2);
   --color-palette-sky-dark-tint-3: var(--color-blue-dark-tint-3);
-  --color-palette-sky-dark-outline: #6789c4;
+  --color-palette-sky-dark-outline: #6489c3;
   --color-palette-slate-light-fill: #e7e7e7;
   --color-palette-slate-light-stroke: var(--color-gray-635);
   --color-palette-slate-light-ink: var(--color-gray-635);
@@ -302,11 +327,11 @@
   --color-tag-gray: var(--color-paint-gray-stroke);
   --color-tag-red: var(--color-paint-red-stroke);
   --color-tag-brand: var(--color-state-active);
-  --font-figure-sans: FigSans, FigSansSym, FigSansMath, Pretendard, 'Pretendard Variable', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif;
+  --font-figure-sans: FigSans, FigSansSym, FigSansMath, Pretendard, 'Pretendard Variable', ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Apple SD Gothic Neo', sans-serif;
   --font-figure-mono: FigMono, FigSans, FigSansSym, FigSansMath, ui-monospace, SFMono-Regular, Menlo, monospace;
-  --size-control-outer: 36px;
-  --size-control-inner: 28px;
-  --size-control-icon: 16px;
+  --size-control-outer: 52px;
+  --size-control-inner: 44px;
+  --size-control-icon: 20px;
   --size-control-icon-stroke: 1.75px;
   --size-pill-height: 18px;
   --size-icon-node: 20px;
@@ -428,7 +453,7 @@
     --color-card-on: var(--color-blue-dark-fill);
     --color-page: var(--color-gray-929);
     --color-outline: var(--color-gray-467);
-    --color-border: var(--color-gray-776);
+    --color-border: var(--primitive-simple2-border);
     --color-plate-border: var(--color-gray-788);
     --color-line: var(--color-gray-651);
     --color-state-active: var(--color-blue-dark-stroke);
@@ -522,7 +547,7 @@
   --color-card-on: var(--color-blue-dark-fill);
   --color-page: var(--color-gray-929);
   --color-outline: var(--color-gray-467);
-  --color-border: var(--color-gray-776);
+  --color-border: var(--primitive-simple2-border);
   --color-plate-border: var(--color-gray-788);
   --color-line: var(--color-gray-651);
   --color-state-active: var(--color-blue-dark-stroke);
@@ -948,10 +973,10 @@
 <defs><marker id="fl-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-line)"/></marker><marker id="fl-arrow-on" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-state-active)"/></marker><marker id="fl-arrow-main" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-data-main)"/></marker></defs>
 <rect x="0.5" y="0.5" width="1439" height="1454" rx="10" fill="var(--color-bg)" stroke="var(--color-plate-border)" stroke-width="1"/>
 <g transform="translate(241.3 0)">
-<g id="g-0" class="fl-group tabbed" data-id="producers"><rect x="218.6" y="28" width="388" height="145" rx="14" class="frame-box fl-stroke a0"/><rect x="226.6" y="32" width="20" height="20" rx="6" class="icon-tile"/><g class="fl-icon in-tile" transform="translate(230.4 35.8) scale(0.3875)"><g fill="currentColor"><circle cx="9" cy="6" r="1"/><path d="M26,10H6A2.0021,2.0021,0,0,1,4,8V4A2.0021,2.0021,0,0,1,6,2H26a2.0021,2.0021,0,0,1,2,2V8A2.0021,2.0021,0,0,1,26,10ZM6,4V8H26V4Z"/><circle cx="9" cy="16" r="1"/><path d="M26,20H6a2.0021,2.0021,0,0,1-2-2V14a2.0021,2.0021,0,0,1,2-2H26a2.0021,2.0021,0,0,1,2,2v4A2.0021,2.0021,0,0,1,26,20ZM6,14v4H26V14Z"/><circle cx="9" cy="26" r="1"/><path d="M26,30H6a2.0021,2.0021,0,0,1-2-2V24a2.0021,2.0021,0,0,1,2-2H26a2.0021,2.0021,0,0,1,2,2v4A2.0021,2.0021,0,0,1,26,30ZM6,24v4H26V24Z"/></g></g><text x="264.6" y="46" class="frame">생산자</text></g>
-<g id="g-1" class="fl-group tabbed" data-id="cluster"><rect x="28" y="311" width="860" height="401" rx="14" class="frame-box fl-stroke a0"/><rect x="36" y="315" width="20" height="20" rx="6" class="icon-tile"/><g class="fl-icon in-tile" transform="translate(39.8 318.8) scale(0.5167)"><g fill="currentColor"><path d="M9.71 2.136a1.43 1.43 0 0 0-2.047 0h-.007a1.48 1.48 0 0 0-.421 1.042c0 .41.161.777.422 1.039l.007.007c.257.264.616.426 1.019.426.404 0 .766-.162 1.027-.426l.003-.007c.261-.262.421-.629.421-1.039 0-.408-.159-.777-.421-1.042H9.71zM8.683 22.295c.404 0 .766-.167 1.027-.429l.003-.008c.261-.261.421-.631.421-1.036 0-.41-.159-.778-.421-1.044H9.71a1.42 1.42 0 0 0-1.027-.432 1.4 1.4 0 0 0-1.02.432h-.007c-.26.266-.422.634-.422 1.044 0 .406.161.775.422 1.036l.007.008c.258.262.617.429 1.02.429zm7.89-4.462c.359-.096.683-.33.882-.684l.027-.052a1.47 1.47 0 0 0 .114-1.067 1.454 1.454 0 0 0-.675-.896l-.021-.014a1.425 1.425 0 0 0-1.078-.132c-.36.091-.684.335-.881.686-.2.349-.241.75-.146 1.119.099.363.33.691.675.896h.002c.346.203.737.239 1.101.144zm-6.405-7.342a2.083 2.083 0 0 0-1.485-.627c-.58 0-1.103.242-1.482.627-.378.385-.612.916-.612 1.507s.233 1.124.612 1.514a2.08 2.08 0 0 0 2.967 0c.379-.39.612-.923.612-1.514s-.233-1.122-.612-1.507zm-.835-2.51c.843.141 1.6.552 2.178 1.144h.004c.092.093.182.196.265.299l1.446-.851a3.176 3.176 0 0 1-.047-1.808 3.149 3.149 0 0 1 1.456-1.926l.025-.016a3.062 3.062 0 0 1 2.345-.306c.77.21 1.465.721 1.898 1.482v.002c.431.757.518 1.626.313 2.408a3.145 3.145 0 0 1-1.456 1.928l-.198.118h-.02a3.095 3.095 0 0 1-2.154.201 3.127 3.127 0 0 1-1.514-.944l-1.444.848a4.162 4.162 0 0 1 0 2.879l1.444.846c.413-.47.939-.789 1.514-.944a3.041 3.041 0 0 1 2.371.319l.048.023v.002a3.17 3.17 0 0 1 1.408 1.906 3.215 3.215 0 0 1-.313 2.405l-.026.053-.003-.005a3.147 3.147 0 0 1-1.867 1.436 3.096 3.096 0 0 1-2.371-.318v-.006a3.156 3.156 0 0 1-1.456-1.927 3.175 3.175 0 0 1 .047-1.805l-1.446-.848a3.905 3.905 0 0 1-.265.294l-.004.005a3.938 3.938 0 0 1-2.178 1.138v1.699a3.09 3.09 0 0 1 1.56.862l.002.004c.565.572.914 1.368.914 2.243 0 .873-.35 1.664-.914 2.239l-.002.009a3.1 3.1 0 0 1-2.21.931 3.1 3.1 0 0 1-2.206-.93h-.002v-.009a3.186 3.186 0 0 1-.916-2.239c0-.875.35-1.672.916-2.243v-.004h.002a3.1 3.1 0 0 1 1.558-.862v-1.699a3.926 3.926 0 0 1-2.176-1.138l-.006-.005a4.098 4.098 0 0 1-1.173-2.874c0-1.122.452-2.136 1.173-2.872h.006a3.947 3.947 0 0 1 2.176-1.144V6.289a3.137 3.137 0 0 1-1.558-.864h-.002v-.004a3.192 3.192 0 0 1-.916-2.243c0-.871.35-1.669.916-2.243l.002-.002A3.084 3.084 0 0 1 8.683 0c.861 0 1.641.355 2.21.932v.002h.002c.565.574.914 1.372.914 2.243 0 .876-.35 1.667-.914 2.243l-.002.005a3.142 3.142 0 0 1-1.56.864v1.692zm8.121-1.129l-.012-.019a1.452 1.452 0 0 0-.87-.668 1.43 1.43 0 0 0-1.103.146h.002c-.347.2-.58.529-.677.896-.095.365-.054.768.146 1.119l.007.009c.2.347.519.579.874.673.357.103.755.059 1.098-.144l.019-.009a1.47 1.47 0 0 0 .657-.885 1.493 1.493 0 0 0-.141-1.118"/></g></g><text x="74" y="329" class="frame">카프카 클러스터</text></g>
-<g id="g-2" class="fl-group" data-id="topic"><rect x="52" y="351" width="616" height="182" rx="14" class="frame-box fl-stroke d2 a0"/><text x="70" y="369" class="frame">토픽 orders</text></g>
-<g id="g-3" class="fl-group tabbed" data-id="consumers"><rect x="184" y="850" width="428" height="209" rx="14" class="frame-box fl-stroke a0"/><rect x="192" y="854" width="20" height="20" rx="6" class="icon-tile"/><g class="fl-icon in-tile" transform="translate(195.8 857.8) scale(0.3875)"><g fill="currentColor"><path d="M22,28H12V26H22V10H6V20H4V10A2.0021,2.0021,0,0,1,6,8H22a2.0021,2.0021,0,0,1,2,2V26A2.0021,2.0021,0,0,1,22,28Z"/><path d="M28,22H26V20h2V4H12V6H10V4a2.0021,2.0021,0,0,1,2-2H28a2.0021,2.0021,0,0,1,2,2V20A2.0021,2.0021,0,0,1,28,22Z"/><path d="M10 14 10 16 14.586 16 3 27.586 4.414 29 16 17.414 16 22 18 22 18 14 10 14z"/></g></g><text x="273" y="868" class="frame">소비자 그룹</text></g>
+<g id="g-0" class="fl-group tabbed" data-id="producers"><rect x="218.6" y="28" width="388" height="145" rx="12" class="frame-box fl-stroke a0"/><rect x="226.6" y="32" width="20" height="20" rx="6" class="icon-tile"/><g class="fl-icon in-tile" transform="translate(230.4 35.8) scale(0.3875)"><g fill="currentColor"><circle cx="9" cy="6" r="1"/><path d="M26,10H6A2.0021,2.0021,0,0,1,4,8V4A2.0021,2.0021,0,0,1,6,2H26a2.0021,2.0021,0,0,1,2,2V8A2.0021,2.0021,0,0,1,26,10ZM6,4V8H26V4Z"/><circle cx="9" cy="16" r="1"/><path d="M26,20H6a2.0021,2.0021,0,0,1-2-2V14a2.0021,2.0021,0,0,1,2-2H26a2.0021,2.0021,0,0,1,2,2v4A2.0021,2.0021,0,0,1,26,20ZM6,14v4H26V14Z"/><circle cx="9" cy="26" r="1"/><path d="M26,30H6a2.0021,2.0021,0,0,1-2-2V24a2.0021,2.0021,0,0,1,2-2H26a2.0021,2.0021,0,0,1,2,2v4A2.0021,2.0021,0,0,1,26,30ZM6,24v4H26V24Z"/></g></g><text x="264.6" y="46" class="frame">생산자</text></g>
+<g id="g-1" class="fl-group tabbed" data-id="cluster"><rect x="28" y="311" width="860" height="401" rx="12" class="frame-box fl-stroke a0"/><rect x="36" y="315" width="20" height="20" rx="6" class="icon-tile"/><g class="fl-icon in-tile" transform="translate(39.8 318.8) scale(0.5167)"><g fill="currentColor"><path d="M9.71 2.136a1.43 1.43 0 0 0-2.047 0h-.007a1.48 1.48 0 0 0-.421 1.042c0 .41.161.777.422 1.039l.007.007c.257.264.616.426 1.019.426.404 0 .766-.162 1.027-.426l.003-.007c.261-.262.421-.629.421-1.039 0-.408-.159-.777-.421-1.042H9.71zM8.683 22.295c.404 0 .766-.167 1.027-.429l.003-.008c.261-.261.421-.631.421-1.036 0-.41-.159-.778-.421-1.044H9.71a1.42 1.42 0 0 0-1.027-.432 1.4 1.4 0 0 0-1.02.432h-.007c-.26.266-.422.634-.422 1.044 0 .406.161.775.422 1.036l.007.008c.258.262.617.429 1.02.429zm7.89-4.462c.359-.096.683-.33.882-.684l.027-.052a1.47 1.47 0 0 0 .114-1.067 1.454 1.454 0 0 0-.675-.896l-.021-.014a1.425 1.425 0 0 0-1.078-.132c-.36.091-.684.335-.881.686-.2.349-.241.75-.146 1.119.099.363.33.691.675.896h.002c.346.203.737.239 1.101.144zm-6.405-7.342a2.083 2.083 0 0 0-1.485-.627c-.58 0-1.103.242-1.482.627-.378.385-.612.916-.612 1.507s.233 1.124.612 1.514a2.08 2.08 0 0 0 2.967 0c.379-.39.612-.923.612-1.514s-.233-1.122-.612-1.507zm-.835-2.51c.843.141 1.6.552 2.178 1.144h.004c.092.093.182.196.265.299l1.446-.851a3.176 3.176 0 0 1-.047-1.808 3.149 3.149 0 0 1 1.456-1.926l.025-.016a3.062 3.062 0 0 1 2.345-.306c.77.21 1.465.721 1.898 1.482v.002c.431.757.518 1.626.313 2.408a3.145 3.145 0 0 1-1.456 1.928l-.198.118h-.02a3.095 3.095 0 0 1-2.154.201 3.127 3.127 0 0 1-1.514-.944l-1.444.848a4.162 4.162 0 0 1 0 2.879l1.444.846c.413-.47.939-.789 1.514-.944a3.041 3.041 0 0 1 2.371.319l.048.023v.002a3.17 3.17 0 0 1 1.408 1.906 3.215 3.215 0 0 1-.313 2.405l-.026.053-.003-.005a3.147 3.147 0 0 1-1.867 1.436 3.096 3.096 0 0 1-2.371-.318v-.006a3.156 3.156 0 0 1-1.456-1.927 3.175 3.175 0 0 1 .047-1.805l-1.446-.848a3.905 3.905 0 0 1-.265.294l-.004.005a3.938 3.938 0 0 1-2.178 1.138v1.699a3.09 3.09 0 0 1 1.56.862l.002.004c.565.572.914 1.368.914 2.243 0 .873-.35 1.664-.914 2.239l-.002.009a3.1 3.1 0 0 1-2.21.931 3.1 3.1 0 0 1-2.206-.93h-.002v-.009a3.186 3.186 0 0 1-.916-2.239c0-.875.35-1.672.916-2.243v-.004h.002a3.1 3.1 0 0 1 1.558-.862v-1.699a3.926 3.926 0 0 1-2.176-1.138l-.006-.005a4.098 4.098 0 0 1-1.173-2.874c0-1.122.452-2.136 1.173-2.872h.006a3.947 3.947 0 0 1 2.176-1.144V6.289a3.137 3.137 0 0 1-1.558-.864h-.002v-.004a3.192 3.192 0 0 1-.916-2.243c0-.871.35-1.669.916-2.243l.002-.002A3.084 3.084 0 0 1 8.683 0c.861 0 1.641.355 2.21.932v.002h.002c.565.574.914 1.372.914 2.243 0 .876-.35 1.667-.914 2.243l-.002.005a3.142 3.142 0 0 1-1.56.864v1.692zm8.121-1.129l-.012-.019a1.452 1.452 0 0 0-.87-.668 1.43 1.43 0 0 0-1.103.146h.002c-.347.2-.58.529-.677.896-.095.365-.054.768.146 1.119l.007.009c.2.347.519.579.874.673.357.103.755.059 1.098-.144l.019-.009a1.47 1.47 0 0 0 .657-.885 1.493 1.493 0 0 0-.141-1.118"/></g></g><text x="74" y="329" class="frame">카프카 클러스터</text></g>
+<g id="g-2" class="fl-group" data-id="topic"><rect x="52" y="351" width="616" height="182" rx="12" class="frame-box fl-stroke d2 a0"/><text x="70" y="369" class="frame">토픽 orders</text></g>
+<g id="g-3" class="fl-group tabbed" data-id="consumers"><rect x="184" y="850" width="428" height="209" rx="12" class="frame-box fl-stroke a0"/><rect x="192" y="854" width="20" height="20" rx="6" class="icon-tile"/><g class="fl-icon in-tile" transform="translate(195.8 857.8) scale(0.3875)"><g fill="currentColor"><path d="M22,28H12V26H22V10H6V20H4V10A2.0021,2.0021,0,0,1,6,8H22a2.0021,2.0021,0,0,1,2,2V26A2.0021,2.0021,0,0,1,22,28Z"/><path d="M28,22H26V20h2V4H12V6H10V4a2.0021,2.0021,0,0,1,2-2H28a2.0021,2.0021,0,0,1,2,2V20A2.0021,2.0021,0,0,1,28,22Z"/><path d="M10 14 10 16 14.586 16 3 27.586 4.414 29 16 17.414 16 22 18 22 18 14 10 14z"/></g></g><text x="273" y="868" class="frame">소비자 그룹</text></g>
 <g id="n-0" class="fl-node" data-id="orderapi"><g class="fl-halo a2" fill="none" opacity="0"><rect x="242.6" y="68" width="100" height="81" rx="10" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="242.6" y="68" width="100" height="81" rx="10" fill="var(--color-node)" class="fl-stroke a1"/><rect x="282.6" y="80" width="20" height="20" rx="6" class="icon-tile"/><g class="fl-icon in-tile" transform="translate(286.4 83.8) scale(0.3875)"><g fill="currentColor"><circle cx="9" cy="6" r="1"/><path d="M26,10H6A2.0021,2.0021,0,0,1,4,8V4A2.0021,2.0021,0,0,1,6,2H26a2.0021,2.0021,0,0,1,2,2V8A2.0021,2.0021,0,0,1,26,10ZM6,4V8H26V4Z"/><circle cx="9" cy="16" r="1"/><path d="M26,20H6a2.0021,2.0021,0,0,1-2-2V14a2.0021,2.0021,0,0,1,2-2H26a2.0021,2.0021,0,0,1,2,2v4A2.0021,2.0021,0,0,1,26,20ZM6,14v4H26V14Z"/><circle cx="9" cy="26" r="1"/><path d="M26,30H6a2.0021,2.0021,0,0,1-2-2V24a2.0021,2.0021,0,0,1,2-2H26a2.0021,2.0021,0,0,1,2,2v4A2.0021,2.0021,0,0,1,26,30ZM6,24v4H26V24Z"/></g></g><text x="292.6" y="117.7" class="label">주문 API</text><text x="292.6" y="133.5" class="sub">주문 생성</text></g>
 <g id="n-1" class="fl-node" data-id="payapi"><g class="fl-halo a4" fill="none" opacity="0"><rect x="362.6" y="68" width="100" height="81" rx="10" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="362.6" y="68" width="100" height="81" rx="10" fill="var(--color-node)" class="fl-stroke a3"/><rect x="402.6" y="80" width="20" height="20" rx="6" class="icon-tile"/><g class="fl-icon in-tile" transform="translate(406.4 83.8) scale(0.3875)"><g fill="currentColor"><circle cx="9" cy="6" r="1"/><path d="M26,10H6A2.0021,2.0021,0,0,1,4,8V4A2.0021,2.0021,0,0,1,6,2H26a2.0021,2.0021,0,0,1,2,2V8A2.0021,2.0021,0,0,1,26,10ZM6,4V8H26V4Z"/><circle cx="9" cy="16" r="1"/><path d="M26,20H6a2.0021,2.0021,0,0,1-2-2V14a2.0021,2.0021,0,0,1,2-2H26a2.0021,2.0021,0,0,1,2,2v4A2.0021,2.0021,0,0,1,26,20ZM6,14v4H26V14Z"/><circle cx="9" cy="26" r="1"/><path d="M26,30H6a2.0021,2.0021,0,0,1-2-2V24a2.0021,2.0021,0,0,1,2-2H26a2.0021,2.0021,0,0,1,2,2v4A2.0021,2.0021,0,0,1,26,30ZM6,24v4H26V24Z"/></g></g><text x="412.6" y="117.7" class="label">결제 API</text><text x="412.6" y="133.5" class="sub">결제 승인</text></g>
 <g id="n-2" class="fl-node" data-id="stockapi"><g class="fl-halo a4" fill="none" opacity="0"><rect x="482.6" y="68" width="100" height="81" rx="10" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="482.6" y="68" width="100" height="81" rx="10" fill="var(--color-node)" class="fl-stroke a3"/><rect x="522.6" y="80" width="20" height="20" rx="6" class="icon-tile"/><g class="fl-icon in-tile" transform="translate(526.4 83.8) scale(0.3875)"><g fill="currentColor"><circle cx="9" cy="6" r="1"/><path d="M26,10H6A2.0021,2.0021,0,0,1,4,8V4A2.0021,2.0021,0,0,1,6,2H26a2.0021,2.0021,0,0,1,2,2V8A2.0021,2.0021,0,0,1,26,10ZM6,4V8H26V4Z"/><circle cx="9" cy="16" r="1"/><path d="M26,20H6a2.0021,2.0021,0,0,1-2-2V14a2.0021,2.0021,0,0,1,2-2H26a2.0021,2.0021,0,0,1,2,2v4A2.0021,2.0021,0,0,1,26,20ZM6,14v4H26V14Z"/><circle cx="9" cy="26" r="1"/><path d="M26,30H6a2.0021,2.0021,0,0,1-2-2V24a2.0021,2.0021,0,0,1,2-2H26a2.0021,2.0021,0,0,1,2,2v4A2.0021,2.0021,0,0,1,26,30ZM6,24v4H26V24Z"/></g></g><text x="532.6" y="117.7" class="label">재고 API</text><text x="532.6" y="133.5" class="sub">재고 차감</text></g>

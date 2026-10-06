@@ -74,8 +74,8 @@
 
 ## 선택 테마 가져오기
 
-테마 선택은 루트 theme.config.json의 base이다. design-tokens의 dist/base 완성본을 src/design-theme에 커밋한다. scripts/theme-snapshot.mjs가 모든 파일의 해시를 검사한다. scripts/lib/design-tokens.mjs는 이 사본의 renderer.tokens.json과 renderer.tokens.dark.json을 읽는다. src/tokens.json과 src/tokens.dark.json은 그림 전용 토큰의 호환 사본이다. 계산 알고리즘과 기존 생성 CSS·JS 값은 유지한다.
+테마 선택은 루트 theme.config.json의 simple2다. design-tokens의 dist/simple2 완성본을 src/design-theme에 커밋한다. scripts/theme-snapshot.mjs가 모든 파일의 해시를 검사한다. scripts/lib/design-tokens.mjs는 이 사본의 renderer.tokens.json과 renderer.tokens.dark.json을 읽는다. src/tokens.json과 src/tokens.dark.json은 그림 전용 토큰의 호환 사본이다. 계산 알고리즘은 유지하고 생성 CSS·JS는 선택한 테마의 값을 사용한다.
 
-공통 정본에서 수정한 다음 `npm run theme:sync -- --from <design-tokens-root>`, `npm run tokens`, `npm run check`, `npm test` 순서로 확인한다. theme:sync는 기존 사본의 수동 수정을 발견하면 중단한다. 자동 업데이트 워크플로도 새 패키지 설치 후 같은 명령으로 base을 가져온다. Git 태그 개발 의존성은 업데이트 감지용이며 실행 시에는 커밋된 사본과 생성물을 사용한다.
+공통 정본에서 수정한 다음 `npm run theme:sync -- --from <design-tokens-root>`, `npm run tokens`, `npm run check`, `npm test` 순서로 확인한다. theme:sync는 기존 사본의 수동 수정을 발견하면 중단한다. 자동 업데이트 워크플로도 새 패키지 설치 후 같은 명령으로 설정한 테마를 가져온다. Git 태그 개발 의존성은 업데이트 감지용이며 실행 시에는 커밋된 사본과 생성물을 사용한다.
 
-현재 연결은 base의 두 모드와 기존 글꼴을 보존한다. 다른 테마는 renderer 계약과 그림 전용 값, 실제 측정 글꼴을 갖추고 검사한 뒤 연결한다. npm 사용자에게 테마 원본을 다시 다운로드하도록 요구하지 않는다.
+현재 연결은 simple2의 두 모드를 사용하고 그림의 측정 글꼴을 보존한다. 다른 테마는 renderer 계약과 그림 전용 값, 실제 측정 글꼴을 갖추고 검사한 뒤 연결한다. npm 사용자에게 테마 원본을 다시 다운로드하도록 요구하지 않는다.

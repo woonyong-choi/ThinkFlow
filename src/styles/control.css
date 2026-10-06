@@ -1,14 +1,8 @@
 /* 조작 단추의 공통 모양과 상태. 재생기(원 단추, 탭), 목록 쪽과 문서 미리보기(테마 묶음)가 모두 이 파일 하나를 쓴다. */
-.fl-round:hover,
-.fl-tabs button:hover,
-.theme button:hover {
-  color: var(--color-fg);
-}
-
 .fl-round:focus-visible,
 .fl-tabs button:focus-visible,
 .theme button:focus-visible {
-  outline: var(--border-tag) solid var(--color-ui-focus);
+  outline: var(--simple2-focus-width) solid var(--color-ui-focus);
   outline-offset: var(--space-1);
 }
 
@@ -19,15 +13,16 @@
   box-sizing: border-box;
   min-height: var(--size-control-outer);
   padding: var(--space-1-5);
-  background: var(--color-bg);
-  border: var(--border-thin) solid var(--color-border);
+  background: var(--color-surface);
+  border: var(--border-thin) solid var(--color-plate-border);
   border-radius: var(--radius-full);
 }
 
 .fl-tabs button,
 .theme button {
   min-height: var(--size-control-inner);
-  font: var(--size-text-13) var(--font-figure-sans);
+  min-width: var(--size-control-inner);
+  font: var(--simple2-control) var(--font-sans);
   color: var(--color-muted);
   cursor: pointer;
   background: transparent;
@@ -39,11 +34,34 @@
   padding: 0 var(--space-6);
 }
 
-/* segmented 방식: 켜진 항목은 꽉 찬 알약(ui.control-on)이다. 켜짐 표시는 묶음 바탕과 대비 3인 border 색 고리다. */
+/* 켜진 탭은 독립된 면과 파란 글자, 그림자로 묶음 바탕에서 구분한다. */
 .fl-tabs button.on,
 .theme button[aria-pressed='true'] {
   font-weight: var(--weight-semibold);
-  color: var(--color-fg);
+  color: var(--color-state-active-text);
   background: var(--color-ui-control-on);
-  box-shadow: 0 0 0 var(--border-thin) var(--color-border);
+  box-shadow: var(--simple2-shadow);
+}
+
+/* 같은 조작의 hover와 pressed를 재생기와 목록에서 공유한다. */
+.fl-round:hover,
+.fl-tabs button:hover,
+.theme button:hover {
+  color: var(--color-state-active-text);
+  background: var(--color-card-on);
+}
+
+.fl-round:active,
+.fl-tabs button:active,
+.theme button:active {
+  color: var(--color-state-on-active);
+  background: var(--color-state-active-fill);
+}
+
+.fl-round:disabled,
+.fl-tabs button:disabled,
+.theme button:disabled {
+  color: var(--color-muted);
+  background: var(--color-surface);
+  cursor: default;
 }

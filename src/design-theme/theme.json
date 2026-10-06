@@ -1,15 +1,18 @@
 {
-  "id": "base",
+  "id": "simple2",
   "schemaVersion": 1,
+  "extends": "base",
+  "inheritStyles": false,
   "modes": [
     "light",
     "dark"
   ],
   "defaultMode": "light",
-  "description": "Blue accents, neutral surfaces and shared document and diagram typography",
+  "description": "Daphnis diagram surfaces, typography and controls aligned with Things",
+  "fonts": "bundled-by-renderer",
   "source": {
     "repository": "https://github.com/woonyong-choi/design-tokens",
-    "path": "themes/base",
+    "path": "themes/simple2",
     "version": "0.1.1"
   },
   "files": {
@@ -18,15 +21,15 @@
     "assets/fonts/pretendard-license.txt": "b04538c9abec39a3db75108cf0af0fd9c77032fe8aa2cf38345b4d250e98e38e",
     "assets/fonts/pretendard-variable.woff2": "9599f12fd42fc0bce1cd50b47a0c022e108d7aa64dd0d1bb0ed44f3282d900b4",
     "diagram.tokens.dark.json": "860a58ed9c3164b87355294a53e1e48d779a033695be5c5c299b377031983ece",
-    "diagram.tokens.json": "77af7fc1b310098360e4299bf7c8292fba443d0d402a175f36fb0cc3e2bd58df",
-    "renderer.tokens.dark.json": "1acb99221e9cef8517e01f4652dfb28bc9af82ddfe98bb7edefa2473e2379c87",
-    "renderer.tokens.json": "73259cd5a54d71dd128169267608a9f4122d37cb2e60c34670df33dab50c2dc4",
-    "styles.css": "b856ff8f3bd48cb6dedf1eb6b23deeabb4340dadfb15b8944ba58b288dc36478",
-    "styles.source.css": "4f824a4f200755432a116e8acccc93eefaeee1cdbf4eb47add2a1e0d1687f39e",
-    "theme.css": "98a3f25957757b89738f97bc5bc7461894de31c137b0d2b3acb5a5bd12727edc",
-    "tokens.dark.json": "b5406d301c5486a04160bc498bfffc415f406defc70828a2185246ecfa772e4d",
-    "tokens.json": "b7bbf715675d19ff85a5ea807bbbd5fd52a61b5c9550fe5d17cb58e43492b7be",
-    "tokens.light.json": "b7bbf715675d19ff85a5ea807bbbd5fd52a61b5c9550fe5d17cb58e43492b7be"
+    "diagram.tokens.json": "795b2a3f7f058fad59e8a49ce1c02df478be42d785abb0a785b0c4b91e203cc5",
+    "renderer.tokens.dark.json": "bc07d185b1b3a94c168dc7f0e91a2e9e74d15c1a771cd7ca0d78ee7ff8f82f9c",
+    "renderer.tokens.json": "0545d6c937832d4ff775d76d80bf0c019f9e67b86db7f94e6697641e450159cb",
+    "styles.css": "6c573a559614b42665615b9117c04f56e783bbf9a6313df36429691de8149c55",
+    "styles.source.css": "6c573a559614b42665615b9117c04f56e783bbf9a6313df36429691de8149c55",
+    "theme.css": "d685b1ffe61c865c60c797aa408a8581db3734197930d2bb34b8a75e05f441b5",
+    "tokens.dark.json": "d9a9be3e286ca69bfac7215eadec715c59620f42b457c3c1191106c6c617a6b3",
+    "tokens.json": "5458872fa03dd2d116f2ac7846c02408aa05d8c06fa4fc678a9b9ea283da98f9",
+    "tokens.light.json": "5458872fa03dd2d116f2ac7846c02408aa05d8c06fa4fc678a9b9ea283da98f9"
   },
-  "contentHash": "547fe104d7475e457bb2f5ae0a2237038af2794a15b3e8b47e5ecbd6797d1054"
+  "contentHash": "ff22b121e16cac078657f4819a43310ddef329148d597d11ef19231dc4428393"
 }

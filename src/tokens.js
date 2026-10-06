@@ -503,6 +503,37 @@ export const tokens = freeze({
     "move": "var(--easing-move)",
     "reveal": "var(--easing-reveal)"
   },
+  "simple2": {
+    "heading": "var(--simple2-heading)",
+    "subheading": "var(--simple2-subheading)",
+    "body": "var(--simple2-body)",
+    "control": "var(--simple2-control)",
+    "caption": "var(--simple2-caption)",
+    "page-gutter": "var(--simple2-page-gutter)",
+    "page-gap": "var(--simple2-page-gap)",
+    "page-width": "var(--simple2-page-width)",
+    "reading-width": "var(--simple2-reading-width)",
+    "control-gap": "var(--simple2-control-gap)",
+    "focus-width": "var(--simple2-focus-width)",
+    "leading": "var(--simple2-leading)",
+    "title-leading": "var(--simple2-title-leading)",
+    "shadow": "var(--simple2-shadow)"
+  },
+  "primitive": {
+    "simple2": {
+      "fg": "var(--primitive-simple2-fg)",
+      "muted": "var(--primitive-simple2-muted)",
+      "group-title": "var(--primitive-simple2-group-title)",
+      "bg": "var(--primitive-simple2-bg)",
+      "page": "var(--primitive-simple2-page)",
+      "node": "var(--primitive-simple2-node)",
+      "card": "var(--primitive-simple2-card)",
+      "surface": "var(--primitive-simple2-surface)",
+      "plate-border": "var(--primitive-simple2-plate-border)",
+      "border": "var(--primitive-simple2-border)",
+      "shadow": "var(--primitive-simple2-shadow)"
+    }
+  },
   "dash": {
     "line": "var(--dash-line)",
     "gap": "var(--dash-gap)",
@@ -580,25 +611,25 @@ export const values = freeze({
       "1000": "#000000"
     },
     "blue": {
-      "anchor": "#125de6",
+      "anchor": "#1e66d8",
       "light-fill": "#edf4ff",
-      "light-stroke": "#125de6",
-      "light-ink": "#0151d9",
-      "light-heat-low": "#b7cdf5",
-      "light-heat-high": "#004dd2",
-      "light-outline": "#658dd5",
+      "light-stroke": "#1e66d8",
+      "light-ink": "#0a57c8",
+      "light-heat-low": "#b3cbf2",
+      "light-heat-high": "#0352c3",
+      "light-outline": "#678dcb",
       "light-tint-1": "#e5eefc",
       "light-tint-2": "#d7e2f4",
-      "light-tint-3": "#cad7ed",
-      "dark-fill": "#1c2a43",
-      "dark-stroke": "#70a3ff",
-      "dark-ink": "#78a9ff",
-      "dark-heat-low": "#293751",
-      "dark-heat-high": "#4474cc",
-      "dark-outline": "#6789c4",
+      "light-tint-3": "#c9d7ed",
+      "dark-fill": "#1b2a43",
+      "dark-stroke": "#6ca4ff",
+      "dark-ink": "#74a9ff",
+      "dark-heat-low": "#283851",
+      "dark-heat-high": "#4075cc",
+      "dark-outline": "#6489c3",
       "dark-tint-1": "#1a202b",
       "dark-tint-2": "#222a38",
-      "dark-tint-3": "#2a3446"
+      "dark-tint-3": "#2a3546"
     },
     "purple": {
       "anchor": "#b28fd1",
@@ -656,26 +687,26 @@ export const values = freeze({
       "dark-ink": "#ff875a",
       "dark-outline": "#c37356"
     },
-    "fg": "#1f1f1f",
-    "muted": "#5d5d5d",
-    "group-title": "#595959",
-    "bg": "#f8f8f8",
+    "fg": "#303336",
+    "muted": "#505b69",
+    "group-title": "#505b69",
+    "bg": "#f2f5f7",
     "group-1": "#ededed",
     "group-2": "#e1e1e1",
     "group-3": "#d6d6d6",
     "node": "#ffffff",
-    "surface": "#f0f0f0",
-    "card": "#f4f4f4",
+    "surface": "#edeef1",
+    "card": "#f6f7fa",
     "card-on": "#edf4ff",
     "page": "#ffffff",
     "outline": "#787878",
-    "border": "#e4e4e4",
-    "plate-border": "#dadada",
+    "border": "#838b96",
+    "plate-border": "#d1d7de",
     "line": "#b7b7b7",
     "state": {
-      "active": "#125de6",
-      "active-fill": "#0151d9",
-      "active-text": "#0151d9",
+      "active": "#1e66d8",
+      "active-fill": "#0a57c8",
+      "active-text": "#0a57c8",
       "on-active": "#ffffff",
       "error": "#c70005",
       "success": "#008c1a",
@@ -683,28 +714,28 @@ export const values = freeze({
       "glow": "#edf4ff"
     },
     "flow": {
-      "brand": "#125de6",
+      "brand": "#1e66d8",
       "purple": "#704f8c",
       "green": "#006d12",
       "gray": "#747474",
       "red": "#6c0001"
     },
     "ui": {
-      "link": "#0151d9",
-      "focus": "#125de6",
-      "progress": "#125de6",
+      "link": "#0a57c8",
+      "focus": "#1e66d8",
+      "progress": "#1e66d8",
       "control-on": "#ffffff"
     },
     "data": {
-      "main": "#125de6",
+      "main": "#1e66d8",
       "compare": "#d44b00",
-      "heat-low": "#b7cdf5",
-      "heat-high": "#004dd2",
+      "heat-low": "#b3cbf2",
+      "heat-high": "#0352c3",
       "heat-ink": "#000000",
       "heat-ink-on": "#ffffff",
       "grid": "#c9c9c9"
     },
-    "accent": "#125de6",
+    "accent": "#1e66d8",
     "palette": {
       "amber": {
         "light-fill": "#fff0ea",
@@ -730,13 +761,13 @@ export const values = freeze({
       },
       "navy": {
         "light-fill": "#edf4ff",
-        "light-stroke": "#125de6",
-        "light-ink": "#0151d9",
-        "light-outline": "#658dd5",
-        "dark-fill": "#1c2a43",
-        "dark-stroke": "#70a3ff",
-        "dark-ink": "#78a9ff",
-        "dark-outline": "#6789c4"
+        "light-stroke": "#1e66d8",
+        "light-ink": "#0a57c8",
+        "light-outline": "#678dcb",
+        "dark-fill": "#1b2a43",
+        "dark-stroke": "#6ca4ff",
+        "dark-ink": "#74a9ff",
+        "dark-outline": "#6489c3"
       },
       "pink": {
         "light-fill": "#f7f0ff",
@@ -749,20 +780,20 @@ export const values = freeze({
         "dark-outline": "#977eae"
       },
       "sky": {
-        "light-fill": "#e9f1fe",
-        "light-stroke": "#125de6",
-        "light-ink": "#0151d9",
+        "light-fill": "#e8f1fe",
+        "light-stroke": "#1e66d8",
+        "light-ink": "#0a57c8",
         "light-tint-1": "#e5eefc",
         "light-tint-2": "#d7e2f4",
-        "light-tint-3": "#cad7ed",
-        "light-outline": "#628ad3",
-        "dark-fill": "#1c2a43",
-        "dark-stroke": "#70a3ff",
-        "dark-ink": "#78a9ff",
+        "light-tint-3": "#c9d7ed",
+        "light-outline": "#648bca",
+        "dark-fill": "#1b2a43",
+        "dark-stroke": "#6ca4ff",
+        "dark-ink": "#74a9ff",
         "dark-tint-1": "#1a202b",
         "dark-tint-2": "#222a38",
-        "dark-tint-3": "#2a3446",
-        "dark-outline": "#6789c4"
+        "dark-tint-3": "#2a3546",
+        "dark-outline": "#6489c3"
       },
       "slate": {
         "light-fill": "#e7e7e7",
@@ -778,9 +809,9 @@ export const values = freeze({
       }
     },
     "figure": {
-      "icon": "#125de6",
+      "icon": "#1e66d8",
       "icon-tile": "#edf4ff",
-      "queue-fill": "#125de6",
+      "queue-fill": "#1e66d8",
       "queue-empty": "#d6d6d6"
     },
     "paint": {
@@ -813,9 +844,9 @@ export const values = freeze({
       },
       "navy": {
         "fill": "#edf4ff",
-        "stroke": "#125de6",
-        "outline": "#658dd5",
-        "ink": "#0151d9"
+        "stroke": "#1e66d8",
+        "outline": "#678dcb",
+        "ink": "#0a57c8"
       },
       "purple": {
         "fill": "#f7f0ff",
@@ -834,13 +865,13 @@ export const values = freeze({
         "ink": "#704f8c"
       },
       "sky": {
-        "fill": "#e9f1fe",
-        "stroke": "#125de6",
-        "outline": "#628ad3",
-        "ink": "#0151d9",
+        "fill": "#e8f1fe",
+        "stroke": "#1e66d8",
+        "outline": "#648bca",
+        "ink": "#0a57c8",
         "group-1": "#e5eefc",
         "group-2": "#d7e2f4",
-        "group-3": "#cad7ed"
+        "group-3": "#c9d7ed"
       },
       "gray": {
         "fill": "#e7e7e7",
@@ -855,13 +886,13 @@ export const values = freeze({
       "green": "#008c1a",
       "gray": "#5d5d5d",
       "red": "#c70005",
-      "brand": "#125de6"
+      "brand": "#1e66d8"
     }
   },
   "font": {
-    "sans": "Pretendard, 'Pretendard Variable', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif",
+    "sans": "ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Apple SD Gothic Neo', sans-serif",
     "mono": "'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace",
-    "figure-sans": "FigSans, FigSansSym, FigSansMath, Pretendard, 'Pretendard Variable', -apple-system, BlinkMacSystemFont, 'Apple SD Gothic Neo', sans-serif",
+    "figure-sans": "FigSans, FigSansSym, FigSansMath, Pretendard, 'Pretendard Variable', ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Apple SD Gothic Neo', sans-serif",
     "figure-mono": "FigMono, FigSans, FigSansSym, FigSansMath, ui-monospace, SFMono-Regular, Menlo, monospace"
   },
   "size": {
@@ -873,9 +904,9 @@ export const values = freeze({
       "22": 22
     },
     "control": {
-      "outer": 36,
-      "inner": 28,
-      "icon": 16,
+      "outer": 52,
+      "inner": 44,
+      "icon": 20,
       "icon-stroke": 1.75
     },
     "pill": {
@@ -1003,7 +1034,7 @@ export const values = freeze({
     "md": 6,
     "lg": 8,
     "xl": 10,
-    "2xl": 14,
+    "2xl": 12,
     "full": 999,
     "route": 22
   },
@@ -1043,6 +1074,37 @@ export const values = freeze({
   "easing": {
     "move": "cubic-bezier(0.455, 0.03, 0.515, 0.955)",
     "reveal": "cubic-bezier(0, 0, 0.58, 1)"
+  },
+  "simple2": {
+    "heading": 36,
+    "subheading": 27,
+    "body": 18,
+    "control": 15,
+    "caption": 13,
+    "page-gutter": 24,
+    "page-gap": 48,
+    "page-width": 1180,
+    "reading-width": 948,
+    "control-gap": 8,
+    "focus-width": 3,
+    "leading": 1.6,
+    "title-leading": 1.2,
+    "shadow": "0 2px 8px rgba(0,0,0,.10), 0 0 2px rgba(0,0,0,.10)"
+  },
+  "primitive": {
+    "simple2": {
+      "fg": "#303336",
+      "muted": "#505b69",
+      "group-title": "#505b69",
+      "bg": "#f2f5f7",
+      "page": "#ffffff",
+      "node": "#ffffff",
+      "card": "#f6f7fa",
+      "surface": "#edeef1",
+      "plate-border": "#d1d7de",
+      "border": "#838b96",
+      "shadow": "0 2px 8px rgba(0,0,0,.10), 0 0 2px rgba(0,0,0,.10)"
+    }
   },
   "dash": {
     "line": 5,
