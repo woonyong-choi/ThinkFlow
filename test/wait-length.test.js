@@ -171,6 +171,7 @@ describe('player', { skip: CHROME ? false : 'Chrome이 없다' }, () => {
       await page.clock.install({ time: 0 });
       await page.clock.pauseAt(3_600_000);
       await page.setContent(html);
+      await page.locator('.fl-pause').dispatchEvent('click');
       await page.addStyleTag({ content: '*, *::before, *::after { transition: none !important; }' });
       const seen = [];
       for (const [label, until] of [['대기 중', 59_000], ['대기가 끝난 직후', nextAt - 100], ['다음 단계 시작 직후', nextAt + 200], ['한 바퀴 끝 직후', timeline.total + 200]]) {

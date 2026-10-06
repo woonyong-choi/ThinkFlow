@@ -41,7 +41,7 @@ export function toGallery(figures, heading) {
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${escapeXml(heading)}</title>
 ${faviconLinks()}
-<style>${STYLES.tokens}${STYLES.control}${STYLES.gallery}</style>
+<style>${STYLES.listingFonts}${STYLES.tokens}${STYLES.control}${STYLES.gallery}</style>
 <script>${THEME_SCRIPT}</script>
 </head>
 <body>
@@ -85,7 +85,7 @@ export function toDocument(figures, heading) {
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${escapeXml(heading)} 문서 미리보기</title>
 ${faviconLinks()}
-<style>${STYLES.tokens}${STYLES.control}${STYLES.document}</style>
+<style>${STYLES.listingFonts}${STYLES.tokens}${STYLES.control}${STYLES.document}</style>
 <script>${THEME_SCRIPT}</script>
 </head>
 <body>

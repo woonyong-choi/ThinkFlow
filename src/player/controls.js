@@ -25,7 +25,12 @@ function bindControls(root, player) {
 // basis: estimate
 function setPlaying(player, value) {
   const { clock, pause } = player;
+  const wasPlaying = clock.isPlaying;
   clock.isPlaying = value;
+  clock.before = performance.now();
+  if (value && !wasPlaying && clock.elapsed === 0 && player.data.segs.length) {
+    drawChartState(player.stage, player.data.segs[clock.index], true);
+  }
   pause.icon.innerHTML = playIconSvg(clock.isPlaying, player.data.metrics);
   pause.button.setAttribute('aria-label', clock.isPlaying ? '일시정지' : '재생');
   syncChartMotion(player.stage, clock);
@@ -50,6 +55,7 @@ function createRing(button) {
   return {
     draw(progress) {
       fill.style.strokeDashoffset = length * (1 - progress);
+      fill.style.visibility = progress > 0 ? 'visible' : 'hidden';
     },
   };
 }
@@ -61,7 +67,11 @@ function createRing(button) {
 // basis: estimate
 function createTabs(container, player) {
   const { data, stepSegs } = player;
-  const buttons = data.steps.map((label, si) => createTab(label, () => enterSegment(player, data.segs.indexOf(stepSegs[si][0]))));
+  const buttons = data.steps.map((label, si) => createTab(label, () => {
+    setPlaying(player, false);
+    enterSegment(player, data.segs.indexOf(stepSegs[si][0]));
+  }));
+  container.addEventListener('keydown', (event) => moveTab(event, buttons));
   container.append(...buttons);
   return buttons;
 }
@@ -85,6 +95,7 @@ function markTabs(buttons, current) {
   buttons.forEach((button, si) => {
     button.classList.toggle('on', si === current);
     button.setAttribute('aria-selected', si === current);
+    button.tabIndex = si === current ? 0 : -1;
   });
 }
 
@@ -111,4 +122,19 @@ function htmlCode() {
   const code = document.createElement('code');
   code.className = 'fl-code';
   return code;
+}
+
+// cost: time O(s), heap O(1), stack O(1)
+// vars: s = 단계 단추 수
+// basis: estimate
+// 탭 안에서는 화살표로 장면을 고르고 Tab은 조작 묶음 밖으로 이동한다.
+function moveTab(event, buttons) {
+  const current = buttons.indexOf(event.target);
+  if (current < 0) return;
+  const keys = { ArrowRight: (current + 1) % buttons.length, ArrowLeft: (current + buttons.length - 1) % buttons.length, Home: 0, End: buttons.length - 1 };
+  const next = keys[event.key];
+  if (next === undefined) return;
+  event.preventDefault();
+  buttons[next].click();
+  buttons[next].focus();
 }

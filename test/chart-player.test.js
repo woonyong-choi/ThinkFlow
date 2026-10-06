@@ -38,6 +38,7 @@ function withPlayer(browser, source, body) {
     const errors = [];
     page.on('pageerror', (e) => errors.push(e.message));
     await page.goto(`file://${join(folder, 'page.html')}`);
+      await page.click('.fl-pause');
     await page.waitForTimeout(SETTLE_MS);
     await body(page);
     assert.deepEqual(errors, []);
@@ -105,7 +106,8 @@ describe('chart player', { skip: CHROME ? false : 'Chrome이 없다' }, () => {
       await page.waitForTimeout(SAMPLE_MS);
       const later = await snapshot(page);
 
-      assert.ok(restarted.count > 0);
+      assert.equal(await page.getAttribute('.fl-pause', 'aria-label'), '재생');
+      assert.equal(await page.locator('.grow').first().evaluate((el) => getComputedStyle(el).transform), 'none', '선택한 장면은 완성된 차트로 읽는다');
       assert.ok(restarted.times.every((t) => t < SETTLE_MS), `재시작한 움직임이 처음부터 시작하지 않는다: ${restarted.times}`);
       assert.deepEqual(later.times, restarted.times);
       assert.ok(later.states.every((s) => s === 'paused'), later.states.join());
@@ -115,7 +117,7 @@ describe('chart player', { skip: CHROME ? false : 'Chrome이 없다' }, () => {
       await page.waitForTimeout(SAMPLE_MS);
       const running = await snapshot(page);
 
-      assert.ok(running.times.every((t, i) => t > later.times[i] + SAMPLE_MS), `2배속으로 흐르지 않는다: ${running.times}`);
+      assert.ok(running.count > 0 && running.times.every((t) => t > SAMPLE_MS), `2배속으로 흐르지 않는다: ${running.times}`);
     });
   });
 });

@@ -74,6 +74,7 @@ describe('chip reach', { skip: CHROME ? false : 'Chrome이 없다' }, () => {
       const page = await browser.newPage({ viewport: { width: 1400, height: 900 } });
       await page.clock.install({ time: 0 });
       await page.goto(`file://${join(folder, 'page.html')}`);
+      await page.locator('.fl-pause').dispatchEvent('click');
       // 가짜 시계는 CSS 전환(실제 시간으로 흐른다)을 따라가지 못해, 켜지는 알약 면이 전환 중인 채로 잴 수 있다. 전환을 꺼 켜진 뒤의 값을 잰다.
       await page.addStyleTag({ content: '*, *::before, *::after { transition: none !important; }' });
       for (let t = 0; t < total; t += FRAME_MS) {

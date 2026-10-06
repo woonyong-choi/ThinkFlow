@@ -526,7 +526,8 @@ export const tokens = freeze({
     "control-radius": "var(--simple2-control-radius)",
     "card-gap": "var(--simple2-card-gap)",
     "node-stroke": "var(--simple2-node-stroke)",
-    "heading-weight": "var(--simple2-heading-weight)"
+    "heading-weight": "var(--simple2-heading-weight)",
+    "progress-stroke": "var(--simple2-progress-stroke)"
   },
   "primitive": {
     "simple2": {
@@ -902,9 +903,9 @@ export const values = freeze({
     }
   },
   "font": {
-    "sans": "ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Apple SD Gothic Neo', sans-serif",
+    "sans": "FigSans, Pretendard, ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Apple SD Gothic Neo', sans-serif",
     "mono": "'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace",
-    "figure-sans": "FigSans, FigSansSym, FigSansMath, Pretendard, 'Pretendard Variable', ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Apple SD Gothic Neo', sans-serif",
+    "figure-sans": "FigSans, FigSansSym, FigSansMath, FigSans, Pretendard, ui-sans-serif, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Apple SD Gothic Neo', sans-serif",
     "figure-mono": "FigMono, FigSans, FigSansSym, FigSansMath, ui-monospace, SFMono-Regular, Menlo, monospace"
   },
   "size": {
@@ -1104,13 +1105,14 @@ export const values = freeze({
     "shadow": "0 2px 8px rgba(0,0,0,.10), 0 0 2px rgba(0,0,0,.10)",
     "play-fill": "#4f91fb",
     "play-ink": "#ffffff",
-    "node-shadow": "drop-shadow(0px 2px 4px rgba(0,0,0,.10)) drop-shadow(0px 0px 1px rgba(0,0,0,.10))",
+    "node-shadow": "drop-shadow(0px 2px 2px rgba(0,0,0,.08))",
     "play-face": 36,
     "corner": 18,
     "control-radius": 6,
     "card-gap": 48,
-    "node-stroke": 0.75,
-    "heading-weight": 700
+    "node-stroke": 1,
+    "heading-weight": 700,
+    "progress-stroke": 2
   },
   "primitive": {
     "simple2": {
@@ -1127,7 +1129,7 @@ export const values = freeze({
       "shadow": "0 2px 8px rgba(0,0,0,.10), 0 0 2px rgba(0,0,0,.10)",
       "play-fill": "#4f91fb",
       "play-ink": "#ffffff",
-      "node-shadow": "drop-shadow(0px 2px 4px rgba(0,0,0,.10)) drop-shadow(0px 0px 1px rgba(0,0,0,.10))"
+      "node-shadow": "drop-shadow(0px 2px 2px rgba(0,0,0,.08))"
     }
   },
   "dash": {

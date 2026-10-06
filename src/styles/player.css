@@ -87,9 +87,9 @@ html.embedded .fl-figure {
 
 .fl-ring {
   position: absolute;
-  inset: calc(-1 * var(--border-thin));
-  width: calc(100% + 2 * var(--border-thin));
-  height: calc(100% + 2 * var(--border-thin));
+  inset: 0;
+  width: var(--size-control-outer);
+  height: var(--size-control-outer);
   pointer-events: none;
 }
 
@@ -106,6 +106,7 @@ html.embedded .fl-figure {
 .fl-round {
   display: grid;
   place-items: center;
+  box-sizing: border-box;
   min-width: var(--size-control-outer);
   height: var(--size-control-outer);
   padding: 0 var(--space-2);
@@ -337,4 +338,16 @@ html.embedded .fl-figure {
 
 .fl-pause:active::before {
   background: var(--color-state-active-fill);
+}
+
+.fl-context {
+  display: grid;
+  gap: var(--space-3);
+  justify-items: center;
+}
+
+.fl-position {
+  font-size: var(--simple2-caption);
+  font-variant-numeric: tabular-nums;
+  color: var(--color-muted);
 }

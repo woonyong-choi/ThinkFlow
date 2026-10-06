@@ -9,8 +9,21 @@ function readStyle(name) {
   return readFileSync(new URL(name, import.meta.url), 'utf8');
 }
 
+// cost: time O(f), heap O(f), stack O(1), io f
+// vars: f = 테마 글꼴 바이트 수
+// basis: estimate
+// 목록도 파일 하나로 열리도록 정본의 글꼴 선언과 자산을 함께 넣는다.
+function listingFonts() {
+  const theme = JSON.parse(readStyle('./design-theme/tokens.json'));
+  return theme.$extensions.theme.fontFaces.map((face) => face.replace(/url\("([^"]+)"\)/g, (_, path) => {
+    const font = readFileSync(new URL(`./design-theme/${path}`, import.meta.url));
+    return `url("data:font/woff2;base64,${font.toString('base64')}")`;
+  })).join('\n');
+}
+
 /** 결과 파일 안 `<style>`에 넣을 CSS. tokens.css는 생성물이다. */
 export const STYLES = Object.freeze({
+  listingFonts: listingFonts(),
   tokens: readStyle('./tokens.css'),
   figure: readStyle('./styles/figure.css'),
   animated: readStyle('./styles/animated.css'),

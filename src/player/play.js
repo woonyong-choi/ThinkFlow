@@ -28,9 +28,9 @@ function figurePlay(root, data) {
     requestAnimationFrame(player.tick);
   } else {
     // 시간 흐름이 없는 그림은 단계 이름과 설명이 없어 탭과 설명 줄을 숨기고 재생 단추와 배속만 둔다.
-    // 차트는 SVG 이미지처럼 되풀이해 자라며, 움직임 줄이기에서는 재생을 누를 때까지 다 자란 채 멈춰 있다.
+    // 차트는 다 자란 채 멈춰 있다가 재생을 누르면 되풀이한다.
     root.querySelector('.fl-tabs').hidden = true;
-    player.caption.hidden = true;
+    root.querySelector('.fl-context').hidden = true;
     player.ring.draw(0);
   }
 }
@@ -48,9 +48,9 @@ function settleReducedMotion(player) {
 
 // cost: time O(1), heap O(1), stack O(1)
 // basis: estimate
-// 차트가 자라는 움직임을 걸어도 되는지. 움직임 줄이기가 아니거나, 사용자가 재생을 눌러 재생 중일 때다.
+// 사용자가 재생을 눌러 시계가 흐를 때만 차트를 움직인다.
 function mayAnimate(clock) {
-  return !REDUCED_MOTION.matches || clock.isPlaying;
+  return clock.isPlaying;
 }
 
 // cost: time O(1), heap O(1), stack O(1)
@@ -83,6 +83,7 @@ function createPlayer(root, data) {
     stepSegs: data.steps.map((_, si) => data.segs.filter((s) => s.si === si)),
     hasCaption: data.segs.some((s) => s.caption),
     caption: root.querySelector('.fl-caption'),
+    position: root.querySelector('.fl-position'),
     captionText: undefined,
     captionFade: undefined,
     pause: { button: pauseButton, icon: pauseButton.querySelector('.fl-pause-icon') },
@@ -103,7 +104,7 @@ function createClock() {
     index: 0,
     elapsed: 0,
     before: performance.now(),
-    isPlaying: !REDUCED_MOTION.matches,
+    isPlaying: false,
     rate: PLAYER_RATES[0],
   };
 }
@@ -133,9 +134,11 @@ function drawFrame(player, now) {
   if (clock.isPlaying) clock.elapsed += (now - clock.before) * clock.rate;
   clock.before = now;
   const seg = data.segs[clock.index];
-  advanceStage(player.stage, seg, clock.elapsed);
-  player.ring.draw(tabProgress(player, seg));
-  if (clock.elapsed >= seg.t1 - seg.t0) enterSegment(player, (clock.index + 1) % data.segs.length);
+  if (clock.isPlaying) {
+    advanceStage(player.stage, seg, clock.elapsed);
+    player.ring.draw(tabProgress(player, seg));
+    if (clock.elapsed >= seg.t1 - seg.t0) enterSegment(player, (clock.index + 1) % data.segs.length);
+  }
   requestAnimationFrame(player.tick);
 }
 
@@ -151,7 +154,9 @@ function enterSegment(player, i) {
   drawSegmentState(player.stage, seg, mayAnimate(clock));
   showCaption(player, seg.caption);
   markTabs(player.tabs, seg.si);
+  player.position.textContent = `${seg.si + 1} / ${data.steps.length}`;
   resetPackets(player.stage, seg);
+  advanceStage(player.stage, seg, 0);
   syncChartMotion(player.stage, clock);
   player.ring.draw(tabProgress(player, seg));
 }
@@ -169,7 +174,7 @@ function showCaption(player, text) {
   player.captionFade?.cancel();
   const fadeMs = parseFloat(getComputedStyle(caption).getPropertyValue(CAPTION_FADE_VAR));
   const fill = () => caption.replaceChildren(...richNodes(text, htmlCode));
-  if (isFirst || !fadeMs || REDUCED_MOTION.matches) {
+  if (isFirst || !player.clock.isPlaying || !fadeMs || REDUCED_MOTION.matches) {
     fill();
     return;
   }

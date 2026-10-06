@@ -62,11 +62,11 @@ function roundButton(extraClass, { label, zoom, content = '' } = {}) {
 const RING_START_DEGREES = -90;
 function ringSvg() {
   const size = values.size.control.outer;
-  const width = values.border.edge;
+  const width = values.simple2['progress-stroke'];
   const center = size / 2;
   const radius = (size - width) / 2;
   const start = `rotate(${RING_START_DEGREES} ${center} ${center})`;
-  return `<svg class="fl-ring" viewBox="0 0 ${size} ${size}" aria-hidden="true"><circle class="fl-ring-fill" cx="${center}" cy="${center}" r="${radius}" stroke-width="${width}" transform="${start}"/></svg>`;
+  return `<svg class="fl-ring" viewBox="0 0 ${size} ${size}" aria-hidden="true"><circle class="fl-ring-fill" cx="${center}" cy="${center}" r="${radius}" stroke-width="${width}" stroke-linecap="round" transform="${start}"/></svg>`;
 }
 
 // 전체 화면 단추와, 전체 화면에서만 보이는 확대·축소 단추.
@@ -103,8 +103,8 @@ ${STYLES.tokens}${STYLES.control}${STYLES.player}${STYLES.figure}${paintCss(resu
 ${VIEW_BUTTONS}
 <div class="fl-canvas">${svg}</div>
 <figcaption class="fl-foot">
-<div class="fl-bar">${PAUSE_BUTTON}<div class="fl-tabs" role="tablist"></div>${RATE_BUTTON}</div>
-<p class="fl-caption" aria-live="polite"></p>
+<div class="fl-context"><span class="fl-position" aria-label="현재 단계"></span><p class="fl-caption" aria-live="polite"></p></div>
+<div class="fl-bar">${PAUSE_BUTTON}<div class="fl-tabs" role="tablist" aria-label="장면 선택"></div>${RATE_BUTTON}</div>
 </figcaption>
 </figure>
 <script>
@@ -121,7 +121,11 @@ figurePlay(document.querySelector('.fl-figure'), ${JSON.stringify(content.data, 
 // basis: estimate
 // 재생기가 설명, 단계 이름, 이동 글로 그리는 글자를 글꼴 부분 집합에 더한다.
 function addTimelineGlyphs(timeline, glyphs) {
-  for (const label of timeline.steps) glyphs.add(label, 'regular');
+  glyphs.add('0123456789 /×.', 'regular');
+  for (const label of timeline.steps) {
+    glyphs.add(label, 'regular');
+    glyphs.add(label, 'semibold');
+  }
   for (const seg of timeline.segs) {
     glyphs.add(seg.caption, 'regular');
     for (const hop of seg.hops) for (const line of hop.data ?? []) glyphs.add(line, 'regular');

@@ -514,6 +514,7 @@ describe('player: lost, legs and status in Chrome', { skip: CHROME ? false : 'Ch
       page.on('pageerror', (e) => errors.push(e.message));
       await page.clock.install({ time: 0 });
       await page.goto(`file://${join(folder, 'page.html')}`);
+      await page.click('.fl-pause');
       await page.addStyleTag({ content: '*, *::before, *::after { transition: none !important; }' });
       await body(page, { result, html });
       assert.deepEqual(errors, []);

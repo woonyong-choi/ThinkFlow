@@ -50,6 +50,56 @@ describe('pages', { skip: SKIP }, () => {
     await browser.close();
   });
 
+  // 근거: #159. 먼저 읽고 재생하며, 키보드로 고른 장면도 멈춘 상태로 확인한다.
+  test('player_opens_paused_and_keyboard_scene_selection_stays_paused', async () => {
+    const source = `${CODE_FIGURE}\nstep "second"\n  a -> b`;
+    await withPage(browser, await toHtml(await buildFigure(source), 'reading'), async (page) => {
+      const progress = () => page.locator('.fl-ring-fill').evaluate((el) => el.style.strokeDashoffset);
+      assert.equal(await page.getAttribute('.fl-pause', 'aria-label'), '재생');
+      const start = await progress();
+      await page.waitForTimeout(AUDIT_WAIT_MS);
+      assert.equal(await progress(), start);
+      assert.equal(await page.locator('.fl-position').textContent(), '1 / 2');
+      await page.locator('.fl-tabs button').first().focus();
+      await page.keyboard.press('ArrowRight');
+      assert.equal(await page.locator('.fl-position').textContent(), '2 / 2');
+      assert.equal(await page.locator('.fl-tabs button:focus').textContent(), 'second');
+      assert.equal(await page.getAttribute('.fl-pause', 'aria-label'), '재생');
+      await page.keyboard.press('Home');
+      assert.equal(await page.locator('.fl-position').textContent(), '1 / 2');
+      assert.equal(await page.locator('.fl-tabs button[tabindex="0"]').count(), 1);
+      await page.click('.fl-pause');
+      await page.waitForTimeout(AUDIT_WAIT_MS);
+      assert.notEqual(await progress(), start);
+      await page.locator('.fl-tabs button').last().click();
+      assert.equal(await page.getAttribute('.fl-pause', 'aria-label'), '재생');
+      const stopped = await progress();
+      await page.click('.fl-rate');
+      await page.waitForTimeout(AUDIT_WAIT_MS);
+      assert.equal(await progress(), stopped);
+    });
+  });
+
+  // 근거: #159. 진행 고리는 확대하지 않고, 활성 도형의 굵기는 표면 규칙에 가려지지 않는다.
+  test('player_ring_size_strokes_and_typeface_match_the_figure', async () => {
+    await withPage(browser, await toHtml(await buildFigure(CODE_FIGURE), 'detail'), async (page) => {
+      await page.waitForTimeout(AUDIT_WAIT_MS);
+      const details = await page.evaluate(() => {
+        const style = (selector) => getComputedStyle(document.querySelector(selector));
+        const ring = document.querySelector('.fl-ring');
+        return { width: ring.getBoundingClientRect().width, view: ring.viewBox.baseVal.width,
+          cap: style('.fl-ring-fill').strokeLinecap, stroke: style('.fl-ring-fill').strokeWidth,
+          active: style('.fl-node.on .fl-stroke').strokeWidth,
+          font: style('.fl-tabs button').fontFamily.split(',')[0], label: style('.label').fontFamily.split(',')[0] };
+      });
+      assert.equal(details.width, details.view);
+      assert.equal(details.cap, 'round');
+      assert.equal(details.stroke, '2px');
+      assert.equal(details.active, '2.5px');
+      assert.equal(details.font, details.label);
+    });
+  });
+
   // 근거: #157. 카드와 도형 표면의 그림자가 실제로 보이고 글자·선에는 적용되지 않아야 한다.
   test('simple2_surface_depth_and_filled_play_icon_are_rendered_in_both_modes', async () => {
     const html = await toHtml(await buildFigure(CODE_FIGURE), 'depth');
@@ -86,14 +136,15 @@ describe('pages', { skip: SKIP }, () => {
   });
 
   // 근거: 버그 #18 "카드 머리의 제목과 파일 이름이 붙어 나옴": 제목, 파일 이름, 꼬리표 사이는 space.3이고 한 줄에 놓인다
-  test('cardHead_title_name_and_kind_are_apart_by_the_token_gap_on_one_line', async () => {
+  test('cardHead_separates_the_title_from_source_metadata', async () => {
     for (const html of [toGallery(FIGURES, '예제'), toDocument(FIGURES, '예제')]) {
       await withPage(browser, html, async (page) => {
         const [title, name, kind] = await Promise.all(['h2 .title', 'h2 .name', 'h2 .kind'].map((selector) => page.locator(selector).first().boundingBox()));
 
-        assert.ok(name.x - (title.x + title.width) >= values.space['3'] - GAP_TOLERANCE, `제목과 파일 이름 사이 ${name.x - (title.x + title.width)}`);
+        if (html.includes('<main>')) assert.ok(name.y >= title.y + title.height - GAP_TOLERANCE, '목록은 제목 다음 줄에 파일 정보를 둔다');
+        else assert.ok(name.x - (title.x + title.width) >= values.space['3'] - GAP_TOLERANCE);
         assert.ok(kind.x - (name.x + name.width) >= values.space['3'] - GAP_TOLERANCE, `파일 이름과 꼬리표 사이 ${kind.x - (name.x + name.width)}`);
-        for (const box of [name, kind]) assert.ok(Math.abs(box.y + box.height / 2 - (title.y + title.height / 2)) < title.height, '한 줄에 놓인다');
+        assert.ok(Math.abs(kind.y - name.y) < name.height, '파일 정보는 같은 줄이다');
       });
     }
   });
@@ -107,6 +158,7 @@ describe('pages', { skip: SKIP }, () => {
     const shown = (page) => page.evaluate(() => [...new Set([...document.querySelectorAll('[data-v]')].map((el) => el.dataset.v))].map((v) => [...document.querySelectorAll(`[data-v="${v}"]`)].filter((el) => el.getAttribute('opacity') === '1').map((el) => el.dataset.t)).filter((texts) => texts.length));
     await withPage(browser, await toHtml(result, 'values'), async (page) => {
       await page.click('.fl-tabs button:nth-child(2)');
+      await page.click('.fl-pause');
       await page.waitForTimeout(1500);
       const changed = await shown(page);
       await page.click('.fl-pause');
@@ -139,6 +191,7 @@ describe('pages', { skip: SKIP }, () => {
       const center = (b) => b.x + b.width / 2;
       const [tabs, caption, bar, pause, ring, round] = await Promise.all(['.fl-tabs', '.fl-caption', '.fl-bar', '.fl-pause', '.fl-ring', '.fl-pause'].map(box));
       const offsetAt = () => page.evaluate(() => Number.parseFloat(getComputedStyle(document.querySelector('.fl-ring-fill')).strokeDashoffset));
+      await page.click('.fl-pause');
       const first = await offsetAt();
       await page.waitForTimeout(RING_WAIT_MS);
       const style = await page.evaluate(() => {

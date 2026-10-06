@@ -80,7 +80,10 @@ code {
   letter-spacing: normal;
 }
 
-/* 제목, 파일 이름, 종류 꼬리표는 기준선을 맞춰 한 줄에 놓고 사이를 간격 토큰으로 띄운다. 머리가 좁으면 칸 단위로 다음 줄로 넘긴다(말줄임 없음). */
+/* 제목을 먼저 읽고 파일 이름과 종류는 다음 줄에서 확인한다. */
+.title {
+  flex-basis: 100%;
+}
 .name {
   font-size: var(--size-text-13);
   font-weight: normal;

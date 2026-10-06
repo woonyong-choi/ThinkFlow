@@ -158,6 +158,7 @@ describe('player', { skip: CHROME ? false : 'Chrome이 없다' }, () => {
       await page.clock.install({ time: 0 });
       await page.clock.pauseAt(PAUSE_AT_MS);
       await page.goto(`file://${join(folder, 'page.html')}`);
+      await page.click('.fl-pause');
       await page.addStyleTag({ content: '*, *::before, *::after { transition: none !important; }' });
       try {
         return await body(page, result, html);
@@ -287,6 +288,7 @@ describe('player', { skip: CHROME ? false : 'Chrome이 없다' }, () => {
     for (let step = 0; step < timeline.steps.length; step++) {
       await withPlayer(name, async (page) => {
         await page.click(`.fl-tabs button:nth-child(${step + 1})`);
+        await page.click('.fl-pause');
         const first = await sample(page);
         const frames = await runFrames(page, { limitMs: timeline.total, until: (list) => list.length && list.at(-1).step !== step });
         const own = statesOfStep(runsOf([{ t: 0, ...first }, ...frames]), step);

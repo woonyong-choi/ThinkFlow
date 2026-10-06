@@ -104,6 +104,8 @@ describe('player reduced motion', { skip: CHROME ? false : 'Chrome이 없다' },
   // 근거: 이슈 #105, 설계 playback.md 재생기: 재생 중에 설정이 켜지면 바로 멈추고 현재 단계의 완성 상태로 바꾼다
   test('player_reduced_motion_turned_on_while_playing_stops_at_the_grown_state_of_the_current_step', async () => {
     await withPlayer(browser, TWO_STEPS, undefined, async (page) => {
+      await page.click('.fl-pause');
+      await page.waitForTimeout(SETTLE_MS);
       assert.equal(await label(page), '일시정지');
       assert.notEqual((await grownState(page)).length, 0, '켜기 전에는 자라는 중이어야 한다');
 
@@ -178,7 +180,9 @@ describe('player reduced motion', { skip: CHROME ? false : 'Chrome이 없다' },
       assert.deepEqual((await motion(page)).times, paused.times);
     });
     await withPlayer(browser, BAR, undefined, async (page) => {
-      assert.ok((await motion(page)).states.every((s) => s === 'running'), '움직임 줄이기가 아니면 되풀이해 자라며 시작한다');
+      assert.equal(await label(page), '재생');
+      assert.ok((await motion(page)).states.every((s) => s !== 'running'), '일반 모드도 먼저 읽을 수 있도록 멈춰 시작한다');
+      assert.deepEqual(await grownState(page), []);
     });
   });
 });
