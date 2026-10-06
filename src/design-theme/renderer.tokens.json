@@ -834,7 +834,7 @@
     },
     "2xl": {
       "$value": {
-        "value": 12,
+        "value": 18,
         "unit": "px"
       },
       "$type": "dimension"
@@ -939,7 +939,7 @@
       "$type": "dimension"
     },
     "page-width": {
-      "$value": 1180,
+      "$value": 960,
       "$type": "dimension"
     },
     "reading-width": {
@@ -965,6 +965,42 @@
     "shadow": {
       "$value": "{primitive.simple2.shadow}",
       "$type": "string"
+    },
+    "play-fill": {
+      "$value": "{primitive.simple2.play-fill}",
+      "$type": "color"
+    },
+    "play-ink": {
+      "$value": "{primitive.simple2.play-ink}",
+      "$type": "color"
+    },
+    "node-shadow": {
+      "$value": "{primitive.simple2.node-shadow}",
+      "$type": "string"
+    },
+    "play-face": {
+      "$value": 36,
+      "$type": "dimension"
+    },
+    "corner": {
+      "$value": 18,
+      "$type": "dimension"
+    },
+    "control-radius": {
+      "$value": 6,
+      "$type": "dimension"
+    },
+    "card-gap": {
+      "$value": 48,
+      "$type": "dimension"
+    },
+    "node-stroke": {
+      "$value": 0.75,
+      "$type": "dimension"
+    },
+    "heading-weight": {
+      "$value": 700,
+      "$type": "fontWeight"
     }
   },
   "primitive": {
@@ -1011,6 +1047,18 @@
       },
       "shadow": {
         "$value": "0 2px 8px rgba(0,0,0,.10), 0 0 2px rgba(0,0,0,.10)",
+        "$type": "string"
+      },
+      "play-fill": {
+        "$value": "#4f91fb",
+        "$type": "color"
+      },
+      "play-ink": {
+        "$value": "#ffffff",
+        "$type": "color"
+      },
+      "node-shadow": {
+        "$value": "drop-shadow(0px 2px 4px rgba(0,0,0,.10)) drop-shadow(0px 0px 1px rgba(0,0,0,.10))",
         "$type": "string"
       }
     }

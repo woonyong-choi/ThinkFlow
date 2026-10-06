@@ -7,7 +7,7 @@ body {
   font-family: var(--font-sans);
   letter-spacing: var(--tracking-text);
   color: var(--color-fg);
-  background: var(--color-page);
+  background: var(--color-bg);
 }
 
 /* 목록 쪽 카드 안은 틀이 카드 너비를 다 채워 양옆이 비치지 않게 하고, 바탕은 재생기 쪽과 같은 색으로 둔다. */
@@ -24,7 +24,7 @@ html.embedded body {
   color: var(--color-fg);
   background: var(--color-bg);
   border-radius: var(--radius-2xl);
-  box-shadow: 0 0 0 var(--border-thin) var(--color-plate-border);
+  box-shadow: var(--simple2-shadow);
 }
 
 html.embedded .fl-figure {
@@ -33,7 +33,7 @@ html.embedded .fl-figure {
   box-shadow: none;
 }
 
-/* 카드 전체가 그림 판 한 덩어리다. 제목 줄, 그림 영역, 조작 줄이 모두 color.bg 한 톤이라 숫자 둘레 halo와 선 라벨 알약도 그대로 맞는다. */
+/* 그림의 바탕은 SVG와 같고, 조작 줄은 카드의 흰 면으로 구분한다. */
 .fl-canvas {
   padding: var(--space-6) 0;
   background: var(--color-bg);
@@ -59,8 +59,7 @@ html.embedded .fl-figure {
   gap: var(--space-6);
   justify-items: center;
   padding: var(--simple2-page-gutter);
-  background: var(--color-bg);
-  border-top: var(--border-thin) solid var(--color-plate-border);
+  background: var(--color-node);
 }
 
 /* 양쪽 칸 너비가 같아(1fr) 배속 글자가 바뀌어도 탭 묶음이 설명과 같은 축에 있다. */
@@ -113,9 +112,9 @@ html.embedded .fl-figure {
   font: var(--simple2-control) var(--font-sans);
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
-  color: var(--color-state-active-text);
-  background: var(--color-node);
-  border: var(--border-thin) solid var(--color-plate-border);
+  color: var(--color-muted);
+  background: transparent;
+  border: 0;
   border-radius: var(--radius-full);
   cursor: pointer;
 }
@@ -305,4 +304,37 @@ html.embedded .fl-figure {
 /* hidden 속성이 display: grid 같은 규칙에 지지 않게 한다. 시간 흐름 없는 그림의 빈 조작 막대를 숨기기 위해서다. */
 [hidden] {
   display: none !important;
+}
+
+/* 보이는 재생 원은 36px, 누르는 영역은 공통 조작 높이를 유지한다. */
+.fl-pause::before {
+  position: absolute;
+  width: var(--simple2-play-face);
+  height: var(--simple2-play-face);
+  background: var(--simple2-play-fill);
+  border-radius: var(--radius-full);
+  content: '';
+}
+
+.fl-pause .fl-pause-icon {
+  position: relative;
+  color: var(--simple2-play-ink);
+}
+
+.fl-pause-icon svg {
+  fill: currentColor;
+  stroke: none;
+}
+
+.fl-pause:hover,
+.fl-pause:active {
+  background: transparent;
+}
+
+.fl-pause:hover::before {
+  background: var(--color-state-active);
+}
+
+.fl-pause:active::before {
+  background: var(--color-state-active-fill);
 }

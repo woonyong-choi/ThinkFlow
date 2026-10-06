@@ -1457,7 +1457,7 @@
     "2xl": {
       "$type": "dimension",
       "$value": {
-        "value": 12,
+        "value": 18,
         "unit": "px"
       }
     },
@@ -1815,6 +1815,18 @@
       "shadow": {
         "$value": "0 2px 8px rgba(0,0,0,.10), 0 0 2px rgba(0,0,0,.10)",
         "$type": "string"
+      },
+      "play-fill": {
+        "$type": "color",
+        "$value": "#4f91fb"
+      },
+      "play-ink": {
+        "$type": "color",
+        "$value": "#ffffff"
+      },
+      "node-shadow": {
+        "$type": "string",
+        "$value": "drop-shadow(0px 2px 4px rgba(0,0,0,.10)) drop-shadow(0px 0px 1px rgba(0,0,0,.10))"
       }
     }
   },
@@ -4029,7 +4041,7 @@
       "$type": "dimension"
     },
     "page-width": {
-      "$value": 1180,
+      "$value": 960,
       "$type": "dimension"
     },
     "reading-width": {
@@ -4055,6 +4067,42 @@
     "shadow": {
       "$value": "{primitive.simple2.shadow}",
       "$type": "string"
+    },
+    "play-fill": {
+      "$type": "color",
+      "$value": "{color.blue.dark-stroke}"
+    },
+    "play-ink": {
+      "$type": "color",
+      "$value": "{color.gray.933}"
+    },
+    "node-shadow": {
+      "$type": "string",
+      "$value": "{primitive.simple2.node-shadow}"
+    },
+    "play-face": {
+      "$type": "dimension",
+      "$value": 36
+    },
+    "corner": {
+      "$type": "dimension",
+      "$value": 18
+    },
+    "control-radius": {
+      "$type": "dimension",
+      "$value": 6
+    },
+    "card-gap": {
+      "$type": "dimension",
+      "$value": 48
+    },
+    "node-stroke": {
+      "$type": "dimension",
+      "$value": 0.75
+    },
+    "heading-weight": {
+      "$type": "fontWeight",
+      "$value": 700
     }
   }
 }

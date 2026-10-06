@@ -9,7 +9,7 @@ body {
   font-family: var(--font-sans);
   letter-spacing: var(--tracking-text);
   color: var(--color-fg);
-  background: var(--color-page);
+  background: var(--color-bg);
 }
 
 .top {
@@ -23,7 +23,7 @@ body {
 h1 {
   margin: 0 0 var(--space-3);
   font-size: var(--simple2-heading);
-  font-weight: var(--weight-semibold);
+  font-weight: var(--simple2-heading-weight);
 }
 
 .top p {
@@ -44,25 +44,24 @@ h1 {
 main {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(min(100%, var(--size-gallery-column)), 1fr));
-  gap: var(--space-14);
+  gap: var(--simple2-card-gap);
   /* 카드를 줄에서 가장 긴 카드 높이로 늘이지 않는다. 짧은 그림 아래 빈 공간을 막기 위해서다. */
   align-items: start;
 }
 
-/* 카드 테두리는 레이아웃 폭을 차지하지 않는 고리다. 카드 안쪽 폭이 그림 표시 폭 규칙의 컨테이너 폭이 되게 한다(player.css 맨 위). */
+/* 그림 카드의 흰 면과 그림자로 캔버스에서 높이를 구분한다. */
 section {
   overflow: hidden;
-  background: var(--color-bg);
-  border-radius: var(--radius-2xl);
-  box-shadow: 0 0 0 var(--border-thin) var(--color-plate-border);
+  background: var(--color-node);
+  border-radius: var(--simple2-corner);
+  box-shadow: var(--simple2-shadow);
 }
 
 header {
   display: grid;
   grid-template-columns: 1fr auto;
   gap: var(--space-1) var(--space-8);
-  padding: var(--space-7) var(--space-9);
-  border-bottom: var(--border-thin) solid var(--color-plate-border);
+  padding: var(--simple2-page-gutter);
 }
 
 h2 {
@@ -72,7 +71,7 @@ h2 {
   align-items: baseline;
   min-width: 0;
   margin: 0;
-  font: var(--weight-semibold) var(--size-text-15) var(--font-sans);
+  font: var(--weight-semibold) var(--size-text-22) var(--font-sans);
 }
 
 /* 백틱으로 감싼 글은 코드 글꼴로 그린다. */
@@ -84,6 +83,8 @@ code {
 /* 제목, 파일 이름, 종류 꼬리표는 기준선을 맞춰 한 줄에 놓고 사이를 간격 토큰으로 띄운다. 머리가 좁으면 칸 단위로 다음 줄로 넘긴다(말줄임 없음). */
 .name {
   font-size: var(--size-text-13);
+  font-weight: normal;
+  color: var(--color-muted);
   overflow-wrap: anywhere;
 }
 

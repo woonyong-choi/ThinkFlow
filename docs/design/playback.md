@@ -295,13 +295,13 @@
 - 이 규칙이 지켜지도록 컨테이너는 그림 둘레에 좌우 여백을 두지 않고, 카드와 재생기 테두리는 레이아웃 폭을 차지하지 않는 고리(`box-shadow`)로 그린다.
 - 재생기와 목록 카드는 그림을 캔버스 폭(`size.figure-canvas`, `width wide` 그림은 `size.figure-canvas-wide`) 아래로 줄이지 않고, 화면 높이에 맞춰 줄이지도 않는다. 줄이면 글자가 가장 작은 글 토큰(`size.text`의 최솟값)보다 작아져 읽을 수 없기 때문이다. 세로로 긴 그림은 페이지가 길어지고, 조작 막대는 화면 아래에 붙어 따라온다(`position: sticky`). 화면 폭이 캔버스 폭보다 좁으면(모바일) 그림 영역이 가로로 스크롤된다. 시작 위치는 화면 가운데이되 그림의 왼쪽 끝을 넘지 않는다. 그림이 화면에 들어오면 가운데에 있고, 그림이 화면보다 넓으면 왼쪽 끝(이름과 축)부터 보여 양끝으로 끝까지 스크롤할 수 있다. 캔버스보다 좁은 그림의 viewBox 왼쪽이 음수인 것은 가운데 정렬 신호가 아니라 왼쪽 빈 판의 폭이다. 문서 미리보기는 README처럼 그림을 컨테이너 폭에 맞춰 줄이되 높이로는 줄이지 않는다. 전체 화면은 확대와 이동이 있어 이 규칙 밖이다.
 - 좁은 내용은 viewBox를 가운데로 넓혀 그리고, 넓은 내용은 표시 폭만 줄인다([배치](layout.md)).
-- 분할 조작(재생기 탭 묶음, 목록 쪽과 문서 미리보기의 테마 묶음)과 둥근 단추(일시정지, 배속, 전체 화면)는 한 모양이다. 묶음은 바깥 높이 `size.control.outer`(36)에 반지름 `radius.full`이고 안쪽 단추는 `size.control.inner`(28)에 반지름 `radius.full`이다. 탭이 여러 줄로 감기면 높이만 늘어난다.
+- 단계 탭과 테마 선택의 누르는 영역은 44px 이상이며 묶음 높이는 52px다. 탭이 여러 줄로 감기면 높이만 늘어난다. 재생은 52px 영역 안에 36px 파란 원과 채운 아이콘을 두고 배속·전체 화면은 테두리 없는 보조 조작이다.
 - 역할은 둘로 나뉜다. 탭은 선택만 맡고, 시간 진행은 일시정지 단추가 맡는다. 탭 안에는 진행 요소를 두지 않고, 끝난 탭과 아직 안 한 탭을 가르는 표시도 없다.
-- 탭 묶음은 segmented 방식이다. 묶음 바탕은 `color.bg`이고, 켜진 탭은 `color.ui.control-on` 꽉 찬 알약에 `color.border` 고리(탭 묶음 바탕과 대비 3)를 두른다. `ui.control-on`은 라이트에서 카드 바탕(`color.node`, 흰색)과 같고, 다크에서는 design-tokens의 `color.gray.776`이다. 켜짐 표시는 면이 아니라 고리가 맡는다. 켜진 탭 글자는 `color.fg`에 `weight.semibold`, 꺼진 탭 글자는 `color.muted`다. 묶음과 원 단추 테두리는 도형 윤곽과 같은 `color.border` 층(대비 3 이상)이고, 카드와 판 바깥 고리(`color.frame`)보다 한 층 진하다.
-- 진행 고리는 일시정지 단추 테두리 위를 12시에서 시계 방향으로 도는 `color.ui.progress` 선이다. 트랙은 단추 테두리(`color.border`) 그대로다. 보여 주는 값은 현재 탭(장면) 전체 시간 대비 지난 비율이고, 탭이 바뀌면 0부터 다시 시작한다. 멈추면 고리도 그 자리에 머물고, `prefers-reduced-motion`이어도 값은 갱신한다. 고리 색은 [색 역할 표](docs-integration.md#색-역할)의 `ui.progress`다.
+- 탭 묶음은 투명하고 켜진 탭만 반지름 6px의 옅은 파란 면과 굵은 파란 글자를 갖는다. 나머지는 보조 글자색이다. 선택한 탭에는 그림자를 넣지 않는다.
+- 진행 고리는 일시정지 단추 테두리 위를 12시에서 시계 방향으로 도는 `color.ui.progress` 선이다. 고정 트랙은 그리지 않는다. 보여 주는 값은 현재 탭(장면) 전체 시간 대비 지난 비율이고, 탭이 바뀌면 0부터 다시 시작한다. 멈추면 고리도 그 자리에 머물고, `prefers-reduced-motion`이어도 값은 갱신한다. 고리 색은 [색 역할 표](docs-integration.md#색-역할)의 `ui.progress`다.
 - 고리 크기는 토큰에서 계산한다. 고리는 단추 바깥 테두리(`size.control.outer`)를 덮고, 선 굵기는 `border.edge`, 반지름은 `(size.control.outer - border.edge) / 2`다. 마크업은 `html.js`가 이 값으로 그리고, `player/controls.js`는 마크업의 반지름에서 둘레를 구해 쓴다.
-- 조작 막대와 설명 줄은 한 가운데 축을 쓴다. 막대는 `1fr auto 1fr` 격자라 일시정지와 배속 단추가 양옆에 같은 폭을 차지하고, 배속 글자가 `0.5×`로 바뀌어도 탭 묶음과 설명의 가운데가 움직이지 않는다. 조작 줄 안쪽 여백은 위아래 모두 `space.8`이고 막대와 설명 사이는 `space.6`이다. 둥근 단추와 탭의 글자 크기는 `size.text.13`으로 같고, 마우스를 올리면 글자가 `color.fg`로 바뀐다. 초점은 `color.state.active` 고리다.
-- 재생기(단독 HTML, 전체 화면)와 목록 쪽 카드 안은 제목 줄, 그림 영역, 조작 줄까지 모두 `color.bg`(라이트 옅은 회색, 다크 어두운 색) 한 톤이다. 카드가 곧 그림 판이라 판이 카드 안에 따로 보이지 않는다. 차트 HTML은 바탕 사각형을 그리지 않고 카드 바탕이 비친다. 숫자 둘레 halo, 선 라벨 알약, 점 테두리는 `color.bg`를 그대로 써서 맞는다. 카드 바깥 목록 쪽 페이지와 단독 재생기의 바깥 여백은 `color.page`(라이트 흰색)라 회색 카드가 흰 바탕 위에 보인다. 둥근 모서리 회색 판(SVG 바탕 사각형)은 문서에 넣는 SVG 파일(움직이는 SVG, 멈춘 SVG)에만 있다. 흰 문서 안에서 그림 경계를 만드는 용도다.
+- 조작 막대와 설명 줄은 한 가운데 축을 쓴다. 막대는 `1fr auto 1fr` 격자라 일시정지와 배속 단추가 양옆에 같은 폭을 차지하고, 배속 글자가 `0.5×`로 바뀌어도 탭 묶음과 설명의 가운데가 움직이지 않는다. 조작 줄 안쪽 여백은 위아래 모두 `simple2.page-gutter`이고 막대와 설명 사이는 `space.6`이다. 둥근 단추와 탭의 글자 크기는 `simple2.control`으로 같고, 마우스를 올리면 글자가 `color.fg`로 바뀐다. 초점은 `color.state.active` 고리다.
+- 목록과 단독 재생기의 바깥은 `color.bg`이고 카드 머리와 조작 줄은 `color.node`다. 반지름 18px 카드에 `simple2.shadow`를 적용한다. 그림 영역과 숫자 halo·선 라벨·점 테두리는 `color.bg`로 맞춘다. 도형 표면만 `simple2.node-shadow`로 높이를 나타내며 글자·아이콘·선·점은 평평하게 유지한다. SVG 파일에는 별도 판 사각형과 같은 도형 표면 그림자가 들어간다.
 
 ### 움직이는 SVG
 
@@ -411,7 +411,7 @@
 | 단계 없는 차트에 재생 단추가 있고 누르면 재생하며, 다시 누르면 멈춘다. | `test/player-reduced-motion.test.js`의 `player_stepless_chart_has_a_play_button_that_plays_and_pauses` |
 | 일시정지 동안 차트 움직임이 멈추고, 배속이 차트 움직임의 재생 속도와 박자 시계에 같은 비율로 걸리며, 단계 이동으로 다시 거는 움직임도 지금의 정지와 배속을 따른다. | `test/chart-player.test.js`(Chrome이 있을 때). 실제 Chrome에서 `getAnimations()`의 `currentTime`, `playState`, `playbackRate`와 진행 고리 값을 정지 전후, 배속마다, 탭 이동 뒤에 잰다 |
 | 현재 탭의 진행은 일시정지 단추 둘레의 고리로 보이고 시간에 따라 채워진다. | `test/pages.test.js`의 `player_controls_share_one_axis_and_height_and_the_ring_and_active_tab_show_state`(Chrome이 있을 때). 고리가 단추를 감싸고 `stroke-dashoffset`이 줄어드는지 확인 |
-| 탭은 segmented 방식이라 켜진 탭만 채운 알약 면과 굵은 글을 갖는다. | `test/pages.test.js`의 `player_controls_share_one_axis_and_height_and_the_ring_and_active_tab_show_state`(Chrome이 있을 때). 켜진 탭과 나머지 탭의 계산된 글 굵기, 면, 글 색 비교 |
+| 탭은 segmented 방식이라 켜진 탭만 옅은 파란 면과 굵은 글을 갖는다. | `test/pages.test.js`의 `player_controls_share_one_axis_and_height_and_the_ring_and_active_tab_show_state`(Chrome이 있을 때). 켜진 탭과 나머지 탭의 계산된 글 굵기, 면, 글 색 비교 |
 
 ## 단점
 

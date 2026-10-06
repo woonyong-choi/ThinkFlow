@@ -517,7 +517,16 @@ export const tokens = freeze({
     "focus-width": "var(--simple2-focus-width)",
     "leading": "var(--simple2-leading)",
     "title-leading": "var(--simple2-title-leading)",
-    "shadow": "var(--simple2-shadow)"
+    "shadow": "var(--simple2-shadow)",
+    "play-fill": "var(--simple2-play-fill)",
+    "play-ink": "var(--simple2-play-ink)",
+    "node-shadow": "var(--simple2-node-shadow)",
+    "play-face": "var(--simple2-play-face)",
+    "corner": "var(--simple2-corner)",
+    "control-radius": "var(--simple2-control-radius)",
+    "card-gap": "var(--simple2-card-gap)",
+    "node-stroke": "var(--simple2-node-stroke)",
+    "heading-weight": "var(--simple2-heading-weight)"
   },
   "primitive": {
     "simple2": {
@@ -531,7 +540,10 @@ export const tokens = freeze({
       "surface": "var(--primitive-simple2-surface)",
       "plate-border": "var(--primitive-simple2-plate-border)",
       "border": "var(--primitive-simple2-border)",
-      "shadow": "var(--primitive-simple2-shadow)"
+      "shadow": "var(--primitive-simple2-shadow)",
+      "play-fill": "var(--primitive-simple2-play-fill)",
+      "play-ink": "var(--primitive-simple2-play-ink)",
+      "node-shadow": "var(--primitive-simple2-node-shadow)"
     }
   },
   "dash": {
@@ -1034,7 +1046,7 @@ export const values = freeze({
     "md": 6,
     "lg": 8,
     "xl": 10,
-    "2xl": 12,
+    "2xl": 18,
     "full": 999,
     "route": 22
   },
@@ -1083,13 +1095,22 @@ export const values = freeze({
     "caption": 13,
     "page-gutter": 24,
     "page-gap": 48,
-    "page-width": 1180,
+    "page-width": 960,
     "reading-width": 948,
     "control-gap": 8,
     "focus-width": 3,
     "leading": 1.6,
     "title-leading": 1.2,
-    "shadow": "0 2px 8px rgba(0,0,0,.10), 0 0 2px rgba(0,0,0,.10)"
+    "shadow": "0 2px 8px rgba(0,0,0,.10), 0 0 2px rgba(0,0,0,.10)",
+    "play-fill": "#4f91fb",
+    "play-ink": "#ffffff",
+    "node-shadow": "drop-shadow(0px 2px 4px rgba(0,0,0,.10)) drop-shadow(0px 0px 1px rgba(0,0,0,.10))",
+    "play-face": 36,
+    "corner": 18,
+    "control-radius": 6,
+    "card-gap": 48,
+    "node-stroke": 0.75,
+    "heading-weight": 700
   },
   "primitive": {
     "simple2": {
@@ -1103,7 +1124,10 @@ export const values = freeze({
       "surface": "#edeef1",
       "plate-border": "#d1d7de",
       "border": "#838b96",
-      "shadow": "0 2px 8px rgba(0,0,0,.10), 0 0 2px rgba(0,0,0,.10)"
+      "shadow": "0 2px 8px rgba(0,0,0,.10), 0 0 2px rgba(0,0,0,.10)",
+      "play-fill": "#4f91fb",
+      "play-ink": "#ffffff",
+      "node-shadow": "drop-shadow(0px 2px 4px rgba(0,0,0,.10)) drop-shadow(0px 0px 1px rgba(0,0,0,.10))"
     }
   },
   "dash": {

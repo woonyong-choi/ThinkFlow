@@ -50,6 +50,41 @@ describe('pages', { skip: SKIP }, () => {
     await browser.close();
   });
 
+  // 근거: #157. 카드와 도형 표면의 그림자가 실제로 보이고 글자·선에는 적용되지 않아야 한다.
+  test('simple2_surface_depth_and_filled_play_icon_are_rendered_in_both_modes', async () => {
+    const html = await toHtml(await buildFigure(CODE_FIGURE), 'depth');
+    await withPage(browser, html, async (page) => {
+      for (const colorScheme of ['light', 'dark']) {
+        await page.emulateMedia({ colorScheme });
+        const style = await page.evaluate(() => {
+          const read = (s, pseudo) => getComputedStyle(document.querySelector(s), pseudo);
+          return {
+            card: read('.fl-figure').boxShadow,
+            node: read('.fl-node > .fl-stroke').filter,
+            text: read('.label').filter, edge: read('.fl-path').filter,
+            face: read('.fl-pause', '::before').width,
+            fill: read('.fl-pause-icon svg').fill, stroke: read('.fl-pause-icon svg').stroke,
+            selected: read('.fl-tabs button.on').boxShadow,
+            border: read('.fl-rate').borderWidth,
+          };
+        });
+        assert.notEqual(style.card, 'none');
+        assert.match(style.node, /drop-shadow/);
+        assert.equal(style.text, 'none');
+        assert.equal(style.edge, 'none');
+        assert.equal(style.face, '36px');
+        assert.notEqual(style.fill, 'none');
+        assert.equal(style.stroke, 'none');
+        assert.equal(style.selected, 'none');
+        assert.equal(style.border, '0px');
+      }
+    });
+    await withPage(browser, toGallery(FIGURES, '예제'), async (page) => {
+      assert.notEqual(await page.locator('section').evaluate((el) => getComputedStyle(el).boxShadow), 'none');
+      assert.equal(await page.locator('section').evaluate((el) => getComputedStyle(el).borderRadius), '18px');
+    });
+  });
+
   // 근거: 버그 #18 "카드 머리의 제목과 파일 이름이 붙어 나옴": 제목, 파일 이름, 꼬리표 사이는 space.3이고 한 줄에 놓인다
   test('cardHead_title_name_and_kind_are_apart_by_the_token_gap_on_one_line', async () => {
     for (const html of [toGallery(FIGURES, '예제'), toDocument(FIGURES, '예제')]) {

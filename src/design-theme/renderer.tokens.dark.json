@@ -168,5 +168,19 @@
       "$value": "{color.blue.dark-stroke}",
       "$type": "color"
     }
+  },
+  "simple2": {
+    "play-fill": {
+      "$value": "{color.blue.dark-stroke}",
+      "$type": "color"
+    },
+    "play-ink": {
+      "$value": "{color.gray.933}",
+      "$type": "color"
+    },
+    "node-shadow": {
+      "$value": "{primitive.simple2.node-shadow}",
+      "$type": "string"
+    }
   }
 }

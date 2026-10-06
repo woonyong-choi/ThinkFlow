@@ -179,7 +179,7 @@
   --radius-md: 6px;
   --radius-lg: 8px;
   --radius-xl: 10px;
-  --radius-2xl: 12px;
+  --radius-2xl: 18px;
   --radius-full: 999px;
   --border-hair: 0.75px;
   --border-thin: 1px;
@@ -196,13 +196,22 @@
   --simple2-caption: 13px;
   --simple2-page-gutter: 24px;
   --simple2-page-gap: 48px;
-  --simple2-page-width: 1180px;
+  --simple2-page-width: 960px;
   --simple2-reading-width: 948px;
   --simple2-control-gap: 8px;
   --simple2-focus-width: 3px;
   --simple2-leading: 1.6;
   --simple2-title-leading: 1.2;
   --simple2-shadow: var(--primitive-simple2-shadow);
+  --simple2-play-fill: var(--primitive-simple2-play-fill);
+  --simple2-play-ink: var(--primitive-simple2-play-ink);
+  --simple2-node-shadow: var(--primitive-simple2-node-shadow);
+  --simple2-play-face: 36px;
+  --simple2-corner: 18px;
+  --simple2-control-radius: 6px;
+  --simple2-card-gap: 48px;
+  --simple2-node-stroke: 0.75px;
+  --simple2-heading-weight: 700;
   --primitive-simple2-fg: #303336;
   --primitive-simple2-muted: #505b69;
   --primitive-simple2-group-title: #505b69;
@@ -214,6 +223,9 @@
   --primitive-simple2-plate-border: #d1d7de;
   --primitive-simple2-border: #838b96;
   --primitive-simple2-shadow: 0 2px 8px rgba(0,0,0,.10), 0 0 2px rgba(0,0,0,.10);
+  --primitive-simple2-play-fill: #4f91fb;
+  --primitive-simple2-play-ink: #ffffff;
+  --primitive-simple2-node-shadow: drop-shadow(0px 2px 4px rgba(0,0,0,.10)) drop-shadow(0px 0px 1px rgba(0,0,0,.10));
   --color-palette-amber-light-fill: var(--color-orange-light-fill);
   --color-palette-amber-light-stroke: var(--color-orange-light-stroke);
   --color-palette-amber-light-ink: var(--color-orange-light-ink);
@@ -481,6 +493,9 @@
     --color-data-heat-ink: var(--color-gray-0);
     --color-data-grid: var(--color-gray-776);
     --color-accent: var(--color-blue-dark-stroke);
+    --simple2-play-fill: var(--color-blue-dark-stroke);
+    --simple2-play-ink: var(--color-gray-933);
+    --simple2-node-shadow: var(--primitive-simple2-node-shadow);
     --color-figure-icon: var(--color-blue-dark-stroke);
     --color-figure-icon-tile: var(--color-blue-dark-fill);
     --color-figure-queue-fill: var(--color-blue-dark-stroke);
@@ -575,6 +590,9 @@
   --color-data-heat-ink: var(--color-gray-0);
   --color-data-grid: var(--color-gray-776);
   --color-accent: var(--color-blue-dark-stroke);
+  --simple2-play-fill: var(--color-blue-dark-stroke);
+  --simple2-play-ink: var(--color-gray-933);
+  --simple2-node-shadow: var(--primitive-simple2-node-shadow);
   --color-figure-icon: var(--color-blue-dark-stroke);
   --color-figure-icon-tile: var(--color-blue-dark-fill);
   --color-figure-queue-fill: var(--color-blue-dark-stroke);
@@ -866,6 +884,12 @@
   text-anchor: middle;
   fill: var(--color-bg);
 }
+
+/* 표면에만 그림자를 두어 글자·아이콘·선의 가장자리는 선명하게 유지한다. */
+.fl .fl-node > .fl-stroke:not([fill="none"]) {
+  stroke-width: var(--simple2-node-stroke);
+  filter: var(--simple2-node-shadow);
+}
 /* 움직이는 SVG에만 있는 단계 이름과 설명 줄 */
 .fl .steplabel {
   font-family: var(--font-figure-sans);
@@ -924,9 +948,9 @@
 <defs><marker id="fl-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-line)"/></marker><marker id="fl-arrow-on" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-state-active)"/></marker><marker id="fl-arrow-main" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="4" markerHeight="4" orient="auto-start-reverse"><path d="M 0 1 L 9 5 L 0 9 z" fill="var(--color-data-main)"/></marker></defs>
 <rect x="0.5" y="0.5" width="959" height="347" rx="10" fill="var(--color-bg)" stroke="var(--color-plate-border)" stroke-width="1"/>
 <g transform="translate(10.1 0)">
-<g id="g-0" class="fl-group" data-id="edge"><rect x="28" y="72" width="128" height="144" rx="12" class="frame-box fl-stroke dashed a0" stroke-dasharray="5 4"/><text x="46" y="90" class="frame">엣지</text></g>
-<g id="g-1" class="fl-group tabbed" data-id="app"><rect x="321.4" y="28" width="590.3" height="216" rx="12" class="frame-box fl-stroke a1"/><rect x="329.4" y="32" width="20" height="20" rx="6" class="icon-tile"/><g class="fl-icon in-tile" transform="translate(333.2 35.8) scale(0.3875)"><g fill="currentColor"><path d="M16,7h0a7.66,7.66,0,0,1,1.51.15,8,8,0,0,1,6.35,6.34l.26,1.35,1.35.24a5.5,5.5,0,0,1-1,10.92H7.5a5.5,5.5,0,0,1-1-10.92l1.34-.24.26-1.35A8,8,0,0,1,16,7m0-2a10,10,0,0,0-9.83,8.12A7.5,7.5,0,0,0,7.49,28h17a7.5,7.5,0,0,0,1.32-14.88,10,10,0,0,0-7.94-7.94A10.27,10.27,0,0,0,16,5Z"/></g></g><text x="367.4" y="46" class="frame">애플리케이션</text></g>
-<g id="g-2" class="fl-group" data-id="web"><rect x="345.4" y="68" width="276.3" height="152" rx="12" class="frame-box fl-stroke d2 a1"/><text x="363.4" y="86" class="frame">웹 계층</text></g>
+<g id="g-0" class="fl-group" data-id="edge"><rect x="28" y="72" width="128" height="144" rx="18" class="frame-box fl-stroke dashed a0" stroke-dasharray="5 4"/><text x="46" y="90" class="frame">엣지</text></g>
+<g id="g-1" class="fl-group tabbed" data-id="app"><rect x="321.4" y="28" width="590.3" height="216" rx="18" class="frame-box fl-stroke a1"/><rect x="329.4" y="32" width="20" height="20" rx="6" class="icon-tile"/><g class="fl-icon in-tile" transform="translate(333.2 35.8) scale(0.3875)"><g fill="currentColor"><path d="M16,7h0a7.66,7.66,0,0,1,1.51.15,8,8,0,0,1,6.35,6.34l.26,1.35,1.35.24a5.5,5.5,0,0,1-1,10.92H7.5a5.5,5.5,0,0,1-1-10.92l1.34-.24.26-1.35A8,8,0,0,1,16,7m0-2a10,10,0,0,0-9.83,8.12A7.5,7.5,0,0,0,7.49,28h17a7.5,7.5,0,0,0,1.32-14.88,10,10,0,0,0-7.94-7.94A10.27,10.27,0,0,0,16,5Z"/></g></g><text x="367.4" y="46" class="frame">애플리케이션</text></g>
+<g id="g-2" class="fl-group" data-id="web"><rect x="345.4" y="68" width="276.3" height="152" rx="18" class="frame-box fl-stroke d2 a1"/><text x="363.4" y="86" class="frame">웹 계층</text></g>
 <g id="n-0" class="fl-node" data-id="cdn"><g class="fl-halo a3" fill="none" opacity="0"><rect x="52" y="112" width="80" height="80" rx="10" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="52" y="112" width="80" height="80" rx="10" fill="var(--color-node)" class="fl-stroke a2"/><rect x="76" y="124" width="32" height="32" rx="9.6" class="icon-tile"/><g class="fl-icon in-tile" transform="translate(82.1 130.1) scale(0.62)"><g fill="currentColor"><circle cx="21" cy="21" r="2"/><circle cx="7" cy="7" r="2"/><path d="M27,31a4,4,0,1,1,4-4A4.0118,4.0118,0,0,1,27,31Zm0-6a2,2,0,1,0,2,2A2.0059,2.0059,0,0,0,27,25Z"/><path d="M30,16A14.0412,14.0412,0,0,0,16,2,13.0426,13.0426,0,0,0,9.2,3.8l1.1,1.7a24.4254,24.4254,0,0,1,2.4-1A25.1349,25.1349,0,0,0,10,15H4a11.1489,11.1489,0,0,1,1.4-4.7L3.9,9A13.8418,13.8418,0,0,0,2,16,13.9983,13.9983,0,0,0,16,30a13.3656,13.3656,0,0,0,5.2-1l-.6-1.9a11.4416,11.4416,0,0,1-5.2.9h0A21.0713,21.0713,0,0,1,12,17H29.9A3.4019,3.4019,0,0,0,30,16ZM12.8,27.6h0a13.02,13.02,0,0,1-5.3-3.1A12.5053,12.5053,0,0,1,4,17h6A25.0022,25.0022,0,0,0,12.8,27.6ZM12,15A21.4461,21.4461,0,0,1,15.3,4h1.4A21.4461,21.4461,0,0,1,20,15Zm10,0A23.2777,23.2777,0,0,0,19.2,4.4,12.0919,12.0919,0,0,1,27.9,15Z"/></g></g><text x="92" y="175.7" class="label">CDN</text></g>
 <g id="n-1" class="fl-node" data-id="lb"><g class="fl-halo a5" fill="none" opacity="0"><rect x="369.4" y="112" width="80" height="80" rx="10" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="369.4" y="112" width="80" height="80" rx="10" fill="var(--color-node)" class="fl-stroke a4"/><rect x="393.4" y="124" width="32" height="32" rx="9.6" class="icon-tile"/><g class="fl-icon in-tile" transform="translate(399.5 130.1) scale(0.62)"><g fill="currentColor"><path d="M25,16H17V12H15v4H7a2.0023,2.0023,0,0,0-2,2v4H7V18h8v4h2V18h8v4h2V18A2.0023,2.0023,0,0,0,25,16Z"/><path d="M20,10V2H12v8h8ZM14,8V4h4V8Z"/><path d="M26,24a2.9948,2.9948,0,0,0-2.8157,2H18.8157a2.982,2.982,0,0,0-5.6314,0H8.8157a3,3,0,1,0,0,2h4.3686a2.982,2.982,0,0,0,5.6314,0h4.3686A2.9947,2.9947,0,1,0,26,24ZM6,28a1,1,0,1,1,1-1A1.0009,1.0009,0,0,1,6,28Zm10,0a1,1,0,1,1,1-1A1.0009,1.0009,0,0,1,16,28Zm10,0a1,1,0,1,1,1-1A1.0009,1.0009,0,0,1,26,28Z"/></g></g><text x="409.4" y="175.7" class="label">로드 밸런서</text></g>
 <g id="n-2" class="fl-node" data-id="server"><g class="fl-halo a7" fill="none" opacity="0"><rect x="509.4" y="108" width="80.3" height="80" rx="10" stroke="var(--color-state-glow)" stroke-width="12.5" stroke-linejoin="round"/></g><rect x="517.4" y="116" width="80.3" height="80" rx="10" fill="var(--color-node)" class="fl-stroke a6"/><rect x="513.4" y="112" width="80.3" height="80" rx="10" fill="var(--color-node)" class="fl-stroke a6"/><rect x="509.4" y="108" width="80.3" height="80" rx="10" fill="var(--color-node)" class="fl-stroke a6"/><rect x="517.4" y="120" width="32" height="32" rx="9.6" class="icon-tile"/><g class="fl-icon in-tile" transform="translate(523.5 126.1) scale(0.62)"><g fill="currentColor"><circle cx="9" cy="6" r="1"/><path d="M26,10H6A2.0021,2.0021,0,0,1,4,8V4A2.0021,2.0021,0,0,1,6,2H26a2.0021,2.0021,0,0,1,2,2V8A2.0021,2.0021,0,0,1,26,10ZM6,4V8H26V4Z"/><circle cx="9" cy="16" r="1"/><path d="M26,20H6a2.0021,2.0021,0,0,1-2-2V14a2.0021,2.0021,0,0,1,2-2H26a2.0021,2.0021,0,0,1,2,2v4A2.0021,2.0021,0,0,1,26,20ZM6,14v4H26V14Z"/><circle cx="9" cy="26" r="1"/><path d="M26,30H6a2.0021,2.0021,0,0,1-2-2V24a2.0021,2.0021,0,0,1,2-2H26a2.0021,2.0021,0,0,1,2,2v4A2.0021,2.0021,0,0,1,26,30ZM6,24v4H26V24Z"/></g></g><g class="fl-badge"><rect x="553.4" y="127" width="28.3" height="18" rx="9" class="badge-pill"/><text x="567.6" y="140" class="badge">(3)</text></g><text x="549.6" y="171.7" class="label">웹 서버</text></g>
