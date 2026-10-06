@@ -282,3 +282,32 @@ test('buildFigure_chip_beside_shape_fixture_has_no_check_7_warning', async () =>
 
   assert.deepEqual(warnings, []);
 });
+
+// 근거: 버그 #145: 그리드 칸에서 시작하는 이동 글 상자가 칸 글자를 가리지 않는 자리를 찾고 check-7 경고 없이 그려진다
+test('buildFigure_grid_cell_movement_chip_avoids_source_cell_text', async () => {
+  const source = `flow right
+width wide
+box src "Source"
+grid g "Sparse 40x40" rows=40 cols=40 {
+ item a "A"
+ item big "Big merged cell" row=10 col=10 rows=15 cols=15
+ gap skip "..." count=5 row=30 cols=3
+ item z "Z" row=39 col=39
+}
+box dst "Dest"
+src -> g.a
+g.a -> g.big
+g.z -> dst
+step "Move"
+ src -> g.a "read" time=1s
+ g.a -> g.big "copy" time=1s
+ g.z -> dst "write" time=1s`;
+
+  const { warnings, timeline } = await buildFigure(source, { strict: true });
+  assert.deepEqual(warnings, []);
+
+  // copy 이동(g.a -> g.big)의 글 상자는 시작할 때 칸 "A" 글자를 피해 아래 레인에 자리잡는다
+  const copyHop = timeline.segs.flatMap((s) => s.hops).find((h) => h.data?.includes('copy'));
+  assert.ok(copyHop);
+  assert.equal(copyHop.chipPath[0][2], 47); // dy: 47 (아래쪽)
+});

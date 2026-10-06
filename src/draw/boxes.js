@@ -81,6 +81,7 @@ function decorBoxes(scene) {
 // 도형이 그려진 테두리 사각형. 사람은 머리와 몸통(어깨 포함) 둘, 원통은 위아래 뚜껑까지 넓힌다.
 function shapeBoxes(scene) {
   return scene.items.flatMap((it) => {
+    if (it.shape === 'grid') return [];
     const name = plainText(it.label ?? it.id);
     if (it.shape === 'person') {
       const head = SIZE.person.head;

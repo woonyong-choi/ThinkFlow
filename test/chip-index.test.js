@@ -226,8 +226,8 @@ test('buildFigure_moving_text_plans_beside_big_merged_cells_and_empty_areas_equa
   const plans = timeline.segs.flatMap((seg) => seg.hops.map((hop) => hop.chipPath.map((point) => point.map((n) => Math.round(n * 1000) / 1000))));
 
   assert.deepEqual(plans, [
-    [[0, 0, 0, 0], [0.023, 0, 0, 0], [0.112, 0, 0, 0.889], [0.147, 0, 0, 1], [1, 0, 0, 1]],
-    [[0, 32.752, 0, 1], [0.687, 12.922, 0, 1], [0.998, 12.922, 0, 1], [1, -19.745, 0, 1]],
+    [[0, 0, 47, 1], [0.147, 0, 0, 1], [1, 0, 0, 1]],
+    [[0, 0, 47, 1], [0.038, 0, 0, 1], [1, 0, 0, 1]],
     [[0, 0, 47, 1], [0.147, 0, 0, 1], [1, 0, 0, 1]],
   ]);
 });
