@@ -108,7 +108,7 @@ daphnis md <file.md ...> [--check] [--out-dir dir] [--fold [--fold-title "text"]
 | `--scene n\|이름` | SVG로 만들 장면을 고른다(번호는 1부터, `render`와 같다). 생략하면 첫 장면이고 장면이 없는 블록은 정지 그림 하나다. 장면 없는 블록에 주면 그 블록 줄에 오류를 내고(종료 1) 아무것도 쓰지 않는다 |
 | `--strict`, `--require-data`, `--require-ci`, `--budget`, `--json` | `render`와 같은 뜻. 블록마다 적용한다. 예산은 블록 하나의 그림마다 검사한다 |
 
-`render`의 `--out`, `--title`, `--html`은 이 명령이 받지 않고, `--check`, `--out-dir`, `--fold`, `--fold-title`, `--unfold`는 다른 명령이 받지 않는다. 기존 명령의 동작은 바뀌지 않는다(명령 추가만).
+`render`의 `--out`, `--html`과 `gallery`의 `--title`은 이 명령이 받지 않고, `--check`, `--out-dir`, `--fold`, `--fold-title`, `--unfold`는 다른 명령이 받지 않는다. 기존 명령의 동작은 바뀌지 않는다(명령 추가만).
 
 ### 블록
 

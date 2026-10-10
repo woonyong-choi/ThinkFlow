@@ -85,6 +85,8 @@ The [examples](examples/) folder holds one demo for each supported expression: t
 
 ## Usage
 
+Start with the [detailed usage guide](docs/usage.md) (Korean) for authoring, animation, embedding, and the public API.
+
 ### Render one figure
 
 Save the source from [How it works](#how-it-works) as `how-it-works.dap` and run:

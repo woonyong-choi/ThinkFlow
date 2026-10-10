@@ -85,6 +85,8 @@ npm install --save-dev github:woonyong-choi/daphnis#main
 
 ## 사용법
 
+처음 쓰면 [상세 사용법](docs/usage.md)에서 설치부터 그림 작성, 애니메이션, 본문 삽입과 공개 API까지 순서대로 확인합니다.
+
 ### 그림 하나 만들기
 
 [작동 방식](#작동-방식)의 원본을 `how-it-works.dap`으로 저장하고 실행합니다.
