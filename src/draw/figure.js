@@ -51,7 +51,7 @@ function drawGroup(g, j, { decorate, glyphs }) {
   const dashed = g.border === 'dashed';
   return (
     `<g id="g-${j}" class="fl-group${g.iconData ? ' tabbed' : ''}${lookClass(lookOf(g))}" data-id="${escapeXml(g.id)}"><rect x="${r(g.x)}" y="${r(g.y)}" width="${r(g.w)}" height="${r(g.h)}" rx="${CORNER.outer}" class="frame-box fl-stroke${dashed ? ' dashed' : ''} ${decorate('group', j)}"${dashed ? ` stroke-dasharray="${LINE_DASH}"` : ''}/>` +
-    `${g.iconData ? drawGroupTab(g) : ''}${drawText(head.text, g, glyphs)}${decor}</g>`
+    `${g.iconData ? drawGroupTab(g, j) : ''}${drawText(head.text, g, glyphs)}${decor}</g>`
   );
 }
 
@@ -67,7 +67,7 @@ function drawItem(it, i, paint) {
   const open = `<g id="n-${i}" class="fl-node fl-shape-${escapeXml(it.shape)}${lookClass(look)}" tabindex="0" role="img" aria-label="${escapeXml(description)}" data-id="${escapeXml(it.id)}">`;
   const shape = drawShape(it, stroke, { ...paint, index: i });
   const content = it.content ? drawContent(it.content, { box: contentBox(it), i, shown: scene.shownCards?.[it.id] }, paint) : '';
-  return `${open}${shape}${paint.flashes.shape.get(i) ?? ''}${paint.borders?.(i, shape) ?? ''}${drawHead(it, paint)}${content}</g>`;
+  return `${open}${shape}${paint.flashes.shape.get(i) ?? ''}${paint.borders?.(i, shape) ?? ''}${drawHead(it, { ...paint, index: i })}${content}</g>`;
 }
 
 // 화면 읽기용 글. 그려진 글(백틱 표시를 뺀 제목)이고, 표·API·클래스는 본문까지 측정이 만든 글이다(머리만 그리는 참여자에는 없다).

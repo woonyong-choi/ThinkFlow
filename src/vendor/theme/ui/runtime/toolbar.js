@@ -10,15 +10,17 @@ export function bindToolbar(root, { source, download } = {}) {
     clearTimeout(timer);
     if (!shown) return;
     shown.button.innerHTML = ToolIcon(shown.icon);
+    shown.button.title = shown.title;
     delete shown.button.dataset.state;
     status.textContent = '';
     shown = undefined;
   }
   function announce(button, icon, ok, text) {
     clear();
-    shown = { button, icon };
+    shown = { button, icon, title: button.title };
     button.innerHTML = ToolIcon(ok ? 'check' : 'alert');
     button.dataset.state = ok ? 'done' : 'failed';
+    button.title = ok ? text : `${text}. 다시 시도하세요`;
     status.textContent = text;
     timer = setTimeout(clear, cssTimeMs(getComputedStyle(button).getPropertyValue('--duration-notice')));
   }
@@ -49,6 +51,7 @@ export function bindToolbar(root, { source, download } = {}) {
     if (!button) return;
     button.hidden = !available;
     if (!available) return;
+    const failure = action === 'copy' ? '복사하지 못했습니다' : '다운로드하지 못했습니다';
     let busy = false;
     button.addEventListener('click', async () => {
       if (busy) return;
@@ -56,9 +59,9 @@ export function bindToolbar(root, { source, download } = {}) {
       button.setAttribute('aria-disabled', 'true');
       try {
         const ok = await run();
-        announce(button, action, ok !== false, ok === false ? '복사하지 못했습니다' : success);
+        announce(button, action, ok !== false, ok === false ? failure : success);
       } catch {
-        announce(button, action, false, action === 'copy' ? '복사하지 못했습니다' : '다운로드하지 못했습니다');
+        announce(button, action, false, failure);
       } finally { busy = false; button.removeAttribute('aria-disabled'); }
     });
   }

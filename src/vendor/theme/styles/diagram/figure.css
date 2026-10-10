@@ -8,12 +8,12 @@
 
 .fl .label {
   font-size: var(--text-small-text);
-  fill: var(--color-fg);
+  fill: var(--color-ink);
 }
 
 .fl .sub {
   font-size: var(--text-tiny-text);
-  fill: var(--color-muted);
+  fill: var(--color-ui-muted);
 }
 
 .fl .frame {
@@ -35,7 +35,7 @@
 .fl .cell,
 .fl .item {
   font-size: var(--text-tiny-text);
-  fill: var(--color-fg);
+  fill: var(--color-ink);
 }
 
 .fl .row.mono {
@@ -50,13 +50,13 @@
 }
 
 .fl .muted {
-  fill: var(--color-muted);
+  fill: var(--color-ui-muted);
 }
 
 .fl .tag {
   font-size: var(--text-figure-meta);
   font-weight: var(--font-weight-semibold);
-  fill: var(--color-fg);
+  fill: var(--color-ink);
 }
 
 .fl .mark {
@@ -69,7 +69,7 @@
 .fl .value {
   font-size: var(--text-tiny-text);
   font-weight: var(--font-weight-semibold);
-  fill: var(--color-fg);
+  fill: var(--color-ink);
 }
 
 .fl .chip {
@@ -78,18 +78,18 @@
 }
 
 .fl .item.gap {
-  fill: var(--color-muted);
+  fill: var(--color-ui-muted);
 }
 
 /* 열 형식(타입)은 코드 글이라 코드 글꼴의 오른쪽 열이다. 제약 줄(NOT NULL, ON DELETE 등)은 문장이라 일반 글꼴이다. 둘 다 이름보다 옅다. */
 .fl .cell.type {
   font-family: var(--font-figure-mono);
   letter-spacing: normal;
-  fill: var(--color-muted);
+  fill: var(--color-ui-muted);
 }
 
 .fl .cell.rule {
-  fill: var(--color-muted);
+  fill: var(--color-ui-muted);
 }
 
 /* 순서 보기의 메시지, 메모, 구획, 활성 막대는 자기 장면이 보일 때만 보인다. 자리는 늘 같아 판 크기가 변하지 않는다. */
@@ -111,7 +111,7 @@
 .fl .cell .key {
   font-size: var(--text-figure-meta);
   font-weight: var(--font-weight-semibold);
-  fill: var(--color-fg);
+  fill: var(--color-ink);
 }
 
 /* 그룹은 면이 없다(투명). 경계와 제목만 있고, 깊이에 따라 회색 면을 겹치지 않는다. 고른 색의 면과 경계는 draw/paint.js가 쓴 색에만 더한다. */
@@ -129,7 +129,7 @@
 }
 
 .fl .note-box {
-  fill: var(--color-node);
+  fill: var(--color-ui-card);
   stroke: var(--color-line);
   stroke-dasharray: var(--dash-card) var(--dash-card);
 }
@@ -137,7 +137,7 @@
 /* 알약은 모두 같은 중립 흰 면과 평소 경계다: 선 라벨, 배지와 개수. */
 .fl .pill,
 .fl .badge-pill {
-  fill: var(--color-node);
+  fill: var(--color-ui-card);
   stroke: var(--fx-edge-rest);
 }
 
@@ -153,7 +153,7 @@
 }
 
 .fl .grid-cell {
-  --fx-face: var(--color-node);
+  --fx-face: var(--color-ui-card);
   --fx-face-on: var(--fx-row);
   fill: var(--fx-face);
   stroke: var(--color-ui-line);
@@ -161,11 +161,11 @@
 }
 
 .fl .grid-tray {
-  fill: var(--color-card);
+  fill: var(--color-ui-card);
 }
 
 .fl .grid-cell.gap {
-  --fx-face: var(--color-card);
+  --fx-face: var(--color-ui-card);
   stroke: var(--color-ui-line);
 }
 
@@ -176,10 +176,10 @@
 }
 
 .fl .fl-edge.mark {
-  --fx-line-rest: var(--color-fg);
+  --fx-line-rest: var(--color-ink);
 }
 
-/* 카드 내용 면(color.card, 테두리 없음) 위에 고른 카드 모습(face)이 옅은 면이나 경계를 더한다. */
+/* 카드 내용 면(color.ui-card, 테두리 없음) 위에 고른 카드 모습(face)이 옅은 면이나 경계를 더한다. */
 .fl .face {
   fill: none;
   stroke: none;
@@ -190,7 +190,7 @@
   font-size: var(--text-figure-meta);
   font-weight: var(--font-weight-semibold);
   text-anchor: middle;
-  fill: var(--color-fg);
+  fill: var(--color-ink);
 }
 
 .fl .fl-icon {
@@ -249,13 +249,13 @@
   --fx-row: var(--color-search-hover);
   --fx-flash: var(--color-search-hover);
   --fx-edge-rest: var(--color-help-border);
-  --fx-ink-rest: var(--color-muted);
+  --fx-ink-rest: var(--color-ui-muted);
   --fx-line-rest: var(--color-line);
 }
 
 /* 도형의 평소 면과 켜진 면. 옅은 면으로 고른 도형(filled)은 켜져도 면이 같다. 면이 없는 윤곽(fill='none')과 점은 자기 면이 없거나 자기 색이다. */
 .fl .fl-node {
-  --fx-face: var(--color-node);
+  --fx-face: var(--color-ui-card);
   --fx-face-on: var(--color-help-hover);
 }
 
@@ -264,7 +264,7 @@
 }
 
 .fl .fl-shape-start {
-  --fx-face: var(--color-fg);
+  --fx-face: var(--color-ink);
 }
 
 .fl .fl-node > .fl-stroke[fill='none'] {
@@ -347,7 +347,7 @@
 }
 
 .fl .fl-fragment-heading {
-  fill: var(--color-node);
+  fill: var(--color-ui-card);
 }
 
 .fl .fl-fragment-label {

@@ -1,4 +1,5 @@
 import { cssTimeMs } from './time.js';
+import { ControlIcon } from '../icons.mjs';
 // 원본의 거리 비례 스크롤과 swing 곡선을 사용한다.
 let scrollFrame;
 export function revealVideo(element, downward = false) {
@@ -39,8 +40,8 @@ export function updateRemote(button, video, selected = true) {
     const text = playing ? 'Pause video' : ended ? 'Replay video' : 'Play video';
     button.setAttribute('aria-label', text);
   } else button.setAttribute('aria-label', fixed);
-  const icon = button.querySelector('img');
-  icon.src = new URL(`${playing ? 'pause' : !fixed && ended ? 'replay' : 'play'}.svg`, icon.src).href;
+  const icon = button.querySelector('[data-control-icon]');
+  icon.outerHTML = String(ControlIcon(playing ? 'pause' : !fixed && ended ? 'replay' : 'play', icon.getAttribute('class')?.replace(/\bapp-control-icon\b/g, '').trim()));
 }
 const initialized = new WeakSet();
 function initContent(container) {

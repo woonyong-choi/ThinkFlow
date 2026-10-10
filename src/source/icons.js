@@ -31,7 +31,7 @@ export function checkIcons(figure, problems) {
     if (item.icon === undefined) continue;
     const { set, name } = splitIconRef(item.icon);
     if (set === DEFAULT_SET) {
-      if (!Object.hasOwn(ICON_NAMES, name)) problems.error(item.line, `${unknownName('icon', name, Object.keys(ICON_NAMES))}. Drop icon= and mark the shape with badge instead`);
+      if (!Object.hasOwn(ICON_NAMES, name)) problems.error(item.line, `${unknownName('icon', name, Object.keys(ICON_NAMES), { shouldList: false })} See src/vendor/theme/assets/icons/catalog.json in the installed package, or drop icon= and use badge instead`);
     } else if (!figure.iconSets.some((s) => s.name === set)) {
       problems.error(item.line, `${unknownName('icon set', set, [DEFAULT_SET, ...figure.iconSets.map((s) => s.name)])}. Register it first: icons ${set} "folder"`);
     } else if (!USER_ICON_PATTERN.test(name)) {

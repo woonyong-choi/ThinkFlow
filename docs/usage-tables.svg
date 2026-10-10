@@ -10,11 +10,7 @@
   --color-gray-59: #f0f0f0;
   --color-gray-282: #b7b7b7;
   --color-gray-933: #111111;
-  --color-fg: var(--color-ink);
-  --color-muted: var(--color-ui-muted);
   --color-group-title: var(--color-help-title-color);
-  --color-node: var(--color-ui-card);
-  --color-card: var(--color-ui-card);
   --color-line: var(--color-gray-282);
   --color-state-active: var(--color-category-blue-light-border);
   --color-state-active-text: var(--color-category-blue-light-ink);
@@ -141,12 +137,12 @@
 
 .fl .label {
   font-size: var(--text-small-text);
-  fill: var(--color-fg);
+  fill: var(--color-ink);
 }
 
 .fl .sub {
   font-size: var(--text-tiny-text);
-  fill: var(--color-muted);
+  fill: var(--color-ui-muted);
 }
 
 .fl .frame {
@@ -168,7 +164,7 @@
 .fl .cell,
 .fl .item {
   font-size: var(--text-tiny-text);
-  fill: var(--color-fg);
+  fill: var(--color-ink);
 }
 
 .fl .row.mono {
@@ -183,13 +179,13 @@
 }
 
 .fl .muted {
-  fill: var(--color-muted);
+  fill: var(--color-ui-muted);
 }
 
 .fl .tag {
   font-size: var(--text-figure-meta);
   font-weight: var(--font-weight-semibold);
-  fill: var(--color-fg);
+  fill: var(--color-ink);
 }
 
 .fl .mark {
@@ -202,7 +198,7 @@
 .fl .value {
   font-size: var(--text-tiny-text);
   font-weight: var(--font-weight-semibold);
-  fill: var(--color-fg);
+  fill: var(--color-ink);
 }
 
 .fl .chip {
@@ -211,18 +207,18 @@
 }
 
 .fl .item.gap {
-  fill: var(--color-muted);
+  fill: var(--color-ui-muted);
 }
 
 /* 열 형식(타입)은 코드 글이라 코드 글꼴의 오른쪽 열이다. 제약 줄(NOT NULL, ON DELETE 등)은 문장이라 일반 글꼴이다. 둘 다 이름보다 옅다. */
 .fl .cell.type {
   font-family: var(--font-figure-mono);
   letter-spacing: normal;
-  fill: var(--color-muted);
+  fill: var(--color-ui-muted);
 }
 
 .fl .cell.rule {
-  fill: var(--color-muted);
+  fill: var(--color-ui-muted);
 }
 
 /* 순서 보기의 메시지, 메모, 구획, 활성 막대는 자기 장면이 보일 때만 보인다. 자리는 늘 같아 판 크기가 변하지 않는다. */
@@ -244,7 +240,7 @@
 .fl .cell .key {
   font-size: var(--text-figure-meta);
   font-weight: var(--font-weight-semibold);
-  fill: var(--color-fg);
+  fill: var(--color-ink);
 }
 
 /* 그룹은 면이 없다(투명). 경계와 제목만 있고, 깊이에 따라 회색 면을 겹치지 않는다. 고른 색의 면과 경계는 draw/paint.js가 쓴 색에만 더한다. */
@@ -262,7 +258,7 @@
 }
 
 .fl .note-box {
-  fill: var(--color-node);
+  fill: var(--color-ui-card);
   stroke: var(--color-line);
   stroke-dasharray: var(--dash-card) var(--dash-card);
 }
@@ -270,7 +266,7 @@
 /* 알약은 모두 같은 중립 흰 면과 평소 경계다: 선 라벨, 배지와 개수. */
 .fl .pill,
 .fl .badge-pill {
-  fill: var(--color-node);
+  fill: var(--color-ui-card);
   stroke: var(--fx-edge-rest);
 }
 
@@ -286,7 +282,7 @@
 }
 
 .fl .grid-cell {
-  --fx-face: var(--color-node);
+  --fx-face: var(--color-ui-card);
   --fx-face-on: var(--fx-row);
   fill: var(--fx-face);
   stroke: var(--color-ui-line);
@@ -294,11 +290,11 @@
 }
 
 .fl .grid-tray {
-  fill: var(--color-card);
+  fill: var(--color-ui-card);
 }
 
 .fl .grid-cell.gap {
-  --fx-face: var(--color-card);
+  --fx-face: var(--color-ui-card);
   stroke: var(--color-ui-line);
 }
 
@@ -309,10 +305,10 @@
 }
 
 .fl .fl-edge.mark {
-  --fx-line-rest: var(--color-fg);
+  --fx-line-rest: var(--color-ink);
 }
 
-/* 카드 내용 면(color.card, 테두리 없음) 위에 고른 카드 모습(face)이 옅은 면이나 경계를 더한다. */
+/* 카드 내용 면(color.ui-card, 테두리 없음) 위에 고른 카드 모습(face)이 옅은 면이나 경계를 더한다. */
 .fl .face {
   fill: none;
   stroke: none;
@@ -323,7 +319,7 @@
   font-size: var(--text-figure-meta);
   font-weight: var(--font-weight-semibold);
   text-anchor: middle;
-  fill: var(--color-fg);
+  fill: var(--color-ink);
 }
 
 .fl .fl-icon {
@@ -382,13 +378,13 @@
   --fx-row: var(--color-search-hover);
   --fx-flash: var(--color-search-hover);
   --fx-edge-rest: var(--color-help-border);
-  --fx-ink-rest: var(--color-muted);
+  --fx-ink-rest: var(--color-ui-muted);
   --fx-line-rest: var(--color-line);
 }
 
 /* 도형의 평소 면과 켜진 면. 옅은 면으로 고른 도형(filled)은 켜져도 면이 같다. 면이 없는 윤곽(fill='none')과 점은 자기 면이 없거나 자기 색이다. */
 .fl .fl-node {
-  --fx-face: var(--color-node);
+  --fx-face: var(--color-ui-card);
   --fx-face-on: var(--color-help-hover);
 }
 
@@ -397,7 +393,7 @@
 }
 
 .fl .fl-shape-start {
-  --fx-face: var(--color-fg);
+  --fx-face: var(--color-ink);
 }
 
 .fl .fl-node > .fl-stroke[fill='none'] {
@@ -480,7 +476,7 @@
 }
 
 .fl .fl-fragment-heading {
-  fill: var(--color-node);
+  fill: var(--color-ui-card);
 }
 
 .fl .fl-fragment-label {
@@ -494,8 +490,8 @@
 <rect x="0.5" y="0.5" width="959" height="315" rx="18" fill="var(--color-prose-pre-background)"/>
 <g transform="translate(292.5 0)">
 
-<g id="n-0" class="fl-node fl-shape-table" tabindex="0" role="img" aria-label="orders; id PK bigint; user_id FK bigint NOT NULL; PK (id); FK (user_id) references users (id)" data-id="orders"><rect x="28" y="28" width="157.2" height="100" rx="8" fill="var(--color-node)" class="fl-stroke a0"/><clipPath id="tc-0"><rect x="28" y="28" width="157.2" height="100" rx="8"/></clipPath><g clip-path="url(#tc-0)"><g class="fl-part" data-part="orders.id"><rect x="29" y="56" width="155.2" height="26" class="part-bg a1"/><text x="46" y="73.7" class="cell">id<tspan class="key" dx="6">PK</tspan></text><text x="167.2" y="73.7" class="cell type" text-anchor="end">bigint</text></g><g class="fl-part" data-part="orders.user_id"><rect x="29" y="82" width="155.2" height="46" class="part-bg a1"/><text x="46" y="99.7" class="cell">user_id<tspan class="key" dx="6">FK</tspan></text><text x="167.2" y="99.7" class="cell type" text-anchor="end">bigint</text><text x="46" y="122.7" class="cell rule">NOT NULL</text></g></g><line x1="28" x2="185.2" y1="56" y2="56" class="col-line"/><line x1="28" x2="185.2" y1="82" y2="82" class="col-line"/><g class="fl-symbol fl-symbol-concept"><g class="fl-icon" transform="translate(71.9 32) scale(0.83333)"><g transform="translate(0 0) scale(0.5)" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M7 12V36A17 6 0 0 0 41 36V12Z" fill="#478fa7" stroke="#39768e" stroke-width="3"/><ellipse cx="24" cy="12" rx="17" ry="6" fill="#c9eaf1" stroke="#39768e" stroke-width="3"/><path d="M9 24A17 6 0 0 0 39 24 M9 34A17 6 0 0 0 39 34" fill="none" stroke="#ffffff" stroke-width="3"/></g></g></g><text x="120.6" y="47.4" class="label" text-anchor="middle">orders</text></g>
-<g id="n-1" class="fl-node fl-shape-table" tabindex="0" role="img" aria-label="users; id PK bigint; name  text NOT NULL; PK (id)" data-id="users"><rect x="217.2" y="188" width="129.8" height="100" rx="8" fill="var(--color-node)" class="fl-stroke a0"/><clipPath id="tc-1"><rect x="217.2" y="188" width="129.8" height="100" rx="8"/></clipPath><g clip-path="url(#tc-1)"><g class="fl-part" data-part="users.id"><rect x="218.2" y="216" width="127.8" height="26" class="part-bg a1"/><text x="235.2" y="233.7" class="cell">id<tspan class="key" dx="6">PK</tspan></text><text x="329.1" y="233.7" class="cell type" text-anchor="end">bigint</text></g><g class="fl-part" data-part="users.name"><rect x="218.2" y="242" width="127.8" height="46" class="part-bg a1"/><text x="235.2" y="259.7" class="cell">name</text><text x="329.1" y="259.7" class="cell type" text-anchor="end">text</text><text x="235.2" y="282.7" class="cell rule">NOT NULL</text></g></g><line x1="217.2" x2="347.1" y1="216" y2="216" class="col-line"/><line x1="217.2" x2="347.1" y1="242" y2="242" class="col-line"/><g class="fl-symbol fl-symbol-concept"><g class="fl-icon" transform="translate(250.5 192) scale(0.83333)"><g transform="translate(0 0) scale(0.5)" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M7 12V36A17 6 0 0 0 41 36V12Z" fill="#478fa7" stroke="#39768e" stroke-width="3"/><ellipse cx="24" cy="12" rx="17" ry="6" fill="#c9eaf1" stroke="#39768e" stroke-width="3"/><path d="M9 24A17 6 0 0 0 39 24 M9 34A17 6 0 0 0 39 34" fill="none" stroke="#ffffff" stroke-width="3"/></g></g></g><text x="296.2" y="207.4" class="label" text-anchor="middle">users</text></g>
+<g id="n-0" class="fl-node fl-shape-table" tabindex="0" role="img" aria-label="orders; id PK bigint; user_id FK bigint NOT NULL; PK (id); FK (user_id) references users (id)" data-id="orders"><rect x="28" y="28" width="157.2" height="100" rx="8" fill="var(--color-ui-card)" class="fl-stroke a0"/><clipPath id="tc-0"><rect x="28" y="28" width="157.2" height="100" rx="8"/></clipPath><g clip-path="url(#tc-0)"><g class="fl-part" data-part="orders.id"><rect x="29" y="56" width="155.2" height="26" class="part-bg a1"/><text x="46" y="73.7" class="cell">id<tspan class="key" dx="6">PK</tspan></text><text x="167.2" y="73.7" class="cell type" text-anchor="end">bigint</text></g><g class="fl-part" data-part="orders.user_id"><rect x="29" y="82" width="155.2" height="46" class="part-bg a1"/><text x="46" y="99.7" class="cell">user_id<tspan class="key" dx="6">FK</tspan></text><text x="167.2" y="99.7" class="cell type" text-anchor="end">bigint</text><text x="46" y="122.7" class="cell rule">NOT NULL</text></g></g><line x1="28" x2="185.2" y1="56" y2="56" class="col-line"/><line x1="28" x2="185.2" y1="82" y2="82" class="col-line"/><g class="fl-symbol fl-symbol-concept"><g class="fl-icon" transform="translate(71.9 32) scale(0.83333)"><g transform="translate(0 0) scale(0.5)"><g color="#3d4856"><g stroke-linecap="round" stroke-linejoin="round"><g transform="translate(-0.57143 0.19643) scale(1.02381)"><path d="M7 11V36C7 45 41 45 41 36V11" fill="#ffffff" stroke="#a4a8ae" stroke-width="2.8"/><ellipse cx="24" cy="11" rx="17" ry="7" fill="#c7ddff" stroke="#a4a8ae" stroke-width="3.25"/><path d="M7 24C7 33 41 33 41 24" fill="none" stroke="#a4a8ae" stroke-width="2.5"/></g></g></g></g></g></g><text x="120.6" y="47.4" class="label" text-anchor="middle">orders</text></g>
+<g id="n-1" class="fl-node fl-shape-table" tabindex="0" role="img" aria-label="users; id PK bigint; name  text NOT NULL; PK (id)" data-id="users"><rect x="217.2" y="188" width="129.8" height="100" rx="8" fill="var(--color-ui-card)" class="fl-stroke a0"/><clipPath id="tc-1"><rect x="217.2" y="188" width="129.8" height="100" rx="8"/></clipPath><g clip-path="url(#tc-1)"><g class="fl-part" data-part="users.id"><rect x="218.2" y="216" width="127.8" height="26" class="part-bg a1"/><text x="235.2" y="233.7" class="cell">id<tspan class="key" dx="6">PK</tspan></text><text x="329.1" y="233.7" class="cell type" text-anchor="end">bigint</text></g><g class="fl-part" data-part="users.name"><rect x="218.2" y="242" width="127.8" height="46" class="part-bg a1"/><text x="235.2" y="259.7" class="cell">name</text><text x="329.1" y="259.7" class="cell type" text-anchor="end">text</text><text x="235.2" y="282.7" class="cell rule">NOT NULL</text></g></g><line x1="217.2" x2="347.1" y1="216" y2="216" class="col-line"/><line x1="217.2" x2="347.1" y1="242" y2="242" class="col-line"/><g class="fl-symbol fl-symbol-concept"><g class="fl-icon" transform="translate(250.5 192) scale(0.83333)"><g transform="translate(0 0) scale(0.5)"><g color="#3d4856"><g stroke-linecap="round" stroke-linejoin="round"><g transform="translate(-0.57143 0.19643) scale(1.02381)"><path d="M7 11V36C7 45 41 45 41 36V11" fill="#ffffff" stroke="#a4a8ae" stroke-width="2.8"/><ellipse cx="24" cy="11" rx="17" ry="7" fill="#c7ddff" stroke="#a4a8ae" stroke-width="3.25"/><path d="M7 24C7 33 41 33 41 24" fill="none" stroke="#a4a8ae" stroke-width="2.5"/></g></g></g></g></g></g><text x="296.2" y="207.4" class="label" text-anchor="middle">users</text></g>
 <g id="e-0" class="fl-edge " role="img" aria-label="orders references users"><defs><marker id="fl-arrow-0" viewBox="0 0 5 5" refX="4" refY="2.5" markerWidth="5" markerHeight="5" orient="auto-start-reverse" overflow="visible"><path class="fl-arrowhead" d="M 1.1 0.25 L 4 2.5 L 1.1 4.75 Z" stroke-width="1"/></marker></defs><path id="p-0" d="M 185.2 95 L 193.2 95 Q 201.2 95, 201.2 103 L 201.2 221 Q 201.2 229, 209.2 229 L 217.2 229" class="fl-path" marker-end="url(#fl-arrow-0)"/></g>
 
 

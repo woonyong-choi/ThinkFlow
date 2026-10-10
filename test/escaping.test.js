@@ -261,13 +261,19 @@ test('I2 icon references that are missing, from an unknown set, or that reach ou
 
 test('I2 built-in icons: concept names and technology brands draw shapes; an unknown name is an error', async () => {
   const plain = await toSvg(await build(dap('box a "A"\n')), { isStatic: true });
-  for (const name of ['server', 'db', 'user', 'git', 'postgresql']) {
+  for (const name of ['server', 'server-detail', 'db', 'user', 'git', 'postgresql']) {
     const svg = await toSvg(await build(dap(`box a "A" icon=${name}\n`)), { isStatic: true });
     assert.notEqual(svg, plain, `${name} changes the picture`);
     parseMarkup(svg);
   }
-  const unknown = dap('box a "A" icon=not-an-icon\n');
-  assert.ok((await reject(unknown)).some((p) => p.line === lineOf(unknown, 'icon=')));
+  for (const name of ['not-an-icon', 'serve']) {
+    const unknown = dap(`box a "A" icon=${name}\n`);
+    const problem = (await reject(unknown)).find(p => p.line === lineOf(unknown, 'icon='));
+    assert.ok(problem);
+    assert.match(problem.message, /assets\/icons\/catalog\.json/);
+    assert.doesNotMatch(problem.message, /Declared:/, 'an icon typo does not print the entire shared library');
+    if (name === 'serve') assert.match(problem.message, /Did you mean "server"/);
+  }
 });
 
 test('I3 text with markup characters in a successful build shows as written in the SVG text', async () => {

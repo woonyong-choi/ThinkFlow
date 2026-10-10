@@ -3,17 +3,11 @@ Copyright (c) 2026 choi woo-nyong
 
 This product includes third-party material.
 
-The shared concept and control icons are distributed in src/vendor/theme/assets.
-Concept shapes are project artwork; control notices are in assets/controls/LICENSE.
-The concept registry, small SVG exports and technology marks are shared with consumers.
-
-Technology brand marks
-  Source and transformations: src/vendor/theme/assets/icons/brands/catalog.json
-  Licenses and upstream versions are listed per mark in the catalog.
-  Full notices: src/vendor/theme/assets/icons/brands/LICENSE (Devicon, MIT),
-  LICENSE.simple-icons (Simple Icons, CC0 1.0), LICENSE.apache-2.0 (Apache Kafka).
-  Apache Kafka logo copyright The Apache Software Foundation.
-  Marks identify their technologies and retain their owners' trademarks.
+The shared concept, control and brand icons are distributed in src/vendor/theme/assets/icons.
+The catalog at src/vendor/theme/assets/icons/catalog.json records icon names,
+categories, aliases, library notices and brand provenance.
+Full notices are included in src/vendor/theme/assets/icons/licenses/.
+Marks identify their technologies and retain their owners' trademarks.
 
 Pretendard (body and number font)
   Source:    https://github.com/orioncactus/pretendard (npm package pretendard 1.3.9, dist/public/static/Pretendard-{Regular,SemiBold}.otf)

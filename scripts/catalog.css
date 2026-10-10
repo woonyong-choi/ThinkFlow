@@ -1,7 +1,7 @@
 /* 예제 갤러리. 그림의 스타일과 레이아웃은 렌더러가 소유하고, 여기는 목록 쪽 배치만 정한다. */
 :root { color-scheme: light dark; }
-body { margin: 0; padding: var(--spacing-6); font-family: var(--font-sans); font-size: var(--text-figure-15); line-height: var(--leading-diagram-body); color: var(--color-fg); background: var(--color-page); }
-h1 { margin: 0; font-size: var(--text-heading); font-weight: var(--font-weight-weight-title); line-height: var(--leading-heading); overflow-wrap: anywhere; }
+body { margin: 0; padding: var(--spacing-6); font-family: var(--font-sans); font-size: var(--text-figure-15); line-height: var(--leading-diagram-body); color: var(--color-ink); background: var(--color-ui-card); }
+h1 { margin: 0; font-size: var(--text-heading); font-weight: var(--font-weight-bold); line-height: var(--leading-heading); overflow-wrap: anywhere; }
 h2 { margin: var(--spacing-12) 0 var(--spacing-3); font-size: var(--text-figure-22); }
 h3 { margin: 0; font-size: var(--text-figure-15); overflow-wrap: anywhere; }
 p { overflow-wrap: anywhere; }
@@ -13,14 +13,14 @@ summary { padding-block: var(--spacing-4); cursor: pointer; }
 a:focus-visible, summary:focus-visible { outline: var(--outline-width-focus) solid var(--color-ui-focus); outline-offset: var(--spacing-1); }
 .catalog-header { display: flex; flex-wrap: wrap; gap: var(--spacing-4); align-items: center; justify-content: space-between; max-width: var(--container-diagram); margin: auto auto var(--spacing-14); }
 .catalog-main { max-width: var(--container-diagram); margin: auto; }
-.catalog-lead { font-size: var(--text-figure-22); color: var(--color-muted); }
+.catalog-lead { font-size: var(--text-figure-22); color: var(--color-ui-muted); }
 .catalog-index { display: flex; flex-wrap: wrap; gap: var(--spacing-3) var(--spacing-6); padding: 0; list-style: none; }
 .catalog-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--spacing-figure-gallery-column)), 1fr)); gap: var(--spacing-6); }
 .catalog-card { min-width: 0; padding: var(--spacing-8); background: var(--color-surface); border-radius: var(--radius-md); }
-.catalog-card code { font-size: var(--text-figure-13); color: var(--color-muted); }
+.catalog-card code { font-size: var(--text-figure-13); color: var(--color-ui-muted); }
 .catalog-preview { display: block; overflow: hidden; margin-block: var(--spacing-4); }
 .catalog-preview img { display: block; width: 100%; height: auto; max-height: var(--spacing-figure-gallery-frame); object-fit: contain; object-position: top; }
 .catalog-scenes { margin: 0; padding-left: var(--spacing-8); font-size: var(--text-figure-13); }
-.catalog-scenes span { color: var(--color-muted); }
-.catalog-support { margin: 0; font-size: var(--text-figure-13); color: var(--color-muted); }
+.catalog-scenes span { color: var(--color-ui-muted); }
+.catalog-support { margin: 0; font-size: var(--text-figure-13); color: var(--color-ui-muted); }
 .catalog-downloads { display: flex; flex-wrap: wrap; gap: var(--spacing-5); padding-block: var(--spacing-4); }

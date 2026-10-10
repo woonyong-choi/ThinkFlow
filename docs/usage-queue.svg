@@ -7,16 +7,11 @@
 :root {
   --color-gray-0: #ffffff;
   --color-gray-59: #f0f0f0;
-  --color-gray-161: #d6d6d6;
   --color-gray-282: #b7b7b7;
   --color-gray-529: #787878;
   --color-gray-910: #171717;
   --color-gray-933: #111111;
-  --color-fg: var(--color-ink);
-  --color-muted: var(--color-ui-muted);
   --color-group-title: var(--color-help-title-color);
-  --color-node: var(--color-ui-card);
-  --color-card: var(--color-ui-card);
   --color-outline: var(--color-gray-529);
   --color-line: var(--color-gray-282);
   --color-state-active: var(--color-category-blue-light-border);
@@ -24,7 +19,7 @@
   --color-ui-focus: var(--color-action-link);
   --color-data-category-1: var(--color-category-blue-fill);
   --color-figure-icon: var(--color-category-blue-light-border);
-  --color-figure-queue-empty: var(--color-gray-161);
+  --color-figure-queue-empty: var(--color-gray-59);
   --color-figure-number-fill: var(--primitive-figure-number-fill);
   --color-figure-number-ink: var(--primitive-figure-number-ink);
   --color-ui-card: var(--color-gray-0);
@@ -131,7 +126,7 @@
   --color-state-active: var(--color-category-blue-light-border);
   --color-state-active-text: var(--color-category-blue-light-ink);
   --color-figure-icon: var(--color-category-blue-light-border);
-  --color-figure-queue-empty: var(--color-gray-161);
+  --color-figure-queue-empty: var(--color-gray-59);
   --color-figure-number-fill: var(--primitive-figure-number-fill);
   --color-figure-number-ink: var(--primitive-figure-number-ink);
   --color-ui-card: var(--color-gray-0);
@@ -155,12 +150,12 @@
 
 .fl .label {
   font-size: var(--text-small-text);
-  fill: var(--color-fg);
+  fill: var(--color-ink);
 }
 
 .fl .sub {
   font-size: var(--text-tiny-text);
-  fill: var(--color-muted);
+  fill: var(--color-ui-muted);
 }
 
 .fl .frame {
@@ -182,7 +177,7 @@
 .fl .cell,
 .fl .item {
   font-size: var(--text-tiny-text);
-  fill: var(--color-fg);
+  fill: var(--color-ink);
 }
 
 .fl .row.mono {
@@ -197,13 +192,13 @@
 }
 
 .fl .muted {
-  fill: var(--color-muted);
+  fill: var(--color-ui-muted);
 }
 
 .fl .tag {
   font-size: var(--text-figure-meta);
   font-weight: var(--font-weight-semibold);
-  fill: var(--color-fg);
+  fill: var(--color-ink);
 }
 
 .fl .mark {
@@ -216,7 +211,7 @@
 .fl .value {
   font-size: var(--text-tiny-text);
   font-weight: var(--font-weight-semibold);
-  fill: var(--color-fg);
+  fill: var(--color-ink);
 }
 
 .fl .chip {
@@ -225,18 +220,18 @@
 }
 
 .fl .item.gap {
-  fill: var(--color-muted);
+  fill: var(--color-ui-muted);
 }
 
 /* 열 형식(타입)은 코드 글이라 코드 글꼴의 오른쪽 열이다. 제약 줄(NOT NULL, ON DELETE 등)은 문장이라 일반 글꼴이다. 둘 다 이름보다 옅다. */
 .fl .cell.type {
   font-family: var(--font-figure-mono);
   letter-spacing: normal;
-  fill: var(--color-muted);
+  fill: var(--color-ui-muted);
 }
 
 .fl .cell.rule {
-  fill: var(--color-muted);
+  fill: var(--color-ui-muted);
 }
 
 /* 순서 보기의 메시지, 메모, 구획, 활성 막대는 자기 장면이 보일 때만 보인다. 자리는 늘 같아 판 크기가 변하지 않는다. */
@@ -258,7 +253,7 @@
 .fl .cell .key {
   font-size: var(--text-figure-meta);
   font-weight: var(--font-weight-semibold);
-  fill: var(--color-fg);
+  fill: var(--color-ink);
 }
 
 /* 그룹은 면이 없다(투명). 경계와 제목만 있고, 깊이에 따라 회색 면을 겹치지 않는다. 고른 색의 면과 경계는 draw/paint.js가 쓴 색에만 더한다. */
@@ -276,7 +271,7 @@
 }
 
 .fl .note-box {
-  fill: var(--color-node);
+  fill: var(--color-ui-card);
   stroke: var(--color-line);
   stroke-dasharray: var(--dash-card) var(--dash-card);
 }
@@ -284,7 +279,7 @@
 /* 알약은 모두 같은 중립 흰 면과 평소 경계다: 선 라벨, 배지와 개수. */
 .fl .pill,
 .fl .badge-pill {
-  fill: var(--color-node);
+  fill: var(--color-ui-card);
   stroke: var(--fx-edge-rest);
 }
 
@@ -300,7 +295,7 @@
 }
 
 .fl .grid-cell {
-  --fx-face: var(--color-node);
+  --fx-face: var(--color-ui-card);
   --fx-face-on: var(--fx-row);
   fill: var(--fx-face);
   stroke: var(--color-ui-line);
@@ -308,11 +303,11 @@
 }
 
 .fl .grid-tray {
-  fill: var(--color-card);
+  fill: var(--color-ui-card);
 }
 
 .fl .grid-cell.gap {
-  --fx-face: var(--color-card);
+  --fx-face: var(--color-ui-card);
   stroke: var(--color-ui-line);
 }
 
@@ -323,10 +318,10 @@
 }
 
 .fl .fl-edge.mark {
-  --fx-line-rest: var(--color-fg);
+  --fx-line-rest: var(--color-ink);
 }
 
-/* 카드 내용 면(color.card, 테두리 없음) 위에 고른 카드 모습(face)이 옅은 면이나 경계를 더한다. */
+/* 카드 내용 면(color.ui-card, 테두리 없음) 위에 고른 카드 모습(face)이 옅은 면이나 경계를 더한다. */
 .fl .face {
   fill: none;
   stroke: none;
@@ -337,7 +332,7 @@
   font-size: var(--text-figure-meta);
   font-weight: var(--font-weight-semibold);
   text-anchor: middle;
-  fill: var(--color-fg);
+  fill: var(--color-ink);
 }
 
 .fl .fl-icon {
@@ -396,13 +391,13 @@
   --fx-row: var(--color-search-hover);
   --fx-flash: var(--color-search-hover);
   --fx-edge-rest: var(--color-help-border);
-  --fx-ink-rest: var(--color-muted);
+  --fx-ink-rest: var(--color-ui-muted);
   --fx-line-rest: var(--color-line);
 }
 
 /* 도형의 평소 면과 켜진 면. 옅은 면으로 고른 도형(filled)은 켜져도 면이 같다. 면이 없는 윤곽(fill='none')과 점은 자기 면이 없거나 자기 색이다. */
 .fl .fl-node {
-  --fx-face: var(--color-node);
+  --fx-face: var(--color-ui-card);
   --fx-face-on: var(--color-help-hover);
 }
 
@@ -411,7 +406,7 @@
 }
 
 .fl .fl-shape-start {
-  --fx-face: var(--color-fg);
+  --fx-face: var(--color-ink);
 }
 
 .fl .fl-node > .fl-stroke[fill='none'] {
@@ -494,7 +489,7 @@
 }
 
 .fl .fl-fragment-heading {
-  fill: var(--color-node);
+  fill: var(--color-ui-card);
 }
 
 .fl .fl-fragment-label {
@@ -510,10 +505,10 @@
 <rect x="0.5" y="0.5" width="959" height="378" rx="18" fill="var(--color-prose-pre-background)"/>
 <g transform="translate(298.6 0)">
 
-<g id="n-0" class="fl-node fl-shape-box" tabindex="0" role="img" aria-label="접수" data-id="producer"><rect x="82.7" y="28" width="100" height="47" rx="8" fill="var(--color-node)" class="fl-stroke a0"/><g class="fl-symbol fl-symbol-concept"><g class="fl-icon" transform="translate(106 41.5) scale(0.83333)"><g transform="translate(0 0) scale(0.5)" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M5 10H11L20 24 M5 24H20 M5 38H11L20 24 M30 24H43 M39 20L43 24L39 28" fill="none" stroke="#2465c7" stroke-width="3"/><rect x="19" y="8" width="11" height="32" rx="4" fill="#3d4856"/></g></g></g><text x="146.7" y="56.9" class="label" text-anchor="middle">접수</text></g>
-<g id="n-1" class="fl-node fl-shape-queue" tabindex="0" role="img" aria-label="대기 작업" data-id="jobs"><rect x="60" y="135" width="112" height="67" rx="8" fill="var(--color-node)" class="fl-stroke a0"/><rect x="78" y="176" width="16" height="14" rx="4" fill="var(--color-figure-queue-empty)" stroke="var(--color-outline)" stroke-width="1"/><rect x="98" y="176" width="16" height="14" rx="4" fill="var(--color-figure-queue-empty)" stroke="var(--color-outline)" stroke-width="1"/><rect x="118" y="176" width="16" height="14" rx="4" fill="var(--color-figure-queue-empty)" stroke="var(--color-outline)" stroke-width="1"/><rect x="138" y="176" width="16" height="14" rx="4" fill="var(--color-figure-queue-empty)" stroke="var(--color-outline)" stroke-width="1"/><text x="116" y="163.9" class="label" text-anchor="middle">대기 작업</text></g>
-<g id="n-2" class="fl-node fl-shape-box" tabindex="0" role="img" aria-label="처리" data-id="worker"><rect x="28" y="262" width="176" height="89" rx="8" fill="var(--color-node)" class="fl-stroke a0"/><g class="fl-symbol fl-symbol-concept"><g class="fl-icon" transform="translate(89.3 275.5) scale(0.83333)"><g transform="translate(0 0) scale(0.5)" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="6" width="38" height="36" rx="6" fill="#3d4856"/><rect x="10" y="13" width="28" height="8" rx="3" fill="#ffffff"/><rect x="10" y="27" width="28" height="8" rx="3" fill="#ffffff"/><circle cx="15" cy="17" r="2" fill="#28a779"/><circle cx="15" cy="31" r="2" fill="#28a779"/></g></g></g><text x="130" y="290.9" class="label" text-anchor="middle">처리</text><rect x="38" y="309" width="156" height="32" rx="6" fill="var(--color-card)" opacity="0" class="fl-card a2"/><g id="n-2-c0" opacity="0" visibility="hidden" class="fl-layer a1"><text x="46" y="329.7" class="row">완료</text></g></g>
-<g id="n-3" class="fl-node fl-shape-box" tabindex="0" role="img" aria-label="재시도 보관" data-id="retry"><rect x="204" y="135" width="130.8" height="47" rx="8" fill="var(--color-node)" class="fl-stroke a0"/><g class="fl-symbol fl-symbol-concept"><g class="fl-icon" transform="translate(222 148.5) scale(0.83333)"><g transform="translate(0 0) scale(0.5)" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M7 12V36A17 6 0 0 0 41 36V12Z" fill="#478fa7" stroke="#39768e" stroke-width="3"/><ellipse cx="24" cy="12" rx="17" ry="6" fill="#c9eaf1" stroke="#39768e" stroke-width="3"/><path d="M9 24A17 6 0 0 0 39 24 M9 34A17 6 0 0 0 39 34" fill="none" stroke="#ffffff" stroke-width="3"/></g></g></g><text x="283.4" y="163.9" class="label" text-anchor="middle">재시도 보관</text></g>
+<g id="n-0" class="fl-node fl-shape-box" tabindex="0" role="img" aria-label="접수" data-id="producer"><rect x="82.7" y="28" width="100" height="47" rx="8" fill="var(--color-ui-card)" class="fl-stroke a0"/><g class="fl-symbol fl-symbol-concept"><g class="fl-icon" transform="translate(106 41.5) scale(0.83333)"><g transform="translate(0 0) scale(0.5)"><g color="#3d4856"><g stroke-linecap="round" stroke-linejoin="round"><g transform="translate(0.80899 0.80899) scale(0.96629)"><rect x="3" y="5" width="16" height="38" rx="5" fill="#ffffff" stroke="#a4a8ae" stroke-width="2.5"/><rect x="29" y="5" width="16" height="38" rx="5" fill="#ffffff" stroke="#a4a8ae" stroke-width="2.5"/><rect x="8" y="11" width="6" height="7" rx="2" fill="#c6cbd2" stroke="none" stroke-width="3.25"/><rect x="8" y="30" width="6" height="7" rx="2" fill="#528aee" stroke="none" stroke-width="3.25"/><rect x="34" y="11" width="6" height="7" rx="2" fill="#c6cbd2" stroke="none" stroke-width="3.25"/><rect x="34" y="30" width="6" height="7" rx="2" fill="#528aee" stroke="none" stroke-width="3.25"/><path d="M10 24H38M34 20L38 24L34 28" fill="none" stroke="#edb300" stroke-width="3"/></g></g></g></g></g></g><text x="146.7" y="56.9" class="label" text-anchor="middle">접수</text></g>
+<g id="n-1" class="fl-node fl-shape-queue" tabindex="0" role="img" aria-label="대기 작업" data-id="jobs"><rect x="60" y="135" width="112" height="67" rx="8" fill="var(--color-ui-card)" class="fl-stroke a0"/><rect x="78" y="176" width="16" height="14" rx="4" fill="var(--color-figure-queue-empty)" stroke="var(--color-outline)" stroke-width="1"/><rect x="98" y="176" width="16" height="14" rx="4" fill="var(--color-figure-queue-empty)" stroke="var(--color-outline)" stroke-width="1"/><rect x="118" y="176" width="16" height="14" rx="4" fill="var(--color-figure-queue-empty)" stroke="var(--color-outline)" stroke-width="1"/><rect x="138" y="176" width="16" height="14" rx="4" fill="var(--color-figure-queue-empty)" stroke="var(--color-outline)" stroke-width="1"/><text x="116" y="163.9" class="label" text-anchor="middle">대기 작업</text></g>
+<g id="n-2" class="fl-node fl-shape-box" tabindex="0" role="img" aria-label="처리" data-id="worker"><rect x="28" y="262" width="176" height="89" rx="8" fill="var(--color-ui-card)" class="fl-stroke a0"/><g class="fl-symbol fl-symbol-concept"><g class="fl-icon" transform="translate(89.3 275.5) scale(0.83333)"><g transform="translate(0 0) scale(0.5)"><g color="#3d4856"><g stroke-linecap="round" stroke-linejoin="round"><g transform="translate(-1.17073 -2.21951) scale(1.04878)"><rect x="5" y="6" width="38" height="10" rx="3.5" fill="#ffffff" stroke="#a4a8ae" stroke-width="2.7"/><circle cx="12" cy="11" r="1.7" fill="#639bfa" stroke="none" stroke-width="3.25"/><rect x="5" y="20" width="38" height="10" rx="3.5" fill="#ffffff" stroke="#a4a8ae" stroke-width="2.7"/><circle cx="12" cy="25" r="1.7" fill="#edb300" stroke="none" stroke-width="3.25"/><rect x="5" y="34" width="38" height="10" rx="3.5" fill="#ffffff" stroke="#a4a8ae" stroke-width="2.7"/><circle cx="12" cy="39" r="1.7" fill="#639bfa" stroke="none" stroke-width="3.25"/></g></g></g></g></g></g><text x="130" y="290.9" class="label" text-anchor="middle">처리</text><rect x="38" y="309" width="156" height="32" rx="6" fill="var(--color-ui-card)" opacity="0" class="fl-card a2"/><g id="n-2-c0" opacity="0" visibility="hidden" class="fl-layer a1"><text x="46" y="329.7" class="row">완료</text></g></g>
+<g id="n-3" class="fl-node fl-shape-box" tabindex="0" role="img" aria-label="재시도 보관" data-id="retry"><rect x="204" y="135" width="130.8" height="47" rx="8" fill="var(--color-ui-card)" class="fl-stroke a0"/><g class="fl-symbol fl-symbol-concept"><g class="fl-icon" transform="translate(222 148.5) scale(0.83333)"><g transform="translate(0 0) scale(0.5)"><g color="#3d4856"><g stroke-linecap="round" stroke-linejoin="round"><g transform="translate(-0.57143 0.19643) scale(1.02381)"><path d="M7 11V36C7 45 41 45 41 36V11" fill="#ffffff" stroke="#a4a8ae" stroke-width="2.8"/><ellipse cx="24" cy="11" rx="17" ry="7" fill="#c7ddff" stroke="#a4a8ae" stroke-width="3.25"/><path d="M7 24C7 33 41 33 41 24" fill="none" stroke="#a4a8ae" stroke-width="2.5"/></g></g></g></g></g></g><text x="283.4" y="163.9" class="label" text-anchor="middle">재시도 보관</text></g>
 <g id="e-0" class="fl-edge "><defs><marker id="fl-arrow-0" viewBox="0 0 5 5" refX="4" refY="2.5" markerWidth="5" markerHeight="5" orient="auto-start-reverse" overflow="visible"><path class="fl-arrowhead" d="M 1.1 0.25 L 4 2.5 L 1.1 4.75 Z" stroke-width="1"/></marker></defs><path id="p-0" d="M 116 75 L 116 135" class="fl-path" marker-end="url(#fl-arrow-0)"/></g>
 <g id="e-1" class="fl-edge "><defs><marker id="fl-arrow-1" viewBox="0 0 5 5" refX="4" refY="2.5" markerWidth="5" markerHeight="5" orient="auto-start-reverse" overflow="visible"><path class="fl-arrowhead" d="M 1.1 0.25 L 4 2.5 L 1.1 4.75 Z" stroke-width="1"/></marker></defs><path id="p-1" d="M 116 202 L 116 262" class="fl-path" marker-end="url(#fl-arrow-1)"/></g>
 <g id="e-2" class="fl-edge quiet a3 a3"><defs><marker id="fl-arrow-2" viewBox="0 0 5 5" refX="4" refY="2.5" markerWidth="5" markerHeight="5" orient="auto-start-reverse" overflow="visible"><path class="fl-arrowhead" d="M 1.1 0.25 L 4 2.5 L 1.1 4.75 Z" stroke-width="1"/></marker></defs><path id="p-2" d="M 149.3 75 L 149.3 83 Q 149.3 91, 157.3 91 L 247.4 91 Q 269.4 91, 269.4 113 L 269.4 135" class="fl-path" marker-end="url(#fl-arrow-2)"/></g>

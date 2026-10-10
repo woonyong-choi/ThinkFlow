@@ -16,8 +16,8 @@
   border-spacing: 0;
   border: var(--border-width-hair) solid var(--color-ui-line);
   border-radius: var(--radius-lg);
-  background: var(--color-card);
-  color: var(--color-fg);
+  background: var(--color-ui-card);
+  color: var(--color-ink);
   font-size: inherit;
   font-variant-numeric: tabular-nums;
 }
@@ -39,7 +39,7 @@
 .app-table .is-right { text-align: right; }
 .app-table caption {
   padding: var(--component-table-padding);
-  color: var(--color-muted);
+  color: var(--color-ui-muted);
   text-align: left;
   font-weight: var(--font-weight-semibold);
 }

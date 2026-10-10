@@ -69,6 +69,8 @@ async function canonicalHtml(result, name) {
   const defs = documentDefs(figure, [content, responsive?.content]);
   // 점이 나타나는 시각은 배치마다 다르므로(좁은 배치는 선 위치가 다르다) 넓은 배치와 좁은 배치의 시각을 모두 규칙으로 둔다.
   const dotAts = [...new Set([...content.dotAts, ...(responsive?.content.dotAts ?? [])])].sort((a, b) => a - b);
+  const styles = [STYLES.control, STYLES.player, STYLES.figure, paintCss(result.scene), STYLES.chart, charts ? chartMotionCss(timeline.growMs, dotAts) : '', hasStatus(timeline) ? STYLES.status : ''].join('');
+  const frame = figureFrame({ labels: content.data.steps.map(step => step.label), canvas: panelsMarkup(content, title, defs), style: figure.width === 'wide' ? ` style="--figure-canvas: ${canvasOf(figure)}px"` : '', narrow: responsive ? `<template class="fl-narrow">${panelsMarkup(responsive.content, title)}</template>` : '', source: typeof figure.source === 'string' ? figure.source : undefined });
   return `<!doctype html>
 <html lang="ko">
 <head>
@@ -79,10 +81,10 @@ async function canonicalHtml(result, name) {
 ${faviconLinks()}
 ${EMBED_SCRIPT}
 <style>${fonts}
-${tokensFor(Object.values(STYLES).filter(value => value !== STYLES.tokens).join('\n') + PLAYER_SCRIPT + paintCss(result.scene) + panelsMarkup(content, title, defs) + JSON.stringify(content.data))}${STYLES.control}${STYLES.player}${STYLES.figure}${paintCss(result.scene)}${STYLES.chart}${charts ? chartMotionCss(timeline.growMs, dotAts) : ''}${hasStatus(timeline) ? STYLES.status : ''}</style>
+${tokensFor(styles + PLAYER_SCRIPT + frame + JSON.stringify(content.data))}${styles}</style>
 </head>
 <body>
-${figureFrame({ labels: content.data.steps.map(step => step.label), canvas: panelsMarkup(content, title, defs), style: figure.width === 'wide' ? ` style="--figure-canvas: ${canvasOf(figure)}px"` : '', narrow: responsive ? `<template class="fl-narrow">${panelsMarkup(responsive.content, title)}</template>` : '', source: typeof figure.source === 'string' ? figure.source : undefined })}
+${frame}
 <script>
 ${PLAYER_SCRIPT}
 figurePlay(document.querySelector('.fl-figure'), ${JSON.stringify(content.data, roundedNumbers).replace(/</g, '\\u003c')});

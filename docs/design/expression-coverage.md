@@ -128,8 +128,8 @@ Daphnis는 `daphnis 2` 원본 하나로 구조, 순서, 상태, 스키마, API, 
 |---|---|---|---|
 | 페이지·조작 글꼴 | 시스템 글꼴 스택 | `font.sans`, `src/vendor/theme/styles/tabs.css`·`src/vendor/theme/styles/toolbar.css` | 직접 대응. 그림 글꼴과 분리 |
 | 그림·코드 글꼴 | 대응 요소 없음 | `font.figure-sans`, `font.figure-mono` | 측정과 SVG 포함을 위한 확장 |
-| 큰 제목 | `.fancysection-heading`, 36px·700 | `text.heading`, `font-weight.weight-title` | 크기·굵기 대응 |
-| 조작 글자 | `.navigation-button`, 15px·600. 분절 조작(탭)은 선택과 비선택 모두 600이고 실측 15.84px다 | `text.feature-tab-font`, `font-weight.weight-medium`, `src/vendor/theme/styles/tabs.css`·`src/vendor/theme/styles/toolbar.css` | 홈페이지와 같은 탭 부품·토큰을 사용한다. 선택과 비선택 모두 같은 굵기이며 패널 뒤 간격과 버튼 안쪽 여백도 공통 규칙이다 |
+| 큰 제목 | `.fancysection-heading`, 36px·700 | `text.heading`, `font-weight.bold` | 크기·굵기 대응 |
+| 조작 글자 | `.navigation-button`, 15px·600. 분절 조작은 선택과 비선택 모두 600이고 실측 15.84px다 | `text.body-text`, `text.platform-text`, `text.feature-tab-font`, `font-weight.semibold`, `src/vendor/theme/styles/tabs.css`·`src/vendor/theme/styles/toolbar.css` | 장면 탭은 홈페이지 문서 탭과 같은 버튼 변형이고 테마 선택은 분절 변형이다. 두 변형은 부모 문서의 글자 크기와 관계없이 같은 정본 글자 기준을 쓴다. 선택과 비선택의 굵기, 패널 뒤 간격과 버튼 여백도 공통 규칙이다 |
 | 본문 글자 | `body`, 18px·400 | `text.body-text`, `font.sans`, `src/vendor/theme/styles/diagram/document.css` | 문서 본문 크기 대응 |
 | 그림 이름·상세·메타 | 직접 대응 요소 없음. 역할 위계의 보조 참고(2017년 영상 스틸)에서 항목 제목은 보통 굵기, 구획 제목은 semibold다 | `text.small-text`, `text.tiny-text`, `text.figure-meta`, `measure/texts.js`의 `STYLE` | 그림 밀도를 위한 확장. 카드 제목은 15px regular, 그룹 제목은 같은 15px semibold, 그림 안 글의 굵기는 regular와 semibold 둘이다. 크기와 굵기를 `STYLE`이 재고 CSS가 같은 토큰으로 그린다 |
 | 캔버스 면 | 페이지 판의 면 역할. 공식 페이지는 `body`와 섹션마다 배경이 다르다 | `color.prose-pre-background` | 페이지 판 면의 역할 대응이고 값은 같지 않다. 실제 Chrome에서 잰 공식 홈 `body`는 rgb(242, 245, 247), 기능 페이지 `body`는 rgb(213, 217, 222)이고 Daphnis 캔버스는 rgb(245, 245, 246)다. 사이트 `body` 값을 그림 캔버스에 복사하지 않는다 |
@@ -139,11 +139,11 @@ Daphnis는 `daphnis 2` 원본 하나로 구조, 순서, 상태, 스키마, API, 
 | 표·클래스 및 병합 격자의 내부 구분선 | 대응 요소 없음 | `color.ui-line`, `border-width.hair`, `.col-line` | 내부 경계를 한 규칙으로 통합 |
 | 관계선·화살촉 | 페이지 이동 표시의 방향성 | `border-width.edge`, `draw/arrow.js` | 관계 의미를 위한 확장. 채운 삼각형 화살촉과 UML 기호 구분 |
 | 생명선·활성 구간·소멸 | 대응 요소 없음 | `border-width.lifeline`, `draw/sequence-life.js` | 시퀀스 의미를 위한 확장 |
-| 시퀀스 제어 구획·대안 제목 | 대응 요소 없음 | `color.ui-line`, `color.card`, `draw/sequence-fragments.js` | 공통 중립 경계·글자 위계를 재사용한 확장 |
-| 카드 본문 | 공식 할 일 카드의 같은 종이 면 안에 놓인 본문·목록 | `color.card`, `draw/content.js` | 바깥 카드와 같은 면. 내용이 있다는 이유로 회색 상자를 추가하지 않음 |
+| 시퀀스 제어 구획·대안 제목 | 대응 요소 없음 | `color.ui-line`, `color.ui-card`, `draw/sequence-fragments.js` | 공통 중립 경계·글자 위계를 재사용한 확장 |
+| 카드 본문 | 공식 할 일 카드의 같은 종이 면 안에 놓인 본문·목록 | `color.ui-card`, `draw/content.js` | 바깥 카드와 같은 면. 내용이 있다는 이유로 회색 상자를 추가하지 않음 |
 | 알약(선 라벨, 배지, 개수) | 대응 요소 없음 | `.pill`, `.badge-pill`(`src/vendor/theme/styles/diagram/figure.css` 한 규칙) | 중립 면과 평소 경계를 한 규칙으로 쓰는 확장 |
 | 선택·호버·키보드 초점 | 페이지 링크의 조작 상태 | `color.search-hover`, `color.help-hover`, `outline-width.focus` | 접근성을 포함한 확장. 키보드 초점 고리 굵기는 조작부, 재생기 캔버스, 문서와 목록 링크 모두 `outline-width.focus` 하나다 |
-| 조작 아이콘 | 영상 재생과 방향 아이콘 | `spacing.figure.control.icon-stroke`, `src/vendor/theme/ui/control-icons.mjs` | 굵기·크기 위계 대응. 조작 도형은 공통 디자인 사본을 읽고 출처·라이선스는 공통 고지와 `NOTICE`가 맡는다 |
+| 조작 아이콘 | 영상 재생과 방향 아이콘 | 공통 카탈로그의 `controls`, `src/vendor/theme/ui/icons.mjs` | 크기 위계 대응. 조작 도형과 렌더러는 공통 디자인 사본을 읽고 출처·라이선스는 공통 고지와 `NOTICE`가 맡는다 |
 | 시스템·브랜드 아이콘 | 대응 요소 없음 | `src/vendor/theme/assets/icons/`, 의미색 토큰 | 종류 구분을 위한 확장. 개념 아이콘과 브랜드는 웹과 같은 공통 SVG 원본을 쓴다 |
 | 데이터·상태 의미색 | 대응 요소 없음 | `color.tag`, `color.state`, 차트 역할색 | 오류·성공·계열 구분을 위한 확장 |
 | 다크 모드 | 웹 기준 페이지에는 없다. 공식 네이티브 앱 화면 이미지 가운데 라이트·다크가 함께 있는 것(2018년 Things 3.7)이 보조 참고다 | `tokens/tokens.dark.json` | 보조 참고만 있는 확장. 2018년 이미지는 현재 네이티브 버전이 아니므로 현재 앱과 같다고 판정하지 않고, 역할이 같은 요소끼리만 견준다 |

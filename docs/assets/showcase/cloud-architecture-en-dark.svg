@@ -8,11 +8,7 @@
   --color-gray-59: #f0f0f0;
   --color-gray-282: #b7b7b7;
   --color-gray-933: #111111;
-  --color-fg: var(--color-ink);
-  --color-muted: var(--color-ui-muted);
   --color-group-title: var(--color-help-title-color);
-  --color-node: var(--color-ui-card);
-  --color-card: var(--color-ui-card);
   --color-line: var(--color-gray-282);
   --color-state-active: var(--color-category-blue-light-border);
   --color-state-active-text: var(--color-category-blue-light-ink);
@@ -139,12 +135,12 @@
 
 .fl .label {
   font-size: var(--text-small-text);
-  fill: var(--color-fg);
+  fill: var(--color-ink);
 }
 
 .fl .sub {
   font-size: var(--text-tiny-text);
-  fill: var(--color-muted);
+  fill: var(--color-ui-muted);
 }
 
 .fl .frame {
@@ -166,7 +162,7 @@
 .fl .cell,
 .fl .item {
   font-size: var(--text-tiny-text);
-  fill: var(--color-fg);
+  fill: var(--color-ink);
 }
 
 .fl .row.mono {
@@ -181,13 +177,13 @@
 }
 
 .fl .muted {
-  fill: var(--color-muted);
+  fill: var(--color-ui-muted);
 }
 
 .fl .tag {
   font-size: var(--text-figure-meta);
   font-weight: var(--font-weight-semibold);
-  fill: var(--color-fg);
+  fill: var(--color-ink);
 }
 
 .fl .mark {
@@ -200,7 +196,7 @@
 .fl .value {
   font-size: var(--text-tiny-text);
   font-weight: var(--font-weight-semibold);
-  fill: var(--color-fg);
+  fill: var(--color-ink);
 }
 
 .fl .chip {
@@ -209,18 +205,18 @@
 }
 
 .fl .item.gap {
-  fill: var(--color-muted);
+  fill: var(--color-ui-muted);
 }
 
 /* 열 형식(타입)은 코드 글이라 코드 글꼴의 오른쪽 열이다. 제약 줄(NOT NULL, ON DELETE 등)은 문장이라 일반 글꼴이다. 둘 다 이름보다 옅다. */
 .fl .cell.type {
   font-family: var(--font-figure-mono);
   letter-spacing: normal;
-  fill: var(--color-muted);
+  fill: var(--color-ui-muted);
 }
 
 .fl .cell.rule {
-  fill: var(--color-muted);
+  fill: var(--color-ui-muted);
 }
 
 /* 순서 보기의 메시지, 메모, 구획, 활성 막대는 자기 장면이 보일 때만 보인다. 자리는 늘 같아 판 크기가 변하지 않는다. */
@@ -242,7 +238,7 @@
 .fl .cell .key {
   font-size: var(--text-figure-meta);
   font-weight: var(--font-weight-semibold);
-  fill: var(--color-fg);
+  fill: var(--color-ink);
 }
 
 /* 그룹은 면이 없다(투명). 경계와 제목만 있고, 깊이에 따라 회색 면을 겹치지 않는다. 고른 색의 면과 경계는 draw/paint.js가 쓴 색에만 더한다. */
@@ -260,7 +256,7 @@
 }
 
 .fl .note-box {
-  fill: var(--color-node);
+  fill: var(--color-ui-card);
   stroke: var(--color-line);
   stroke-dasharray: var(--dash-card) var(--dash-card);
 }
@@ -268,7 +264,7 @@
 /* 알약은 모두 같은 중립 흰 면과 평소 경계다: 선 라벨, 배지와 개수. */
 .fl .pill,
 .fl .badge-pill {
-  fill: var(--color-node);
+  fill: var(--color-ui-card);
   stroke: var(--fx-edge-rest);
 }
 
@@ -284,7 +280,7 @@
 }
 
 .fl .grid-cell {
-  --fx-face: var(--color-node);
+  --fx-face: var(--color-ui-card);
   --fx-face-on: var(--fx-row);
   fill: var(--fx-face);
   stroke: var(--color-ui-line);
@@ -292,11 +288,11 @@
 }
 
 .fl .grid-tray {
-  fill: var(--color-card);
+  fill: var(--color-ui-card);
 }
 
 .fl .grid-cell.gap {
-  --fx-face: var(--color-card);
+  --fx-face: var(--color-ui-card);
   stroke: var(--color-ui-line);
 }
 
@@ -307,10 +303,10 @@
 }
 
 .fl .fl-edge.mark {
-  --fx-line-rest: var(--color-fg);
+  --fx-line-rest: var(--color-ink);
 }
 
-/* 카드 내용 면(color.card, 테두리 없음) 위에 고른 카드 모습(face)이 옅은 면이나 경계를 더한다. */
+/* 카드 내용 면(color.ui-card, 테두리 없음) 위에 고른 카드 모습(face)이 옅은 면이나 경계를 더한다. */
 .fl .face {
   fill: none;
   stroke: none;
@@ -321,7 +317,7 @@
   font-size: var(--text-figure-meta);
   font-weight: var(--font-weight-semibold);
   text-anchor: middle;
-  fill: var(--color-fg);
+  fill: var(--color-ink);
 }
 
 .fl .fl-icon {
@@ -380,13 +376,13 @@
   --fx-row: var(--color-search-hover);
   --fx-flash: var(--color-search-hover);
   --fx-edge-rest: var(--color-help-border);
-  --fx-ink-rest: var(--color-muted);
+  --fx-ink-rest: var(--color-ui-muted);
   --fx-line-rest: var(--color-line);
 }
 
 /* 도형의 평소 면과 켜진 면. 옅은 면으로 고른 도형(filled)은 켜져도 면이 같다. 면이 없는 윤곽(fill='none')과 점은 자기 면이 없거나 자기 색이다. */
 .fl .fl-node {
-  --fx-face: var(--color-node);
+  --fx-face: var(--color-ui-card);
   --fx-face-on: var(--color-help-hover);
 }
 
@@ -395,7 +391,7 @@
 }
 
 .fl .fl-shape-start {
-  --fx-face: var(--color-fg);
+  --fx-face: var(--color-ink);
 }
 
 .fl .fl-node > .fl-stroke[fill='none'] {
@@ -478,7 +474,7 @@
 }
 
 .fl .fl-fragment-heading {
-  fill: var(--color-node);
+  fill: var(--color-ui-card);
 }
 
 .fl .fl-fragment-label {
@@ -490,21 +486,21 @@
 <defs></defs>
 <rect x="0.5" y="0.5" width="959" height="1097" rx="18" fill="var(--color-prose-pre-background)"/>
 <g transform="translate(86.6 0)">
-<g id="g-0" class="fl-group tabbed" data-id="net"><rect x="66.4" y="135" width="388" height="181" rx="8" class="frame-box fl-stroke dashed " stroke-dasharray="5 4"/><g class="fl-symbol fl-symbol-concept"><g class="fl-icon" transform="translate(106.4 139) scale(0.83333)"><g transform="translate(0 0) scale(0.5)" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="24" cy="24" r="19" fill="#c7ddff" stroke="#90b4ee" stroke-width="3"/><ellipse cx="24" cy="24" rx="8" ry="19" fill="none" stroke="#2465c7" stroke-width="3"/><path d="M5 24H43" fill="none" stroke="#2465c7" stroke-width="3"/></g></g></g><text x="144.4" y="154.4" class="frame">Internet</text></g>
-<g id="g-1" class="fl-group tabbed" data-id="cloud"><rect x="315.4" y="376" width="443.5" height="694" rx="8" class="frame-box fl-stroke dashed " stroke-dasharray="5 4"/><g class="fl-symbol fl-symbol-concept"><g class="fl-icon" transform="translate(323.4 380) scale(0.83333)"><g transform="translate(0 0) scale(0.5)" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M13 39A9 9 0 0 1 12 21A12 12 0 0 1 35 20A9.5 9.5 0 0 1 35 39Z" fill="#639bfa"/></g></g></g><text x="361.4" y="395.4" class="frame">Cloud</text></g>
+<g id="g-0" class="fl-group tabbed" data-id="net"><rect x="66.4" y="135" width="388" height="181" rx="8" class="frame-box fl-stroke dashed " stroke-dasharray="5 4"/><g class="fl-symbol fl-symbol-concept"><g class="fl-icon" transform="translate(106.4 139) scale(0.83333)"><g transform="translate(0 0) scale(0.5)"><g color="#3d4856"><g stroke-linecap="round" stroke-linejoin="round"><g transform="translate(1.56522 1.56522) scale(0.93478)"><circle cx="24" cy="24" r="17" fill="#ffffff" stroke="#a4a8ae" stroke-width="2.7"/><path d="M8 24H40M24 7C12 17 12 31 24 41C36 31 36 17 24 7" fill="none" stroke="#c6cbd2" stroke-width="2"/><rect x="2" y="14" width="9" height="9" rx="2.5" fill="#639bfa" stroke="#ffffff" stroke-width="1.7"/><rect x="37" y="14" width="9" height="9" rx="2.5" fill="#639bfa" stroke="#ffffff" stroke-width="1.7"/><rect x="19.5" y="37" width="9" height="9" rx="2.5" fill="#639bfa" stroke="#ffffff" stroke-width="1.7"/><rect x="20" y="2" width="8" height="8" rx="2.5" fill="#ffbf00" stroke="#ffffff" stroke-width="1.7"/></g></g></g></g></g></g><text x="144.4" y="154.4" class="frame">Internet</text></g>
+<g id="g-1" class="fl-group tabbed" data-id="cloud"><rect x="315.4" y="376" width="443.5" height="694" rx="8" class="frame-box fl-stroke dashed " stroke-dasharray="5 4"/><g class="fl-symbol fl-symbol-concept"><g class="fl-icon" transform="translate(323.4 380) scale(0.83333)"><g transform="translate(0 0) scale(0.75)"><g color="#3d4856"><path fill="none" stroke="currentColor" stroke-width="2.38" stroke-linecap="round" stroke-linejoin="round" d="M23.9953,14.8588 C26.5158,14.8588 28.5591,16.9021 28.5591,19.4226 C28.5591,21.943 26.5158,23.9863 23.9953,23.9863 L9.1631,23.9863 C6.0793,23.9957 3.5462,21.5527 3.4441,18.4706 C3.342,15.3884 5.7078,12.7831 8.7855,12.5883 C10.2919,9.4021 13.7082,7.5795 17.1935,8.1026 C20.6788,8.6256 23.4096,11.3708 23.9143,14.8588 Z"/></g></g></g></g><text x="361.4" y="395.4" class="frame">Cloud</text></g>
 <g id="g-2" class="fl-group" data-id="data"><rect x="339.4" y="859" width="395.5" height="187" rx="8" class="frame-box fl-stroke "/><text x="371.4" y="878.4" class="frame">Data</text></g>
 
-<g id="n-0" class="fl-node fl-shape-person" tabindex="0" role="img" aria-label="Web user" data-id="user"><rect x="28" y="28" width="124.8" height="47" rx="8" fill="var(--color-node)" class="fl-stroke a0"/><g class="fl-symbol fl-symbol-concept"><g class="fl-icon" transform="translate(46 41.5) scale(0.83333)"><g transform="translate(0 0) scale(0.5)" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="40" height="40" rx="10" fill="#3d4856"/><circle cx="24" cy="16" r="6" fill="#ffffff"/><path d="M13 36A11 11 0 0 1 35 36Z" fill="#ffffff"/></g></g></g><text x="104.4" y="56.9" class="label" text-anchor="middle">Web user</text></g>
-<g id="n-1" class="fl-node fl-shape-person" tabindex="0" role="img" aria-label="Operator" data-id="admin"><rect x="490.6" y="269" width="121.5" height="47" rx="8" fill="var(--color-node)" class="fl-stroke a0"/><g class="fl-symbol fl-symbol-concept"><g class="fl-icon" transform="translate(508.6 282.5) scale(0.83333)"><g transform="translate(0 0) scale(0.5)" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="40" height="40" rx="10" fill="#3d4856"/><circle cx="24" cy="16" r="6" fill="#ffffff"/><path d="M13 36A11 11 0 0 1 35 36Z" fill="#ffffff"/><path d="M36 27L44 30V36Q44 41 36 44Q28 41 28 36V30Z" fill="#ffffff"/><path d="M36 30L41 32V36Q41 39 36 41Q31 39 31 36V32Z" fill="#ee9d45"/></g></g></g><text x="565.4" y="297.9" class="label" text-anchor="middle">Operator</text></g>
-<g id="n-2" class="fl-node fl-shape-box" tabindex="0" role="img" aria-label="DNS" data-id="dns"><rect x="150.4" y="191" width="80" height="85" rx="8" fill="var(--color-node)" class="fl-stroke a0"/><g class="fl-symbol fl-symbol-concept"><g class="fl-icon" transform="translate(174.4 203) scale(1.33333)"><g transform="translate(0 0) scale(0.5)" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="24" cy="24" r="19" fill="#c7ddff" stroke="#90b4ee" stroke-width="3"/><ellipse cx="24" cy="24" rx="8" ry="19" fill="none" stroke="#2465c7" stroke-width="3"/><path d="M5 24H43" fill="none" stroke="#2465c7" stroke-width="3"/></g></g></g><text x="190.4" y="257.9" class="label" text-anchor="middle">DNS</text></g>
-<g id="n-3" class="fl-node fl-shape-box" tabindex="0" role="img" aria-label="CDN" data-id="cdn"><rect x="290.4" y="191" width="80" height="85" rx="8" fill="var(--color-node)" class="fl-stroke a0"/><g class="fl-symbol fl-symbol-concept"><g class="fl-icon" transform="translate(314.4 203) scale(1.33333)"><g transform="translate(0 0) scale(0.5)" fill="none" stroke-linecap="round" stroke-linejoin="round"><circle cx="24" cy="24" r="19" fill="#c7ddff" stroke="#90b4ee" stroke-width="3"/><ellipse cx="24" cy="24" rx="8" ry="19" fill="none" stroke="#2465c7" stroke-width="3"/><path d="M5 24H43" fill="none" stroke="#2465c7" stroke-width="3"/></g></g></g><text x="330.4" y="257.9" class="label" text-anchor="middle">CDN</text></g>
-<g id="n-4" class="fl-node fl-shape-box" tabindex="0" role="img" aria-label="Balancer" data-id="lb"><rect x="390.4" y="416" width="80" height="85" rx="8" fill="var(--color-node)" class="fl-stroke a0"/><g class="fl-symbol fl-symbol-concept"><g class="fl-icon" transform="translate(414.4 428) scale(1.33333)"><g transform="translate(0 0) scale(0.5)" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V23 M36 8V23" fill="none" stroke="#a4a8ae" stroke-width="3"/><rect x="5" y="24" width="38" height="16" rx="7" fill="#ffffff" stroke="#a4a8ae" stroke-width="3"/><path d="M19 12A8 8 0 0 1 29 12 M21 17A5 5 0 0 1 27 17" fill="none" stroke="#2465c7" stroke-width="3"/><circle cx="13" cy="32" r="2" fill="#28a779"/><path d="M25 32H35" fill="none" stroke="#2465c7" stroke-width="3"/></g></g></g><text x="430.4" y="482.9" class="label" text-anchor="middle">Balancer</text></g>
-<g id="n-5" class="fl-node fl-shape-box" tabindex="0" role="img" aria-label="Web server" data-id="web"><rect x="389.4" y="569" width="89.3" height="85" rx="8" fill="var(--color-node)" class="fl-stroke a0"/><rect x="385.4" y="565" width="89.3" height="85" rx="8" fill="var(--color-node)" class="fl-stroke a0"/><rect x="381.4" y="561" width="89.3" height="85" rx="8" fill="var(--color-node)" class="fl-stroke a0"/><g class="fl-symbol fl-symbol-concept"><g class="fl-icon" transform="translate(393.9 573) scale(1.33333)"><g transform="translate(0 0) scale(0.5)" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="6" width="38" height="36" rx="6" fill="#3d4856"/><rect x="10" y="13" width="28" height="8" rx="3" fill="#ffffff"/><rect x="10" y="27" width="28" height="8" rx="3" fill="#ffffff"/><circle cx="15" cy="17" r="2" fill="#28a779"/><circle cx="15" cy="31" r="2" fill="#28a779"/></g></g></g><g class="fl-badge"><rect x="429.9" y="580" width="28.3" height="18" rx="9" class="badge-pill"/><text x="444" y="593" class="badge">(3)</text></g><text x="426" y="627.9" class="label" text-anchor="middle">Web server</text></g>
-<g id="n-6" class="fl-node fl-shape-box" tabindex="0" role="img" aria-label="VPN" data-id="vpn"><rect x="511.4" y="416" width="80" height="85" rx="8" fill="var(--color-node)" class="fl-stroke a0"/><g class="fl-symbol fl-symbol-concept"><g class="fl-icon" transform="translate(535.4 428) scale(1.33333)"><g transform="translate(0 0) scale(0.5)" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M24 4L39 10Q41 11 41 14V23C41 33 33 40 24 44C15 40 7 33 7 23V14Q7 11 9 10Z" fill="#28a779"/><path d="M16 24L22 30L33 18" fill="none" stroke="#ffffff" stroke-width="3"/></g></g></g><text x="551.4" y="482.9" class="label" text-anchor="middle">VPN</text></g>
-<g id="n-7" class="fl-node fl-shape-box" tabindex="0" role="img" aria-label="Bastion" data-id="bastion"><rect x="511.4" y="565" width="80" height="85" rx="8" fill="var(--color-node)" class="fl-stroke a0"/><g class="fl-symbol fl-symbol-concept"><g class="fl-icon" transform="translate(535.4 577) scale(1.33333)"><g transform="translate(0 0) scale(0.5)" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="40" height="40" rx="10" fill="#3d4856"/><circle cx="24" cy="16" r="6" fill="#ffffff"/><path d="M13 36A11 11 0 0 1 35 36Z" fill="#ffffff"/><path d="M36 27L44 30V36Q44 41 36 44Q28 41 28 36V30Z" fill="#ffffff"/><path d="M36 30L41 32V36Q41 39 36 41Q31 39 31 36V32Z" fill="#ee9d45"/></g></g></g><text x="551.4" y="631.9" class="label" text-anchor="middle">Bastion</text></g>
-<g id="n-8" class="fl-node fl-shape-box" tabindex="0" role="img" aria-label="App server" data-id="app"><rect x="494.4" y="714" width="86.2" height="85" rx="8" fill="var(--color-node)" class="fl-stroke a0"/><g class="fl-symbol fl-symbol-concept"><g class="fl-icon" transform="translate(521.5 726) scale(1.33333)"><g transform="translate(0 0) scale(0.5)" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="6" width="38" height="36" rx="6" fill="#3d4856"/><rect x="10" y="13" width="28" height="8" rx="3" fill="#ffffff"/><rect x="10" y="27" width="28" height="8" rx="3" fill="#ffffff"/><circle cx="15" cy="17" r="2" fill="#28a779"/><circle cx="15" cy="31" r="2" fill="#28a779"/></g></g></g><text x="537.5" y="780.9" class="label" text-anchor="middle">App server</text></g>
-<g id="n-9" class="fl-node fl-shape-store" tabindex="0" role="img" aria-label="DB primary" data-id="db"><path d="M423.4 927 a 53.8 12 0 0 1 107.5 0 v 83 a 53.8 12 0 0 1 -107.5 0 z" fill="var(--color-node)" class="fl-stroke a0"/><path d="M423.4 927 a 53.8 12 0 0 0 107.5 0" fill="none" class="fl-stroke a0"/><g class="fl-symbol fl-symbol-concept"><g class="fl-icon" transform="translate(449.7 951) scale(0.83333)"><g transform="translate(0 0) scale(0.5)" fill="none" stroke-linecap="round" stroke-linejoin="round"><path d="M7 12V36A17 6 0 0 0 41 36V12Z" fill="#478fa7" stroke="#39768e" stroke-width="3"/><ellipse cx="24" cy="12" rx="17" ry="6" fill="#c9eaf1" stroke="#39768e" stroke-width="3"/><path d="M9 24A17 6 0 0 0 39 24 M9 34A17 6 0 0 0 39 34" fill="none" stroke="#ffffff" stroke-width="3"/></g></g></g><g class="fl-badge"><rect x="473.7" y="952" width="30.9" height="18" rx="9" class="badge-pill"/><text x="489.1" y="965" class="badge">RW</text></g><text x="477.1" y="991.9" class="label" text-anchor="middle">DB primary</text></g>
-<g id="n-10" class="fl-node fl-shape-store" tabindex="0" role="img" aria-label="Cache" data-id="cache"><path d="M610.9 927 a 50 12 0 0 1 100 0 v 83 a 50 12 0 0 1 -100 0 z" fill="var(--color-node)" class="fl-stroke a0"/><path d="M610.9 927 a 50 12 0 0 0 100 0" fill="none" class="fl-stroke a0"/><g class="fl-symbol fl-symbol-concept"><g class="fl-icon" transform="translate(633.4 951) scale(0.83333)"><g transform="translate(0 0) scale(0.5)" fill="none" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="40" height="40" rx="11" fill="#d08437"/><rect x="7" y="7" width="34" height="34" rx="8" fill="#ee9d45"/><path d="M25 10L14 26H23L21 38L35 21H26Z" fill="#ffffff"/></g></g></g><g class="fl-badge"><rect x="657.4" y="952" width="30.9" height="18" rx="9" class="badge-pill"/><text x="672.9" y="965" class="badge">RW</text></g><text x="660.9" y="991.9" class="label" text-anchor="middle">Cache</text></g>
+<g id="n-0" class="fl-node fl-shape-person" tabindex="0" role="img" aria-label="Web user" data-id="user"><rect x="28" y="28" width="124.8" height="47" rx="8" fill="var(--color-ui-card)" class="fl-stroke a0"/><g class="fl-symbol fl-symbol-concept"><g class="fl-icon" transform="translate(46 41.5) scale(0.83333)"><g transform="translate(0 0) scale(0.75)"><g color="#3d4856"><path d="M16 15.6C13.1 15.6 10.7 12.9 10.7 9.8S13.1 4.1 16 4.1S21.3 6.7 21.3 9.8S18.9 15.6 16 15.6ZM7.2 28C5 28 4.6 27.4 4.6 26C4.6 22 9.6 18 16 18S27.4 22 27.4 26C27.4 27.4 27 28 24.8 28Z" fill="currentColor"/></g></g></g></g><text x="104.4" y="56.9" class="label" text-anchor="middle">Web user</text></g>
+<g id="n-1" class="fl-node fl-shape-person" tabindex="0" role="img" aria-label="Operator" data-id="admin"><rect x="490.6" y="269" width="121.5" height="47" rx="8" fill="var(--color-ui-card)" class="fl-stroke a0"/><g class="fl-symbol fl-symbol-concept"><g class="fl-icon" transform="translate(508.6 282.5) scale(0.83333)"><g transform="translate(0 0) scale(0.75)"><g color="#3d4856"><defs><mask id="icon-n-1-badge"><rect width="32" height="32" fill="#ffffff"/><circle cx="25.2" cy="25.2" r="7.25" fill="#000000"/></mask></defs><g mask="url(#icon-n-1-badge)"><path d="M16 15.6C13.1 15.6 10.7 12.9 10.7 9.8S13.1 4.1 16 4.1S21.3 6.7 21.3 9.8S18.9 15.6 16 15.6ZM7.2 28C5 28 4.6 27.4 4.6 26C4.6 22 9.6 18 16 18S27.4 22 27.4 26C27.4 27.4 27 28 24.8 28Z" fill="currentColor"/></g><path fill="none" stroke="currentColor" stroke-width="1.76" stroke-linecap="round" stroke-linejoin="round" d="M21.3771,22.1222 L25.3944,22.1222 M27.7918,22.1222 L29.0229,22.1222 M21.3771,25.2 L22.6406,25.2 M25.038,25.2 L29.0229,25.2 M21.3771,28.2778 L25.3944,28.2778 M27.7918,28.2778 L29.0229,28.2778"/><path fill="none" stroke="currentColor" stroke-width="1.76" d="M27.6298,22.1222 C27.6298,22.6948 27.1657,23.159 26.5931,23.159 C26.0205,23.159 25.5564,22.6948 25.5564,22.1222 C25.5564,21.5497 26.0205,21.0855 26.5931,21.0855 C27.1657,21.0855 27.6298,21.5497 27.6298,22.1222 Z"/><path fill="none" stroke="currentColor" stroke-width="1.76" d="M24.876,25.2 C24.876,25.7726 24.4119,26.2367 23.8393,26.2367 C23.2667,26.2367 22.8026,25.7726 22.8026,25.2 C22.8026,24.6274 23.2667,24.1633 23.8393,24.1633 C24.4119,24.1633 24.876,24.6274 24.876,25.2 Z"/><path fill="none" stroke="currentColor" stroke-width="1.76" d="M27.6298,28.2778 C27.6298,28.8503 27.1657,29.3145 26.5931,29.3145 C26.0205,29.3145 25.5564,28.8503 25.5564,28.2778 C25.5564,27.7052 26.0205,27.241 26.5931,27.241 C27.1657,27.241 27.6298,27.7052 27.6298,28.2778 Z"/></g></g></g></g><text x="565.4" y="297.9" class="label" text-anchor="middle">Operator</text></g>
+<g id="n-2" class="fl-node fl-shape-box" tabindex="0" role="img" aria-label="DNS" data-id="dns"><rect x="150.4" y="191" width="80" height="85" rx="8" fill="var(--color-ui-card)" class="fl-stroke a0"/><g class="fl-symbol fl-symbol-concept"><g class="fl-icon" transform="translate(174.4 203) scale(1.33333)"><g transform="translate(0 0) scale(0.5)"><g color="#3d4856"><g stroke-linecap="round" stroke-linejoin="round"><g transform="translate(0.80899 0.80899) scale(0.96629)"><rect x="4" y="3" width="40" height="15" rx="4" fill="#c7ddff" stroke="#90b4ee" stroke-width="2.5"/><path d="M357 738 102 784Q145 938 250.0 1012.0Q355 1086 562 1086Q750 1086 842.0 1041.5Q934 997 971.5 928.5Q1009 860 1009 677L1006 349Q1006 209 1019.5 142.5Q1033 76 1070 0H792Q781 28 765 83Q758 108 755 116Q683 46 601.0 11.0Q519 -24 426 -24Q262 -24 167.5 65.0Q73 154 73 290Q73 380 116.0 450.5Q159 521 236.5 558.5Q314 596 460 624Q657 661 733 693V721Q733 802 693.0 836.5Q653 871 542 871Q467 871 425.0 841.5Q383 812 357 738ZM733 510Q679 492 562.0 467.0Q445 442 409 418Q354 379 354 319Q354 260 398.0 217.0Q442 174 510 174Q586 174 655 224Q706 262 722 317Q733 353 733 454Z" transform="translate(15.384 14) scale(0.004883 -0.004883)" fill="#2465c7"/><path d="M135 0V1466H416V938Q546 1086 724 1086Q918 1086 1045.0 945.5Q1172 805 1172 542Q1172 270 1042.5 123.0Q913 -24 728 -24Q637 -24 548.5 21.5Q460 67 396 156V0ZM414 554Q414 389 466 310Q539 198 660 198Q753 198 818.5 277.5Q884 357 884 528Q884 710 818.0 790.5Q752 871 649 871Q548 871 481.0 792.5Q414 714 414 554Z" transform="translate(20.946 14) scale(0.004883 -0.004883)" fill="#2465c7"/><path d="M1073 748 796 698Q782 781 732.5 823.0Q683 865 604 865Q499 865 436.5 792.5Q374 720 374 550Q374 361 437.5 283.0Q501 205 608 205Q688 205 739.0 250.5Q790 296 811 407L1087 360Q1044 170 922.0 73.0Q800 -24 595 -24Q362 -24 223.5 123.0Q85 270 85 530Q85 793 224.0 939.5Q363 1086 600 1086Q794 1086 908.5 1002.5Q1023 919 1073 748Z" transform="translate(27.054 14) scale(0.004883 -0.004883)" fill="#2465c7"/><path d="M24 20V27M20 24L24 28L28 24" fill="none" stroke="#a4a8ae" stroke-width="2.5"/><rect x="4" y="31" width="40" height="14" rx="4" fill="#ffffff" stroke="#a4a8ae" stroke-width="2.5"/><path d="M140 0V1466H436V0Z" transform="translate(19.276 42) scale(0.004883 -0.004883)" fill="#a4a8ae"/><path d="M149 0V1466H624Q894 1466 976 1444Q1102 1411 1187.0 1300.5Q1272 1190 1272 1015Q1272 880 1223.0 788.0Q1174 696 1098.5 643.5Q1023 591 945 574Q839 553 638 553H445V0ZM445 1218V802H607Q782 802 841.0 825.0Q900 848 933.5 897.0Q967 946 967 1011Q967 1091 920.0 1143.0Q873 1195 801 1208Q748 1218 588 1218Z" transform="translate(22.054 42) scale(0.004883 -0.004883)" fill="#a4a8ae"/></g></g></g></g></g></g><text x="190.4" y="257.9" class="label" text-anchor="middle">DNS</text></g>
+<g id="n-3" class="fl-node fl-shape-box" tabindex="0" role="img" aria-label="CDN" data-id="cdn"><rect x="290.4" y="191" width="80" height="85" rx="8" fill="var(--color-ui-card)" class="fl-stroke a0"/><g class="fl-symbol fl-symbol-concept"><g class="fl-icon" transform="translate(314.4 203) scale(1.33333)"><g transform="translate(0 0) scale(0.5)"><g color="#3d4856"><g stroke-linecap="round" stroke-linejoin="round"><g transform="translate(1.56522 1.56522) scale(0.93478)"><circle cx="24" cy="24" r="17" fill="#ffffff" stroke="#a4a8ae" stroke-width="2.7"/><path d="M8 24H40M24 7C12 17 12 31 24 41C36 31 36 17 24 7" fill="none" stroke="#c6cbd2" stroke-width="2"/><rect x="2" y="14" width="9" height="9" rx="2.5" fill="#639bfa" stroke="#ffffff" stroke-width="1.7"/><rect x="37" y="14" width="9" height="9" rx="2.5" fill="#639bfa" stroke="#ffffff" stroke-width="1.7"/><rect x="19.5" y="37" width="9" height="9" rx="2.5" fill="#639bfa" stroke="#ffffff" stroke-width="1.7"/><rect x="20" y="2" width="8" height="8" rx="2.5" fill="#ffbf00" stroke="#ffffff" stroke-width="1.7"/></g></g></g></g></g></g><text x="330.4" y="257.9" class="label" text-anchor="middle">CDN</text></g>
+<g id="n-4" class="fl-node fl-shape-box" tabindex="0" role="img" aria-label="Balancer" data-id="lb"><rect x="390.4" y="416" width="80" height="85" rx="8" fill="var(--color-ui-card)" class="fl-stroke a0"/><g class="fl-symbol fl-symbol-concept"><g class="fl-icon" transform="translate(414.4 428) scale(1.33333)"><g transform="translate(0 0) scale(0.5)"><g color="#3d4856"><g stroke-linecap="round" stroke-linejoin="round"><g transform="translate(2.04255 2.04255) scale(0.91489)"><path d="M24 13V23M19 28L11 35M29 28L38 35" fill="none" stroke="#a4a8ae" stroke-width="3"/><rect x="15" y="3" width="18" height="10" rx="3.5" fill="#ffffff" stroke="#a4a8ae" stroke-width="2.7"/><rect x="2" y="35" width="18" height="10" rx="3.5" fill="#ffffff" stroke="#a4a8ae" stroke-width="2.7"/><rect x="31" y="35" width="15" height="10" rx="3.5" fill="#ffffff" stroke="#a4a8ae" stroke-width="2.7"/><circle cx="24" cy="25" r="6" fill="#528aee" stroke="#528aee" stroke-width="2.5"/></g></g></g></g></g></g><text x="430.4" y="482.9" class="label" text-anchor="middle">Balancer</text></g>
+<g id="n-5" class="fl-node fl-shape-box" tabindex="0" role="img" aria-label="Web server" data-id="web"><rect x="389.4" y="569" width="89.3" height="85" rx="8" fill="var(--color-ui-card)" class="fl-stroke a0"/><rect x="385.4" y="565" width="89.3" height="85" rx="8" fill="var(--color-ui-card)" class="fl-stroke a0"/><rect x="381.4" y="561" width="89.3" height="85" rx="8" fill="var(--color-ui-card)" class="fl-stroke a0"/><g class="fl-symbol fl-symbol-concept"><g class="fl-icon" transform="translate(393.9 573) scale(1.33333)"><g transform="translate(0 0) scale(0.5)"><g color="#3d4856"><g stroke-linecap="round" stroke-linejoin="round"><g transform="translate(-1.17073 -2.21951) scale(1.04878)"><rect x="5" y="6" width="38" height="10" rx="3.5" fill="#ffffff" stroke="#a4a8ae" stroke-width="2.7"/><circle cx="12" cy="11" r="1.7" fill="#639bfa" stroke="none" stroke-width="3.25"/><rect x="5" y="20" width="38" height="10" rx="3.5" fill="#ffffff" stroke="#a4a8ae" stroke-width="2.7"/><circle cx="12" cy="25" r="1.7" fill="#edb300" stroke="none" stroke-width="3.25"/><rect x="5" y="34" width="38" height="10" rx="3.5" fill="#ffffff" stroke="#a4a8ae" stroke-width="2.7"/><circle cx="12" cy="39" r="1.7" fill="#639bfa" stroke="none" stroke-width="3.25"/></g></g></g></g></g></g><g class="fl-badge"><rect x="429.9" y="580" width="28.3" height="18" rx="9" class="badge-pill"/><text x="444" y="593" class="badge">(3)</text></g><text x="426" y="627.9" class="label" text-anchor="middle">Web server</text></g>
+<g id="n-6" class="fl-node fl-shape-box" tabindex="0" role="img" aria-label="VPN" data-id="vpn"><rect x="511.4" y="416" width="80" height="85" rx="8" fill="var(--color-ui-card)" class="fl-stroke a0"/><g class="fl-symbol fl-symbol-concept"><g class="fl-icon" transform="translate(535.4 428) scale(1.33333)"><g transform="translate(0 0) scale(0.75)"><g color="#3d4856"><path fill="none" stroke="currentColor" stroke-width="2.38" stroke-linecap="round" stroke-linejoin="round" d="M24.5501,5.1611 C22.1389,3.9618 19.186,3.2558 16,3.2558 C12.814,3.2558 9.8624,3.9618 7.4499,5.1611 C6.2673,5.7499 5.6759,6.0442 5.1037,6.9695 C4.5315,7.8947 4.5302,8.7906 4.5302,10.5812 L4.5302,15.0289 C4.5302,22.2714 10.3186,26.2986 13.6716,28.0229 C14.6071,28.5033 15.0735,28.7442 16,28.7442 C16.9265,28.7442 17.3929,28.5033 18.3284,28.0229 C21.6801,26.2973 27.4698,22.2701 27.4698,15.0276 L27.4698,10.5812 C27.4698,8.7906 27.4698,7.8947 26.8963,6.9695 C26.3228,6.0442 25.7327,5.7499 24.5501,5.1611"/><path fill="none" stroke="currentColor" stroke-width="2.38" stroke-linecap="round" stroke-linejoin="round" d="M16,12.1767 L16,13.4512"/><path fill="none" stroke="currentColor" stroke-width="2.38" stroke-linecap="round" stroke-linejoin="round" d="M14.7256,12.814 C14.7256,13.5178 15.2962,14.0884 16,14.0884 C16.7038,14.0884 17.2744,13.5178 17.2744,12.814 C17.2744,12.1101 16.7038,11.5395 16,11.5395 C15.2962,11.5395 14.7256,12.1101 14.7256,12.814"/><path fill="none" stroke="currentColor" stroke-width="2.38" stroke-linecap="round" stroke-linejoin="round" d="M16.9558,18.5488 L15.0442,18.5488 L16,14.0884 Z"/></g></g></g></g><text x="551.4" y="482.9" class="label" text-anchor="middle">VPN</text></g>
+<g id="n-7" class="fl-node fl-shape-box" tabindex="0" role="img" aria-label="Bastion" data-id="bastion"><rect x="511.4" y="565" width="80" height="85" rx="8" fill="var(--color-ui-card)" class="fl-stroke a0"/><g class="fl-symbol fl-symbol-concept"><g class="fl-icon" transform="translate(535.4 577) scale(1.33333)"><g transform="translate(0 0) scale(0.75)"><g color="#3d4856"><defs><mask id="icon-n-7-badge"><rect width="32" height="32" fill="#ffffff"/><circle cx="25.2" cy="25.2" r="7.25" fill="#000000"/></mask></defs><g mask="url(#icon-n-7-badge)"><path d="M16 15.6C13.1 15.6 10.7 12.9 10.7 9.8S13.1 4.1 16 4.1S21.3 6.7 21.3 9.8S18.9 15.6 16 15.6ZM7.2 28C5 28 4.6 27.4 4.6 26C4.6 22 9.6 18 16 18S27.4 22 27.4 26C27.4 27.4 27 28 24.8 28Z" fill="currentColor"/></g><path fill="none" stroke="currentColor" stroke-width="1.76" stroke-linecap="round" stroke-linejoin="round" d="M21.3771,22.1222 L25.3944,22.1222 M27.7918,22.1222 L29.0229,22.1222 M21.3771,25.2 L22.6406,25.2 M25.038,25.2 L29.0229,25.2 M21.3771,28.2778 L25.3944,28.2778 M27.7918,28.2778 L29.0229,28.2778"/><path fill="none" stroke="currentColor" stroke-width="1.76" d="M27.6298,22.1222 C27.6298,22.6948 27.1657,23.159 26.5931,23.159 C26.0205,23.159 25.5564,22.6948 25.5564,22.1222 C25.5564,21.5497 26.0205,21.0855 26.5931,21.0855 C27.1657,21.0855 27.6298,21.5497 27.6298,22.1222 Z"/><path fill="none" stroke="currentColor" stroke-width="1.76" d="M24.876,25.2 C24.876,25.7726 24.4119,26.2367 23.8393,26.2367 C23.2667,26.2367 22.8026,25.7726 22.8026,25.2 C22.8026,24.6274 23.2667,24.1633 23.8393,24.1633 C24.4119,24.1633 24.876,24.6274 24.876,25.2 Z"/><path fill="none" stroke="currentColor" stroke-width="1.76" d="M27.6298,28.2778 C27.6298,28.8503 27.1657,29.3145 26.5931,29.3145 C26.0205,29.3145 25.5564,28.8503 25.5564,28.2778 C25.5564,27.7052 26.0205,27.241 26.5931,27.241 C27.1657,27.241 27.6298,27.7052 27.6298,28.2778 Z"/></g></g></g></g><text x="551.4" y="631.9" class="label" text-anchor="middle">Bastion</text></g>
+<g id="n-8" class="fl-node fl-shape-box" tabindex="0" role="img" aria-label="App server" data-id="app"><rect x="494.4" y="714" width="86.2" height="85" rx="8" fill="var(--color-ui-card)" class="fl-stroke a0"/><g class="fl-symbol fl-symbol-concept"><g class="fl-icon" transform="translate(521.5 726) scale(1.33333)"><g transform="translate(0 0) scale(0.5)"><g color="#3d4856"><g stroke-linecap="round" stroke-linejoin="round"><g transform="translate(-1.17073 -2.21951) scale(1.04878)"><rect x="5" y="6" width="38" height="10" rx="3.5" fill="#ffffff" stroke="#a4a8ae" stroke-width="2.7"/><circle cx="12" cy="11" r="1.7" fill="#639bfa" stroke="none" stroke-width="3.25"/><rect x="5" y="20" width="38" height="10" rx="3.5" fill="#ffffff" stroke="#a4a8ae" stroke-width="2.7"/><circle cx="12" cy="25" r="1.7" fill="#edb300" stroke="none" stroke-width="3.25"/><rect x="5" y="34" width="38" height="10" rx="3.5" fill="#ffffff" stroke="#a4a8ae" stroke-width="2.7"/><circle cx="12" cy="39" r="1.7" fill="#639bfa" stroke="none" stroke-width="3.25"/></g></g></g></g></g></g><text x="537.5" y="780.9" class="label" text-anchor="middle">App server</text></g>
+<g id="n-9" class="fl-node fl-shape-store" tabindex="0" role="img" aria-label="DB primary" data-id="db"><path d="M423.4 927 a 53.8 12 0 0 1 107.5 0 v 83 a 53.8 12 0 0 1 -107.5 0 z" fill="var(--color-ui-card)" class="fl-stroke a0"/><path d="M423.4 927 a 53.8 12 0 0 0 107.5 0" fill="none" class="fl-stroke a0"/><g class="fl-symbol fl-symbol-concept"><g class="fl-icon" transform="translate(449.7 951) scale(0.83333)"><g transform="translate(0 0) scale(0.5)"><g color="#3d4856"><g stroke-linecap="round" stroke-linejoin="round"><g transform="translate(-0.57143 0.19643) scale(1.02381)"><path d="M7 11V36C7 45 41 45 41 36V11" fill="#ffffff" stroke="#a4a8ae" stroke-width="2.8"/><ellipse cx="24" cy="11" rx="17" ry="7" fill="#c7ddff" stroke="#a4a8ae" stroke-width="3.25"/><path d="M7 24C7 33 41 33 41 24" fill="none" stroke="#a4a8ae" stroke-width="2.5"/></g></g></g></g></g></g><g class="fl-badge"><rect x="473.7" y="952" width="30.9" height="18" rx="9" class="badge-pill"/><text x="489.1" y="965" class="badge">RW</text></g><text x="477.1" y="991.9" class="label" text-anchor="middle">DB primary</text></g>
+<g id="n-10" class="fl-node fl-shape-store" tabindex="0" role="img" aria-label="Cache" data-id="cache"><path d="M610.9 927 a 50 12 0 0 1 100 0 v 83 a 50 12 0 0 1 -100 0 z" fill="var(--color-ui-card)" class="fl-stroke a0"/><path d="M610.9 927 a 50 12 0 0 0 100 0" fill="none" class="fl-stroke a0"/><g class="fl-symbol fl-symbol-concept"><g class="fl-icon" transform="translate(633.4 951) scale(0.83333)"><g transform="translate(0 0) scale(0.5)"><g color="#3d4856"><g stroke-linecap="round" stroke-linejoin="round"><g transform="translate(0.75000 -2.12500) scale(1.00000)"><g transform="translate(25 4) scale(0.46)"><path d="M7 11V36C7 45 41 45 41 36V11" fill="#ffffff" stroke="#a4a8ae" stroke-width="2.8"/><ellipse cx="24" cy="11" rx="17" ry="7" fill="#c7ddff" stroke="#a4a8ae" stroke-width="3.25"/><path d="M7 24C7 33 41 33 41 24" fill="none" stroke="#a4a8ae" stroke-width="2.5"/></g><rect x="3" y="10" width="18" height="25" rx="4" fill="#ffffff" stroke="#a4a8ae" stroke-width="2.5"/><rect x="7" y="15" width="10" height="5" rx="1.8" fill="#c7ddff" stroke="none" stroke-width="3.25"/><rect x="7" y="25" width="10" height="5" rx="1.8" fill="#c6cbd2" stroke="none" stroke-width="3.25"/><path d="M22 23L29 23" fill="none" stroke="#c6cbd2" stroke-width="1.8"/><path d="M5 41H14V37M11 40L14 37L17 40" fill="none" stroke="#639bfa" stroke-width="2.2"/><path d="M19 37V43H31M28 40L31 43L28 46" fill="none" stroke="#edb300" stroke-width="2.2"/></g></g></g></g></g></g><g class="fl-badge"><rect x="657.4" y="952" width="30.9" height="18" rx="9" class="badge-pill"/><text x="672.9" y="965" class="badge">RW</text></g><text x="660.9" y="991.9" class="label" text-anchor="middle">Cache</text></g>
 <g id="e-0" class="fl-edge "><defs><marker id="fl-arrow-0" viewBox="0 0 5 5" refX="4" refY="2.5" markerWidth="5" markerHeight="5" orient="auto-start-reverse" overflow="visible"><path class="fl-arrowhead" d="M 1.1 0.25 L 4 2.5 L 1.1 4.75 Z" stroke-width="1"/></marker></defs><path id="p-0" d="M 90.4 75 L 90.4 153 Q 90.4 175, 112.4 175 L 182.4 175 Q 190.4 175, 190.4 183 L 190.4 191" class="fl-path" marker-end="url(#fl-arrow-0)"/></g>
 <g id="e-1" class="fl-edge "><defs><marker id="fl-arrow-1" viewBox="0 0 5 5" refX="4" refY="2.5" markerWidth="5" markerHeight="5" orient="auto-start-reverse" overflow="visible"><path class="fl-arrowhead" d="M 1.1 0.25 L 4 2.5 L 1.1 4.75 Z" stroke-width="1"/></marker></defs><path id="p-1" d="M 230.4 234 L 290.4 234" class="fl-path" marker-end="url(#fl-arrow-1)"/></g>
 <g id="e-2" class="fl-edge "><defs><marker id="fl-arrow-2" viewBox="0 0 5 5" refX="4" refY="2.5" markerWidth="5" markerHeight="5" orient="auto-start-reverse" overflow="visible"><path class="fl-arrowhead" d="M 1.1 0.25 L 4 2.5 L 1.1 4.75 Z" stroke-width="1"/></marker></defs><path id="p-2" d="M 330.4 276 L 330.4 284 Q 330.4 292, 338.4 292 L 408.4 292 Q 430.4 292, 430.4 314 L 430.4 416" class="fl-path" marker-end="url(#fl-arrow-2)"/></g>

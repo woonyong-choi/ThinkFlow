@@ -2,9 +2,11 @@
 import { ratio } from '../format.js';
 import { BADGE_STYLE } from '../measure/decor.js';
 import { centerBaseline, escapeXml, roundCoord as r } from '../text.js';
-import { ICON_GRID } from '../icons/index.js';
 import { headBox } from '../layout/titles.js';
 import { values } from '../vendor/theme/tokens.js';
+import { iconBody } from '../vendor/theme/ui/svg.mjs';
+
+const ICON_GRID = values.icon['size-small'];
 
 // cost: time O(k), heap O(out), stack O(1)
 // vars: k = 장식 수, out = 만든 SVG 글자 수
@@ -12,7 +14,7 @@ import { values } from '../vendor/theme/tokens.js';
 /**
  * 장식 한 줄을 그린다.
  * @param decor measure/decor.js의 layoutDecor 결과
- * @param place { x, y, iconData }. x, y는 줄 왼쪽 위(그림 좌표), iconData는 아이콘 { body }
+ * @param place { x, y, iconData, prefix }. x, y는 줄 왼쪽 위이고 prefix는 그린 아이콘의 문서 내 식별자다
  * @param glyphs 쓴 글자를 모으는 그릇
  */
 export function drawDecor(decor, place, glyphs) {
@@ -23,18 +25,19 @@ export function drawDecor(decor, place, glyphs) {
 }
 
 // 아이콘. 24 격자 아이콘을 정사각 칸에 맞춰 넣는다. 내장 아이콘은 공통 도형과 색을 유지하며 사용자 SVG는 currentColor를 쓴다.
-function drawIcon(item, { x, y, iconData }) {
-  return drawSymbol(iconData, { x: x + item.x, y: y + item.y, size: item.w });
+function drawIcon(item, { x, y, iconData, prefix }) {
+  return drawSymbol(iconData, { x: x + item.x, y: y + item.y, size: item.w, prefix });
 }
 
 // 의미 아이콘(등록부 도형)은 자신의 실루엣에 면과 윤곽을 갖는다. 브랜드와 사용자 SVG에는 임의 배경을 붙이지 않는다. 두 가지 모두 같은 틀 맞춤(iconAt)을 쓴다.
-function drawSymbol(iconData, { x, y, size }) {
-  return `<g class="fl-symbol fl-symbol-${iconData.role}">${iconAt(iconData, { x, y, size, className: 'fl-icon' })}</g>`;
+function drawSymbol(iconData, { x, y, size, prefix }) {
+  return `<g class="fl-symbol fl-symbol-${iconData.role}">${iconAt(iconData, { x, y, size, prefix })}</g>`;
 }
 
-// 정사각 칸(왼쪽 위 x, y, 한 변 size)에 아이콘의 24 격자(ICON_GRID)를 맞춰 그린다. 의미 아이콘은 격자 그대로이고 브랜드와 사용자 SVG는 읽을 때 격자에 맞춰 두어(icons/sanitize.js) 여백이 모두 같다.
-function iconAt(iconData, { x, y, size, className }) {
-  return `<g class="${className}" transform="translate(${r(x)} ${r(y)}) scale(${ratio(size / ICON_GRID)})">${iconData.body}</g>`;
+// 내장 SVG의 격자 맞춤과 mask ID 분리는 공통 렌더러가 맡고, 사용자 SVG는 검증할 때 맞춘 격자를 쓴다.
+function iconAt(iconData, { x, y, size, prefix }) {
+  const body = iconData.svg ? iconBody(iconData.svg, { size: ICON_GRID, prefix }) : iconData.body;
+  return `<g class="fl-icon" transform="translate(${r(x)} ${r(y)}) scale(${ratio(size / ICON_GRID)})">${body}</g>`;
 }
 
 // cost: time O(1), heap O(out), stack O(1)
@@ -44,10 +47,10 @@ function iconAt(iconData, { x, y, size, className }) {
  * 그룹 제목 줄 왼쪽의 아이콘 타일. 그룹 틀 안쪽 왼쪽 위에 둥근 타일로 놓는다.
  * @param g 그룹(x, y, iconData)
  */
-export function drawGroupTab(g) {
+export function drawGroupTab(g, index) {
   const size = values.spacing.figure.group.title - values.spacing["2"];
   // 탭은 제목 덩어리 사각형(layout/titles.js headBox: 선이 탭을 지나면 탭과 제목이 한 덩어리로 비킨다) 왼쪽 위에서 안쪽으로 들인다.
-  return drawSymbol(g.iconData, { x: headBox(g, g.titleDx).x + values.spacing["2"], y: g.y + values.spacing["1"], size });
+  return drawSymbol(g.iconData, { x: headBox(g, g.titleDx).x + values.spacing["2"], y: g.y + values.spacing["1"], size, prefix: `icon-g-${index}` });
 }
 
 // 글자 배지. 배지와 복제 개수가 같은 모양이다(선 라벨 알약과는 다른 역할이다: draw/connector.js).

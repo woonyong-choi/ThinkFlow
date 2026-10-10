@@ -121,7 +121,7 @@ export function drawStatusPills(scene, timeline, { glyphs, windows, name, isStat
       const textX = x + SPACE["1-5"] + ICON + SPACE["1"];
       return (
         `<g class="fl-status" data-st="${escapeXml(`${name(node, item)}-${kind}`)}" opacity="${isStatic ? 1 : 0}"${hiddenAttr(isStatic)}>` +
-        `<rect x="${r(x)}" y="${r(y)}" width="${r(w)}" height="${r(h)}" rx="${r(h / 2)}" fill="${tokens.color.node}" stroke="${color}" stroke-width="${values["border-width"].edge}"/>` +
+        `<rect x="${r(x)}" y="${r(y)}" width="${r(w)}" height="${r(h)}" rx="${r(h / 2)}" fill="${tokens.color["ui-card"]}" stroke="${color}" stroke-width="${values["border-width"].edge}"/>` +
         MARKS[kind](markX, y + h / 2, color) +
         `<text x="${r(textX)}" y="${r(centerBaseline(y + h / 2, BADGE_STYLE.size))}" class="status-text">${text}</text>` +
         `${windows(spans)}</g>`

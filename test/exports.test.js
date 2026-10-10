@@ -103,15 +103,31 @@ test('X6 builds are deterministic: the same source gives byte-identical SVG and 
   assert.deepEqual(await outputs(first), a, 'rendering again from the same result changes nothing');
 });
 
-// #214: 독립 SVG는 배경과 정지·재생 층이 읽는 변수 정의를 함께 싣는다.
-test('toSvg_embeds_every_referenced_style_variable', async () => {
-  const result = await build(MOVE('loop'));
-  for (const isStatic of [false, true]) {
-    const svg = await toSvg(result, { isStatic });
-    const defined = new Set([...svg.matchAll(/(--[\w-]+)\s*:/g)].map((match) => match[1]));
-    const referenced = new Set([...svg.matchAll(/var\(\s*(--[\w-]+)/g)].map((match) => match[1]));
+// 독립 결과물은 배경과 정지·재생 층이 읽는 변수 정의를 함께 싣는다.
+test('renderers_embed_required_style_variables', async () => {
+  const sources = [MOVE('loop'), dap(`
+    chart c "Heatmap" heatmap {
+      cell "r" "a" 1
+      cell "r" "b" 2
+    }
+    scene "cells" mode=loop
+      light c "r" "a"
+      wait 1s
+      light c "r" "b"
+  `)];
+  for (const source of sources) {
+    const result = await build(source);
+    const outputs = [['svg', await toSvg(result)], ['static', await toSvg(result, { isStatic: true })], ['html', await toHtml(result)]];
+    for (const [format, output] of outputs) {
+      const defined = new Set([...output.matchAll(/(--[\w-]+)\s*:/g)].map((match) => match[1]));
+      const required = new Set([...output.matchAll(/var\(\s*(--[\w-]+)\s*\)/g)].map((match) => match[1]));
+      const heatCells = findAll(parseMarkup(output, { html: format === 'html' }), (node) => (node.attrs.class ?? '').split(/\s+/).includes('chart-heat'));
+      // 공통 차트 CSS의 강도 변수는 히트맵 칸이 있을 때만 읽고, 각 칸이 공급한다.
+      if (!heatCells.length) required.delete('--s');
+      for (const cell of heatCells) assert.match(cell.attrs.style, /(?:^|;)\s*--s\s*:/);
 
-    assert.deepEqual([...referenced].filter((name) => !defined.has(name)).sort(), [], `isStatic=${isStatic}`);
+      assert.deepEqual([...required].filter((name) => !defined.has(name)).sort(), [], `${format}\n${source}`);
+    }
   }
 });
 

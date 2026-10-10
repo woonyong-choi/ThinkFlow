@@ -51,7 +51,7 @@ test('S1 켜짐과 평소 모습은 효과 한 벌(--fx-*)을 움직이는 SVG�
   }
   const frames = (svg.match(KEYFRAMES) ?? []).filter((k) => k.includes('--fx-'));
   assert.ok(frames.length > 0, 'the lit nodes, parts and cells animate through --fx-*');
-  assert.ok(frames.every((k) => !/--color-state-active\)|--simple2-(hover-fill|separator|row-selection|surface-edge)|--color-paint/.test(k)), 'keyframes do not repeat token colors');
+  assert.ok(frames.every((k) => !/--color-state-active\)|--color-paint/.test(k)), 'keyframes do not repeat token colors');
   assert.match(html, /\.fl-part\.on :is\(\.part-bg, \.grid-cell\)\s*\{\s*fill: var\(--fx-face-on\)/, 'the HTML lit field and cell read the same lit face as the animated SVG');
   assert.ok(frames.some((k) => k.includes('fill: var(--fx-face-on)') && !k.includes('stroke')) && frames.some((k) => k.includes('fill: var(--fx-face);')), 'the animated SVG lights a field and a cell by that lit face only');
   assert.match(svg, /\.fl-node\.ap-outline\.tn-yellow\s*\{\s*--fx-edge-rest:/, 'a chosen tone changes only the rest values');

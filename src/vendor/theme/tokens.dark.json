@@ -250,10 +250,6 @@
           "$value": "{color.category.red.dark-tint-1}",
           "$type": "color"
         },
-        "stroke": {
-          "$value": "{color.category.red.dark-border}",
-          "$type": "color"
-        },
         "outline": {
           "$value": "{color.category.red.dark-border}",
           "$type": "color"
@@ -261,19 +257,11 @@
         "ink": {
           "$value": "{color.category.red.dark-ink}",
           "$type": "color"
-        },
-        "dot": {
-          "$value": "{color.category.red.dark-border}",
-          "$type": "color"
         }
       },
       "green": {
         "fill": {
           "$value": "{color.category.green.dark-tint-1}",
-          "$type": "color"
-        },
-        "stroke": {
-          "$value": "{color.category.green.dark-border}",
           "$type": "color"
         },
         "outline": {
@@ -283,19 +271,11 @@
         "ink": {
           "$value": "{color.category.green.dark-ink}",
           "$type": "color"
-        },
-        "dot": {
-          "$value": "{color.category.green.dark-border}",
-          "$type": "color"
         }
       },
       "purple": {
         "fill": {
           "$value": "{color.category.purple.dark-tint-1}",
-          "$type": "color"
-        },
-        "stroke": {
-          "$value": "{color.category.purple.dark-border}",
           "$type": "color"
         },
         "outline": {
@@ -305,71 +285,25 @@
         "ink": {
           "$value": "{color.category.purple.dark-ink}",
           "$type": "color"
-        },
-        "dot": {
-          "$value": "{color.category.purple.dark-border}",
-          "$type": "color"
-        }
-      },
-      "sky": {
-        "fill": {
-          "$value": "{color.palette.sky.dark-fill}",
-          "$type": "color"
-        },
-        "stroke": {
-          "$value": "{color.palette.sky.dark-stroke}",
-          "$type": "color"
-        },
-        "outline": {
-          "$value": "{color.palette.sky.dark-outline}",
-          "$type": "color"
-        },
-        "ink": {
-          "$value": "{color.palette.sky.dark-ink}",
-          "$type": "color"
-        },
-        "group-1": {
-          "$value": "{color.palette.sky.dark-tint-1}",
-          "$type": "color"
-        },
-        "group-2": {
-          "$value": "{color.palette.sky.dark-tint-2}",
-          "$type": "color"
-        },
-        "group-3": {
-          "$value": "{color.palette.sky.dark-tint-3}",
-          "$type": "color"
         }
       },
       "gray": {
         "fill": {
-          "$value": "{color.palette.slate.dark-fill}",
-          "$type": "color"
-        },
-        "stroke": {
-          "$value": "{color.palette.slate.dark-stroke}",
+          "$value": "{color.gray.788}",
           "$type": "color"
         },
         "outline": {
-          "$value": "{color.palette.slate.dark-outline}",
+          "$value": "{color.gray.467}",
           "$type": "color"
         },
         "ink": {
-          "$value": "{color.palette.slate.dark-ink}",
-          "$type": "color"
-        },
-        "dot": {
-          "$value": "{color.palette.slate.dark-dot}",
+          "$value": "{color.gray.333}",
           "$type": "color"
         }
       },
       "blue": {
         "fill": {
           "$value": "{color.category.blue.dark-tint-1}",
-          "$type": "color"
-        },
-        "stroke": {
-          "$value": "{color.category.blue.dark-border}",
           "$type": "color"
         },
         "outline": {
@@ -379,35 +313,11 @@
         "ink": {
           "$value": "{color.category.blue.dark-ink}",
           "$type": "color"
-        },
-        "dot": {
-          "$value": "{color.category.blue.dark-border}",
-          "$type": "color"
-        },
-        "group-1": {
-          "$value": "{color.category.blue.dark-tint-1}",
-          "$type": "color"
-        },
-        "group-2": {
-          "$value": "{color.category.blue.dark-tint-2}",
-          "$type": "color"
-        },
-        "group-3": {
-          "$value": "{color.category.blue.dark-tint-3}",
-          "$type": "color"
-        },
-        "effect": {
-          "$value": "{color.category.blue.dark-effect}",
-          "$type": "color"
         }
       },
       "yellow": {
         "fill": {
           "$value": "{color.category.yellow.dark-tint-1}",
-          "$type": "color"
-        },
-        "stroke": {
-          "$value": "{color.category.yellow.dark-border}",
           "$type": "color"
         },
         "outline": {
@@ -417,35 +327,11 @@
         "ink": {
           "$value": "{color.category.yellow.dark-ink}",
           "$type": "color"
-        },
-        "dot": {
-          "$value": "{color.category.yellow.dark-border}",
-          "$type": "color"
-        },
-        "group-1": {
-          "$value": "{color.category.yellow.dark-tint-1}",
-          "$type": "color"
-        },
-        "group-2": {
-          "$value": "{color.category.yellow.dark-tint-2}",
-          "$type": "color"
-        },
-        "group-3": {
-          "$value": "{color.category.yellow.dark-tint-3}",
-          "$type": "color"
-        },
-        "effect": {
-          "$value": "{color.category.yellow.dark-effect}",
-          "$type": "color"
         }
       },
       "orange": {
         "fill": {
           "$value": "{color.category.orange.dark-tint-1}",
-          "$type": "color"
-        },
-        "stroke": {
-          "$value": "{color.category.orange.dark-border}",
           "$type": "color"
         },
         "outline": {
@@ -455,35 +341,11 @@
         "ink": {
           "$value": "{color.category.orange.dark-ink}",
           "$type": "color"
-        },
-        "dot": {
-          "$value": "{color.category.orange.dark-border}",
-          "$type": "color"
-        },
-        "group-1": {
-          "$value": "{color.category.orange.dark-tint-1}",
-          "$type": "color"
-        },
-        "group-2": {
-          "$value": "{color.category.orange.dark-tint-2}",
-          "$type": "color"
-        },
-        "group-3": {
-          "$value": "{color.category.orange.dark-tint-3}",
-          "$type": "color"
-        },
-        "effect": {
-          "$value": "{color.category.orange.dark-effect}",
-          "$type": "color"
         }
       },
       "cyan": {
         "fill": {
           "$value": "{color.category.cyan.dark-tint-1}",
-          "$type": "color"
-        },
-        "stroke": {
-          "$value": "{color.category.cyan.dark-border}",
           "$type": "color"
         },
         "outline": {
@@ -492,26 +354,6 @@
         },
         "ink": {
           "$value": "{color.category.cyan.dark-ink}",
-          "$type": "color"
-        },
-        "dot": {
-          "$value": "{color.category.cyan.dark-border}",
-          "$type": "color"
-        },
-        "group-1": {
-          "$value": "{color.category.cyan.dark-tint-1}",
-          "$type": "color"
-        },
-        "group-2": {
-          "$value": "{color.category.cyan.dark-tint-2}",
-          "$type": "color"
-        },
-        "group-3": {
-          "$value": "{color.category.cyan.dark-tint-3}",
-          "$type": "color"
-        },
-        "effect": {
-          "$value": "{color.category.cyan.dark-effect}",
           "$type": "color"
         }
       }
@@ -540,7 +382,7 @@
     },
     "platform-color": {
       "$type": "color",
-      "$value": "{color.fg}"
+      "$value": "{color.ink}"
     },
     "platform-hover": {
       "$type": "color",

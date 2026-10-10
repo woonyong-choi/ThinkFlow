@@ -154,7 +154,7 @@ scene "조회"
 
 ### 그리기와 색
 
-- 틀과 칸은 `color.node` 면과 `color.outline` 윤곽이고 글은 `color.fg`다. 생략 칸(`gap`)은 `color.surface` 면에 점선 윤곽과 `color.muted` 글이다. 빈 자리는 면 없이 점선 윤곽만 그린다([빈 칸 표현](#빈-칸-표현)).
+- 틀과 칸은 `color.ui-card` 면과 `color.outline` 윤곽이고 글은 `color.ink`다. 생략 칸(`gap`)은 `color.surface` 면에 점선 윤곽과 `color.ui-muted` 글이다. 빈 자리는 면 없이 점선 윤곽만 그린다([빈 칸 표현](#빈-칸-표현)).
 - 밝힌 칸은 `color.search-hover` 면(선택 행과 같다. 효과 한 벌의 `--fx-row`를 HTML 재생기와 움직이는 SVG가 같이 읽는다, [배치](layout.md))이고 윤곽은 이웃 칸과 같은 중립 구분선 그대로다. 선택 테두리를 따로 그리지 않아 칸 구분선과 선택이 겹쳐 두 겹이 되지 않는다. 칸이 밝아지고 꺼지는 것은 논리 경계에서 바로 바뀌고 CSS 전환을 걸지 않는다([재생](playback.md#움직이는-svg)). 파랑은 "지금 일어나는 것"만 뜻하므로 값의 크고 작음을 이 색으로 나타내지 않는다.
 - 이 짝들은 모두 [대비 기준](docs-integration.md#대비-기준)의 기존 짝(글자와 면, 경계와 면, 강조 그래픽과 면)이라 새 색 역할이 없다. 크기와 간격은 토큰 `spacing.figure.grid.cell`과 기존 `space.*`뿐이다.
 

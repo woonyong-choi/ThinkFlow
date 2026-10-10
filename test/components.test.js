@@ -3,9 +3,12 @@
 // 시험 이름 첫 낱말(U1~U11)이 요구사항 번호이고, 번호와 계약의 대응은 docs/design/expression-coverage.md의 시험 번호 표에 있다. 브라우저에서만 보이는 것(탭을 만들고 숨기는 일, 클릭)은 같은 문서의 브라우저에서만 보이는 계약 표에 있다.
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
+import { runInNewContext } from 'node:vm';
+
 import { figureFrame } from '../src/html/player-script.js';
-import { CONTROL_ICONS } from '../src/vendor/theme/ui/control-icons.mjs';
-import { loadIcon } from '../src/icons/index.js';
+import { getIconCatalog, readIcon } from '../src/vendor/theme/ui/build/icons.mjs';
+import { ToolIcon } from '../src/vendor/theme/ui/toolbar.mjs';
+import { iconBody } from '../src/vendor/theme/ui/svg.mjs';
 import { drawTexts } from '../src/draw/texts.js';
 import { edgeMarker } from '../src/draw/arrow.js';
 import { TEXT } from '../src/chart/metrics.js';
@@ -265,22 +268,48 @@ test('U7 in a drawn figure each head a line points at exists once, and ordinary 
 // ---- 아이콘 ----
 
 test('U8 a concept icon is one symbol: the card header, the tile and the group title draw the same shapes in the same role, a brand keeps its own glyph', async () => {
-  const { dom } = await rendered(dap(`
-    group g "G" icon=server {
-      box a "A" icon=server
-      box t "T" shape=tile icon=server
+  for (const name of ['server', 'flag-add']) {
+    const result = await build(dap(`
+      group g "G" icon=${name} {
+        box a "A" icon=${name}
+        box t "T" shape=tile icon=${name}
+      }
+      box b "B" icon=git
+      a -> b
+      scene "Move" mode=loop
+        a -> b
+    `));
+    const svg = await toSvg(result, { isStatic: true });
+    const dom = parseMarkup(svg);
+    const symbols = findAll(dom, (n) => n.tag === 'g' && hasClass(n, 'fl-symbol'));
+    assert.equal(symbols.length, 4);
+    const [concept, brand] = [symbols.filter((n) => hasClass(n, 'fl-symbol-concept')), symbols.filter((n) => hasClass(n, 'fl-symbol-brand'))];
+    assert.equal(concept.length, 3, 'group title, card header and tile');
+    assert.equal(brand.length, 1);
+    for (const [index, symbol] of concept.entries()) {
+      const prefix = index === 0 ? 'icon-g-0' : `icon-n-${index - 1}`;
+      const registered = parseMarkup(`<svg xmlns="http://www.w3.org/2000/svg">${iconBody(readIcon(name), { size: values.icon['size-small'], prefix })}</svg>`);
+      assert.deepEqual(shape({ tag: 'g', attrs: {}, children: symbol.children[0].children }), shape({ tag: 'g', attrs: {}, children: registered.children }), 'the registered shapes');
     }
-    box b "B" icon=git
-  `));
-  const symbols = findAll(dom, (n) => n.tag === 'g' && hasClass(n, 'fl-symbol'));
-  assert.equal(symbols.length, 4);
-  const registered = parseMarkup(`<svg xmlns="http://www.w3.org/2000/svg">${loadIcon({ set: 'builtin', name: 'server' }).body}</svg>`);
-  const [concept, brand] = [symbols.filter((n) => hasClass(n, 'fl-symbol-concept')), symbols.filter((n) => hasClass(n, 'fl-symbol-brand'))];
-  assert.equal(concept.length, 3, 'group title, card header and tile');
-  assert.equal(brand.length, 1);
-  for (const symbol of concept) assert.deepEqual(shape({ tag: 'g', attrs: {}, children: symbol.children[0].children }), shape({ tag: 'g', attrs: {}, children: registered.children }), 'the registered shapes');
-  assert.equal(loadIcon({ set: 'builtin', name: 'server' }).role, 'concept');
-  assert.equal(loadIcon({ set: 'builtin', name: 'git' }).role, 'brand');
+    const animated = await toSvg(result);
+    const html = await toHtml(result, 'icons');
+    for (const output of [svg, animated, html]) {
+      const parsed = parseMarkup(output, { html: output === html });
+      // HTML의 좁은 배치는 비활성 template이며 넓은 배치와 교체되어 둘 중 하나만 문서에 붙는다.
+      const layouts = output === html ? findAll(parsed, node => hasClass(node, 'dp-panels')) : [parsed];
+      for (const layout of layouts) {
+        const masks = findAll(layout, (node) => node.tag === 'mask').map(node => node.attrs.id);
+        assert.equal(new Set(masks).size, masks.length, 'repeated icons and motion layers have unique masks');
+        if (name === 'flag-add') assert.ok(masks.length >= 3, 'the built-in mask survives rendering');
+        for (const symbol of findAll(layout, (node) => hasClass(node, 'fl-symbol'))) {
+          const local = findAll(symbol, (node) => node.tag === 'mask').map(node => node.attrs.id);
+          for (const node of descendants(symbol)) if (node.attrs.mask) assert.ok(local.includes(/^url\(#(.+)\)$/.exec(node.attrs.mask)?.[1]), 'an icon only uses its own mask');
+        }
+      }
+    }
+    assert.equal(await toSvg(result), animated, 'shared icon IDs do not depend on earlier renders');
+    assert.equal(await toHtml(result, 'icons'), html, 'HTML is deterministic');
+  }
 });
 
 // ---- HTML 그림 틀 ----
@@ -369,9 +398,12 @@ test('U9 every page has one frame, one toolbar and one tab row: the toolbar sits
     for (const tab of page.tabs) assert.equal(tab.attrs['aria-controls'], 'scene-panel');
   }
   assert.deepEqual([pages.still.data.segs.length, pages.one.data.steps.length, pages.three.data.steps.length], [0, 1, 3]);
-  // 조작부 아이콘은 한 표에서 와서 모든 페이지에 같은 글로 실린다.
+  // 단일 HTML도 공통 조작 아이콘을 외부 모듈 없이 그린다.
   const html = await toHtml(await build(dap('box a "A"\n')), 'doc');
-  assert.ok(html.includes(`const CONTROL_ICONS = ${JSON.stringify(CONTROL_ICONS).replace(/</g, '\\u003c')};`));
+  const script = textContent(findAll(parseMarkup(html, { html: true }), node => node.tag === 'script').at(-1));
+  const names = Object.keys(getIconCatalog().controls);
+  const drawn = runInNewContext(`${script}\nfunction figurePlay() {}\n${JSON.stringify(names)}.map(ToolIcon);`, { document: { querySelector: () => null }, matchMedia: () => ({ matches: false }) });
+  assert.deepEqual(Array.from(drawn), names.map(ToolIcon));
   for (const [, name] of html.matchAll(/getPropertyValue\(['"](--[\w-]+)['"]\)/g)) {
     assert.ok(html.includes(`${name}:`), `runtime token ${name} survives CSS pruning`);
   }

@@ -85,10 +85,10 @@ function editDistance(a, b) {
 // cost: time O(k·n²), heap O(k), stack O(1)
 // vars: k = 이름 수, n = 이름 글자 수
 // basis: estimate
-/** 없는 이름 오류 메시지. 편집 거리 2 이하의 이름이 있으면 제안하고, 선언된 이름 목록을 붙인다. */
-export function unknownName(kind, name, known) {
+/** 없는 이름 오류 메시지. 편집 거리 2 이하의 이름이 있으면 제안하고, 요청한 경우 선언된 이름 목록을 붙인다. */
+export function unknownName(kind, name, known, { shouldList = true } = {}) {
   const sorted = [...known].sort();
   const near = sorted.map((k) => [k, editDistance(name, k)]).filter(([, d]) => d <= 2).sort((a, b) => a[1] - b[1])[0];
   const hint = near ? ` Did you mean "${near[0]}"?` : '';
-  return `unknown ${kind} "${name}".${hint} Declared: ${sorted.join(', ') || 'none'}`;
+  return `unknown ${kind} "${name}".${hint}${shouldList ? ` Declared: ${sorted.join(', ') || 'none'}` : ''}`;
 }

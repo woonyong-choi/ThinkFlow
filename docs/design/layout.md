@@ -63,28 +63,29 @@
 
 | 자리 | 정본 토큰 | 현재 크기·굵기 | 색 |
 |---|---|---|---|
-| 목록·문서 페이지 `h1` | `text.heading`, `heading-weight` | 36px·700 | `fg` |
-| 문서 미리보기 `h2` | `text.subtitle`, `font-weight.semibold` | 27px·600 | `fg` |
-| 목록의 그림 제목 | `text.figure.22`, `font-weight.semibold` | 22px·600 | `fg` |
-| 문서 미리보기 문단 | `text.body-text` | 18px·400 | `fg` |
-| 도형 이름·차트 제목 | `text.small-text` | 15px·400 | `fg` |
-| 단계 탭·테마 선택 | `text.small-text`, `font-weight.semibold` | 15px·600, 선택과 비선택 모두 | `muted`, 선택 `color.control-paper` |
-| 차트 항목 이름 | `text.tiny-text` | 13px·400, 워터폴 합계 행 600 | `fg` |
-| 테이블 열 이름·격자 항목 | `text.figure.13` | 13px·400 | `fg` |
-| 단계 설명·현재 단계 | `text.figure.13`, `text.tiny-text` | 13px·400 | `muted` |
-| 파일 이름·목록 링크 | `text.figure.13` | 13px·400 | 파일 이름 `muted`, 링크 `ui.link` |
-| 도형·차트 부제, 선 라벨, 메모, 이동 글 | `text.tiny-text` | 13px·400 | 부제 `muted`, 선 라벨은 알약 글자색, 나머지 `fg` |
-| 카드 줄·코드·형식·제약·값 | `text.tiny-text` | 13px·400, 값 600 | `fg`, 형식과 제약 `muted` |
+| 목록·문서 페이지 `h1` | `text.heading`, `font-weight.bold` | 36px·700 | `ink` |
+| 문서 미리보기 `h2` | `text.subtitle`, `font-weight.semibold` | 27px·600 | `ink` |
+| 목록의 그림 제목 | `text.figure.22`, `font-weight.semibold` | 22px·600 | `ink` |
+| 문서 미리보기 문단 | `text.body-text` | 18px·400 | `ink` |
+| 도형 이름·차트 제목 | `text.small-text` | 15px·400 | `ink` |
+| 단계 탭 | `text.body-text`를 기준으로 `text.platform-text`, `font-weight.semibold` | 홈페이지 문서 탭과 같은 버튼 변형 | `color.platform-color`, 선택 `color.control-paper` |
+| 테마 선택 | `text.body-text`를 기준으로 `text.feature-tab-font`, `font-weight.semibold` | 공통 분절 변형, 선택과 비선택의 굵기 동일 | `color.platform-color`, 선택 `color.control-paper` |
+| 차트 항목 이름 | `text.tiny-text` | 13px·400, 워터폴 합계 행 600 | `ink` |
+| 테이블 열 이름·격자 항목 | `text.figure.13` | 13px·400 | `ink` |
+| 단계 설명·현재 단계 | `text.figure.13`, `text.tiny-text` | 13px·400 | `ui-muted` |
+| 파일 이름·목록 링크 | `text.figure.13` | 13px·400 | 파일 이름 `ui-muted`, 링크 `ui.link` |
+| 도형·차트 부제, 선 라벨, 메모, 이동 글 | `text.tiny-text` | 13px·400 | 부제 `ui-muted`, 선 라벨은 알약 글자색, 나머지 `ink` |
+| 카드 줄·코드·형식·제약·값 | `text.tiny-text` | 13px·400, 값 600 | `ink`, 형식과 제약 `ui-muted` |
 | 그룹 제목·보기 이름 | `text.small-text`, `font-weight.semibold` | 15px·600, 자간 없음 | `group-title` |
-| 카드 태그·표시·열 키(PK, FK) | `text.figure-meta` | 11px·600 | 태그와 열 키 `fg`, 표시 `state.active-text` |
-| 차트 범례·눈금·단위·값·끝 이름 | `text.figure-meta` | 11px·400, 강조 값 600 | 값 `fg`, 끝 이름 계열 글자색, 나머지 `muted` |
-| 상태 알약 글자 | `text.figure-meta` | 11px·600 | `fg` |
+| 카드 태그·표시·열 키(PK, FK) | `text.figure-meta` | 11px·600 | 태그와 열 키 `ink`, 표시 `state.active-text` |
+| 차트 범례·눈금·단위·값·끝 이름 | `text.figure-meta` | 11px·400, 강조 값 600 | 값 `ink`, 끝 이름 계열 글자색, 나머지 `ui-muted` |
+| 상태 알약 글자 | `text.figure-meta` | 11px·600 | `ink` |
 
 페이지 제목과 그림 내부 제목은 서로 다른 역할이다. 같은 요소를 맞출 때는 숫자뿐 아니라 글꼴, 줄 높이, 주변 간격과 실제 표시 배율도 비교한다. 목록과 문서의 큰 제목은 모두 `leading.heading`을 사용한다.
 
 - 이름 한 줄에 아이콘 하나뿐인 단순 상자(카드, 부제, 배지, 개수, 타일, 원통 없음)는 아이콘과 이름을 한 줄에 나란히 놓는다(`sizeInline`). 너비는 아이콘, 간격, 이름 폭이고 높이는 `spacing.figure.node.min-height` 이상이라 아이콘을 위에 쌓아 생기던 빈 높이가 없다. 이름 자리는 `labelRows`가 같은 값(`decor.textCx`)을 쓴다. 타일, 카드가 있는 도형, 여러 줄 이름은 이전 배치 그대로다.
 - 줄 높이는 글자 크기에 비율 토큰을 곱해 반올림한다. 도형 안의 여러 줄 글(이름, 부제, 카드 줄, 격자 칸 글)은 `leading.normal`(1.5)이고 카드 줄 사이 간격은 `spacing.1-5`이다. 크기를 정하는 쪽(`measure/texts.js`의 `STYLE`)과 그리는 쪽이 같은 값을 쓰고, 카드 높이와 도형 높이가 이 값으로 늘어나 글이 카드 밖으로 잘리지 않는다. 이동 글 상자는 `leading.snug`(1.35), 설명 줄과 문단은 `leading.normal`(1.5)이다.
-- 차트 값 글자(11)는 눈금과 같은 크기라 굵기(강조 값 600)와 색(`fg` 대 `muted`)으로 앞선다. 데이터 그림에서 가장 중요한 글이지만 크기 단계를 하나 더 늘리지 않았다. 카드 값 줄의 값은 카드 줄과 같은 13이고 굵기만 다르다.
+- 차트 값 글자(11)는 눈금과 같은 크기라 굵기(강조 값 600)와 색(`ink` 대 `ui-muted`)으로 앞선다. 데이터 그림에서 가장 중요한 글이지만 크기 단계를 하나 더 늘리지 않았다. 카드 값 줄의 값은 카드 줄과 같은 13이고 굵기만 다르다.
 - 이동 글 상자는 문장과 이름표 역할(13)이다.
 - 글 한 줄의 자리와 폭은 `measure/texts.js`가 `textAt`으로 정한 text 하나이고, 기준 점(`anchor`)도 text가 정한다. 카드 내용 줄(`measure/content.js`의 `sizeContent`)도 태그, 오른쪽 표시, 본문, 관계 그래프 이름, 값을 모두 text로 재어 돌려주고, 그리는 쪽(`draw/content.js`, `draw/values.js`)과 그림 검사 1번(`check/fit.js`)은 그 text를 그대로 읽어 따로 폭을 다시 세지 않는다. 메모와 순서 구획 제목은 `textBlock`, 그룹 제목은 `placeGroupHead`가 같은 방식으로 text를 만든다.
 - 구획 카드(표, API, 클래스)와 순서 보기 참여자의 머리는 `measure/card.js`의 `headerOf` 하나다. 제목은 아이콘과 배지를 뺀 폭(`room`)에 한 줄이 들면 그대로 두고, 넘으면 낱말 자리, 이름 안의 `/`, `-`, `_`, `.` 뒤, 글자 단위 순서로 줄을 나눈다. `room`은 본문 폭과 `INNER_MAX` 중 큰 쪽이라 본문이 이미 넓으면 제목은 필요 없이 좁게 나뉘지 않는다. 머리 높이는 줄 수만큼 늘어나고 아이콘은 첫 줄과 가운데가 같다.
@@ -150,15 +151,15 @@
 
 ### 장식: 아이콘, 배지, 개수, 번호
 
-- 도형 윗줄(아이콘 `spacing.figure.icon.node`, 글자 알약 높이 `spacing.figure.pill.height`)과 그룹 제목 줄(아이콘 `spacing.figure.icon.group`)의 장식 크기는 배치 전에 정하고 도형과 제목 너비에 넣는다. 윗줄은 이름 위에 서고 높이만큼 도형이 커진다. 복제 개수 상자는 뒤 윤곽 두 겹(`spacing.1`씩)만큼 크고 이름과 카드는 앞 상자 안에 놓인다.
+- 도형 윗줄(아이콘 `spacing.figure.icon.node`, 글자 알약 높이 `spacing.figure.pill.height`)과 그룹 제목 줄의 장식 크기는 배치 전에 정하고 도형과 제목 너비에 넣는다. 윗줄은 이름 위에 서고 높이만큼 도형이 커진다. 복제 개수 상자는 뒤 윤곽 두 겹(`spacing.1`씩)만큼 크고 이름과 카드는 앞 상자 안에 놓인다.
 - 선 번호 원은 라벨 알약의 일부라 알약 크기에 들어가 배치와 검사가 같은 사각형을 쓴다. 번호만 있고 라벨이 없는 알약은 elkjs에 자리를 요구하지 않고, 선을 다 그린 뒤 가장 긴 구간 가운데에 얹는다(이 알약이 층 사이 간격을 늘려 가로 구성도가 캔버스에 들지 않던 문제를 푼다).
-- 타일(`shape=tile`)은 윗줄 아이콘을 `spacing.figure.icon.tile`로 키우고 최소 너비를 `spacing.figure.node.tile-width`로 줄인 같은 상자다. 타일 아이콘(`spacing.figure.icon.tile`)과 이름 사이는 `spacing.figure.icon.tile-gap`이다. 그룹 제목 줄 아이콘은 왼쪽 위 모서리 정사각 탭(`spacing.figure.group.title`) 가운데에 `spacing.figure.icon.group`로 놓이고, 제목은 탭 오른쪽(`titleDx`가 탭 너비만큼 큼)에서 시작한다. 탭은 선이 가리면 제목과 함께 선 오른쪽으로 비킨다. 구성도는 층 하나가 `spacing.15` 간격과 그룹 안쪽 여백만큼 폭을 쓰므로, 캔버스(960)에 들려면 그룹 방향으로 열을 줄여 짜야 한다(`examples/architecture.dap`은 그룹마다 방향을 달리해 표준 폭에 맞춘다).
+- 타일(`shape=tile`)은 윗줄 아이콘을 `spacing.figure.icon.tile`로 키우고 최소 너비를 `spacing.figure.node.tile-width`로 줄인 같은 상자다. 타일 아이콘(`spacing.figure.icon.tile`)과 이름 사이는 `spacing.figure.icon.tile-gap`이다. 그룹 제목 줄 아이콘은 왼쪽 위 모서리 정사각 탭에 놓인다. 크기는 탭 너비(`spacing.figure.group.title`)에서 `spacing.2`를 뺀 값이고, 제목은 탭 오른쪽(`titleDx`가 탭 너비만큼 큼)에서 시작한다. 탭은 선이 가리면 제목과 함께 선 오른쪽으로 비킨다. 구성도는 층 하나가 `spacing.15` 간격과 그룹 안쪽 여백만큼 폭을 쓰므로, 캔버스(960)에 들려면 그룹 방향으로 열을 줄여 짜야 한다(`examples/architecture.dap`은 그룹마다 방향을 달리해 표준 폭에 맞춘다).
 
 ### 아이콘
 
-- 기본 세트 `builtin`은 공통 디자인 사본의 개념 카탈로그(`src/vendor/theme/assets/icons/catalog-detail.json`), 별칭(`src/vendor/theme/assets/icons/catalog.json`), 브랜드 SVG(`src/vendor/theme/assets/icons/brands/`)에서 이름을 읽는다. `src/icons/index.js`가 `ICON_NAMES`를 만들며 접두사 없이 사용한다.
-- 개념 아이콘과 브랜드는 홈페이지와 같은 SVG 원본을 사용한다. 작은 SVG의 격자는 `icon.size-small` 토큰이 정하고, `draw/decor.js`가 `ICON_GRID`를 읽어 정사각 칸에 맞춘다. 내장 SVG의 색과 모양은 보존하며 이 저장소에 별도 도형이나 팔레트를 두지 않는다. 브랜드의 출처·변형·라이선스는 `src/vendor/theme/assets/icons/brands/catalog.json`과 같은 폴더의 `LICENSE`, 저장소의 `NOTICE`에 있다. 사용자 세트만 아래의 단색 SVG 제약을 따른다.
-- 재생기 조작 아이콘은 공통 디자인의 `src/vendor/theme/ui/control-icons.mjs`를 사용한다. 원본은 공통 `assets/controls/`이며 관련 고지는 `src/vendor/theme/assets/controls/LICENSE`에 있다. 색은 단추의 글자색을 따르고 선 굵기와 크기는 공통 조작 토큰이 정한다. 문법 복사, HTML 내려받기, 전체화면과 확대·맞춤을 제공하며 재생·일시정지·배속·반복 단추는 없다([재생](playback.md)).
+- 기본 세트 `builtin`은 공통 `ui/build/icons.mjs`가 읽는 배포 카탈로그(`src/vendor/theme/assets/icons/catalog.json`)의 이름과 별칭을 사용한다. 각 이름은 `assets/icons/<의미 범주>/<이름>.svg` 하나를 가리킨다. `src/icons/index.js`가 `ICON_NAMES`를 만들며 접두사 없이 사용한다. 없는 이름은 가까운 이름과 카탈로그 위치를 안내하며 전체 등록명을 오류에 나열하지 않는다.
+- 개념 아이콘과 브랜드는 홈페이지와 같은 SVG 원본과 `ui/svg.mjs` 렌더러를 사용한다. 공통 `iconBody`가 `icon.size-small` 격자에 맞추고, Daphnis는 측정한 정사각 칸에 배치한다. 같은 도형이 반복되어도 내부 마스크 ID는 삽입마다 구분하며, 재생·정지 층도 서로 다른 ID를 쓴다. 내장 SVG의 색과 모양은 보존하며 별도 도형이나 팔레트를 두지 않는다. 출처와 라이선스는 카탈로그의 `libraries`, `brands`와 `assets/icons/licenses/`, 저장소의 `NOTICE`에 있다. 사용자 세트만 아래의 단색 SVG 제약을 따른다.
+- 재생기 조작 아이콘은 같은 카탈로그의 `controls` 역할과 공통 `ui/icons.mjs`의 `ControlIcon`을 사용한다. 단일 HTML도 공통 렌더러와 조작부에 필요한 SVG만 포함한다. 색은 단추의 글자색을 따르고 크기는 공통 조작 토큰이 정한다. 문법 복사, HTML 내려받기, 전체화면과 확대·맞춤을 제공하며 재생·일시정지·배속·반복 단추는 없다([재생](playback.md)).
 - 사용자 세트: `icons 이름 "폴더"`로 등록하고 `icon=이름:파일이름`으로 쓴다. 저장소에는 넣지 않는다(라이선스가 불명확한 세트를 사용자가 직접 쓰는 경우). 렌더 때 파일을 읽어 `g`, `path`, `circle`, `ellipse`, `rect`, `line`, `polyline`, `polygon`과 좌표, 변환, 칠하기 속성만 다시 쓰고(색은 모두 `currentColor`나 `none`) 나머지(script, image, style, use, 그라디언트 등)는 오류다. 크기는 루트 `viewBox`(유한한 숫자 넷, 폭과 높이는 양수)가 정하고, `viewBox`를 적었는데 틀리면 `width`와 `height`로 넘어가지 않고 오류다. `viewBox`가 없을 때만 `width`와 `height`(둘 다 유한한 양수, `px` 허용)를 쓴다. 숫자 속성은 무한대로 넘치는 값(`1e309`)도 오류다. 읽을 때 틀을 24 격자 한가운데에 맞추는 변환을 아이콘 안에 한 번 적어 두므로(반올림 없이), 그릴 때는 격자만 본다. 격자에 맞추는 배율이나 이동이 유한한 0 아닌 수로 나타나지 않는 크기(`1e-320`)는 `icon=` 줄의 오류다. 64KB, 요소 600개 상한이다.
 
 ### 연결점 방향
@@ -291,7 +292,7 @@
 
 ### 표면 위계
 
-HTML은 흰 문서 면 위에 제목과 조작을 놓는다. 설명 그림 판만 `color.prose-pre-background`과 `radius.card-radius` 모서리를 가지며 바깥 그림자는 없다. SVG 판도 같은 면과 모서리를 쓴다. 내부 상자·큐·표·격자는 `radius.lg` 모서리의 그림자 없는 평면이고 윤곽 굵기는 `border-width.thin` 하나다. 평소 윤곽 색은 `color.help-border`(`--fx-edge-rest`)이고, `light`가 켠 도형만 윤곽 색이 강조 색(`--fx-edge`)으로 바뀐다. 굵기와 모서리는 켜져도 같다. 글자·선·점·의미 기호에도 그림자를 붙이지 않는다. 표 내부 구분선은 `color.ui-line`로 낮추고 의미를 구분하는 바깥 윤곽과 격자 경계는 기존 대비를 유지한다. 표와 격자는 전체 바깥 모서리만 둥글다. 테이블 열 줄의 밝힘 면은 틀 모양(`clipPath`)으로 잘려 마지막 줄이 둥근 틀을 뚫지 않고, 격자 칸은 칸 묶음의 바깥 모서리와 맞닿은 모서리만 반지름(`radius.md`)을 가지며 안쪽 칸의 교차는 직각이다(`cellShape`). 사람은 표준 카드이고 윗줄의 사용자 의미 아이콘(`color.figure.icon-person-ink`로 채운 머리와 어깨 실루엣)만 사람임을 알린다. 켜짐(`light`)은 같은 윤곽의 색과 도형 면만 바꾸고 굵기, 모서리, 크기를 바꾸지 않는다. 값 변경 강조는 같은 윤곽 안의 면만 바꾼다. 어느 쪽도 윤곽을 겹으로 덧씌우지 않는다. 흐름이나 이동이 닿은 도형은 도착 후광(펄스)만 쓰고 면과 윤곽을 켜지 않는다. 마우스를 올려도 도형이나 카드는 켜지지 않는다(장식용 호버 활성 없음). 시각 위계는 글과 의미 아이콘이 먼저, 현재 흐름이 둘째, 도형 면과 관계선이 셋째, 그룹과 틀이 가장 뒤다. 경계 문법은 기본 = 중립 경계(`color.help-border`), 켜짐(`light`) = 강조 윤곽(`color.state-active`)과 옅은 켜진 면(`color.help-hover`), 값 변화 = 짧은 배경 면이다. 호버 상태는 없다. 켜짐과 평소의 값은 `figure.css`의 효과 한 벌(`--fx-*`)이 한 번 정하고, 정지 그림, HTML 재생기의 `.on` 규칙, 움직이는 SVG의 keyframes가 같은 속성 이름을 읽는다(keyframes는 토큰 값을 다시 적지 않는다). 표 줄과 격자 칸이 켜지면 두 출력 모두 `--fx-row`(`color.search-hover`) 면이다. 고른 색(`tone`, `appearance`)은 평소 값(`--fx-face`, `--fx-edge-rest`)만 바꾼다(`draw/paint.js`). 켜진 동안 윤곽은 강조 색에 자리를 내주고, 옅은 면(`appearance=filled`)으로 고른 도형은 켜져도 면이 같다. 내용이 찬 카드는 윤곽 없이 중립 면 하나(`color.card`)만 두고 안쪽 값 행에도 윤곽을 두지 않는다(반지름 도형 8, 카드 6, 값 면 4). 그룹은 가장 뒤의 조직 정보다. 틀은 카드와 같은 바깥 모서리(`radius.lg`)와 가는 경계(`border-width.thin`)이고 면이 없어(옅은 면은 `appearance=filled`일 때만) 깊어질수록 짙어지지 않으며, 굵기, 면, 모서리는 단계에 따라 바뀌지 않는다. `light`가 명시한 그룹만 경계선 색이 도형 윤곽과 같은 강조 색(`--fx-edge`)이 된다. 그룹의 평소 경계는 틀 사각형 자신의 `--fx-edge-rest`라 같은 그룹 안의 배지가 읽지 않는다. 이름 묶음(아이콘, 이름, 부제)의 자리는 카드가 비어 있어도 채워져도 같다. 머리가 내려오거나 올라가지 않고, 카드 내용이 들어올 자리는 가장 큰 내용에 맞춰 늘 예약되어 비어 있는 동안에도 남아 있으며 단계마다 도형 크기는 변하지 않는다. 행 사이 통로(gutter)가 있는 격자는 칸 묶음 전체가 바깥 모서리만 둥근 한 판(`grid-tray`, 테두리 없는 `color.card` 면) 위에 놓여 통로가 판의 면으로 보이고, 바깥 모서리는 칸 묶음 전체의 네 모서리에 닿은 칸만 둥글다. 카드 안 관계 그래프는 밝힌 이름을 선택 행의 옅은 면(`color.search-hover`)으로, 이름 윤곽은 중립 `color.outline`으로 그리고 열 사이에 `spacing.2`를 비운다. 선 번호 원은 검정 면(`color.figure.number-fill`)과 흰 숫자(`color.figure.number-ink`)를 쓰며 강조 상태에서도 유지한다. 선은 `border-width.edge` 굵기의 둥근 끝이고 화살촉은 선마다 같은 함수로 만든 채운 삼각형 표식(`fl-arrow-{번호}`, 상자 한 변이 몸통 굵기의 `spacing.figure.arrow.head`배, 모양과 계산은 `src/draw/arrow.js`)다. 몸통 색으로 채우고 같은 실제 굵기의 윤곽선(`currentColor`, 둥근 끝과 이음)으로 그리므로 평소, 켜짐, 직접 고른 색, 흐림, 다크 어느 상태에서도 색이 실제 선 stroke와 같고 크기도 같다. 표식은 `markerUnits=strokeWidth`라 몸통 굵기에 비례해 커지므로 마커 안 선 굵기를 `viewBox / size`로 정규화해 이중으로 굵어지지 않게 한다(어떤 몸통 굵기에서도 머리 굵기 = 몸통 굵기). 꼭지는 선 끝 점에 놓여 몸통의 둥근 끝과 매끈히 이어지고 보이는 끝은 선 끝 점에서 몸통 굵기의 절반만 나온다. 관계선 1.75px에서 머리는 진행 방향 길이 약 6.8px, 가로 폭 약 9.6px의 채운 삼각형이다(`ARM_X` 1.1, `ARM_HALF` 2.25, 마커 좌표). 시작 끝 머리(`both`)는 같은 표식을 `auto-start-reverse`로 쓴다. 키보드 초점(`:focus-visible`)은 도형 자신의 윤곽을 `--color-ui-focus` 색과 `outline-width.focus` 굵기로 그리는 접근성용 굵기 예외다. 켜짐(`light`)의 강조 윤곽이나 도착 펄스와 별개의 표시이고, 같은 윤곽 모양(원통, 둥근 표)과 모서리를 쓰므로 도형의 크기와 배치는 그대로다. 브라우저 기본 사각 포커스 상자(`outline`)는 어떤 초점에서도 g 요소에서 끄고, `:focus-visible`이 아닌 초점은 아무 표시도 그리지 않는다. 값 변경 강조는 값 행의 정확한 행 모양(첫 행과 마지막 행은 카드 모서리에 맞춘 둥근 끝)으로만 그리고, 이 행 강조가 켜진 도형에는 도형 전체의 지금 면을 칠하지 않는다.
+HTML은 흰 문서 면 위에 제목과 조작을 놓는다. 설명 그림 판만 `color.prose-pre-background`과 `radius.card-radius` 모서리를 가지며 바깥 그림자는 없다. SVG 판도 같은 면과 모서리를 쓴다. 내부 상자·큐·표·격자는 `radius.lg` 모서리의 그림자 없는 평면이고 윤곽 굵기는 `border-width.thin` 하나다. 평소 윤곽 색은 `color.help-border`(`--fx-edge-rest`)이고, `light`가 켠 도형만 윤곽 색이 강조 색(`--fx-edge`)으로 바뀐다. 굵기와 모서리는 켜져도 같다. 글자·선·점·의미 기호에도 그림자를 붙이지 않는다. 표 내부 구분선은 `color.ui-line`로 낮추고 의미를 구분하는 바깥 윤곽과 격자 경계는 기존 대비를 유지한다. 표와 격자는 전체 바깥 모서리만 둥글다. 테이블 열 줄의 밝힘 면은 틀 모양(`clipPath`)으로 잘려 마지막 줄이 둥근 틀을 뚫지 않고, 격자 칸은 칸 묶음의 바깥 모서리와 맞닿은 모서리만 반지름(`radius.md`)을 가지며 안쪽 칸의 교차는 직각이다(`cellShape`). 사람은 표준 카드이고 윗줄의 사용자 의미 아이콘(`color.figure.icon-person-ink`로 채운 머리와 어깨 실루엣)만 사람임을 알린다. 켜짐(`light`)은 같은 윤곽의 색과 도형 면만 바꾸고 굵기, 모서리, 크기를 바꾸지 않는다. 값 변경 강조는 같은 윤곽 안의 면만 바꾼다. 어느 쪽도 윤곽을 겹으로 덧씌우지 않는다. 흐름이나 이동이 닿은 도형은 도착 후광(펄스)만 쓰고 면과 윤곽을 켜지 않는다. 마우스를 올려도 도형이나 카드는 켜지지 않는다(장식용 호버 활성 없음). 시각 위계는 글과 의미 아이콘이 먼저, 현재 흐름이 둘째, 도형 면과 관계선이 셋째, 그룹과 틀이 가장 뒤다. 경계 문법은 기본 = 중립 경계(`color.help-border`), 켜짐(`light`) = 강조 윤곽(`color.state-active`)과 옅은 켜진 면(`color.help-hover`), 값 변화 = 짧은 배경 면이다. 호버 상태는 없다. 켜짐과 평소의 값은 `figure.css`의 효과 한 벌(`--fx-*`)이 한 번 정하고, 정지 그림, HTML 재생기의 `.on` 규칙, 움직이는 SVG의 keyframes가 같은 속성 이름을 읽는다(keyframes는 토큰 값을 다시 적지 않는다). 표 줄과 격자 칸이 켜지면 두 출력 모두 `--fx-row`(`color.search-hover`) 면이다. 고른 색(`tone`, `appearance`)은 평소 값(`--fx-face`, `--fx-edge-rest`)만 바꾼다(`draw/paint.js`). 켜진 동안 윤곽은 강조 색에 자리를 내주고, 옅은 면(`appearance=filled`)으로 고른 도형은 켜져도 면이 같다. 내용이 찬 카드는 윤곽 없이 중립 면 하나(`color.ui-card`)만 두고 안쪽 값 행에도 윤곽을 두지 않는다(반지름 도형 8, 카드 6, 값 면 4). 그룹은 가장 뒤의 조직 정보다. 틀은 카드와 같은 바깥 모서리(`radius.lg`)와 가는 경계(`border-width.thin`)이고 면이 없어(옅은 면은 `appearance=filled`일 때만) 깊어질수록 짙어지지 않으며, 굵기, 면, 모서리는 단계에 따라 바뀌지 않는다. `light`가 명시한 그룹만 경계선 색이 도형 윤곽과 같은 강조 색(`--fx-edge`)이 된다. 그룹의 평소 경계는 틀 사각형 자신의 `--fx-edge-rest`라 같은 그룹 안의 배지가 읽지 않는다. 이름 묶음(아이콘, 이름, 부제)의 자리는 카드가 비어 있어도 채워져도 같다. 머리가 내려오거나 올라가지 않고, 카드 내용이 들어올 자리는 가장 큰 내용에 맞춰 늘 예약되어 비어 있는 동안에도 남아 있으며 단계마다 도형 크기는 변하지 않는다. 행 사이 통로(gutter)가 있는 격자는 칸 묶음 전체가 바깥 모서리만 둥근 한 판(`grid-tray`, 테두리 없는 `color.ui-card` 면) 위에 놓여 통로가 판의 면으로 보이고, 바깥 모서리는 칸 묶음 전체의 네 모서리에 닿은 칸만 둥글다. 카드 안 관계 그래프는 밝힌 이름을 선택 행의 옅은 면(`color.search-hover`)으로, 이름 윤곽은 중립 `color.outline`으로 그리고 열 사이에 `spacing.2`를 비운다. 선 번호 원은 검정 면(`color.figure.number-fill`)과 흰 숫자(`color.figure.number-ink`)를 쓰며 강조 상태에서도 유지한다. 선은 `border-width.edge` 굵기의 둥근 끝이고 화살촉은 선마다 같은 함수로 만든 채운 삼각형 표식(`fl-arrow-{번호}`, 상자 한 변이 몸통 굵기의 `spacing.figure.arrow.head`배, 모양과 계산은 `src/draw/arrow.js`)다. 몸통 색으로 채우고 같은 실제 굵기의 윤곽선(`currentColor`, 둥근 끝과 이음)으로 그리므로 평소, 켜짐, 직접 고른 색, 흐림, 다크 어느 상태에서도 색이 실제 선 stroke와 같고 크기도 같다. 표식은 `markerUnits=strokeWidth`라 몸통 굵기에 비례해 커지므로 마커 안 선 굵기를 `viewBox / size`로 정규화해 이중으로 굵어지지 않게 한다(어떤 몸통 굵기에서도 머리 굵기 = 몸통 굵기). 꼭지는 선 끝 점에 놓여 몸통의 둥근 끝과 매끈히 이어지고 보이는 끝은 선 끝 점에서 몸통 굵기의 절반만 나온다. 관계선 1.75px에서 머리는 진행 방향 길이 약 6.8px, 가로 폭 약 9.6px의 채운 삼각형이다(`ARM_X` 1.1, `ARM_HALF` 2.25, 마커 좌표). 시작 끝 머리(`both`)는 같은 표식을 `auto-start-reverse`로 쓴다. 키보드 초점(`:focus-visible`)은 도형 자신의 윤곽을 `--color-ui-focus` 색과 `outline-width.focus` 굵기로 그리는 접근성용 굵기 예외다. 켜짐(`light`)의 강조 윤곽이나 도착 펄스와 별개의 표시이고, 같은 윤곽 모양(원통, 둥근 표)과 모서리를 쓰므로 도형의 크기와 배치는 그대로다. 브라우저 기본 사각 포커스 상자(`outline`)는 어떤 초점에서도 g 요소에서 끄고, `:focus-visible`이 아닌 초점은 아무 표시도 그리지 않는다. 값 변경 강조는 값 행의 정확한 행 모양(첫 행과 마지막 행은 카드 모서리에 맞춘 둥근 끝)으로만 그리고, 이 행 강조가 켜진 도형에는 도형 전체의 지금 면을 칠하지 않는다.
 
 도형의 글자는 내장 Pretendard로 측정하고 같은 파일의 부분 글꼴로 출력한다. Things 웹의 시스템 글꼴 자체를 재배포하지 않는다. 제목 15px(카드 제목 regular, 그룹 제목 semibold), 문장과 이름표 13px, 작은 표시 11px semibold의 위계를 유지하며 조작부는 15px semibold다.
 

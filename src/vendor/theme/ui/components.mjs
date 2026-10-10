@@ -3,14 +3,15 @@ import { escape, safeUrl, trusted, isTrusted, slot, id, out } from './html.mjs';
 import { ToolButton, Toolbar, ToolHeader } from './toolbar.mjs';
 const CARD_VARIANTS = ['centered', 'grouped', 'inline', 'related', 'summary'];
 
-/** 본문 블록 폭: content(본문 폭), narrow(좁은 미디어 폭), wide(넓은 미디어 폭). 옛 표기 `wide: true`, `size: 'compact'`도 받는다. */
+/** 본문 블록 폭: content(본문 폭), narrow(좁은 미디어 폭), wide(넓은 미디어 폭). */
 export const WIDTHS = ['content', 'narrow', 'wide'];
-export function contentWidth({ width, wide, size } = {}) {
+export function contentWidth(props = {}) {
+  for (const key of ['wide', 'size']) {
+    if (Object.hasOwn(props, key)) throw new Error(`Use width instead of ${key}`);
+  }
+  const { width } = props;
   if (width !== undefined && !WIDTHS.includes(width)) throw new Error(`Unknown width: ${width}`);
-  const aliases = [wide === true ? 'wide' : undefined, size === 'compact' ? 'narrow' : undefined].filter(Boolean);
-  if (size !== undefined && size !== 'compact') throw new Error(`Unknown size: ${size}`);
-  if (aliases.length > 1 || (width !== undefined && aliases.length && aliases[0] !== width)) throw new Error(`Conflicting width: ${[width, ...aliases].filter(Boolean).join(', ')}`);
-  return width ?? aliases[0] ?? 'content';
+  return width ?? 'content';
 }
 export const widthClass = (props) => { const width = contentWidth(props); return width === 'content' ? '' : ` app-width-${width}`; };
 
@@ -89,16 +90,17 @@ export function TabList({ id: group, label = '탭', labels, selector = 'buttons'
  * 모두 생략하면 상자 없이 둥근 단추 줄이 패널 아래에 온다. `numbers`만 라벨 없이 쓸 수 있고 버튼에는 번호, 접근성 이름에는 라벨이 나온다.
  * 보이는 패널만 높이를 차지하므로 선택 줄은 현재 내용 바로 옆에 붙는다. `position: bottom`이면 탭 목록이 패널 뒤에 놓인다.
  */
-export function Tabs({ id: group, label, platform = false, tabs, frame, position, selector, selected = 0, width, wide }) {
+export function Tabs(props) {
+  const { id: group, label, platform = false, tabs, frame, position, selector, selected = 0 } = props;
   if (!Array.isArray(tabs) || !tabs.length) throw new Error('Tabs require tabs');
   if (!Number.isInteger(selected) || selected < 0 || selected >= tabs.length) throw new Error('Tabs selected index is out of range');
-  const props = { id: group, label, platform, labels: tabs.map((tab) => tab.label), frame, position, selector, selected, width, wide };
-  return out(`${Tabs.open(props)}${tabs.map((tab, index) => `${Tabs.panelOpen({ id: group, index, selected })}${slot(tab.body, 'tab body')}${Tabs.panelClose()}`).join('')}${Tabs.close(props)}`);
+  const groupProps = { id: group, label, platform, labels: tabs.map((tab) => tab.label), frame, position, selector, selected, width: contentWidth(props) };
+  return out(`${Tabs.open(groupProps)}${tabs.map((tab, index) => `${Tabs.panelOpen({ id: group, index, selected })}${slot(tab.body, 'tab body')}${Tabs.panelClose()}`).join('')}${Tabs.close(groupProps)}`);
 }
 Tabs.open = (props) => {
   const { id: group, label = props.platform ? '기기별 안내' : '탭', platform = false, labels } = props;
   const variant = tabVariant(props);
-  return `<section class="app-tabs${platform ? ' is-platform' : ''}${variant.classes}${widthClass({ width: props.width, wide: props.wide })}" data-tabs${platform ? ' data-platform' : ''}>${variant.position === 'bottom' ? '' : TabList({ id: group, label, labels, selector: variant.selector, selected: props.selected })}`;
+  return `<section class="app-tabs${platform ? ' is-platform' : ''}${variant.classes}${widthClass(props)}" data-tabs${platform ? ' data-platform' : ''}>${variant.position === 'bottom' ? '' : TabList({ id: group, label, labels, selector: variant.selector, selected: props.selected })}`;
 };
 Tabs.panelOpen = ({ id: group, index, selected = 0 }) => `<div class="app-tabpanel" id="${id(group)}-panel-${index}" role="tabpanel" aria-labelledby="${group}-tab-${index}" tabindex="0"${index === selected ? '' : ' hidden'}>`;
 Tabs.panelClose = () => '</div>';
@@ -138,20 +140,22 @@ CardGroup.gap = (variant) => variant === 'inline' ? ' ' : '';
  * 이름이 모두 있으면 분할 선택 줄, 아니면 번호 줄이다. 보이는 장만 높이를 차지하므로 선택 줄은 현재 그림 바로 아래에 있다.
  * `slides`는 `{ image(슬롯), caption, label }`이다.
  */
-export function Gallery({ id: group, title = '이미지 슬라이드', wide, width, selected = 0, slides }) {
+export function Gallery(props) {
+  const { id: group, title = '이미지 슬라이드', selected = 0, slides } = props;
   if (!Array.isArray(slides) || !slides.length) throw new Error('Gallery requires slides');
   if (!Number.isInteger(selected) || selected < 0 || selected >= slides.length) throw new Error('Gallery selected index is out of range');
   const labeled = slides.every((slide) => typeof slide.label === 'string');
   return Tabs({
-    id: group, label: title, selector: labeled ? 'segmented' : 'numbers', selected, width, wide,
+    id: group, label: title, selector: labeled ? 'segmented' : 'numbers', selected, width: contentWidth(props),
     tabs: slides.map((slide, index) => ({ label: slide.label ?? `슬라이드 ${index + 1}`, body: Figure({ media: slide.image, caption: slide.caption }) })),
   });
 }
 
 /** 그림과 영상 같은 미디어 한 장. `media`는 슬롯, `href`를 주면 링크로 감싼다. `controls` 슬롯은 캡션 줄에 붙는다. */
-export function Figure({ media, href, caption = '', controls, width, wide, size }) {
+export function Figure(props) {
+  const { media, href, caption = '', controls } = props;
   const body = href === undefined ? slot(media, 'media') : `<a href="${safeUrl(href)}">${slot(media, 'media')}</a>`;
-  return out(`<figure class="${FIGURE_CLASS}${widthClass({ width, wide, size })}">${body}${caption || controls ? `<figcaption>${escape(caption)}${controls === undefined ? '' : slot(controls, 'controls')}</figcaption>` : ''}</figure>`);
+  return out(`<figure class="${FIGURE_CLASS}${widthClass(props)}">${body}${caption || controls ? `<figcaption>${escape(caption)}${controls === undefined ? '' : slot(controls, 'controls')}</figcaption>` : ''}</figure>`);
 }
 
 const GRID_COLUMNS = { 1: 'one-column', 2: 'two-columns', 3: 'three-columns', 4: 'four-columns', 5: 'five-columns', 6: 'six-columns' };
@@ -178,10 +182,11 @@ export function Device({ screen, overlay, label, figure = false }) {
 }
 export const MediaControls = ({ remote }) => out(`<div class="app-media-controls">${slot(remote, 'remote')}</div>`);
 /** 본문 영상: 내부 재생 조작과 선택 캡션. 홈의 외부 재생 링크는 RemoteLink가 맡는다. */
-export function Video({ id: target, src, poster, title, caption, playerWidth, playerHeight, playerWide = false, frame, deviceOverlay, width, wide, size }) {
+export function Video(props) {
+  const { id: target, src, poster, title, caption, playerWidth, playerHeight, playerWide = false, frame, deviceOverlay } = props;
   const view = Player({ id: target, src, poster, title, width: playerWidth, height: playerHeight, controls: true, wide: playerWide });
   const media = frame === 'iphone' ? Device({ screen: view, overlay: deviceOverlay }) : view;
-  return Figure({ media, caption, width, wide, size });
+  return Figure({ media, caption, width: contentWidth(props) });
 }
 
 export const FIGURE_CLASS = 'app-figure';

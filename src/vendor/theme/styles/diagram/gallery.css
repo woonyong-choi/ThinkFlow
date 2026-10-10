@@ -8,8 +8,8 @@ body {
   padding: var(--spacing-12) var(--spacing-6);
   font-family: var(--font-sans);
   letter-spacing: var(--tracking-text);
-  color: var(--color-fg);
-  background: var(--color-page);
+  color: var(--color-ink);
+  background: var(--color-ui-card);
 }
 
 .top {
@@ -23,7 +23,7 @@ body {
 h1 {
   margin: 0 0 var(--spacing-1-5);
   font-size: var(--text-heading);
-  font-weight: var(--font-weight-weight-title);
+  font-weight: var(--font-weight-bold);
   line-height: var(--leading-heading);
   word-break: keep-all;
   overflow-wrap: anywhere;
@@ -33,7 +33,7 @@ h1 {
   grid-column: 1;
   margin: 0;
   font-size: var(--text-figure-15);
-  color: var(--color-muted);
+  color: var(--color-ui-muted);
 }
 
 .top a {
@@ -55,7 +55,7 @@ main {
 /* 제목과 조작은 문서 면에 놓고, 설명 그림만 별도 판을 가진다. */
 section {
   overflow: hidden;
-  background: var(--color-page);
+  background: var(--color-ui-card);
 }
 
 header {
@@ -90,13 +90,13 @@ code {
 .name {
   font-size: var(--text-figure-13);
   font-weight: normal;
-  color: var(--color-muted);
+  color: var(--color-ui-muted);
   overflow-wrap: anywhere;
 }
 
 .kind {
   font-size: var(--text-figure-11);
-  color: var(--color-muted);
+  color: var(--color-ui-muted);
 }
 
 nav {

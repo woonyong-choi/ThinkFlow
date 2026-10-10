@@ -9,11 +9,7 @@
   --color-gray-59: #f0f0f0;
   --color-gray-282: #b7b7b7;
   --color-gray-933: #111111;
-  --color-fg: var(--color-ink);
-  --color-muted: var(--color-ui-muted);
   --color-group-title: var(--color-help-title-color);
-  --color-node: var(--color-ui-card);
-  --color-card: var(--color-ui-card);
   --color-line: var(--color-gray-282);
   --color-state-active: var(--color-category-blue-light-border);
   --color-state-active-text: var(--color-category-blue-light-ink);
@@ -140,12 +136,12 @@
 
 .fl .label {
   font-size: var(--text-small-text);
-  fill: var(--color-fg);
+  fill: var(--color-ink);
 }
 
 .fl .sub {
   font-size: var(--text-tiny-text);
-  fill: var(--color-muted);
+  fill: var(--color-ui-muted);
 }
 
 .fl .frame {
@@ -167,7 +163,7 @@
 .fl .cell,
 .fl .item {
   font-size: var(--text-tiny-text);
-  fill: var(--color-fg);
+  fill: var(--color-ink);
 }
 
 .fl .row.mono {
@@ -182,13 +178,13 @@
 }
 
 .fl .muted {
-  fill: var(--color-muted);
+  fill: var(--color-ui-muted);
 }
 
 .fl .tag {
   font-size: var(--text-figure-meta);
   font-weight: var(--font-weight-semibold);
-  fill: var(--color-fg);
+  fill: var(--color-ink);
 }
 
 .fl .mark {
@@ -201,7 +197,7 @@
 .fl .value {
   font-size: var(--text-tiny-text);
   font-weight: var(--font-weight-semibold);
-  fill: var(--color-fg);
+  fill: var(--color-ink);
 }
 
 .fl .chip {
@@ -210,18 +206,18 @@
 }
 
 .fl .item.gap {
-  fill: var(--color-muted);
+  fill: var(--color-ui-muted);
 }
 
 /* 열 형식(타입)은 코드 글이라 코드 글꼴의 오른쪽 열이다. 제약 줄(NOT NULL, ON DELETE 등)은 문장이라 일반 글꼴이다. 둘 다 이름보다 옅다. */
 .fl .cell.type {
   font-family: var(--font-figure-mono);
   letter-spacing: normal;
-  fill: var(--color-muted);
+  fill: var(--color-ui-muted);
 }
 
 .fl .cell.rule {
-  fill: var(--color-muted);
+  fill: var(--color-ui-muted);
 }
 
 /* 순서 보기의 메시지, 메모, 구획, 활성 막대는 자기 장면이 보일 때만 보인다. 자리는 늘 같아 판 크기가 변하지 않는다. */
@@ -243,7 +239,7 @@
 .fl .cell .key {
   font-size: var(--text-figure-meta);
   font-weight: var(--font-weight-semibold);
-  fill: var(--color-fg);
+  fill: var(--color-ink);
 }
 
 /* 그룹은 면이 없다(투명). 경계와 제목만 있고, 깊이에 따라 회색 면을 겹치지 않는다. 고른 색의 면과 경계는 draw/paint.js가 쓴 색에만 더한다. */
@@ -261,7 +257,7 @@
 }
 
 .fl .note-box {
-  fill: var(--color-node);
+  fill: var(--color-ui-card);
   stroke: var(--color-line);
   stroke-dasharray: var(--dash-card) var(--dash-card);
 }
@@ -269,7 +265,7 @@
 /* 알약은 모두 같은 중립 흰 면과 평소 경계다: 선 라벨, 배지와 개수. */
 .fl .pill,
 .fl .badge-pill {
-  fill: var(--color-node);
+  fill: var(--color-ui-card);
   stroke: var(--fx-edge-rest);
 }
 
@@ -285,7 +281,7 @@
 }
 
 .fl .grid-cell {
-  --fx-face: var(--color-node);
+  --fx-face: var(--color-ui-card);
   --fx-face-on: var(--fx-row);
   fill: var(--fx-face);
   stroke: var(--color-ui-line);
@@ -293,11 +289,11 @@
 }
 
 .fl .grid-tray {
-  fill: var(--color-card);
+  fill: var(--color-ui-card);
 }
 
 .fl .grid-cell.gap {
-  --fx-face: var(--color-card);
+  --fx-face: var(--color-ui-card);
   stroke: var(--color-ui-line);
 }
 
@@ -308,10 +304,10 @@
 }
 
 .fl .fl-edge.mark {
-  --fx-line-rest: var(--color-fg);
+  --fx-line-rest: var(--color-ink);
 }
 
-/* 카드 내용 면(color.card, 테두리 없음) 위에 고른 카드 모습(face)이 옅은 면이나 경계를 더한다. */
+/* 카드 내용 면(color.ui-card, 테두리 없음) 위에 고른 카드 모습(face)이 옅은 면이나 경계를 더한다. */
 .fl .face {
   fill: none;
   stroke: none;
@@ -322,7 +318,7 @@
   font-size: var(--text-figure-meta);
   font-weight: var(--font-weight-semibold);
   text-anchor: middle;
-  fill: var(--color-fg);
+  fill: var(--color-ink);
 }
 
 .fl .fl-icon {
@@ -381,13 +377,13 @@
   --fx-row: var(--color-search-hover);
   --fx-flash: var(--color-search-hover);
   --fx-edge-rest: var(--color-help-border);
-  --fx-ink-rest: var(--color-muted);
+  --fx-ink-rest: var(--color-ui-muted);
   --fx-line-rest: var(--color-line);
 }
 
 /* 도형의 평소 면과 켜진 면. 옅은 면으로 고른 도형(filled)은 켜져도 면이 같다. 면이 없는 윤곽(fill='none')과 점은 자기 면이 없거나 자기 색이다. */
 .fl .fl-node {
-  --fx-face: var(--color-node);
+  --fx-face: var(--color-ui-card);
   --fx-face-on: var(--color-help-hover);
 }
 
@@ -396,7 +392,7 @@
 }
 
 .fl .fl-shape-start {
-  --fx-face: var(--color-fg);
+  --fx-face: var(--color-ink);
 }
 
 .fl .fl-node > .fl-stroke[fill='none'] {
@@ -479,7 +475,7 @@
 }
 
 .fl .fl-fragment-heading {
-  fill: var(--color-node);
+  fill: var(--color-ui-card);
 }
 
 .fl .fl-fragment-label {
@@ -494,9 +490,9 @@
 <rect x="0.5" y="0.5" width="959" height="170" rx="18" fill="var(--color-prose-pre-background)"/>
 <g transform="translate(68.4 0)">
 
-<g id="n-0" class="fl-node fl-shape-box" tabindex="0" role="img" aria-label="클라이언트" data-id="client"><rect x="28" y="62" width="100" height="47" rx="8" fill="var(--color-node)" class="fl-stroke a0"/><text x="78" y="90.9" class="label" text-anchor="middle">클라이언트</text></g>
-<g id="n-1" class="fl-node fl-shape-box" tabindex="0" role="img" aria-label="서버" data-id="server"><rect x="328.4" y="28" width="176" height="115" rx="8" fill="var(--color-node)" class="fl-stroke a0"/><text x="416.4" y="56.9" class="label" text-anchor="middle">서버</text><rect x="338.4" y="75" width="156" height="58" rx="6" fill="var(--color-card)" opacity="0" class="fl-card a2"/><g id="n-1-c0" opacity="0" visibility="hidden" class="fl-layer a1"><text x="346.4" y="95.7" class="row">주문을 확인하고 저장합니다</text><text x="346.4" y="121.7" class="row">처리 중</text></g></g>
-<g id="n-2" class="fl-node fl-shape-store" tabindex="0" role="img" aria-label="데이터베이스" data-id="db"><path d="M683.1 62 a 56 12 0 0 1 112 0 v 47 a 56 12 0 0 1 -112 0 z" fill="var(--color-node)" class="fl-stroke a0"/><path d="M683.1 62 a 56 12 0 0 0 112 0" fill="none" class="fl-stroke a0"/><text x="739.1" y="90.9" class="label" text-anchor="middle">데이터베이스</text></g>
+<g id="n-0" class="fl-node fl-shape-box" tabindex="0" role="img" aria-label="클라이언트" data-id="client"><rect x="28" y="62" width="100" height="47" rx="8" fill="var(--color-ui-card)" class="fl-stroke a0"/><text x="78" y="90.9" class="label" text-anchor="middle">클라이언트</text></g>
+<g id="n-1" class="fl-node fl-shape-box" tabindex="0" role="img" aria-label="서버" data-id="server"><rect x="328.4" y="28" width="176" height="115" rx="8" fill="var(--color-ui-card)" class="fl-stroke a0"/><text x="416.4" y="56.9" class="label" text-anchor="middle">서버</text><rect x="338.4" y="75" width="156" height="58" rx="6" fill="var(--color-ui-card)" opacity="0" class="fl-card a2"/><g id="n-1-c0" opacity="0" visibility="hidden" class="fl-layer a1"><text x="346.4" y="95.7" class="row">주문을 확인하고 저장합니다</text><text x="346.4" y="121.7" class="row">처리 중</text></g></g>
+<g id="n-2" class="fl-node fl-shape-store" tabindex="0" role="img" aria-label="데이터베이스" data-id="db"><path d="M683.1 62 a 56 12 0 0 1 112 0 v 47 a 56 12 0 0 1 -112 0 z" fill="var(--color-ui-card)" class="fl-stroke a0"/><path d="M683.1 62 a 56 12 0 0 0 112 0" fill="none" class="fl-stroke a0"/><text x="739.1" y="90.9" class="label" text-anchor="middle">데이터베이스</text></g>
 <g id="e-0" class="fl-edge "><defs><marker id="fl-arrow-0" viewBox="0 0 5 5" refX="4" refY="2.5" markerWidth="5" markerHeight="5" orient="auto-start-reverse" overflow="visible"><path class="fl-arrowhead" d="M 1.1 0.25 L 4 2.5 L 1.1 4.75 Z" stroke-width="1"/></marker></defs><path id="p-0" d="M 128 85.5 L 328.4 85.5" class="fl-path" marker-end="url(#fl-arrow-0)"/></g>
 <g id="e-1" class="fl-edge "><defs><marker id="fl-arrow-1" viewBox="0 0 5 5" refX="4" refY="2.5" markerWidth="5" markerHeight="5" orient="auto-start-reverse" overflow="visible"><path class="fl-arrowhead" d="M 1.1 0.25 L 4 2.5 L 1.1 4.75 Z" stroke-width="1"/></marker></defs><path id="p-1" d="M 504.4 85.5 L 683.1 85.5" class="fl-path" marker-end="url(#fl-arrow-1)"/></g>
 <g class="fl-value"><text x="486.4" y="121.7" class="value" text-anchor="end" opacity="1" data-v="0" data-t="0">0</text></g>

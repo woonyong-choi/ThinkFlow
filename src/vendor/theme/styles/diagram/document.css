@@ -8,8 +8,8 @@ body {
   padding: var(--spacing-12) var(--spacing-6);
   font-family: var(--font-sans);
   letter-spacing: var(--tracking-text);
-  color: var(--color-fg);
-  background: var(--color-page);
+  color: var(--color-ink);
+  background: var(--color-ui-card);
 }
 
 .bar {
@@ -37,7 +37,7 @@ article {
 h1 {
   padding-bottom: var(--spacing-1-5);
   font-size: var(--text-heading);
-  font-weight: var(--font-weight-weight-title);
+  font-weight: var(--font-weight-bold);
   line-height: var(--leading-heading);
   word-break: keep-all;
   overflow-wrap: anywhere;
@@ -69,7 +69,7 @@ code {
 
 .kind {
   font-size: var(--text-figure-11);
-  color: var(--color-muted);
+  color: var(--color-ui-muted);
 }
 
 /* GitHub README에서는 <p align="center"> 안 img와 같다. */

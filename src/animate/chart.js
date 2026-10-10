@@ -76,7 +76,7 @@ function animateDimming({ clock, segs, css, windows, scope, state }, drawn) {
     if (drawn.dimsInkColor) {
       // 밝힌 칸이 있고 밝히지 않은 칸도 있을 때만 밝힌 칸이 굵다. 모든 칸을 밝히면 구별할 칸이 없어 굵기가 그대로다(재생기 chart.css `:has(.chart-cell.dim)`과 같다).
       const isBold = segs.map((g) => lit(g).includes(key) && drawn.rowKeys.some((other) => !lit(g).includes(other)));
-      push([`${scope} .cr-${k}.ink`, declare(isBold, { on: 'font-weight: var(--font-weight-semibold)', off: 'font-weight: var(--weight-regular)' })]);
+      push([`${scope} .cr-${k}.ink`, declare(isBold, { on: 'font-weight: var(--font-weight-semibold)', off: 'font-weight: var(--font-weight-normal)' })]);
       return;
     }
     const isDim = segs.map((g) => lit(g).length > 0 && !lit(g).includes(key));

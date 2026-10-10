@@ -51,7 +51,7 @@ ${VIEW_BUTTONS}
 ${narrow}
 ${source === undefined ? '' : sourceScript(source)}
 <div class="fl-foot">
-${TabList({ id: 'scene', label: '장면 선택', labels, selector: 'segmented', controls: labels.map(() => 'scene-panel'), inlineCode: true, afterPanel: true })}
+${TabList({ id: 'scene', label: '장면 선택', labels, controls: labels.map(() => 'scene-panel'), inlineCode: true, afterPanel: true })}
 </div>
 </figure>`;
 }

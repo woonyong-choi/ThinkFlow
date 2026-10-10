@@ -36,23 +36,6 @@ function initContent(root) {
     initialized.add(block);
     bindToolbar(block, { source: () => block.querySelector('code').textContent });
   }
-  for (const section of root.querySelectorAll('[data-keyboard]')) {
-    if (initialized.has(section)) continue;
-    initialized.add(section);
-    const select = section.querySelector('[data-keyboard-language]');
-    select.addEventListener('change', () => {
-      section.querySelectorAll('[data-keyboard-keys]').forEach(element => {
-        const variants = JSON.parse(element.dataset.keyboardMap);
-        const keys = variants[select.value] ?? variants['en-us'];
-        element.replaceChildren(...keys.flatMap((key,index) => {
-          const kbd = document.createElement('kbd');
-          kbd.textContent = key;
-          return index ? [document.createTextNode(' '), kbd] : [kbd];
-        }));
-      });
-    });
-  }
-
   for (const button of root.querySelectorAll('[data-tooltip-trigger]')) {
     if (initialized.has(button)) continue;
     initialized.add(button);

@@ -21,7 +21,7 @@ export function surfaceOutline(it) {
 }
 
 /** 도형 면의 채움 속성. 카드와 원통, 갈림길, 원이 같은 중립 카드 면을 쓴다. 고른 옅은 면(filled)은 CSS(draw/paint.js)가 덮는다. */
-export const SURFACE_FILL = `fill="${tokens.color.node}"`;
+export const SURFACE_FILL = `fill="${tokens.color["ui-card"]}"`;
 
 /** 카드 면 하나. tail은 stroke 뒤에 붙는 속성(점선 등)이다. */
 export function drawSurface(it, stroke, tail = '') {

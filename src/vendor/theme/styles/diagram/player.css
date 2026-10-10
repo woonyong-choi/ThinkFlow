@@ -10,8 +10,8 @@ body {
   padding: var(--spacing-12) var(--spacing-6);
   font-family: var(--font-figure-sans);
   letter-spacing: var(--tracking-text);
-  color: var(--color-fg);
-  background: var(--color-page);
+  color: var(--color-ink);
+  background: var(--color-ui-card);
 }
 
 /* 본문이나 목록 카드에 삽입된 재생기(iframe)는 둘러싼 면 위에 그대로 놓인다. 바탕을 칠하지 않고 바깥 여백이 없어 그림이 본문 흐름에 붙는다. */
@@ -31,8 +31,8 @@ html.embedded body {
   max-width: var(--figure-canvas, var(--spacing-figure-figure-canvas));
   margin: 0 auto;
   overflow: clip;
-  color: var(--color-fg);
-  background: var(--color-page);
+  color: var(--color-ink);
+  background: var(--color-ui-card);
   border-radius: 0;
 }
 
@@ -44,7 +44,7 @@ html.embedded .fl-figure {
 }
 
 html.embedded .fl-figure.full {
-  background: var(--color-page);
+  background: var(--color-ui-card);
 }
 
 /* 그림의 바탕은 SVG와 같다. 도구 막대는 이 면 위 오른쪽 위에 뜬다. */
@@ -108,12 +108,6 @@ html.embedded .fl-figure.full {
 .fl-foot > .app-tablist {
   justify-content: center;
   min-width: 0;
-}
-
-/* 백틱으로 감싼 글. 코드 글꼴로 그린다. */
-.fl-code {
-  font-family: var(--font-figure-mono);
-  letter-spacing: normal;
 }
 
 /* 전체 화면은 같은 틀을 창 전체로 키우는 것뿐이다. 문서 안에서는 자연 높이이고 전체 화면에서만 창 높이를 채운다. */

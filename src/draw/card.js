@@ -33,8 +33,8 @@ export function drawCard(it, stroke, paint) {
 // vars: t = text 수, out = 만든 SVG 글자 수
 // basis: estimate
 /** 카드 머리와 본문 글: 장식(아이콘, 배지, 개수) 뒤에 도형의 text 전부. 열과 칸의 글은 그 부분이 그린다. */
-export function drawHead(it, { glyphs }) {
-  const decor = it.decor ? drawDecor(it.decor, { x: it.x + it.decor.x, y: it.y + it.decor.y, iconData: it.iconData }, glyphs) : '';
+export function drawHead(it, { glyphs, index }) {
+  const decor = it.decor ? drawDecor(it.decor, { x: it.x + it.decor.x, y: it.y + it.decor.y, iconData: it.iconData, prefix: `icon-n-${index}` }, glyphs) : '';
   return decor + drawTexts(it.texts ?? [], it, glyphs);
 }
 
