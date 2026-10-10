@@ -5,10 +5,7 @@
 `.thinkflow` 텍스트 원본 하나를 문서용 움직이는 SVG 그림으로 바꿉니다. 구조, 순서, 상태, 스키마, 클래스, 추적과 차트를 그리고, 점이 닿을 때 값이 바뀌는 모습까지 보입니다.
 
 <p align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="docs/assets/thinkflow-dark.svg">
-    <img src="docs/assets/thinkflow-light.svg" alt="ThinkFlow" width="160">
-  </picture>
+  <img src="docs/assets/thinkflow-logo.png" alt="ThinkFlow 로고: 투명한 느낌표가 파란 선을 그리고 그 아래 ThinkFlow 글자가 놓인 모습" width="320">
 </p>
 
 <p align="center">
