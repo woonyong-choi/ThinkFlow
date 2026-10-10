@@ -228,11 +228,11 @@ GitHub 마크다운은 ` ```thinkflow ` 블록을 코드로 보이고 아래 이
 
 | 경로 | 명령 | 상태 |
 |---|---|---|
-| 저장소 설치 | `npm install --save-dev github:woonyong-choi/ThinkFlow#main` | 현재 `thinkflow` 문법 |
-| 설치 후 실행 | `npx thinkflow md doc.md` | 잠금 파일에 고정된 소스 |
+| npm 설치 | `npm install --save-dev thinkflow` | 공개 npm 패키지 |
+| 설치 후 실행 | `npx thinkflow md doc.md` | 잠금 파일에 고정된 버전 |
 | GitHub Action | `uses: woonyong-choi/ThinkFlow@main` | 지금 |
 
-ThinkFlow의 첫 npm 배포 전에는 현재 소스를 설치한다. 현재 문법의 문서에는 저장소 소스를 설치하고 잠금 파일을 함께 관리한다.
+설치한 프로젝트의 잠금 파일을 함께 커밋하고 `npm ci`로 같은 버전을 설치한다.
 
 저장소 루트 `action.yml`은 composite Action이다. 의존 패키지를 Action 폴더에 설치한 뒤 입력에 맞춰 명령을 돌린다.
 

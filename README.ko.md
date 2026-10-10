@@ -56,10 +56,10 @@ scene "Chat"
 
 ## 설치
 
-Node.js 20 이상이 필요합니다. ThinkFlow의 첫 npm 배포 전에는 현재 소스를 설치합니다.
+Node.js 20 이상이 필요합니다.
 
 ```sh
-npm install --save-dev github:woonyong-choi/ThinkFlow#main
+npm install --save-dev thinkflow
 ```
 
 `npx thinkflow <명령>`으로 실행합니다. 패키지에는 Node.js용 ESM API와 TypeScript 선언도 포함됩니다.

@@ -56,10 +56,10 @@ scene "Chat"
 
 ## Installation
 
-Requirements: Node.js 20 or later. Install the current source until the first ThinkFlow npm release is published.
+Requirements: Node.js 20 or later.
 
 ```sh
-npm install --save-dev github:woonyong-choi/ThinkFlow#main
+npm install --save-dev thinkflow
 ```
 
 Run it with `npx thinkflow <command>`. The package also includes an ESM API and TypeScript declarations for Node.js.

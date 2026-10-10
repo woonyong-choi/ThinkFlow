@@ -6,13 +6,13 @@ ThinkFlow는 텍스트로 문서용 그림을 만드는 도구입니다. 구성 
 
 ## 설치와 버전 확인
 
-Node.js 20 이상과 npm이 필요합니다. ThinkFlow의 첫 npm 배포 전에는 현재 저장소를 설치합니다.
+Node.js 20 이상과 npm이 필요합니다.
 
 ```sh
-npm install --save-dev github:woonyong-choi/ThinkFlow#main
+npm install --save-dev thinkflow
 ```
 
-설치한 프로젝트에서 `npx thinkflow`로 실행합니다. 팀에서 같은 결과를 만들려면 `package-lock.json`을 함께 커밋하고 `npm ci`를 사용합니다. Git 의존성도 잠금 파일에 해석된 커밋이 기록됩니다. 특정 검증판을 고정할 때는 `#main` 자리에 그 커밋의 전체 SHA를 사용합니다.
+설치한 프로젝트에서 `npx thinkflow`로 실행합니다. 팀에서 같은 결과를 만들려면 `package-lock.json`을 함께 커밋하고 `npm ci`를 사용합니다.
 
 패키지 버전은 다음 명령으로 확인할 수 있습니다. 원본 첫 줄에는 버전 숫자 없이 `thinkflow`만 적습니다.
 
