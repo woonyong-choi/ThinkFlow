@@ -296,9 +296,9 @@ button.app-tooltip { padding: 0; background: none; color: var(--color-control-li
 .app-suggestion-label { margin: var(--spacing-gap-sm) var(--spacing-search-results-padding) 0; color: var(--color-ui-muted); font-size: var(--text-small-text); }
 /* 카드와 칩: 도움말 카드(변형 is-*), 지식 카드, 태그. 화면 모듈은 맥락 선택자로 배치만 바꾼다. */
 .app-help-card { position: relative; display: block; padding: var(--spacing-card-top) var(--spacing-card-right) var(--spacing-card-inset) var(--spacing-card-inset); color: var(--color-body); background: var(--color-help-bg); border: var(--border-width-thin) solid var(--color-help-border); border-radius: var(--radius-help-radius); line-height: var(--leading-line-card); }
-.app-help-card:hover { text-decoration: none; background: var(--color-soft); }
+.app-help-card:hover { text-decoration: none; }
 .app-help-card strong { display: block; font-weight: var(--font-weight-bold); word-break: keep-all; overflow-wrap: anywhere; }
-.app-help-card::after { content: ''; position: absolute; right: var(--spacing-gap-xs); border-top: var(--spacing-underline) solid var(--color-ui-line); border-right: var(--spacing-underline) solid var(--color-ui-line); }
+.app-help-card::after { content: ''; position: absolute; right: var(--spacing-gap-xs); }
 .app-help-card.is-compact { padding: var(--spacing-compact-inset) var(--spacing-card-right) var(--spacing-compact-inset) var(--spacing-compact-inset); line-height: var(--leading-line-compact); font-size: var(--text-compact-text); font-weight: var(--font-weight-semibold); }
 .app-help-card .app-article-icon { width: var(--spacing-icon-lg); height: var(--spacing-icon-lg); position: absolute; top: var(--spacing-card-inset); left: var(--spacing-card-inset); }
 .app-support-grid.is-pair > .app-help-card:not(.is-compact) { min-height: var(--spacing-support-card-min); }
@@ -700,7 +700,7 @@ button.app-tooltip { padding: 0; background: none; color: var(--color-control-li
 .app-landing-hero { background: var(--color-canvas); }
 .app-hero-copy { width: var(--container-intro); max-width: var(--spacing-hero-max); margin: auto; padding-block: calc(var(--spacing-hero-top) + var(--spacing-gap-sm)) var(--spacing-hero-top); font-size: var(--text-intro-text); line-height: var(--leading-line-intro); text-align: center; }
 .app-hero-copy :is(.app-hero-logo, .app-hero-wordmark) { margin-bottom: calc(var(--text-intro-text) * 1.5); }
-.app-hero-copy .app-hero-logo { max-width: 75%; }
+.app-hero-copy .app-hero-logo { max-width: var(--spacing-hero-logo-max); }
 .app-hero-title { margin: 0 auto calc(var(--text-intro-text) * 1.5); font-size: var(--text-section-title); font-weight: var(--font-weight-bold); line-height: var(--leading-landing-title-line); color: var(--color-landing-title-color); }
 .app-hero-description { color: var(--color-description-color); margin: var(--spacing-landing-description-margin) auto; }
 .app-hero-description, .app-landing-heading > p { word-break: keep-all; overflow-wrap: anywhere; }
