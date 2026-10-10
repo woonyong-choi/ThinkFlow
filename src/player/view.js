@@ -66,6 +66,7 @@ function bindPan(viewer) {
 // 브라우저 전체 화면을 먼저 쓰고, 막혀 있으면(iframe에 allowfullscreen이 없을 때 등) 창을 덮는 모양으로 대신한다.
 function setFull(viewer, isFull) {
   const { root } = viewer;
+  if (isFull && !root.classList.contains('full')) viewer.returnFocus = document.activeElement;
   const canUseApi = Boolean(root.requestFullscreen) && document.fullscreenEnabled;
   if (!canUseApi) return showFull(viewer, isFull);
   if (isFull) root.requestFullscreen().catch(() => showFull(viewer, true));
@@ -75,6 +76,8 @@ function setFull(viewer, isFull) {
 
 function showFull(viewer, isFull) {
   const { root, fullButton } = viewer;
+  const wasFull = root.classList.contains('full');
+  if (isFull && !wasFull && !viewer.returnFocus) viewer.returnFocus = document.activeElement;
   root.classList.toggle('full', isFull);
   // 스크롤하는 전체 화면 캔버스만 키보드 초점을 받아 방향키로 옮겨 볼 수 있다. 문서 안 캔버스는 넘치지 않는다.
   if (isFull) viewer.canvas.tabIndex = 0;
@@ -89,6 +92,12 @@ function showFull(viewer, isFull) {
   else {
     clearFull(viewer);
     viewer.fit?.();
+    if (wasFull) {
+      const previous = viewer.returnFocus;
+      const target = previous?.isConnected && previous !== document.body && previous !== document.documentElement ? previous : fullButton;
+      viewer.returnFocus = undefined;
+      target.focus({ preventScroll: true });
+    }
   }
 }
 
