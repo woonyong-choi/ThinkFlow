@@ -96,7 +96,7 @@ export function readApi({ tokens, line }, ctx) {
 // vars: t = 문장 낱말 수
 // basis: estimate
 /** 테이블과 API 안 줄. `}`면 블록을 닫고, 아니면 테이블은 `열 타입 [pk] [unique] [fk=테이블.열]`, API는 `칸 타입`이다. 이름은 대소문자를 가린다. */
-export function readColumn({ tokens, line }, ctx) {
+export function readColumn({ tokens, line, hasLexError }, ctx) {
   const [name, type, ...rest] = tokens;
   const card = ctx.block.card;
   const isApi = ctx.block.kind === 'api';
@@ -105,6 +105,7 @@ export function readColumn({ tokens, line }, ctx) {
     ctx.block = undefined;
     return;
   }
+  if (hasLexError || card.isRejected) return;
   if (!isApi && STATEMENTS[name.value]?.in === 'table' && type?.type === 'word' && type.value.startsWith('(')) {
     readTableKey({ tokens, line }, ctx);
     return;
