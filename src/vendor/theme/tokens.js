@@ -303,7 +303,6 @@ export const tokens = freeze({
     "prose-link-active": "var(--color-prose-link-active)",
     "prose-mark-background": "var(--color-prose-mark-background)",
     "prose-marker": "var(--color-prose-marker)",
-    "code-copy-hover": "var(--color-code-copy-hover)",
     "action-link": "var(--color-action-link)",
     "category": {
       "blue": {
@@ -517,7 +516,6 @@ export const tokens = freeze({
     "comments-preview-height": "var(--spacing-comments-preview-height)",
     "post-header-margin": "var(--spacing-post-header-margin)",
     "post-title-margin": "var(--spacing-post-title-margin)",
-    "post-title-width": "var(--spacing-post-title-width)",
     "post-lead-margin": "var(--spacing-post-lead-margin)",
     "post-paragraph-margin": "var(--spacing-post-paragraph-margin)",
     "post-caption-margin": "var(--spacing-post-caption-margin)",
@@ -951,7 +949,6 @@ export const tokens = freeze({
     "post-date-color": "var(--primitive-post-date-color)",
     "post-title-size": "var(--primitive-post-title-size)",
     "post-title-margin": "var(--primitive-post-title-margin)",
-    "post-title-width": "var(--primitive-post-title-width)",
     "post-lead-size": "var(--primitive-post-lead-size)",
     "post-lead-margin": "var(--primitive-post-lead-margin)",
     "post-h2-margin": "var(--primitive-post-h2-margin)",
@@ -1658,7 +1655,6 @@ export const values = freeze({
     "prose-link-active": "#114691",
     "prose-mark-background": "#fcf9cf",
     "prose-marker": "rgba(0,15,36,.46)",
-    "code-copy-hover": "#5b9aff",
     "action-link": "#2576eb",
     "category": {
       "blue": {
@@ -1872,7 +1868,6 @@ export const values = freeze({
     "comments-preview-height": 240,
     "post-header-margin": 36,
     "post-title-margin": 18.9,
-    "post-title-width": "84%",
     "post-lead-margin": 31.5,
     "post-paragraph-margin": 25.2,
     "post-caption-margin": 12.015,
@@ -2306,7 +2301,6 @@ export const values = freeze({
     "post-date-color": "#989fa8",
     "post-title-size": 37.8,
     "post-title-margin": 18.9,
-    "post-title-width": "84%",
     "post-lead-size": 22.5,
     "post-lead-margin": 31.5,
     "post-h2-margin": "69.1875px 0 23.0625px",

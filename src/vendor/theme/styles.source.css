@@ -126,15 +126,16 @@ body > main { overflow-x: clip; }
 .app-tool-surface { position: relative; background: var(--color-prose-pre-background); border-radius: var(--radius-card-radius); }
 .app-tool-header { position: relative; z-index: var(--z-index-raised); display: flex; flex: 0 0 auto; align-items: center; justify-content: space-between; gap: var(--spacing-3); min-width: 0; padding: var(--spacing-1-5); }
 .app-tool-label { min-width: 0; padding-inline-start: var(--spacing-1-5); overflow: hidden; color: var(--color-ui-muted); font-size: var(--text-post-date-size); text-overflow: ellipsis; white-space: nowrap; }
-.app-toolbar, .app-tool-group { position: relative; display: flex; align-items: center; gap: var(--spacing-0-5); padding: var(--spacing-0-5); background: var(--color-ui-card); border: var(--border-width-thin) solid var(--color-ui-line); border-radius: var(--radius-md); box-shadow: var(--shadow-diagram); }
+.app-toolbar, .app-tool-group { position: relative; display: flex; align-items: center; gap: var(--spacing-0-5); padding: var(--spacing-0-5); border-radius: var(--radius-md); }
 .app-toolbar { font-family: var(--font-sans); flex: 0 1 auto; min-width: 0; max-width: 100%; margin-inline-start: auto; opacity: 0; transition: opacity var(--duration-fast); }
 .app-tool-surface:hover .app-toolbar, .app-tool-surface:has(:focus-visible) .app-toolbar, .app-toolbar:has(.app-tool-status:not(:empty)) { opacity: 1; }
 .app-tool-button { display: grid; flex: 0 0 auto; place-items: center; box-sizing: border-box; width: var(--spacing-figure-control-inner); height: var(--spacing-figure-control-inner); padding: 0; color: var(--color-ui-muted); background: transparent; border: 0; border-radius: var(--radius-feature-tab-button-radius); cursor: pointer; }
 .app-tool-icon { display: block; width: var(--spacing-figure-control-icon); height: var(--spacing-figure-control-icon); stroke-width: var(--spacing-figure-control-icon-stroke); }
+.app-tool-button:hover, .app-tool-button:active, .app-tool-button:focus-visible { color: var(--color-accent); background: var(--color-control-hover); }
+.app-tool-button:active { background: var(--color-control-active); }
+.app-tool-button:focus-visible { outline: var(--outline-width-focus) solid var(--color-ui-focus); outline-offset: var(--spacing-0-5); }
 .app-tool-button[data-state='done'] { color: var(--color-state-success); }
 .app-tool-button[data-state='failed'] { color: var(--color-state-error); }
-.app-tool-button:hover, .app-tool-button:active, .app-tool-button:focus-visible { color: var(--color-control-paper); background: var(--color-code-copy-hover); }
-.app-tool-button:focus-visible { outline: var(--outline-width-focus) solid var(--color-ui-focus); outline-offset: var(--spacing-0-5); }
 .app-tool-button:disabled { color: var(--color-ui-muted); cursor: default; background: transparent; }
 .app-tool-button[hidden] { display: none; }
 .app-copy-holder { position: fixed; top: 0; left: 0; opacity: 0; pointer-events: none; }
@@ -296,7 +297,7 @@ button.app-tooltip { padding: 0; background: none; color: var(--color-control-li
 /* 카드와 칩: 도움말 카드(변형 is-*), 지식 카드, 태그. 화면 모듈은 맥락 선택자로 배치만 바꾼다. */
 .app-help-card { position: relative; display: block; padding: var(--spacing-card-top) var(--spacing-card-right) var(--spacing-card-inset) var(--spacing-card-inset); color: var(--color-body); background: var(--color-help-bg); border: var(--border-width-thin) solid var(--color-help-border); border-radius: var(--radius-help-radius); line-height: var(--leading-line-card); }
 .app-help-card:hover { text-decoration: none; background: var(--color-soft); }
-.app-help-card strong { display: block; font-weight: var(--font-weight-bold); }
+.app-help-card strong { display: block; font-weight: var(--font-weight-bold); word-break: keep-all; overflow-wrap: anywhere; }
 .app-help-card::after { content: ''; position: absolute; right: var(--spacing-gap-xs); border-top: var(--spacing-underline) solid var(--color-ui-line); border-right: var(--spacing-underline) solid var(--color-ui-line); }
 .app-help-card.is-compact { padding: var(--spacing-compact-inset) var(--spacing-card-right) var(--spacing-compact-inset) var(--spacing-compact-inset); line-height: var(--leading-line-compact); font-size: var(--text-compact-text); font-weight: var(--font-weight-semibold); }
 .app-help-card .app-article-icon { width: var(--spacing-icon-lg); height: var(--spacing-icon-lg); position: absolute; top: var(--spacing-card-inset); left: var(--spacing-card-inset); }
@@ -516,18 +517,19 @@ button.app-tooltip { padding: 0; background: none; color: var(--color-control-li
 .app-media-controls { margin-block: var(--spacing-gap-sm); text-align: center; }
 /* 3. 화면 묶음: 위 조각을 조합하고 화면별로 덮어쓴다 */
 /* 문서 상세: 제목 줄, 목차, 문서 목록 접기, 함께 읽기, 날짜와 예시 안내. */
-.app-article-title { display: flex; align-items: center; border-bottom: var(--spacing-underline) solid var(--color-ui-line); font-size: var(--text-section-title); color: var(--color-ink); }
+.app-article-title { border-bottom: var(--spacing-underline) solid var(--color-ui-line); font-size: var(--text-section-title); word-break: keep-all; overflow-wrap: anywhere; color: var(--color-ink); }
+.app-article-title > .app-content-icon { margin-inline-end: var(--spacing-gap-xs); }
 .app-article-lead { font-size: var(--text-article-lead); line-height: var(--leading-line-intro); }
 .app-toc { padding: var(--text-body-text) var(--spacing-platform-inset); margin: 0 0 var(--spacing-prose-paragraph-gap); border: var(--border-width-thin) solid var(--color-toc-border); border-radius: var(--radius-prose-pre-radius); background: var(--color-toc-background); font-size: var(--text-body-text); line-height: var(--leading-feature-body-line); color: var(--color-body); }
 .app-toc-heading { margin: 0 0 calc(var(--text-body-text) / 2); padding: 0; border: 0; font-size: inherit; line-height: inherit; font-weight: var(--font-weight-bold); }
 .app-toc-list { margin: 0 0 var(--spacing-callout-title-gap); padding-left: var(--spacing-prose-list-inset); list-style: decimal; font-variant-numeric: tabular-nums; }
 .app-toc-list li::marker { color: var(--color-toc-marker); }
 .app-toc a { color: inherit; text-decoration: underline var(--color-toc-underline); }
-.app-article-title { gap: var(--spacing-gap-xs); line-height: var(--leading-article-title-line); padding-bottom: var(--spacing-article-title-padding); margin-bottom: var(--spacing-article-title-gap); }
+.app-article-title { line-height: var(--leading-article-title-line); padding-bottom: var(--spacing-article-title-padding); margin-bottom: var(--spacing-article-title-gap); }
 .app-document-shell { line-height: var(--leading-feature-body-line); }
 .app-document { min-width: 0; max-width: var(--container-body-width); margin: var(--spacing-article-search-bottom) auto 0; overflow-wrap: anywhere; }
 .app-document-header { margin-bottom: var(--spacing-article-title-gap); }
-.app-document-header .app-article-title { align-items: flex-start; margin: 0; border-color: var(--color-article-title-border); }
+.app-document-header .app-article-title { margin: 0; border-color: var(--color-article-title-border); }
 .app-document-lead { font-size: var(--text-post-lead-size); margin: 0 0 var(--spacing-post-lead-margin); }
 .app-document-metadata { margin-bottom: var(--spacing-post-lead-margin); }
 .app-document-dates { display: flex; flex-wrap: wrap; gap: var(--spacing-gap-sm); color: var(--color-ui-muted); font-size: var(--text-small-text); }
@@ -629,7 +631,7 @@ button.app-tooltip { padding: 0; background: none; color: var(--color-control-li
 .app-blog-post { padding: var(--component-post-padding); margin: 0 auto; color: var(--color-ink); line-height: var(--leading-feature-body-line); }
 .app-post-header { margin: var(--spacing-post-header-margin) 0; }
 .app-post-date { font-size: var(--text-post-date-size); line-height: var(--leading-feature-body-line); color: var(--color-post-date-color); }
-.app-post-title { margin: var(--spacing-post-title-margin) calc((100% - var(--spacing-post-title-width)) / 2); font-size: var(--text-post-title-size); }
+.app-post-title { margin: var(--spacing-post-title-margin) 0; font-size: var(--text-post-title-size); word-break: keep-all; overflow-wrap: anywhere; }
 .app-post-title { line-height: var(--leading-post-title-line); }
 .app-blog-card { position: relative; display: flex; flex-direction: column; min-width: 0; overflow: hidden; border: var(--border-width-thin) solid var(--color-help-border); border-radius: var(--radius-help-radius); background: var(--color-help-bg); isolation: isolate; }
 .app-blog-card-link { display: flex; flex-direction: column; flex: 1; min-width: 0; color: inherit; }
@@ -675,7 +677,6 @@ button.app-tooltip { padding: 0; background: none; color: var(--color-control-li
 .app-post-footer .app-caption { text-align: center; }
 .app-post-author { margin: 0; font-size: var(--text-post-date-size); line-height: var(--leading-feature-body-line); text-align: center; color: var(--color-post-date-color); }
 .app-post-footer .app-tags { justify-content: center; }
-.app-publication .app-article-title { overflow-wrap: anywhere; }
 .app-publication .app-document-header .app-tags a { text-decoration: none; }
 .app-post-footer .app-document-dates { justify-content: center; }
 .app-post-footer .app-example-notice { text-align: left; }
@@ -710,7 +711,8 @@ button.app-tooltip { padding: 0; background: none; color: var(--color-control-li
 .app-landing-section { padding-block: var(--spacing-landing-section); background: var(--color-ui-card); }
 .app-landing-heading { width: var(--spacing-landing-heading-width); max-width: var(--spacing-landing-heading-max); margin: var(--spacing-landing-heading-space) auto; text-align: center; }
 .app-landing-heading :is(h1,h2) { margin: var(--spacing-landing-heading-margin) 0; font-size: var(--text-section-title); line-height: var(--leading-landing-title-line); font-weight: var(--font-weight-bold); word-break: keep-all; }
-.app-landing-heading :is(h1,h2) img { display: inline-block; width: var(--spacing-landing-icon); height: auto; margin-left: var(--spacing-landing-icon-left); margin-bottom: var(--spacing-landing-icon-bottom); margin-right: var(--spacing-landing-icon-right); }
+.app-landing-icon { display: inline-flex; align-items: center; justify-content: center; width: var(--spacing-landing-icon); height: var(--spacing-landing-icon); margin-left: var(--spacing-landing-icon-left); margin-bottom: var(--spacing-landing-icon-bottom); margin-right: var(--spacing-landing-icon-right); vertical-align: bottom; }
+.app-landing-icon > img { width: 100%; height: auto; }
 .app-landing-heading > p { color: var(--color-description-color); margin: var(--spacing-landing-description-margin) auto; font-size: var(--text-landing-intro); line-height: var(--leading-feature-line); }
 .app-landing-action { display: inline-block; padding: var(--spacing-platform-button-gap) var(--spacing-platform-button-y); border-radius: var(--spacing-tab-button-inset); font-weight: var(--font-weight-semibold); color: var(--color-control-link); }
 .app-landing-action::after { content: ''; display: inline-block; width: var(--spacing-help-mobile-block); height: var(--text-landing-review-font); margin-left: var(--spacing-landing-chevron-gap); margin-right: var(--spacing-landing-chevron-offset); vertical-align: var(--spacing-landing-chevron-align); background: url('./assets/icons/navigation/chevron-right.svg') 0 0 / 100% 100% no-repeat; }

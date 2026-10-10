@@ -22,7 +22,7 @@ export const SocialRow = ({ links }) => out(`<p class="app-landing-social">${slo
 /** 섹션 머리: 아이콘, 제목(글자 또는 슬롯), 설명 단락 슬롯, 링크 행 슬롯, 동작 링크. 홈 섹션과 기능 소개가 같이 쓴다. */
 export function SectionIntro({ level = 2, id: heading, icon, title, description, links, action }) {
   if (!Number.isInteger(level) || level < 1 || level > 6) throw new Error(`Invalid heading level: ${level}`);
-  return out(`<div class="app-landing-heading"><h${level}${heading ? ` id="${id(heading)}"` : ''}>${icon === undefined ? '' : `${slot(icon, 'icon')} `}${isTrusted(title) ? title.html : escape(title)}</h${level}>${description === undefined ? '' : slot(description, 'description')}${links === undefined ? '' : SocialRow({ links })}${action ? `<p><a class="app-landing-action" href="${safeUrl(action.href)}">${escape(action.label)}</a></p>` : ''}</div>`);
+  return out(`<div class="app-landing-heading"><h${level}${heading ? ` id="${id(heading)}"` : ''}>${icon === undefined ? '' : `<span class="app-landing-icon">${slot(icon, 'icon')}</span> `}${isTrusted(title) ? title.html : escape(title)}</h${level}>${description === undefined ? '' : slot(description, 'description')}${links === undefined ? '' : SocialRow({ links })}${action ? `<p><a class="app-landing-action" href="${safeUrl(action.href)}">${escape(action.label)}</a></p>` : ''}</div>`);
 }
 /** 링크 행의 항목. 주소가 없으면 아이콘만 보이는 자리표시이며 링크로 읽히지 않는다. */
 export function SocialLink({ href, label, icon }) {

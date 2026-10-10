@@ -3,15 +3,16 @@
 .app-tool-surface { position: relative; background: var(--color-prose-pre-background); border-radius: var(--radius-card-radius); }
 .app-tool-header { position: relative; z-index: var(--z-index-raised); display: flex; flex: 0 0 auto; align-items: center; justify-content: space-between; gap: var(--spacing-3); min-width: 0; padding: var(--spacing-1-5); }
 .app-tool-label { min-width: 0; padding-inline-start: var(--spacing-1-5); overflow: hidden; color: var(--color-ui-muted); font-size: var(--text-post-date-size); text-overflow: ellipsis; white-space: nowrap; }
-.app-toolbar, .app-tool-group { position: relative; display: flex; align-items: center; gap: var(--spacing-0-5); padding: var(--spacing-0-5); background: var(--color-ui-card); border: var(--border-width-thin) solid var(--color-ui-line); border-radius: var(--radius-md); box-shadow: var(--shadow-diagram); }
+.app-toolbar, .app-tool-group { position: relative; display: flex; align-items: center; gap: var(--spacing-0-5); padding: var(--spacing-0-5); border-radius: var(--radius-md); }
 .app-toolbar { font-family: var(--font-sans); flex: 0 1 auto; min-width: 0; max-width: 100%; margin-inline-start: auto; opacity: 0; transition: opacity var(--duration-fast); }
 .app-tool-surface:hover .app-toolbar, .app-tool-surface:has(:focus-visible) .app-toolbar, .app-toolbar:has(.app-tool-status:not(:empty)) { opacity: 1; }
 .app-tool-button { display: grid; flex: 0 0 auto; place-items: center; box-sizing: border-box; width: var(--spacing-figure-control-inner); height: var(--spacing-figure-control-inner); padding: 0; color: var(--color-ui-muted); background: transparent; border: 0; border-radius: var(--radius-feature-tab-button-radius); cursor: pointer; }
 .app-tool-icon { display: block; width: var(--spacing-figure-control-icon); height: var(--spacing-figure-control-icon); stroke-width: var(--spacing-figure-control-icon-stroke); }
+.app-tool-button:hover, .app-tool-button:active, .app-tool-button:focus-visible { color: var(--color-accent); background: var(--color-control-hover); }
+.app-tool-button:active { background: var(--color-control-active); }
+.app-tool-button:focus-visible { outline: var(--outline-width-focus) solid var(--color-ui-focus); outline-offset: var(--spacing-0-5); }
 .app-tool-button[data-state='done'] { color: var(--color-state-success); }
 .app-tool-button[data-state='failed'] { color: var(--color-state-error); }
-.app-tool-button:hover, .app-tool-button:active, .app-tool-button:focus-visible { color: var(--color-control-paper); background: var(--color-code-copy-hover); }
-.app-tool-button:focus-visible { outline: var(--outline-width-focus) solid var(--color-ui-focus); outline-offset: var(--spacing-0-5); }
 .app-tool-button:disabled { color: var(--color-ui-muted); cursor: default; background: transparent; }
 .app-tool-button[hidden] { display: none; }
 .app-copy-holder { position: fixed; top: 0; left: 0; opacity: 0; pointer-events: none; }
