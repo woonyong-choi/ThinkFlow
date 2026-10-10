@@ -163,7 +163,12 @@ async function runWrite(path) {
   if (isDirty) return refuse('uncommitted changes. Commit first so the recorded code hash reproduces the measurement');
   const paths = sourcesOf();
   const now = summarize(await measure(paths));
-  writeFileSync(path, `${JSON.stringify({ ...now, codeHash: hash, scriptHash: scriptHash(), inputs: inputsOf(paths) }, null, 2)}\n`);
+  try {
+    writeFileSync(path, `${JSON.stringify({ ...now, codeHash: hash, scriptHash: scriptHash(), inputs: inputsOf(paths) }, null, 2)}\n`, { flag: 'wx' });
+  } catch (error) {
+    if (error.code === 'EEXIST') return refuse(`${path} already exists and is not overwritten. Write to a new file name`);
+    throw error;
+  }
   console.log(`baseline written to ${path}: total ${now.totalMs} ms, worst ${now.worstMs} ms (${now.worstName}), code ${hash.slice(0, SHORT_HASH)}`);
   return 0;
 }
