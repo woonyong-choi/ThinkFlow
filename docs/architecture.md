@@ -78,6 +78,8 @@
 3. `npm run figures` 뒤 `npm test`, `npm run check`를 실행한다. Daphnis에서 토큰을 합치거나 다시 생성하지 않는다.
 4. 자동 수신은 `design-update.yml`에서 전체 CI를 통과한 PR을 병합한다. `sync-homepage.yml`은 같은 디자인과 고정된 렌더러 커밋을 홈페이지로 전달한다.
 
+사용자 명의 자동 병합에는 이 저장소 범위의 `DESIGN_AUTOMATION_TOKEN`을 사용한다. fine-grained PAT의 Contents·Pull requests Read and write 권한이 필요하다. 등록되지 않으면 검증한 PR만 준비하며, 사용자 작성자가 아닌 PR은 인증 전환 뒤 사용자 작성 PR로 대체한다.
+
 ### 재생하기
 
 1. 브라우저가 HTML을 열면 `player`가 장면을 탭으로만 고른다. `static` 장면은 마지막 상태를 그리고, `once`는 한 번 재생한 뒤 마지막 상태에 머물고, `loop`는 같은 장면을 되풀이한다. 다음 장면으로 저절로 넘어가지 않는다.

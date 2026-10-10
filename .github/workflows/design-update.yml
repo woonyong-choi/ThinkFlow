@@ -16,7 +16,6 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
-      actions: write
     steps:
       - uses: actions/checkout@v4
         with:
@@ -33,10 +32,17 @@ jobs:
           fi
       - name: Merge the verified update and sync homepage
         env:
-          GH_TOKEN: ${{ github.token }}
+          GH_TOKEN: ${{ secrets.DESIGN_AUTOMATION_TOKEN || github.token }}
+          AUTOMATION_TOKEN: ${{ secrets.DESIGN_AUTOMATION_TOKEN }}
           HEAD_SHA: ${{ github.sha }}
         run: |
           pr=$(gh pr list --head build/repo-design-tokens --state open --json number --jq '.[0].number // empty')
+          if test -n "$pr" && test -n "$AUTOMATION_TOKEN"; then
+            if test "$(gh pr view "$pr" --json author --jq .author.login)" != "$(gh api user --jq .login)"; then
+              gh pr close "$pr"
+              pr=''
+            fi
+          fi
           if test -z "$pr"; then
             cat > design-pr.md <<'BODY'
           ## 변경
@@ -57,6 +63,10 @@ jobs:
           BODY
             pr=$(gh pr create --base main --head build/repo-design-tokens --title 'build(repo): 공통 디자인 업데이트 적용' --body-file design-pr.md)
           fi
+          if test -z "$AUTOMATION_TOKEN"; then
+            echo '검증한 PR을 준비했습니다. 사용자 명의 자동 병합은 DESIGN_AUTOMATION_TOKEN 등록 후 실행합니다.' >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
           test "$(gh pr view "$pr" --json headRefOid --jq .headRefOid)" = "$HEAD_SHA"
           git fetch origin main
           git merge-base --is-ancestor origin/main "$HEAD_SHA"
@@ -65,4 +75,3 @@ jobs:
           if test "$current" = "$HEAD_SHA"; then
             gh api --method DELETE "repos/$GITHUB_REPOSITORY/git/refs/heads/build/repo-design-tokens"
           fi
-          gh workflow run sync-homepage.yml --ref main
