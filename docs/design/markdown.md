@@ -252,14 +252,16 @@ npm 배포판 `0.1.3`은 이전 문법이다. 현재 문법의 문서에는 저�
 `.github/workflows/release.yml`은 `v*` 태그에서 돈다.
 
 1. 태그가 `v{package.json version}`과 다르면 실패한다.
-2. `secrets.NPM_TOKEN`이 없으면 해당 메시지로 실패한다.
-3. `npm ci`로 설치하고 `npm test -- --test-concurrency=2`, `npm run check`, `npm run check:sources`(예제와 문서 그림, showcase 원본 `--strict`), `npm run check:figures`(모든 마크다운 문서의 `md --check --strict`와 showcase SVG 낡음 검사)를 돈다. `npm test`는 브라우저를 열지 않는 공개 계약 시험이라 브라우저 설치가 필요 없다. 워크플로의 실행 여부와 날짜는 GitHub Actions 기록과 이슈가 맡고 이 문서는 설정과 요구만 적는다.
+2. `secrets.NPM_TOKEN`이 없으면 해당 메시지로 실패한다. 현재 인증 방식은 대상 패키지에 쓰기 권한과 bypass 2FA를 가진 granular access token이다. 토큰을 금지한 패키지 설정에서는 이 방식으로 배포할 수 없다. 인증 조건은 [npm 공식 안내](https://docs.npmjs.com/requiring-2fa-for-package-publishing-and-settings-modification/)를 따른다.
+3. `npm ci`로 설치하고 `npm test`, `npm run check`, `npm run check:sources`(예제와 문서 그림, showcase 원본 `--strict`), `npm run check:figures`(모든 마크다운 문서의 `md --check --strict`와 showcase SVG 낡음 검사)를 돈다. 이어서 `npm run check:package`로 실제 배포물의 독립 설치를 확인한다. `npm test`는 브라우저를 열지 않는 공개 계약 시험이라 브라우저 설치가 필요 없다. 워크플로의 실행 여부와 날짜는 GitHub Actions 기록과 이슈가 맡고 이 문서는 설정과 요구만 적는다.
 4. `npm publish --provenance --access public`을 한다. 버전에 `-`가 있으면 `--tag next`를 붙인다.
 5. `gh release create`로 GitHub Release를 만든다. 버전에 `-`가 있으면 사전 배포 표시를 한다.
 
 ### 패키지
 
 `package.json`의 `files`는 `src`, 로고 SVG(`docs/assets/daphnis-*.svg`), `LICENSE`, `NOTICE`다. README와 `package.json`은 npm이 늘 넣는다. 글꼴은 의존 패키지(`pretendard`, `@expo-google-fonts/*`, `jetbrains-mono`)로 설치된다. 내장 아이콘·공통 스타일·그 라이선스는 `src/vendor/theme`에 들어 있고 `src/icons`는 공통 카탈로그 읽기와 사용자 SVG 검증을 맡는다. 시험, 문서, 예제, 스크립트는 올라가지 않는다. 실행 파일은 `bin`의 `daphnis` 하나다. 라이브러리는 `buildFigure`, `toSvg`, `toHtml`과 디자인 매니페스트를 내보낸다.
+
+`npm run check:package -- /absolute/new-consumer-path`는 저장소 밖의 새 소비 환경을 만들고 실제 `npm pack` 산출물을 설치한다. 경로가 이미 있으면 거절하며 자신이 만든 경로는 성공·실패 뒤 모두 지운다. npm 공개 레지스트리에 접근해야 한다. 사용자 npm 설정과 인증 환경을 제외하고 공개 런타임 의존성만 설치한다. 검사 입력은 기존 flow 예제이고 CLI와 공개 API가 같은 SVG·HTML을 만드는지, Markdown 반영과 내장 디자인·글꼴을 확인한다. 실제 npm 발행과 사용자 인증 권한은 이 검사에 포함하지 않는다.
 
 ### 요구사항
 
@@ -295,7 +297,7 @@ npm 배포판 `0.1.3`은 이전 문법이다. 현재 문법의 문서에는 저�
 | CRLF 문서는 CRLF로 다시 쓰고 두 번째 실행은 바꾸지 않는다. | `test/markdown.test.js`(M8) |
 | 옵션은 명령마다 받는 것만 받는다. | `test/cli.test.js`(L2, L3, L7) |
 | 패키지에는 실행에 필요한 파일, 로고 SVG, 라이선스, NOTICE만 든다. | 직접 확인하는 자동 시험이 아직 확인되지 않았다(검증 요구사항, 미완료) |
-| 패키지를 설치해 실행할 수 있다. | 수동: `npm pack`, 빈 폴더에 설치, `npx daphnis render`와 `md`(자동 시험은 설치에 네트워크가 필요해 두지 않는다) |
+| 패키지를 설치해 실행할 수 있다. | `npm run check:package`: 실제 tarball 설치, CLI의 check·render·md와 공개 API 출력 대조. Node 20·22 CI와 릴리스가 실행 |
 | Action이 저장소 CI에서 돈다. | `ci.yml`의 `action` 작업 |
 | Action이 한글, 공백, 줄바꿈 이름의 잘못된 원본을 실패시키고 `.dap`와 `.md`가 아닌 파일은 모으지 않으며, 겹치는 글롭은 한 번만 검사한다. | 직접 확인하는 자동 시험이 아직 확인되지 않았다(검증 요구사항, 미완료) |
 

@@ -1,6 +1,6 @@
 name: release
 
-# v* 태그를 올리면 테스트 뒤 npm에 배포하고 GitHub Release를 만든다. 사전 조건: 저장소 secret NPM_TOKEN(npm automation 토큰).
+# v* 태그를 올리면 테스트 뒤 npm에 배포하고 GitHub Release를 만든다. 사전 조건: 저장소 secret NPM_TOKEN(대상 패키지에 쓰기 권한과 bypass 2FA를 가진 granular access token).
 on:
   push:
     tags: ['v*']
@@ -31,7 +31,7 @@ jobs:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: |
           if [ -z "$NPM_TOKEN" ]; then
-            echo "::error::secrets.NPM_TOKEN is not set. Add an npm automation token under Settings > Secrets and variables > Actions, then run this workflow again."
+            echo "::error::secrets.NPM_TOKEN is not set. Add a granular access token with package write permission and bypass 2FA under Settings > Secrets and variables > Actions, then run this workflow again."
             exit 1
           fi
       - run: npm ci
@@ -39,6 +39,8 @@ jobs:
       - run: npm run check
       - run: npm run check:sources
       - run: npm run check:figures
+      - name: Check installed npm package
+        run: npm run check:package -- "$RUNNER_TEMP/daphnis-package"
       - name: Publish to npm
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

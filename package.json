@@ -48,7 +48,8 @@
     "showcase": "node scripts/build-showcase.mjs",
     "figures": "npm run catalog && node src/cli.js render docs/assets/how-it-works.dap && npm run showcase && node scripts/run-md.mjs",
     "catalog": "npm run examples",
-    "design:sync": "node src/vendor/theme/ui/build/sync.mjs"
+    "design:sync": "node src/vendor/theme/ui/build/sync.mjs",
+    "check:package": "node scripts/check-package.mjs"
   },
   "engines": {
     "node": ">=20"

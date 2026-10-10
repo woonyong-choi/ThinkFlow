@@ -199,9 +199,12 @@ cd daphnis
 npm install
 npm test
 npm run check
+npm run check:package -- /absolute/new-consumer-path
 ```
 
 `npm test` runs the contract tests through the public entry points (build results, SVG, HTML, CLI, Markdown) and needs no browser. Looking at the figures in a real browser, at phone and desktop sizes in light and dark, is a separate manual review that the tests do not replace.
+
+The package check creates a new directory outside the repository, installs the actual tarball with public runtime dependencies, and checks CLI, Markdown and API outputs. It removes its directory afterward and needs access to the public npm registry. It does not publish a release.
 
 Shared values, CSS, icons, tabs and toolbars come from the verified bundle in `src/vendor/theme/`. Builds use the committed public copy and do not require access to its source repository. Updates pass manifest checks and figure regeneration in a PR. In a clone, run `node src/cli.js` instead of `daphnis`, and `npm run catalog` to render every example, its source and an index into `.local/examples/`.
 
