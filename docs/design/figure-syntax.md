@@ -429,7 +429,7 @@ view time ["라벨"] {
 | `plot` | 차트 카드 정확히 하나 | 문서 폭의 차트 |
 | `time` | 추적 카드 정확히 하나 | 레인과 시간 축 위의 구간 |
 
-- 구성원이 아닌 이름, 방식에 맞지 않는 카드(`a table card cannot be a sequence participant`)는 구성원 이름의 자리에서 오류다.
+- 구성원이 아닌 이름, 방식에 맞지 않는 카드(`a chart card cannot be a sequence participant`)는 구성원 이름의 자리에서 오류다.
 - 카드는 보기 여럿에 함께 놓일 수 있다. 같은 이름의 카드가 보기마다 한 번씩 그려지고 상태는 하나다.
 - 그래프 보기의 구성원은 그룹을 적으면 그 안 카드와 그룹 전체를 담는다. 그룹 안 카드를 그룹 없이 적으면 `list group "g" instead of "x"` 오류다. 블록을 생략한 그래프 보기는 추적 카드와 `plot` 보기(적은 것과 기본 것)에 놓인 차트를 뺀 모든 카드를 담고(순서 보기에 놓인 카드는 들어간다), 그 차트를 그래프에도 그리려면 블록에 적는다.
 - `view main graph`처럼 보기 방식 앞에 이름을 쓰면 `a view is one of graph, sequence, plot, time. Found "main"` 오류다.

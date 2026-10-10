@@ -18,7 +18,7 @@ Turn one `.thinkflow` text source into an animated SVG figure for documentation:
   </picture>
 </p>
 
-Dots in a figure start at their own times and move at their own pace, so one scene shows several flows running at once, values changing as dots arrive, a queue filling, and a message lost on the way. A source declares cards (boxes, tables, APIs, classes, grids, charts, traces) and then lists scenes. Cards that no `view` line lists get a view by default (a graph for most cards, a plot for a chart with no edges, a time view for a trace), and you write `view graph`, `view sequence`, `view plot`, or `view time` to choose yourself. The same card can appear in several views, and one event moves it in all of them. ThinkFlow measures text with the fonts it embeds, lays out with elkjs, checks the result for overlaps, and writes an animated SVG or an HTML player.
+Dots in a figure start at their own times and move at their own pace, so one scene shows several flows running at once, values changing as dots arrive, a queue filling, and a message lost on the way. A source declares cards (boxes, tables, APIs, classes, grids, charts, traces) and then lists scenes. Unlisted cards get a default view based on the declared composition. See [Choosing views](docs/usage.md#목적에-맞는-보기-선택하기), or write `view graph`, `view sequence`, `view plot`, or `view time` to choose yourself. The same card can appear in several views, and one event moves it in all of them. ThinkFlow measures text with the fonts it embeds, lays out with elkjs, checks the result for overlaps, and writes an animated SVG or an HTML player.
 
 ## How it works
 
@@ -85,7 +85,7 @@ The [examples](examples/) folder holds one demo for each supported expression: t
 
 ## Usage
 
-Start with the [detailed usage guide](docs/usage.md) (Korean) for authoring, animation, embedding, and the public API.
+Start with [Getting started](docs/usage.md#시작하기) (Korean): install, make your first figure, open the HTML, and put it in a document. Use the [task guide](docs/usage.md#목적에-맞는-보기-선택하기) to choose a figure, or the [documentation index](docs/README.md) to find syntax, commands, the API, and troubleshooting.
 
 ### Render one figure
 
@@ -112,7 +112,7 @@ The command prints nothing and exits with 0 when the figure has no errors or war
 
 ### Keep figures in a Markdown document
 
-Write the source in a `thinkflow` code block and run `thinkflow md`:
+Save the following `thinkflow` code block in `guide.md` and run `thinkflow md`:
 
 ````text
 ```thinkflow name=request
@@ -186,22 +186,16 @@ Not supported: 3D, maps, CAD, full BPMN, Gantt charts, CPU simulation, a real-ti
 
 ## Documentation
 
-The design documents and the per-expression references are written in Korean.
+The usage guide, per-expression references, and design documents are written in Korean.
 
-- [Architecture](docs/architecture.md): components, flows, and invariants
-- [Figure syntax](docs/design/figure-syntax.md): line rules, file structure, cards, views, scenes, and errors
-- [Cards and views](docs/design/figure-kinds.md): sequence views, states, schemas, and classes
-- [Cell grids](docs/design/grid.md): cell grid syntax, sizes, lighting a cell, and cell-to-cell lines
-- [Charts](docs/design/charts.md): chart cards, value sources, and revealing series
-- [Layout](docs/design/layout.md): text measurement, shape sizes and ports, group layout, and aspect ratio
-- [Figure check](docs/design/figure-check.md): screen error checks and messages
-- [Playback](docs/design/playback.md): timeline, beat state, the HTML player, and the animated SVG
-- [Markdown and release](docs/design/markdown.md): the `md` command, the GitHub Action, and publishing
-- [Docs skill integration](docs/design/docs-integration.md): replacing D2 and Vega-Lite in the docs skill
-- [Expression coverage](docs/design/expression-coverage.md): what the examples and tests cover, and the limits
+- [ThinkFlow usage guide](docs/usage.md): installation, the first figure, choosing expressions, animation, embedding, CLI and API, and troubleshooting
 - [Structure figures](docs/reference/flow.md), [architecture](docs/reference/architecture.md), [sequence figures](docs/reference/sequence.md), [state figures](docs/reference/state.md), [data relation figures](docs/reference/data.md), [cell grids](docs/reference/grid.md), and [charts](docs/reference/charts.md): a minimal example, scenes, and common errors for each
+- [Figure syntax](docs/design/figure-syntax.md): line rules, cards, views, scenes, and the complete options
+- [Figure check](docs/design/figure-check.md): layout checks and diagnostics
+- [Expression and verification coverage](docs/design/expression-coverage.md): supported expressions, verified scope, and limits
+- [Architecture](docs/architecture.md): components, flows, and invariants for contributors changing the implementation
 
-All documents are listed in [docs/README.md](docs/README.md).
+Find all guides and detailed designs in the [documentation index](docs/README.md).
 
 ## Development
 

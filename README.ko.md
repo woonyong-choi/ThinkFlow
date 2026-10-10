@@ -18,7 +18,7 @@
   </picture>
 </p>
 
-그림 안의 점은 저마다 다른 시각에 출발해 다른 속도로 움직입니다. 그래서 한 장면에 여러 흐름이 동시에 돌고, 점이 닿을 때 값이 바뀌고, 큐가 차오르고, 메시지가 도중에 유실되는 모습이 보입니다. 원본은 카드(상자, 테이블, API, 클래스, 격자, 차트, 추적)를 선언하고 장면을 차례로 적습니다. `view` 줄이 적지 않은 카드는 기본 보기를 받고(대부분의 카드는 그래프, 선이 없는 차트는 차트 보기, 추적은 시간 보기), 직접 고르려면 `view graph`, `view sequence`, `view plot`, `view time`을 씁니다. 같은 카드가 여러 보기에 놓일 수 있고, 사건 하나가 모든 보기에서 함께 움직입니다. ThinkFlow는 그림에 넣는 글꼴 파일로 글을 재고, elkjs로 배치하고, 겹침을 검사한 뒤, 움직이는 SVG나 HTML 재생기를 씁니다.
+그림 안의 점은 저마다 다른 시각에 출발해 다른 속도로 움직입니다. 그래서 한 장면에 여러 흐름이 동시에 돌고, 점이 닿을 때 값이 바뀌고, 큐가 차오르고, 메시지가 도중에 유실되는 모습이 보입니다. 원본은 카드(상자, 테이블, API, 클래스, 격자, 차트, 추적)를 선언하고 장면을 차례로 적습니다. `view` 줄에 적지 않은 카드는 구성에 맞는 기본 보기를 받습니다. [보기 선택 안내](docs/usage.md#목적에-맞는-보기-선택하기)를 참고해 직접 고르려면 `view graph`, `view sequence`, `view plot`, `view time`을 씁니다. 같은 카드가 여러 보기에 놓일 수 있고, 사건 하나가 모든 보기에서 함께 움직입니다. ThinkFlow는 그림에 넣는 글꼴 파일로 글을 재고, elkjs로 배치하고, 겹침을 검사한 뒤, 움직이는 SVG나 HTML 재생기를 씁니다.
 
 ## 작동 방식
 
@@ -85,7 +85,7 @@ npm install --save-dev thinkflow
 
 ## 사용법
 
-처음 쓰면 [상세 사용법](docs/usage.md)에서 설치부터 그림 작성, 애니메이션, 본문 삽입과 공개 API까지 순서대로 확인합니다.
+[시작하기](docs/usage.md#시작하기)에서 설치 → 첫 그림 → HTML 확인 → 문서 삽입을 따라 합니다. 만들려는 그림은 [작업별 안내](docs/usage.md#목적에-맞는-보기-선택하기), 문법·명령·API·문제 해결은 [문서 안내](docs/README.md)에서 찾습니다.
 
 ### 그림 하나 만들기
 
@@ -112,7 +112,7 @@ npx thinkflow check how-it-works.thinkflow --strict --json
 
 ### 마크다운 문서에 그림 넣기
 
-원본을 `thinkflow` 코드 블록으로 쓰고 `thinkflow md`를 실행합니다.
+다음 `thinkflow` 코드 블록을 `guide.md`에 저장하고 `thinkflow md`를 실행합니다.
 
 ````text
 ```thinkflow name=request
@@ -186,22 +186,16 @@ const html = await toHtml(result, 'Server');
 
 ## 문서
 
-설계 문서와 표현별 레퍼런스는 한국어로 씁니다.
+사용법, 표현별 레퍼런스와 설계 문서는 한국어로 씁니다.
 
-- [아키텍처](docs/architecture.md): 구성 요소, 실행 흐름, 불변 조건
-- [그림 문법](docs/design/figure-syntax.md): 줄 규칙, 파일 구조, 카드, 보기, 장면, 오류
-- [카드와 보기](docs/design/figure-kinds.md): 순서 보기, 상태, 스키마, 클래스
-- [칸 격자](docs/design/grid.md): 칸 격자 문법, 크기, 칸 밝히기, 칸 단위 선
-- [차트](docs/design/charts.md): 차트 카드, 값 출처, 계열 드러내기
-- [배치](docs/design/layout.md): 글 재기, 도형 크기와 연결점, 그룹 배치, 그림 비율
-- [그림 검사](docs/design/figure-check.md): 화면 오류 검사 항목과 메시지
-- [재생](docs/design/playback.md): 시간표, 박자 상태, HTML 재생기, 움직이는 SVG
-- [마크다운과 배포](docs/design/markdown.md): `md` 명령, GitHub Action, 배포
-- [문서 스킬 연동](docs/design/docs-integration.md): 문서 스킬의 D2와 Vega-Lite를 대신하는 계약
-- [표현 범위](docs/design/expression-coverage.md): 예제와 시험이 덮는 범위와 한계
+- [ThinkFlow 사용법](docs/usage.md): 설치, 첫 그림, 표현 선택, 움직임, 문서 삽입, CLI·API, 문제 해결
 - [구조 그림](docs/reference/flow.md), [구성도](docs/reference/architecture.md), [순서 그림](docs/reference/sequence.md), [상태 그림](docs/reference/state.md), [데이터 관계 그림](docs/reference/data.md), [칸 격자](docs/reference/grid.md), [차트](docs/reference/charts.md): 표현마다 최소 예제, 장면, 흔한 오류
+- [그림 문법](docs/design/figure-syntax.md): 줄 규칙, 카드, 보기, 장면과 전체 옵션
+- [그림 검사](docs/design/figure-check.md): 화면 배치 검사 항목과 진단
+- [표현 범위와 검증 범위](docs/design/expression-coverage.md): 지원 표현과 확인한 범위, 한계
+- [아키텍처](docs/architecture.md): 구현을 고칠 때 확인할 구성 요소, 실행 흐름, 불변 조건
 
-전체 문서는 [docs/README.md](docs/README.md)에 있습니다.
+전체 안내와 상세 설계는 [문서 안내](docs/README.md)에서 찾습니다.
 
 ## 개발
 

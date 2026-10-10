@@ -35,7 +35,7 @@ doc -> cli
 ...
 ```
 
-![doc.md, thinkflow md](doc-flow.svg)<!-- thinkflow -->
+![flow](doc-flow.svg)<!-- thinkflow -->
 ````
 
 3. 이름을 `name=path`로 바꾸고 다시 돌리면 이미지 줄이 `doc-path.svg`를 가리키고 옛 `doc-flow.svg`는 지워진다.
@@ -51,7 +51,7 @@ doc -> cli
 
 ````text
 <!-- thinkflow fold v1 name=flow -->
-![doc.md, thinkflow md](doc-flow.svg)<!-- thinkflow -->
+![flow](doc-flow.svg)<!-- thinkflow -->
 
 <details>
 <summary>그림 원본</summary>
@@ -104,7 +104,7 @@ thinkflow md <file.md ...> [--check] [--out-dir dir] [--fold [--fold-title "text
 | `--fold-title "text"` | `--fold`가 새로 만드는 `<summary>` 글. 기본은 `그림 원본`. `--fold`와만 쓴다 |
 | `--unfold` | 이 도구가 만든 접기만 걷는다. `--fold`와 함께 쓰면 인자 오류 |
 | `--static` | 멈춘 SVG를 쓴다 |
-| `--` | 이 뒤의 인자는 모두 문서 이름이다. `-`로 시작하는 이름의 문서에 쓴다(Action이 문서 목록을 넘길 때 쓴다). 값을 받는 옵션(`--out-dir`, `--fold-title`, `--scene`, `--budget`)의 값이 비어 있거나, 같은 옵션을 두 번 쓰거나, 문서 이름이 빈 글이면 인자 오류다 |
+| `--` | 이 뒤의 인자는 모두 문서 이름이다. `-`로 시작하는 이름의 문서에 쓴다(Action이 문서 목록을 넘길 때 쓴다). 값을 받는 옵션(`--out-dir`, `--fold-title`, `--scene`, `--budget`)의 값이 비어 있거나, `--budget` 이외의 값을 받는 옵션을 두 번 쓰거나, 문서 이름이 빈 글이면 인자 오류다 |
 | `--scene n\|이름` | SVG로 만들 장면을 고른다(번호는 1부터, `render`와 같다). 생략하면 첫 장면이고 장면이 없는 블록은 정지 그림 하나다. 장면 없는 블록에 주면 그 블록 줄에 오류를 내고(종료 1) 아무것도 쓰지 않는다 |
 | `--strict`, `--budget`, `--json` | `render`와 같은 뜻. 블록마다 적용한다. 예산은 블록 하나의 그림마다 검사한다 |
 

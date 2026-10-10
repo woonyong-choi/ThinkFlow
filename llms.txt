@@ -2,22 +2,11 @@
 
 > Turn one `.thinkflow` text source into an animated SVG figure for documentation: structure, sequences, states, schemas, classes, traces, and charts, with values that change as dots arrive.
 
-Dots in a figure start at their own times and move at their own pace, so one scene shows several flows running at once, values changing as dots arrive, a queue filling, and a message lost on the way. A source declares cards (boxes, tables, APIs, classes, grids, charts, traces) and then lists scenes. Cards that no `view` line lists get a view by default (a graph for most cards, a plot for a chart with no edges, a time view for a trace), and you write `view graph`, `view sequence`, `view plot`, or `view time` to choose yourself. The same card can appear in several views, and one event moves it in all of them. ThinkFlow measures text with the fonts it embeds, lays out with elkjs, checks the result for overlaps, and writes an animated SVG or an HTML player.
+Dots in a figure start at their own times and move at their own pace, so one scene shows several flows running at once, values changing as dots arrive, a queue filling, and a message lost on the way. A source declares cards (boxes, tables, APIs, classes, grids, charts, traces) and then lists scenes. Unlisted cards get a default view based on the declared composition. See [Choosing views](docs/usage.md#목적에-맞는-보기-선택하기), or write `view graph`, `view sequence`, `view plot`, or `view time` to choose yourself. The same card can appear in several views, and one event moves it in all of them. ThinkFlow measures text with the fonts it embeds, lays out with elkjs, checks the result for overlaps, and writes an animated SVG or an HTML player.
 
 ## Docs
 
 - [ThinkFlow 사용법](https://raw.githubusercontent.com/woonyong-choi/thinkflow/main/docs/usage.md): 설치, 기본 작성, 장면과 트래픽, 표현 선택, Markdown과 홈페이지 삽입, CLI, API, 문제 해결
-- [아키텍처](https://raw.githubusercontent.com/woonyong-choi/thinkflow/main/docs/architecture.md): 구성 요소, 실행 흐름, 불변 조건
-- [그림 문법](https://raw.githubusercontent.com/woonyong-choi/thinkflow/main/docs/design/figure-syntax.md): `thinkflow` 원본의 줄과 글자 규칙, 파일 구조, 카드, 보기, 장면, 값, 오류, 문법 표
-- [카드와 보기](https://raw.githubusercontent.com/woonyong-choi/thinkflow/main/docs/design/figure-kinds.md): 순서 보기, 상태, 스키마, 클래스 카드의 선언과 장면 규칙, 카드와 보기 사이 규칙
-- [칸 격자](https://raw.githubusercontent.com/woonyong-choi/thinkflow/main/docs/design/grid.md): 칸 단위 카드의 문법, 크기, 칸 밝히기, 칸 단위 선
-- [차트](https://raw.githubusercontent.com/woonyong-choi/thinkflow/main/docs/design/charts.md): 차트 카드, 값 출처, 계열 드러내기, 그리기
-- [배치](https://raw.githubusercontent.com/woonyong-choi/thinkflow/main/docs/design/layout.md): 글 재기, 도형 크기와 연결점, 그룹 배치, 그림 비율
-- [그림 검사](https://raw.githubusercontent.com/woonyong-choi/thinkflow/main/docs/design/figure-check.md): 화면 오류 검사 항목과 메시지
-- [재생](https://raw.githubusercontent.com/woonyong-choi/thinkflow/main/docs/design/playback.md): 장면의 정지·한 번·반복, 논리 시각과 표시 길이, 시간표 규칙(시간 상한과 정밀도, 이벤트, 조건과 대기, 예약), HTML 재생기(탭, 도구 막대, 전체 화면, 반응형, 내려받기), 움직이는 SVG와 멈춘 SVG, 결과 파일
-- [마크다운과 배포](https://raw.githubusercontent.com/woonyong-choi/thinkflow/main/docs/design/markdown.md): `md` 명령, GitHub Action, 배포 워크플로, 패키지
-- [문서 스킬 연동](https://raw.githubusercontent.com/woonyong-choi/thinkflow/main/docs/design/docs-integration.md): 문서 스킬의 D2와 Vega-Lite를 대신하는 계약, 디자인 기준·색 계약·수용 게이트와 증거 표
-- [표현 범위와 검증 범위](https://raw.githubusercontent.com/woonyong-choi/thinkflow/main/docs/design/expression-coverage.md): 지원 표현과 문법, 예제, 시험의 대응표, 전용 표현이 없는 범위, 승인한 제외와 보류
 - [구조 그림 레퍼런스](https://raw.githubusercontent.com/woonyong-choi/thinkflow/main/docs/reference/flow.md): 구조 그림의 최소 예제, 장면과 움직임, 흔한 오류
 - [구성도 레퍼런스](https://raw.githubusercontent.com/woonyong-choi/thinkflow/main/docs/reference/architecture.md): 그룹, 아이콘, 번호 선을 쓴 구성도의 최소 예제와 흔한 오류
 - [순서 그림 레퍼런스](https://raw.githubusercontent.com/woonyong-choi/thinkflow/main/docs/reference/sequence.md): 순서 보기의 최소 예제, 구획, 흔한 오류
@@ -25,7 +14,18 @@ Dots in a figure start at their own times and move at their own pace, so one sce
 - [데이터 관계 그림 레퍼런스](https://raw.githubusercontent.com/woonyong-choi/thinkflow/main/docs/reference/data.md): 테이블 카드의 최소 예제, 장면과 움직임, 흔한 오류
 - [칸 격자 레퍼런스](https://raw.githubusercontent.com/woonyong-choi/thinkflow/main/docs/reference/grid.md): 칸 격자의 최소 예제, 장면과 움직임, 흔한 오류
 - [차트 레퍼런스](https://raw.githubusercontent.com/woonyong-choi/thinkflow/main/docs/reference/charts.md): 차트 열여섯 종류의 표, 계열 규칙, 최소 예제, 흔한 오류
+- [그림 문법](https://raw.githubusercontent.com/woonyong-choi/thinkflow/main/docs/design/figure-syntax.md): `thinkflow` 원본의 줄과 글자 규칙, 파일 구조, 카드, 보기, 장면, 값, 오류, 문법 표
+- [그림 검사](https://raw.githubusercontent.com/woonyong-choi/thinkflow/main/docs/design/figure-check.md): 화면 오류 검사 항목과 메시지
+- [표현 범위와 검증 범위](https://raw.githubusercontent.com/woonyong-choi/thinkflow/main/docs/design/expression-coverage.md): 지원 표현과 문법, 예제, 시험의 대응표, 전용 표현이 없는 범위, 승인한 제외와 보류
 - [용어](https://raw.githubusercontent.com/woonyong-choi/thinkflow/main/docs/glossary.md): 이 프로젝트에서만 쓰는 말
+- [아키텍처](https://raw.githubusercontent.com/woonyong-choi/thinkflow/main/docs/architecture.md): 구성 요소, 실행 흐름, 불변 조건
+- [카드와 보기](https://raw.githubusercontent.com/woonyong-choi/thinkflow/main/docs/design/figure-kinds.md): 순서 보기, 상태, 스키마, 클래스 카드의 선언과 장면 규칙, 카드와 보기 사이 규칙
+- [칸 격자](https://raw.githubusercontent.com/woonyong-choi/thinkflow/main/docs/design/grid.md): 칸 단위 카드의 문법, 크기, 칸 밝히기, 칸 단위 선
+- [차트](https://raw.githubusercontent.com/woonyong-choi/thinkflow/main/docs/design/charts.md): 차트 카드, 값 출처, 계열 드러내기, 그리기
+- [배치](https://raw.githubusercontent.com/woonyong-choi/thinkflow/main/docs/design/layout.md): 글 재기, 도형 크기와 연결점, 그룹 배치, 그림 비율
+- [재생](https://raw.githubusercontent.com/woonyong-choi/thinkflow/main/docs/design/playback.md): 장면의 정지·한 번·반복, 논리 시각과 표시 길이, 시간표 규칙(시간 상한과 정밀도, 이벤트, 조건과 대기, 예약), HTML 재생기(탭, 도구 막대, 전체 화면, 반응형, 내려받기), 움직이는 SVG와 멈춘 SVG, 결과 파일
+- [마크다운과 배포](https://raw.githubusercontent.com/woonyong-choi/thinkflow/main/docs/design/markdown.md): `md` 명령, GitHub Action, 배포 워크플로, 패키지
+- [문서 스킬 연동](https://raw.githubusercontent.com/woonyong-choi/thinkflow/main/docs/design/docs-integration.md): 문서 스킬의 D2와 Vega-Lite를 대신하는 계약, 디자인 기준·색 계약·수용 게이트와 증거 표
 
 ## Optional
 
