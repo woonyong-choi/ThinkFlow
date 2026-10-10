@@ -1,12 +1,15 @@
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/assets/thinkflow-logo-dark.png">
+    <img src="docs/assets/thinkflow-logo.png" alt="ThinkFlow 로고: 투명한 느낌표가 파란 선을 그리고 그 아래 ThinkFlow 글자가 놓인 모습" width="320">
+  </picture>
+</p>
+
 # ThinkFlow
 
 [English](README.md) | 한국어
 
 `.thinkflow` 텍스트 원본 하나를 문서용 움직이는 SVG 그림으로 바꿉니다. 구조, 순서, 상태, 스키마, 클래스, 추적과 차트를 그리고, 점이 닿을 때 값이 바뀌는 모습까지 보입니다.
-
-<p align="center">
-  <img src="docs/assets/thinkflow-logo.png" alt="ThinkFlow 로고: 투명한 느낌표가 파란 선을 그리고 그 아래 ThinkFlow 글자가 놓인 모습" width="320">
-</p>
 
 <p align="center">
   <picture>
@@ -134,7 +137,7 @@ npx thinkflow md guide.md
 
 ```yaml
 - uses: actions/checkout@v4
-- uses: woonyong-choi/ThinkFlow@main
+- uses: woonyong-choi/thinkflow@main
   with:
     paths: "docs/**/*.thinkflow docs/**/*.md README.md"
     mode: check   # check(기본) 또는 render
@@ -203,8 +206,8 @@ const html = await toHtml(result, 'Server');
 ## 개발
 
 ```sh
-git clone https://github.com/woonyong-choi/ThinkFlow.git
-cd ThinkFlow
+git clone https://github.com/woonyong-choi/thinkflow.git
+cd thinkflow
 npm install
 npm test
 npm run check

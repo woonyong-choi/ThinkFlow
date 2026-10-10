@@ -11,8 +11,8 @@ Open an issue before you start work.
 Requirements: Node.js 20 or later.
 
 ```sh
-git clone https://github.com/woonyong-choi/ThinkFlow.git
-cd ThinkFlow
+git clone https://github.com/woonyong-choi/thinkflow.git
+cd thinkflow
 npm install
 ```
 

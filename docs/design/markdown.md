@@ -230,7 +230,7 @@ GitHub 마크다운은 ` ```thinkflow ` 블록을 코드로 보이고 아래 이
 |---|---|---|
 | npm 설치 | `npm install --save-dev thinkflow` | 공개 npm 패키지 |
 | 설치 후 실행 | `npx thinkflow md doc.md` | 잠금 파일에 고정된 버전 |
-| GitHub Action | `uses: woonyong-choi/ThinkFlow@main` | 지금 |
+| GitHub Action | `uses: woonyong-choi/thinkflow@main` | 지금 |
 
 설치한 프로젝트의 잠금 파일을 함께 커밋하고 `npm ci`로 같은 버전을 설치한다.
 
@@ -312,7 +312,7 @@ GitHub 마크다운은 ` ```thinkflow ` 블록을 코드로 보이고 아래 이
 ## 대안
 
 - 블록을 이미지로 바꾸고 원본을 지우는 방식(mermaid-cli의 기본)은 문서에서 원본을 잃으므로 쓰지 않는다. 원본은 블록으로 남긴다.
-- 접기를 늘 켜 두는 방식은 문서 구조를 모든 사용자에게 바꾸므로 쓰지 않는다. 옵션으로 고르고, 옵션이 없으면 접힘 상태를 지킨다([#39](https://github.com/woonyong-choi/ThinkFlow/issues/39)).
+- 접기를 늘 켜 두는 방식은 문서 구조를 모든 사용자에게 바꾸므로 쓰지 않는다. 옵션으로 고르고, 옵션이 없으면 접힘 상태를 지킨다([#39](https://github.com/woonyong-choi/thinkflow/issues/39)).
 - 접은 곳을 시작과 끝 표식 없이 `<details>` 모양만으로 알아보는 방식은 사용자가 쓴 `<details>`와 구분할 수 없어 쓰지 않는다.
 - 이미지 줄을 구분하는 표시로 시작과 끝 주석 두 줄을 쓰는 방식은 문서가 길어져 한 줄 표시를 고른다.
 - 이름 없는 블록의 이름을 문서 전체 순번으로 하는 방식은 이름 있는 블록이 끼면 이름이 밀려 쓰지 않는다.

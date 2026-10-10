@@ -1,12 +1,15 @@
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/assets/thinkflow-logo-dark.png">
+    <img src="docs/assets/thinkflow-logo.png" alt="ThinkFlow logo: a transparent exclamation mark drawing a blue line above the ThinkFlow wordmark" width="320">
+  </picture>
+</p>
+
 # ThinkFlow
 
 English | [한국어](README.ko.md)
 
 Turn one `.thinkflow` text source into an animated SVG figure for documentation: structure, sequences, states, schemas, classes, traces, and charts, with values that change as dots arrive.
-
-<p align="center">
-  <img src="docs/assets/thinkflow-logo.png" alt="ThinkFlow logo: a transparent exclamation mark drawing a blue line above the ThinkFlow wordmark" width="320">
-</p>
 
 <p align="center">
   <picture>
@@ -134,7 +137,7 @@ This GitHub Action step fails a pull request when a source has a warning or a Ma
 
 ```yaml
 - uses: actions/checkout@v4
-- uses: woonyong-choi/ThinkFlow@main
+- uses: woonyong-choi/thinkflow@main
   with:
     paths: "docs/**/*.thinkflow docs/**/*.md README.md"
     mode: check   # check (default) or render
@@ -203,8 +206,8 @@ All documents are listed in [docs/README.md](docs/README.md).
 ## Development
 
 ```sh
-git clone https://github.com/woonyong-choi/ThinkFlow.git
-cd ThinkFlow
+git clone https://github.com/woonyong-choi/thinkflow.git
+cd thinkflow
 npm install
 npm test
 npm run check
