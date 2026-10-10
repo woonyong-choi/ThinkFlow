@@ -228,9 +228,11 @@ GitHub 마크다운은 ` ```dap ` 블록을 코드로 보이고 아래 이미지
 
 | 경로 | 명령 | 상태 |
 |---|---|---|
-| npm | `npx daphnis md doc.md` | 0.1.0부터 |
-| 저장소 | `npx github:woonyong-choi/daphnis md doc.md` | 지금 |
+| 저장소 설치 | `npm install --save-dev github:woonyong-choi/daphnis#main` | 현재 `daphnis 2` 문법 |
+| 설치 후 실행 | `npx daphnis md doc.md` | 잠금 파일에 고정된 소스 |
 | GitHub Action | `uses: woonyong-choi/daphnis@main` | 지금 |
+
+npm 배포판 `0.1.3`은 이전 문법이다. 현재 문법의 문서에는 저장소 소스를 설치하고 잠금 파일을 함께 관리한다.
 
 저장소 루트 `action.yml`은 composite Action이다. 의존 패키지를 Action 폴더에 설치한 뒤 입력에 맞춰 명령을 돌린다.
 
@@ -257,7 +259,7 @@ GitHub 마크다운은 ` ```dap ` 블록을 코드로 보이고 아래 이미지
 
 ### 패키지
 
-`package.json`의 `files`는 `src`, 로고 SVG(`docs/assets/daphnis-*.svg`), `LICENSE`, `NOTICE`다. README와 `package.json`은 npm이 늘 넣는다. 글꼴은 의존 패키지(`@expo-google-fonts/*`, `jetbrains-mono`)로 설치되고, 아이콘과 그 라이선스는 `src/icons`에 들어 있다. 시험, 문서, 예제, 스크립트는 올라가지 않는다. 실행 파일은 `bin`의 `daphnis` 하나이고 라이브러리 API는 내보내지 않는다(`exports` 없음).
+`package.json`의 `files`는 `src`, 로고 SVG(`docs/assets/daphnis-*.svg`), `LICENSE`, `NOTICE`다. README와 `package.json`은 npm이 늘 넣는다. 글꼴은 의존 패키지(`pretendard`, `@expo-google-fonts/*`, `jetbrains-mono`)로 설치된다. 내장 아이콘·공통 스타일·그 라이선스는 `src/vendor/theme`에 들어 있고 `src/icons`는 공통 카탈로그 읽기와 사용자 SVG 검증을 맡는다. 시험, 문서, 예제, 스크립트는 올라가지 않는다. 실행 파일은 `bin`의 `daphnis` 하나다. 라이브러리는 `buildFigure`, `toSvg`, `toHtml`과 디자인 매니페스트를 내보낸다.
 
 ### 요구사항
 

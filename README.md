@@ -56,10 +56,10 @@ scene "Chat"
 
 ## Installation
 
-Requirements: Node.js 20 or later.
+Requirements: Node.js 20 or later. The current source uses `daphnis 2`. The npm release `0.1.3` uses the previous grammar, so install the current source for the examples in this document.
 
 ```sh
-npm install --save-dev daphnis
+npm install --save-dev github:woonyong-choi/daphnis#main
 ```
 
 Run it with `npx daphnis <command>`.

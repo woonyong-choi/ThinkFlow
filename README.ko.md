@@ -56,10 +56,10 @@ scene "Chat"
 
 ## 설치
 
-요구 사항: Node.js 20 이상.
+Node.js 20 이상이 필요합니다. 현재 소스는 `daphnis 2`를 사용합니다. npm 배포판 `0.1.3`은 이전 문법이므로 이 문서의 예제에는 현재 소스를 설치합니다.
 
 ```sh
-npm install --save-dev daphnis
+npm install --save-dev github:woonyong-choi/daphnis#main
 ```
 
 `npx daphnis <명령>`으로 실행합니다.
