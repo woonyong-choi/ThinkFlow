@@ -58,12 +58,16 @@ const html = await toHtml(result, 'flow');
 assert.equal(svg, readFileSync('render/flow.svg', 'utf8'));
 assert.equal(html, readFileSync('render/flow.html', 'utf8'));
 for (const output of [svg, html]) assert.match(output, /data:font\\/woff2;base64,/);
-assert.ok(result.timeline.segs.length > 0);
+assert.deepEqual(result.warnings, []);
 assert.match(html, /role="tablist"/);
 console.log('설치한 CLI·Markdown·공개 API와 내장 글꼴·디자인 확인');
 `);
   const manifest = JSON.parse(readFileSync(join(root, 'src/vendor/theme/manifest.json'), 'utf8'));
   process.stdout.write(run(process.execPath, ['consumer.mjs', manifest.contentHash]));
+  copyFileSync(join(root, 'test/package-consumer.mts'), join(consumer, 'consumer.mts'));
+  run(process.execPath, [join(root, 'node_modules/typescript/bin/tsc'), '--module', 'nodenext', '--target', 'es2022', '--lib', 'es2022', '--strict', '--noEmitOnError', '--outDir', 'compiled', 'consumer.mts']);
+  run(process.execPath, ['compiled/consumer.mjs']);
+  console.log('설치한 TypeScript 선언·옵션·불투명 빌드 결과·진단 확인');
   console.log(`${pack.name}@${pack.version}: 배포 파일 ${pack.files.length}개 검사 완료`);
 } finally {
   rmSync(consumer, { recursive: true });

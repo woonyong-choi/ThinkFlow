@@ -10,6 +10,7 @@ export class FigureError extends Error {
   // basis: estimate
   constructor(problems) {
     super(problems.map((p) => `${p.line}: ${p.message}`).join('\n'));
+    this.name = 'FigureError';
     this.problems = problems;
   }
 }

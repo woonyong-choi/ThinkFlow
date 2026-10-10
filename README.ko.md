@@ -62,7 +62,7 @@ Node.js 20 이상이 필요합니다. 현재 소스는 `daphnis 2`를 사용합�
 npm install --save-dev github:woonyong-choi/daphnis#main
 ```
 
-`npx daphnis <명령>`으로 실행합니다.
+`npx daphnis <명령>`으로 실행합니다. 패키지에는 Node.js용 ESM API와 TypeScript 선언도 포함됩니다.
 
 ## 갤러리
 
@@ -147,6 +147,18 @@ npx daphnis md guide.md
 
 `paths`는 추적 중인 파일에 쓰는 git 글롭입니다. `mode: render`는 SVG와 이미지 줄을 쓰지만 커밋하지는 않습니다. 맞는 파일이 하나도 없으면 단계가 실패합니다. `budget`은 공백이나 쉼표로 나눈 `이름=값` 목록으로 생성 예산을 올리며(`--budget`과 같습니다), 이름이나 값이 틀리면 그림을 만들기 전에 단계가 실패합니다.
 
+### JavaScript와 TypeScript에서 빌드
+
+```js
+import { buildFigure, toSvg, toHtml } from 'daphnis';
+
+const result = await buildFigure('daphnis 2\nbox server "Server"\n', { allowFileAccess: false });
+const svg = await toSvg(result);
+const html = await toHtml(result, 'Server');
+```
+
+세 함수 모두 Promise를 반환합니다. 빌드 결과는 렌더러에 그대로 전달하고 진단은 `result.warnings`에서 읽습니다. 원본이나 배치 오류는 공개된 `FigureError`를 잡아 `problems`에서 읽습니다. [API 사용법](docs/usage.md#javascript에서-조립하기)에 옵션, 진단 필드와 불투명한 `BuiltFigure` 타입이 정의되어 있습니다.
+
 ### 문법 판
 
 원본은 `daphnis 2`로 시작해야 하고 `.dap` 파일만 읽습니다. 다른 판으로 시작하거나 판 줄이 없으면 읽지 않습니다. 줄과 자리를 알리는 진단을 내고 파일을 쓰지 않은 채 멈춥니다. 옛 파일을 고쳐 쓰는 명령은 없으므로 현재 문법으로 다시 씁니다. 없어진 문장과 대체 문장은 [그림 문법](docs/design/figure-syntax.md#판과-없앤-형태)의 표에 있습니다.
@@ -204,7 +216,7 @@ npm run check:package -- /absolute/new-consumer-path
 
 `npm test`는 공개 진입점(빌드 결과, SVG, HTML, 명령, 마크다운)으로 계약을 확인하고 브라우저가 필요 없습니다. 실제 브라우저에서 휴대폰과 데스크톱 크기, 라이트와 다크로 그림을 눈으로 보는 일은 시험이 대신하지 못하는 별도의 수동 검수입니다.
 
-패키지 검사는 저장소 밖의 새 폴더에 실제 tarball과 공개 런타임 의존성을 설치해 CLI·Markdown·API 출력을 확인합니다. 검사 폴더는 끝나면 지우며 npm 공개 레지스트리 접근이 필요합니다. 새 버전을 발행하는 명령은 아닙니다.
+패키지 검사는 저장소 밖의 새 폴더에 실제 tarball과 공개 런타임 의존성을 설치해 CLI·Markdown·API 출력을 확인합니다. 설치된 선언으로 TypeScript 소비자를 컴파일하고 실행하며 잘못된 호출의 거부도 확인합니다. 컴파일러는 개발 작업본에서만 사용합니다. 검사 폴더는 끝나면 지우며 npm 공개 레지스트리 접근이 필요합니다. 새 버전을 발행하는 명령은 아닙니다.
 
 공통 화면 값, CSS, 아이콘, 탭과 도구 막대는 `src/vendor/theme/`의 검증된 디자인 완성본을 사용합니다. 공개된 사본으로 빌드하므로 디자인 정본 저장소의 접근 권한은 필요하지 않습니다. 사본 변경은 전체 해시 검사와 그림 재생성을 통과한 PR로 반영합니다. 복제한 저장소에서는 `daphnis` 대신 `node src/cli.js`를 실행하고, `npm run catalog`로 모든 예제와 원본, 목록을 `.local/examples/`에 만듭니다.
 

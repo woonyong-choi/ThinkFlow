@@ -7,9 +7,8 @@ import { mkdirSync, mkdtempSync, readdirSync, readFileSync, readlinkSync, rmSync
 import { tmpdir } from 'node:os';
 import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { buildFigure, FigureError } from '../src/build.js';
-import { toHtml } from '../src/html.js';
-import { toSvg } from '../src/svg.js';
+
+import { buildFigure, FigureError, toHtml, toSvg } from 'daphnis';
 
 export const ROOT = fileURLToPath(new URL('..', import.meta.url));
 const CLI = join(ROOT, 'src', 'cli.js');

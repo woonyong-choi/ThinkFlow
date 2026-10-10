@@ -20,7 +20,7 @@ npm install --save-dev github:woonyong-choi/daphnis#main
 node --input-type=module -e "import {createRequire} from 'node:module'; console.log(createRequire(import.meta.url)('daphnis/package.json').version)"
 ```
 
-Daphnis 패키지에는 공통 디자인의 배포 사본, 아이콘과 렌더러가 포함됩니다. 소비자가 별도의 비공개 디자인 저장소에 접근할 필요는 없습니다. 독립 npm 패키지의 구성과 실제 배포 절차는 [마크다운과 배포](design/markdown.md#패키지)를 확인합니다.
+Daphnis 패키지에는 공통 디자인의 배포 사본, 아이콘, 렌더러와 TypeScript 선언이 포함된다. 소비자가 별도의 비공개 디자인 저장소에 접근할 필요는 없다. 라이브러리 API도 Node.js에서 실행하며 ESM으로 가져온다. 독립 npm 패키지의 구성과 실제 배포 절차는 [마크다운과 배포](design/markdown.md#패키지)를 확인한다.
 
 ## 첫 그림 만들기
 
@@ -335,24 +335,47 @@ SVG의 `--scene` 번호는 1부터입니다. 생략하면 첫 장면이고 장�
 
 ## JavaScript에서 조립하기
 
-공개 API는 `buildFigure`, `toSvg`, `toHtml`입니다. 원본을 한 번 빌드하고 그 결과로 두 출력을 만듭니다.
+공개 함수는 `buildFigure`, `toSvg`, `toHtml`이다. 원본을 한 번 빌드하고 그 결과로 두 출력을 만든다. 오류 클래스 `FigureError`도 같은 진입점에서 가져온다. 아래 코드는 `.mjs` 파일이나 `package.json`에 `"type": "module"`이 있는 프로젝트에서 실행한다.
 
 ```js
 import { readFile, writeFile } from 'node:fs/promises';
-import { buildFigure, toSvg, toHtml } from 'daphnis';
+import { buildFigure, FigureError, toSvg, toHtml } from 'daphnis';
 
 const source = await readFile('request.dap', 'utf8');
-const result = await buildFigure(source, {
-  strict: true,
-  allowFileAccess: false,
-});
-await writeFile('request.svg', await toSvg(result));
-await writeFile('request.html', await toHtml(result, '요청 경로'));
+try {
+  const result = await buildFigure(source, {
+    strict: true,
+    allowFileAccess: false,
+  });
+  await writeFile('request.svg', await toSvg(result));
+  await writeFile('request.html', await toHtml(result, '요청 경로'));
+} catch (error) {
+  if (!(error instanceof FigureError)) throw error;
+  for (const problem of error.problems) {
+    console.error(`${problem.line}:${problem.column} ${problem.code}: ${problem.message}`);
+  }
+}
 ```
 
-`buildFigure`는 파일을 쓰지 않습니다. `result.warnings`는 경고 목록이고 오류는 예외로 전달됩니다. `strict: true`이면 경고도 실패합니다. 외부 JSON이나 사용자 아이콘 세트를 허용하는 서버 도구라면 읽을 범위와 경로 정책을 정하고 `baseDir`를 명시합니다. 검증되지 않은 문서 입력을 받는 곳에서는 `allowFileAccess: false`를 유지합니다.
+세 함수 모두 Promise를 반환하며 파일을 쓰지 않는다. `buildFigure(source, options?)`의 결과는 `BuiltFigure`이고 두 렌더러에 그대로 전달한다. 공개 경고 목록은 `result.warnings`다. 내부 그림·장면·시간표의 필드와 JSON 직렬화 형식은 공개 계약이 아니므로 직접 수정하거나 저장해서 복원하지 않는다.
 
-`toSvg(result, { scene: 0, isStatic: true, name: 'request' })`는 첫 장면의 정지 SVG를 반환합니다. **API의 장면 번호는 0부터이며 CLI는 1부터입니다.** `toHtml(result, '제목')`은 모든 장면과 필요한 글꼴·스타일·재생 코드를 포함한 HTML 문자열을 반환합니다. 내부 모듈 경로 대신 공개 진입점을 가져옵니다. 디자인을 맞추기 위해 결과 SVG나 HTML을 정규식으로 덮어쓰지 않습니다.
+| 빌드 옵션 | 기본값 | 계약 |
+|---|---|---|
+| `baseDir` | 현재 작업 폴더 | 외부 JSON과 사용자 아이콘 경로의 기준 폴더 |
+| `strict` | `false` | 경고를 오류로 승격해 `FigureError`로 전달 |
+| `budget` | 이름별 기본 한도 | `grid-elements`, `grid-path-commands`, `events`, `chain`, `chip-index`의 한도를 양의 안전한 정수로 지정 |
+| `layoutWidth` | 기본 배치 폭 | 그래프 보기의 배치 목표 폭(px). 양의 유한수이며 그래프 보기가 있는 문서에서만 사용 |
+| `allowFileAccess` | `true` | `false`이면 원본에 외부 JSON이나 파일 기반 아이콘 세트가 있을 때 거부 |
+
+외부 JSON이나 사용자 아이콘 세트를 허용하는 서버 도구는 읽을 범위와 경로 정책을 정하고 `baseDir`를 명시한다. `baseDir`는 접근 가능한 경로를 제한하는 보안 경계가 아니다. 검증되지 않은 문서 입력을 받는 곳에서는 `allowFileAccess: false`를 유지한다. 내장 글꼴과 아이콘을 읽는 동작은 이 옵션과 무관하다.
+
+`toSvg(result, { scene: 0, isStatic: true, name: 'request' })`는 첫 장면의 마지막 상태를 담은 SVG 문자열을 반환한다. API의 장면 번호는 0부터이며 CLI는 1부터다. `scene`은 장면 이름도 받으며 생략하면 첫 장면이다. `isStatic`의 기본값은 `false`다. `name`은 원본에 `title`이 없을 때 쓸 제목이며 기본값은 빈 문자열이다. 장면이 있는 그림에서 존재하지 않는 번호나 이름을 선택하면 `RangeError`다.
+
+`toHtml(result, '제목')`은 모든 장면과 필요한 글꼴·스타일·재생 코드를 포함한 HTML 문자열을 반환한다. 두 번째 인자는 원본에 `title`이 없을 때 쓸 제목이며 생략하면 빈 문자열이다. 좁은 폭의 배치도 검사하므로 빌드가 성공한 뒤라도 이 단계에서 `FigureError`가 발생할 수 있다.
+
+`FigureError.name`은 `FigureError`이며 `problems`는 `FigureDiagnostic` 목록이다. 각 진단은 `severity`(`error` 또는 `warning`), `code`, `line`, `column`, `message`를 가진다. 줄과 열은 1부터 시작하며 원본 위치를 모르면 0이다. `warnings`도 같은 형식을 사용한다. `code`는 문자열이므로 연동 코드는 모르는 코드도 표시해야 한다. 진단을 분류할 때 사람이 읽는 `message`를 파싱하지 않는다. 잘못된 예산 옵션은 `TypeError`이고 그 밖의 실행 오류는 예시처럼 다시 던진다.
+
+TypeScript에서는 `import type { BuildOptions, BuiltFigure, FigureDiagnostic, SvgOptions } from 'daphnis'`로 타입을 가져온다. Node.js 프로젝트는 `module: "NodeNext"` 설정으로 같은 ESM 진입점을 사용한다. 타입의 정본은 [공개 선언](../src/index.d.ts)이다. 내부 모듈 경로 대신 공개 진입점을 가져오고, 디자인을 맞추기 위해 결과 SVG나 HTML을 정규식으로 덮어쓰지 않는다.
 
 ## 읽는 화면의 동작
 

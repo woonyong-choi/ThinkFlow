@@ -62,7 +62,7 @@ Requirements: Node.js 20 or later. The current source uses `daphnis 2`. The npm 
 npm install --save-dev github:woonyong-choi/daphnis#main
 ```
 
-Run it with `npx daphnis <command>`.
+Run it with `npx daphnis <command>`. The package also includes an ESM API and TypeScript declarations for Node.js.
 
 ## Gallery
 
@@ -147,6 +147,18 @@ This GitHub Action step fails a pull request when a source has a warning or a Ma
 
 `paths` are git globs of tracked files. `mode: render` writes the SVG files and image lines but does not commit them. The step fails when no file matches. `budget` takes `name=value` items separated by spaces or commas and raises the generation budgets (the same as `--budget`); a bad name or value fails the step before any figure is built.
 
+### Build from JavaScript or TypeScript
+
+```js
+import { buildFigure, toSvg, toHtml } from 'daphnis';
+
+const result = await buildFigure('daphnis 2\nbox server "Server"\n', { allowFileAccess: false });
+const svg = await toSvg(result);
+const html = await toHtml(result, 'Server');
+```
+
+All three functions return promises. Pass the build result to the renderers unchanged and read `result.warnings` for diagnostics. Catch the exported `FigureError` and read its `problems` for source or layout errors. [The API guide](docs/usage.md#javascript에서-조립하기) defines options, diagnostic fields, and the opaque `BuiltFigure` type.
+
 ### The grammar version
 
 A source must start with `daphnis 2`, and only `.dap` files are read. A file that starts with another version or has no version line is not read: the build stops with a diagnostic that names the line and column and writes nothing. daphnis has no command that rewrites old files, so write them in the current grammar ([Figure syntax](docs/design/figure-syntax.md#판과-없앤-형태) lists the removed statements and their replacements).
@@ -204,7 +216,7 @@ npm run check:package -- /absolute/new-consumer-path
 
 `npm test` runs the contract tests through the public entry points (build results, SVG, HTML, CLI, Markdown) and needs no browser. Looking at the figures in a real browser, at phone and desktop sizes in light and dark, is a separate manual review that the tests do not replace.
 
-The package check creates a new directory outside the repository, installs the actual tarball with public runtime dependencies, and checks CLI, Markdown and API outputs. It removes its directory afterward and needs access to the public npm registry. It does not publish a release.
+The package check creates a new directory outside the repository, installs the actual tarball with public runtime dependencies, and checks CLI, Markdown and API outputs. It also compiles and runs a TypeScript consumer against the installed declarations and rejects invalid calls. The compiler stays in the development checkout. The check removes its directory afterward and needs access to the public npm registry. It does not publish a release.
 
 Shared values, CSS, icons, tabs and toolbars come from the verified bundle in `src/vendor/theme/`. Builds use the committed public copy and do not require access to its source repository. Updates pass manifest checks and figure regeneration in a PR. In a clone, run `node src/cli.js` instead of `daphnis`, and `npm run catalog` to render every example, its source and an index into `.local/examples/`.
 

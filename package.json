@@ -25,6 +25,7 @@
     "url": "https://github.com/woonyong-choi/daphnis/issues"
   },
   "type": "module",
+  "types": "./src/index.d.ts",
   "files": [
     "src",
     "docs/assets/daphnis-*.svg",
@@ -65,10 +66,14 @@
     "subset-font": "^2.9.0"
   },
   "devDependencies": {
-    "playwright-core": "^1.63.0"
+    "playwright-core": "^1.63.0",
+    "typescript": "7.0.2"
   },
   "exports": {
-    ".": "./src/index.js",
+    ".": {
+      "types": "./src/index.d.ts",
+      "default": "./src/index.js"
+    },
     "./design-manifest.json": "./src/vendor/theme/manifest.json",
     "./package.json": "./package.json"
   }
