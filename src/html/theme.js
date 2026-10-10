@@ -23,7 +23,6 @@ function applyTheme(mode) {
     root.removeAttribute('data-theme');
     root.style.colorScheme = 'light dark';
   }
-  for (const frame of document.querySelectorAll('iframe')) frame.contentWindow?.postMessage({ theme: mode }, '*');
   for (const button of document.querySelectorAll('.theme button')) button.setAttribute('aria-pressed', String(button.dataset.mode === (mode === 'light' || mode === 'dark' ? mode : 'system')));
 }
 function savedTheme() {

@@ -6,8 +6,6 @@ import { PULSE, PULSE_MS } from '../pulse.js';
 import { TONE_FILLS, TONE_INKS, TONE_OUTLINES } from '../tone.js';
 import { tokens, values } from '../vendor/theme/tokens.js';
 
-const DURATION = values.duration;
-
 // 효과 시간(표시 ms, 장면 speed와 상관없음)은 src/pulse.js의 PULSE가 주인이다(올라가고, 유지하고, 내려오는 세 토큰의 읽기). 비는 선의 고정 알약은 세 시간의 합(PULSE_MS) 동안 줄어든다. 재생기는 합을 다시 계산하지 않고 이 값을 읽는다.
 const PULSE_TIMING = Object.freeze({ riseMs: PULSE.rise, holdMs: PULSE.hold, decayMs: PULSE.fall, fadeMs: PULSE_MS });
 
@@ -27,11 +25,8 @@ export const PLAYER_METRICS = Object.freeze({
   chipPadX: values.spacing["4-5"],
   chipPadY: values.spacing["2"],
   chipGap: values.spacing["3"],
-  icon: values.spacing.figure.control.icon,
-  iconStroke: values.spacing.figure.control["icon-stroke"],
   zoomMax: values.scale['zoom-max'],
   zoomStep: values.scale['zoom-step'],
-  noticeMs: DURATION.notice,
   move: curveOf('move'),
 });
 

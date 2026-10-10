@@ -1,4 +1,5 @@
 import { bindTabs } from './tabs.js';
+import { bindToolbar } from './toolbar.js';
 
 const initialized = new WeakSet();
 function initContent(root) {
@@ -30,39 +31,10 @@ function initContent(root) {
     }
 
   }
-  for (const button of root.querySelectorAll('[data-copy]')) {
-    if (initialized.has(button)) continue;
-    initialized.add(button);
-    const block = button.closest('.app-code');
-    const status = block.querySelector('[data-copy-status]');
-    const label = button.getAttribute('aria-label');
-    const idle = button.textContent;
-    let copying = false;
-    let reset;
-    button.hidden = false;
-    button.addEventListener('click', async () => {
-      if (copying) return;
-      copying = true;
-      clearTimeout(reset);
-      button.setAttribute('aria-disabled', 'true');
-      status.textContent = `${label} 중입니다.`;
-      try {
-        await navigator.clipboard.writeText(block.querySelector('code').textContent);
-        button.textContent = '복사됨';
-        button.dataset.state = 'copied';
-        button.setAttribute('aria-label', `${label}됨`);
-        status.textContent = `${label}를 완료했습니다.`;
-      } catch {
-        button.textContent = '복사 실패';
-        button.dataset.state = 'failed';
-        button.setAttribute('aria-label', `${label} 실패. 다시 시도`);
-        status.textContent = `${label}에 실패했습니다. 다시 시도하거나 코드를 선택해 복사하세요.`;
-      } finally {
-        copying = false;
-        button.removeAttribute('aria-disabled');
-        reset = setTimeout(() => { delete button.dataset.state; button.textContent = idle; button.setAttribute('aria-label', label); }, parseFloat(getComputedStyle(button).getPropertyValue('--duration-copy-feedback')));
-      }
-    });
+  for (const block of root.querySelectorAll('.app-code')) {
+    if (initialized.has(block)) continue;
+    initialized.add(block);
+    bindToolbar(block, { source: () => block.querySelector('code').textContent });
   }
   for (const section of root.querySelectorAll('[data-keyboard]')) {
     if (initialized.has(section)) continue;

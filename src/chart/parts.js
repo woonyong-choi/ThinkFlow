@@ -1,7 +1,7 @@
 // 원·도넛은 비율을 각도로 표현하고, 항목별 이름·값·비율을 같은 순서로 읽게 한다.
 // 조각 칸은 값이 0이어도 항목마다 하나씩 늘 있다(길이 0인 빈 경로). 그래서 값이 0에서 양수로 바뀌어도 그림 구조가 같고 조각 하나만 자란다.
 // 조각은 목록 번호(`1.`)를 조각 안 고리에 적는다(누적 막대와 같은 번호 키). 키 상자가 조각 고리에 들어갈 때만 보이고, 들어가지 않는 얇은 조각은 목록 순서(12시에서 시계 방향)와 비율이 잇는다.
-import { areaPaint } from '../chart-palette.js';
+import { categoryPaint } from '../chart-palette.js';
 import { wrap } from '../measure/fonts.js';
 import { centerBaseline, escapeXml, renderRich, roundCoord as r } from '../text.js';
 import { values } from '../vendor/theme/tokens.js';
@@ -74,7 +74,7 @@ export function drawParts(figure, top) {
   let y = top + outer * 2 + SPACE["4-5"];
   const svg = [emptyRing(chart, geometry, isUndefined)];
   chart.parts.forEach((part, index) => {
-    const paint = areaPaint(index);
+    const paint = categoryPaint(index);
     const row = chart.rows[index];
     const detail = isUndefined ? format(part.value) : `${format(part.value)} · ${percent(part.fraction * 100)}%`;
     const d = sectorPath(part, geometry);
@@ -93,7 +93,7 @@ export function drawParts(figure, top) {
     svg.push(entry.svg);
     y = entry.bottom;
   });
-  if (inner) svg.push(`<text x="${r(geometry.cx)}" y="${r(geometry.cy)}" text-anchor="middle" class="chart-value"${isUndefined ? ' visibility="hidden"' : ''}${markAttrs(chart, markId(chart, 0, 'total', '.t'), { raw: chart.total, isText: true, paint: areaPaint(0) })}>${renderRich(valueFormat([chart.total], chart.decimals)(chart.total))}</text>`);
+  if (inner) svg.push(`<text x="${r(geometry.cx)}" y="${r(geometry.cy)}" text-anchor="middle" class="chart-value"${isUndefined ? ' visibility="hidden"' : ''}${markAttrs(chart, markId(chart, 0, 'total', '.t'), { raw: chart.total, isText: true, paint: categoryPaint(0) })}>${renderRich(valueFormat([chart.total], chart.decimals)(chart.total))}</text>`);
   svg.push(...zeroNote(chart, geometry, isUndefined));
   return { svg: svg.join(''), bottom: y, rowKeys: chart.rows.map((row) => row.label), dotAts: [...new Set(chart.parts.filter((part) => part.value > 0).map((part) => Number(r(part.start))))] };
 }

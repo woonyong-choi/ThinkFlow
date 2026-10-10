@@ -15,6 +15,8 @@ body {
 }
 
 /* 본문이나 목록 카드에 삽입된 재생기(iframe)는 둘러싼 면 위에 그대로 놓인다. 바탕을 칠하지 않고 바깥 여백이 없어 그림이 본문 흐름에 붙는다. */
+html.embedded { overflow: clip; }
+
 html.embedded body {
   padding: 0;
   background: transparent;
@@ -52,16 +54,14 @@ html.embedded .fl-figure.full {
   flex: 1 1 auto;
   flex-direction: column;
   min-height: 0;
-  padding-top: calc(var(--spacing-figure-control-inner) + var(--spacing-1-5) * 3);
 }
 
 /* 판을 담는 회색 판은 그림에서 유일한 회색 층이다. 카드는 이 위의 흰 면이고 그룹은 면이 없다. 문서 안에서는 자연 높이라 넘치지 않고, 전체 화면에서 그림이 영역보다 커지면 이 안에서 스크롤한다. */
 .fl-canvas {
   min-height: 0;
   padding: var(--spacing-3) 0;
-  background: var(--color-prose-pre-background);
-  border-radius: var(--radius-card-radius);
-  overflow: auto;
+  background: transparent;
+  overflow: clip;
 }
 
 .fl-canvas:focus-visible {
@@ -100,27 +100,11 @@ html.embedded .fl-figure.full {
   justify-content: center;
   box-sizing: border-box;
   max-height: 50%;
-  padding: var(--spacing-2) 0 0;
+  padding: 0;
   overflow: auto;
 }
 
-.fl-round {
-  display: grid;
-  place-items: center;
-  box-sizing: border-box;
-  min-width: var(--spacing-figure-control-outer);
-  height: var(--spacing-figure-control-outer);
-  padding: 0 var(--spacing-1);
-  font: var(--text-small-text) var(--font-figure-sans);
-  white-space: nowrap;
-  color: var(--color-muted);
-  background: transparent;
-  border: 0;
-  border-radius: var(--radius-full);
-  cursor: pointer;
-}
-
-/* 탭 줄은 틀 폭 안에서 줄을 바꾸고(폭 규칙은 control.css의 분절 조작) 가운데로 모은다. 부모 flex 안에서 내용 폭 밑으로 줄어들 수 있어야 긴 탭이 틀 밖으로 나가지 않는다. */
+/* 탭 줄은 틀 폭 안에서 줄을 바꾸고(폭 규칙은 tabs.css의 공통 탭) 가운데로 모은다. 부모 flex 안에서 내용 폭 밑으로 줄어들 수 있어야 긴 탭이 틀 밖으로 나가지 않는다. */
 .fl-foot > .app-tablist {
   justify-content: center;
   min-width: 0;
@@ -130,91 +114,6 @@ html.embedded .fl-figure.full {
 .fl-code {
   font-family: var(--font-figure-mono);
   letter-spacing: normal;
-}
-
-/* 떠 있는 조작 면: 도구 막대와 확대·축소가 같은 카드 면, 경계, 모서리, 그림자다. */
-.fl-view-tools,
-.fl-zoom {
-  padding: var(--spacing-0-5);
-  background: var(--color-card);
-  border: var(--border-width-thin) solid var(--color-ui-line);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-diagram);
-}
-
-/* 도구 막대: 문법 복사, HTML 다운로드, 전체화면(맨 오른쪽)이 모든 그림에서 같다. 마우스는 그림에 올리거나 키보드 초점이 들어올 때 서서히 나타나고, 터치(손가락)에서는 늘 보인다.
-   결과 알림(.fl-tool-status)은 막대 맨 앞에 붙어 나타나는 동안은 마우스와 상관없이 보인다. */
-.fl-view-tools {
-  position: absolute;
-  top: var(--spacing-1-5);
-  right: var(--spacing-1-5);
-  z-index: var(--z-index-raised);
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-0-5);
-  max-width: calc(100% - var(--spacing-3));
-  opacity: 0;
-  transition: opacity var(--duration-fast);
-}
-
-.fl-figure:hover .fl-view-tools,
-.fl-figure:has(:focus-visible) .fl-view-tools,
-.fl-view-tools:has(.fl-tool-status:not(:empty)) {
-  opacity: 1;
-}
-
-.fl-view-tools .fl-round {
-  flex: 0 0 auto;
-  min-width: var(--spacing-figure-control-inner);
-  height: var(--spacing-figure-control-inner);
-  border-radius: var(--radius-feature-tab-button-radius);
-}
-
-.fl-view-tools .fl-round[data-state='done'] {
-  color: var(--color-state-success);
-}
-
-.fl-view-tools .fl-round[data-state='failed'] {
-  color: var(--color-state-error);
-}
-
-/* 결과 알림. 비어 있으면 폭이 0이라 보이지 않지만 화면 읽기 도구는 바뀐 글을 읽는다. */
-.fl-tool-status {
-  min-width: 0;
-  max-width: calc(var(--spacing-figure-control-outer) * 4);
-  padding: 0 var(--spacing-2);
-  overflow: hidden;
-  font-size: var(--text-figure-13);
-  color: var(--color-fg);
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.fl-tool-status:empty {
-  max-width: 0;
-  padding: 0;
-}
-
-/* 복사 명령이 쓰는 눈에 안 보이는 선택 영역. */
-.fl-copy-holder {
-  position: fixed;
-  top: 0;
-  left: 0;
-  pointer-events: none;
-  opacity: 0;
-}
-
-/* 도구 막대 공간은 입력 방식과 관계없이 항상 예약한다. 터치에서만 표시를 유지하므로 좁은 마우스 창과 전체 화면에서도 첫 카드를 가리지 않는다. */
-@media (hover: none), (pointer: coarse) {
-  .fl-view-tools {
-    opacity: 1;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .fl-view-tools {
-    transition: none;
-  }
 }
 
 /* 전체 화면은 같은 틀을 창 전체로 키우는 것뿐이다. 문서 안에서는 자연 높이이고 전체 화면에서만 창 높이를 채운다. */

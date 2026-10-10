@@ -11,26 +11,18 @@
   --color-gray-282: #b7b7b7;
   --color-gray-933: #111111;
   --color-gray-1000: #000000;
-  --color-blue-light-stroke: #125de6;
-  --color-blue-light-ink: #0151d9;
-  --color-blue-light-heat-low: #b7cdf5;
-  --color-blue-light-heat-high: #004dd2;
-  --color-blue-dark-stroke: #70a3ff;
-  --color-blue-dark-ink: #78a9ff;
-  --color-blue-dark-heat-low: #293751;
-  --color-blue-dark-heat-high: #4474cc;
   --color-fg: var(--color-ink);
   --color-muted: var(--color-ui-muted);
   --color-group-title: var(--color-help-title-color);
   --color-node: var(--color-ui-card);
   --color-card: var(--color-ui-card);
   --color-line: var(--color-gray-282);
-  --color-state-active: var(--color-blue-light-stroke);
-  --color-state-active-text: var(--color-blue-light-ink);
+  --color-state-active: var(--color-category-blue-light-border);
+  --color-state-active-text: var(--color-category-blue-light-ink);
   --color-ui-focus: var(--color-action-link);
-  --color-data-main: var(--color-blue-light-stroke);
-  --color-data-heat-low: var(--color-blue-light-heat-low);
-  --color-data-heat-high: var(--color-blue-light-heat-high);
+  --color-data-main: var(--color-category-blue-light-border);
+  --color-data-heat-low: var(--color-category-blue-light-tint-3);
+  --color-data-heat-high: var(--color-category-blue-light-border);
   --color-data-heat-ink: var(--color-gray-1000);
   --color-data-heat-ink-on: var(--color-gray-0);
   --color-data-grid: var(--color-gray-212);
@@ -41,8 +33,7 @@
   --color-data-category-effect-1: var(--color-category-blue-light-effect);
   --color-data-category-on-1: var(--color-category-blue-on);
   --color-data-category-on-2: var(--color-category-yellow-on);
-  --color-data-category-area-1: var(--color-category-blue-area);
-  --color-figure-icon: var(--color-blue-light-stroke);
+  --color-figure-icon: var(--color-category-blue-light-border);
   --color-figure-number-fill: var(--primitive-figure-number-fill);
   --color-figure-number-ink: var(--primitive-figure-number-ink);
   --color-ui-card: var(--color-gray-0);
@@ -59,10 +50,13 @@
   --color-category-blue-fill: var(--color-category-blue-anchor);
   --color-category-blue-on: var(--color-gray-0);
   --color-category-blue-light-border: #1e6bd6;
+  --color-category-blue-light-ink: #1161cb;
+  --color-category-blue-light-tint-3: #d5e4fa;
   --color-category-blue-dark-border: #3a85f2;
+  --color-category-blue-dark-ink: #6da8ff;
+  --color-category-blue-dark-tint-3: #303d54;
   --color-category-blue-light-effect: #3984f2;
   --color-category-blue-dark-effect: #60a0ff;
-  --color-category-blue-area: #4370b3;
   --color-category-yellow-anchor: #f2d024;
   --color-category-yellow-fill: var(--color-category-yellow-anchor);
   --color-category-yellow-on: var(--color-gray-1000);
@@ -120,16 +114,16 @@
   :root:not([data-theme='light']):not([data-theme='dark']) {
   --color-line: var(--primitive-figure-dark-line);
   --color-state-active: var(--primitive-figure-ui-accent);
-  --color-state-active-text: var(--color-blue-dark-ink);
+  --color-state-active-text: var(--color-category-blue-dark-ink);
   --color-data-main: var(--color-category-blue-dark-border);
-  --color-data-heat-low: var(--color-blue-dark-heat-low);
-  --color-data-heat-high: var(--color-blue-dark-heat-high);
+  --color-data-heat-low: var(--color-category-blue-dark-tint-3);
+  --color-data-heat-high: var(--color-category-blue-dark-border);
   --color-data-heat-ink: var(--color-gray-0);
   --color-data-grid: var(--primitive-figure-dark-edge);
   --color-data-category-outline-1: var(--color-category-blue-dark-border);
   --color-data-category-outline-2: var(--color-category-yellow-dark-border);
   --color-data-category-effect-1: var(--color-category-blue-dark-effect);
-  --color-figure-icon: var(--color-blue-dark-stroke);
+  --color-figure-icon: var(--color-category-blue-dark-border);
   --color-figure-number-fill: var(--color-gray-59);
   --color-figure-number-ink: var(--color-gray-933);
   --color-ui-card: var(--primitive-figure-dark-node);
@@ -147,16 +141,16 @@
 [data-theme='dark'] {
   --color-line: var(--primitive-figure-dark-line);
   --color-state-active: var(--primitive-figure-ui-accent);
-  --color-state-active-text: var(--color-blue-dark-ink);
+  --color-state-active-text: var(--color-category-blue-dark-ink);
   --color-data-main: var(--color-category-blue-dark-border);
-  --color-data-heat-low: var(--color-blue-dark-heat-low);
-  --color-data-heat-high: var(--color-blue-dark-heat-high);
+  --color-data-heat-low: var(--color-category-blue-dark-tint-3);
+  --color-data-heat-high: var(--color-category-blue-dark-border);
   --color-data-heat-ink: var(--color-gray-0);
   --color-data-grid: var(--primitive-figure-dark-edge);
   --color-data-category-outline-1: var(--color-category-blue-dark-border);
   --color-data-category-outline-2: var(--color-category-yellow-dark-border);
   --color-data-category-effect-1: var(--color-category-blue-dark-effect);
-  --color-figure-icon: var(--color-blue-dark-stroke);
+  --color-figure-icon: var(--color-category-blue-dark-border);
   --color-figure-number-fill: var(--color-gray-59);
   --color-figure-number-ink: var(--color-gray-933);
   --color-ui-card: var(--primitive-figure-dark-node);
@@ -172,17 +166,17 @@
 }
 [data-theme='light'] {
   --color-line: var(--color-gray-282);
-  --color-state-active: var(--color-blue-light-stroke);
-  --color-state-active-text: var(--color-blue-light-ink);
-  --color-data-main: var(--color-blue-light-stroke);
-  --color-data-heat-low: var(--color-blue-light-heat-low);
-  --color-data-heat-high: var(--color-blue-light-heat-high);
+  --color-state-active: var(--color-category-blue-light-border);
+  --color-state-active-text: var(--color-category-blue-light-ink);
+  --color-data-main: var(--color-category-blue-light-border);
+  --color-data-heat-low: var(--color-category-blue-light-tint-3);
+  --color-data-heat-high: var(--color-category-blue-light-border);
   --color-data-heat-ink: var(--color-gray-1000);
   --color-data-grid: var(--color-gray-212);
   --color-data-category-outline-1: var(--color-category-blue-light-border);
   --color-data-category-outline-2: var(--color-category-yellow-light-border);
   --color-data-category-effect-1: var(--color-category-blue-light-effect);
-  --color-figure-icon: var(--color-blue-light-stroke);
+  --color-figure-icon: var(--color-category-blue-light-border);
   --color-figure-number-fill: var(--primitive-figure-number-fill);
   --color-figure-number-ink: var(--primitive-figure-number-ink);
   --color-ui-card: var(--color-gray-0);
@@ -891,10 +885,10 @@
 <g id="n-1" class="fl-node fl-shape-box" tabindex="0" role="img" aria-label="앱" data-id="app"><rect x="215.3" y="28" width="100" height="47" rx="8" fill="var(--color-node)" class="fl-stroke a3"/><text x="265.3" y="56.9" class="label" text-anchor="middle">앱</text></g>
 <g id="n-2" class="fl-node fl-shape-box" tabindex="0" role="img" aria-label="주문 API" data-id="api"><rect x="28" y="135" width="316" height="350.5" rx="8" fill="var(--color-node)" class="fl-stroke a3"/><rect x="28" y="135" width="316" height="350.5" rx="8" fill="var(--color-node)" class="fl-pulse" opacity="0" aria-hidden="true"><animate attributeName="opacity" dur="6.4s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.07686;0.08936;0.10186;0.13936;0.20335;0.21585;0.22835;0.26585;0.31123;0.32373;0.33623;0.37373;0.43772;0.45022;0.46272;0.50022;0.54561;0.55811;0.57061;0.60811;0.6721;0.6846;0.6971;0.7346;0.77998;0.79248;0.80498;0.84248;0.90647;0.91897;0.93147;0.96897;1" values="0;0;1;1;0;0;1;1;0;0;1;1;0;0;1;1;0;0;1;1;0;0;1;1;0;0;1;1;0;0;1;1;0;0"/></rect><text x="186" y="163.9" class="label" text-anchor="middle">주문 API</text><rect x="38" y="182" width="296" height="293.5" rx="6" fill="var(--color-card)" opacity="0" class="fl-card a0"/><g id="n-2-c0" opacity="0" visibility="hidden" class="fl-layer a4"><path d="M38 211H334V237H38V211Z" class="fl-flash" opacity="0" data-vf="0"><animate attributeName="opacity" dur="6.4s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.07686;0.08936;0.10186;0.13936;0.20335;0.21585;0.22835;0.26585;0.31123;0.3125;0.32373;0.325;0.33623;0.3375;0.37373;0.375;0.42969;0.43772;0.44219;0.45022;0.45469;0.46272;0.49219;0.50022;0.54561;0.54688;0.55811;0.55937;0.57061;0.57188;0.60811;0.60938;0.66406;0.6721;0.67656;0.6846;0.68906;0.6971;0.72656;0.7346;0.77998;0.78125;0.79248;0.79375;0.80498;0.80625;0.84248;0.84375;0.89844;0.90647;0.91094;0.91897;0.92344;0.93147;0.96094;0.96897;1" values="0;0;1;1;0;0;1;1;0;0;0.10158;1;1;1;1;0.03386;0;0;0.64277;1;1;1;1;0.21426;0;0;0.10158;1;1;1;1;0.03386;0;0;0.64277;1;1;1;1;0.21426;0;0;0.10158;1;1;1;1;0.03386;0;0;0.64277;1;1;1;1;0.21426;0;0"/></path><text x="46" y="202.7" class="row">접수한 주문을 저장소에 보냅니다</text><text x="46" y="228.7" class="row">처리 중</text><g class="fl-chart" data-chart="traffic" transform="translate(38 240)"><text x="28" y="44.9" class="label">처리량</text>
 <text x="28" y="65.7" class="sub">예시 데이터. 처리 중인 주문 수</text>
-<rect x="28" y="75" width="12" height="12" rx="4" fill="var(--color-data-category-area-1)" stroke="var(--color-data-category-outline-1)" stroke-width="1.5"/>
+<rect x="28" y="75" width="12" height="12" rx="4" fill="var(--color-data-category-1)" stroke="var(--color-data-category-outline-1)" stroke-width="1.5"/>
 <text x="46" y="83" class="chart-legend">진행 중</text>
 <g class="cr-0 ink"><text x="28" y="118.2" class="chart-label">현재</text></g>
-<g class="cr-0"><g class="cs-0"><rect x="31.2" y="138.5" width="2" height="12" rx="0" fill="var(--color-data-category-area-1)" stroke="var(--color-data-category-outline-1)" stroke-width="1.5" class="grow" data-mark="orders:0" data-raw="0" data-effect="var(--color-data-category-effect-1)"><animate attributeName="width" dur="6.4s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.07686;0.20335;0.31123;0.3125;0.42969;0.43772;0.54561;0.54688;0.66406;0.6721;0.77998;0.78125;0.89844;0.90647" values="2;74.7;149.3;224;149.3;74.7;149.3;224;149.3;74.7;149.3;224;149.3;74.7;149.3"/><animate attributeName="rx" dur="6.4s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.07686" values="0;4"/></rect><rect x="31.2" y="138.5" width="2" height="12" rx="0" class="fl-mark-pulse grow" style="fill:var(--color-data-category-effect-1);fill-opacity:0.2;stroke:var(--color-data-category-effect-1);stroke-width:1.5" opacity="0" pointer-events="none" aria-hidden="true" data-pulse-of="orders:0"><animate attributeName="width" dur="6.4s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.07686;0.20335;0.31123;0.3125;0.42969;0.43772;0.54561;0.54688;0.66406;0.6721;0.77998;0.78125;0.89844;0.90647" values="2;74.7;149.3;224;149.3;74.7;149.3;224;149.3;74.7;149.3;224;149.3;74.7;149.3"/><animate attributeName="rx" dur="6.4s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.07686" values="0;4"/><animate attributeName="opacity" dur="6.4s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.07686;0.08936;0.10186;0.13936;0.20335;0.21585;0.22835;0.26585;0.31123;0.3125;0.32373;0.325;0.33623;0.3375;0.37373;0.375;0.42969;0.43772;0.44219;0.45022;0.45469;0.46272;0.49219;0.50022;0.54561;0.54688;0.55811;0.55937;0.57061;0.57188;0.60811;0.60938;0.66406;0.6721;0.67656;0.6846;0.68906;0.6971;0.72656;0.7346;0.77998;0.78125;0.79248;0.79375;0.80498;0.80625;0.84248;0.84375;0.89844;0.90647;0.91094;0.91897;0.92344;0.93147;0.96094;0.96897;1" values="0;0;1;1;0;0;1;1;0;0;0.10158;1;1;1;1;0.03386;0;0;0.64277;1;1;1;1;0.21426;0;0;0.10158;1;1;1;1;0.03386;0;0;0.64277;1;1;1;1;0.21426;0;0;0.10158;1;1;1;1;0.03386;0;0;0.64277;1;1;1;1;0.21426;0;0"/></rect></g></g>
+<g class="cr-0"><g class="cs-0"><rect x="31.2" y="138.5" width="2" height="12" rx="0" fill="var(--color-data-category-1)" stroke="var(--color-data-category-outline-1)" stroke-width="1.5" class="grow" data-mark="orders:0" data-raw="0" data-effect="var(--color-data-category-effect-1)"><animate attributeName="width" dur="6.4s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.07686;0.20335;0.31123;0.3125;0.42969;0.43772;0.54561;0.54688;0.66406;0.6721;0.77998;0.78125;0.89844;0.90647" values="2;74.7;149.3;224;149.3;74.7;149.3;224;149.3;74.7;149.3;224;149.3;74.7;149.3"/><animate attributeName="rx" dur="6.4s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.07686" values="0;4"/></rect><rect x="31.2" y="138.5" width="2" height="12" rx="0" class="fl-mark-pulse grow" style="fill:var(--color-data-category-effect-1);fill-opacity:0.2;stroke:var(--color-data-category-effect-1);stroke-width:1.5" opacity="0" pointer-events="none" aria-hidden="true" data-pulse-of="orders:0"><animate attributeName="width" dur="6.4s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.07686;0.20335;0.31123;0.3125;0.42969;0.43772;0.54561;0.54688;0.66406;0.6721;0.77998;0.78125;0.89844;0.90647" values="2;74.7;149.3;224;149.3;74.7;149.3;224;149.3;74.7;149.3;224;149.3;74.7;149.3"/><animate attributeName="rx" dur="6.4s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.07686" values="0;4"/><animate attributeName="opacity" dur="6.4s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.07686;0.08936;0.10186;0.13936;0.20335;0.21585;0.22835;0.26585;0.31123;0.3125;0.32373;0.325;0.33623;0.3375;0.37373;0.375;0.42969;0.43772;0.44219;0.45022;0.45469;0.46272;0.49219;0.50022;0.54561;0.54688;0.55811;0.55937;0.57061;0.57188;0.60811;0.60938;0.66406;0.6721;0.67656;0.6846;0.68906;0.6971;0.72656;0.7346;0.77998;0.78125;0.79248;0.79375;0.80498;0.80625;0.84248;0.84375;0.89844;0.90647;0.91094;0.91897;0.92344;0.93147;0.96094;0.96897;1" values="0;0;1;1;0;0;1;1;0;0;0.10158;1;1;1;1;0.03386;0;0;0.64277;1;1;1;1;0.21426;0;0;0.10158;1;1;1;1;0.03386;0;0;0.64277;1;1;1;1;0.21426;0;0;0.10158;1;1;1;1;0.03386;0;0;0.64277;1;1;1;1;0.21426;0;0"/></rect></g></g>
 
 
 <g class="cr-0 ink"><g class="cs-0"><rect x="36.2" y="138" width="8.8" height="13" class="chart-text-bg late" data-mark="orders:0.b" data-raw="0" data-effect="var(--color-data-category-effect-1)"><animate attributeName="x" dur="6.4s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.07686;0.20335;0.31123;0.3125;0.42969;0.43772;0.54561;0.54688;0.66406;0.6721;0.77998;0.78125;0.89844;0.90647" values="36.2;110.9;185.6;260.2;185.6;110.9;185.6;260.2;185.6;110.9;185.6;260.2;185.6;110.9;185.6"/></rect><g class="late fl-mark-pulse-wrap"><rect x="36.2" y="138" width="8.8" height="13" class="fl-mark-pulse" style="fill:var(--color-data-category-effect-1);fill-opacity:0.2;stroke:none;stroke-width:1.5" opacity="0" pointer-events="none" aria-hidden="true" data-pulse-of="orders:0.b"><animate attributeName="x" dur="6.4s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.07686;0.20335;0.31123;0.3125;0.42969;0.43772;0.54561;0.54688;0.66406;0.6721;0.77998;0.78125;0.89844;0.90647" values="36.2;110.9;185.6;260.2;185.6;110.9;185.6;260.2;185.6;110.9;185.6;260.2;185.6;110.9;185.6"/><animate attributeName="opacity" dur="6.4s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.07686;0.08936;0.10186;0.13936;0.20335;0.21585;0.22835;0.26585;0.31123;0.3125;0.32373;0.325;0.33623;0.3375;0.37373;0.375;0.42969;0.43772;0.44219;0.45022;0.45469;0.46272;0.49219;0.50022;0.54561;0.54688;0.55811;0.55937;0.57061;0.57188;0.60811;0.60938;0.66406;0.6721;0.67656;0.6846;0.68906;0.6971;0.72656;0.7346;0.77998;0.78125;0.79248;0.79375;0.80498;0.80625;0.84248;0.84375;0.89844;0.90647;0.91094;0.91897;0.92344;0.93147;0.96094;0.96897;1" values="0;0;1;1;0;0;1;1;0;0;0.10158;1;1;1;1;0.03386;0;0;0.64277;1;1;1;1;0.21426;0;0;0.10158;1;1;1;1;0.03386;0;0;0.64277;1;1;1;1;0.21426;0;0;0.10158;1;1;1;1;0.03386;0;0;0.64277;1;1;1;1;0.21426;0;0"/></rect></g><g opacity="0" visibility="hidden"><animate attributeName="visibility" dur="6.4s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.07686" values="visible;hidden"/><animate attributeName="opacity" dur="6.4s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.07686" values="1;0"/><text x="37.2" y="148.5" class="chart-value ours late" data-mark-text="orders:0.t"><animate attributeName="x" dur="6.4s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.07686;0.20335;0.31123;0.3125;0.42969;0.43772;0.54561;0.54688;0.66406;0.6721;0.77998;0.78125;0.89844;0.90647" values="37.2;111.9;186.6;261.2;186.6;111.9;186.6;261.2;186.6;111.9;186.6;261.2;186.6;111.9;186.6"/>0</text></g><g opacity="0" visibility="hidden"><animate attributeName="visibility" dur="6.4s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.07686;0.20335;0.42969;0.43772;0.66406;0.6721;0.89844;0.90647" values="hidden;visible;hidden;visible;hidden;visible;hidden;visible;hidden"/><animate attributeName="opacity" dur="6.4s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.07686;0.20335;0.42969;0.43772;0.66406;0.6721;0.89844;0.90647" values="0;1;0;1;0;1;0;1;0"/><text x="37.2" y="148.5" class="chart-value ours late" data-mark-text="orders:0.t"><animate attributeName="x" dur="6.4s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.07686;0.20335;0.31123;0.3125;0.42969;0.43772;0.54561;0.54688;0.66406;0.6721;0.77998;0.78125;0.89844;0.90647" values="37.2;111.9;186.6;261.2;186.6;111.9;186.6;261.2;186.6;111.9;186.6;261.2;186.6;111.9;186.6"/>1</text></g><g opacity="0" visibility="hidden"><animate attributeName="visibility" dur="6.4s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.20335;0.31123;0.3125;0.42969;0.43772;0.54561;0.54688;0.66406;0.6721;0.77998;0.78125;0.89844;0.90647" values="hidden;visible;hidden;visible;hidden;visible;hidden;visible;hidden;visible;hidden;visible;hidden;visible"/><animate attributeName="opacity" dur="6.4s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.20335;0.31123;0.3125;0.42969;0.43772;0.54561;0.54688;0.66406;0.6721;0.77998;0.78125;0.89844;0.90647" values="0;1;0;1;0;1;0;1;0;1;0;1;0;1"/><text x="37.2" y="148.5" class="chart-value ours late" data-mark-text="orders:0.t"><animate attributeName="x" dur="6.4s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.07686;0.20335;0.31123;0.3125;0.42969;0.43772;0.54561;0.54688;0.66406;0.6721;0.77998;0.78125;0.89844;0.90647" values="37.2;111.9;186.6;261.2;186.6;111.9;186.6;261.2;186.6;111.9;186.6;261.2;186.6;111.9;186.6"/>2</text></g><g opacity="0" visibility="hidden"><animate attributeName="visibility" dur="6.4s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.31123;0.3125;0.54561;0.54688;0.77998;0.78125" values="hidden;visible;hidden;visible;hidden;visible;hidden"/><animate attributeName="opacity" dur="6.4s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.31123;0.3125;0.54561;0.54688;0.77998;0.78125" values="0;1;0;1;0;1;0"/><text x="37.2" y="148.5" class="chart-value ours late" data-mark-text="orders:0.t"><animate attributeName="x" dur="6.4s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.07686;0.20335;0.31123;0.3125;0.42969;0.43772;0.54561;0.54688;0.66406;0.6721;0.77998;0.78125;0.89844;0.90647" values="37.2;111.9;186.6;261.2;186.6;111.9;186.6;261.2;186.6;111.9;186.6;261.2;186.6;111.9;186.6"/>3</text></g></g></g>
@@ -921,10 +915,10 @@
 <g id="still-n-1" class="fl-node fl-shape-box" tabindex="0" role="img" aria-label="앱" data-id="app"><rect x="215.3" y="28" width="100" height="47" rx="8" fill="var(--color-node)" class="fl-stroke sa1"/><text x="265.3" y="56.9" class="label" text-anchor="middle">앱</text></g>
 <g id="still-n-2" class="fl-node fl-shape-box" tabindex="0" role="img" aria-label="주문 API" data-id="api"><rect x="28" y="135" width="316" height="350.5" rx="8" fill="var(--color-node)" class="fl-stroke sa1"/><text x="186" y="163.9" class="label" text-anchor="middle">주문 API</text><rect x="38" y="182" width="296" height="293.5" rx="6" fill="var(--color-card)" opacity="0" class="fl-card sa0"/><g id="still-n-2-c0" opacity="0" visibility="hidden" class="fl-layer sa2"><text x="46" y="202.7" class="row">접수한 주문을 저장소에 보냅니다</text><text x="46" y="228.7" class="row">처리 중</text><g class="fl-chart" data-chart="traffic" transform="translate(38 240)"><text x="28" y="44.9" class="label">처리량</text>
 <text x="28" y="65.7" class="sub">예시 데이터. 처리 중인 주문 수</text>
-<rect x="28" y="75" width="12" height="12" rx="4" fill="var(--color-data-category-area-1)" stroke="var(--color-data-category-outline-1)" stroke-width="1.5"/>
+<rect x="28" y="75" width="12" height="12" rx="4" fill="var(--color-data-category-1)" stroke="var(--color-data-category-outline-1)" stroke-width="1.5"/>
 <text x="46" y="83" class="chart-legend">진행 중</text>
 <g class="cr-0 ink"><text x="28" y="118.2" class="chart-label">현재</text></g>
-<g class="cr-0"><g class="cs-0"><rect x="31.2" y="138.5" width="149.3" height="12" rx="4" fill="var(--color-data-category-area-1)" stroke="var(--color-data-category-outline-1)" stroke-width="1.5" class="grow" data-mark="orders:0" data-raw="0" data-effect="var(--color-data-category-effect-1)"></rect></g></g>
+<g class="cr-0"><g class="cs-0"><rect x="31.2" y="138.5" width="149.3" height="12" rx="4" fill="var(--color-data-category-1)" stroke="var(--color-data-category-outline-1)" stroke-width="1.5" class="grow" data-mark="orders:0" data-raw="0" data-effect="var(--color-data-category-effect-1)"></rect></g></g>
 
 
 <g class="cr-0 ink"><g class="cs-0"><rect x="185.6" y="138" width="8.8" height="13" class="chart-text-bg late" data-mark="orders:0.b" data-raw="0" data-effect="var(--color-data-category-effect-1)"></rect><text x="186.6" y="148.5" class="chart-value ours late" data-mark-text="orders:0.t">2</text></g></g>

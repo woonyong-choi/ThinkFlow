@@ -8,23 +8,19 @@
   --color-gray-59: #f0f0f0;
   --color-gray-282: #b7b7b7;
   --color-gray-933: #111111;
-  --color-blue-light-stroke: #125de6;
-  --color-blue-light-ink: #0151d9;
-  --color-blue-dark-stroke: #70a3ff;
-  --color-blue-dark-ink: #78a9ff;
   --color-fg: var(--color-ink);
   --color-muted: var(--color-ui-muted);
   --color-group-title: var(--color-help-title-color);
   --color-node: var(--color-ui-card);
   --color-card: var(--color-ui-card);
   --color-line: var(--color-gray-282);
-  --color-state-active: var(--color-blue-light-stroke);
-  --color-state-active-fill: var(--color-blue-light-ink);
-  --color-state-active-text: var(--color-blue-light-ink);
+  --color-state-active: var(--color-category-blue-light-border);
+  --color-state-active-fill: var(--color-category-blue-fill);
+  --color-state-active-text: var(--color-category-blue-light-ink);
   --color-state-on-active: var(--color-gray-0);
   --color-ui-focus: var(--color-action-link);
   --color-data-category-1: var(--color-category-blue-fill);
-  --color-figure-icon: var(--color-blue-light-stroke);
+  --color-figure-icon: var(--color-category-blue-light-border);
   --color-figure-number-fill: var(--primitive-figure-number-fill);
   --color-figure-number-ink: var(--primitive-figure-number-ink);
   --color-ui-card: var(--color-gray-0);
@@ -39,6 +35,10 @@
   --color-category-blue-anchor: #1e6bd6;
   --color-category-blue-fill: var(--color-category-blue-anchor);
   --color-category-blue-on: var(--color-gray-0);
+  --color-category-blue-light-border: #1e6bd6;
+  --color-category-blue-light-ink: #1161cb;
+  --color-category-blue-dark-border: #3a85f2;
+  --color-category-blue-dark-ink: #6da8ff;
   --font-figure-sans: FigSans, FigSansSym, FigSansMath, ui-sans-serif, -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
   --font-figure-mono: FigMono, FigSans, FigSansSym, FigSansMath, ui-monospace, SFMono-Regular, Menlo, monospace;
   --text-small-text: var(--primitive-small-text);
@@ -80,10 +80,9 @@
 [data-theme='dark'] {
   --color-line: var(--primitive-figure-dark-line);
   --color-state-active: var(--primitive-figure-ui-accent);
-  --color-state-active-fill: var(--color-category-blue-fill);
-  --color-state-active-text: var(--color-blue-dark-ink);
+  --color-state-active-text: var(--color-category-blue-dark-ink);
   --color-state-on-active: var(--color-category-blue-on);
-  --color-figure-icon: var(--color-blue-dark-stroke);
+  --color-figure-icon: var(--color-category-blue-dark-border);
   --color-figure-number-fill: var(--color-gray-59);
   --color-figure-number-ink: var(--color-gray-933);
   --color-ui-card: var(--primitive-figure-dark-node);
@@ -98,11 +97,10 @@
 }
 [data-theme='light'] {
   --color-line: var(--color-gray-282);
-  --color-state-active: var(--color-blue-light-stroke);
-  --color-state-active-fill: var(--color-blue-light-ink);
-  --color-state-active-text: var(--color-blue-light-ink);
+  --color-state-active: var(--color-category-blue-light-border);
+  --color-state-active-text: var(--color-category-blue-light-ink);
   --color-state-on-active: var(--color-gray-0);
-  --color-figure-icon: var(--color-blue-light-stroke);
+  --color-figure-icon: var(--color-category-blue-light-border);
   --color-figure-number-fill: var(--primitive-figure-number-fill);
   --color-figure-number-ink: var(--primitive-figure-number-ink);
   --color-ui-card: var(--color-gray-0);

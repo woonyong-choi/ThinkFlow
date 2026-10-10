@@ -1,3 +1,4 @@
+import { cssTimeMs } from './time.js';
 // 자동 이동은 합성 가능한 transform으로, 직접 탐색은 네이티브 스크롤로 처리한다.
 const reduced = matchMedia('(prefers-reduced-motion: reduce)');
 const scopes = new Map();
@@ -9,7 +10,7 @@ for (const rail of document.querySelectorAll('[data-flow-rail]')) {
 for (const [scope, rails] of scopes) {
   const shared = scope.hasAttribute('data-flow-rows');
   const durationValue = getComputedStyle(rails[0]).getPropertyValue('--duration-motion-rail').trim();
-  const duration = parseFloat(durationValue) * (durationValue.endsWith('ms') ? 1 : 1000) * 2;
+  const duration = cssTimeMs(durationValue) * 2;
   let focused = false; let manual = false; let suspended = false;
   const rows = rails.map(rail => ({
     viewport: rail.querySelector('[data-flow-viewport]'), track: rail.querySelector('[data-flow-track]'),

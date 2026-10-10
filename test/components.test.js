@@ -334,10 +334,10 @@ test('U9 every page has one frame, one toolbar and one tab row: the toolbar sits
   const figure = findOne(frame, (n) => n.tag === 'figure' && hasClass(n, 'fl-figure'), 'figure');
   const [surface, foot] = figure.children.filter((n) => n.tag === 'div');
   assert.ok(hasClass(surface, 'fl-surface') && hasClass(foot, 'fl-foot'));
-  const tools = findOne(surface, (n) => hasClass(n, 'fl-view-tools'), 'toolbar');
+  const tools = findOne(surface, (n) => hasClass(n, 'app-toolbar'), 'toolbar');
   assert.equal(tools.attrs.role, 'toolbar');
   assert.deepEqual(tools.children.filter((n) => n.tag === 'button').map((n) => n.attrs['aria-label']), ['문법 복사', 'HTML 다운로드', '전체화면']);
-  assert.deepEqual(tools.children.filter((n) => n.tag === 'button').map((n) => classes(n).find((name) => name !== 'fl-round')), ['fl-copy', 'fl-download', 'fl-full']);
+  assert.deepEqual(tools.children.filter((n) => n.tag === 'button').map((n) => classes(n).find((name) => name !== 'app-tool-button')), ['fl-copy', 'fl-download', 'fl-full']);
   assert.equal(descendants(surface).indexOf(tools) < descendants(surface).findIndex((n) => hasClass(n, 'fl-canvas')), true, 'toolbar before the canvas');
   const tabs = findOne(foot, (n) => hasClass(n, 'app-tablist'), 'tab row');
   assert.equal(tabs.attrs.role, 'tablist');
@@ -358,7 +358,7 @@ test('U9 every page has one frame, one toolbar and one tab row: the toolbar sits
     const dom = parseMarkup(html, { html: true });
     const script = textContent(descendants(dom).filter((n) => n.tag === 'script').at(-1));
     pages[name] = {
-      chrome: shape(findOne(dom, (n) => hasClass(n, 'fl-view-tools'), 'toolbar')),
+      chrome: shape(findOne(dom, (n) => hasClass(n, 'app-toolbar'), 'toolbar')),
       tabs: findAll(dom, (n) => n.attrs.role === 'tab'),
       data: JSON.parse(/figurePlay\(document\.querySelector\('\.fl-figure'\), (.*)\);\s*$/s.exec(script)[1]),
     };
@@ -371,5 +371,8 @@ test('U9 every page has one frame, one toolbar and one tab row: the toolbar sits
   assert.deepEqual([pages.still.data.segs.length, pages.one.data.steps.length, pages.three.data.steps.length], [0, 1, 3]);
   // 조작부 아이콘은 한 표에서 와서 모든 페이지에 같은 글로 실린다.
   const html = await toHtml(await build(dap('box a "A"\n')), 'doc');
-  assert.ok(html.includes(`const UI_ICONS = ${JSON.stringify(CONTROL_ICONS).replace(/</g, '\\u003c')};`));
+  assert.ok(html.includes(`const CONTROL_ICONS = ${JSON.stringify(CONTROL_ICONS).replace(/</g, '\\u003c')};`));
+  for (const [, name] of html.matchAll(/getPropertyValue\(['"](--[\w-]+)['"]\)/g)) {
+    assert.ok(html.includes(`${name}:`), `runtime token ${name} survives CSS pruning`);
+  }
 });

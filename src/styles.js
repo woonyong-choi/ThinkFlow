@@ -14,12 +14,11 @@ function readStyle(name) {
 export const STYLES = Object.freeze({
   tokens: readStyle('./vendor/theme/tokens.css'),
   figure: readStyle('./vendor/theme/styles/diagram/figure.css'),
-  control: readStyle('./vendor/theme/styles/tabs.css') + readStyle('./vendor/theme/styles/diagram/control.css'),
+  control: readStyle('./vendor/theme/styles/tabs.css') + readStyle('./vendor/theme/styles/toolbar.css'),
   player: readStyle('./vendor/theme/styles/diagram/player.css'),
-  gallery: readStyle('./vendor/theme/styles/diagram/gallery.css'),
+  gallery: readStyle('./vendor/theme/styles/diagram-embed.css') + readStyle('./vendor/theme/styles/diagram/gallery.css'),
   document: readStyle('./vendor/theme/styles/diagram/document.css'),
   chart: readStyle('./vendor/theme/styles/diagram/chart.css'),
-  chartData: readStyle('./vendor/theme/styles/diagram/chart-data.css'),
   status: readStyle('./vendor/theme/styles/diagram/status.css'),
 });
 

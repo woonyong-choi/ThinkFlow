@@ -12,10 +12,6 @@
   --color-gray-529: #787878;
   --color-gray-910: #171717;
   --color-gray-933: #111111;
-  --color-blue-light-stroke: #125de6;
-  --color-blue-light-ink: #0151d9;
-  --color-blue-dark-stroke: #70a3ff;
-  --color-blue-dark-ink: #78a9ff;
   --color-fg: var(--color-ink);
   --color-muted: var(--color-ui-muted);
   --color-group-title: var(--color-help-title-color);
@@ -23,11 +19,11 @@
   --color-card: var(--color-ui-card);
   --color-outline: var(--color-gray-529);
   --color-line: var(--color-gray-282);
-  --color-state-active: var(--color-blue-light-stroke);
-  --color-state-active-text: var(--color-blue-light-ink);
+  --color-state-active: var(--color-category-blue-light-border);
+  --color-state-active-text: var(--color-category-blue-light-ink);
   --color-ui-focus: var(--color-action-link);
   --color-data-category-1: var(--color-category-blue-fill);
-  --color-figure-icon: var(--color-blue-light-stroke);
+  --color-figure-icon: var(--color-category-blue-light-border);
   --color-figure-queue-empty: var(--color-gray-161);
   --color-figure-number-fill: var(--primitive-figure-number-fill);
   --color-figure-number-ink: var(--primitive-figure-number-ink);
@@ -42,6 +38,10 @@
   --color-action-link: var(--primitive-link);
   --color-category-blue-anchor: #1e6bd6;
   --color-category-blue-fill: var(--color-category-blue-anchor);
+  --color-category-blue-light-border: #1e6bd6;
+  --color-category-blue-light-ink: #1161cb;
+  --color-category-blue-dark-border: #3a85f2;
+  --color-category-blue-dark-ink: #6da8ff;
   --font-figure-sans: FigSans, FigSansSym, FigSansMath, ui-sans-serif, -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
   --font-figure-mono: FigMono, FigSans, FigSansSym, FigSansMath, ui-monospace, SFMono-Regular, Menlo, monospace;
   --text-small-text: var(--primitive-small-text);
@@ -85,8 +85,8 @@
   --color-outline: var(--primitive-figure-dark-outline);
   --color-line: var(--primitive-figure-dark-line);
   --color-state-active: var(--primitive-figure-ui-accent);
-  --color-state-active-text: var(--color-blue-dark-ink);
-  --color-figure-icon: var(--color-blue-dark-stroke);
+  --color-state-active-text: var(--color-category-blue-dark-ink);
+  --color-figure-icon: var(--color-category-blue-dark-border);
   --color-figure-queue-empty: var(--color-gray-910);
   --color-figure-number-fill: var(--color-gray-59);
   --color-figure-number-ink: var(--color-gray-933);
@@ -105,8 +105,8 @@
   --color-outline: var(--primitive-figure-dark-outline);
   --color-line: var(--primitive-figure-dark-line);
   --color-state-active: var(--primitive-figure-ui-accent);
-  --color-state-active-text: var(--color-blue-dark-ink);
-  --color-figure-icon: var(--color-blue-dark-stroke);
+  --color-state-active-text: var(--color-category-blue-dark-ink);
+  --color-figure-icon: var(--color-category-blue-dark-border);
   --color-figure-queue-empty: var(--color-gray-910);
   --color-figure-number-fill: var(--color-gray-59);
   --color-figure-number-ink: var(--color-gray-933);
@@ -123,9 +123,9 @@
 [data-theme='light'] {
   --color-outline: var(--color-gray-529);
   --color-line: var(--color-gray-282);
-  --color-state-active: var(--color-blue-light-stroke);
-  --color-state-active-text: var(--color-blue-light-ink);
-  --color-figure-icon: var(--color-blue-light-stroke);
+  --color-state-active: var(--color-category-blue-light-border);
+  --color-state-active-text: var(--color-category-blue-light-ink);
+  --color-figure-icon: var(--color-category-blue-light-border);
   --color-figure-queue-empty: var(--color-gray-161);
   --color-figure-number-fill: var(--primitive-figure-number-fill);
   --color-figure-number-ink: var(--primitive-figure-number-ink);

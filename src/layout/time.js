@@ -1,7 +1,7 @@
 // 시간 보기 배치. 추적 카드의 구간(span)을 실제 시간 축 위에 놓는다. 레인은 구간이 처음 나온 순서로 위에서 아래로 쌓고, 같은 레인에서 시간이 겹치는 구간은 줄을 나눈다.
 // 가로 위치는 시작 시각에 비례하고 길이는 길이에 비례한다(0에서 시작하는 선형 축, 눈금은 chart/scale.js의 같은 규칙).
 import { measure, wrap } from '../measure/fonts.js';
-import { areaPaint } from '../chart-palette.js';
+import { categoryPaint } from '../chart-palette.js';
 import { lineHeight, textAt } from '../measure/texts.js';
 import { values } from '../vendor/theme/tokens.js';
 import { axisEnd } from '../chart/axis.js';
@@ -39,7 +39,7 @@ export function layoutTime(card, names, width = WIDTH) {
     const source = card.spans.filter((s) => s.lane === id);
     const rows = layout ? compactRows(source, scale, y + labelLayout.space) : wideRows(source, scale, y);
     const h = rows.height + labelLayout.space;
-    const lane = { id, label: names.get(id) ?? id, y, h, paint: areaPaint(k), spans: rows.spans.map((s) => ({ ...s, key: `${card.id}.${s.id}` })) };
+    const lane = { id, label: names.get(id) ?? id, y, h, paint: categoryPaint(k), spans: rows.spans.map((s) => ({ ...s, key: `${card.id}.${s.id}` })) };
     y += h;
     return lane;
   });

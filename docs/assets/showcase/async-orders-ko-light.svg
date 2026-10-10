@@ -14,10 +14,6 @@
   --color-gray-910: #171717;
   --color-gray-933: #111111;
   --color-gray-1000: #000000;
-  --color-blue-light-stroke: #125de6;
-  --color-blue-light-ink: #0151d9;
-  --color-blue-dark-stroke: #70a3ff;
-  --color-blue-dark-ink: #78a9ff;
   --color-fg: var(--color-ink);
   --color-muted: var(--color-ui-muted);
   --color-group-title: var(--color-help-title-color);
@@ -25,8 +21,8 @@
   --color-card: var(--color-ui-card);
   --color-outline: var(--color-gray-529);
   --color-line: var(--color-gray-282);
-  --color-state-active: var(--color-blue-light-stroke);
-  --color-state-active-text: var(--color-blue-light-ink);
+  --color-state-active: var(--color-category-blue-light-border);
+  --color-state-active-text: var(--color-category-blue-light-ink);
   --color-flow-gray: var(--color-gray-545);
   --color-ui-focus: var(--color-action-link);
   --color-data-category-1: var(--color-category-blue-fill);
@@ -41,7 +37,7 @@
   --color-data-category-on-2: var(--color-category-yellow-on);
   --color-data-category-on-3: var(--color-category-red-on);
   --color-data-category-on-5: var(--color-category-orange-on);
-  --color-figure-icon: var(--color-blue-light-stroke);
+  --color-figure-icon: var(--color-category-blue-light-border);
   --color-figure-queue-empty: var(--color-gray-161);
   --color-figure-number-fill: var(--primitive-figure-number-fill);
   --color-figure-number-ink: var(--primitive-figure-number-ink);
@@ -58,7 +54,9 @@
   --color-category-blue-fill: var(--color-category-blue-anchor);
   --color-category-blue-on: var(--color-gray-0);
   --color-category-blue-light-border: #1e6bd6;
+  --color-category-blue-light-ink: #1161cb;
   --color-category-blue-dark-border: #3a85f2;
+  --color-category-blue-dark-ink: #6da8ff;
   --color-category-yellow-anchor: #f2d024;
   --color-category-yellow-fill: var(--color-category-yellow-anchor);
   --color-category-yellow-on: var(--color-gray-1000);
@@ -118,13 +116,13 @@
   --color-outline: var(--primitive-figure-dark-outline);
   --color-line: var(--primitive-figure-dark-line);
   --color-state-active: var(--primitive-figure-ui-accent);
-  --color-state-active-text: var(--color-blue-dark-ink);
+  --color-state-active-text: var(--color-category-blue-dark-ink);
   --color-flow-gray: var(--color-gray-220);
   --color-data-category-outline-1: var(--color-category-blue-dark-border);
   --color-data-category-outline-2: var(--color-category-yellow-dark-border);
   --color-data-category-outline-3: var(--color-category-red-dark-border);
   --color-data-category-outline-5: var(--color-category-orange-dark-border);
-  --color-figure-icon: var(--color-blue-dark-stroke);
+  --color-figure-icon: var(--color-category-blue-dark-border);
   --color-figure-queue-empty: var(--color-gray-910);
   --color-figure-number-fill: var(--color-gray-59);
   --color-figure-number-ink: var(--color-gray-933);
@@ -142,14 +140,14 @@
 [data-theme='light'] {
   --color-outline: var(--color-gray-529);
   --color-line: var(--color-gray-282);
-  --color-state-active: var(--color-blue-light-stroke);
-  --color-state-active-text: var(--color-blue-light-ink);
+  --color-state-active: var(--color-category-blue-light-border);
+  --color-state-active-text: var(--color-category-blue-light-ink);
   --color-flow-gray: var(--color-gray-545);
   --color-data-category-outline-1: var(--color-category-blue-light-border);
   --color-data-category-outline-2: var(--color-category-yellow-light-border);
   --color-data-category-outline-3: var(--color-category-red-light-border);
   --color-data-category-outline-5: var(--color-category-orange-light-border);
-  --color-figure-icon: var(--color-blue-light-stroke);
+  --color-figure-icon: var(--color-category-blue-light-border);
   --color-figure-queue-empty: var(--color-gray-161);
   --color-figure-number-fill: var(--primitive-figure-number-fill);
   --color-figure-number-ink: var(--primitive-figure-number-ink);

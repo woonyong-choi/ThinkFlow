@@ -102,8 +102,10 @@ body > main { overflow-x: clip; }
   .app-header a { font-size: var(--text-nav-text); }
 }
 /* 선택 줄: 문서 탭, 갤러리와 도표 장면이 같은 부품을 사용한다. */
+.app-tablist, .app-tablist button { box-sizing: border-box; }
+.app-tablist.is-after-panel { margin-block: var(--spacing-gap-sm) 0; }
 .app-tablist { display: flex; flex-wrap: wrap; justify-content: center; max-width: none; margin: 0; padding: 0; background: transparent; }
-.app-tablist button { flex: none; max-width: 100%; cursor: pointer; margin: var(--spacing-platform-button-gap); border: 0; word-break: keep-all; overflow-wrap: break-word; padding: var(--spacing-platform-button-y) var(--spacing-platform-button-x); font-family: inherit; font-size: var(--text-platform-text); font-weight: var(--font-weight-weight-medium); line-height: var(--leading-platform-line); color: var(--color-platform-color); border-radius: var(--radius-prose-pre-radius); background: var(--color-feature-tab-background); transition: background-color var(--duration-platform-motion) var(--ease-icon-easing), color var(--duration-platform-motion) var(--ease-icon-easing), box-shadow var(--duration-platform-motion) var(--ease-icon-easing); }
+.app-tablist button { flex: none; max-width: 100%; cursor: pointer; margin: var(--spacing-platform-button-gap); border: 0; word-break: keep-all; overflow-wrap: break-word; padding: var(--spacing-platform-button-y) var(--spacing-platform-button-x); font-family: var(--font-sans); font-size: var(--text-platform-text); font-weight: var(--font-weight-weight-medium); line-height: var(--leading-platform-line); color: var(--color-platform-color); border-radius: var(--radius-prose-pre-radius); background: var(--color-feature-tab-background); transition: background-color var(--duration-platform-motion) var(--ease-icon-easing), color var(--duration-platform-motion) var(--ease-icon-easing), box-shadow var(--duration-platform-motion) var(--ease-icon-easing); }
 .app-tablist button:hover { background: var(--color-platform-hover); box-shadow: var(--shadow-platform-hover-shadow); }
 .app-tablist button:active { background: var(--color-platform-active); box-shadow: var(--shadow-platform-active-shadow); }
 .app-tablist button:is([aria-selected=true], [aria-pressed=true]) { color: var(--color-control-paper); background: var(--color-feature-tab-selected); cursor: default; }
@@ -119,10 +121,80 @@ body > main { overflow-x: clip; }
 .app-tablist button:focus-visible { outline: var(--outline-width-focus) solid var(--color-ui-focus); outline-offset: var(--spacing-0-5); }
 .app-tablist button:disabled { color: var(--color-muted); cursor: default; background: transparent; box-shadow: none; }
 @media (prefers-reduced-motion: reduce) { .app-tablist button { transition: none; } }
+/* 코드와 그림의 블록 안 조작부. 크기·아이콘·상태·노출 규칙은 여기서만 정한다. */
+.app-tool-surface { position: relative; background: var(--color-prose-pre-background); border-radius: var(--radius-card-radius); }
+.app-tool-header { position: relative; z-index: var(--z-index-raised); display: flex; flex: 0 0 auto; align-items: center; justify-content: space-between; gap: var(--spacing-3); min-width: 0; padding: var(--spacing-1-5); }
+.app-tool-label { min-width: 0; padding-inline-start: var(--spacing-1-5); overflow: hidden; color: var(--color-ui-muted); font-size: var(--text-post-date-size); text-overflow: ellipsis; white-space: nowrap; }
+.app-toolbar, .app-tool-group { position: relative; display: flex; align-items: center; gap: var(--spacing-0-5); padding: var(--spacing-0-5); background: var(--color-card); border: var(--border-width-thin) solid var(--color-ui-line); border-radius: var(--radius-md); box-shadow: var(--shadow-diagram); }
+.app-toolbar { font-family: var(--font-sans); flex: 0 1 auto; min-width: 0; max-width: 100%; margin-inline-start: auto; opacity: 0; transition: opacity var(--duration-fast); }
+.app-tool-surface:hover .app-toolbar, .app-tool-surface:has(:focus-visible) .app-toolbar, .app-toolbar:has(.app-tool-status:not(:empty)) { opacity: 1; }
+.app-tool-button { display: grid; flex: 0 0 auto; place-items: center; box-sizing: border-box; width: var(--spacing-figure-control-inner); height: var(--spacing-figure-control-inner); padding: 0; color: var(--color-muted); background: transparent; border: 0; border-radius: var(--radius-feature-tab-button-radius); cursor: pointer; }
+.app-tool-icon { display: block; width: var(--spacing-figure-control-icon); height: var(--spacing-figure-control-icon); stroke-width: var(--spacing-figure-control-icon-stroke); }
+.app-tool-button[data-state='done'] { color: var(--color-state-success); }
+.app-tool-button[data-state='failed'] { color: var(--color-state-error); }
+.app-tool-button:hover, .app-tool-button:active, .app-tool-button:focus-visible { color: var(--color-control-paper); background: var(--color-code-copy-hover); }
+.app-tool-button:focus-visible { outline: var(--outline-width-focus) solid var(--color-ui-focus); outline-offset: var(--spacing-0-5); }
+.app-tool-button:disabled { color: var(--color-muted); cursor: default; background: transparent; }
+.app-tool-button[hidden] { display: none; }
+.app-tool-status { min-width: 0; max-width: calc(var(--spacing-figure-control-outer) * 4); padding: 0 var(--spacing-2); overflow: hidden; color: var(--color-fg); font-size: var(--text-figure-13); text-overflow: ellipsis; white-space: nowrap; }
+.app-tool-status:empty { max-width: 0; padding: 0; }
+.app-copy-holder { position: fixed; top: 0; left: 0; opacity: 0; pointer-events: none; }
+@media (hover: none), (pointer: coarse) { .app-toolbar { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) { .app-toolbar { transition: none; } }
+/* 문서 표와 단축키 표가 공유하는 면·경계·읽기 규칙. */
+.app-table-scroll {
+  max-width: 100%;
+  overflow: auto;
+  margin-block: var(--spacing-gap);
+}
+
+.app-table-scroll:focus-visible {
+  outline: var(--outline-width-focus) solid var(--color-ui-focus);
+  outline-offset: var(--spacing-0-5);
+}
+
+.app-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border: var(--border-width-hair) solid var(--color-ui-line);
+  border-radius: var(--radius-lg);
+  background: var(--color-card);
+  color: var(--color-fg);
+  font-size: inherit;
+  font-variant-numeric: tabular-nums;
+}
+
+.app-table :is(th, td) {
+  padding: var(--component-table-padding);
+  vertical-align: baseline;
+  border: 0;
+  border-bottom: var(--border-width-hair) solid var(--color-ui-line);
+  text-align: left;
+  word-break: keep-all;
+  overflow-wrap: break-word;
+}
+
+.app-table > :last-child > tr:last-child > :is(th, td) { border-bottom: 0; }
+.app-table th { font-weight: var(--font-weight-semibold); }
+.app-table :is(th, td) code { white-space: nowrap; }
+.app-table .is-center { text-align: center; }
+.app-table .is-right { text-align: right; }
+.app-table caption {
+  padding: var(--component-table-padding);
+  color: var(--color-muted);
+  text-align: left;
+  font-weight: var(--font-weight-semibold);
+}
+/* 동일한 삽입 계약을 사용하는 본문과 갤러리의 대체 전체화면. */
+.app-diagram { margin-block: 0 var(--spacing-prose-paragraph-gap); }
+.app-diagram iframe { display: block; width: 100%; border: 0; }
+iframe[data-diagram].is-fullscreen { position: fixed; inset: 0; z-index: var(--z-index-overlay); width: 100%; height: 100%; max-height: none; background: var(--color-page); }
+.has-fullscreen-diagram { overflow: hidden; }
 /* 조작 요소: 재생·원격 버튼, 주요 동작 링크, 탭 목록, 툴팁, 인라인 버튼. 화면은 맥락 선택자로 크기만 바꾼다. */
 .app-tabs { margin-block: var(--spacing-gap); }
 .app-tabpanel { text-align: left; }
-.app-tabs > .app-tablist { margin: var(--component-platform-nav-margin); }
+.app-tabs > .app-tablist:not(.is-after-panel) { margin: var(--component-platform-nav-margin); }
 .app-tooltip { border-bottom: var(--leading-border) dotted currentColor; cursor: help; }
 .app-remote { padding: var(--spacing-control-inset-block) var(--spacing-control-inset-inline); line-height: 1; color: var(--color-control-link); border: 0; border-radius: var(--radius-control-radius); background: transparent; cursor: pointer; }
 .app-remote:hover { color: var(--color-control-link); background: var(--color-control-hover); }
@@ -133,7 +205,6 @@ body > main { overflow-x: clip; }
 .app-remote img { width: var(--text-subtitle); height: var(--text-subtitle); }
 .app-tabs:is(.is-platform, .is-frame-panel) { margin-block: 0 var(--spacing-prose-paragraph-gap); padding-inline: var(--spacing-platform-inset); border: var(--leading-border) solid var(--color-syntax-example-border); border-radius: var(--radius-prose-pre-radius); background: var(--color-syntax-example-background); }
 /* 탭 기본(옵션을 생략하면): 상자 없음, 선택 줄은 패널 아래, 둥근 단추. 기본을 벗어난 값만 클래스가 붙는다: is-frame-panel, is-position-top, is-selector-segmented|numbers. 옛 is-platform은 panel, top, buttons다. */
-.app-tabs:not(.is-position-top):not(.is-platform) .app-tablist { margin-block: var(--spacing-gap-sm) 0; }
 .app-tabs.is-frame-panel:not(.is-position-top) .app-tablist { margin-bottom: var(--spacing-gap-sm); }
 .app-tabs:not(.is-position-top):not(.is-platform):not(.is-frame-panel) { margin-block: 0 var(--spacing-prose-paragraph-gap); }
 .app-tabs:not(.is-position-top):not(.is-platform) .app-tabpanel > :first-child { margin-top: 0; }
@@ -411,14 +482,6 @@ button.app-tooltip { padding: 0; background: none; color: var(--color-control-li
 .app-prose code { padding: var(--component-prose-code-padding); border: var(--leading-border) solid var(--color-prose-code-border); border-radius: var(--radius-prose-code-radius); background: var(--color-prose-code-background); color: var(--color-prose-code-color); font-family: var(--font-prose-code-font); font-size: var(--text-prose-code-size); line-height: var(--leading-feature-body-line); white-space: pre-wrap; overflow-wrap: break-word; }
 .app-prose kbd { display: inline-block; box-sizing: content-box; min-width: var(--text-key-size); padding: var(--component-key-padding); margin: var(--component-key-margin); border: 0; border-radius: var(--radius-key-radius); background: var(--color-key-background); color: var(--color-key-color); box-shadow: var(--shadow-key-shadow); font-family: var(--font-key-font); font-size: var(--text-key-size); font-weight: var(--font-weight-key-weight); font-style: normal; line-height: 1; text-align: center; vertical-align: var(--leading-border); }
 .app-code { font-size: var(--text-prose-code-size); display: grid; grid-template-columns: minmax(0, 1fr); min-width: 0; margin-block: 0 var(--spacing-prose-paragraph-gap); overflow: hidden; background: var(--color-prose-pre-background); border: var(--leading-border) solid var(--color-prose-code-border); border-radius: var(--radius-prose-pre-radius); color: var(--color-prose-code-color); }
-.app-code-header { display: flex; gap: var(--spacing-gap-xs); align-items: center; justify-content: space-between; min-width: 0; padding: var(--component-prose-pre-padding); line-height: var(--leading-feature-body-line); color: var(--color-ui-muted); }
-.app-code-language { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.app-code-header button { display: grid; flex: none; place-items: center; box-sizing: border-box; width: calc(var(--leading-icon) + var(--spacing-gap-xs)); height: calc(var(--leading-icon) + var(--spacing-gap-xs)); margin-inline-end: calc(var(--spacing-gap-xs) / -2); padding: 0; border: 0; border-radius: var(--spacing-help-inline-no-icon); font-size: 0; color: var(--color-ui-muted); background: transparent; cursor: pointer; }
-.app-code-header button::before { content: ''; display: block; width: var(--leading-icon); height: var(--leading-icon); background: currentColor; mask: url('./assets/controls/copy.svg') center / contain no-repeat; }
-.app-code-header button:hover, .app-code-header button:focus-visible { color: var(--color-on-action); background-color: var(--color-code-copy-hover); }
-.app-code-header button[data-state=copied]::before { mask-image: url('./assets/controls/copy-done.svg'); }
-.app-code-header button[data-state=failed]::before { mask-image: url('./assets/controls/copy-failed.svg'); }
-.app-code-header button[hidden] { display: none; }
 .app-code pre { min-width: 0; margin: 0; padding: var(--component-prose-pre-padding); overflow: visible; background: transparent; color: inherit; font-family: var(--font-prose-code-font); font-size: inherit; line-height: var(--leading-feature-body-line); tab-size: var(--component-prose-tab-size); white-space: pre-wrap; overflow-wrap: anywhere; }
 .app-code code { padding: 0; border: 0; border-radius: 0; background: transparent; color: inherit; font: inherit; white-space: inherit; overflow-wrap: inherit; }
 .app-syntax-keyword { color: var(--color-ui-syntax-keyword); font-weight: var(--font-weight-weight-medium); }
@@ -434,7 +497,6 @@ button.app-tooltip { padding: 0; background: none; color: var(--color-control-li
 .app-syntax-operator { color: var(--color-ui-syntax-operator); }
 .app-syntax-punctuation { color: var(--color-ui-syntax-punctuation); }
 .app-syntax-annotation { color: var(--color-ui-syntax-annotation); }
-.app-table-scroll { overflow: auto; margin-block: var(--spacing-gap); }
 .app-figure-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(var(--spacing-figure-grid-min), 1fr)); gap: var(--spacing-gap); margin-bottom: var(--spacing-gap); }
 .app-figure-grid.is-small { grid-template-columns: repeat(auto-fit, minmax(var(--spacing-figure-grid-min-small), 1fr)); }
 .app-figure-grid.is-large { grid-template-columns: repeat(auto-fit, minmax(var(--spacing-figure-grid-min-large), 1fr)); }
@@ -446,13 +508,6 @@ button.app-tooltip { padding: 0; background: none; color: var(--color-control-li
 .app-figure-grid.has-six-columns { grid-template-columns: repeat(6, minmax(0, 1fr)); }
 .app-prose .app-figure-grid-item > :last-child { margin-bottom: 0; }
 .app-prose .app-table-scroll { margin: 0 0 var(--spacing-prose-paragraph-gap); }
-.app-prose table { border-collapse: separate; border-spacing: 0; border: var(--leading-border) solid var(--color-prose-table-line); border-radius: var(--radius-prose-pre-radius); font-size: inherit; }
-.app-prose th, .app-prose td { padding: var(--component-prose-table-padding); vertical-align: baseline; border: 0; border-bottom: var(--leading-border) solid var(--color-prose-table-line); text-align: left; }
-.app-prose tbody tr:last-child td { border-bottom: 0; }
-.app-prose .app-table-scroll tr:last-child :is(th, td) { border-bottom: 0; }
-.app-prose th, .app-prose td { word-break: keep-all; overflow-wrap: break-word; }
-.app-prose :is(th, td) code { white-space: nowrap; }
-.app-prose th { background: transparent; font-weight: var(--font-weight-weight-title); }
 .app-prose .is-center { text-align: center; }
 .app-prose .is-right { text-align: right; }
 .app-callout { padding: var(--component-callout-padding); background: var(--color-syntax-example-background); border: var(--leading-border) solid var(--color-syntax-example-border); border-radius: var(--radius-prose-pre-radius); margin: 0 0 var(--spacing-prose-paragraph-gap); }
@@ -510,12 +565,11 @@ button.app-tooltip { padding: 0; background: none; color: var(--color-control-li
 .app-prose .katex-display { margin-block: 0; }
 .app-prose .katex-block, .app-prose .katex-display { overflow-x: auto; overflow-y: hidden; }
 .app-prose .katex-error { color: var(--color-ui-muted); text-decoration: underline dotted; }
-.app-diagram { margin: 0 0 var(--spacing-prose-paragraph-gap); }
-.app-diagram iframe { display: block; width: 100%; border: 0; }
-/* 미디어: 그림, 영상 플레이어, 기기 틀. 갤러리는 탭 구성 요소다. 본문 블록 폭(app-width-*)은 그림·영상·탭(갤러리)·코드가 함께 쓰며 가로 여백(margin-inline)은 폭 규칙만 정한다. 블록 구성 요소는 세로 여백(margin-block)만 쓴다. */
+/* 미디어: 그림, 영상 플레이어, 기기 틀. 갤러리는 탭 구성 요소다. 본문 블록 폭(app-width-*)은 그림·도표·영상·탭(갤러리)·코드가 함께 쓰며 가로 여백(margin-inline)은 폭 규칙만 정한다. 블록 구성 요소는 세로 여백(margin-block)만 쓴다. */
 .app-figure { margin-block: var(--spacing-gap-lg); text-align: center; }
 .app-figure img { width: 100%; border-radius: var(--radius-media-radius); }
 .app-figure figcaption { margin-top: var(--spacing-gap-sm); font-size: var(--text-small-text); color: var(--color-ui-muted); }
+.app-diagram { margin-inline: 0; }
 .app-width-narrow { max-width: var(--spacing-width-narrow); margin-inline: auto; }
 .app-width-wide { width: var(--component-width-wide); max-width: none; margin-inline: calc((100% - var(--component-width-wide)) / 2); }
 .app-device { position: relative; width: min(100%, var(--spacing-device-width)); margin: var(--spacing-gap) auto; background: url('./assets/bezel-iphone6-shadow-io80.png') center / 100% 100% no-repeat; }

@@ -1,5 +1,6 @@
 // 테마 값으로 표현하는 기본 구성 요소다.
 import { escape, safeUrl, trusted, isTrusted, slot, id, out } from './html.mjs';
+import { ToolButton, Toolbar, ToolHeader } from './toolbar.mjs';
 const CARD_VARIANTS = ['centered', 'grouped', 'inline', 'related', 'summary'];
 
 /** 본문 블록 폭: content(본문 폭), narrow(좁은 미디어 폭), wide(넓은 미디어 폭). 옛 표기 `wide: true`, `size: 'compact'`도 받는다. */
@@ -11,10 +12,10 @@ export function contentWidth({ width, wide, size } = {}) {
   if (aliases.length > 1 || (width !== undefined && aliases.length && aliases[0] !== width)) throw new Error(`Conflicting width: ${[width, ...aliases].filter(Boolean).join(', ')}`);
   return width ?? aliases[0] ?? 'content';
 }
-const widthClass = (props) => { const width = contentWidth(props); return width === 'content' ? '' : ` app-width-${width}`; };
+export const widthClass = (props) => { const width = contentWidth(props); return width === 'content' ? '' : ` app-width-${width}`; };
 
 export function CopyButton({ label = '코드 복사' } = {}) {
-  return out(`<button type="button" data-copy aria-label="${escape(label)}" hidden>복사</button>`);
+  return ToolButton({ action: 'copy', label, icon: 'copy', hidden: true });
 }
 
 export const SYNTAX_ROLES = Object.freeze(['keyword', 'string', 'number', 'function', 'type', 'property', 'parameter', 'variable', 'constant', 'comment', 'operator', 'punctuation', 'annotation']);
@@ -33,8 +34,9 @@ export function SyntaxToken({ text, role }) {
 
 /** `code`는 이스케이프 또는 구문 강조를 마친 `<code>` 슬롯이다. */
 export function CodeBlock({ code, label = '코드 복사', language = '', filename = '', width }) {
-  const heading = [language, filename].filter(Boolean).map(escape).join(' · ');
-  return out(`<div class="app-code${widthClass({ width })}"><div class="app-code-header"><span class="app-code-language">${heading}</span>${CopyButton({ label })}</div><pre>${slot(code, 'code')}</pre><span class="app-sr" data-copy-status role="status" aria-live="polite" aria-atomic="true"></span></div>`);
+  const heading = [language, filename].filter(Boolean).join(' · ');
+  const toolbar = Toolbar({ label: '코드 도구', buttons: [CopyButton({ label })] });
+  return out(`<div class="app-code app-tool-surface${widthClass({ width })}">${ToolHeader({ label: heading, toolbar })}<pre>${slot(code, 'code')}</pre></div>`);
 }
 
 export function Callout({ title, tone, fineprint = false, body }) {
@@ -74,12 +76,12 @@ function tabVariant({ platform = false, frame, position, selector }) {
   return { frame: f, position: p, selector: s, classes: `${f === 'none' ? '' : ` is-frame-${f}`}${p === 'bottom' ? '' : ` is-position-${p}`}${s === 'buttons' ? '' : ` is-selector-${s}`}` };
 }
 /** 패널과 별도로 조립할 수 있는 선택 줄. controls는 같은 캔버스를 공유하는 장면에도 쓸 수 있다. */
-export function TabList({ id: group, label = '탭', labels, selector = 'buttons', selected = 0, controls, inlineCode = false }) {
+export function TabList({ id: group, label = '탭', labels, selector = 'buttons', selected = 0, controls, inlineCode = false, afterPanel = false }) {
   id(group);
   if (!TAB_SELECTORS.includes(selector)) throw new Error(`Unknown tabs selector: ${selector}`);
   const numbers = selector === 'numbers';
   const content = text => inlineCode ? String(text).split('`').map((part, at) => at % 2 ? `<code>${escape(part)}</code>` : escape(part)).join('') : escape(text);
-  return out(`<div class="app-tablist${selector === 'buttons' ? '' : ` is-${selector}`}" role="tablist" aria-label="${escape(label)}">${labels.map((text, index) => `<button type="button" id="${group}-tab-${index}" role="tab" aria-selected="${index === selected}" aria-controls="${id(controls?.[index] ?? `${group}-panel-${index}`)}" tabindex="${index === selected ? '0' : '-1'}"${numbers ? ` aria-label="${escape(text ?? `탭 ${index + 1}`)}"` : ''}>${numbers ? index + 1 : content(text)}</button>`).join('')}</div>`);
+  return out(`<div class="app-tablist${afterPanel ? ' is-after-panel' : ''}${selector === 'buttons' ? '' : ` is-${selector}`}" role="tablist" aria-label="${escape(label)}">${labels.map((text, index) => `<button type="button" id="${group}-tab-${index}" role="tab" aria-selected="${index === selected}" aria-controls="${id(controls?.[index] ?? `${group}-panel-${index}`)}" tabindex="${index === selected ? '0' : '-1'}"${numbers ? ` aria-label="${escape(text ?? `탭 ${index + 1}`)}"` : ''}>${numbers ? index + 1 : content(text)}</button>`).join('')}</div>`);
 }
 /**
  * 탭 묶음. `tabs`는 `{ label, body }`이고 body는 슬롯이다.
@@ -106,7 +108,7 @@ Tabs.close = (props) => {
   const variant = tabVariant(props);
   if (variant.position !== 'bottom') return '</section>';
   const { id: group, label = props.platform ? '기기별 안내' : '탭', labels } = props;
-  return `${TabList({ id: group, label, labels, selector: variant.selector, selected: props.selected })}</section>`;
+  return `${TabList({ id: group, label, labels, selector: variant.selector, selected: props.selected, afterPanel: true })}</section>`;
 };
 
 /** 도움말 카드. `icon`은 슬롯이고 없으면 아이콘 자리가 없다. `related`는 이어서 읽을 글의 한 줄 카드(작은 아이콘, 제목, 갈매기표)이며 설명은 그리지 않는다. `headingLevel`을 주면 제목이 해당 단계의 제목 역할이 된다. */

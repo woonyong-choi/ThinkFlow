@@ -30,72 +30,6 @@ export const tokens = freeze({
       "933": "var(--color-gray-933)",
       "1000": "var(--color-gray-1000)"
     },
-    "blue": {
-      "light-fill": "var(--color-blue-light-fill)",
-      "light-stroke": "var(--color-blue-light-stroke)",
-      "light-ink": "var(--color-blue-light-ink)",
-      "light-heat-low": "var(--color-blue-light-heat-low)",
-      "light-heat-high": "var(--color-blue-light-heat-high)",
-      "light-outline": "var(--color-blue-light-outline)",
-      "light-tint-1": "var(--color-blue-light-tint-1)",
-      "light-tint-2": "var(--color-blue-light-tint-2)",
-      "light-tint-3": "var(--color-blue-light-tint-3)",
-      "dark-stroke": "var(--color-blue-dark-stroke)",
-      "dark-ink": "var(--color-blue-dark-ink)",
-      "dark-heat-low": "var(--color-blue-dark-heat-low)",
-      "dark-heat-high": "var(--color-blue-dark-heat-high)",
-      "dark-tint-1": "var(--color-blue-dark-tint-1)",
-      "dark-tint-2": "var(--color-blue-dark-tint-2)",
-      "dark-tint-3": "var(--color-blue-dark-tint-3)"
-    },
-    "purple": {
-      "light-fill": "var(--color-purple-light-fill)",
-      "light-stroke": "var(--color-purple-light-stroke)",
-      "light-ink": "var(--color-purple-light-ink)",
-      "light-dot": "var(--color-purple-light-dot)",
-      "light-outline": "var(--color-purple-light-outline)",
-      "light-tint-1": "var(--color-purple-light-tint-1)",
-      "light-tint-2": "var(--color-purple-light-tint-2)",
-      "light-tint-3": "var(--color-purple-light-tint-3)",
-      "dark-fill": "var(--color-purple-dark-fill)",
-      "dark-stroke": "var(--color-purple-dark-stroke)",
-      "dark-ink": "var(--color-purple-dark-ink)",
-      "dark-dot": "var(--color-purple-dark-dot)",
-      "dark-outline": "var(--color-purple-dark-outline)",
-      "dark-tint-1": "var(--color-purple-dark-tint-1)",
-      "dark-tint-2": "var(--color-purple-dark-tint-2)",
-      "dark-tint-3": "var(--color-purple-dark-tint-3)"
-    },
-    "red": {
-      "light-fill": "var(--color-red-light-fill)",
-      "light-stroke": "var(--color-red-light-stroke)",
-      "light-ink": "var(--color-red-light-ink)",
-      "light-dot": "var(--color-red-light-dot)",
-      "light-outline": "var(--color-red-light-outline)",
-      "dark-fill": "var(--color-red-dark-fill)",
-      "dark-stroke": "var(--color-red-dark-stroke)",
-      "dark-ink": "var(--color-red-dark-ink)",
-      "dark-dot": "var(--color-red-dark-dot)",
-      "dark-outline": "var(--color-red-dark-outline)"
-    },
-    "green": {
-      "light-fill": "var(--color-green-light-fill)",
-      "light-stroke": "var(--color-green-light-stroke)",
-      "light-ink": "var(--color-green-light-ink)",
-      "light-dot": "var(--color-green-light-dot)",
-      "light-outline": "var(--color-green-light-outline)",
-      "dark-fill": "var(--color-green-dark-fill)",
-      "dark-stroke": "var(--color-green-dark-stroke)",
-      "dark-ink": "var(--color-green-dark-ink)",
-      "dark-dot": "var(--color-green-dark-dot)",
-      "dark-outline": "var(--color-green-dark-outline)"
-    },
-    "orange": {
-      "light-fill": "var(--color-orange-light-fill)",
-      "light-stroke": "var(--color-orange-light-stroke)",
-      "light-ink": "var(--color-orange-light-ink)",
-      "light-outline": "var(--color-orange-light-outline)"
-    },
     "fg": "var(--color-fg)",
     "muted": "var(--color-muted)",
     "group-title": "var(--color-group-title)",
@@ -221,24 +155,6 @@ export const tokens = freeze({
         "5": "var(--color-data-category-label-5)",
         "6": "var(--color-data-category-label-6)",
         "7": "var(--color-data-category-label-7)"
-      },
-      "category-area": {
-        "1": "var(--color-data-category-area-1)",
-        "2": "var(--color-data-category-area-2)",
-        "3": "var(--color-data-category-area-3)",
-        "4": "var(--color-data-category-area-4)",
-        "5": "var(--color-data-category-area-5)",
-        "6": "var(--color-data-category-area-6)",
-        "7": "var(--color-data-category-area-7)"
-      },
-      "category-on-area": {
-        "1": "var(--color-data-category-on-area-1)",
-        "2": "var(--color-data-category-on-area-2)",
-        "3": "var(--color-data-category-on-area-3)",
-        "4": "var(--color-data-category-on-area-4)",
-        "5": "var(--color-data-category-on-area-5)",
-        "6": "var(--color-data-category-on-area-6)",
-        "7": "var(--color-data-category-on-area-7)"
       }
     },
     "palette": {
@@ -341,10 +257,7 @@ export const tokens = freeze({
         "stroke": "var(--color-paint-purple-stroke)",
         "outline": "var(--color-paint-purple-outline)",
         "ink": "var(--color-paint-purple-ink)",
-        "dot": "var(--color-paint-purple-dot)",
-        "group-1": "var(--color-paint-purple-group-1)",
-        "group-2": "var(--color-paint-purple-group-2)",
-        "group-3": "var(--color-paint-purple-group-3)"
+        "dot": "var(--color-paint-purple-dot)"
       },
       "pink": {
         "fill": "var(--color-paint-pink-fill)",
@@ -532,7 +445,6 @@ export const tokens = freeze({
     "prose-caption-color": "var(--color-prose-caption-color)",
     "prose-link-active": "var(--color-prose-link-active)",
     "prose-mark-background": "var(--color-prose-mark-background)",
-    "prose-table-line": "var(--color-prose-table-line)",
     "prose-marker": "var(--color-prose-marker)",
     "ui-syntax-property": "var(--color-ui-syntax-property)",
     "ui-syntax-parameter": "var(--color-ui-syntax-parameter)",
@@ -560,9 +472,7 @@ export const tokens = freeze({
         "dark-tint-2": "var(--color-category-blue-dark-tint-2)",
         "dark-tint-3": "var(--color-category-blue-dark-tint-3)",
         "light-effect": "var(--color-category-blue-light-effect)",
-        "dark-effect": "var(--color-category-blue-dark-effect)",
-        "area": "var(--color-category-blue-area)",
-        "on-area": "var(--color-category-blue-on-area)"
+        "dark-effect": "var(--color-category-blue-dark-effect)"
       },
       "yellow": {
         "anchor": "var(--color-category-yellow-anchor)",
@@ -579,9 +489,7 @@ export const tokens = freeze({
         "dark-tint-2": "var(--color-category-yellow-dark-tint-2)",
         "dark-tint-3": "var(--color-category-yellow-dark-tint-3)",
         "light-effect": "var(--color-category-yellow-light-effect)",
-        "dark-effect": "var(--color-category-yellow-dark-effect)",
-        "area": "var(--color-category-yellow-area)",
-        "on-area": "var(--color-category-yellow-on-area)"
+        "dark-effect": "var(--color-category-yellow-dark-effect)"
       },
       "red": {
         "anchor": "var(--color-category-red-anchor)",
@@ -594,9 +502,7 @@ export const tokens = freeze({
         "dark-ink": "var(--color-category-red-dark-ink)",
         "dark-tint-1": "var(--color-category-red-dark-tint-1)",
         "light-effect": "var(--color-category-red-light-effect)",
-        "dark-effect": "var(--color-category-red-dark-effect)",
-        "area": "var(--color-category-red-area)",
-        "on-area": "var(--color-category-red-on-area)"
+        "dark-effect": "var(--color-category-red-dark-effect)"
       },
       "green": {
         "anchor": "var(--color-category-green-anchor)",
@@ -609,9 +515,7 @@ export const tokens = freeze({
         "dark-ink": "var(--color-category-green-dark-ink)",
         "dark-tint-1": "var(--color-category-green-dark-tint-1)",
         "light-effect": "var(--color-category-green-light-effect)",
-        "dark-effect": "var(--color-category-green-dark-effect)",
-        "area": "var(--color-category-green-area)",
-        "on-area": "var(--color-category-green-on-area)"
+        "dark-effect": "var(--color-category-green-dark-effect)"
       },
       "orange": {
         "anchor": "var(--color-category-orange-anchor)",
@@ -628,9 +532,7 @@ export const tokens = freeze({
         "dark-tint-2": "var(--color-category-orange-dark-tint-2)",
         "dark-tint-3": "var(--color-category-orange-dark-tint-3)",
         "light-effect": "var(--color-category-orange-light-effect)",
-        "dark-effect": "var(--color-category-orange-dark-effect)",
-        "area": "var(--color-category-orange-area)",
-        "on-area": "var(--color-category-orange-on-area)"
+        "dark-effect": "var(--color-category-orange-dark-effect)"
       },
       "purple": {
         "anchor": "var(--color-category-purple-anchor)",
@@ -643,9 +545,7 @@ export const tokens = freeze({
         "dark-ink": "var(--color-category-purple-dark-ink)",
         "dark-tint-1": "var(--color-category-purple-dark-tint-1)",
         "light-effect": "var(--color-category-purple-light-effect)",
-        "dark-effect": "var(--color-category-purple-dark-effect)",
-        "area": "var(--color-category-purple-area)",
-        "on-area": "var(--color-category-purple-on-area)"
+        "dark-effect": "var(--color-category-purple-dark-effect)"
       },
       "cyan": {
         "anchor": "var(--color-category-cyan-anchor)",
@@ -662,9 +562,7 @@ export const tokens = freeze({
         "dark-tint-2": "var(--color-category-cyan-dark-tint-2)",
         "dark-tint-3": "var(--color-category-cyan-dark-tint-3)",
         "light-effect": "var(--color-category-cyan-light-effect)",
-        "dark-effect": "var(--color-category-cyan-dark-effect)",
-        "area": "var(--color-category-cyan-area)",
-        "on-area": "var(--color-category-cyan-on-area)"
+        "dark-effect": "var(--color-category-cyan-dark-effect)"
       }
     },
     "figure-data-line": "var(--color-figure-data-line)",
@@ -1555,7 +1453,6 @@ export const tokens = freeze({
     "interview-meta-gap": "var(--primitive-interview-meta-gap)",
     "interview-meta-offset": "var(--primitive-interview-meta-offset)",
     "tab-label-min": "var(--primitive-tab-label-min)",
-    "prose-table-padding": "var(--primitive-prose-table-padding)",
     "key-font": "var(--primitive-key-font)",
     "key-padding": "var(--primitive-key-padding)",
     "key-margin": "var(--primitive-key-margin)",
@@ -1663,7 +1560,6 @@ export const tokens = freeze({
     "card-summary-lines": "var(--primitive-card-summary-lines)",
     "ratio-banner": "var(--primitive-ratio-banner)",
     "spacing-unit": "var(--primitive-spacing-unit)",
-    "copy-feedback": "var(--primitive-copy-feedback)",
     "illustration-technology-keycap-icon-stroke": "var(--primitive-illustration-technology-keycap-icon-stroke)",
     "illustration-technology-layers-icon-stroke": "var(--primitive-illustration-technology-layers-icon-stroke)",
     "illustration-project-placeholder-icon-stroke": "var(--primitive-illustration-project-placeholder-icon-stroke)",
@@ -1681,7 +1577,8 @@ export const tokens = freeze({
     "figure-dark-outline": "var(--primitive-figure-dark-outline)",
     "figure-number-fill": "var(--primitive-figure-number-fill)",
     "figure-number-ink": "var(--primitive-figure-number-ink)",
-    "figure-chart-hole": "var(--primitive-figure-chart-hole)"
+    "figure-chart-hole": "var(--primitive-figure-chart-hole)",
+    "table-padding": "var(--primitive-table-padding)"
   },
   "breakpoint": {
     "desktop": "var(--breakpoint-desktop)",
@@ -1757,7 +1654,6 @@ export const tokens = freeze({
     "platform-motion": "var(--duration-platform-motion)",
     "landing-nav-motion": "var(--duration-landing-nav-motion)",
     "status-history-duration": "var(--duration-status-history-duration)",
-    "copy-feedback": "var(--duration-copy-feedback)",
     "effect-rise": "var(--duration-effect-rise)",
     "effect-hold": "var(--duration-effect-hold)",
     "effect-decay": "var(--duration-effect-decay)",
@@ -1919,7 +1815,6 @@ export const tokens = freeze({
     "prose-rule-width": "var(--component-prose-rule-width)",
     "prose-rule-margin": "var(--component-prose-rule-margin)",
     "prose-tab-size": "var(--component-prose-tab-size)",
-    "prose-table-padding": "var(--component-prose-table-padding)",
     "key-padding": "var(--component-key-padding)",
     "key-margin": "var(--component-key-margin)",
     "prose-h1-margin": "var(--component-prose-h1-margin)",
@@ -1950,7 +1845,8 @@ export const tokens = freeze({
     "illustration-technology-keycap-icon-stroke": "var(--component-illustration-technology-keycap-icon-stroke)",
     "illustration-technology-layers-icon-stroke": "var(--component-illustration-technology-layers-icon-stroke)",
     "illustration-project-placeholder-icon-stroke": "var(--component-illustration-project-placeholder-icon-stroke)",
-    "illustration-project-placeholder-stroke": "var(--component-illustration-project-placeholder-stroke)"
+    "illustration-project-placeholder-stroke": "var(--component-illustration-project-placeholder-stroke)",
+    "table-padding": "var(--component-table-padding)"
   },
   "outline-width": {
     "focus": "var(--outline-width-focus)"
@@ -1977,16 +1873,16 @@ export const tokens = freeze({
 });
 export const values = freeze({
   "color": {
-    "accent": "#125de6",
-    "link": "#0151d9",
+    "accent": "#1e6bd6",
+    "link": "#1161cb",
     "border-strong": "#b7b7b7",
     "border": "#dfe3e8",
     "surface-raised": "#f4f4f4",
-    "syntax-string": "#0151d9",
-    "syntax-function": "#704f8c",
-    "syntax-number": "#a63900",
-    "syntax-keyword": "#be0004",
-    "syntax-type": "#006d12",
+    "syntax-string": "#1161cb",
+    "syntax-function": "#7d40c8",
+    "syntax-number": "#9d5100",
+    "syntax-keyword": "#cc0041",
+    "syntax-type": "#00744e",
     "gray": {
       "0": "#ffffff",
       "43": "#f4f4f4",
@@ -2005,72 +1901,6 @@ export const values = freeze({
       "933": "#111111",
       "1000": "#000000"
     },
-    "blue": {
-      "light-fill": "#edf4ff",
-      "light-stroke": "#125de6",
-      "light-ink": "#0151d9",
-      "light-heat-low": "#b7cdf5",
-      "light-heat-high": "#004dd2",
-      "light-outline": "#658dd5",
-      "light-tint-1": "#e5eefc",
-      "light-tint-2": "#d7e2f4",
-      "light-tint-3": "#cad7ed",
-      "dark-stroke": "#70a3ff",
-      "dark-ink": "#78a9ff",
-      "dark-heat-low": "#293751",
-      "dark-heat-high": "#4474cc",
-      "dark-tint-1": "#1a202b",
-      "dark-tint-2": "#222a38",
-      "dark-tint-3": "#2a3446"
-    },
-    "purple": {
-      "light-fill": "#f7f0ff",
-      "light-stroke": "#8c6aaa",
-      "light-ink": "#704f8c",
-      "light-dot": "#704f8c",
-      "light-outline": "#9884ac",
-      "light-tint-1": "#f1eaf9",
-      "light-tint-2": "#e6ddf0",
-      "light-tint-3": "#dcd1e8",
-      "dark-fill": "#31233d",
-      "dark-stroke": "#b693d6",
-      "dark-ink": "#be9ade",
-      "dark-dot": "#9c7abb",
-      "dark-outline": "#977eae",
-      "dark-tint-1": "#231d28",
-      "dark-tint-2": "#2e2635",
-      "dark-tint-3": "#393042"
-    },
-    "red": {
-      "light-fill": "#ffefed",
-      "light-stroke": "#c70005",
-      "light-ink": "#be0004",
-      "light-dot": "#6c0001",
-      "light-outline": "#cd7367",
-      "dark-fill": "#40201c",
-      "dark-stroke": "#fc7182",
-      "dark-ink": "#ff8390",
-      "dark-dot": "#e25971",
-      "dark-outline": "#c56f73"
-    },
-    "green": {
-      "light-fill": "#eaf8e9",
-      "light-stroke": "#008c1a",
-      "light-ink": "#006d12",
-      "light-dot": "#006d12",
-      "light-outline": "#629a61",
-      "dark-fill": "#1a301a",
-      "dark-stroke": "#58bf5a",
-      "dark-ink": "#58bf5a",
-      "dark-dot": "#62c963",
-      "dark-outline": "#5a9659"
-    },
-    "orange": {
-      "light-fill": "#fff0ea",
-      "light-stroke": "#d44b00",
-      "light-ink": "#a63900",
-      "light-outline": "#c47a5f"
-    },
     "fg": "#303336",
     "muted": "#55606e",
     "group-title": "#3d4856",
@@ -2080,13 +1910,13 @@ export const values = freeze({
     "outline": "#787878",
     "line": "#b7b7b7",
     "state": {
-      "active": "#125de6",
-      "active-fill": "#0151d9",
-      "active-text": "#0151d9",
+      "active": "#1e6bd6",
+      "active-fill": "#1e6bd6",
+      "active-text": "#1161cb",
       "on-active": "#ffffff",
-      "error": "#c70005",
-      "success": "#008c1a",
-      "warning": "#d44b00"
+      "error": "#cc0041",
+      "success": "#00744e",
+      "warning": "#9d5100"
     },
     "flow": {
       "gray": "#747474"
@@ -2096,10 +1926,10 @@ export const values = freeze({
       "focus": "#2576eb"
     },
     "data": {
-      "main": "#125de6",
-      "compare": "#d44b00",
-      "heat-low": "#b7cdf5",
-      "heat-high": "#004dd2",
+      "main": "#1e6bd6",
+      "compare": "#c46800",
+      "heat-low": "#d5e4fa",
+      "heat-high": "#1e6bd6",
       "heat-ink": "#000000",
       "heat-ink-on": "#ffffff",
       "grid": "#c9c9c9",
@@ -2196,66 +2026,48 @@ export const values = freeze({
         "5": "optional",
         "6": "optional",
         "7": "optional"
-      },
-      "category-area": {
-        "1": "#4370b3",
-        "2": "#e6d27a",
-        "3": "#d85a69",
-        "4": "#569576",
-        "5": "#e59960",
-        "6": "#7554a8",
-        "7": "#6bb9c2"
-      },
-      "category-on-area": {
-        "1": "#ffffff",
-        "2": "#000000",
-        "3": "#000000",
-        "4": "#000000",
-        "5": "#000000",
-        "6": "#ffffff",
-        "7": "#000000"
       }
     },
     "palette": {
       "amber": {
-        "light-fill": "#fff0ea",
-        "light-stroke": "#d44b00",
-        "light-ink": "#a63900",
-        "light-outline": "#c47a5f"
+        "light-fill": "#fff9f5",
+        "light-stroke": "#c46800",
+        "light-ink": "#9d5100",
+        "light-outline": "#c46800"
       },
       "teal": {
-        "light-fill": "#eaf8e9",
-        "light-stroke": "#008c1a",
-        "light-ink": "#006d12",
-        "light-dot": "#006d12",
-        "light-outline": "#629a61"
+        "light-fill": "#f7fbf9",
+        "light-stroke": "#149265",
+        "light-ink": "#00744e",
+        "light-dot": "#149265",
+        "light-outline": "#149265"
       },
       "navy": {
-        "light-fill": "#edf4ff",
-        "light-stroke": "#125de6",
-        "light-ink": "#0151d9",
-        "light-outline": "#658dd5"
+        "light-fill": "#f7fafe",
+        "light-stroke": "#1e6bd6",
+        "light-ink": "#1161cb",
+        "light-outline": "#1e6bd6"
       },
       "pink": {
-        "light-fill": "#f7f0ff",
-        "light-stroke": "#8c6aaa",
-        "light-ink": "#704f8c",
-        "light-outline": "#9884ac"
+        "light-fill": "#fbf9fe",
+        "light-stroke": "#7d40c8",
+        "light-ink": "#7d40c8",
+        "light-outline": "#7d40c8"
       },
       "sky": {
         "light-fill": "#e9f1fe",
-        "light-stroke": "#125de6",
-        "light-ink": "#0151d9",
-        "light-tint-1": "#e5eefc",
-        "light-tint-2": "#d7e2f4",
-        "light-tint-3": "#cad7ed",
+        "light-stroke": "#1e6bd6",
+        "light-ink": "#1161cb",
+        "light-tint-1": "#f7fafe",
+        "light-tint-2": "#e5eefc",
+        "light-tint-3": "#d5e4fa",
         "light-outline": "#628ad3",
         "dark-fill": "#1c2a43",
-        "dark-stroke": "#70a3ff",
-        "dark-ink": "#78a9ff",
-        "dark-tint-1": "#1a202b",
-        "dark-tint-2": "#222a38",
-        "dark-tint-3": "#2a3446",
+        "dark-stroke": "#3a85f2",
+        "dark-ink": "#6da8ff",
+        "dark-tint-1": "#303948",
+        "dark-tint-2": "#303b4e",
+        "dark-tint-3": "#303d54",
         "dark-outline": "#6789c4"
       },
       "slate": {
@@ -2272,69 +2084,66 @@ export const values = freeze({
       }
     },
     "figure": {
-      "icon": "#125de6",
+      "icon": "#1e6bd6",
       "queue-empty": "#d6d6d6",
       "number-fill": "#303336",
       "number-ink": "#ffffff"
     },
     "paint": {
       "red": {
-        "fill": "#ffefed",
-        "stroke": "#c70005",
-        "outline": "#cd7367",
-        "ink": "#be0004",
-        "dot": "#6c0001"
+        "fill": "#fff8f8",
+        "stroke": "#fa1955",
+        "outline": "#fa1955",
+        "ink": "#cc0041",
+        "dot": "#fa1955"
       },
       "amber": {
-        "fill": "#fff0ea",
-        "stroke": "#d44b00",
-        "outline": "#c47a5f",
-        "ink": "#a63900"
+        "fill": "#fff9f5",
+        "stroke": "#c46800",
+        "outline": "#c46800",
+        "ink": "#9d5100"
       },
       "green": {
-        "fill": "#eaf8e9",
-        "stroke": "#008c1a",
-        "outline": "#629a61",
-        "ink": "#006d12",
-        "dot": "#006d12"
+        "fill": "#f7fbf9",
+        "stroke": "#149265",
+        "outline": "#149265",
+        "ink": "#00744e",
+        "dot": "#149265"
       },
       "teal": {
-        "fill": "#eaf8e9",
-        "stroke": "#008c1a",
-        "outline": "#629a61",
-        "ink": "#006d12",
-        "dot": "#006d12"
+        "fill": "#f7fbf9",
+        "stroke": "#149265",
+        "outline": "#149265",
+        "ink": "#00744e",
+        "dot": "#149265"
       },
       "navy": {
-        "fill": "#edf4ff",
-        "stroke": "#125de6",
-        "outline": "#658dd5",
-        "ink": "#0151d9"
+        "fill": "#f7fafe",
+        "stroke": "#1e6bd6",
+        "outline": "#1e6bd6",
+        "ink": "#1161cb"
       },
       "purple": {
-        "fill": "#f7f0ff",
-        "stroke": "#8c6aaa",
-        "outline": "#9884ac",
-        "ink": "#704f8c",
-        "dot": "#704f8c",
-        "group-1": "#f1eaf9",
-        "group-2": "#e6ddf0",
-        "group-3": "#dcd1e8"
+        "fill": "#fbf9fe",
+        "stroke": "#7d40c8",
+        "outline": "#7d40c8",
+        "ink": "#7d40c8",
+        "dot": "#7d40c8"
       },
       "pink": {
-        "fill": "#f7f0ff",
-        "stroke": "#8c6aaa",
-        "outline": "#9884ac",
-        "ink": "#704f8c"
+        "fill": "#fbf9fe",
+        "stroke": "#7d40c8",
+        "outline": "#7d40c8",
+        "ink": "#7d40c8"
       },
       "sky": {
         "fill": "#e9f1fe",
-        "stroke": "#125de6",
+        "stroke": "#1e6bd6",
         "outline": "#628ad3",
-        "ink": "#0151d9",
-        "group-1": "#e5eefc",
-        "group-2": "#d7e2f4",
-        "group-3": "#cad7ed"
+        "ink": "#1161cb",
+        "group-1": "#f7fafe",
+        "group-2": "#e5eefc",
+        "group-3": "#d5e4fa"
       },
       "gray": {
         "fill": "#e7e7e7",
@@ -2389,10 +2198,10 @@ export const values = freeze({
       }
     },
     "on-action": "#ffffff",
-    "syntax-property": "#704f8c",
-    "syntax-parameter": "#a63900",
-    "syntax-constant": "#a63900",
-    "syntax-annotation": "#006d12",
+    "syntax-property": "#7d40c8",
+    "syntax-parameter": "#9d5100",
+    "syntax-constant": "#9d5100",
+    "syntax-annotation": "#00744e",
     "syntax-variable": "#1f1f1f",
     "syntax-comment": "#5d5d5d",
     "syntax-operator": "#1f1f1f",
@@ -2409,11 +2218,11 @@ export const values = freeze({
     "search-bg": "#edeef1",
     "help-bg": "#f6f7fa",
     "help-border": "#ebecef",
-    "ui-syntax-keyword": "#be0004",
-    "ui-syntax-string": "#0151d9",
-    "ui-syntax-number": "#a63900",
-    "ui-syntax-function": "#704f8c",
-    "ui-syntax-type": "#006d12",
+    "ui-syntax-keyword": "#cc0041",
+    "ui-syntax-string": "#1161cb",
+    "ui-syntax-number": "#9d5100",
+    "ui-syntax-function": "#7d40c8",
+    "ui-syntax-type": "#00744e",
     "nav-color": "rgba(38,52,74,.5)",
     "control-link": "#5c9cf5",
     "control-hover": "rgba(92,156,245,.2)",
@@ -2507,12 +2316,11 @@ export const values = freeze({
     "prose-caption-color": "rgba(4,15,26,.5)",
     "prose-link-active": "#114691",
     "prose-mark-background": "#fcf9cf",
-    "prose-table-line": "#eceef0",
     "prose-marker": "rgba(0,15,36,.46)",
-    "ui-syntax-property": "#704f8c",
-    "ui-syntax-parameter": "#a63900",
-    "ui-syntax-constant": "#a63900",
-    "ui-syntax-annotation": "#006d12",
+    "ui-syntax-property": "#7d40c8",
+    "ui-syntax-parameter": "#9d5100",
+    "ui-syntax-constant": "#9d5100",
+    "ui-syntax-annotation": "#00744e",
     "ui-syntax-variable": "#1f1f1f",
     "ui-syntax-comment": "#5d5d5d",
     "ui-syntax-operator": "#1f1f1f",
@@ -2535,9 +2343,7 @@ export const values = freeze({
         "dark-tint-2": "#303b4e",
         "dark-tint-3": "#303d54",
         "light-effect": "#3984f2",
-        "dark-effect": "#60a0ff",
-        "area": "#4370b3",
-        "on-area": "#ffffff"
+        "dark-effect": "#60a0ff"
       },
       "yellow": {
         "anchor": "#f2d024",
@@ -2554,9 +2360,7 @@ export const values = freeze({
         "dark-tint-2": "#3b3a39",
         "dark-tint-3": "#3c3c39",
         "light-effect": "#f0d03b",
-        "dark-effect": "#ffec9a",
-        "area": "#e6d27a",
-        "on-area": "#000000"
+        "dark-effect": "#ffec9a"
       },
       "red": {
         "anchor": "#fa1955",
@@ -2569,9 +2373,7 @@ export const values = freeze({
         "dark-ink": "#ff7f8b",
         "dark-tint-1": "#413439",
         "light-effect": "#ff697b",
-        "dark-effect": "#ff7785",
-        "area": "#d85a69",
-        "on-area": "#000000"
+        "dark-effect": "#ff7785"
       },
       "green": {
         "anchor": "#269c6e",
@@ -2584,9 +2386,7 @@ export const values = freeze({
         "dark-ink": "#4cba8a",
         "dark-tint-1": "#323b3c",
         "light-effect": "#3aab7c",
-        "dark-effect": "#46b586",
-        "area": "#569576",
-        "on-area": "#000000"
+        "dark-effect": "#46b586"
       },
       "orange": {
         "anchor": "#ff8906",
@@ -2603,9 +2403,7 @@ export const values = freeze({
         "dark-tint-2": "#403938",
         "dark-tint-3": "#433a38",
         "light-effect": "#df812e",
-        "dark-effect": "#ffb27a",
-        "area": "#e59960",
-        "on-area": "#000000"
+        "dark-effect": "#ffb27a"
       },
       "purple": {
         "anchor": "#7d40c8",
@@ -2618,9 +2416,7 @@ export const values = freeze({
         "dark-ink": "#bb91ff",
         "dark-tint-1": "#383547",
         "light-effect": "#945ae3",
-        "dark-effect": "#b78aff",
-        "area": "#7554a8",
-        "on-area": "#ffffff"
+        "dark-effect": "#b78aff"
       },
       "cyan": {
         "anchor": "#25c0cf",
@@ -2637,9 +2433,7 @@ export const values = freeze({
         "dark-tint-2": "#333c42",
         "dark-tint-3": "#343e44",
         "light-effect": "#33a7b3",
-        "dark-effect": "#4ddae9",
-        "area": "#6bb9c2",
-        "on-area": "#000000"
+        "dark-effect": "#4ddae9"
       }
     },
     "figure-data-line": "#2576eb",
@@ -3530,7 +3324,6 @@ export const values = freeze({
     "interview-meta-gap": "0.5em",
     "interview-meta-offset": "0.25em",
     "tab-label-min": "3em",
-    "prose-table-padding": ".3em .5em",
     "key-font": "ui-sans-serif, -apple-system, BlinkMacSystemFont, \"Apple Symbols\", Roboto, sans-serif",
     "key-padding": ".3em .4em",
     "key-margin": "0 .05em",
@@ -3638,7 +3431,6 @@ export const values = freeze({
     "card-summary-lines": 2,
     "ratio-banner": "5 / 2",
     "spacing-unit": 4,
-    "copy-feedback": 2400,
     "illustration-technology-keycap-icon-stroke": 2.4,
     "illustration-technology-layers-icon-stroke": 3,
     "illustration-project-placeholder-icon-stroke": 2.5,
@@ -3656,7 +3448,8 @@ export const values = freeze({
     "figure-dark-outline": "#868686",
     "figure-number-fill": "#303336",
     "figure-number-ink": "#ffffff",
-    "figure-chart-hole": 0.55
+    "figure-chart-hole": 0.55,
+    "table-padding": ".3em .5em"
   },
   "breakpoint": {
     "desktop": 1100,
@@ -3732,7 +3525,6 @@ export const values = freeze({
     "platform-motion": 200,
     "landing-nav-motion": 150,
     "status-history-duration": 1000,
-    "copy-feedback": 2400,
     "effect-rise": 80,
     "effect-hold": 80,
     "effect-decay": 240,
@@ -3894,7 +3686,6 @@ export const values = freeze({
     "prose-rule-width": "62%",
     "prose-rule-margin": "2.8em auto",
     "prose-tab-size": "4",
-    "prose-table-padding": ".3em .5em",
     "key-padding": ".3em .4em",
     "key-margin": "0 .05em",
     "prose-h1-margin": "2.0677em 0 1.0323em",
@@ -3925,7 +3716,8 @@ export const values = freeze({
     "illustration-technology-keycap-icon-stroke": 2.4,
     "illustration-technology-layers-icon-stroke": 3,
     "illustration-project-placeholder-icon-stroke": 2.5,
-    "illustration-project-placeholder-stroke": 7
+    "illustration-project-placeholder-stroke": 7,
+    "table-padding": ".3em .5em"
   },
   "outline-width": {
     "focus": 3

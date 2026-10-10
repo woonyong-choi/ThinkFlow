@@ -1,23 +1,12 @@
 // 여러 그림을 한 쪽에서 보는 목록과 문서 안 모습 미리보기.
+import { bindDiagramHost } from '../vendor/theme/ui/runtime/diagram-host.js';
 import { STYLES } from '../styles.js';
 import { escapeXml, plainText, renderRichHtml } from '../text.js';
 import { hrefAttr } from '../href.js';
 import { faviconLinks } from './favicon.js';
 import { THEME_BUTTONS, THEME_SCRIPT } from './theme.js';
 
-const GALLERY_SCRIPT = `<script>
-// 그림 쪽이 알려 준 본문 높이로 iframe 높이를 맞추고(그림 아래 빈 공간을 없애기 위해서다), 새로 뜬 그림에는 현재 테마를 보낸다.
-addEventListener('message', (e) => {
-  const frame = [...document.querySelectorAll('iframe')].find((f) => f.contentWindow === e.source);
-  if (!frame) return;
-  if (typeof e.data?.figureFullscreen === 'boolean') {
-    frame.classList.toggle('full', e.data.figureFullscreen);
-    document.documentElement.classList.toggle('has-full-figure', Boolean(document.querySelector('iframe.full')));
-  }
-  if (e.data?.figureHeight && !frame.classList.contains('full')) frame.style.height = e.data.figureHeight + 'px';
-  if (e.data?.themeRequest) frame.contentWindow.postMessage({ theme: savedTheme() }, '*');
-});
-</script>`;
+const GALLERY_SCRIPT = `<script>${bindDiagramHost.toString()}; bindDiagramHost();</script>`;
 
 // cost: time O(n), heap O(n), stack O(1)
 // vars: n = 이름과 제목 글자 수
@@ -45,7 +34,7 @@ export function toGallery(figures, heading) {
     .map(
       (f) =>
         `<section><header>${cardHead(f)}<nav><a href="${hrefAttr(`${pageOf(f)}.html`)}">열기</a><a href="${hrefAttr(`${f.href}.svg`)}">SVG</a></nav></header>` +
-        `<iframe src="${hrefAttr(`${pageOf(f)}.html`)}" loading="lazy" allowfullscreen title="${escapeXml(f.name)}"></iframe></section>`,
+        `<iframe data-diagram src="${hrefAttr(`${pageOf(f)}.html`)}" loading="lazy" allowfullscreen title="${escapeXml(f.name)}"></iframe></section>`,
     )
     .join('\n');
   return `<!doctype html>

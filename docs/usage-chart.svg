@@ -11,34 +11,26 @@
   --color-gray-282: #b7b7b7;
   --color-gray-933: #111111;
   --color-gray-1000: #000000;
-  --color-blue-light-stroke: #125de6;
-  --color-blue-light-ink: #0151d9;
-  --color-blue-light-heat-low: #b7cdf5;
-  --color-blue-light-heat-high: #004dd2;
-  --color-blue-dark-stroke: #70a3ff;
-  --color-blue-dark-ink: #78a9ff;
-  --color-blue-dark-heat-low: #293751;
-  --color-blue-dark-heat-high: #4474cc;
   --color-fg: var(--color-ink);
   --color-muted: var(--color-ui-muted);
   --color-group-title: var(--color-help-title-color);
   --color-node: var(--color-ui-card);
   --color-card: var(--color-ui-card);
   --color-line: var(--color-gray-282);
-  --color-state-active: var(--color-blue-light-stroke);
-  --color-state-active-text: var(--color-blue-light-ink);
+  --color-state-active: var(--color-category-blue-light-border);
+  --color-state-active-text: var(--color-category-blue-light-ink);
   --color-ui-focus: var(--color-action-link);
-  --color-data-main: var(--color-blue-light-stroke);
-  --color-data-heat-low: var(--color-blue-light-heat-low);
-  --color-data-heat-high: var(--color-blue-light-heat-high);
+  --color-data-main: var(--color-category-blue-light-border);
+  --color-data-heat-low: var(--color-category-blue-light-tint-3);
+  --color-data-heat-high: var(--color-category-blue-light-border);
   --color-data-heat-ink: var(--color-gray-1000);
   --color-data-heat-ink-on: var(--color-gray-0);
   --color-data-grid: var(--color-gray-212);
+  --color-data-category-1: var(--color-category-blue-fill);
+  --color-data-category-2: var(--color-category-yellow-fill);
   --color-data-category-outline-1: var(--color-category-blue-light-border);
   --color-data-category-outline-2: var(--color-category-yellow-light-border);
-  --color-data-category-area-1: var(--color-category-blue-area);
-  --color-data-category-area-2: var(--color-category-yellow-area);
-  --color-figure-icon: var(--color-blue-light-stroke);
+  --color-figure-icon: var(--color-category-blue-light-border);
   --color-figure-number-fill: var(--primitive-figure-number-fill);
   --color-figure-number-ink: var(--primitive-figure-number-ink);
   --color-ui-card: var(--color-gray-0);
@@ -51,12 +43,18 @@
   --color-help-title-color: var(--primitive-help-title-color);
   --color-prose-pre-background: var(--primitive-help-bg);
   --color-action-link: var(--primitive-link);
+  --color-category-blue-anchor: #1e6bd6;
+  --color-category-blue-fill: var(--color-category-blue-anchor);
   --color-category-blue-light-border: #1e6bd6;
+  --color-category-blue-light-ink: #1161cb;
+  --color-category-blue-light-tint-3: #d5e4fa;
   --color-category-blue-dark-border: #3a85f2;
-  --color-category-blue-area: #4370b3;
+  --color-category-blue-dark-ink: #6da8ff;
+  --color-category-blue-dark-tint-3: #303d54;
+  --color-category-yellow-anchor: #f2d024;
+  --color-category-yellow-fill: var(--color-category-yellow-anchor);
   --color-category-yellow-light-border: #d6b600;
   --color-category-yellow-dark-border: #f2d024;
-  --color-category-yellow-area: #e6d27a;
   --color-figure-data-line: var(--color-action-link);
   --font-figure-sans: FigSans, FigSansSym, FigSansMath, ui-sans-serif, -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
   --font-figure-mono: FigMono, FigSans, FigSansSym, FigSansMath, ui-monospace, SFMono-Regular, Menlo, monospace;
@@ -109,15 +107,15 @@
   :root:not([data-theme='light']):not([data-theme='dark']) {
   --color-line: var(--primitive-figure-dark-line);
   --color-state-active: var(--primitive-figure-ui-accent);
-  --color-state-active-text: var(--color-blue-dark-ink);
+  --color-state-active-text: var(--color-category-blue-dark-ink);
   --color-data-main: var(--color-category-blue-dark-border);
-  --color-data-heat-low: var(--color-blue-dark-heat-low);
-  --color-data-heat-high: var(--color-blue-dark-heat-high);
+  --color-data-heat-low: var(--color-category-blue-dark-tint-3);
+  --color-data-heat-high: var(--color-category-blue-dark-border);
   --color-data-heat-ink: var(--color-gray-0);
   --color-data-grid: var(--primitive-figure-dark-edge);
   --color-data-category-outline-1: var(--color-category-blue-dark-border);
   --color-data-category-outline-2: var(--color-category-yellow-dark-border);
-  --color-figure-icon: var(--color-blue-dark-stroke);
+  --color-figure-icon: var(--color-category-blue-dark-border);
   --color-figure-number-fill: var(--color-gray-59);
   --color-figure-number-ink: var(--color-gray-933);
   --color-ui-card: var(--primitive-figure-dark-node);
@@ -135,15 +133,15 @@
 [data-theme='dark'] {
   --color-line: var(--primitive-figure-dark-line);
   --color-state-active: var(--primitive-figure-ui-accent);
-  --color-state-active-text: var(--color-blue-dark-ink);
+  --color-state-active-text: var(--color-category-blue-dark-ink);
   --color-data-main: var(--color-category-blue-dark-border);
-  --color-data-heat-low: var(--color-blue-dark-heat-low);
-  --color-data-heat-high: var(--color-blue-dark-heat-high);
+  --color-data-heat-low: var(--color-category-blue-dark-tint-3);
+  --color-data-heat-high: var(--color-category-blue-dark-border);
   --color-data-heat-ink: var(--color-gray-0);
   --color-data-grid: var(--primitive-figure-dark-edge);
   --color-data-category-outline-1: var(--color-category-blue-dark-border);
   --color-data-category-outline-2: var(--color-category-yellow-dark-border);
-  --color-figure-icon: var(--color-blue-dark-stroke);
+  --color-figure-icon: var(--color-category-blue-dark-border);
   --color-figure-number-fill: var(--color-gray-59);
   --color-figure-number-ink: var(--color-gray-933);
   --color-ui-card: var(--primitive-figure-dark-node);
@@ -159,16 +157,16 @@
 }
 [data-theme='light'] {
   --color-line: var(--color-gray-282);
-  --color-state-active: var(--color-blue-light-stroke);
-  --color-state-active-text: var(--color-blue-light-ink);
-  --color-data-main: var(--color-blue-light-stroke);
-  --color-data-heat-low: var(--color-blue-light-heat-low);
-  --color-data-heat-high: var(--color-blue-light-heat-high);
+  --color-state-active: var(--color-category-blue-light-border);
+  --color-state-active-text: var(--color-category-blue-light-ink);
+  --color-data-main: var(--color-category-blue-light-border);
+  --color-data-heat-low: var(--color-category-blue-light-tint-3);
+  --color-data-heat-high: var(--color-category-blue-light-border);
   --color-data-heat-ink: var(--color-gray-1000);
   --color-data-grid: var(--color-gray-212);
   --color-data-category-outline-1: var(--color-category-blue-light-border);
   --color-data-category-outline-2: var(--color-category-yellow-light-border);
-  --color-figure-icon: var(--color-blue-light-stroke);
+  --color-figure-icon: var(--color-category-blue-light-border);
   --color-figure-number-fill: var(--primitive-figure-number-fill);
   --color-figure-number-ink: var(--primitive-figure-number-ink);
   --color-ui-card: var(--color-gray-0);
@@ -840,17 +838,17 @@
 
 <g class="fl-chart fl-plot" data-chart="latency" data-view="v1" transform="translate(0 0)"><text x="28" y="44.9" class="label">요청별 시간</text>
 <text x="28" y="65.7" class="sub">예시 데이터. 단위는 ms</text>
-<rect x="28" y="75" width="12" height="12" rx="4" fill="var(--color-data-category-area-1)" stroke="var(--color-data-category-outline-1)" stroke-width="1.5"/>
+<rect x="28" y="75" width="12" height="12" rx="4" fill="var(--color-data-category-1)" stroke="var(--color-data-category-outline-1)" stroke-width="1.5"/>
 <text x="46" y="83" class="chart-legend">1 처리</text>
-<rect x="89.4" y="75" width="12" height="12" rx="4" fill="var(--color-data-category-area-2)" stroke="var(--color-data-category-outline-2)" stroke-width="1.5"/>
+<rect x="89.4" y="75" width="12" height="12" rx="4" fill="var(--color-data-category-2)" stroke="var(--color-data-category-outline-2)" stroke-width="1.5"/>
 <text x="107.4" y="83" class="chart-legend">2 대기</text>
 <g class="cr-0 ink"><text x="28" y="131.7" class="chart-label">요청 A</text></g>
-<g class="cr-0"><g class="cs-0"><rect x="168" y="107" width="411.5" height="12" rx="4" fill="var(--color-data-category-area-1)" stroke="var(--color-data-category-outline-1)" stroke-width="1.5" class="grow"/></g></g>
-<g class="cr-0"><g class="cs-1"><rect x="168" y="135" width="102.9" height="12" rx="4" fill="var(--color-data-category-area-2)" stroke="var(--color-data-category-outline-2)" stroke-width="1.5" class="grow"/></g></g>
+<g class="cr-0"><g class="cs-0"><rect x="168" y="107" width="411.5" height="12" rx="4" fill="var(--color-data-category-1)" stroke="var(--color-data-category-outline-1)" stroke-width="1.5" class="grow"/></g></g>
+<g class="cr-0"><g class="cs-1"><rect x="168" y="135" width="102.9" height="12" rx="4" fill="var(--color-data-category-2)" stroke="var(--color-data-category-outline-2)" stroke-width="1.5" class="grow"/></g></g>
 
 <g class="cr-1 ink"><text x="28" y="193.7" class="chart-label">요청 B</text></g>
-<g class="cr-1"><g class="cs-0"><rect x="168" y="169" width="437.2" height="12" rx="4" fill="var(--color-data-category-area-1)" stroke="var(--color-data-category-outline-1)" stroke-width="1.5" class="grow"/></g></g>
-<g class="cr-1"><g class="cs-1"><rect x="168" y="197" width="462.9" height="12" rx="4" fill="var(--color-data-category-area-2)" stroke="var(--color-data-category-outline-2)" stroke-width="1.5" class="grow"/></g></g>
+<g class="cr-1"><g class="cs-0"><rect x="168" y="169" width="437.2" height="12" rx="4" fill="var(--color-data-category-1)" stroke="var(--color-data-category-outline-1)" stroke-width="1.5" class="grow"/></g></g>
+<g class="cr-1"><g class="cs-1"><rect x="168" y="197" width="462.9" height="12" rx="4" fill="var(--color-data-category-2)" stroke="var(--color-data-category-outline-2)" stroke-width="1.5" class="grow"/></g></g>
 
 
 <g class="cr-0 ink"><g class="cs-0"><rect x="584.5" y="106.5" width="15.5" height="13" class="chart-text-bg late"/><text x="585.5" y="117" class="chart-value ours late">80</text></g></g>

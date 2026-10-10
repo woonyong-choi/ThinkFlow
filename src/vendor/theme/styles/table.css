@@ -1,0 +1,45 @@
+/* 문서 표와 단축키 표가 공유하는 면·경계·읽기 규칙. */
+.app-table-scroll {
+  max-width: 100%;
+  overflow: auto;
+  margin-block: var(--spacing-gap);
+}
+
+.app-table-scroll:focus-visible {
+  outline: var(--outline-width-focus) solid var(--color-ui-focus);
+  outline-offset: var(--spacing-0-5);
+}
+
+.app-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  border: var(--border-width-hair) solid var(--color-ui-line);
+  border-radius: var(--radius-lg);
+  background: var(--color-card);
+  color: var(--color-fg);
+  font-size: inherit;
+  font-variant-numeric: tabular-nums;
+}
+
+.app-table :is(th, td) {
+  padding: var(--component-table-padding);
+  vertical-align: baseline;
+  border: 0;
+  border-bottom: var(--border-width-hair) solid var(--color-ui-line);
+  text-align: left;
+  word-break: keep-all;
+  overflow-wrap: break-word;
+}
+
+.app-table > :last-child > tr:last-child > :is(th, td) { border-bottom: 0; }
+.app-table th { font-weight: var(--font-weight-semibold); }
+.app-table :is(th, td) code { white-space: nowrap; }
+.app-table .is-center { text-align: center; }
+.app-table .is-right { text-align: right; }
+.app-table caption {
+  padding: var(--component-table-padding);
+  color: var(--color-muted);
+  text-align: left;
+  font-weight: var(--font-weight-semibold);
+}

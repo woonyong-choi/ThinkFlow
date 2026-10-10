@@ -1,5 +1,6 @@
 // 문서 작성 도구가 넘긴 텍스트와 검증된 본문 슬롯을 공통 구조로 조립한다.
-import { escape, safeUrl, slot, id, out } from './html.mjs';
+import { escape, safeUrl, slot, id, out, trusted } from './html.mjs';
+import { Table } from './table.mjs';
 import { Kbd, TooltipTrigger, TooltipBubble } from './components.mjs';
 
 export function ContentGroup({ title, body, after }) {
@@ -35,7 +36,7 @@ export const Shortcut = ({ label = '', keys }) => out(`<p>${escape(label)} ${key
 
 export function Keyboard({ id: name, image, label, helpLabel, help, languages, groups, defaultLanguage = 'en-us' }) {
   id(name);
-  return out(`<section class="app-keyboard" data-keyboard><div class="app-keyboard-selector">${image ? slot(image, 'image') : ''}<label class="app-sr" for="${name}-locale">${escape(label)}</label><select id="${name}-locale" data-keyboard-language>${languages.map(item => `<option value="${escape(item.value)}">${escape(item.label)}</option>`).join('')}</select>${TooltipTrigger({ id: `${name}-help`, label: helpLabel })}${TooltipBubble({ id: `${name}-help`, body: help })}</div>${groups.map(group => `<h3>${escape(group.title)}</h3><div class="app-table-scroll"><table><tbody>${group.rows.map(row => `<tr><td>${slot(row.label, 'label')}</td><td><span data-keyboard-keys data-keyboard-map="${escape(JSON.stringify(row.keys))}">${(row.keys[defaultLanguage] ?? []).map(text => Kbd({ text })).join(' ')}</span>${row.note ? slot(row.note, 'note') : ''}</td></tr>`).join('')}</tbody></table></div>`).join('')}</section>`);
+  return out(`<section class="app-keyboard" data-keyboard><div class="app-keyboard-selector">${image ? slot(image, 'image') : ''}<label class="app-sr" for="${name}-locale">${escape(label)}</label><select id="${name}-locale" data-keyboard-language>${languages.map(item => `<option value="${escape(item.value)}">${escape(item.label)}</option>`).join('')}</select>${TooltipTrigger({ id: `${name}-help`, label: helpLabel })}${TooltipBubble({ id: `${name}-help`, body: help })}</div>${groups.map(group => `<h3>${escape(group.title)}</h3>${Table({ label: group.title, body: trusted(`<tbody>${group.rows.map(row => `<tr><td>${slot(row.label, 'label')}</td><td><span data-keyboard-keys data-keyboard-map="${escape(JSON.stringify(row.keys))}">${(row.keys[defaultLanguage] ?? []).map(text => Kbd({ text })).join(' ')}</span>${row.note ? slot(row.note, 'note') : ''}</td></tr>`).join('')}</tbody>`) })}`).join('')}</section>`);
 }
 
 export function StatusBoard({ id: name, message, history, historyLabel, action, title, items }) {

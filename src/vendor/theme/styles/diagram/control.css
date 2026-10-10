@@ -1,4 +1,0 @@
-/* 도표 도구 막대의 상태. 선택 줄의 모습은 styles/tabs.css가 소유한다. */
-.fl-round:focus-visible { outline: var(--outline-width-focus) solid var(--color-ui-focus); outline-offset: var(--spacing-0-5); }
-.fl-round:hover, .fl-round:active { color: var(--color-control-paper); background: var(--color-code-copy-hover); }
-.fl-round:disabled { color: var(--color-muted); cursor: default; background: transparent; }

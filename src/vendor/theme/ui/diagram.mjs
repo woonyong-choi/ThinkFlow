@@ -1,29 +1,22 @@
-import { escape, safeUrl, out } from './html.mjs';
-import { TabList } from './components.mjs';
+import { escape, safeUrl, out, trusted } from './html.mjs';
+import { TabList, widthClass } from './components.mjs';
+import { ToolButton, Toolbar, ToolHeader } from './toolbar.mjs';
 
 /** 정적으로 만든 도표 문서를 공통 프레임에 넣는다. 크기는 콘텐츠의 측정값이다. */
-export function DiagramEmbed({ src, title, width, height }) {
+export function DiagramEmbed({ src, title, dimensions, width }) {
   if (!src.startsWith('/') || src.startsWith('//')) throw new TypeError('Diagram source must be local');
-  if (![width, height].every(value => Number.isFinite(value) && value > 0)) throw new TypeError('Diagram dimensions must be positive');
-  return out(`<figure class="app-diagram"><iframe data-diagram src="${safeUrl(src)}" title="${escape(title)}" width="${Math.ceil(width)}" height="${Math.ceil(height)}" loading="lazy" allow="fullscreen; clipboard-write" allowfullscreen></iframe></figure>`);
+  if (![dimensions?.width, dimensions?.height].every(value => Number.isFinite(value) && value > 0)) throw new TypeError('Diagram dimensions must be positive');
+  return out(`<figure class="app-diagram${widthClass({ width })}"><iframe data-diagram src="${safeUrl(src)}" title="${escape(title)}" width="${Math.ceil(dimensions.width)}" height="${Math.ceil(dimensions.height)}" loading="lazy" allow="fullscreen; clipboard-write" allowfullscreen></iframe></figure>`);
 }
 
-// cost: time O(1), heap O(1), stack O(1)
-// basis: estimate
-// 원 단추 하나. 문법 복사, HTML 다운로드, 전체 화면, 확대·축소가 모두 이 구성을 쓴다. 아이콘은 player/view.js와 player/export.js가 같은 격자에서 그린다.
-function roundButton(extraClass, { label, zoom } = {}) {
-  const className = extraClass ? `fl-round ${extraClass}` : 'fl-round';
-  const labelAttr = label ? ` aria-label="${label}" title="${label}"` : '';
-  const zoomAttr = zoom ? ` data-zoom="${zoom}"` : '';
-  return `<button type="button" class="${className}"${zoomAttr}${labelAttr}></button>`;
-}
-
-// 도구 막대는 모든 그림과 모든 곳(단독, 삽입, 내려받은 파일)에서 같다. 순서는 문법 복사, HTML 다운로드, 전체 화면이다. 맨 앞의 상태 칸은 복사와 내려받기의 결과를 짧게 알린다(비어 있으면 폭이 0이다).
-// 확대·축소는 전체 화면에서만 보인다. 재생을 다루는 단추는 두지 않는다.
-const VIEW_BUTTONS =
-  `<div class="fl-view-tools" role="toolbar" aria-label="그림 도구"><span class="fl-tool-status" role="status" aria-live="polite"></span>` +
-  `${roundButton('fl-copy', { label: '문법 복사' })}${roundButton('fl-download', { label: 'HTML 다운로드' })}${roundButton('fl-full', { label: '전체화면' })}` +
-  `<div class="fl-zoom">${roundButton('', { label: '확대', zoom: 'in' })}${roundButton('', { label: '축소', zoom: 'out' })}${roundButton('', { label: '전체 보기', zoom: 'fit' })}</div></div>`;
+const zoomTools = trusted(`<div class="fl-zoom app-tool-group">${[
+  ['in', '확대', 'zoom-in'], ['out', '축소', 'zoom-out'], ['fit', '전체 보기', 'scan'],
+].map(([zoom, label, icon]) => ToolButton({ action: `zoom-${zoom}`, zoom, label, icon })).join('')}</div>`);
+const VIEW_BUTTONS = ToolHeader({ toolbar: Toolbar({ label: '그림 도구', buttons: [
+  ToolButton({ action: 'copy', className: 'fl-copy', label: '문법 복사', icon: 'copy' }),
+  ToolButton({ action: 'download', className: 'fl-download', label: 'HTML 다운로드', icon: 'download' }),
+  ToolButton({ action: 'fullscreen', className: 'fl-full', label: '전체화면', icon: 'maximize-2' }),
+], extra: zoomTools }) });
 
 // cost: time O(n), heap O(n), stack O(1)
 // vars: n = 원본 글자 수
@@ -51,14 +44,14 @@ function sourceScript(source) {
  */
 export function DiagramFrame({ canvas, className = '', style = '', narrow = '', source, labels = [] }) {
   return `<figure class="fl-figure${className}" tabindex="0"${style}>
-<div class="fl-surface">
+<div class="fl-surface app-tool-surface">
 ${VIEW_BUTTONS}
 <div class="fl-canvas" id="scene-panel" role="tabpanel" aria-label="그림" tabindex="0">${canvas}</div>
 </div>
 ${narrow}
 ${source === undefined ? '' : sourceScript(source)}
 <div class="fl-foot">
-${TabList({ id: 'scene', label: '장면 선택', labels, selector: 'segmented', controls: labels.map(() => 'scene-panel'), inlineCode: true })}
+${TabList({ id: 'scene', label: '장면 선택', labels, selector: 'segmented', controls: labels.map(() => 'scene-panel'), inlineCode: true, afterPanel: true })}
 </div>
 </figure>`;
 }

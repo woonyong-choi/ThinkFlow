@@ -29,7 +29,7 @@ export function drawHistogram(figure, top) {
 // basis: estimate
 // 막대 하나. 이웃과 틈을 두려고 양쪽을 줄이되 막대가 틈보다 좁으면 그대로 둔다.
 function binMark(chart, bin, { box, index, baseline, labels }) {
-  // 보이는 이름은 입력 구간표와 같은 서식이다. data-value는 반올림 전 높이 그대로 둔 구조 자료다.
+  // 접근성 이름과 제목은 같은 숫자 서식을 쓴다. data-value는 반올림 전 높이 그대로 둔 구조 자료다.
   const label = `${labels.range(bin)}: ${labels.height(bin)} ${bin.measure} (${bin.count}건)`;
   const inset = box.w > SPACE["0-5"] * 2 ? SPACE["0-25"] : 0;
   const rect = `<rect x="${r(box.x + inset)}" y="${r(box.y)}" width="${r(box.w - inset * 2)}" height="${r(box.h)}" fill="${seriesFill(chart, 0)}" stroke="${seriesOutline(chart, 0)}" stroke-width="${values["border-width"].tag}" class="chart-histogram-bin" data-count="${bin.count}" data-value="${bin.value}"${markAttrs(chart, markId(chart, 0, index), { raw: bin.count, paint: seriesPaint(chart, 0) })}/>`;

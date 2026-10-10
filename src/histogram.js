@@ -53,7 +53,7 @@ export function histogramValue(bin, chart) {
 // vars: b = 구간 수
 // basis: estimate
 /**
- * 보이는 글(SVG 접근성 이름과 제목, 입력 구간표)의 구간 이름과 높이 글자. 표시용 사본이라 계산에는 쓰지 않는다.
+ * SVG 접근성 이름과 제목의 구간 이름과 높이 글자. 표시용 사본이라 계산에는 쓰지 않는다.
  * 높이는 건수 모드면 정수 그대로, 정규화 모드면 표와 같은 값 글자(valueFormat)다. 구간 끝은 edgeNames가 쓴다.
  * @returns { range(bin), height(bin) }
  */

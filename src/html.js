@@ -1,6 +1,5 @@
 // 재생 화면 HTML 한 장과 목록 쪽. 스크립트, 스타일, 글꼴, 그림을 모두 안에 넣어 파일 하나로 열린다.
 import { chartMotionCss } from './chart/motion.js';
-import { chartCards } from './chart-frames.js';
 import { canvasOf } from './canvas.js';
 import { createGlyphSet, embedFonts } from './measure/fonts.js';
 import { paintCss } from './draw/paint.js';
@@ -9,7 +8,6 @@ import { STYLES, tokensFor, figureDefs, patternDefs } from './styles.js';
 import { escapeXml, plainText, roundCoord as r } from './text.js';
 import { figureContent } from './html/content.js';
 import { responsiveContent } from './html/responsive.js';
-import { chartData } from './html/chart-data.js';
 import { faviconLinks } from './html/favicon.js';
 import { THEME_KEY } from './html/theme.js';
 import { CANONICAL_NAME, PLAYER_SCRIPT, figureFrame } from './html/player-script.js';
@@ -81,11 +79,10 @@ async function canonicalHtml(result, name) {
 ${faviconLinks()}
 ${EMBED_SCRIPT}
 <style>${fonts}
-${tokensFor(Object.values(STYLES).filter(value => value !== STYLES.tokens).join('\n') + paintCss(result.scene) + panelsMarkup(content, title, defs) + JSON.stringify(content.data))}${STYLES.control}${STYLES.player}${STYLES.figure}${paintCss(result.scene)}${STYLES.chart}${charts ? STYLES.chartData : ''}${charts ? chartMotionCss(timeline.growMs, dotAts) : ''}${hasStatus(timeline) ? STYLES.status : ''}</style>
+${tokensFor(Object.values(STYLES).filter(value => value !== STYLES.tokens).join('\n') + PLAYER_SCRIPT + paintCss(result.scene) + panelsMarkup(content, title, defs) + JSON.stringify(content.data))}${STYLES.control}${STYLES.player}${STYLES.figure}${paintCss(result.scene)}${STYLES.chart}${charts ? chartMotionCss(timeline.growMs, dotAts) : ''}${hasStatus(timeline) ? STYLES.status : ''}</style>
 </head>
 <body>
 ${figureFrame({ labels: content.data.steps.map(step => step.label), canvas: panelsMarkup(content, title, defs), style: figure.width === 'wide' ? ` style="--figure-canvas: ${canvasOf(figure)}px"` : '', narrow: responsive ? `<template class="fl-narrow">${panelsMarkup(responsive.content, title)}</template>` : '', source: typeof figure.source === 'string' ? figure.source : undefined })}
-${dataRegion(figure)}
 <script>
 ${PLAYER_SCRIPT}
 figurePlay(document.querySelector('.fl-figure'), ${JSON.stringify(content.data, roundedNumbers).replace(/</g, '\\u003c')});
@@ -93,18 +90,6 @@ figurePlay(document.querySelector('.fl-figure'), ${JSON.stringify(content.data, 
 </body>
 </html>
 `;
-}
-
-// cost: time O(c·r), heap O(out), stack O(1)
-// vars: c = 차트 수, r = 차트 행 수, out = 표 글자 수
-// basis: estimate
-/**
- * 차트의 입력값 표 모음. 그림 틀 밖 그림 바로 뒤에 놓인 평범한 닫힌 `<details>`들이다. 여는 것은 사용자 조작뿐이고 초점이나 스크롤로 그림의 배치가 바뀌지 않는다(styles/chart-data.css).
- * 차트가 없으면 빈 글이다.
- */
-function dataRegion(figure) {
-  const tables = chartCards(figure).map((card) => chartData({ chart: card.plot.chart, chartType: card.plot.chartType, title: card.label ?? card.id }));
-  return tables.length ? `<section aria-label="차트 데이터">${tables.join('')}</section>` : '';
 }
 
 // cost: time O(c·p), heap O(p), stack O(1)

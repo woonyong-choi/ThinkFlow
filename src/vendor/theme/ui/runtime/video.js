@@ -1,3 +1,4 @@
+import { cssTimeMs } from './time.js';
 // 원본의 거리 비례 스크롤과 swing 곡선을 사용한다.
 let scrollFrame;
 export function revealVideo(element, downward = false) {
@@ -9,7 +10,7 @@ export function revealVideo(element, downward = false) {
   const style = getComputedStyle(document.body);
   const margin = parseFloat(style.getPropertyValue('--spacing-scroll-margin'));
   const speed = parseFloat(style.getPropertyValue('--component-scroll-speed'));
-  const maximumMs = parseFloat(style.getPropertyValue('--duration-scroll-duration'));
+  const maximumMs = cssTimeMs(style.getPropertyValue('--duration-scroll-duration'));
   const start = window.scrollY;
   const end = Math.max(0, Math.min(start + (partial ? rect.bottom - viewport + margin : rect.top - margin), document.documentElement.scrollHeight - viewport));
   const distance = end - start;

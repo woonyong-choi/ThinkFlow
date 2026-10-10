@@ -2,19 +2,17 @@
 // 도구 막대(문법 복사, HTML 다운로드, 전체 화면 순서. 앞 둘은 player/export.js)와, 전체 화면에서만 켜지는 확대·축소·끌어 옮기기를 맡는다. 문서 안에서는 그림을 그대로 보인다. 전체 화면은 보는 방식만 바꾸고 장면과 시계에 손대지 않는다.
 // 판은 SVG 한 장씩이고, 문서 안에서는 모든 판이 같은 비율로 줄어 구역에 다 들어온다(CSS .dp-panel > svg). 전체 화면의 확대는 판 묶음 폭의 배수이고 옮기기는 그림 영역의 스크롤이다.
 
-const ZOOM_ICONS = { in: 'zoom-in', out: 'zoom-out', fit: 'scan' };
-
 /**
  * 그림 틀에 문법 복사, HTML 다운로드, 전체화면 단추와 확대·축소를 붙인다.
  * @param root `.fl-figure` 요소. 안에 `.fl-copy`, `.fl-download`, `.fl-full`, `.fl-zoom` 단추와 `.dp-panels`가 있다
- * @param data { metrics: { icon, iconStroke, zoomMax, zoomStep }, width, height, responsive? }. width, height는 장면 크기다
+ * @param data { metrics: { zoomMax, zoomStep }, width, height, responsive? }. width, height는 장면 크기다
  * @param swapLayout 좁은 배치로 바꾸는 함수(isNarrow) → 그 배치의 데이터. 좁은 배치가 없는 그림은 undefined
  */
 function figureView(root, data, swapLayout) {
   // 보는 상태 한 덩어리. zoom은 전체 화면의 확대 배수(1이면 그림 전체가 보임), drag는 끄는 중인 손짓이다.
   const viewer = { root, canvas: root.querySelector('.fl-canvas'), panels: root.querySelector('.dp-panels'), metrics: data.metrics, data, zoom: 1, drag: undefined, fullButton: root.querySelector('.fl-full') };
   bindResponsiveView(viewer, swapLayout);
-  bindExport(root, data.metrics);
+  bindExport(root);
   bindFull(viewer);
   bindZoom(viewer);
   bindPan(viewer);
@@ -45,12 +43,14 @@ function bindFull(viewer) {
     if (e.key === 'Escape' && root.classList.contains('full') && !document.fullscreenElement) setFull(viewer, false);
   });
   addEventListener('resize', () => root.classList.contains('full') && layoutFull(viewer));
+  addEventListener('message', event => {
+    if (event.source === parent && event.data?.figureExitFullscreen === true) setFull(viewer, false);
+  });
 }
 
 function bindZoom(viewer) {
   const { root, metrics } = viewer;
   root.querySelectorAll('.fl-zoom button').forEach((b) => {
-    b.innerHTML = drawUiIcon(metrics, ZOOM_ICONS[b.dataset.zoom]);
     b.addEventListener('click', () => (b.dataset.zoom === 'fit' ? zoomAt(viewer, 1 / viewer.zoom) : zoomAt(viewer, b.dataset.zoom === 'in' ? metrics.zoomStep : 1 / metrics.zoomStep)));
   });
 }
@@ -74,13 +74,13 @@ function setFull(viewer, isFull) {
 }
 
 function showFull(viewer, isFull) {
-  const { root, fullButton, metrics } = viewer;
+  const { root, fullButton } = viewer;
   root.classList.toggle('full', isFull);
   // 스크롤하는 전체 화면 캔버스만 키보드 초점을 받아 방향키로 옮겨 볼 수 있다. 문서 안 캔버스는 넘치지 않는다.
   if (isFull) viewer.canvas.tabIndex = 0;
   else viewer.canvas.removeAttribute('tabindex');
   if (window.self !== window.top) parent.postMessage({ figureFullscreen: isFull && document.fullscreenElement !== root }, '*');
-  fullButton.innerHTML = drawUiIcon(metrics, isFull ? 'minimize-2' : 'maximize-2');
+  fullButton.innerHTML = ToolIcon(isFull ? 'minimize-2' : 'maximize-2');
   const label = isFull ? '전체화면 종료' : '전체화면';
   fullButton.setAttribute('aria-label', label);
   fullButton.title = label;
@@ -157,9 +157,4 @@ function zoomAt(viewer, factor, center) {
   const after = panels.getBoundingClientRect();
   canvas.scrollLeft += after.left + fraction.x * after.width - at.x;
   canvas.scrollTop += after.top + fraction.y * after.height - at.y;
-}
-
-// 조작부의 24 격자 글리프. 크기와 획은 공통 토큰을 쓰는 선 글리프이고 면으로 채우지 않는다. 도구 막대의 단추와 확대·축소가 쓴다.
-function drawUiIcon(metrics, name) {
-  return `<svg width="${metrics.icon}" height="${metrics.icon}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="${metrics.iconStroke}" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${UI_ICONS[name]}</svg>`;
 }

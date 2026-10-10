@@ -1,5 +1,5 @@
 // 증감 막대는 직전 누계에서 시작하고, 합계 막대는 0에서 현재 누계까지 그린다.
-import { areaPaint } from '../chart-palette.js';
+import { categoryPaint } from '../chart-palette.js';
 import { measure, wrap } from '../measure/fonts.js';
 import { escapeXml, roundCoord as r } from '../text.js';
 import { tokens, values } from '../vendor/theme/tokens.js';
@@ -72,7 +72,7 @@ function waterfallRow(source, row, { chart, names, top, pitch, scale, index, cy,
   const decreasing = !row.total && row.change < 0;
   const color = decreasing ? tokens.color.data['compare-outline'] : tokens.color.data.main;
   // 갱신 효과 칠: 오르면 첫 범주 계열, 내리면 비교 색(면 compare-fill, 테두리 compare-outline)이다.
-  const paint = decreasing ? { tint: tokens.color.data['compare-fill'], border: color, effect: color } : areaPaint(0);
+  const paint = decreasing ? { tint: tokens.color.data['compare-fill'], border: color, effect: color } : categoryPaint(0);
   const fill = decreasing ? tokens.color.data['compare-fill'] : paint.fill;
   const name = inkGroup(index, rowName(source.label, { layout: names, k: index, top, cy, className: `chart-label${row.total ? ' chart-waterfall-total' : ''}` }));
   // 칸마다 막대와 0 증감 표시가 둘 다 늘 있다. 변화가 없으면(길이 0) 막대는 그려지지 않고 표시만 굵기를 갖고, 있으면 반대다.

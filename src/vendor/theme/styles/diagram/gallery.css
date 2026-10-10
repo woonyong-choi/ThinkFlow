@@ -124,20 +124,7 @@ iframe {
   border: 0;
 }
 
-/* 모바일에서 전체 화면 API가 없는 경우에도 삽입 그림을 브라우저 창 전체로 연다. */
-iframe.full {
-  position: fixed;
-  inset: 0;
-  z-index: var(--z-index-overlay);
-  height: 100%;
-  min-height: 100%;
-  max-height: 100%;
-  background: var(--color-page);
-}
 
-.has-full-figure {
-  overflow: hidden;
-}
 
 .top, main {
   max-width: var(--container-diagram);
