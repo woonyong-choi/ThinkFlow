@@ -10,7 +10,7 @@ import { checkLayoutWidth } from './layout/graph.js';
 import { findMissingGlyph } from './measure/fonts.js';
 import { STYLE } from './measure/texts.js';
 import { hasUnpairedBacktick, isLiteralFace } from './text.js';
-import { INTERVAL_TYPES, checkChartLightTargets, checkChartRows, hasRowRule } from './source/chart-rules.js';
+import { checkChartLightTargets, checkChartRows, hasRowRule } from './source/chart-rules.js';
 import { readFigure } from './source/parse.js';
 import { createProblems, FigureError } from './source/problems.js';
 
@@ -29,7 +29,7 @@ const LABEL_KEY = { bar: 'label', stacked: 'label', percent: 'label', dumbbell: 
  * @returns { figure, scene, timeline, warnings, valueTexts }. figure.source는 받은 원본 글 그대로(CRLF 포함)이고 reflowFigure도 같은 figure를 쓴다. scene은 보기마다의 판을 합친 장면(scene.panels, scene.plots, scene.times, scene.chartFrames)이고 timeline은 문서 하나의 시간표다
  * @throws FigureError 원본 오류나 그림 검사 오류가 있을 때. 모든 문제를 담는다
  */
-export async function buildFigure(source, { baseDir = '.', strict = false, requireData = false, requireCi = false, budget, layoutWidth, allowFileAccess = true } = {}) {
+export async function buildFigure(source, { baseDir = '.', strict = false, budget, layoutWidth, allowFileAccess = true } = {}) {
   const limits = resolveBudget(budget);
   const problems = createProblems(source);
   const figure = readFigure(source, problems);
@@ -41,7 +41,6 @@ export async function buildFigure(source, { baseDir = '.', strict = false, requi
   }
   for (const card of chartCards(figure)) {
     if (card.plot.chart.data) loadChartData(card.plot, baseDir, problems);
-    checkSkillRules(card.plot, { requireData, requireCi }, problems);
   }
   checkGlyphs(figure, problems);
   attachIcons(figure, baseDir, problems);
@@ -155,24 +154,6 @@ function toRow(record, { chart, chartType, byKey, line, index }, problems) {
   for (const s of byKey.values()) if (['bar', 'stacked', 'percent', 'line', 'step'].includes(chartType) && !(s in values)) values[s] = null;
   if (chartType === 'heatmap') return { label: `${values.row}\u0000${values.col}`, row: values.row, col: values.col, values: { value: values.value }, line };
   return { label, values, line };
-}
-
-// cost: time O(r·s), heap O(1), stack O(1)
-// vars: r = 행 수, s = 계열 수
-// basis: estimate
-// 문서 스킬이 실험 차트에 거는 규칙. 값 손 기재 금지(예시 데이터 제외)와 신뢰구간.
-function checkSkillRules(plot, { requireData, requireCi }, problems) {
-  const { chart } = plot;
-  const isIllustrative = plot.subtitle?.startsWith('예시 데이터.') ?? false;
-  if (requireData && !chart.data && !isIllustrative) problems.error(chart.rows[0]?.line ?? plot.line, 'values must come from data "results/summary.json" at "/..." (--require-data). Hand-written rows are only for subtitles starting with "예시 데이터."');
-  if (!requireCi || !INTERVAL_TYPES.includes(plot.chartType)) return;
-  for (const row of chart.rows) {
-    for (const { id } of chart.series) {
-      const hasCi = row.values[`${id}.low`] !== undefined && row.values[`${id}.high`] !== undefined;
-      const name = row.label ?? `x=${row.values.x}`;
-      if (row.values[id] !== null && !hasCi) problems.error(row.line, `${plot.chartType} "${name}" needs ${id}.low= and ${id}.high= (--require-ci)`);
-    }
-  }
 }
 
 // cost: time O(d), heap O(d), stack O(1)

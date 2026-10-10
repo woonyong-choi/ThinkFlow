@@ -107,7 +107,9 @@ test('L2 a warning still writes (exit 0, "warning:" on stderr); --strict turns i
 
 test('L2 usage mistakes exit 2 and write nothing: no arguments, unknown command, unknown option, an option without its value, a bad budget', (t) => {
   const dir = workspace(t, { 'x.dap': TWO_SCENES });
-  for (const args of [[], ['frobnicate', 'x.dap'], ['render', 'x.dap', '--nope'], ['render', 'x.dap', '--out'], ['render', 'x.dap', '--budget', 'events'], ['render', 'x.dap', '--budget', 'nothing=5'], ['render', 'x.dap', '--budget', 'events=0'], ['render']]) {
+  // #209: 문서 작성 정책 옵션은 모든 명령에서 알 수 없는 옵션이다.
+  const policies = ['render', 'check', 'gallery', 'md'].flatMap((command) => ['--require-data', '--require-ci'].map((flag) => [command, 'x.dap', flag]));
+  for (const args of [[], ['frobnicate', 'x.dap'], ['render', 'x.dap', '--nope'], ['render', 'x.dap', '--out'], ['render', 'x.dap', '--budget', 'events'], ['render', 'x.dap', '--budget', 'nothing=5'], ['render', 'x.dap', '--budget', 'events=0'], ['render'], ...policies]) {
     const run = cli(args, { cwd: dir });
     assert.equal(run.status, 2, JSON.stringify(args));
     assert.match(run.stderr, /usage|unknown|needs|budget/i, JSON.stringify(args));

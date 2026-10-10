@@ -424,7 +424,7 @@
 - 갤러리의 예약 파일은 목록 쪽 `index.html`과 문서 미리보기 `document.html`이고 이름은 그대로 둔다. 원본 이름이 `index`나 `document`(대소문자 무시)면 그 원본의 재생 화면만 `{이름}-player.html`로 쓰고 목록 카드가 그 파일을 가리킨다. SVG는 `{이름}.svg`로 겹치지 않아 그대로다.
 - 쓰기 전에 모든 출력 이름(`{이름}.svg`, 재생 화면, 예약 파일 둘)을 대소문자 없이 겹치는지 확인한다. 겹치면 `{파일} would be written twice: for ... Rename one of the sources`를 stderr에 알리고 종료 1이며 아무 파일도 쓰지 않아 출력 폴더의 기존 파일이 그대로다.
 - 원본 파일 이름은 링크에서 늘 상대 경로로만 쓰인다. 목록 쪽과 문서 미리보기의 `href`, `src`는 경로 조각마다 `encodeURIComponent`(괄호도 인코딩)를 거친 뒤 `./`를 앞에 붙이고 HTML 속성 이스케이프를 한다. 그래서 `javascript:...` 같은 이름이 URL 스킴으로 읽혀 실행되지 않고, `#`, `?`, 공백, 한글이 든 이름도 그 이름의 출력 파일을 연다. 마크다운 이미지 줄도 같은 함수(`src/href.js`)로 조각을 인코딩한다.
-- `gallery`가 받는 선택 사항은 `--out`, `--title`, `--strict`, `--require-data`, `--require-ci`, `--budget`이고 `--html`은 받기만 한다(늘 HTML을 쓴다). 그 밖의 선택 사항(`--static`, `--json`)은 사용법 오류(종료 2)다. `--strict`는 폴더의 모든 원본에 걸리고, 경고가 있는 원본이 하나라도 있으면 전체가 실패한다.
+- `gallery`가 받는 선택 사항은 `--out`, `--title`, `--strict`, `--budget`이고 `--html`은 받기만 한다(늘 HTML을 쓴다). 그 밖의 선택 사항(`--static`, `--json`)은 사용법 오류(종료 2)다. `--strict`는 폴더의 모든 원본에 걸리고, 경고가 있는 원본이 하나라도 있으면 전체가 실패한다.
 - iframe 높이는 그림 쪽이 알린 자연 높이에 맞추고(그림은 그 높이를 되돌려 받지 않는다), 카드는 줄에서 가장 긴 카드 높이로 늘이지 않는다.
 - 위쪽에 테마 단추 "시스템 / 라이트 / 다크"가 있다. 고르면 목록 쪽과 모든 iframe 그림이 그 모드로 바뀐다. 시스템은 루트에 `color-scheme: light dark`를 걸어 OS 설정을 따르고, 라이트와 다크는 루트에 `color-scheme`을 그 값으로 걸고 목록 쪽 자체 색은 토큰 CSS의 `data-theme`로 바꾼다. iframe 안 문서는 Chrome에서 부모의 `color-scheme`을 `prefers-color-scheme`에 안정적으로 받지 못해, 목록 쪽이 iframe에 `{ theme }` 메시지를 보내고 iframe 문서가 자기 루트의 `data-theme`과 `color-scheme`을 바꾼다. 새로 뜬 iframe은 `themeRequest`로 현재 테마를 받는다.
 - 고른 값은 `localStorage`의 `daphnis-theme`에 기억하고 첫 그림 전에 적용한다. 저장한 값이 없으면 시스템 설정을 따른다. 단독 재생기 HTML에는 이 단추가 없고 OS 설정만 따른다. 그래서 목록에서 라이트를 골라도 거기서 따로 연 단독 재생 화면은 OS가 다크이면 어둡게 열린다(미해결).

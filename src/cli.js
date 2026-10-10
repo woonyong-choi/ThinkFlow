@@ -12,16 +12,16 @@ import { toSvg } from './svg.js';
 
 const USAGE = [
   'usage:',
-  '  daphnis render <file.dap ...> [--out dir] [--html] [--static] [--scene n|label] [--strict] [--require-data] [--require-ci] [--budget name=value ...] [--json]',
-  '  daphnis check <file.dap ...> [--strict] [--require-data] [--require-ci] [--budget name=value ...] [--json]',
-  '  daphnis gallery <dir> [--out dir] [--title "text"] [--strict] [--require-data] [--require-ci] [--budget name=value ...]',
-  '  daphnis md <file.md ...> [--check] [--out-dir dir] [--fold [--fold-title "text"] | --unfold] [--static] [--scene n|label] [--strict] [--require-data] [--require-ci] [--budget name=value ...] [--json]',
+  '  daphnis render <file.dap ...> [--out dir] [--html] [--static] [--scene n|label] [--strict] [--budget name=value ...] [--json]',
+  '  daphnis check <file.dap ...> [--strict] [--budget name=value ...] [--json]',
+  '  daphnis gallery <dir> [--out dir] [--title "text"] [--strict] [--budget name=value ...]',
+  '  daphnis md <file.md ...> [--check] [--out-dir dir] [--fold [--fold-title "text"] | --unfold] [--static] [--scene n|label] [--strict] [--budget name=value ...] [--json]',
   `budget names: ${BUDGET_NAMES.join(', ')}`,
 ].join('\n');
 // gallery가 받는 옵션. --html은 gallery가 늘 HTML을 쓰므로 받기만 한다.
-const GALLERY_FLAGS = ['html', 'strict', 'require-data', 'require-ci'];
+const GALLERY_FLAGS = ['html', 'strict'];
 const VALUE_OPTIONS = ['--out', '--title', '--out-dir', '--fold-title', '--scene'];
-const FLAGS = ['--html', '--static', '--strict', '--require-data', '--require-ci', '--json', '--check', '--fold', '--unfold'];
+const FLAGS = ['--html', '--static', '--strict', '--json', '--check', '--fold', '--unfold'];
 // md 명령이 받지 않는 옵션과 md 명령만 받는 옵션
 const MD_REFUSED = ['out', 'title', 'html'];
 const MD_ONLY = ['check', 'out-dir', 'fold', 'unfold', 'fold-title'];

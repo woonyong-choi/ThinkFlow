@@ -199,7 +199,7 @@
 | 스킬 규칙 | 이 도구 |
 |---|---|
 | 변환은 `render_figures`로만 | `render_figures`가 `.dap` 원본마다 `daphnis render --strict`를 부른다. 경고도 실패다 |
-| 실험 차트 값 손 기재 금지, 비율에 신뢰구간 | `docs/experiments/` 아래 차트에 `--require-data --require-ci`를 붙인다([차트](charts.md)) |
+| 실험 차트의 자료 출처와 신뢰구간 | 문서 작성 과정에서 확인한다. Daphnis는 inline 행과 외부 JSON의 값·구간 유효성을 검사한다([차트](charts.md#값-출처)) |
 | 원본과 만든 그림 함께 커밋 | 그대로 |
 | 변환 뒤 그림을 열어 겹침, 잘림, 빈 영역 확인 | [그림 검사](figure-check.md)는 겹침과 잘림의 자동 증거를 낸다. 눈 확인을 대신하지 않으며 빈 영역은 검사 항목이 없다 |
 | 다시 변환 뒤 `git diff` 없음 | [배치](layout.md)의 결정성 요구사항이 지킨다 |

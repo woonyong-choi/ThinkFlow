@@ -45,6 +45,18 @@ test('K1 each of the sixteen chart kinds builds from a minimal source, draws its
   }
 });
 
+// #209: 제목과 부제의 언어는 inline 자료의 허용 여부를 바꾸지 않는다.
+test('buildFigure_localized_chart_labels_accept_same_inline_data', async () => {
+  for (const [title, subtitle] of [['값', '예시 데이터. 설명'], ['Values', 'Illustrative data. Example']]) {
+    const source = dap(`chart sample "${title}" bar "${subtitle}" {\n  x "value (u)"\n  series v "Value"\n  row "A" v=42\n}\n`);
+    const result = await build(source);
+    const texts = textsOf(parseMarkup(await toSvg(result, { isStatic: true })));
+
+    assert.deepEqual(result.warnings, []);
+    for (const word of [title, subtitle, '42']) assert.ok(texts.includes(word), word);
+  }
+});
+
 test('K2 lengths are proportional to values: bar, stacked, percent and histogram', async () => {
   const bars = marks(await stillDom(chart('bar', KINDS.bar.rows))).map((m) => num(m, 'width'));
   near(ratio(bars[0], bars[1]), 2, 'bar 40:20');

@@ -93,7 +93,7 @@ scene "쓰기"
 ### 명령
 
 ```text
-daphnis md <file.md ...> [--check] [--out-dir dir] [--fold [--fold-title "text"] | --unfold] [--static] [--scene n|이름] [--strict] [--require-data] [--require-ci] [--budget 이름=값 ...] [--json]
+daphnis md <file.md ...> [--check] [--out-dir dir] [--fold [--fold-title "text"] | --unfold] [--static] [--scene n|이름] [--strict] [--budget 이름=값 ...] [--json]
 ```
 
 | 옵션 | 뜻 |
@@ -106,7 +106,7 @@ daphnis md <file.md ...> [--check] [--out-dir dir] [--fold [--fold-title "text"]
 | `--static` | 멈춘 SVG를 쓴다 |
 | `--` | 이 뒤의 인자는 모두 문서 이름이다. `-`로 시작하는 이름의 문서에 쓴다(Action이 문서 목록을 넘길 때 쓴다). 값을 받는 옵션(`--out-dir`, `--fold-title`, `--scene`, `--budget`)의 값이 비어 있거나, 같은 옵션을 두 번 쓰거나, 문서 이름이 빈 글이면 인자 오류다 |
 | `--scene n\|이름` | SVG로 만들 장면을 고른다(번호는 1부터, `render`와 같다). 생략하면 첫 장면이고 장면이 없는 블록은 정지 그림 하나다. 장면 없는 블록에 주면 그 블록 줄에 오류를 내고(종료 1) 아무것도 쓰지 않는다 |
-| `--strict`, `--require-data`, `--require-ci`, `--budget`, `--json` | `render`와 같은 뜻. 블록마다 적용한다. 예산은 블록 하나의 그림마다 검사한다 |
+| `--strict`, `--budget`, `--json` | `render`와 같은 뜻. 블록마다 적용한다. 예산은 블록 하나의 그림마다 검사한다 |
 
 `render`의 `--out`, `--html`과 `gallery`의 `--title`은 이 명령이 받지 않고, `--check`, `--out-dir`, `--fold`, `--fold-title`, `--unfold`는 다른 명령이 받지 않는다. 기존 명령의 동작은 바뀌지 않는다(명령 추가만).
 
