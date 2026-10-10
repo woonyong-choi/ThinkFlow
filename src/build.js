@@ -148,7 +148,7 @@ function toRow(record, { chart, chartType, byKey, line, index }, problems) {
   }
   for (const [key, value] of Object.entries(values)) {
     const isNumber = typeof value === 'number' && Number.isFinite(value);
-    if (key !== 'series' && key !== 'row' && key !== 'col' && value !== null && !isNumber) problems.error(line, `data element ${index} value "${key}" must be a number or null. Found ${JSON.stringify(value)}`);
+    if (key !== 'series' && key !== 'row' && key !== 'col' && value !== null && !isNumber) problems.error(line, `data element ${index} value "${key}" must be a number or null. Found ${Array.isArray(value) ? 'array' : typeof value}`);
   }
   // 빠진 키는 빠진 값이다(막대, 쌓는 막대, 비율, 선, 계단). 선택하지 않은 표본 값은 없다.
   for (const s of byKey.values()) if (['bar', 'stacked', 'percent', 'line', 'step'].includes(chartType) && !(s in values)) values[s] = null;

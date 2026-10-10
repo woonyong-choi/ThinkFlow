@@ -399,7 +399,7 @@ test('C5 chart data from JSON: relative path, element keys become series, and ev
   const secret = 'TOKEN=ghp_PRIVATE_BYTES_0123456789';
   const dir = workspace(t, {
     'rows.json': JSON.stringify({ rows: [{ label: 'A', ours: 4 }, { label: 'B', ours: 8 }] }),
-    'bad-type.json': JSON.stringify([{ label: 'A', ours: 'four' }]),
+    'bad-type.json': JSON.stringify([{ label: 'A', ours: secret }]),
     'not-array.json': JSON.stringify({ rows: 1 }),
     'no-object.json': JSON.stringify([1]),
     'secret.env': secret,
