@@ -1,5 +1,6 @@
 // 3번, 4번, 5번: 선이 도형을 지나지 않고, 끝이 연결점에 있고, 다른 선과 붙지 않는다.
 import { CROWD, TOUCH } from '../layout/model.js';
+import { columnAnchorY } from '../table.js';
 import { THROUGH_INSET, capitalize, drawnBox, isCoVisible, near, onBorder, segmentHits } from './geometry.js';
 
 // cost: time O(e·(s + g)·p·d), heap O(1), stack O(1)
@@ -43,7 +44,7 @@ export function checkEnds({ edges, scene }, problems) {
   // 같은 카드가 여러 보기에 그려질 수 있어 선 끝은 그 선이 속한 보기의 카드와 견준다.
   for (const e of edges.filter((edge) => edge.strategy !== 'sequence')) {
     const rects = new Map([...scene.items, ...scene.groups].filter((it) => it.view === e.view).map((it) => [it.id, it]));
-    for (const [end, point, way, part] of [[e.from, e.points[0], 'out', { column: e.fromColumn, cell: e.fromCell }], [e.to, e.points.at(-1), 'in', { column: e.toColumn, cell: e.toCell }]]) {
+    for (const [end, point, way, part] of [[e.from, e.points[0], 'out', { columns: e.fromColumns, cell: e.fromCell }], [e.to, e.points.at(-1), 'in', { columns: e.toColumns, cell: e.toCell }]]) {
       const id = end.split('.')[0];
       const it = rects.get(id);
       if (it && !isPortPlace(point, it, { way, ...part })) problems.error(e.line, `[check 4] internal: edge ${e.from} -> ${e.to} does not touch "${id}" at its connection point. Please report this`);
@@ -64,10 +65,10 @@ function cellRect(it, id) {
 // vars: c = 테이블 열 수와 칸 수
 // basis: estimate
 // 도형별 연결점. 나가는 선은 오른쪽(세로 그룹 안 원통은 아래나 오른쪽), 들어오는 선은 왼쪽(세로 그룹 안 원통은 위나 왼쪽)이다. 격자 칸의 선은 그 칸의 테두리다. 묶음 배치한 테이블 열은 들어오는 선도 오른쪽이다. 그 밖의 도형과 그룹은 경계 어디나다.
-function isPortPlace(p, it, { way, column, cell }) {
+function isPortPlace(p, it, { way, columns, cell }) {
   const side = way === 'out' ? it.x + it.w : it.x;
   if (it.shape === 'grid' && cell) return onBorder(p, cellRect(it, cell));
-  if ((it.shape === 'table' || it.shape === 'api') && column) return near(p.x, it.isBracket ? it.x + it.w : side) && near(p.y, it.y + it.tableRows[it.columns.findIndex((c) => c.name === column)].center);
+  if ((it.shape === 'table' || it.shape === 'api') && columns) return near(p.x, it.isBracket ? it.x + it.w : side) && near(p.y, it.y + columnAnchorY(it.tableRows, columns));
   if (it.shape === 'decision') return near(p.x, side) && near(p.y, it.y + it.h / 2);
   // 원통은 뚜껑 윤곽까지가 선이 닿는 면이라 그린 사각형으로 본다.
   if (it.shape === 'store') {

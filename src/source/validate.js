@@ -3,6 +3,7 @@ import { walkUp } from './ancestry.js';
 import { checkChartCards } from './chart-check.js';
 import { checkClassRelations } from './class-check.js';
 import { checkMultiplicities } from './multiplicity.js';
+import { checkTables } from './table-check.js';
 import { checkFlowStep } from './flow-check.js';
 import { CARD_SHAPES, PART_SHAPES, STATUS_SHAPES } from './grammar.js';
 import { checkIcons } from './icons.js';
@@ -22,7 +23,7 @@ export function validateFigure(figure, problems) {
   const names = collectNames(figure, problems);
   // 이름이 겹치면 이름으로 찾는 부모와 선 끝이 모호해서, 이름에 기대는 확인을 하지 않고 중복 오류만 알린다.
   if (problems.errors.length > before) return;
-  buildForeignKeys(figure, problems);
+  checkTables(figure, problems);
   checkEdges(figure, names, problems);
   checkClassRelations(figure, problems);
   checkStateMarks(figure, names, problems);
@@ -82,7 +83,7 @@ function checkEdges(figure, names, problems) {
     if (isInside(edge.from, edge.to) || isInside(edge.to, edge.from)) problems.error(edge.line, 'an edge cannot join a group and a node inside it');
     if ([from, to].some((end) => end?.shape === 'state') && [from, to].some((end) => end?.shape === 'group')) problems.error(edge.line, 'a transition joins two states');
     resolveRelation(edge, { from, to }, problems);
-    const key = `${edge.from}.${edge.fromCell ?? edge.fromColumn ?? ''}\u0000${edge.to}.${edge.toCell ?? edge.toColumn ?? ''}`;
+    const key = `${edge.from}.${edge.fromCell ?? edge.fromColumns?.join(',') ?? ''}\u0000${edge.to}.${edge.toCell ?? edge.toColumns?.join(',') ?? ''}`;
     if (seen.has(key)) problems.error(edge.line, `there is already an edge ${endName(edge, 'from')} -> ${endName(edge, 'to')} (line ${seen.get(key)}). Merge the labels into one`);
     else seen.set(key, edge.line);
   });
@@ -91,7 +92,7 @@ function checkEdges(figure, names, problems) {
 // cost: time O(c), heap O(1), stack O(1)
 // vars: c = 카드의 칸 수
 // basis: estimate
-// 선 끝의 `카드.칸`을 카드 이름(from, to)과 칸 이름으로 가른다. 테이블과 API는 열(fromColumn, toColumn), 칸 격자는 칸(fromCell, toCell)이다.
+// 선 끝의 `카드.칸`을 카드 이름(from, to)과 칸 이름으로 가른다. 테이블과 API는 열(fromColumns, toColumns), 칸 격자는 칸(fromCell, toCell)이다.
 // 클래스 멤버와 칸이 없는 카드는 연결점이 아니다. gap은 생략된 항목들이라 선 끝이 될 수 없다.
 function splitPartEnds(edge, names, problems) {
   for (const way of ['from', 'to']) {
@@ -116,12 +117,12 @@ function readPart(edge, way, { card, part, written }, problems) {
     else if (found.kind === 'gap') problems.error(edge.line, `"${written}" is a gap, which stands for omitted entries. Connect an item instead`);
     else edge[`${way}Cell`] = part;
   } else if (!card.columns.some((c) => c.name === part)) problems.error(edge.line, `${card.shape} "${card.id}" has no ${card.shape === 'api' ? 'field' : 'column'} "${part}"`);
-  else edge[`${way}Column`] = part;
+  else edge[`${way}Columns`] = [part];
 }
 
 // 선 끝의 알림 이름: `카드.칸` 또는 이름
 function endName(edge, way) {
-  const part = edge[`${way}Cell`] ?? edge[`${way}Column`];
+  const part = edge[`${way}Cell`] ?? edge[`${way}Columns`]?.join(',');
   return part ? `${edge[way]}.${part}` : edge[way];
 }
 
@@ -129,7 +130,7 @@ function endName(edge, way) {
 // 격자의 칸 선은 라벨을 받지 않는다(둘 자리가 없다). 열 선은 라벨을 받는다. 같은 칸끼리, 카드 전체를 잇는 선, 한쪽만 열인 선은 뜻이 정해지지 않아 거절한다.
 function checkSelfEdge(edge, card, problems) {
   if (card?.columns) {
-    const isPair = edge.fromColumn && edge.toColumn && edge.fromColumn !== edge.toColumn;
+    const isPair = edge.fromColumns && edge.toColumns && (edge.fromColumns.length !== edge.toColumns.length || edge.fromColumns.some((name, index) => name !== edge.toColumns[index]));
     if (!isPair) problems.error(edge.line, `an edge cannot go from "${endName(edge, 'from')}" to itself. A ${card.shape} can join two different columns of its own, such as ${card.id}.parent_id -> ${card.id}.id`);
     return;
   }
@@ -155,25 +156,6 @@ function resolveRelation(edge, { from, to }, problems) {
   } else if (hasRelationOptions && from && to) problems.error(edge.line, 'relation=, from=, and to= join two classes, interfaces, or tables');
   if (isClassPair || isTablePair) checkMultiplicities(edge, problems);
   if (from?.shape === 'state' && to?.shape === 'state' && edge.label === undefined) problems.error(edge.line, 'a transition needs an event label: a -> b "event"');
-}
-
-// cost: time O(c·t), heap O(c), stack O(1)
-// vars: c = 열 수, t = 테이블 수
-// basis: estimate
-// 테이블 열의 fk=는 선이 된다. 가리키는 열은 pk나 unique다.
-function buildForeignKeys(figure, problems) {
-  const tables = new Map(figure.nodes.filter((n) => n.shape === 'table').map((t) => [t.id, t]));
-  for (const table of tables.values()) {
-    for (const column of table.columns) {
-      if (!column.fk) continue;
-      const target = tables.get(column.fk.table);
-      const targetColumn = target?.columns.find((c) => c.name === column.fk.column);
-      if (!target) problems.error(column.line, unknownName('table', column.fk.table, tables.keys()));
-      else if (!targetColumn) problems.error(column.line, unknownName(`column in "${target.id}"`, column.fk.column, target.columns.map((c) => c.name)));
-      else if (!targetColumn.pk && !targetColumn.unique) problems.error(column.line, `fk must point to a pk or unique column. "${target.id}.${targetColumn.name}" is neither`);
-      else figure.edges.push({ from: table.id, to: target.id, fromColumn: column.name, toColumn: targetColumn.name, label: undefined, quiet: false, dashed: false, line: column.line, isForeignKey: true, fromMultiplicity: column.fromMultiplicity, toMultiplicity: column.toMultiplicity });
-    }
-  }
 }
 
 // cost: time O(e·v), heap O(1), stack O(1)

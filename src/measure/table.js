@@ -1,5 +1,5 @@
 // 표와 API의 열을 한 번 배치해 그리기, 연결점, 충돌 검사에 넘긴다. 열 줄의 글은 카드가 쓰는 text(measure/texts.js)다.
-import { columnKey, columnRules } from '../table.js';
+import { columnKeyLabel, columnRules } from '../table.js';
 import { values } from '../vendor/theme/tokens.js';
 import { INNER_MAX, PAD, headerOf, placeHeader } from './card.js';
 import { STYLE, textAt, textWidth } from './texts.js';
@@ -12,11 +12,11 @@ export const TYPE_GAP = SPACE["4"];
 // vars: c = 열 수, r = 열의 제약 줄 수
 // basis: estimate
 // 열 줄 자리. top은 첫 열 줄의 윗변이다. 줄 높이는 형식 열 높이에 제약 줄 수를 더한 값이다.
-function placeRows(columns, top) {
+function placeRows(table, top) {
   const rowH = values.spacing.figure.node["table-row"];
   let y = top;
-  return columns.map((column) => {
-    const rules = columnRules(column).map((text, i) => ({ text, center: y + rowH + STYLE.rule.line * (i + 0.5) }));
+  return table.columns.map((column) => {
+    const rules = columnRules(column, table).map((text, i) => ({ text, center: y + rowH + STYLE.rule.line * (i + 0.5) }));
     const row = { id: column.name, y, center: y + rowH / 2, h: rowH + rules.length * STYLE.rule.line, rules };
     y += row.h;
     return row;
@@ -30,8 +30,8 @@ function placeRows(columns, top) {
  * 열 줄: 이름(키 표시가 뒤에 붙는다)과 오른쪽 끝의 형식, 그 아래 제약 줄.
  * @param w 카드 폭. 형식 text가 오른쪽 안쪽 여백에 붙는다
  */
-function columnTexts(column, row, w) {
-  const key = columnKey(column);
+function columnTexts(column, row, w, table) {
+  const key = columnKeyLabel(column, table);
   return [
     textAt('cell', column.name, STYLE.cell, { x: PAD.x, center: row.center }, key ? { key: { text: key, style: STYLE.key } } : {}),
     textAt('cell type', column.type, STYLE.type, { x: w - PAD.x, center: row.center, anchor: 'end' }),
@@ -49,13 +49,13 @@ function columnTexts(column, row, w) {
  * @returns { w, height, rows, header: { decor?, texts }, dividers }
  */
 export function tableLayout(node, { minWidth = 0 } = {}) {
-  const draftRows = placeRows(node.columns, 0);
-  const drafts = node.columns.flatMap((column, k) => columnTexts(column, draftRows[k], 0));
+  const draftRows = placeRows(node, 0);
+  const drafts = node.columns.flatMap((column, k) => columnTexts(column, draftRows[k], 0, node));
   const widest = (texts, role) => Math.max(0, ...texts.filter((t) => t.role === role).map(textWidth));
   const body = Math.max(widest(drafts, 'cell') + widest(drafts, 'cell type') + TYPE_GAP, widest(drafts, 'cell rule'));
   const header = headerOf(node, { room: Math.max(body, INNER_MAX) });
   const w = Math.max(values.spacing.figure.node["min-width"], Math.max(body, header.w) + PAD.x * 2, minWidth);
-  const rows = placeRows(node.columns, header.h);
-  const parts = rows.map(({ id, y, center, h }, k) => ({ id, y, center, h, texts: columnTexts(node.columns[k], rows[k], w) }));
+  const rows = placeRows(node, header.h);
+  const parts = rows.map(({ id, y, center, h }, k) => ({ id, y, center, h, texts: columnTexts(node.columns[k], rows[k], w, node) }));
   return { w, height: header.h + rows.reduce((sum, row) => sum + row.h, 0), rows: parts, header: placeHeader(header, w), dividers: rows.map((row) => row.y) };
 }

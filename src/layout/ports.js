@@ -1,6 +1,7 @@
 // 도형과 그룹의 연결점. 선 끝이 어디에 닿는지, 몸통 도형의 연결점을 어디에 놓는지를 정한다(docs/design/layout.md 도형 크기와 연결점, 연결점 순서).
 import { values } from '../vendor/theme/tokens.js';
 import { cellPort, circlePort } from './cell-ports.js';
+import { columnAnchorY } from '../table.js';
 
 const SIZE = values.spacing.figure;
 const SIDE_OUT = { right: 'EAST', down: 'SOUTH' };
@@ -39,8 +40,8 @@ export function endpoint(id, end, nodes) {
 // 도형이 선 끝에 요구하는 연결점 { side, position? }. 요구가 없으면 undefined다. 위치가 없으면 면만 고정한다.
 function portSpec(node, end) {
   const { way, edge, flow } = end;
-  const column = way === 'out' ? edge.fromColumn : edge.toColumn;
-  if ((node.shape === 'table' || node.shape === 'api') && column) return columnPort(node, way, column);
+  const columns = way === 'out' ? edge.fromColumns : edge.toColumns;
+  if ((node.shape === 'table' || node.shape === 'api') && columns) return columnPort(node, way, columns);
   if (node.shape === 'grid' && (way === 'out' ? edge.fromCell : edge.toCell)) return cellPort(node, end);
   if (node.shape === 'circle') return circlePort(node, way);
   if (node.shape === 'decision') return { side: way === 'out' ? 'EAST' : 'WEST', position: { x: way === 'out' ? node.size.w : 0, y: node.size.h / 2 } };
@@ -54,10 +55,9 @@ function portSpec(node, end) {
 // vars: c = 테이블 열 수
 // basis: estimate
 // 테이블 열 줄 가운데 높이의 연결점. 묶음 배치(`isBracket`)는 들어오는 선도 오른쪽 면이다. 왼쪽 면이면 아래 도형이 오른쪽으로 계단처럼 밀려 캔버스에 들지 않고 줄 바꿈 선이 그림을 가로지른다(docs/design/layout.md 연결점).
-function columnPort(node, way, column) {
-  const row = node.columns.findIndex((c) => c.name === column);
+function columnPort(node, way, columns) {
   const isEast = way === 'out' || node.isBracket;
-  return { side: isEast ? 'EAST' : 'WEST', position: { x: isEast ? node.size.w : 0, y: node.size.tableRows[row].center } };
+  return { side: isEast ? 'EAST' : 'WEST', position: { x: isEast ? node.size.w : 0, y: columnAnchorY(node.size.tableRows, columns) } };
 }
 
 function storeSide(direction, way) {

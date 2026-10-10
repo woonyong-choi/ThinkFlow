@@ -112,6 +112,9 @@ export const VALUES = {
  * positional은 낱말 뒤 자리별 값 목록 이름이다.
  */
 export const STATEMENTS = table({
+  pk: { section: 'declare', in: 'table', display: 'pk (열, ...)' },
+  unique: { section: 'declare', in: 'table', display: 'unique (열, ...)' },
+  fk: { section: 'declare', in: 'table', display: 'fk (열, ...) -> 테이블 (열, ...)' },
   daphnis: { section: 'version' },
   title: { section: 'header' },
   subtitle: { section: 'header' },
@@ -271,7 +274,7 @@ export const OPTIONS = table({
   'column.unique': FLAG,
   'column.nullable': FLAG,
   'column.required': FLAG,
-  'column.ondelete': { type: 'word', values: 'deleteAction' },
+  'foreignKey.ondelete': { type: 'word', values: 'deleteAction' },
   'column.fk': { type: 'word', format: '테이블.열' },
   'classifier.abstract': FLAG,
   'member.visibility': { type: 'word', values: 'visibility' },

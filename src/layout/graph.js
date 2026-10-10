@@ -105,7 +105,7 @@ function ratioMiss({ width, height }, canvas) {
 // vars: e = 선 수
 // basis: estimate
 function hasColumnEdges(figure) {
-  return figure.edges.some((e) => e.fromColumn || e.toColumn);
+  return figure.edges.some((e) => e.fromColumns || e.toColumns);
 }
 
 // cost: time O((3 + FOLD_TRIES)·elk(s + e)), heap O(s + e), stack O(d)

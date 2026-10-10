@@ -4,6 +4,7 @@ import { readGroup } from './group.js';
 import { checkId, parentFor, rejectName, skipBlock } from './names.js';
 import { readNode } from './node.js';
 import { readOptions } from './options.js';
+import { readForeignKeyOptions, readTableKey } from './table-keys.js';
 import { COLUMN_PATTERN, FK_PATTERN, ID_PATTERN, TABLE_PATTERN } from './words.js';
 
 // API 카드의 제목. `메서드 경로`이고 경로는 `/`로 시작하거나 전체 주소다.
@@ -67,7 +68,7 @@ export function readTable({ tokens, line }, ctx) {
     skipBlock('table', { id: id.value, columns: [] }, { tokens, line }, ctx);
     return;
   }
-  pushBlockCard({ id: id.value, shape: 'table', label: label.value, icon: TABLE_ICON, columns: [], parent: parentFor(id, ctx), line }, 'table', ctx);
+  pushBlockCard({ id: id.value, shape: 'table', label: label.value, icon: TABLE_ICON, columns: [], keys: [], foreignKeys: [], parent: parentFor(id, ctx), line }, 'table', ctx);
 }
 
 // cost: time O(t), heap O(t), stack O(1)
@@ -104,6 +105,10 @@ export function readColumn({ tokens, line }, ctx) {
     ctx.block = undefined;
     return;
   }
+  if (!isApi && STATEMENTS[name.value]?.in === 'table' && type?.type === 'word' && type.value.startsWith('(')) {
+    readTableKey({ tokens, line }, ctx);
+    return;
+  }
   if (name.type !== 'word' || !COLUMN_PATTERN.test(name.value)) {
     ctx.problems.error(line, `${isApi ? 'a field' : 'a column'} name uses letters, digits, and "_", starting with a letter`);
     return;
@@ -130,6 +135,7 @@ export function readColumn({ tokens, line }, ctx) {
 function readColumnOptions(rest, column, ctx) {
   const { line } = column;
   const seen = new Set();
+  const referenceOptions = [];
   for (const t of rest) {
     const key = t.key ?? t.value;
     if (seen.has(key)) {
@@ -142,17 +148,14 @@ function readColumnOptions(rest, column, ctx) {
       const [table, col] = t.value.split('.');
       column.fk = { table, column: col };
     } else if (t.type === 'option' && ['ondelete', 'from', 'to'].includes(t.key)) {
-      const found = readOptions([t], { scopes: ['column', 'multiplicity'], what: 'a column', line, ctx });
-      const property = t.key === 'ondelete' ? t.key : `${t.key}Multiplicity`;
-      column[property] = found[t.key];
+      referenceOptions.push(t);
     } else ctx.problems.error(line, `unknown column option "${t.key ?? t.value}". Use pk, unique, nullable, required, fk=table.column, ondelete=policy, from=, or to=`);
   }
-  if (column.pk && column.nullable) ctx.problems.error(line, 'a primary key cannot be nullable');
+  Object.assign(column, readForeignKeyOptions(referenceOptions, line, ctx));
   if (column.nullable && column.required) ctx.problems.error(line, 'nullable and required cannot be combined');
   for (const key of ['ondelete', 'fromMultiplicity', 'toMultiplicity']) {
     if (column[key] !== undefined && !column.fk) ctx.problems.error(line, `${key.replace('Multiplicity', '')} requires fk=table.column`);
   }
-  if (column.ondelete === 'set-null' && !column.nullable) ctx.problems.error(line, 'ondelete=set-null requires nullable');
 }
 
 // cost: time O(t), heap O(t), stack O(1)

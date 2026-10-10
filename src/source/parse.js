@@ -63,7 +63,7 @@ export function readFigure(source, problems) {
  * source: 받은 원본 글 그대로(줄바꿈 CRLF, 첫 글자 포함). 읽기 전에 고치지 않고 정리하지 않는다. 문법 복사가 이 글을 쓴다.
  * nodes: { id, shape, label, sub, parent, tone, appearance, line, columns?, members?, cells?, plot?, spans? },
  * groups: { id, label, direction, parent, tone, appearance, line },
- * edges: { from, to, label, quiet, dashed, head, no, line, relation?, fromColumn?, toColumn?, fromCell?, toCell?, fromSpan?, toSpan? },
+ * edges: { from, to, label, quiet, dashed, head, no, line, relation?, fromColumns?, toColumns?, fromCell?, toCell?, fromSpan?, toSpan? },
  * views: { id, strategy, direction, label, members, line, isImplicit }. id는 v1, v2, ...로 resolveViews가 붙인다,
  * steps: { label, mode, speed, line, beats, tracks, forMs, keep, sets, status }
  */

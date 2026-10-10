@@ -703,6 +703,7 @@ scene "같은 시각에 요청한다" for=8s
 <!-- grammar-table:start -->
 | 부분 | 자리 | 낱말 |
 |---|---|---|
+| 선언 | 테이블 블록 안 | `pk (열, ...)`, `unique (열, ...)`, `fk (열, ...) -> 테이블 (열, ...)` |
 | 판 표기 | 문서 줄 | `daphnis` |
 | 머리 | 문서 줄 | `title`, `subtitle`, `pace`, `aspect`, `width` |
 | 선언 | 문서 줄 | `person`, `box`, `external`, `store`, `decision`, `queue`, `state`, `group`, `grid`, `icons`, `value`, `on node id+N`, `start`, `final`, `table`, `api id "METHOD /url" {`, `class`, `interface`, `chart id "title" type ["subtitle"] {`, `trace id "title" [unit=ms] {`, `view graph|sequence|plot|time ["label"] [{]`, `a -> b` |
@@ -798,7 +799,7 @@ scene "같은 시각에 요청한다" for=8s
 | `column.unique` | 값 없음(낱말만) |
 | `column.nullable` | 값 없음(낱말만) |
 | `column.required` | 값 없음(낱말만) |
-| `column.ondelete` | `restrict`, `cascade`, `set-null`, `no-action` |
+| `foreignKey.ondelete` | `restrict`, `cascade`, `set-null`, `no-action` |
 | `column.fk` | 테이블.열 |
 | `classifier.abstract` | 값 없음(낱말만) |
 | `member.visibility` | `public`, `private`, `protected`, `package` |
@@ -828,7 +829,7 @@ scene "같은 시각에 요청한다" for=8s
 | `width` | `width 값` | `standard`, `wide` | `standard` |
 | `border` | `group.border` | `solid`, `dashed` | `solid` |
 | `status` | `scene.status` | `ok`, `warn`, `fail`, `wait` | 없음 |
-| `deleteAction` | `column.ondelete` | `restrict`, `cascade`, `set-null`, `no-action` | 없음 |
+| `deleteAction` | `foreignKey.ondelete` | `restrict`, `cascade`, `set-null`, `no-action` | 없음 |
 | `relation` | `relation.relation` | `association`, `dependency`, `inheritance`, `realization`, `aggregation`, `composition` | `association` |
 | `visibility` | `member.visibility` | `public`, `private`, `protected`, `package` | 없음 |
 <!-- grammar-table:end -->

@@ -16,7 +16,20 @@ export function assignViewEdges(figure) {
   }
 }
 
-const partOf = (e, way) => e[`${way}Column`] ?? e[`${way}Cell`];
+const partsOf = (e, way) => e[`${way}Columns`] ?? [e[`${way}Cell`]];
+
+// 열 묶음의 양쪽 주소가 있으면 같은 위치의 열 쌍이어야 한다.
+// cost: time O(c), heap O(1), stack O(1)
+// vars: c = 선 끝의 열 수
+// basis: estimate
+function matchesParts(edge, from, to) {
+  const sources = partsOf(edge, 'from');
+  const targets = partsOf(edge, 'to');
+  if (from === undefined) return to === undefined || targets.includes(to);
+  if (to === undefined) return sources.includes(from);
+  const index = sources.indexOf(from);
+  return index >= 0 && targets[index] === to;
+}
 
 // cost: time O(v·e), heap O(e), stack O(1)
 // vars: v = 보기 수, e = 선 수
@@ -31,7 +44,7 @@ export function projectMove(figure, move, { only, graphOnly } = {}) {
   const [fromId, fromPart] = move.from.split('.');
   const [toId, toPart] = move.to.split('.');
   const result = { projections: [], holdsBoth: false };
-  const matches = (e, [a, pa], [b, pb]) => e.from === a && e.to === b && (pa === undefined || partOf(e, 'from') === pa) && (pb === undefined || partOf(e, 'to') === pb);
+  const matches = (e, [a, pa], [b, pb]) => e.from === a && e.to === b && matchesParts(e, pa, pb);
   for (const view of figure.views) {
     if ((only && !only.includes(view.id)) || !viewHas(view, fromId) || !viewHas(view, toId)) continue;
     if (view.strategy === 'sequence') {
