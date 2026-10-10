@@ -48,13 +48,14 @@ export async function toSvg(result, { scene: selector = 0, isStatic = false, nam
   const shownHeight = height * scale;
   const fonts = await embedFonts(glyphs.used);
   const title = figure.title ?? name;
-  const motion = charts.length ? STYLES.chart + chartMotionCss(timeline.growMs, charts.flatMap((c) => c.drawn.dotAts)) : '';
+  const chartStyle = charts.length || result.scene.times.length ? STYLES.chart : '';
+  const motion = charts.length ? chartMotionCss(timeline.growMs, charts.flatMap((c) => c.drawn.dotAts)) : '';
   const place = (layer, className) => `<g${className ? ` class="${className}"` : ''} transform="translate(${r((width - layer.content.width) / 2)} 0)">\n${layer.content.svg}\n</g>`;
   const layers = stillLayer ? `${place(motionLayer, 'fl-motion')}\n${place({ content: { ...stillLayer.content, svg: scopeIds(stillLayer.content.svg, 'still-') } }, 'fl-still')}` : place(motionLayer);
   const head = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="fl" width="${r(shownWidth)}" height="${r(shownHeight)}" viewBox="0 0 ${r(width)} ${r(height)}" role="img" data-scene="${si}" data-mode="${mode}">
 <title>${escapeXml(plainText(title))}</title>
 `;
-  const styles = `${STYLES.figure}${paintCss(result.scene)}${motion}${hasStatus(timeline) ? STYLES.status : ''}
+  const styles = `${STYLES.figure}${paintCss(result.scene)}${chartStyle}${motion}${hasStatus(timeline) ? STYLES.status : ''}
 ${motionLayer.css.join('\n')}${stillLayer ? `\n${stillLayer.css.join('\n')}\n${STILL_CSS}` : ''}
 `;
   const body = `<defs>${figureDefs(figure)}${patternDefs(charts.map(({ drawn }) => drawn))}</defs>

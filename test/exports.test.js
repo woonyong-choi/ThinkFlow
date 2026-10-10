@@ -2,6 +2,9 @@
 // 브라우저가 있어야 보이는 것(탭, 시계, 전체 화면)은 docs/design/expression-coverage.md의 브라우저에서만 보이는 계약 표에 있다. 시험 이름 첫 낱말(X1~X11)이 요구사항 번호이고 시험 번호 표에 대응이 있다.
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
+
+import postcss from 'postcss';
+
 import { EXAMPLES, build, thinkflow, descendants, findAll, findOne, parseMarkup, read, reject, textContent, textsOf, toHtml, toSvg } from './support.js';
 
 const MOVE = (mode, speed = 1, time = '10s') => thinkflow(`box a "A"\nbox b "B"\na -> b\nscene "s" mode=${mode} speed=${speed}\n  a -> b "m" time=${time}\n`);
@@ -103,8 +106,19 @@ test('X6 builds are deterministic: the same source gives byte-identical SVG and 
   assert.deepEqual(await outputs(first), a, 'rendering again from the same result changes nothing');
 });
 
-// 독립 결과물은 배경과 정지·재생 층이 읽는 변수 정의를 함께 싣는다.
+// 독립 결과물은 배경과 정지·재생 층이 읽는 색 선언과 변수 정의를 함께 싣는다.
 test('renderers_embed_required_style_variables', async () => {
+  const trace = thinkflow(`
+    box a "A"
+    trace t "T" unit=ms {
+      span one "ONE" lane=a at=0 dur=100
+      span two "TWO" lane=a at=100 dur=300
+    }
+    scene "spans" mode=loop
+      light t.one
+      wait 1s
+      light t.two
+  `);
   const sources = [MOVE('loop'), thinkflow(`
     chart c "Heatmap" heatmap {
       cell "r" "a" 1
@@ -114,19 +128,38 @@ test('renderers_embed_required_style_variables', async () => {
       light c "r" "a"
       wait 1s
       light c "r" "b"
-  `)];
+  `), trace];
   for (const source of sources) {
     const result = await build(source);
     const outputs = [['svg', await toSvg(result)], ['static', await toSvg(result, { isStatic: true })], ['html', await toHtml(result)]];
     for (const [format, output] of outputs) {
       const defined = new Set([...output.matchAll(/(--[\w-]+)\s*:/g)].map((match) => match[1]));
       const required = new Set([...output.matchAll(/var\(\s*(--[\w-]+)\s*\)/g)].map((match) => match[1]));
-      const heatCells = findAll(parseMarkup(output, { html: format === 'html' }), (node) => (node.attrs.class ?? '').split(/\s+/).includes('chart-heat'));
+      const dom = parseMarkup(output, { html: format === 'html' });
+      const heatCells = findAll(dom, (node) => (node.attrs.class ?? '').split(/\s+/).includes('chart-heat'));
       // 공통 차트 CSS의 강도 변수는 히트맵 칸이 있을 때만 읽고, 각 칸이 공급한다.
       if (!heatCells.length) required.delete('--s');
       for (const cell of heatCells) assert.match(cell.attrs.style, /(?:^|;)\s*--s\s*:/);
 
       assert.deepEqual([...required].filter((name) => !defined.has(name)).sort(), [], `${format}\n${source}`);
+
+      // #242: 차트 카드가 없어도 추적 글자와 축의 색 선언이 독립 결과물에 있어야 한다.
+      if (source === trace) {
+        const css = findAll(dom, (node) => node.tag === 'style').map(textContent).join('\n');
+        const declarations = new Map();
+        postcss.parse(css).walkRules((rule) => {
+          if (rule.parent.type !== 'root') return;
+          for (const selector of rule.selectors) {
+            const properties = declarations.get(selector) ?? new Set();
+            rule.walkDecls((decl) => properties.add(decl.prop));
+            declarations.set(selector, properties);
+          }
+        });
+        for (const [role, property] of [['chart-label', 'fill'], ['chart-rule-label', 'fill'], ['chart-tick', 'fill'], ['chart-unit', 'fill'], ['chart-grid', 'stroke'], ['chart-axis', 'stroke']]) {
+          assert.ok(findAll(dom, (node) => (node.attrs.class ?? '').split(/\s+/).includes(role)).length, `${format} draws ${role}`);
+          assert.ok(declarations.get(`.fl .${role}`)?.has(property), `${format} embeds ${role} ${property}`);
+        }
+      }
     }
   }
 });
