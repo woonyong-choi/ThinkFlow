@@ -5,7 +5,7 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: daphnis-design-apply
+  group: thinkflow-design-apply
   cancel-in-progress: false
 jobs:
   validate:

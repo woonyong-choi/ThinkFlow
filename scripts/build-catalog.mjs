@@ -22,7 +22,7 @@ const output = resolve(process.argv[2] ?? '.local/examples');
 // vars: n = 예제 수, build = 그림 빌드 비용, out = 한 예제의 생성물 크기
 // basis: estimate
 async function main() {
-  const sources = readdirSync(EXAMPLES).filter((name) => name.endsWith('.dap')).map((name) => name.replace(/\.dap$/, ''));
+  const sources = readdirSync(EXAMPLES).filter((name) => name.endsWith('.thinkflow')).map((name) => name.replace(/\.thinkflow$/, ''));
   assert.deepEqual([...sources].sort(), [...CHART_EXAMPLES, ...DEVELOPMENT_EXAMPLES].sort(), 'examples/ holds exactly the listed demos');
   assert.deepEqual([...CHART_EXAMPLES].sort(), Object.keys(VALUES.chartType.items).sort(), 'one chart demo per chart type in the grammar table');
   // 이전에 이 도구가 만든 폴더(review.json이 있다)만 비우고 다시 만든다. 낡은 목록과 그림이 남지 않게 하려는 것이고, 모르는 폴더는 지우지 않는다.
@@ -37,10 +37,10 @@ async function main() {
   const entries = [];
   const review = [];
   for (const id of [...CHART_EXAMPLES, ...DEVELOPMENT_EXAMPLES]) {
-    const source = readFileSync(`${EXAMPLES}/${id}.dap`, 'utf8');
+    const source = readFileSync(`${EXAMPLES}/${id}.thinkflow`, 'utf8');
     const result = await buildFigure(source, { baseDir: EXAMPLES, strict: true });
     const scenes = result.timeline.steps;
-    writeFileSync(resolve(output, `${id}.dap`), source);
+    writeFileSync(resolve(output, `${id}.thinkflow`), source);
     writeFileSync(resolve(output, `${id}.svg`), await toSvg(result, { name: id }));
     writeFileSync(resolve(output, `${id}.html`), await toHtml(result, id));
     // 원본이 상대 경로로 읽는 자료(사용자 아이콘, JSON 값)는 원본 사본과 같은 상대 경로에 놓고, 목록이 파일마다 링크한다.
@@ -53,7 +53,7 @@ async function main() {
     review.push({ id, scenes, warnings: result.warnings, durationMs: result.timeline.total, support, coverage: Object.keys(catalogCoverage(source)) });
     console.log(`${id}: ${scenes.map((scene) => `${scene.label}(${scene.mode})`).join(' · ')}`);
   }
-  writeFileSync(resolve(output, 'index.html'), galleryPage(entries, 'Daphnis 예제'));
+  writeFileSync(resolve(output, 'index.html'), galleryPage(entries, 'ThinkFlow 예제'));
   writeFileSync(resolve(output, 'review.json'), JSON.stringify(review, null, 2));
   console.log(JSON.stringify({ examples: entries.length, output }));
 }

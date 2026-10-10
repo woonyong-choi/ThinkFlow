@@ -8,7 +8,7 @@ import { CONTENT } from '../src/measure/content.js';
 import { measure, wrap } from '../src/measure/fonts.js';
 import { STYLE, textSpan } from '../src/measure/texts.js';
 import { centerBaseline } from '../src/text.js';
-import { build, dap, findAll, findOne, num, parseMarkup, reject, textContent, toSvg } from './support.js';
+import { build, thinkflow, findAll, findOne, num, parseMarkup, reject, textContent, toSvg } from './support.js';
 
 const TICK = '`';
 const EPS = 0.06; // SVG 좌표는 소수 첫째 자리로 줄여 쓴다
@@ -23,7 +23,7 @@ const cardLines = (text) => text.map((n) => textContent(n));
 // ---- 읽는 방식 ----
 
 test('T1 backticks are code in prose and characters in literal text: an odd count is accepted in a class member, an API or table type and a value, and still a located error in prose', async () => {
-  const source = dap(`
+  const source = thinkflow(`
     class a "A" {
       field id "${TICK}odd"
       method run "(): ${TICK}x"
@@ -39,7 +39,7 @@ test('T1 backticks are code in prose and characters in literal text: an odd coun
   assert.deepEqual(cardLines(textsWith(dom, 'cell type')), [TICK]);
   assert.deepEqual(cardLines(textsWith(dom, 'value')), [`a${TICK}b`]);
   assert.equal(findAll(dom, (n) => n.tag === 'tspan' && n.attrs.class === 'code').length, 0, 'no code spans');
-  const problems = await reject(dap(`box a "A ${TICK}unclosed"`));
+  const problems = await reject(thinkflow(`box a "A ${TICK}unclosed"`));
   assert.equal(problems.length, 1);
   assert.equal(problems[0].line, 2, 'the prose backtick error is located');
   assert.match(problems[0].message, /not paired/);
@@ -47,7 +47,7 @@ test('T1 backticks are code in prose and characters in literal text: an odd coun
 
 test('T12 a literal type keeps its backticks and escaped characters on a class, an API and a table, and the card is as wide as the glyphs that are drawn', async () => {
   // 고정폭 글꼴이라 같은 글자 수의 평범한 글과 같은 폭이어야 한다. 백틱이 글이 아니라 서식으로 읽히면 글자가 둘 사라지고 카드가 좁아진다. 기대 폭은 같은 글자 수의 평범한 글로 지은 카드에서 따로 얻는다.
-  const card = (literal) => dap(`
+  const card = (literal) => thinkflow(`
     class k "K" {
       field f "${literal.replaceAll('"', '\\"')}"
     }
@@ -86,7 +86,7 @@ test('T2 a value is read as written by the measuring and the drawing: the face t
 
 test('T3 a rich label has the text it shows as its accessible name, and a class member keeps its characters across wrapped lines', async () => {
   const members = Array.from({ length: 3 }, (_, i) => `method m${i} "(first: Alpha, second: Beta, third: Gamma, fourth: Delta): Result${i}"`).join('\n  ');
-  const { dom } = await rendered(dap(`
+  const { dom } = await rendered(thinkflow(`
     box a "A ${TICK}code${TICK} B"
     class k "Order" {
       ${members}
@@ -104,7 +104,7 @@ test('T3 a rich label has the text it shows as its accessible name, and a class 
 // ---- 글 자리 ----
 
 test('T4 a card line is drawn where the measure put it: tag, shown text, mark, muted extra and a value share one measured line', async () => {
-  const { result, dom } = await rendered(dap(`
+  const { result, dom } = await rendered(thinkflow(`
     box a "Order"
     value total "total" on=a from=0
     scene "s" mode=static
@@ -134,7 +134,7 @@ test('T4 a card line is drawn where the measure put it: tag, shown text, mark, m
 });
 
 test('T5 the fit check reads the measured texts: a text outside its card is an internal check-1 error and a text that fits is not', async () => {
-  const { result } = await rendered(dap(`
+  const { result } = await rendered(thinkflow(`
     table t "Order" {
       id bigint pk
       memo text
@@ -176,7 +176,7 @@ test('T13 a relation graph row widens every card kind to fit its columns: no nam
     for (const [chain, names] of Object.entries(GRAPH_CHAINS)) {
       const label = `${kind}, ${chain}`;
       const graph = names.slice(1).map((name, i) => `${names[i]} -> ${name}`).join('; ');
-      const { result, dom } = await rendered(dap(`${card}\nview graph down\nscene "s" mode=static\n  show a graph "${graph}"`));
+      const { result, dom } = await rendered(thinkflow(`${card}\nview graph down\nscene "s" mode=static\n  show a graph "${graph}"`));
       const item = result.scene.items.find((it) => it.id === 'a');
       const [{ graph: laid }] = item.content.layouts.at(-1).rows;
       assert.deepEqual(laid.nodes.map((n) => n.name), names, `${label}: every name is placed`);
@@ -205,7 +205,7 @@ const HEADS = {
 test('T6 one header wraps a long title in every card kind: it fits the card, keeps every character and mark, and stays near the card width', async () => {
   const widths = {};
   for (const [name, body] of Object.entries(HEADS)) {
-    const { result } = await rendered(dap(`${body}\nview graph down\nscene "one"`));
+    const { result } = await rendered(thinkflow(`${body}\nview graph down\nscene "one"`));
     const item = result.scene.items[0];
     const lines = item.texts.filter((t) => t.role === 'label').map((t) => t.text);
     const label = body.match(/"([^"]+)"/)[1];
@@ -221,16 +221,16 @@ test('T6 one header wraps a long title in every card kind: it fits the card, kee
 });
 
 test('T7 a wide body keeps a long title on one line, and a short title never wraps', async () => {
-  const wide = await rendered(dap(`api a "POST https://pay.example.com/v1/charges" {\n amount "amount: a_really_long_type_description_that_makes_the_body_wide_enough_here"\n}\nview graph down\nscene "one"`));
+  const wide = await rendered(thinkflow(`api a "POST https://pay.example.com/v1/charges" {\n amount "amount: a_really_long_type_description_that_makes_the_body_wide_enough_here"\n}\nview graph down\nscene "one"`));
   const item = wide.result.scene.items[0];
   assert.equal(item.texts.filter((t) => t.role === 'label').length, 1, 'the body is wider than the title, so the title keeps one line');
   assert.ok(item.w > 300);
-  const short = await rendered(dap(`class a "Short" {\n field id "UUID"\n}\nview graph down\nscene "one"`));
+  const short = await rendered(thinkflow(`class a "Short" {\n field id "UUID"\n}\nview graph down\nscene "one"`));
   assert.equal(short.result.scene.items[0].texts.filter((t) => t.role === 'label').length, 1);
 });
 
 test('T8 sequence participants take the same wrapped header, including the stereotype and abstract marks', async () => {
-  const { result } = await rendered(dap(`
+  const { result } = await rendered(thinkflow(`
     table orders "A long participant table label that keeps going and going on" {
       id bigint pk
     }
@@ -269,7 +269,7 @@ test('T9 a word without spaces breaks after path and identifier separators befor
 // ---- 제목 줄 ----
 
 test('T10 a chart title and subtitle are the card title and subtitle: same roles and line heights, aligned left with the plot', async () => {
-  const { dom } = await rendered(dap(`
+  const { dom } = await rendered(thinkflow(`
     box a "Card title" "Card subtitle"
     chart c "Chart title" bar "Chart subtitle" {
       x "x(u)"
@@ -298,7 +298,7 @@ test('T11 a long chart or trace title wraps at the default width: it keeps every
     'Quarterly revenue by region and channel with a deliberately long title that needs more than one line at the default width',
     'GET /v1/orders/{id}/payments/authorizations/capture-and-settle-with-an-unusually-long-trace-name that also has several words',
   ];
-  const { dom } = await rendered(dap(`
+  const { dom } = await rendered(thinkflow(`
     box a "A"
     chart c "${titles[0]}" bar "Short subtitle" {
       x "x(u)"

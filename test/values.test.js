@@ -2,7 +2,7 @@
 // 시험 이름 첫 낱말(E1~E18)이 요구사항 번호이고, 번호와 계약의 대응은 docs/design/expression-coverage.md의 시험 번호 표에 있다.
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { build, dap, finalValue, lineOf, reject } from './support.js';
+import { build, thinkflow, finalValue, lineOf, reject } from './support.js';
 
 const BASE = `
   box a "A"
@@ -13,7 +13,7 @@ const BASE = `
   c -> b
 `;
 /** 장면 하나(`mode`는 기본 static)에 박자 줄들을 단 원본. */
-const one = (moves, head = BASE, mode = 'static') => dap(`${head}\nscene "s" mode=${mode}\n${moves.map((m) => `  ${m}`).join('\n')}\n`);
+const one = (moves, head = BASE, mode = 'static') => thinkflow(`${head}\nscene "s" mode=${mode}\n${moves.map((m) => `  ${m}`).join('\n')}\n`);
 /** 줄 번호가 `needle`을 가진 줄의 것인 진단이 있어야 한다. */
 const atLine = (problems, source, needle) => problems.some((p) => p.line === lineOf(source, needle));
 
@@ -28,7 +28,7 @@ test('E1 a move applies its set on arrival at the destination, not at departure 
 });
 
 test('E2 a move against the declared edge direction follows the edge backwards and still arrives at its own destination', async () => {
-  const reverse = dap(`
+  const reverse = thinkflow(`
     box a "A"
     box b "B"
     value n "n" on=b from=0
@@ -43,9 +43,9 @@ test('E2 a move against the declared edge direction follows the edge backwards a
 });
 
 test('E2 a move needs a card and an edge: a missing edge and an unknown card are located errors', async () => {
-  const none = dap(`box a "A"\nbox b "B"\nbox c "C"\na -> b\nscene "s" mode=static\n  a -> c\n`);
+  const none = thinkflow(`box a "A"\nbox b "B"\nbox c "C"\na -> b\nscene "s" mode=static\n  a -> c\n`);
   assert.ok((await reject(none)).some((p) => p.line === lineOf(none, 'a -> c') && /no edge between "a" and "c"/.test(p.message)));
-  const unknown = dap(`box a "A"\nbox b "B"\na -> b\nscene "s" mode=static\n  a -> zz\n`);
+  const unknown = thinkflow(`box a "A"\nbox b "B"\na -> b\nscene "s" mode=static\n  a -> zz\n`);
   assert.ok((await reject(unknown)).some((p) => p.line === lineOf(unknown, 'a -> zz') && /unknown card/.test(p.message)));
 });
 
@@ -56,7 +56,7 @@ test('E3 at one instant every on-line applies before any set=, and a later set s
 });
 
 test('E4 a read expression takes the value from the start of its update, so := swaps', async () => {
-  const swap = dap(`
+  const swap = thinkflow(`
     box a "A"
     box b "B"
     value x "x" on=a from=1
@@ -70,7 +70,7 @@ test('E4 a read expression takes the value from the start of its update, so := s
 });
 
 test('E5 values restart from "from" in each scene; keep carries them; a scene set= wins over keep and over from', async () => {
-  const doc = (second) => dap(`${BASE}\nscene "one" mode=static\n  a -> b set="n+1"\nscene "two" mode=static${second}\n  a -> b set="n+1"\n`);
+  const doc = (second) => thinkflow(`${BASE}\nscene "one" mode=static\n  a -> b set="n+1"\nscene "two" mode=static${second}\n  a -> b set="n+1"\n`);
   assert.equal(await finalValue(doc(''), 'n', 0), '1');
   assert.equal(await finalValue(doc(''), 'n', 1), '1');
   assert.equal(await finalValue(doc(' keep="n"'), 'n', 1), '2');
@@ -80,26 +80,26 @@ test('E5 values restart from "from" in each scene; keep carries them; a scene se
 
 test('E5 keep lists plain values only: unknown, repeated and reference values and a keep on the first scene are located errors', async () => {
   const ref = `${BASE}\n  value r "r" on=a ref=n`;
-  const second = (head, keep) => dap(`${head}\nscene "one" mode=static\n  a -> b\nscene "two" mode=static keep="${keep}"\n  a -> b\n`);
+  const second = (head, keep) => thinkflow(`${head}\nscene "one" mode=static\n  a -> b\nscene "two" mode=static keep="${keep}"\n  a -> b\n`);
   for (const source of [second(BASE, 'zz'), second(BASE, 'n, n'), second(ref, 'r')]) {
     assert.ok(atLine(await reject(source), source, 'keep='), source);
   }
-  const first = dap(`${BASE}\nscene "one" mode=static keep="n"\n  a -> b\n`);
+  const first = thinkflow(`${BASE}\nscene "one" mode=static keep="n"\n  a -> b\n`);
   assert.ok(atLine(await reject(first), first, 'keep='));
 });
 
 test('E6 a reference value follows the value it points at, including references of references', async () => {
-  const doc = dap(`${BASE}\nvalue r "r" on=a ref=n\nvalue s "s" on=c ref=r\nscene "s" mode=static\n  a -> b set="n+3"\n`);
+  const doc = thinkflow(`${BASE}\nvalue r "r" on=a ref=n\nvalue s "s" on=c ref=r\nscene "s" mode=static\n  a -> b set="n+3"\n`);
   assert.equal(await finalValue(doc, 'r'), '3');
   assert.equal(await finalValue(doc, 's'), '3');
   for (const bad of ['value r "r" on=a ref=r', 'value r "r" on=a ref=zz', 'value r "r" on=a ref=n from=1']) {
-    const source = dap(`${BASE}\n${bad}\n`);
+    const source = thinkflow(`${BASE}\n${bad}\n`);
     assert.ok(atLine(await reject(source), source, bad), bad);
   }
 });
 
 test('E7 a queue counts through its own name and is observable through a referencing value', async () => {
-  const doc = dap(`
+  const doc = thinkflow(`
     box a "A"
     queue q "Q" slots=4 from=1
     value len "len" on=a ref=q
@@ -110,10 +110,10 @@ test('E7 a queue counts through its own name and is observable through a referen
   `);
   assert.equal(await finalValue(doc, 'len'), '2');
   // 같은 시각에 넘쳤다가 돌아오는 값은 보이지 않으므로 칸 수 경고도 없다
-  const over = dap('box a "A"\nqueue q "Q" slots=2 from=2\na -> q\nscene "s" mode=once\n  a -> q time=500ms set="q+1, q-1"\n');
+  const over = thinkflow('box a "A"\nqueue q "Q" slots=2 from=2\na -> q\nscene "s" mode=once\n  a -> q time=500ms set="q+1, q-1"\n');
   assert.deepEqual((await build(over, { strict: false })).warnings, []);
   for (const bad of ['queue q "Q" slots=0', 'queue q "Q" slots=33', 'queue q "Q" slots=2.5', 'queue q "Q" slots=2 from=3', 'queue q "Q"']) {
-    const source = dap(`${bad}\n`);
+    const source = thinkflow(`${bad}\n`);
     assert.ok(atLine(await reject(source), source, bad), bad);
   }
 });
@@ -128,7 +128,7 @@ test('E8 lost: the effect of a destination the dot never reaches is not applied,
     a -> b
     b -> c
   `;
-  const track = (extra) => dap(`${head}\nscene "s" mode=static for=6s\n  track a -> b -> c at=0s time=2s ${extra}\n`);
+  const track = (extra) => thinkflow(`${head}\nscene "s" mode=static for=6s\n  track a -> b -> c at=0s time=2s ${extra}\n`);
   assert.equal(await finalValue(track('set="m+1"'), 'm'), '1');
   assert.equal(await finalValue(track('lost=100% set="m+1"'), 'm'), '0');
   assert.equal(await finalValue(track('lost=100% set="n+1@b"'), 'n'), '1');
@@ -160,11 +160,11 @@ test('E9 updates of one instant show as the last text of that instant; a return 
 });
 
 test('E10 a flow with every= departs repeatedly; only dots that arrive before the scene ends change the value', async () => {
-  const flow = (length) => dap(`${BASE}\nscene "s" mode=static for=${length}\n  track a -> b at=0s every=1s time=500ms set="n+1"\n`);
+  const flow = (length) => thinkflow(`${BASE}\nscene "s" mode=static for=${length}\n  track a -> b at=0s every=1s time=500ms set="n+1"\n`);
   assert.equal(await finalValue(flow('3s'), 'n'), '3');
   assert.equal(await finalValue(flow('2.2s'), 'n'), '2');
   // 흐름도 같은 시각의 갱신은 마지막 글 하나로 보이고, 조건이 있는 흐름(이벤트 처리기)도 같다
-  const returned = async (condition) => (await build(dap(`${BASE}\nscene "s" mode=once for=2s\n  track a -> b at=0s time=500ms ${condition} set="n+1, n-1"\n`))).timeline.values.find((row) => row.id === 'n').changes;
+  const returned = async (condition) => (await build(thinkflow(`${BASE}\nscene "s" mode=once for=2s\n  track a -> b at=0s time=500ms ${condition} set="n+1, n-1"\n`))).timeline.values.find((row) => row.id === 'n').changes;
   assert.deepEqual(await returned(''), []);
   assert.deepEqual(await returned('wait="n=0"'), []);
 });
@@ -178,7 +178,7 @@ test('E11 when: a false condition skips the move completely, a true one runs it'
 });
 
 /** 시퀀스 보기를 더한 원본. `fragment`는 순서 보기가 있어야 쓴다. */
-const sequenced = (moves) => dap(`${BASE}\nview graph\nview sequence "S" {\n  a b\n}\nscene "s" mode=once\n${moves}`);
+const sequenced = (moves) => thinkflow(`${BASE}\nview graph\nview sequence "S" {\n  a b\n}\nscene "s" mode=once\n${moves}`);
 
 test('E11 inside a fragment a value changes when each repetition arrives, a message takes the time it takes outside, and when, wait and reserve are line errors', async () => {
   const loop = await build(sequenced('  fragment loop "L" times=3 {\n    a -> b "x" time=500ms set="n+1"\n  }\n'));
@@ -197,7 +197,7 @@ test('E11 inside a fragment a value changes when each repetition arrives, a mess
 });
 
 /** 잠금 한 칸과 요청 둘. `seen`은 `lock`에 닿은 점 수를 센다. */
-const lockDoc = (moves, { holder = 'A', length = '6s' } = {}) => dap(`
+const lockDoc = (moves, { holder = 'A', length = '6s' } = {}) => thinkflow(`
   box a "A"
   box b "B"
   box lock "L"
@@ -255,7 +255,7 @@ test('E12 #173 a release made by a departing dot at the timeout instant also win
 });
 
 test('E13 a wait that can never end is a warning, and stuck says it is meant', async () => {
-  const stalled = (extra) => dap(`box a "A"\nbox b "B"\nvalue h "h" on=b from=A\na -> b\nscene "s" mode=static\n  a -> b wait="h='none'" ${extra}\n`);
+  const stalled = (extra) => thinkflow(`box a "A"\nbox b "B"\nvalue h "h" on=b from=A\na -> b\nscene "s" mode=static\n  a -> b wait="h='none'" ${extra}\n`);
   const warned = await build(stalled(''), { strict: false });
   assert.deepEqual(warned.warnings.map((w) => [w.code, w.severity]), [['wait-stalled', 'warning']]);
   assert.equal(warned.warnings[0].line, lineOf(stalled(''), 'wait='));
@@ -287,7 +287,7 @@ test('E14 a reserve and an update at one instant that end on the earlier text ar
 });
 
 test('E14 a reserve is all-or-nothing: an expression that cannot run at departure fails the build at that line', async () => {
-  const doc = dap(`
+  const doc = thinkflow(`
     box a "A"
     box b "B"
     queue q "Q" slots=4
@@ -332,7 +332,7 @@ test('E17 numbers in value expressions are finite and under 1e15 in magnitude', 
 });
 
 test('E18 a document without scenes shows the declared start values', async () => {
-  const doc = dap(`box a "A"\nvalue n "n" on=a from=37\nvalue w "w" on=a from=idle\n`);
+  const doc = thinkflow(`box a "A"\nvalue n "n" on=a from=37\nvalue w "w" on=a from=idle\n`);
   assert.equal(await finalValue(doc, 'n'), '37');
   assert.equal(await finalValue(doc, 'w'), 'idle');
 });

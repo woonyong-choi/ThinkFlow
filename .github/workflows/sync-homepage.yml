@@ -15,12 +15,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          path: daphnis
+          path: thinkflow
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
       - name: Verify the imported design
-        working-directory: daphnis
+        working-directory: thinkflow
         run: node scripts/check-design.mjs
       - uses: actions/checkout@v4
         with:
@@ -43,7 +43,7 @@ jobs:
       - name: Export the matching renderer and design
         env:
           RENDERER_SHA: ${{ github.sha }}
-        run: node daphnis/scripts/sync-homepage.mjs homepage "$RENDERER_SHA"
+        run: node thinkflow/scripts/sync-homepage.mjs homepage "$RENDERER_SHA"
       - name: Push the update when content changes
         working-directory: homepage
         run: |

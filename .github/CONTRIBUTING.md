@@ -1,6 +1,6 @@
 # Contributing
 
-This guide explains how to contribute to daphnis.
+This guide explains how to contribute to thinkflow.
 
 ## Before you start
 
@@ -11,8 +11,8 @@ Open an issue before you start work.
 Requirements: Node.js 20 or later.
 
 ```sh
-git clone https://github.com/woonyong-choi/daphnis.git
-cd daphnis
+git clone https://github.com/woonyong-choi/ThinkFlow.git
+cd ThinkFlow
 npm install
 ```
 

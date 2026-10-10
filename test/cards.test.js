@@ -2,7 +2,7 @@
 // 시험 이름 첫 낱말(S1~S11)이 요구사항 번호이고, 번호와 계약의 대응은 docs/design/expression-coverage.md의 시험 번호 표에 있다.
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { build, dap, descendants, findAll, lineOf, num, parseMarkup, reject, stillDom, textContent, textsOf, toHtml, toSvg, visibleTexts } from './support.js';
+import { build, thinkflow, descendants, findAll, lineOf, num, parseMarkup, reject, stillDom, textContent, textsOf, toHtml, toSvg, visibleTexts } from './support.js';
 
 /** 멈춘 SVG의 선 경로 `p-번호`가 끝나는 점(마지막 좌표 쌍). */
 function edgeEnds(dom) {
@@ -22,7 +22,7 @@ function rowY(dom, label) {
 const nearest = (y, rows) => Object.entries(rows).sort(([, a], [, b]) => Math.abs(a - y) - Math.abs(b - y))[0][0];
 
 test('S1 one document holds people, API fields, table columns, values and a chart, and every edge ends on its own row', async () => {
-  const source = dap(`
+  const source = thinkflow(`
     person user "User"
     table orders "orders" {
       id bigint pk
@@ -56,7 +56,7 @@ test('S1 one document holds people, API fields, table columns, values and a char
 });
 
 test('S2 a grid is addressed by its items; a trace by its spans; a class by nothing but the card itself', async () => {
-  const ok = dap(`
+  const ok = thinkflow(`
     grid g "G" cols=4 {
       item left "L" cols=3
       item right "R" col=3
@@ -77,15 +77,15 @@ test('S2 a grid is addressed by its items; a trace by its spans; a class by noth
     ['g.left -> g.left\n', /./],
     ['b -> g.left.x\n', /card\.part/],
   ]) {
-    const source = dap(`grid g "G" cols=4 {\n  item left "L" cols=3\n}\nbox b "B"\n${bad}`);
+    const source = thinkflow(`grid g "G" cols=4 {\n  item left "L" cols=3\n}\nbox b "B"\n${bad}`);
     assert.ok((await reject(source)).some((p) => message.test(p.message)), bad);
   }
-  const light = dap(`box b "B"\ntrace t "T" {\n  span s1 "one" lane=b at=0 dur=100\n}\nscene "s" mode=static\n  light t.zz\n`);
+  const light = thinkflow(`box b "B"\ntrace t "T" {\n  span s1 "one" lane=b at=0 dur=100\n}\nscene "s" mode=static\n  light t.zz\n`);
   assert.ok((await reject(light)).some((p) => p.line === lineOf(light, 'light t.zz')));
 });
 
 test('S3 grid cells are as wide and tall as the units they cover, empty places stay empty, and cells may not overlap', async () => {
-  const dom = await stillDom(dap(`
+  const dom = await stillDom(thinkflow(`
     grid g "G" rows=2 cols=10 {
       item wide "WIDE" cols=6
       item narrow "NARROW" col=6 cols=4
@@ -98,31 +98,31 @@ test('S3 grid cells are as wide and tall as the units they cover, empty places s
   const unit = (narrow - wide) / (8 - 3);
   assert.ok(unit > 10, `unit ${unit}`);
   assert.ok(Math.abs(low - (wide + 2 * unit)) < 0.5, `centers ${wide} ${narrow} ${low}`);
-  const clash = dap(`grid g "G" cols=4 {\n  item a "A" cols=3\n  item b "B" col=2 cols=2\n}\n`);
+  const clash = thinkflow(`grid g "G" cols=4 {\n  item a "A" cols=3\n  item b "B" col=2 cols=2\n}\n`);
   assert.ok((await reject(clash)).length);
-  const outside = dap(`grid g "G" cols=4 {\n  item a "A" col=4\n}\n`);
+  const outside = thinkflow(`grid g "G" cols=4 {\n  item a "A" col=4\n}\n`);
   assert.ok((await reject(outside)).some((p) => p.line === lineOf(outside, 'item a')));
 });
 
 test('S4 a table foreign key becomes an edge between the two columns, to a key column only, and a column cannot reference itself', async () => {
-  const doc = (child) => dap(`table users "users" {\n  id bigint pk\n  name text\n}\ntable orders "orders" {\n  id bigint pk\n  ${child}\n}\n`);
+  const doc = (child) => thinkflow(`table users "users" {\n  id bigint pk\n  name text\n}\ntable orders "orders" {\n  id bigint pk\n  ${child}\n}\n`);
   await build(doc('user_id bigint fk=users.id'));
   const cases = [
     [doc('user_id bigint fk=users.name'), 'user_id', /fk must point to a pk or unique column/],
     [doc('user_id bigint fk=users.zz'), 'user_id', /unknown column in "users" "zz"/],
     [doc('user_id bigint fk=nope.id'), 'user_id', /unknown table "nope"/],
-    [dap('table orders "orders" {\n  id bigint pk fk=orders.id\n}\n'), 'fk=orders.id', /cannot go from "orders.id" to itself/],
+    [thinkflow('table orders "orders" {\n  id bigint pk fk=orders.id\n}\n'), 'fk=orders.id', /cannot go from "orders.id" to itself/],
   ];
   for (const [source, needle, message] of cases) {
     const problems = await reject(source);
     assert.ok(problems.some((p) => p.line === lineOf(source, needle) && message.test(p.message)), `${needle}: ${JSON.stringify(problems)}`);
   }
-  const contradictory = dap(`table t "t" {\n  id bigint pk nullable\n}\n`);
+  const contradictory = thinkflow(`table t "t" {\n  id bigint pk nullable\n}\n`);
   assert.ok((await reject(contradictory)).some((p) => p.line === lineOf(contradictory, 'id bigint')));
 });
 
 test('S4 table relations and foreign keys share endpoint multiplicity labels without inferring constraints', async () => {
-  const tables = (column = 'owner bigint') => dap(`
+  const tables = (column = 'owner bigint') => thinkflow(`
     table users "users" {
       id bigint pk
       name text
@@ -155,7 +155,7 @@ test('S4 table relations and foreign keys share endpoint multiplicity labels wit
 });
 
 test('S5 the same card in a graph view and a sequence view is drawn once per view and moves once per view', async () => {
-  const source = dap(`
+  const source = thinkflow(`
     person user "User"
     box gw "Gateway"
     value hits "hits" on=gw from=0
@@ -183,13 +183,13 @@ test('S5 the same card in a graph view and a sequence view is drawn once per vie
 
 test('S6 sequence-only statements need their card in a sequence view', async () => {
   for (const line of ['note gw "n"', 'activate gw', 'deactivate gw', 'gw -> user "m" create']) {
-    const source = dap(`box gw "G"\nbox user "U"\ngw -> user\nscene "s" mode=static\n  ${line}\n`);
+    const source = thinkflow(`box gw "G"\nbox user "U"\ngw -> user\nscene "s" mode=static\n  ${line}\n`);
     assert.ok((await reject(source)).some((p) => p.line === lineOf(source, `  ${line}`)), line);
   }
 });
 
 test('S7 #175 a value, show or clear on a card that no graph view shows is rejected at its own line, and the same figure with the card in a graph view is drawn', async () => {
-  const doc = (line, graph = '') => dap(`
+  const doc = (line, graph = '') => thinkflow(`
     person u "User"
     box s "Service"
     value n "count" on=s from=0
@@ -215,7 +215,7 @@ test('S7 #175 a value, show or clear on a card that no graph view shows is rejec
 });
 
 test('S8 #172 card content shown by a scene is drawn whichever view is declared first', async () => {
-  const doc = (views) => dap(`
+  const doc = (views) => thinkflow(`
     box api "API"
     store db "DB"
     api -> db
@@ -244,14 +244,14 @@ test('S9 every card must be shown by some view, views take only fitting members,
     ['box a "A"\nbox b "B"\nview plot {\n  a\n}\nview graph {\n  b\n}\n', 'chart'],
   ];
   for (const [body, message] of cases) {
-    const problems = await reject(dap(body));
+    const problems = await reject(thinkflow(body));
     assert.ok(problems.some((p) => p.message.includes(message)), `${JSON.stringify(body)} -> ${JSON.stringify(problems)}`);
   }
 });
 
 test('S9 a view names its kind first and has no id of its own: the old "view id kind" form is a plain syntax error', async () => {
   for (const line of ['view main graph', 'view calls sequence {', 'view p plot {', 'view t time {']) {
-    const source = dap(`box a "A"\n${line}\n${line.endsWith('{') ? '  a\n}\n' : ''}`);
+    const source = thinkflow(`box a "A"\n${line}\n${line.endsWith('{') ? '  a\n}\n' : ''}`);
     const problems = await reject(source);
     assert.ok(problems.some((p) => p.line === lineOf(source, line) && p.code === 'syntax'), line);
     for (const problem of problems) assert.doesNotMatch(problem.message, /renamed|no longer|used to|old form|instead of/i, 'no migration advice');
@@ -259,7 +259,7 @@ test('S9 a view names its kind first and has no id of its own: the old "view id 
 });
 
 test('S10 a default view appears when none is declared: a graph holding every card, plus one time view per trace', async () => {
-  const source = dap(`box a "A"\ntrace t "T" {\n  span s1 "one" lane=a at=0 dur=10\n}\n`);
+  const source = thinkflow(`box a "A"\ntrace t "T" {\n  span s1 "one" lane=a at=0 dur=10\n}\n`);
   const html = parseMarkup(await toHtml(await build(source), 'x'), { html: true });
   const variants = findAll(html, (n) => n.attrs.class?.split(' ').includes('dp-panels'));
   assert.ok(variants.length);
@@ -270,11 +270,11 @@ test('S10 a default view appears when none is declared: a graph holding every ca
 });
 
 test('S11 participants are listed in the order they first send: a different order is a warning (an error under strict) pointing into the view block', async () => {
-  const source = dap(`person u "U"\nbox s "S"\nview sequence {\n  s\n  u\n}\nscene "m" mode=static\n  u -> s "hi"\n`);
+  const source = thinkflow(`person u "U"\nbox s "S"\nview sequence {\n  s\n  u\n}\nscene "m" mode=static\n  u -> s "hi"\n`);
   const firstParticipant = lineOf(source, 'view sequence') + 1;
   const strict = await reject(source);
   assert.ok(strict.some((p) => /first send/.test(p.message) && p.line === firstParticipant), JSON.stringify(strict));
   const lenient = await build(source, { strict: false });
   assert.deepEqual(lenient.warnings.map((w) => w.line), [firstParticipant]);
-  await build(dap(`person u "U"\nbox s "S"\nview sequence {\n  u\n  s\n}\nscene "m" mode=static\n  u -> s "hi"\n`));
+  await build(thinkflow(`person u "U"\nbox s "S"\nview sequence {\n  u\n  s\n}\nscene "m" mode=static\n  u -> s "hi"\n`));
 });

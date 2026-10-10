@@ -1,4 +1,4 @@
-// daphnis md: 문서의 ```dap 블록을 SVG와 이미지 줄로 반영한다. 소유 표시, 낡은 파일 정리, 접기, 잠금, 쓰기 실패를 파일과 출력으로만 본다.
+// thinkflow md: 문서의 ```thinkflow 블록을 SVG와 이미지 줄로 반영한다. 소유 표시, 낡은 파일 정리, 접기, 잠금, 쓰기 실패를 파일과 출력으로만 본다.
 // 시험 이름 첫 낱말(M1~M13)이 요구사항 번호이고, 번호와 계약의 대응은 docs/design/expression-coverage.md의 시험 번호 표에 있다.
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
@@ -7,10 +7,10 @@ import { hostname } from 'node:os';
 import { join } from 'node:path';
 import { test } from 'node:test';
 import { findBlocks } from '../src/md.js';
-import { cli, dap, read, snapshot, workspace } from './support.js';
+import { cli, thinkflow, read, snapshot, workspace } from './support.js';
 
 const FENCE = '```';
-const block = (name, body = 'title "Flow"\nbox a "A"\n') => `${FENCE}dap${name ? ` name=${name}` : ''}\n${dap(body)}${FENCE}\n`;
+const block = (name, body = 'title "Flow"\nbox a "A"\n') => `${FENCE}thinkflow${name ? ` name=${name}` : ''}\n${thinkflow(body)}${FENCE}\n`;
 const doc = (...blocks) => `# Doc\n\nintro\n\n${blocks.join('\ntext between\n\n')}\nafter\n`;
 const md = (dir, args, options) => cli(['md', ...args], { cwd: dir, ...options });
 const svgs = (dir) => readdirSync(dir).filter((f) => f.endsWith('.svg')).sort();
@@ -21,15 +21,15 @@ test('M1 a named block becomes {doc}-{name}.svg and a marked image line right be
   assert.equal(run.status, 0, run.stderr);
   assert.deepEqual(svgs(dir), ['doc-flow.svg']);
   const text = read(dir, 'doc.md');
-  assert.match(text, /```\n\n!\[Flow\]\(doc-flow\.svg\)<!-- dap -->\n/);
+  assert.match(text, /```\n\n!\[Flow\]\(doc-flow\.svg\)<!-- thinkflow -->\n/);
   assert.equal(run.stdout.trim().split('\n').length, 2, 'the svg and the document are reported');
   assert.match(read(dir, 'doc-flow.svg'), /^<svg /);
 });
 
-test('M1 the SVG carries its owner as "daphnis md v2 {document path}" on its second line', (t) => {
+test('M1 the SVG carries its owner as "thinkflow md v2 {document path}" on its second line', (t) => {
   const dir = workspace(t, { 'doc.md': doc(block('flow')) });
   md(dir, ['doc.md']);
-  assert.equal(read(dir, 'doc-flow.svg').split('\n')[1], '<!-- daphnis md v2 doc.md -->');
+  assert.equal(read(dir, 'doc-flow.svg').split('\n')[1], '<!-- thinkflow md v2 doc.md -->');
 });
 
 test('M2 running again changes nothing and prints nothing; --check agrees and an edit makes it fail without writing', (t) => {
@@ -45,7 +45,7 @@ test('M2 running again changes nothing and prints nothing; --check agrees and an
   const edited = snapshot(dir);
   const check = md(dir, ['doc.md', '--check']);
   assert.equal(check.status, 1);
-  assert.match(check.stderr, /is out of date\. Run daphnis md to update it/);
+  assert.match(check.stderr, /is out of date\. Run thinkflow md to update it/);
   assert.deepEqual(snapshot(dir), edited, '--check writes nothing');
 });
 
@@ -57,7 +57,7 @@ test('M3 renaming a block moves its figure: the new file appears, the old one th
   assert.equal(run.status, 0, run.stderr);
   assert.deepEqual(svgs(dir), ['doc-path.svg']);
   assert.match(run.stdout, /removed .*doc-flow\.svg/);
-  assert.match(read(dir, 'doc.md'), /\]\(doc-path\.svg\)<!-- dap -->/);
+  assert.match(read(dir, 'doc.md'), /\]\(doc-path\.svg\)<!-- thinkflow -->/);
   assert.doesNotMatch(read(dir, 'doc.md'), /doc-flow/);
 });
 
@@ -75,7 +75,7 @@ test('M3 blocks without a name are numbered among themselves, and a named block 
 test('M4 files the tool does not own are never taken, overwritten or removed: no mark, another document, an old-style or foreign mark', (t) => {
   const user = '<svg xmlns="http://www.w3.org/2000/svg"/>\n';
   const marked = (mark) => `<svg xmlns="http://www.w3.org/2000/svg">\n<!-- ${mark} -->\n</svg>\n`;
-  const cases = [['no mark', user], ['another document', marked('daphnis md v2 other.md')], ['an unversioned mark', marked('daphnis md doc.md')], ['a foreign mark', marked('mutoscope md v2 doc.md')]];
+  const cases = [['no mark', user], ['another document', marked('thinkflow md v2 other.md')], ['an unversioned mark', marked('thinkflow md doc.md')], ['a foreign mark', marked('mutoscope md v2 doc.md')]];
   for (const [what, content] of cases) {
     const dir = workspace(t, { 'doc.md': doc(block('flow')), 'doc-flow.svg': content });
     const before = snapshot(dir);
@@ -86,13 +86,13 @@ test('M4 files the tool does not own are never taken, overwritten or removed: no
     assert.equal(md(dir, ['doc.md', '--check']).status, 1, `${what}: --check reports the same conflict`);
   }
   // 소유하지 않은 낡은 이름은 정리하지 않는다
-  const dir = workspace(t, { 'doc.md': doc(block('flow')), 'doc-old.svg': user, 'doc-older.svg': marked('daphnis md doc.md') });
+  const dir = workspace(t, { 'doc.md': doc(block('flow')), 'doc-old.svg': user, 'doc-older.svg': marked('thinkflow md doc.md') });
   assert.equal(md(dir, ['doc.md']).status, 0);
   assert.deepEqual(svgs(dir), ['doc-flow.svg', 'doc-old.svg', 'doc-older.svg']);
 });
 
 test('M4 only marked image lines are the tool\'s: an unmarked image or one with another mark stays, and an orphaned marked line is removed', (t) => {
-  const text = doc(block('flow')).replace('after', '![mine](mine.png)\n\n![theirs](theirs.svg)<!-- other -->\n\n![gone](old.svg)<!-- dap -->\n\nafter');
+  const text = doc(block('flow')).replace('after', '![mine](mine.png)\n\n![theirs](theirs.svg)<!-- other -->\n\n![gone](old.svg)<!-- thinkflow -->\n\nafter');
   const dir = workspace(t, { 'doc.md': text });
   assert.equal(md(dir, ['doc.md']).status, 0);
   const result = read(dir, 'doc.md');
@@ -101,29 +101,29 @@ test('M4 only marked image lines are the tool\'s: an unmarked image or one with 
   assert.doesNotMatch(result, /old\.svg/);
 });
 
-test('M4 other fences are not blocks: a muto fence, a dap line inside a text fence, and a block with a bad name option', (t) => {
-  const foreign = `${FENCE}muto name=x\ndaphnis 2\nbox a "A"\n${FENCE}\n\n${'````'}text\n${FENCE}dap name=inside\ndaphnis 2\nbox a "A"\n${FENCE}\n${'````'}\n`;
+test('M4 other fences are not blocks: a muto fence, a thinkflow line inside a text fence, and a block with a bad name option', (t) => {
+  const foreign = `${FENCE}muto name=x\nthinkflow\nbox a "A"\n${FENCE}\n\n${'````'}text\n${FENCE}thinkflow name=inside\nthinkflow\nbox a "A"\n${FENCE}\n${'````'}\n`;
   const dir = workspace(t, { 'doc.md': foreign });
   const before = snapshot(dir);
   const run = md(dir, ['doc.md']);
   assert.equal(run.status, 0);
   assert.deepEqual(snapshot(dir), before);
-  const bad = workspace(t, { 'doc.md': `${FENCE}dap name=Bad_Name\ndaphnis 2\nbox a "A"\n${FENCE}\n` });
+  const bad = workspace(t, { 'doc.md': `${FENCE}thinkflow name=Bad_Name\nthinkflow\nbox a "A"\n${FENCE}\n` });
   const badRun = md(bad, ['doc.md']);
   assert.equal(badRun.status, 1);
   assert.deepEqual(svgs(bad), []);
 });
 
 test('M4 text the document shows literally is never read or rewritten: indented code, HTML comments, and a fence that a four-space line cannot close', (t) => {
-  const source = dap('box a "A"');
+  const source = thinkflow('box a "A"');
   const literal = `${[
     '# Doc',
     'Indented code shows the tool\'s own lines:',
-    `    ![Flow](doc-flow.svg)<!-- dap -->\n\n    ${FENCE}dap name=indented\n    ${source.replaceAll('\n', '\n    ').trimEnd()}\n    ${FENCE}`,
-    '<!--\n![Old](doc-old.svg)<!-- dap -->',
-    `<!--\n${FENCE}dap name=hidden\n${source}${FENCE}\n-->`,
-    `\`\`\`\`text\n    \`\`\`\`\n${FENCE}dap name=inner\n${source}${FENCE}\n\`\`\`\``,
-    ...['     ', '\t'].map((closer, k) => `  ${FENCE}text\n${closer}${FENCE}\n  ${FENCE}dap name=held${k}\n  ${source.replaceAll('\n', '\n  ').trimEnd()}\n  ${FENCE}`),
+    `    ![Flow](doc-flow.svg)<!-- thinkflow -->\n\n    ${FENCE}thinkflow name=indented\n    ${source.replaceAll('\n', '\n    ').trimEnd()}\n    ${FENCE}`,
+    '<!--\n![Old](doc-old.svg)<!-- thinkflow -->',
+    `<!--\n${FENCE}thinkflow name=hidden\n${source}${FENCE}\n-->`,
+    `\`\`\`\`text\n    \`\`\`\`\n${FENCE}thinkflow name=inner\n${source}${FENCE}\n\`\`\`\``,
+    ...['     ', '\t'].map((closer, k) => `  ${FENCE}text\n${closer}${FENCE}\n  ${FENCE}thinkflow name=held${k}\n  ${source.replaceAll('\n', '\n  ').trimEnd()}\n  ${FENCE}`),
     'end',
   ].join('\n\n')}\n`;
   const dir = workspace(t, { 'doc.md': literal });
@@ -135,22 +135,22 @@ test('M4 text the document shows literally is never read or rewritten: indented 
 });
 
 test('M9 a fence is read where Markdown reads one: up to three spaces in, inside a list item whatever its indent, and behind ~~~', (t) => {
-  const body = dap('title "Flow"\nbox a "A"').trimEnd();
-  const fenced = (pad, name, fence = FENCE) => `${pad}${fence}dap name=${name}\n${body.replace(/^/gm, pad)}\n${pad}${fence}`;
+  const body = thinkflow('title "Flow"\nbox a "A"').trimEnd();
+  const fenced = (pad, name, fence = FENCE) => `${pad}${fence}thinkflow name=${name}\n${body.replace(/^/gm, pad)}\n${pad}${fence}`;
   const text = `${['1.  step', fenced('    ', 'item'), fenced('', 'tilde', '~~~'), fenced('  ', 'two')].join('\n\n')}\n`;
   const dir = workspace(t, { 'doc.md': text });
   const run = md(dir, ['doc.md']);
   assert.equal(run.status, 0, run.stderr);
   assert.deepEqual(svgs(dir), ['doc-item.svg', 'doc-tilde.svg', 'doc-two.svg']);
   const result = read(dir, 'doc.md');
-  assert.match(result, /\n {4}```\n\n {4}!\[Flow\]\(doc-item\.svg\)<!-- dap -->\n/, 'the list image line keeps the item indent');
-  assert.match(result, /~~~\n\n!\[Flow\]\(doc-tilde\.svg\)<!-- dap -->\n/);
-  assert.match(result, /\n {2}```\n\n {2}!\[Flow\]\(doc-two\.svg\)<!-- dap -->\n/);
+  assert.match(result, /\n {4}```\n\n {4}!\[Flow\]\(doc-item\.svg\)<!-- thinkflow -->\n/, 'the list image line keeps the item indent');
+  assert.match(result, /~~~\n\n!\[Flow\]\(doc-tilde\.svg\)<!-- thinkflow -->\n/);
+  assert.match(result, /\n {2}```\n\n {2}!\[Flow\]\(doc-two\.svg\)<!-- thinkflow -->\n/);
   assert.equal(md(dir, ['doc.md']).stdout, '', 'a second run changes nothing');
 });
 
 test('M9 a closing fence is measured from its list or quote, not from the opener: the opener\'s own indent is not taken off, so five spaces or a tab never close', () => {
-  const lines = (opener, closer, quoted = '') => [`${quoted}${opener}${FENCE}dap`, `${quoted}${opener}daphnis 2`, `${quoted}${opener}box a "A"`, `${quoted}${closer}${FENCE}`];
+  const lines = (opener, closer, quoted = '') => [`${quoted}${opener}${FENCE}thinkflow`, `${quoted}${opener}thinkflow`, `${quoted}${opener}box a "A"`, `${quoted}${closer}${FENCE}`];
   // [opener indent, closer indent, closes?]. 목록 칸은 4칸(`1.  x`)이고 중첩 목록은 4칸(`- a` 안 `- b`)이다.
   const flat = [['', '', true], ['', '   ', true], ['', '    ', false], ['  ', '', true], ['  ', '   ', true], ['  ', '     ', false], ['  ', '\t', false], ['   ', '       ', false], ['', '\t', false]];
   for (const [opener, closer, closes] of flat) {
@@ -170,9 +170,9 @@ test('M9 a closing fence is measured from its list or quote, not from the opener
   assert.equal(findBlocks(lines('  ', '   ', '> '), true).blocks.length, 1);
 });
 
-test('M9 a five-space or tab line cannot close a dap fence, so the document is reported and nothing is drawn or rewritten', (t) => {
+test('M9 a five-space or tab line cannot close a thinkflow fence, so the document is reported and nothing is drawn or rewritten', (t) => {
   for (const closer of ['     ', '\t']) {
-    const text = `intro\n\n  ${FENCE}dap name=open\n  daphnis 2\n  box a "A"\n${closer}${FENCE}\n`;
+    const text = `intro\n\n  ${FENCE}thinkflow name=open\n  thinkflow\n  box a "A"\n${closer}${FENCE}\n`;
     const dir = workspace(t, { 'doc.md': text });
     const run = md(dir, ['doc.md']);
     assert.equal(run.status, 1);
@@ -223,11 +223,11 @@ test('M6 the image link is relative to the real document, so a folder or a docum
   const dir = workspace(t, { 'real/sub/doc.md': doc(block('flow')), 'sub/b.md': doc(block('x')) });
   symlinkSync(join(dir, 'real/sub'), join(dir, 'alias'));
   assert.equal(md(dir, ['alias/doc.md', '--out-dir', 'out']).status, 0);
-  assert.match(read(dir, 'real/sub/doc.md'), /\]\(\.\.\/\.\.\/out\/doc-flow\.svg\)<!-- dap -->/);
+  assert.match(read(dir, 'real/sub/doc.md'), /\]\(\.\.\/\.\.\/out\/doc-flow\.svg\)<!-- thinkflow -->/);
   assert.equal(md(dir, ['real/sub/doc.md', '--out-dir', 'out', '--check']).status, 0, 'the real path agrees with the alias');
   symlinkSync('sub/b.md', join(dir, 'a.md'));
   assert.equal(md(dir, ['a.md']).status, 0);
-  assert.match(read(dir, 'sub/b.md'), /\]\(\.\.\/a-x\.svg\)<!-- dap -->/, 'the figure sits next to the link and the document one folder deeper');
+  assert.match(read(dir, 'sub/b.md'), /\]\(\.\.\/a-x\.svg\)<!-- thinkflow -->/, 'the figure sits next to the link and the document one folder deeper');
 });
 
 test('M6 #176 two blocks whose figures are symbolic links to one file clash before any write: both links, the target and the document stay as they were', (t) => {
@@ -260,7 +260,7 @@ test('M6 a document and a symbolic link to it are one output: md a.md b.md is re
   // 사용자가 만든 링크는 그대로 두고 가리키는 문서를 바꾼다
   assert.equal(md(dir, ['a.md']).status, 0);
   assert.equal(lstatSync(join(dir, 'a.md')).isSymbolicLink(), true);
-  assert.match(read(dir, 'b.md'), /<!-- dap -->/);
+  assert.match(read(dir, 'b.md'), /<!-- thinkflow -->/);
 });
 
 test('M11 a document that is a symbolic link to nothing is reported as unreadable and nothing is written', (t) => {
@@ -275,15 +275,15 @@ test('M11 a document that is a symbolic link to nothing is reported as unreadabl
 
 test('M3 an owned figure whose existing name differs from the new one only by letter case is the same file, not a stale one to remove', (t) => {
   // 블록 이름은 소문자뿐이라 문서에서 대소문자만 바꾼 이름은 만들 수 없다. 이 도구의 표시가 붙은 파일이 대문자 이름으로 이미 있는 경우(손으로 옮겼거나 옛 실행의 결과)를 쓴다.
-  const owned = '<svg xmlns="http://www.w3.org/2000/svg">\n<!-- daphnis md v2 doc.md -->\n</svg>\n';
+  const owned = '<svg xmlns="http://www.w3.org/2000/svg">\n<!-- thinkflow md v2 doc.md -->\n</svg>\n';
   const dir = workspace(t, { 'doc.md': doc(block('flow')), 'doc-Flow.svg': owned });
   if (!existsSync(join(dir, 'doc-flow.svg'))) return t.skip('this file system tells names apart by case');
   const run = md(dir, ['doc.md']);
   assert.equal(run.status, 0, run.stderr);
   assert.doesNotMatch(run.stdout, /removed/);
-  assert.match(read(dir, 'doc.md'), /\]\(doc-flow\.svg\)<!-- dap -->/);
+  assert.match(read(dir, 'doc.md'), /\]\(doc-flow\.svg\)<!-- thinkflow -->/);
   assert.equal(svgs(dir).length, 1);
-  assert.match(read(dir, 'doc-flow.svg'), /^<svg [\s\S]*daphnis md v2 doc\.md[\s\S]*Flow/, 'the figure the document points to exists and is the new figure');
+  assert.match(read(dir, 'doc-flow.svg'), /^<svg [\s\S]*thinkflow md v2 doc\.md[\s\S]*Flow/, 'the figure the document points to exists and is the new figure');
   assert.equal(md(dir, ['doc.md']).stdout, '');
   assert.equal(md(dir, ['doc.md', '--check']).status, 0);
 });
@@ -335,9 +335,9 @@ test('M7 --fold puts the picture first and the source in details; folding, unfol
   const fold = md(dir, ['doc.md', '--fold']);
   assert.equal(fold.status, 0, fold.stderr);
   const folded = read(dir, 'doc.md');
-  assert.match(folded, /<!-- daphnis fold v1 name=flow -->\n!\[Flow\]\(doc-flow\.svg\)<!-- dap -->\n\n<details>\n<summary>그림 원본<\/summary>\n\n```dap name=flow\n/);
-  assert.match(folded, /<!-- \/daphnis fold v1 name=flow -->/);
-  assert.match(folded, /<!-- daphnis fold v1 n=1 -->/);
+  assert.match(folded, /<!-- thinkflow fold v1 name=flow -->\n!\[Flow\]\(doc-flow\.svg\)<!-- thinkflow -->\n\n<details>\n<summary>그림 원본<\/summary>\n\n```thinkflow name=flow\n/);
+  assert.match(folded, /<!-- \/thinkflow fold v1 name=flow -->/);
+  assert.match(folded, /<!-- thinkflow fold v1 n=1 -->/);
   const afterFold = snapshot(dir);
   assert.equal(md(dir, ['doc.md', '--fold']).stdout, '');
   assert.equal(md(dir, ['doc.md']).stdout, '', 'a plain run keeps the fold');
@@ -363,9 +363,9 @@ test('M7 a details element the user wrote is never rewritten, and a block inside
   const dir = workspace(t, { 'doc.md': text });
   assert.equal(md(dir, ['doc.md', '--fold']).status, 0);
   const result = read(dir, 'doc.md');
-  assert.doesNotMatch(result, /daphnis fold/);
+  assert.doesNotMatch(result, /thinkflow fold/);
   assert.match(result, /<summary>mine<\/summary>/);
-  assert.match(result, /!\[Flow\]\(doc-flow\.svg\)<!-- dap -->/);
+  assert.match(result, /!\[Flow\]\(doc-flow\.svg\)<!-- thinkflow -->/);
   assert.equal(md(dir, ['doc.md', '--unfold']).stdout, '', 'unfold leaves a user details alone');
 });
 
@@ -375,38 +375,38 @@ test('M8 line endings: untouched lines keep their ending and new lines use CRLF 
   assert.equal(md(dir, ['doc.md']).status, 0);
   const result = read(dir, 'doc.md');
   assert.equal(result.replaceAll('\r\n', '').includes('\n'), false, 'no bare LF');
-  assert.match(result, /\]\(doc-flow\.svg\)<!-- dap -->\r\n/);
+  assert.match(result, /\]\(doc-flow\.svg\)<!-- thinkflow -->\r\n/);
   const mixed = workspace(t, { 'doc.md': doc(block('flow')).replace('intro\n', 'intro\r\n') });
   md(mixed, ['doc.md']);
   assert.match(read(mixed, 'doc.md'), /intro\r\n/);
-  assert.match(read(mixed, 'doc.md'), /<!-- dap -->\r\n/, 'new lines follow the document once it has any CRLF');
+  assert.match(read(mixed, 'doc.md'), /<!-- thinkflow -->\r\n/, 'new lines follow the document once it has any CRLF');
 });
 
 test('M9 a quoted block is read only when it already carries the tool\'s mark or an option asks; a plain run leaves the document byte for byte', (t) => {
-  const quoted = '# Doc\n\n> ```dap name=q\n> daphnis 2\n> box a "A"\n> ```\n';
+  const quoted = '# Doc\n\n> ```thinkflow name=q\n> thinkflow\n> box a "A"\n> ```\n';
   const dir = workspace(t, { 'doc.md': quoted });
   assert.equal(md(dir, ['doc.md']).status, 0);
   assert.equal(read(dir, 'doc.md'), quoted);
   assert.deepEqual(svgs(dir), []);
   assert.equal(md(dir, ['doc.md', '--fold']).status, 0);
   assert.deepEqual(svgs(dir), ['doc-q.svg']);
-  assert.match(read(dir, 'doc.md'), /^> <!-- daphnis fold v1 name=q -->$/m);
+  assert.match(read(dir, 'doc.md'), /^> <!-- thinkflow fold v1 name=q -->$/m);
 });
 
 test('M10 two runs at once: a live lock refuses with md-locked and changes nothing; a lock whose process is gone is cleared', (t) => {
   const dir = workspace(t, { 'doc.md': doc(block('flow')) });
   const lock = (pid, host = hostname()) => `${JSON.stringify({ pid, host, created: new Date().toISOString(), nonce: 'test-nonce' })}\n`;
-  writeFileSync(join(dir, '.daphnis-md.lock'), lock(process.pid));
+  writeFileSync(join(dir, '.thinkflow-md.lock'), lock(process.pid));
   const before = snapshot(dir);
   const busy = md(dir, ['doc.md', '--json']);
   assert.equal(busy.status, 1);
   assert.equal(JSON.parse(busy.stdout.trim().split('\n')[0]).code, 'md-locked');
   assert.deepEqual(snapshot(dir), before);
   assert.equal(md(dir, ['doc.md', '--check']).status, 1, '--check does not lock, and reports the missing figure instead');
-  writeFileSync(join(dir, '.daphnis-md.lock'), lock(process.pid, 'some-other-host'));
+  writeFileSync(join(dir, '.thinkflow-md.lock'), lock(process.pid, 'some-other-host'));
   assert.equal(md(dir, ['doc.md']).status, 1, 'a lock from another host is never cleared automatically');
   const finished = spawnSync(process.execPath, ['-e', ''], { encoding: 'utf8' });
-  writeFileSync(join(dir, '.daphnis-md.lock'), lock(finished.pid));
+  writeFileSync(join(dir, '.thinkflow-md.lock'), lock(finished.pid));
   const cleared = md(dir, ['doc.md']);
   assert.equal(cleared.status, 0, cleared.stderr);
   assert.deepEqual(readdirSync(dir).filter((f) => f.startsWith('.')), [], 'the lock is gone afterwards');
@@ -455,5 +455,5 @@ test('M13 --json reports each problem as one line with the six fields, and optio
   assert.ok(lines.length >= 1);
   for (const line of lines) assert.deepEqual(Object.keys(line).sort(), ['code', 'column', 'file', 'line', 'message', 'severity']);
   for (const option of ['--html', '--title', '--out']) assert.equal(md(dir, ['doc.md', option, 'x']).status, 2, option);
-  assert.equal(cli(['render', 'x.dap', '--check']).status, 2);
+  assert.equal(cli(['render', 'x.thinkflow', '--check']).status, 2);
 });

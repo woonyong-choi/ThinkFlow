@@ -2,9 +2,9 @@
 // 브라우저가 있어야 보이는 것(탭, 시계, 전체 화면)은 docs/design/expression-coverage.md의 브라우저에서만 보이는 계약 표에 있다. 시험 이름 첫 낱말(X1~X11)이 요구사항 번호이고 시험 번호 표에 대응이 있다.
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { EXAMPLES, build, dap, descendants, findAll, findOne, parseMarkup, read, reject, textContent, textsOf, toHtml, toSvg } from './support.js';
+import { EXAMPLES, build, thinkflow, descendants, findAll, findOne, parseMarkup, read, reject, textContent, textsOf, toHtml, toSvg } from './support.js';
 
-const MOVE = (mode, speed = 1, time = '10s') => dap(`box a "A"\nbox b "B"\na -> b\nscene "s" mode=${mode} speed=${speed}\n  a -> b "m" time=${time}\n`);
+const MOVE = (mode, speed = 1, time = '10s') => thinkflow(`box a "A"\nbox b "B"\na -> b\nscene "s" mode=${mode} speed=${speed}\n  a -> b "m" time=${time}\n`);
 const ANIMATION = new Set(['animate', 'set', 'animateMotion', 'animateTransform']);
 const animations = (dom) => descendants(dom).filter((n) => ANIMATION.has(n.tag));
 const seconds = (text) => (text.endsWith('ms') ? Number.parseFloat(text) / 1000 : Number.parseFloat(text));
@@ -40,16 +40,16 @@ test('X2 speed scales the playback length, not the logical times: 10s at speed 2
 
 test('X3 speed must be a positive finite number, and a length of under 1ms after dividing is an invalid-speed error', async () => {
   for (const speed of ['0', '-1', 'abc', 'NaN', 'Infinity', '1e999', '']) {
-    const source = dap(`box a "A"\nbox b "B"\na -> b\nscene "s" mode=once speed=${speed}\n  a -> b time=1s\n`);
+    const source = thinkflow(`box a "A"\nbox b "B"\na -> b\nscene "s" mode=once speed=${speed}\n  a -> b time=1s\n`);
     assert.ok((await reject(source)).length, `speed=${speed}`);
   }
-  const fast = await reject(dap(`box a "A"\nbox b "B"\na -> b\nscene "s" mode=once speed=100000\n  a -> b time=1s\n`));
+  const fast = await reject(thinkflow(`box a "A"\nbox b "B"\na -> b\nscene "s" mode=once speed=100000\n  a -> b time=1s\n`));
   assert.ok(fast.some((p) => p.code === 'invalid-speed'), JSON.stringify(fast));
-  await build(dap(`box a "A"\nbox b "B"\na -> b\nscene "s" mode=once speed=1000\n  a -> b time=1s\n`));
+  await build(thinkflow(`box a "A"\nbox b "B"\na -> b\nscene "s" mode=once speed=1000\n  a -> b time=1s\n`));
 });
 
 test('X4 a scene is chosen by number or by name; only its own messages show; an unknown scene is a RangeError', async () => {
-  const source = dap(`
+  const source = thinkflow(`
     person u "U"
     box s "S"
     view sequence {
@@ -72,14 +72,14 @@ test('X4 a scene is chosen by number or by name; only its own messages show; an 
 });
 
 test('X5 a figure with no scenes is one still picture of the declared start values', async () => {
-  const result = await build(dap('box a "A"\nvalue n "n" on=a from=5\n'));
+  const result = await build(thinkflow('box a "A"\nvalue n "n" on=a from=5\n'));
   const dom = parseMarkup(await toSvg(result));
   assert.equal(animations(dom).length, 0);
   assert.equal(dom.attrs['data-mode'], 'static');
 });
 
 test('X6 builds are deterministic: the same source gives byte-identical SVG and HTML, in any order of calls', async () => {
-  const source = dap(`
+  const source = thinkflow(`
     box a "A"
     box b "B"
     value n "n" on=b from=0
@@ -105,7 +105,7 @@ test('X6 builds are deterministic: the same source gives byte-identical SVG and 
 
 // 독립 결과물은 배경과 정지·재생 층이 읽는 변수 정의를 함께 싣는다.
 test('renderers_embed_required_style_variables', async () => {
-  const sources = [MOVE('loop'), dap(`
+  const sources = [MOVE('loop'), thinkflow(`
     chart c "Heatmap" heatmap {
       cell "r" "a" 1
       cell "r" "b" 2
@@ -133,7 +133,7 @@ test('renderers_embed_required_style_variables', async () => {
 
 // ---- 정본 내려받기와 단독 HTML ----
 
-const DOC = dap(`
+const DOC = thinkflow(`
   title "Doc </script><img src=x onerror=alert(1)> & \\"q\\""
   box a "A <b>"
   box b "B & 'c'"
@@ -166,19 +166,19 @@ test('X7 the HTML is one standalone file: no outside resource, only inline scrip
 test('X8 the canonical copy in the page head rebuilds the whole page byte for byte (the download contract)', async () => {
   const html = await toHtml(await build(DOC), 'doc');
   const dom = parseMarkup(html, { html: true });
-  const meta = findOne(dom, (n) => n.tag === 'meta' && n.attrs.name === 'daphnis-canonical', 'canonical meta');
+  const meta = findOne(dom, (n) => n.tag === 'meta' && n.attrs.name === 'thinkflow-canonical', 'canonical meta');
   const template = Buffer.from(meta.attrs.content, 'base64').toString('utf8');
-  assert.match(template, /<meta name="daphnis-canonical" content="">/);
+  assert.match(template, /<meta name="thinkflow-canonical" content="">/);
   // 내려받기가 하는 일: 칸이 빈 정본에 같은 base64를 다시 채운다
-  const head = '<meta name="daphnis-canonical" content="';
+  const head = '<meta name="thinkflow-canonical" content="';
   const at = template.indexOf(head) + head.length;
   assert.equal(template.slice(0, at) + meta.attrs.content + template.slice(at), html);
   // 정본 안에는 정본이 또 들어 있지 않아 다시 내려받아도 커지지 않는다
-  assert.equal((template.match(/daphnis-canonical/g) ?? []).length, 2, 'name and the script constant only, never a nested copy');
+  assert.equal((template.match(/thinkflow-canonical/g) ?? []).length, 2, 'name and the script constant only, never a nested copy');
 });
 
 test('X9 one panel per view, in the order declared, and the same panels in the narrow-screen layout', async () => {
-  const source = dap(`
+  const source = thinkflow(`
     person u "U"
     box s "S"
     chart c "C" bar {
@@ -209,7 +209,7 @@ test('X9 one panel per view, in the order declared, and the same panels in the n
 });
 
 test('X9 siblings keep their declared order when the narrow-screen layout stacks them one per layer, and the wide layout is unchanged', async () => {
-  const source = dap(`
+  const source = thinkflow(`
     box lb "LB" icon=lb
     box a1 "API 1" icon=server
     box a2 "API 2" icon=server
@@ -232,7 +232,7 @@ test('X9 siblings keep their declared order when the narrow-screen layout stacks
 
 test('X9b every panel of the wide and the narrow-screen layout shares one width ratio that never exceeds its natural size', async () => {
   const names = ['a', 'b', 'c', 'd', 'e', 'f'];
-  const source = dap(`
+  const source = thinkflow(`
     ${names.map((n) => `box ${n} "Service ${n.toUpperCase()}"`).join('\n    ')}
     chart numbers "Numbers" bar {
       x "x(u)"
@@ -283,13 +283,13 @@ test('X9d the narrow-screen layout is shipped only when it hides no more moving 
     return descendants(dom).find((n) => n.tag === 'template' && /\bfl-narrow\b/.test(n.attrs.class ?? ''));
   };
   // 좁은 폭의 구조 배치는 이동 글 4개를 가리므로 쓰지 않고, 넓은 배치를 폭에 맞춰 줄인다.
-  assert.equal(await narrowOf('flow.dap'), undefined);
+  assert.equal(await narrowOf('flow.thinkflow'), undefined);
   // 이동 글을 가리지 않는 좁은 배치는 그대로 쓴다.
-  assert.ok(await narrowOf('metric.dap'));
+  assert.ok(await narrowOf('metric.thinkflow'));
 });
 
 test('X9c the shared viewer has no viewport-height cap in the document, and keeps the fixed full-screen frame', async () => {
-  const html = await toHtml(await build(dap('box a "A"\n')), 'x');
+  const html = await toHtml(await build(thinkflow('box a "A"\n')), 'x');
   const css = /<style>([\s\S]*?)<\/style>/.exec(html)[1];
   assert.doesNotMatch(css, /max-height:[^;}]*\d+[sld]?vh/);
   assert.match(css, /\.fl-figure\.full \{[^}]*\bposition: fixed;/);
@@ -298,7 +298,7 @@ test('X9c the shared viewer has no viewport-height cap in the document, and keep
 
 // 도구 막대의 순서와 마크업은 components.test.js U9가 본다. 여기서는 어떤 그림에도 재생 조작이 없다는 것만 본다.
 test('X10 no figure has a play, speed, loop or progress control', async () => {
-  const sources = [DOC, dap('box a "A"\n'), dap('chart c "C" bar {\n  x "x(u)"\n  series v "v"\n  row "r" v=1\n}\n')];
+  const sources = [DOC, thinkflow('box a "A"\n'), thinkflow('chart c "C" bar {\n  x "x(u)"\n  series v "v"\n  row "r" v=1\n}\n')];
   for (const source of sources) {
     const html = parseMarkup(await toHtml(await build(source), 'doc'), { html: true });
     const names = findAll(html, (n) => n.tag === 'button').map((n) => n.attrs['aria-label']);
@@ -308,7 +308,7 @@ test('X10 no figure has a play, speed, loop or progress control', async () => {
 });
 
 test('X11 the page keeps the original source exactly (line endings and all) so the copy button copies what the author wrote', async () => {
-  const source = `daphnis 2\r\ntitle "한글 \\"따옴표\\" <b>"\r\nbox a "A" # comment\r\n`;
+  const source = `thinkflow\r\ntitle "한글 \\"따옴표\\" <b>"\r\nbox a "A" # comment\r\n`;
   const html = parseMarkup(await toHtml(await build(source), 'doc'), { html: true });
   const carried = findAll(html, (n) => n.tag === 'script' && n.attrs.type === 'application/json').map((n) => JSON.parse(textContent(n)));
   assert.deepEqual(carried.filter((value) => value === source), [source]);

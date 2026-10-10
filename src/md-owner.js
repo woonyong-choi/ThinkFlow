@@ -3,9 +3,9 @@
 import { readFileSync, realpathSync } from 'node:fs';
 import { basename, dirname, join, relative, resolve, sep } from 'node:path';
 
-// 소유 표시는 `daphnis md v2`뿐이다. 판 번호가 없거나 이름이 다른 표시는 이 도구의 표시가 아니다.
+// 소유 표시는 `thinkflow md v2`뿐이다. 판 번호가 없거나 이름이 다른 표시는 이 도구의 표시가 아니다.
 const VERSION = 'v2';
-const MARK = new RegExp(`^<!-- daphnis md ${VERSION} (.+) -->$`);
+const MARK = new RegExp(`^<!-- thinkflow md ${VERSION} (.+) -->$`);
 
 // cost: time O(d), heap O(d), stack O(d), io d
 // vars: d = 경로 깊이
@@ -41,7 +41,7 @@ export function ownerOf(file, outDir) {
 }
 
 /** 이 문서에서 만든 SVG라는 표시 한 줄. */
-export const svgMark = (owner) => `<!-- daphnis md ${VERSION} ${owner.text} -->`;
+export const svgMark = (owner) => `<!-- thinkflow md ${VERSION} ${owner.text} -->`;
 
 // cost: time O(n), heap O(n), stack O(1), io 1
 // vars: n = 파일 글자 수
@@ -65,8 +65,8 @@ function markOf(path) {
 // vars: n = 파일 글자 수
 // basis: estimate
 /**
- * 이미 있는 SVG가 이 문서 것인지 판정한다. kind는 'mine'(표시 글이 이 문서의 표시 글과 같음), 'other'(다른 문서의 표시, text를 함께 돌려줌), 'unmarked'(`daphnis md v2` 표시가 없는 파일)다.
- * 다른 표시(판 번호 없는 `daphnis md` 등)는 표시 없는 파일과 같아서 사용자 파일로 남는다. 이 도구가 가져가거나 덮어쓰거나 지우지 않는다.
+ * 이미 있는 SVG가 이 문서 것인지 판정한다. kind는 'mine'(표시 글이 이 문서의 표시 글과 같음), 'other'(다른 문서의 표시, text를 함께 돌려줌), 'unmarked'(`thinkflow md v2` 표시가 없는 파일)다.
+ * 다른 표시(판 번호 없는 `thinkflow md` 등)는 표시 없는 파일과 같아서 사용자 파일로 남는다. 이 도구가 가져가거나 덮어쓰거나 지우지 않는다.
  */
 export function ownership(path, owner) {
   const text = markOf(path);

@@ -11,7 +11,7 @@ const FIGURES = ['api', 'architecture', 'class', 'flow', 'integration', 'memory'
 const ANIMATION = new Set(['animate', 'set', 'animateMotion', 'animateTransform']);
 
 test('K30 the examples are one per expression: sixteen chart kinds and fourteen figure families, nothing else', () => {
-  const names = readdirSync(EXAMPLES).filter((f) => f.endsWith('.dap')).map((f) => f.replace(/\.dap$/, '')).sort();
+  const names = readdirSync(EXAMPLES).filter((f) => f.endsWith('.thinkflow')).map((f) => f.replace(/\.thinkflow$/, '')).sort();
   assert.deepEqual(names, [...CHARTS, ...FIGURES].sort());
 });
 
@@ -21,8 +21,8 @@ function declaredTitles(source) {
 }
 
 for (const name of [...CHARTS, ...FIGURES]) {
-  test(`K30 ${name}.dap builds strictly, every scene is a well-formed picture, and the page is standalone`, async () => {
-    const source = readFileSync(join(EXAMPLES, `${name}.dap`), 'utf8');
+  test(`K30 ${name}.thinkflow builds strictly, every scene is a well-formed picture, and the page is standalone`, async () => {
+    const source = readFileSync(join(EXAMPLES, `${name}.thinkflow`), 'utf8');
     const result = await build(source, { baseDir: EXAMPLES });
     assert.deepEqual(result.warnings, []);
     const { steps, presentation } = result.timeline;
@@ -56,7 +56,7 @@ for (const name of [...CHARTS, ...FIGURES]) {
 
 test('K30 every chart example is the chart kind its file is named after, and says so in its title', async () => {
   for (const kind of CHARTS) {
-    const source = readFileSync(join(EXAMPLES, `${kind}.dap`), 'utf8');
+    const source = readFileSync(join(EXAMPLES, `${kind}.thinkflow`), 'utf8');
     assert.match(source, new RegExp(`^chart\\s+[a-z][a-z0-9-]*\\s+"[^"]*"\\s+${kind}\\b`, 'm'), kind);
   }
 });

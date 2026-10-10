@@ -1,0 +1,44 @@
+thinkflow
+title "Order events fan out"
+subtitle "Orders from four sources fill an event queue while stock, payment, and notification consumers take them at their own pace. A mail is lost on the way"
+
+box web "Web" icon=desktop
+box app "App" icon=mobile
+box partner "Partner" icon=apigw
+box batch "Batch" icon=server
+box api "Order API" icon=server
+queue q "Order events" slots=10 from=6
+box stock "Stock" icon=db
+box pay "Payment"
+box notify "Notify" icon=mobile
+
+value left "Left" on=stock from=120
+value paid "Paid" on=pay
+value sent "Sent" on=notify
+value orders "Orders" on=api
+on api orders+1
+on q q+1
+on stock left-1
+on pay paid+1
+on notify sent+1
+
+web -> api
+app -> api
+partner -> api
+batch -> api
+api -> q
+q -> stock
+q -> pay
+q -> notify
+
+view graph down
+
+scene "Events in flight" mode=loop
+  track web -> api -> q at=0s every=2s time=3s
+  track app -> api -> q at=500ms every=2s time=3s tone=orange
+  track partner -> api -> q at=1s every=2s time=3s tone=gray
+  track batch -> api -> q at=1500ms every=2s time=3s tone=orange
+  track q -> stock at=0s every=1500ms time=2200ms set="q-1@q"
+  track q -> pay at=150ms every=3s time=2800ms tone=orange set="q-1@q"
+  track q -> notify at=300ms every=5s time=2500ms tone=gray set="q-1@q"
+  track q -> notify "Mail lost" at=450ms every=7s time=3s tone=red lost=60% set="q-1@q"

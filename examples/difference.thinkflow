@@ -1,0 +1,24 @@
+thinkflow
+title "새 추천 모델의 전환율 차이"
+subtitle "새 모델 전환율에서 기존 모델 전환율을 뺀 값이 0보다 오른쪽이면 새 모델이 낫다"
+
+chart gap "기존 대비 전환율 차이" difference "예시 데이터. 점은 차이, 선은 95% 신뢰구간, 점선은 허용 하한 -0.5%p" {
+  x "전환율 차이(%p)"
+  decimals 1
+  series diff "새 모델 − 기존 모델"
+  rule -0.5 "허용 하한"
+  row "홈 추천" diff=1.8 diff.low=0.9 diff.high=2.7
+  row "장바구니 추천" diff=0.4 diff.low=-0.3 diff.high=1.1
+  row "검색 결과 정렬" diff=-0.2 diff.low=-0.9 diff.high=0.5
+  row "신규 가입자" diff=-1.6 diff.low=-2.5 diff.high=-0.7
+  row "알림 추천" diff=0 diff.low=0 diff.high=0
+}
+
+scene "전체 차이"
+
+scene "하나씩 확인"
+  light gap "홈 추천"
+  wait 1s
+  light gap "신규 가입자"
+  wait 1s
+  light gap "알림 추천"

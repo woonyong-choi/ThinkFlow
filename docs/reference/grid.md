@@ -4,8 +4,8 @@
 
 ## 최소 예제
 
-```dap name=minimal
-daphnis 2
+```thinkflow name=minimal
+thinkflow
 title "주소를 둘로 나누기"
 
 grid addr "주소 (8비트)" cols=8 {
@@ -25,7 +25,7 @@ scene "조회"
   addr.page -> table time=700ms
 ```
 
-![주소를 둘로 나누기](grid-minimal.svg)<!-- dap -->
+![주소를 둘로 나누기](grid-minimal.svg)<!-- thinkflow -->
 
 칸은 `item`으로 적고, 위치는 0부터 세는 `row`, `col`, 크기는 `rows`, `cols`입니다. 칸 이름은 격자 밖에서 `격자.칸`으로 부릅니다.
 
@@ -35,7 +35,7 @@ scene "조회"
 
 ## 장면과 움직임
 
-`light 격자.칸`은 칸 하나를 밝히고 `light 격자`는 틀을 밝힙니다. 칸에서 칸으로, 칸에서 카드로 점이 가는 이동은 `격자.칸 -> 카드`처럼 적습니다. 생략한 칸은 `gap 이름 "글" count=N`으로 적고, 선이나 이동의 끝이나 밝힘 대상이 될 수 없습니다. 주소 변환은 [memory 예제](../../examples/memory.dap), 호출 스택은 [stack 예제](../../examples/stack.dap), 노드와 포인터는 [pointer 예제](../../examples/pointer.dap)가 보입니다.
+`light 격자.칸`은 칸 하나를 밝히고 `light 격자`는 틀을 밝힙니다. 칸에서 칸으로, 칸에서 카드로 점이 가는 이동은 `격자.칸 -> 카드`처럼 적습니다. 생략한 칸은 `gap 이름 "글" count=N`으로 적고, 선이나 이동의 끝이나 밝힘 대상이 될 수 없습니다. 주소 변환은 [memory 예제](../../examples/memory.thinkflow), 호출 스택은 [stack 예제](../../examples/stack.thinkflow), 노드와 포인터는 [pointer 예제](../../examples/pointer.thinkflow)가 보입니다.
 
 ## 흔한 오류
 
@@ -45,4 +45,4 @@ scene "조회"
 | 겹치는 칸 | `item "b" overlaps item "a" (line 3). Move one of them or change row, col, rows, cols` | `syntax` | 위치나 크기를 바꿉니다 |
 | 선언하지 않은 칸을 선 끝으로 씀 | 가까운 이름을 제안하는 `syntax` 메시지 | `syntax` | `격자.칸` 이름을 고칩니다 |
 
-`code`는 `daphnis check figure.dap --json`으로 봅니다.
+`code`는 `thinkflow check figure.thinkflow --json`으로 봅니다.

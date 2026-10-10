@@ -1,0 +1,25 @@
+thinkflow
+title "Order states"
+subtitle "A paid order ships and ends when it is delivered, and cancellation is the other end state"
+
+state created "Created"
+state paid "Paid"
+state shipped "Shipped"
+state delivered "Delivered"
+state cancelled "Cancelled"
+start created
+final delivered
+final cancelled
+
+created -> paid "payment approved"
+paid -> shipped "shipped out"
+shipped -> delivered "receipt confirmed"
+created -> cancelled "payment failed"
+paid -> cancelled "customer cancels" dashed
+
+view graph down
+
+scene "Normal order" mode=static
+  created -> paid time=700ms
+  paid -> shipped time=700ms
+  shipped -> delivered time=700ms

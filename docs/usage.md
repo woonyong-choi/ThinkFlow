@@ -1,33 +1,33 @@
-# Daphnis 사용법
+# ThinkFlow 사용법
 
-Daphnis는 텍스트로 문서용 그림을 만드는 도구입니다. 구성 요소를 한 번 선언한 뒤 연결, 보기, 장면을 조합합니다. 구조·순서·상태·데이터 관계·차트가 같은 카드와 조작부를 사용하고, 애니메이션은 선언한 구조를 따라 움직입니다.
+ThinkFlow는 텍스트로 문서용 그림을 만드는 도구입니다. 구성 요소를 한 번 선언한 뒤 연결, 보기, 장면을 조합합니다. 구조·순서·상태·데이터 관계·차트가 같은 카드와 조작부를 사용하고, 애니메이션은 선언한 구조를 따라 움직입니다.
 
 이 문서는 처음 설치해서 글에 그림을 넣는 과정과 자주 쓰는 조합을 설명합니다. 옵션의 전체 목록은 코드에서 생성하는 [그림 문법](design/figure-syntax.md#문법-표)이 정본입니다. 여기의 수치와 서비스는 설명용 예시이며 실제 시스템의 측정값이 아닙니다.
 
-## 설치와 판 확인
+## 설치와 버전 확인
 
-Node.js 20 이상과 npm이 필요합니다. 현재 저장소의 원본 문법은 `daphnis 2`입니다. npm의 `0.1.3` 배포판은 이전 문법이므로 아래 예제에는 현재 저장소를 설치합니다.
-
-```sh
-npm install --save-dev github:woonyong-choi/daphnis#main
-```
-
-설치한 프로젝트에서 `npx daphnis`로 실행합니다. 설치 전에 `npx daphnis`만 실행하면 npm의 기존 배포판을 가져올 수 있습니다. 팀에서 같은 결과를 만들려면 `package-lock.json`을 함께 커밋하고 `npm ci`를 사용합니다. Git 의존성도 잠금 파일에 해석된 커밋이 기록됩니다. 특정 검증판을 고정할 때는 `#main` 자리에 그 커밋의 전체 SHA를 사용합니다.
-
-패키지 버전은 다음 명령으로 확인할 수 있습니다. 패키지 버전과 원본 첫 줄의 문법 판은 서로 다른 값입니다.
+Node.js 20 이상과 npm이 필요합니다. ThinkFlow의 첫 npm 배포 전에는 현재 저장소를 설치합니다.
 
 ```sh
-node --input-type=module -e "import {createRequire} from 'node:module'; console.log(createRequire(import.meta.url)('daphnis/package.json').version)"
+npm install --save-dev github:woonyong-choi/ThinkFlow#main
 ```
 
-Daphnis 패키지에는 공통 디자인의 배포 사본, 아이콘, 렌더러와 TypeScript 선언이 포함된다. 소비자가 별도의 비공개 디자인 저장소에 접근할 필요는 없다. 라이브러리 API도 Node.js에서 실행하며 ESM으로 가져온다. 독립 npm 패키지의 구성과 실제 배포 절차는 [마크다운과 배포](design/markdown.md#패키지)를 확인한다.
+설치한 프로젝트에서 `npx thinkflow`로 실행합니다. 팀에서 같은 결과를 만들려면 `package-lock.json`을 함께 커밋하고 `npm ci`를 사용합니다. Git 의존성도 잠금 파일에 해석된 커밋이 기록됩니다. 특정 검증판을 고정할 때는 `#main` 자리에 그 커밋의 전체 SHA를 사용합니다.
+
+패키지 버전은 다음 명령으로 확인할 수 있습니다. 원본 첫 줄에는 버전 숫자 없이 `thinkflow`만 적습니다.
+
+```sh
+node --input-type=module -e "import {createRequire} from 'node:module'; console.log(createRequire(import.meta.url)('thinkflow/package.json').version)"
+```
+
+ThinkFlow 패키지에는 공통 디자인의 배포 사본, 아이콘, 렌더러와 TypeScript 선언이 포함된다. 소비자가 별도의 비공개 디자인 저장소에 접근할 필요는 없다. 라이브러리 API도 Node.js에서 실행하며 ESM으로 가져온다. 독립 npm 패키지의 구성과 실제 배포 절차는 [마크다운과 배포](design/markdown.md#패키지)를 확인한다.
 
 ## 첫 그림 만들기
 
-아래 내용을 `request.dap`에 저장합니다. 카드 세 개와 선 두 개만으로 정적인 구조가 만들어집니다. 좌표, 글꼴, 색, 보기, 장면을 지정할 필요가 없습니다.
+아래 내용을 `request.thinkflow`에 저장합니다. 카드 세 개와 선 두 개만으로 정적인 구조가 만들어집니다. 좌표, 글꼴, 색, 보기, 장면을 지정할 필요가 없습니다.
 
-```dap name=request
-daphnis 2
+```thinkflow name=request
+thinkflow
 title "요청을 저장하는 경로"
 person client "사용자"
 box service "주문 서비스"
@@ -36,13 +36,13 @@ client -> service "요청"
 service -> records "기록"
 ```
 
-![요청을 저장하는 경로](usage-request.svg)<!-- dap -->
+![요청을 저장하는 경로](usage-request.svg)<!-- thinkflow -->
 
 검사하고 SVG와 HTML을 만듭니다.
 
 ```sh
-npx daphnis check request.dap --strict
-npx daphnis render request.dap --html
+npx thinkflow check request.thinkflow --strict
+npx thinkflow render request.thinkflow --html
 ```
 
 `request.svg`와 `request.html`이 원본 옆에 생깁니다. HTML은 모든 장면을 선택하는 재생기이고 SVG는 선택한 장면 하나입니다. 장면이 없는 위 예제는 두 형식 모두 정지 그림입니다. 그림 제목은 원본의 `title`에 적습니다. `render --title`은 지원하지 않습니다.
@@ -58,7 +58,7 @@ npx daphnis render request.dap --html
 
 `service`는 다른 줄에서 참조하는 식별자이고 `"주문 서비스"`는 화면의 표시 이름입니다. 표시 이름을 바꿔도 연결 줄은 그대로 쓸 수 있습니다. 카드와 그룹, 값의 식별자는 문서 안에서 겹치면 안 됩니다. 일반 식별자는 영어 소문자로 시작하고 소문자·숫자·낱말 사이의 `-`를 씁니다. 테이블 이름과 열 이름의 세부 규칙은 [이름 규칙](design/figure-syntax.md#이름)을 따릅니다.
 
-원본은 판 선언 → 제목 등 머리말 → 카드·값·연결·보기 → 장면 순서로 씁니다. 장면을 쓰기 시작한 뒤 새 카드를 선언하지 않습니다. 한 문장에 한 줄을 쓰며 표시 글은 큰따옴표로 감쌉니다. 카드 안의 열이나 칸은 `{ ... }` 블록에 두고, 장면 아래의 들여쓰기는 읽기 편하도록 맞춥니다.
+원본은 시작 선언 → 제목 등 머리말 → 카드·값·연결·보기 → 장면 순서로 씁니다. 장면을 쓰기 시작한 뒤 새 카드를 선언하지 않습니다. 한 문장에 한 줄을 쓰며 표시 글은 큰따옴표로 감쌉니다. 카드 안의 열이나 칸은 `{ ... }` 블록에 두고, 장면 아래의 들여쓰기는 읽기 편하도록 맞춥니다.
 
 ## 구조에 장면 추가하기
 
@@ -99,8 +99,8 @@ scene "요청 처리"
 
 다음 예제는 접수량이 처리량보다 많을 때의 큐를 보여 줍니다. `queue` 자체가 찬 칸 수를 나타내는 값이므로 별도의 큐 길이 변수를 만들지 않습니다.
 
-```dap name=queue
-daphnis 2
+```thinkflow name=queue
+thinkflow
 title "접수와 처리가 독립적으로 진행되는 큐"
 box producer "접수" icon=apigw
 queue jobs "대기 작업" slots=4 from=1
@@ -120,7 +120,7 @@ scene "접수가 더 빠를 때" mode=loop for=8s
   track jobs -> worker at=500ms every=2s time=700ms wait="jobs>0" reserve="jobs-1" tone=green
 ```
 
-![접수와 처리가 독립적으로 진행되는 큐](usage-queue.svg)<!-- dap -->
+![접수와 처리가 독립적으로 진행되는 큐](usage-queue.svg)<!-- thinkflow -->
 
 `every`는 출발 간격이고 `time`은 한 이동에 걸리는 시간입니다. 이동 시간이 출발 간격보다 길면 여러 점이 같은 경로 위에 동시에 존재합니다. `for=8s`는 장면의 논리 길이이며 실서비스의 실행 시간이 아닙니다. 구간별 속도가 다르면 `legs="500ms, -"`처럼 경로의 각 구간 시간을 나눌 수 있습니다.
 
@@ -137,7 +137,7 @@ scene "접수가 더 빠를 때" mode=loop for=8s
 
 `on worker done+1`은 점이 `worker`에 도착할 때마다 완료 수를 올립니다. `reserve`로 이미 큐 수를 바꾸었다면 같은 수를 `on`에서 다시 바꾸지 않습니다. `value pending "진행 중" from=0`처럼 값만 선언하거나 카드 안에 선언해 표시할 수도 있습니다. `ref=jobs`는 큐 값의 별도 표시 이름을 만들 때 사용합니다.
 
-장면의 논리 사건은 빌드할 때 계산됩니다. 재생기는 같은 시간표를 표시하며 실제 메시지 브로커를 실행하지 않습니다. `speed=1.5`는 화면의 재생 배속만 바꾸고 `every`, `time`과 사건 사이의 논리 관계는 유지합니다. 의도적으로 영원히 기다리는 모습을 설명할 때만 `stuck`을 사용합니다. 조건·예약·값 유지의 더 큰 조합은 [queue 예제](../examples/queue.dap)와 [재생 계약](design/playback.md)을 확인합니다.
+장면의 논리 사건은 빌드할 때 계산됩니다. 재생기는 같은 시간표를 표시하며 실제 메시지 브로커를 실행하지 않습니다. `speed=1.5`는 화면의 재생 배속만 바꾸고 `every`, `time`과 사건 사이의 논리 관계는 유지합니다. 의도적으로 영원히 기다리는 모습을 설명할 때만 `stuck`을 사용합니다. 조건·예약·값 유지의 더 큰 조합은 [queue 예제](../examples/queue.thinkflow)와 [재생 계약](design/playback.md)을 확인합니다.
 
 ## 목적에 맞는 보기 선택하기
 
@@ -154,14 +154,14 @@ group backend "주문 시스템" direction=down {
 
 전체 방향은 `view graph down`, 그룹 안 방향은 `direction=down`으로 정합니다. 좌표를 직접 배치하지 않습니다. `icon=server`는 내장 아이콘 이름이고 `tone=blue`는 색 역할입니다. 기본 중성 카드로 충분하면 둘 다 생략합니다. `appearance=filled|outline`을 쓰려면 함께 사용할 `tone`을 지정합니다. 지원되는 색은 문법 표를 따르며 임의의 HEX 색을 원본에 쓰지 않습니다.
 
-[구성도 레퍼런스](reference/architecture.md)는 그룹, 아이콘과 번호 선을 설명합니다. [API 예제](../examples/api.dap)는 요청·응답의 이름 붙은 칸을 연결하고, [클래스 예제](../examples/class.dap)는 필드·메서드·상속·구현·합성 관계를 표현합니다. 클래스 멤버는 연결점이 아니므로 관계는 클래스 카드끼리 연결합니다.
+[구성도 레퍼런스](reference/architecture.md)는 그룹, 아이콘과 번호 선을 설명합니다. [API 예제](../examples/api.thinkflow)는 요청·응답의 이름 붙은 칸을 연결하고, [클래스 예제](../examples/class.thinkflow)는 필드·메서드·상속·구현·합성 관계를 표현합니다. 클래스 멤버는 연결점이 아니므로 관계는 클래스 카드끼리 연결합니다.
 
 ### 메시지 순서
 
 순서 그림도 카드를 먼저 선언하지만 연결을 별도로 선언하지 않습니다. 보기 안에 참여자의 가로 순서를 놓고, 메시지를 장면 안에 적습니다.
 
-```dap name=sequence
-daphnis 2
+```thinkflow name=sequence
+thinkflow
 title "저장 완료 뒤에 응답하기"
 person client "사용자"
 box service "주문 서비스"
@@ -176,7 +176,7 @@ scene "주문 접수" mode=static
   service -> client "주문 번호" dashed
 ```
 
-![저장 완료 뒤에 응답하기](usage-sequence.svg)<!-- dap -->
+![저장 완료 뒤에 응답하기](usage-sequence.svg)<!-- thinkflow -->
 
 `mode=static`은 메시지 전체를 한 번에 보여 줍니다. `once`로 바꾸면 같은 메시지를 순서대로 설명합니다. 한 장면에 여러 가능성을 나누려면 `fragment alt`와 `branch`, 반복에는 `fragment loop`, 병렬에는 `fragment par`, 선택적 실행에는 `fragment opt`를 씁니다. `activate`·`deactivate`는 활성 구간, `note`는 주석, `create`·`destroy`는 참여자의 생명주기입니다. 상세 예제는 [순서 그림](reference/sequence.md)을 확인합니다.
 
@@ -184,8 +184,8 @@ scene "주문 접수" mode=static
 
 상태 그림은 같은 그래프 보기와 장면 문법을 사용합니다. 카드가 서비스 대신 상태를 뜻하고 `start`, `final`로 시작과 끝을 표시합니다.
 
-```dap name=state
-daphnis 2
+```thinkflow name=state
+thinkflow
 title "작업의 정상 처리와 재시도"
 state queued "대기"
 state running "처리 중"
@@ -204,16 +204,16 @@ scene "재시도"
   running -> queued
 ```
 
-![작업의 정상 처리와 재시도](usage-state.svg)<!-- dap -->
+![작업의 정상 처리와 재시도](usage-state.svg)<!-- thinkflow -->
 
 같은 구조 위에서 경로만 바꿉니다. 실패 횟수, 재시도 정책, 트랜잭션 보장까지 이 그림이 자동으로 정의하지는 않습니다. 필요한 정책은 본문에 설명하거나 값과 조건을 추가해 표현합니다. 자세한 내용은 [상태 그림](reference/state.md)을 확인합니다.
 
 ### 테이블, 관계와 일반 표
 
-테이블 카드는 열과 키, 외래 키 관계를 설명합니다. 일반적인 속성 비교나 목록 표는 문서의 Markdown 표를 사용하고, 열 사이의 참조를 설명할 때 Daphnis 테이블을 사용합니다.
+테이블 카드는 열과 키, 외래 키 관계를 설명합니다. 일반적인 속성 비교나 목록 표는 문서의 Markdown 표를 사용하고, 열 사이의 참조를 설명할 때 ThinkFlow 테이블을 사용합니다.
 
-```dap name=tables
-daphnis 2
+```thinkflow name=tables
+thinkflow
 title "주문이 사용자를 참조하는 관계"
 table users "users" {
   id bigint pk
@@ -229,7 +229,7 @@ scene "사용자 찾기"
   orders.user_id -> users.id time=800ms
 ```
 
-![주문이 사용자를 참조하는 관계](usage-tables.svg)<!-- dap -->
+![주문이 사용자를 참조하는 관계](usage-tables.svg)<!-- thinkflow -->
 
 외래 키 선언이 연결을 만든다. `from="0..*" to="1"`을 같은 열에 붙이면 각 끝의 다중성을 표시한다. 외래 키 없이 직접 적는 선은 설명용 관계다. 같은 관계를 `orders.user_id -> users.id`로 장면 밖에 다시 선언하지 않는다. 복합 키는 테이블 안에 `pk (tenant_id, id)`와 `fk (tenant_id, user_id) -> users (tenant_id, id)`처럼 열 묶음으로 적는다. 열의 자료형은 표시할 계약이고, SQL을 실행하거나 DB 스키마를 자동으로 변경하지 않는다. 고유 키와 참조 동작은 [데이터 관계 그림](reference/data.md)에 있다.
 
@@ -237,14 +237,14 @@ scene "사용자 찾기"
 
 `grid`는 카드 안의 칸을 구성합니다. `item`의 `row`, `col`은 0부터 세며 `rows`, `cols`는 차지하는 칸 수입니다. 이 숫자는 데이터 구조의 의미이며 화면의 픽셀 좌표가 아닙니다. `light address.page`로 칸을 강조하고 `address.page -> page-table`처럼 특정 칸을 연결합니다.
 
-[칸 격자](reference/grid.md)에서 최소 문법을 익힌 뒤 [메모리](../examples/memory.dap), [스택](../examples/stack.dap), [포인터](../examples/pointer.dap)를 확인합니다. 생략 구간 `gap`은 설명용 표시이므로 이동이나 강조의 대상이 아닙니다.
+[칸 격자](reference/grid.md)에서 최소 문법을 익힌 뒤 [메모리](../examples/memory.thinkflow), [스택](../examples/stack.thinkflow), [포인터](../examples/pointer.thinkflow)를 확인합니다. 생략 구간 `gap`은 설명용 표시이므로 이동이나 강조의 대상이 아닙니다.
 
 ### 차트와 측정값
 
 차트는 계열을 먼저 선언하고 행에 값을 적습니다. 단위는 축 제목에 붙입니다. 다른 카드와 연결되지 않은 차트는 `view plot`을 쓰지 않아도 차트 보기를 받습니다.
 
-```dap name=chart
-daphnis 2
+```thinkflow name=chart
+thinkflow
 title "대기와 처리 시간을 구분하기"
 chart latency "요청별 시간" bar "예시 데이터. 단위는 ms" {
   x "시간(ms)"
@@ -260,7 +260,7 @@ scene "계열 비교"
   reveal latency.wait
 ```
 
-![대기와 처리 시간을 구분하기](usage-chart.svg)<!-- dap -->
+![대기와 처리 시간을 구분하기](usage-chart.svg)<!-- thinkflow -->
 
 `reveal`에 나온 계열만 장면 시작 때 숨었다가 드러납니다. `light latency "요청 B"`는 특정 행을 강조합니다. 값 이름을 행의 숫자 자리에 넣으면 값이 바뀔 때 차트도 따라 바뀝니다. 계열 색·무늬·번호와 범례는 렌더러가 정하므로 차트마다 별도 CSS를 만들지 않습니다.
 
@@ -281,7 +281,7 @@ scene "계열 비교"
 
 `trace`에는 `span id "표시 이름" lane=카드 at=시작 dur=길이`를 적습니다. `unit=ms|us|s`는 측정값의 단위이고 `at`, `dur`는 그 단위의 숫자입니다. 이는 `track time=700ms` 같은 애니메이션 시간과 다릅니다. 같은 레인에서 겹치는 구간은 다른 줄에 배치합니다.
 
-[추적 예제](../examples/trace.dap)는 호출 관계를 `graph`, 측정 구간을 `time` 보기로 나란히 설명합니다. 같은 카드를 그래프와 순서 보기 양쪽에 배치할 수도 있습니다. 보기는 위에서 아래로 쌓이며 같은 논리 사건이 여러 보기에 함께 표시됩니다. 이를 위해 카드를 복제하거나 사건을 두 번 적지 않습니다. [통합 예제](../examples/integration.dap)에서 여러 보기의 조합을 확인합니다.
+[추적 예제](../examples/trace.thinkflow)는 호출 관계를 `graph`, 측정 구간을 `time` 보기로 나란히 설명합니다. 같은 카드를 그래프와 순서 보기 양쪽에 배치할 수도 있습니다. 보기는 위에서 아래로 쌓이며 같은 논리 사건이 여러 보기에 함께 표시됩니다. 이를 위해 카드를 복제하거나 사건을 두 번 적지 않습니다. [통합 예제](../examples/integration.thinkflow)에서 여러 보기의 조합을 확인합니다.
 
 ## Markdown과 홈페이지에 넣기
 
@@ -290,8 +290,8 @@ scene "계열 비교"
 문서 안에 다음 형식으로 원본을 둡니다. 블록 이름은 소문자·숫자·`-`를 사용하고 같은 문서 안에서 중복하지 않습니다.
 
 ````text
-```dap name=request
-daphnis 2
+```thinkflow name=request
+thinkflow
 box client "사용자"
 box service "주문 서비스"
 client -> service
@@ -299,8 +299,8 @@ client -> service
 ````
 
 ```sh
-npx daphnis md guide.md --strict
-npx daphnis md guide.md --check --strict
+npx thinkflow md guide.md --strict
+npx thinkflow md guide.md --check --strict
 ```
 
 첫 명령은 SVG를 만들고 블록 아래에 관리 표식이 있는 이미지 줄을 넣습니다. 둘째 명령은 파일을 바꾸지 않고 낡은 결과가 있는지 검사합니다. 생성된 SVG와 수정된 Markdown을 함께 커밋합니다. 원본을 고친 뒤 SVG를 손으로 고치지 않습니다.
@@ -309,7 +309,7 @@ npx daphnis md guide.md --check --strict
 
 ### 홈페이지에서 읽는 본문
 
-홈페이지는 `dap` 블록을 빌드할 때 HTML 그림으로 컴파일하고 본문에 삽입합니다. 원본의 `title`이 그림의 이름이 됩니다. 같은 원본은 빌드에서 재사용하고 읽는 브라우저에서 파서나 배치 엔진을 실행하지 않습니다.
+홈페이지는 `thinkflow` 블록을 빌드할 때 HTML 그림으로 컴파일하고 본문에 삽입합니다. 원본의 `title`이 그림의 이름이 됩니다. 같은 원본은 빌드에서 재사용하고 읽는 브라우저에서 파서나 배치 엔진을 실행하지 않습니다.
 
 홈페이지의 블로그와 문서는 같은 삽입 부품을 사용합니다. 장면 탭, 문법 복사, HTML 다운로드, 전체화면을 그림마다 따로 구현하지 않습니다. 정적인 설명으로 충분한 곳에는 장면 없이 넣고, 순서나 변화의 이해를 돕는 곳에만 장면을 추가합니다.
 
@@ -319,15 +319,15 @@ npx daphnis md guide.md --check --strict
 
 | 목적 | 명령 |
 |---|---|
-| 원본만 검사 | `npx daphnis check request.dap --strict` |
-| SVG 만들기 | `npx daphnis render request.dap` |
-| SVG와 모든 장면의 HTML | `npx daphnis render request.dap --html` |
-| 선택한 장면의 정지 SVG | `npx daphnis render request.dap --static --scene "요청 처리"` |
-| 별도 폴더에 결과 쓰기 | `npx daphnis render request.dap --html --out figures` |
-| 폴더의 원본을 갤러리로 만들기 | `npx daphnis gallery figures --out preview --title "설계 그림"` |
-| 진단을 JSON으로 받기 | `npx daphnis check request.dap --json` |
+| 원본만 검사 | `npx thinkflow check request.thinkflow --strict` |
+| SVG 만들기 | `npx thinkflow render request.thinkflow` |
+| SVG와 모든 장면의 HTML | `npx thinkflow render request.thinkflow --html` |
+| 선택한 장면의 정지 SVG | `npx thinkflow render request.thinkflow --static --scene "요청 처리"` |
+| 별도 폴더에 결과 쓰기 | `npx thinkflow render request.thinkflow --html --out figures` |
+| 폴더의 원본을 갤러리로 만들기 | `npx thinkflow gallery figures --out preview --title "설계 그림"` |
+| 진단을 JSON으로 받기 | `npx thinkflow check request.thinkflow --json` |
 
-SVG의 `--scene` 번호는 1부터입니다. 생략하면 첫 장면이고 장면이 없는 그림에는 지정하지 않습니다. HTML은 모든 장면을 포함하므로 `--static`이나 SVG의 선택 장면이 HTML의 장면 목록을 줄이지 않습니다. `gallery`는 지정한 폴더의 `.dap`를 읽고 목록·문서 미리보기·각 그림의 HTML과 SVG를 만듭니다. 하위 폴더를 재귀적으로 찾는 명령은 아닙니다.
+SVG의 `--scene` 번호는 1부터입니다. 생략하면 첫 장면이고 장면이 없는 그림에는 지정하지 않습니다. HTML은 모든 장면을 포함하므로 `--static`이나 SVG의 선택 장면이 HTML의 장면 목록을 줄이지 않습니다. `gallery`는 지정한 폴더의 `.thinkflow`를 읽고 목록·문서 미리보기·각 그림의 HTML과 SVG를 만듭니다. 하위 폴더를 재귀적으로 찾는 명령은 아닙니다.
 
 `--strict`는 경고도 실패로 취급합니다. `--json`은 진단마다 JSON 한 줄을 출력하며, 일반 진단은 파일·줄·메시지로 나옵니다. CLI의 종료 코드는 성공 0, 원본·검사·입출력 실패 또는 낡은 결과 1, 사용법 오류 2입니다. 여러 원본의 `render`에서는 실패한 원본의 결과를 쓰지 않지만 성공한 다른 원본의 결과는 쓸 수 있습니다. 출력 경로 충돌은 쓰기 전에 전체를 거절합니다.
 
@@ -339,9 +339,9 @@ SVG의 `--scene` 번호는 1부터입니다. 생략하면 첫 장면이고 장�
 
 ```js
 import { readFile, writeFile } from 'node:fs/promises';
-import { buildFigure, FigureError, toSvg, toHtml } from 'daphnis';
+import { buildFigure, FigureError, toSvg, toHtml } from 'thinkflow';
 
-const source = await readFile('request.dap', 'utf8');
+const source = await readFile('request.thinkflow', 'utf8');
 try {
   const result = await buildFigure(source, {
     strict: true,
@@ -375,7 +375,7 @@ try {
 
 `FigureError.name`은 `FigureError`이며 `problems`는 `FigureDiagnostic` 목록이다. 각 진단은 `severity`(`error` 또는 `warning`), `code`, `line`, `column`, `message`를 가진다. 줄과 열은 1부터 시작하며 원본 위치를 모르면 0이다. `warnings`도 같은 형식을 사용한다. `code`는 문자열이므로 연동 코드는 모르는 코드도 표시해야 한다. 진단을 분류할 때 사람이 읽는 `message`를 파싱하지 않는다. 잘못된 예산 옵션은 `TypeError`이고 그 밖의 실행 오류는 예시처럼 다시 던진다.
 
-TypeScript에서는 `import type { BuildOptions, BuiltFigure, FigureDiagnostic, SvgOptions } from 'daphnis'`로 타입을 가져온다. Node.js 프로젝트는 `module: "NodeNext"` 설정으로 같은 ESM 진입점을 사용한다. 타입의 정본은 [공개 선언](../src/index.d.ts)이다. 내부 모듈 경로 대신 공개 진입점을 가져오고, 디자인을 맞추기 위해 결과 SVG나 HTML을 정규식으로 덮어쓰지 않는다.
+TypeScript에서는 `import type { BuildOptions, BuiltFigure, FigureDiagnostic, SvgOptions } from 'thinkflow'`로 타입을 가져온다. Node.js 프로젝트는 `module: "NodeNext"` 설정으로 같은 ESM 진입점을 사용한다. 타입의 정본은 [공개 선언](../src/index.d.ts)이다. 내부 모듈 경로 대신 공개 진입점을 가져오고, 디자인을 맞추기 위해 결과 SVG나 HTML을 정규식으로 덮어쓰지 않는다.
 
 ## 읽는 화면의 동작
 
@@ -391,7 +391,7 @@ TypeScript에서는 `import type { BuildOptions, BuiltFigure, FigureDiagnostic, 
 
 | 증상 | 먼저 확인할 것 |
 |---|---|
-| 첫 줄에서 문법 오류 | 설치판과 `daphnis 2`가 맞는지, 판 줄이 첫 의미 줄인지 |
+| 첫 줄에서 문법 오류 | 첫 의미 줄이 숫자나 옵션 없는 `thinkflow`인지 |
 | 이름을 찾지 못함 | 표시 이름 대신 식별자를 썼는지, 철자와 대소문자, 선언 순서 |
 | 이동 경로를 찾지 못함 | 그래프에서는 연결을 먼저 선언했는지, 순서 보기에는 참여자가 있는지 |
 | 움직이지 않음 | 장면이 `static`인지, SVG가 첫 정지 장면인지, 움직임 줄이기가 켜졌는지 |

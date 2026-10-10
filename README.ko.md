@@ -1,13 +1,13 @@
-# daphnis
+# ThinkFlow
 
 [English](README.md) | 한국어
 
-`.dap` 텍스트 원본 하나를 문서용 움직이는 SVG 그림으로 바꿉니다. 구조, 순서, 상태, 스키마, 클래스, 추적과 차트를 그리고, 점이 닿을 때 값이 바뀌는 모습까지 보입니다.
+`.thinkflow` 텍스트 원본 하나를 문서용 움직이는 SVG 그림으로 바꿉니다. 구조, 순서, 상태, 스키마, 클래스, 추적과 차트를 그리고, 점이 닿을 때 값이 바뀌는 모습까지 보입니다.
 
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="docs/assets/daphnis-lockup-dark.svg">
-    <img src="docs/assets/daphnis-lockup-light.svg" alt="daphnis" width="260">
+    <source media="(prefers-color-scheme: dark)" srcset="docs/assets/thinkflow-dark.svg">
+    <img src="docs/assets/thinkflow-light.svg" alt="ThinkFlow" width="160">
   </picture>
 </p>
 
@@ -18,12 +18,12 @@
   </picture>
 </p>
 
-그림 안의 점은 저마다 다른 시각에 출발해 다른 속도로 움직입니다. 그래서 한 장면에 여러 흐름이 동시에 돌고, 점이 닿을 때 값이 바뀌고, 큐가 차오르고, 메시지가 도중에 유실되는 모습이 보입니다. 원본은 카드(상자, 테이블, API, 클래스, 격자, 차트, 추적)를 선언하고 장면을 차례로 적습니다. `view` 줄이 적지 않은 카드는 기본 보기를 받고(대부분의 카드는 그래프, 선이 없는 차트는 차트 보기, 추적은 시간 보기), 직접 고르려면 `view graph`, `view sequence`, `view plot`, `view time`을 씁니다. 같은 카드가 여러 보기에 놓일 수 있고, 사건 하나가 모든 보기에서 함께 움직입니다. daphnis는 그림에 넣는 글꼴 파일로 글을 재고, elkjs로 배치하고, 겹침을 검사한 뒤, 움직이는 SVG나 HTML 재생기를 씁니다.
+그림 안의 점은 저마다 다른 시각에 출발해 다른 속도로 움직입니다. 그래서 한 장면에 여러 흐름이 동시에 돌고, 점이 닿을 때 값이 바뀌고, 큐가 차오르고, 메시지가 도중에 유실되는 모습이 보입니다. 원본은 카드(상자, 테이블, API, 클래스, 격자, 차트, 추적)를 선언하고 장면을 차례로 적습니다. `view` 줄이 적지 않은 카드는 기본 보기를 받고(대부분의 카드는 그래프, 선이 없는 차트는 차트 보기, 추적은 시간 보기), 직접 고르려면 `view graph`, `view sequence`, `view plot`, `view time`을 씁니다. 같은 카드가 여러 보기에 놓일 수 있고, 사건 하나가 모든 보기에서 함께 움직입니다. ThinkFlow는 그림에 넣는 글꼴 파일로 글을 재고, elkjs로 배치하고, 겹침을 검사한 뒤, 움직이는 SVG나 HTML 재생기를 씁니다.
 
 ## 작동 방식
 
 ```text
-daphnis 2
+thinkflow
 title "Saturn"
 
 person user "Developer"
@@ -49,20 +49,20 @@ scene "Chat"
   <img src="docs/assets/how-it-works-light.svg" alt="위 원본으로 그린 그림: 개발자의 질문이 Screen에서 Engine을 거쳐 Codex CLI로 갑니다">
 </picture>
 
-1. 첫 줄은 문법 판 `daphnis 2`입니다. 그다음 카드와 선, 필요하면 `view` 줄, `scene`부터 장면을 적습니다. 여기에는 보기를 적지 않았습니다. 카드는 왼쪽에서 오른쪽으로 놓이는 그래프 하나에 기본으로 담깁니다. 장면은 이름 하나를 갖고, 재생 방식 `mode`(`static`, `once`, `loop`)는 적지 않으면 줄이 있는 장면은 `once`, 빈 장면은 `static`입니다. 설명은 그림 밖 문서 본문이 맡습니다.
-2. daphnis가 `system` 안 카드는 위에서 아래로, 나머지는 왼쪽에서 오른쪽으로 놓습니다.
+1. 첫 줄은 숫자 없는 `thinkflow`입니다. 그다음 카드와 선, 필요하면 `view` 줄, `scene`부터 장면을 적습니다. 여기에는 보기를 적지 않았습니다. 카드는 왼쪽에서 오른쪽으로 놓이는 그래프 하나에 기본으로 담깁니다. 장면은 이름 하나를 갖고, 재생 방식 `mode`(`static`, `once`, `loop`)는 적지 않으면 줄이 있는 장면은 `once`, 빈 장면은 `static`입니다. 설명은 그림 밖 문서 본문이 맡습니다.
+2. ThinkFlow가 `system` 안 카드는 위에서 아래로, 나머지는 왼쪽에서 오른쪽으로 놓습니다.
 3. 첫 박자에 점이 `user`에서 `tui`로 가고, 점이 닿을 때 `tui` 안 카드가 채워집니다.
-4. `engine -> cdex` 같은 오타는 `how-it-works.dap:19: unknown card "cdex". Did you mean "codex"? Declared: codex, engine, system, tui, user`를 내고 멈춥니다.
+4. `engine -> cdex` 같은 오타는 `how-it-works.thinkflow:19: unknown card "cdex". Did you mean "codex"? Declared: codex, engine, system, tui, user`를 내고 멈춥니다.
 
 ## 설치
 
-Node.js 20 이상이 필요합니다. 현재 소스는 `daphnis 2`를 사용합니다. npm 배포판 `0.1.3`은 이전 문법이므로 이 문서의 예제에는 현재 소스를 설치합니다.
+Node.js 20 이상이 필요합니다. ThinkFlow의 첫 npm 배포 전에는 현재 소스를 설치합니다.
 
 ```sh
-npm install --save-dev github:woonyong-choi/daphnis#main
+npm install --save-dev github:woonyong-choi/ThinkFlow#main
 ```
 
-`npx daphnis <명령>`으로 실행합니다. 패키지에는 Node.js용 ESM API와 TypeScript 선언도 포함됩니다.
+`npx thinkflow <명령>`으로 실행합니다. 패키지에는 Node.js용 ESM API와 TypeScript 선언도 포함됩니다.
 
 ## 갤러리
 
@@ -89,10 +89,10 @@ npm install --save-dev github:woonyong-choi/daphnis#main
 
 ### 그림 하나 만들기
 
-[작동 방식](#작동-방식)의 원본을 `how-it-works.dap`으로 저장하고 실행합니다.
+[작동 방식](#작동-방식)의 원본을 `how-it-works.thinkflow`으로 저장하고 실행합니다.
 
 ```sh
-npx daphnis render how-it-works.dap --html
+npx thinkflow render how-it-works.thinkflow --html
 ```
 
 ```text
@@ -100,23 +100,23 @@ how-it-works.svg
 how-it-works.html
 ```
 
-SVG는 스크립트 없이 움직이고 첫 장면을 그 `mode`대로 재생합니다. `--scene 2`나 `--scene "Chat"`으로 다른 장면을 고릅니다. 숫자로만 된 장면 이름은 `--scene`이 장면 번호로 읽으므로 오류입니다. HTML에는 장면 탭과 그림 위 도구막대가 더해지고, 장면은 스스로 다음 장면으로 넘어가지 않습니다. 도구막대는 단독이든 삽입이든 모든 그림이 같고, 왼쪽부터 `.dap` 원본 복사, 독립 실행 HTML 내려받기, 전체 화면(확대 포함) 세 가지입니다. 도구막대는 그림마다 원본에서 정하지 않습니다. 재생, 일시정지, 배속, 반복 단추는 없고 장면의 `mode`가 재생 방식을 정합니다. `--static`은 고른 장면의 마지막 상태를 멈춘 SVG로 씁니다. 점과 펄스는 없고, 값, 카드, 차트는 마지막 상태이며, 그 장면이 켜 둔 `light`는 남습니다. 장면이 없는 문서는 선언한 값을 보이는 정지 그림입니다. `<img>`로 넣은 움직이는 SVG는 Chrome에서 `prefers-reduced-motion`을 따르지 못합니다. 문서에 직접 넣거나 파일을 직접 열거나, `<picture>`의 `media` 소스에 `--static` SVG를 지정합니다.
+SVG는 스크립트 없이 움직이고 첫 장면을 그 `mode`대로 재생합니다. `--scene 2`나 `--scene "Chat"`으로 다른 장면을 고릅니다. 숫자로만 된 장면 이름은 `--scene`이 장면 번호로 읽으므로 오류입니다. HTML에는 장면 탭과 그림 위 도구막대가 더해지고, 장면은 스스로 다음 장면으로 넘어가지 않습니다. 도구막대는 단독이든 삽입이든 모든 그림이 같고, 왼쪽부터 `.thinkflow` 원본 복사, 독립 실행 HTML 내려받기, 전체 화면(확대 포함) 세 가지입니다. 도구막대는 그림마다 원본에서 정하지 않습니다. 재생, 일시정지, 배속, 반복 단추는 없고 장면의 `mode`가 재생 방식을 정합니다. `--static`은 고른 장면의 마지막 상태를 멈춘 SVG로 씁니다. 점과 펄스는 없고, 값, 카드, 차트는 마지막 상태이며, 그 장면이 켜 둔 `light`는 남습니다. 장면이 없는 문서는 선언한 값을 보이는 정지 그림입니다. `<img>`로 넣은 움직이는 SVG는 Chrome에서 `prefers-reduced-motion`을 따르지 못합니다. 문서에 직접 넣거나 파일을 직접 열거나, `<picture>`의 `media` 소스에 `--static` SVG를 지정합니다.
 
 ### 그림 검사하기
 
 ```sh
-npx daphnis check how-it-works.dap --strict --json
+npx thinkflow check how-it-works.thinkflow --strict --json
 ```
 
 오류와 경고가 없으면 아무것도 출력하지 않고 0으로 끝납니다. `--strict`는 경고도 실패로 칩니다. `--json`은 진단마다 `{ file, line, message, severity, code, column }` 한 줄을 출력합니다. 그림이 예산보다 많은 양(예를 들어 수십만 칸의 격자)을 만들어야 하면 파일을 쓰기 전에 `budget-exceeded` 오류로 실패하고, `--budget grid-elements=2000000`으로 올립니다. `render`, `check`, `gallery`, `md`가 모두 `--budget 이름=값`을 받습니다.
 
 ### 마크다운 문서에 그림 넣기
 
-원본을 `dap` 코드 블록으로 쓰고 `daphnis md`를 실행합니다.
+원본을 `thinkflow` 코드 블록으로 쓰고 `thinkflow md`를 실행합니다.
 
 ````text
-```dap name=request
-daphnis 2
+```thinkflow name=request
+thinkflow
 box client "Client"
 box server "Server"
 client -> server "GET /orders"
@@ -124,12 +124,12 @@ client -> server "GET /orders"
 ````
 
 ```sh
-npx daphnis md guide.md
+npx thinkflow md guide.md
 ```
 
-명령은 문서 옆에 `guide-request.svg`를 쓰고 블록 바로 아래에 `![request](guide-request.svg)<!-- dap -->`를 넣습니다. 대체 글은 블록의 `title`이고, `title`이 없으면 이름입니다. 다시 돌려도 아무것도 바뀌지 않습니다.
+명령은 문서 옆에 `guide-request.svg`를 쓰고 블록 바로 아래에 `![request](guide-request.svg)<!-- thinkflow -->`를 넣습니다. 대체 글은 블록의 `title`이고, `title`이 없으면 이름입니다. 다시 돌려도 아무것도 바뀌지 않습니다.
 
-`dap` 블록 이름을 바꾸면 옛 SVG가 지워지고, `--out-dir images`는 SVG를 그 폴더에 쓰고 이미지 줄이 그곳을 가리키게 하며(이미 문서 옆에 있던 SVG는 그대로 남으므로 직접 지웁니다), `--check`는 쓰지 않고 문서나 SVG가 낡았으면 종료 코드 1로 끝납니다. `--fold`는 그림을 먼저 보이고 `dap` 블록을 `<details>` 안에 접으며(`--fold-title "글"`로 요약 글을 정합니다), `--unfold`는 daphnis가 만든 접기만 되돌리고, 옵션이 없으면 문서의 접힘 상태를 그대로 둡니다. GitHub Action은 `fold`, `fold-title` 입력으로 같은 선택을 받습니다. 문서는 자기가 만든 SVG만 쓰고 지웁니다. 블록이 다른 문서가 만든 SVG나 `daphnis md` 표시가 없는 파일을 덮어쓰려 하면 충돌로 알리고, 같은 출력 폴더에는 두 실행이 동시에 쓰지 못합니다. 어느 블록이든 오류가 있으면 아무 파일도 쓰기 전에 멈춥니다. 규칙은 [마크다운](docs/design/markdown.md)에 있습니다.
+`thinkflow` 블록 이름을 바꾸면 옛 SVG가 지워지고, `--out-dir images`는 SVG를 그 폴더에 쓰고 이미지 줄이 그곳을 가리키게 하며(이미 문서 옆에 있던 SVG는 그대로 남으므로 직접 지웁니다), `--check`는 쓰지 않고 문서나 SVG가 낡았으면 종료 코드 1로 끝납니다. `--fold`는 그림을 먼저 보이고 `thinkflow` 블록을 `<details>` 안에 접으며(`--fold-title "글"`로 요약 글을 정합니다), `--unfold`는 ThinkFlow가 만든 접기만 되돌리고, 옵션이 없으면 문서의 접힘 상태를 그대로 둡니다. GitHub Action은 `fold`, `fold-title` 입력으로 같은 선택을 받습니다. 문서는 자기가 만든 SVG만 쓰고 지웁니다. 블록이 다른 문서가 만든 SVG나 `thinkflow md` 표시가 없는 파일을 덮어쓰려 하면 충돌로 알리고, 같은 출력 폴더에는 두 실행이 동시에 쓰지 못합니다. 어느 블록이든 오류가 있으면 아무 파일도 쓰기 전에 멈춥니다. 규칙은 [마크다운](docs/design/markdown.md)에 있습니다.
 
 ### CI에서 최신으로 지키기
 
@@ -137,9 +137,9 @@ npx daphnis md guide.md
 
 ```yaml
 - uses: actions/checkout@v4
-- uses: woonyong-choi/daphnis@main
+- uses: woonyong-choi/ThinkFlow@main
   with:
-    paths: "docs/**/*.dap docs/**/*.md README.md"
+    paths: "docs/**/*.thinkflow docs/**/*.md README.md"
     mode: check   # check(기본) 또는 render
     strict: true  # 경고도 실패
     budget: "grid-elements=2000000"  # 선택: 생성 예산을 올림
@@ -150,18 +150,18 @@ npx daphnis md guide.md
 ### JavaScript와 TypeScript에서 빌드
 
 ```js
-import { buildFigure, toSvg, toHtml } from 'daphnis';
+import { buildFigure, toSvg, toHtml } from 'thinkflow';
 
-const result = await buildFigure('daphnis 2\nbox server "Server"\n', { allowFileAccess: false });
+const result = await buildFigure('thinkflow\nbox server "Server"\n', { allowFileAccess: false });
 const svg = await toSvg(result);
 const html = await toHtml(result, 'Server');
 ```
 
 세 함수 모두 Promise를 반환합니다. 빌드 결과는 렌더러에 그대로 전달하고 진단은 `result.warnings`에서 읽습니다. 원본이나 배치 오류는 공개된 `FigureError`를 잡아 `problems`에서 읽습니다. [API 사용법](docs/usage.md#javascript에서-조립하기)에 옵션, 진단 필드와 불투명한 `BuiltFigure` 타입이 정의되어 있습니다.
 
-### 문법 판
+### 원본 형식
 
-원본은 `daphnis 2`로 시작해야 하고 `.dap` 파일만 읽습니다. 다른 판으로 시작하거나 판 줄이 없으면 읽지 않습니다. 줄과 자리를 알리는 진단을 내고 파일을 쓰지 않은 채 멈춥니다. 옛 파일을 고쳐 쓰는 명령은 없으므로 현재 문법으로 다시 씁니다. 없어진 문장과 대체 문장은 [그림 문법](docs/design/figure-syntax.md#판과-없앤-형태)의 표에 있습니다.
+원본은 `thinkflow`로 시작해야 하고 `.thinkflow` 파일만 읽습니다. 시작 선언이 없거나 뒤에 숫자·옵션을 붙이면 읽지 않습니다. 줄과 자리를 알리는 진단을 내고 파일을 쓰지 않은 채 멈춥니다. 옛 파일을 고쳐 쓰는 명령은 없으므로 현재 문법으로 다시 씁니다. 없어진 문장과 대체 문장은 [그림 문법](docs/design/figure-syntax.md#시작-선언과-없앤-형태)의 표에 있습니다.
 
 ## 기능
 
@@ -175,7 +175,7 @@ const html = await toHtml(result, 'Server');
 - 배치: 그룹마다 방향을 정하는 elkjs 배치. 도형 크기는 그림에 넣는 글꼴로 잽니다. 도형에 맞추려고 글자를 줄이지 않습니다. 좁은 화면에서는 그래프와 차트 판을 컨테이너 폭에 맞춰 다시 그리고, 그래도 들어가지 않는 판은 다른 판과 같은 비율로 함께 줄어듭니다(자연 크기보다 커지지 않습니다). 작은 글자는 전체화면과 확대로 읽습니다. 좁은 배치는 HTML을 쓸 때 만들고 같은 검사를 받으므로, `check`를 통과한 원본도 좁은 폭에 글이 들어가지 않으면 `render --html`이 실패할 수 있습니다.
 - 그림 검사: 겹침, 도형을 지나는 선, 붙은 선, 비율, 읽힘.
 - 재생: 같은 시간표로 만드는 HTML 재생기와 움직이는 SVG.
-- 마크다운: `daphnis md`가 문서의 `dap` 코드 블록을 그리고 블록 아래 이미지 줄을 맞춥니다. GitHub Action이 CI에서 이를 검사합니다.
+- 마크다운: `thinkflow md`가 문서의 `thinkflow` 코드 블록을 그리고 블록 아래 이미지 줄을 맞춥니다. GitHub Action이 CI에서 이를 검사합니다.
 
 지원하지 않는 것: 3차원, 지도, CAD, 전체 BPMN, 간트, CPU 시뮬레이션, 실시간 백엔드, API 카드 실행, 클래스 멤버를 선의 끝으로 쓰기. Sankey, 불꽃 그래프, 바이올린은 아직 지원하지 않는 보류 항목이며 검증이 먼저 필요합니다. [표현 범위](docs/design/expression-coverage.md)에 예제마다 무엇을 덮고 무엇을 덮지 않는지, 알려진 한계가 적혀 있습니다.
 
@@ -206,8 +206,8 @@ const html = await toHtml(result, 'Server');
 ## 개발
 
 ```sh
-git clone https://github.com/woonyong-choi/daphnis.git
-cd daphnis
+git clone https://github.com/woonyong-choi/ThinkFlow.git
+cd ThinkFlow
 npm install
 npm test
 npm run check
@@ -218,7 +218,7 @@ npm run check:package -- /absolute/new-consumer-path
 
 패키지 검사는 저장소 밖의 새 폴더에 실제 tarball과 공개 런타임 의존성을 설치해 CLI·Markdown·API 출력을 확인합니다. 설치된 선언으로 TypeScript 소비자를 컴파일하고 실행하며 잘못된 호출의 거부도 확인합니다. 컴파일러는 개발 작업본에서만 사용합니다. 검사 폴더는 끝나면 지우며 npm 공개 레지스트리 접근이 필요합니다. 새 버전을 발행하는 명령은 아닙니다.
 
-공통 화면 값, CSS, 아이콘, 탭과 도구 막대는 `src/vendor/theme/`의 검증된 디자인 완성본을 사용합니다. 공개된 사본으로 빌드하므로 디자인 정본 저장소의 접근 권한은 필요하지 않습니다. 사본 변경은 전체 해시 검사와 그림 재생성을 통과한 PR로 반영합니다. 복제한 저장소에서는 `daphnis` 대신 `node src/cli.js`를 실행하고, `npm run catalog`로 모든 예제와 원본, 목록을 `.local/examples/`에 만듭니다.
+공통 화면 값, CSS, 아이콘, 탭과 도구 막대는 `src/vendor/theme/`의 검증된 디자인 완성본을 사용합니다. 공개된 사본으로 빌드하므로 디자인 정본 저장소의 접근 권한은 필요하지 않습니다. 사본 변경은 전체 해시 검사와 그림 재생성을 통과한 PR로 반영합니다. 복제한 저장소에서는 `thinkflow` 대신 `node src/cli.js`를 실행하고, `npm run catalog`로 모든 예제와 원본, 목록을 `.local/examples/`에 만듭니다.
 
 브랜치, 커밋, PR 규칙은 [CONTRIBUTING](.github/CONTRIBUTING.md)에 있습니다.
 

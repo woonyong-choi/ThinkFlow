@@ -1,11 +1,11 @@
-name: daphnis
-description: Check or render .dap figures and the dap code blocks in Markdown documents
+name: thinkflow
+description: Check or render .thinkflow figures and the thinkflow code blocks in Markdown documents
 author: choi woo-nyong
 inputs:
   paths:
-    description: Space-separated glob patterns of tracked .dap and .md files. A pattern is a git glob (`**/*.md`, `docs/*.dap`). A tracked symbolic link is skipped, because the file it points to is the same document.
+    description: Space-separated glob patterns of tracked .thinkflow and .md files. A pattern is a git glob (`**/*.md`, `docs/*.thinkflow`). A tracked symbolic link is skipped, because the file it points to is the same document.
     required: false
-    default: '**/*.dap **/*.md'
+    default: '**/*.thinkflow **/*.md'
   mode:
     description: '`check` fails when a source has an error or a Markdown figure is out of date and writes nothing. `render` writes the SVG files and updates the Markdown image lines.'
     required: false
@@ -15,7 +15,7 @@ inputs:
     required: false
     default: 'false'
   fold:
-    description: '`keep` leaves the folded state of each document as it is (new figures stay unfolded). `fold` puts the figure first and folds each dap block into a details section. `unfold` undoes only the folds daphnis made. Applies to the Markdown files in both modes.'
+    description: '`keep` leaves the folded state of each document as it is (new figures stay unfolded). `fold` puts the figure first and folds each thinkflow block into a details section. `unfold` undoes only the folds thinkflow made. Applies to the Markdown files in both modes.'
     required: false
     default: keep
   fold-title:
@@ -32,10 +32,10 @@ runs:
     - uses: actions/setup-node@v4
       with:
         node-version: 20
-    - name: Install daphnis
+    - name: Install thinkflow
       shell: bash
       run: npm ci --omit=dev --ignore-scripts --no-audit --no-fund --prefix "$GITHUB_ACTION_PATH"
-    - name: Run daphnis
+    - name: Run thinkflow
       shell: bash
       env:
         PATHS: ${{ inputs.paths }}
@@ -64,26 +64,26 @@ runs:
         budget_text="${BUDGET:-}"
         budget_args=()
         for item in ${budget_text//,/ }; do budget_args+=(--budget "$item"); done
-        dap_files=()
+        source_files=()
         md_files=()
         # 경로는 NUL로 받는다. 줄 단위 출력은 Git이 한글 이름을 따옴표와 escape로 감싸고(core.quotepath), 공백과 줄바꿈이 든 이름을 가른다.
         while IFS= read -r -d '' file; do
           # 심볼릭 링크와 가리키는 문서를 함께 넘기면 같은 파일을 두 번 쓰는 것이라 거절된다. 링크는 빼고 가리키는 문서가 목록에 있으면 그것을 처리한다.
           if [ -L "$file" ]; then continue; fi
           case "$file" in
-            *.dap) dap_files+=("$file") ;;
+            *.thinkflow) source_files+=("$file") ;;
             *.md) md_files+=("$file") ;;
           esac
         done < <(for pattern in $PATHS; do git ls-files -z -- ":(glob)$pattern"; done | sort -zu)
-        if [ "${#dap_files[@]}" -eq 0 ] && [ "${#md_files[@]}" -eq 0 ]; then
-          echo "::error::no tracked .dap or .md file matches '$PATHS'"
+        if [ "${#source_files[@]}" -eq 0 ] && [ "${#md_files[@]}" -eq 0 ]; then
+          echo "::error::no tracked .thinkflow or .md file matches '$PATHS'"
           exit 1
         fi
-        if [ "$MODE" = check ]; then dap_command=check; md_flag=--check; else dap_command=render; md_flag=; fi
+        if [ "$MODE" = check ]; then source_command=check; md_flag=--check; else source_command=render; md_flag=; fi
         cli="$GITHUB_ACTION_PATH/src/cli.js"
         status=0
-        if [ "${#dap_files[@]}" -gt 0 ]; then
-          node "$cli" "$dap_command" $strict_flag ${budget_args[@]+"${budget_args[@]}"} -- "${dap_files[@]}" || status=1
+        if [ "${#source_files[@]}" -gt 0 ]; then
+          node "$cli" "$source_command" $strict_flag ${budget_args[@]+"${budget_args[@]}"} -- "${source_files[@]}" || status=1
         fi
         if [ "${#md_files[@]}" -gt 0 ]; then
           node "$cli" md $md_flag $strict_flag ${fold_flags[@]+"${fold_flags[@]}"} ${budget_args[@]+"${budget_args[@]}"} -- "${md_files[@]}" || status=1

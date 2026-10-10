@@ -22,7 +22,7 @@ const VIEW_BUTTONS = ToolHeader({ toolbar: Toolbar({ label: '그림 도구', but
 // vars: n = 원본 글자 수
 // basis: estimate
 /**
- * 원본 글(.dap 문법)을 문서에 싣는 JSON 칸. 글을 JSON 문자열 하나로 쓰고 `<`, `>`, `&`, 줄 구분 문자는 \u 이스케이프로 바꿔 HTML 어디에 있어도 요소나 주석이 열리지 않는다.
+ * 원본 글을 문서에 싣는 JSON 칸. 글을 JSON 문자열 하나로 쓰고 `<`, `>`, `&`, 줄 구분 문자는 \u 이스케이프로 바꿔 HTML 어디에 있어도 요소나 주석이 열리지 않는다.
  * 줄바꿈(CRLF 포함)은 JSON 이스케이프로 그대로 남아 복사한 글이 원본과 같다. 이 칸은 정본 템플릿 안에 있으므로 내려받은 파일에서도, 다시 내려받아도 같다.
  */
 function sourceScript(source) {
@@ -40,7 +40,7 @@ function sourceScript(source) {
  * @param className figure 요소에 더할 class(앞에 공백 포함, 없으면 빈 글)
  * @param style figure 요소에 더할 속성 글(앞에 공백 포함, 없으면 빈 글)
  * @param narrow 좁은 배치의 판 묶음을 담은 template 글(없으면 빈 글)
- * @param source 원본 글(.dap). 없으면 복사 단추가 숨는다
+ * @param source 원본 글. 없으면 복사 단추가 숨는다
  */
 export function DiagramFrame({ canvas, className = '', style = '', narrow = '', source, labels = [] }) {
   return `<figure class="fl-figure${className}" tabindex="0"${style}>

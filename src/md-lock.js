@@ -7,7 +7,7 @@ import { hostname } from 'node:os';
 import { dirname, join } from 'node:path';
 import { realPath } from './md-owner.js';
 
-const LOCK_NAME = '.daphnis-md.lock';
+const LOCK_NAME = '.thinkflow-md.lock';
 
 // cost: time O(1), heap O(1), stack O(1), io 1
 // basis: estimate
@@ -40,7 +40,7 @@ function pidState(pid) {
 // 지우면 안 되는 잠금을 알리는 결과. 진단 글은 잠금 파일 경로, 주인 정보, 직접 지우는 방법을 담는다.
 function refusal(path, info, reason) {
   const owner = info ? `pid ${info.pid} on host ${info.host}, created ${info.created}` : 'owner unknown';
-  return { busy: { path, message: `${reason} (${owner}). If no daphnis md is running, delete this file by hand and run again` } };
+  return { busy: { path, message: `${reason} (${owner}). If no thinkflow md is running, delete this file by hand and run again` } };
 }
 
 // cost: time O(1), heap O(1), stack O(1), io 4
@@ -77,7 +77,7 @@ function lockOne(dir) {
     if (!seen) return refusal(path, undefined, 'the lock file cannot be read or has an unknown format');
     if (seen.host !== info.host) return refusal(path, seen, 'the lock belongs to another host, so it is not cleared automatically');
     const state = pidState(seen.pid);
-    if (state !== 'gone') return refusal(path, seen, state === 'alive' ? 'another daphnis md is writing to this folder' : 'the lock owner cannot be checked (permission denied), so it is not cleared automatically');
+    if (state !== 'gone') return refusal(path, seen, state === 'alive' ? 'another thinkflow md is writing to this folder' : 'the lock owner cannot be checked (permission denied), so it is not cleared automatically');
     const refused = clearStale(path, seen);
     if (refused) return refused;
   }

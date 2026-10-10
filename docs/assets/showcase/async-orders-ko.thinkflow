@@ -1,0 +1,44 @@
+thinkflow
+title "주문 이벤트가 퍼져 나간다"
+subtitle "네 곳의 주문이 이벤트 큐에 쌓이고, 재고, 결제, 알림 소비자가 각자 속도로 꺼내 간다. 메일 하나는 도중에 사라진다"
+
+box web "웹" icon=desktop
+box app "앱" icon=mobile
+box partner "제휴사" icon=apigw
+box batch "배치" icon=server
+box api "주문 API" icon=server
+queue q "주문 이벤트" slots=10 from=6
+box stock "재고" icon=db
+box pay "결제"
+box notify "알림" icon=mobile
+
+value left "남은 수" on=stock from=120
+value paid "결제 수" on=pay
+value sent "발송 수" on=notify
+value orders "접수 수" on=api
+on api orders+1
+on q q+1
+on stock left-1
+on pay paid+1
+on notify sent+1
+
+web -> api
+app -> api
+partner -> api
+batch -> api
+api -> q
+q -> stock
+q -> pay
+q -> notify
+
+view graph down
+
+scene "이벤트가 오가는 중" mode=loop
+  track web -> api -> q at=0s every=2s time=3s
+  track app -> api -> q at=500ms every=2s time=3s tone=orange
+  track partner -> api -> q at=1s every=2s time=3s tone=gray
+  track batch -> api -> q at=1500ms every=2s time=3s tone=orange
+  track q -> stock at=0s every=1500ms time=2200ms set="q-1@q"
+  track q -> pay at=150ms every=3s time=2800ms tone=orange set="q-1@q"
+  track q -> notify at=300ms every=5s time=2500ms tone=gray set="q-1@q"
+  track q -> notify "메일 유실" at=450ms every=7s time=3s tone=red lost=60% set="q-1@q"

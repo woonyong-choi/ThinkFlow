@@ -3,9 +3,6 @@
 // 기능 추가는 이 표에 항목을 더하는 일이다.
 import { TONES } from '../tone.js';
 
-/** 이 도구가 읽는 문법 판. 첫 문장 `daphnis 2`가 이 판을 적는다. */
-export const VERSION = 2;
-
 // 원형이 없는 표. `constructor` 같은 낱말이 표 항목으로 잡히지 않게 한다.
 const table = (entries) => Object.assign(Object.create(null), entries);
 
@@ -115,7 +112,7 @@ export const STATEMENTS = table({
   pk: { section: 'declare', in: 'table', display: 'pk (열, ...)' },
   unique: { section: 'declare', in: 'table', display: 'unique (열, ...)' },
   fk: { section: 'declare', in: 'table', display: 'fk (열, ...) -> 테이블 (열, ...)' },
-  daphnis: { section: 'version' },
+  thinkflow: { section: 'preamble' },
   title: { section: 'header' },
   subtitle: { section: 'header' },
   pace: { section: 'header' },

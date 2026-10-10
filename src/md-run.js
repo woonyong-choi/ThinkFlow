@@ -1,4 +1,4 @@
-// daphnis md: 마크다운 문서의 ```dap 블록을 SVG로 만들고 블록 아래 이미지 줄을 맞춘다(docs/design/markdown.md).
+// thinkflow md: 마크다운 문서의 ```thinkflow 블록을 SVG로 만들고 블록 아래 이미지 줄을 맞춘다(docs/design/markdown.md).
 // 모든 문서를 먼저 만든 다음에 쓴다. 오류가 하나라도 있으면 아무 파일도 쓰지 않고, --check는 쓰지 않고 갱신이 필요한지만 알린다.
 import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { basename, dirname, extname, isAbsolute, join, relative, sep } from 'node:path';
@@ -46,14 +46,14 @@ const claim = (site, path, hint) => ({ path, owner: site.line ? `${site.file}:${
 // cost: time O(b), heap O(b), stack O(1), io b
 // vars: b = 블록 수
 // basis: estimate
-// 쓸 SVG가 이미 있으면 이 문서 것인지 확인한다. 다른 문서 것이거나 `daphnis md v2` 표시가 없는 파일이면 그 블록 줄에 오류를 알린다. 오류가 있으면 false다.
+// 쓸 SVG가 이미 있으면 이 문서 것인지 확인한다. 다른 문서 것이거나 `thinkflow md v2` 표시가 없는 파일이면 그 블록 줄에 오류를 알린다. 오류가 있으면 false다.
 function checkOwners(file, targets, { owner, json }) {
   let ok = true;
   for (const { block, svg } of targets) {
     if (!existsSync(svg)) continue;
     const found = ownership(svg, owner);
     if (found.kind === 'mine') continue;
-    const who = found.kind === 'other' ? `was made for another document, or its mark does not name this document (${found.text})` : 'has no daphnis md v2 mark, so it is not a figure made by this tool';
+    const who = found.kind === 'other' ? `was made for another document, or its mark does not name this document (${found.text})` : 'has no thinkflow md v2 mark, so it is not a figure made by this tool';
     report(file, [{ ...problem(`${svg} already exists and ${who}. Give the block a different name=, or write this document to a different --out-dir`, 'md'), line: block.open + 1 }], json);
     ok = false;
   }
@@ -204,7 +204,7 @@ function checkOutDir(dir, json) {
 // vars: d = 문서 수, b = 문서 안 블록 수, build = 블록 하나를 만드는 비용, out = SVG 글자 수, n = 폴더 안 파일 수
 // basis: estimate
 /**
- * `daphnis md`를 실행한다. 종료 코드를 돌려준다: 0 정상(또는 --check에서 갱신 불필요), 1 오류(또는 --check에서 갱신 필요).
+ * `thinkflow md`를 실행한다. 종료 코드를 돌려준다: 0 정상(또는 --check에서 갱신 불필요), 1 오류(또는 --check에서 갱신 필요).
  * 오류가 있으면 아무 파일도 쓰거나 지우지 않는다. 같은 출력 폴더를 다른 프로세스가 쓰는 중이어도 1이다(진단 code md-locked). 쓰기나 삭제가 실패해도 1이다(진단 code io).
  */
 export async function runMd(args) {
@@ -235,8 +235,8 @@ async function runLocked(args) {
   if (plans.includes(undefined)) return 1;
   const { writes, removes } = outputPlan(plans);
   if (args.flags.has('check')) {
-    for (const { path } of writes) report(path, [problem('is out of date. Run daphnis md to update it', 'md-outdated')], json);
-    for (const path of removes) report(path, [problem('is a stale figure. Run daphnis md to remove it', 'md-outdated')], json);
+    for (const { path } of writes) report(path, [problem('is out of date. Run thinkflow md to update it', 'md-outdated')], json);
+    for (const path of removes) report(path, [problem('is a stale figure. Run thinkflow md to remove it', 'md-outdated')], json);
     return writes.length || removes.length ? 1 : 0;
   }
   // SVG와 문서를 쓰고(SVG 먼저, 문서 마지막) 성공한 뒤에만 낡은 SVG를 지운다. 지우기가 실패해도 문서와 새 SVG는 일관되고 낡은 SVG만 남는다.

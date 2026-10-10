@@ -1,0 +1,33 @@
+thinkflow
+title "오토스케일링 인스턴스 수"
+subtitle "요청이 늘면 계단처럼 올라가고, 값이 바뀌기 전까지는 같은 수가 유지된다"
+
+chart scale "인스턴스 수 변화" step "예시 데이터. 점선은 정책이 요구한 수. 15분 구간은 지표 수집 실패로 값이 없다" {
+  x "경과 시간(분)"
+  y "인스턴스(대)"
+  series running "실행 중" role=main
+  series want "요구 수" role=reference
+  series warm "예열 풀"
+  point x=0 running=4 want=4 warm=2
+  point x=5 running=4 want=6 warm=2
+  point x=10 running=6 want=9 warm=3
+  point x=15 running=- want=9 warm=-
+  point x=20 running=9 want=9 warm=3
+  point x=25 running=9 want=7 warm=1
+  point x=30 running=7 want=5 warm=1
+  point x=35 running=5 want=5 warm=2
+}
+
+scene "수요와 실제"
+
+scene "정책이 먼저"
+  reveal scale.want
+  wait 1s
+  reveal scale.running
+  wait 1s
+  reveal scale.warm
+
+scene "스케일 아웃 구간"
+  light scale x=10
+  wait 1s
+  light scale x=20

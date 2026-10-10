@@ -4,7 +4,7 @@ import { OPTIONS, STATEMENTS, VALUES } from './grammar.js';
 export const DOC_START = '<!-- grammar-table:start -->';
 export const DOC_END = '<!-- grammar-table:end -->';
 
-const SECTION_NAMES = { version: '판 표기', header: '머리', declare: '선언', timeline: '시간 흐름' };
+const SECTION_NAMES = { preamble: '시작 선언', header: '머리', declare: '선언', timeline: '시간 흐름' };
 const BLOCK_NAMES = { card: '카드 본문 안', chart: '차트 블록 안', class: '클래스 블록 안', table: '테이블 블록 안', grid: '격자 블록 안', trace: '추적 블록 안' };
 const TYPE_NAMES = { flag: '값 없음(낱말만)', text: '글', word: '낱말', number: '숫자' };
 

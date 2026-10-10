@@ -1,0 +1,31 @@
+thinkflow
+title "월간 반복 매출 변동"
+subtitle "늘어난 매출은 오른쪽, 줄어든 매출은 0 왼쪽으로 쌓인다"
+
+chart mrr "구독 매출 증감 요인" stacked "예시 데이터. 단위 만원. 10월 환불은 집계 전" {
+  x "월 매출 증감(만원)"
+  series new "신규 가입"
+  series expand "플랜 확장"
+  series churn "해지"
+  series refund "환불"
+  missing "집계 전"
+  rule 2000 "목표 순증"
+  row "7월" new=1800 expand=900 churn=-700 refund=-150
+  row "8월" new=2100 expand=1100 churn=-950 refund=-200
+  row "9월" new=1500 expand=1300 churn=-1250 refund=-380
+  row "10월" new=1900 expand=700 churn=-600 refund=-
+}
+
+scene "네 요인"
+
+scene "늘어난 쪽부터"
+  reveal mrr.new
+  wait 1s
+  reveal mrr.expand
+  wait 1s
+  reveal mrr.churn
+  wait 1s
+  reveal mrr.refund
+
+scene "9월 한 행"
+  light mrr "9월"

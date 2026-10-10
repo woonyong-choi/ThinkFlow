@@ -1,8 +1,8 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { build, dap, findAll, lineOf, reject, stillDom, textsOf } from './support.js';
+import { build, thinkflow, findAll, lineOf, reject, stillDom, textsOf } from './support.js';
 
-const tables = (key = 'pk (tenant_id, id)', reference = 'fk (tenant_id, user_id) -> users (tenant_id, id)') => dap(`
+const tables = (key = 'pk (tenant_id, id)', reference = 'fk (tenant_id, user_id) -> users (tenant_id, id)') => thinkflow(`
   table users "users" {
     tenant_id bigint
     id bigint
@@ -17,7 +17,7 @@ const tables = (key = 'pk (tenant_id, id)', reference = 'fk (tenant_id, user_id)
 `);
 
 test('a foreign key must reference a whole unique key, including inline composite primary keys', async () => {
-  const source = dap(`table users "users" {\n tenant_id bigint pk\n id bigint pk\n}\ntable orders "orders" {\n user_id bigint fk=users.id\n}\n`);
+  const source = thinkflow(`table users "users" {\n tenant_id bigint pk\n id bigint pk\n}\ntable orders "orders" {\n user_id bigint fk=users.id\n}\n`);
   assert.ok((await reject(source)).some(p => p.line === lineOf(source, 'user_id bigint') && /whole.*key/.test(p.message)));
 });
 
@@ -52,7 +52,7 @@ test('composite key errors identify the declaration before layout', async () => 
   }
   const nullable = tables().replace('id bigint\n', 'id bigint nullable\n');
   assert.ok((await reject(nullable)).some(p => p.line === lineOf(nullable, 'tenant_id bigint nullable') && /primary key cannot be nullable/.test(p.message)));
-  const inline = dap('table users "users" {\n tenant_id bigint pk\n id bigint pk nullable\n}\n');
+  const inline = thinkflow('table users "users" {\n tenant_id bigint pk\n id bigint pk nullable\n}\n');
   assert.ok((await reject(inline)).some(p => p.line === lineOf(inline, 'id bigint pk nullable') && /primary key cannot be nullable/.test(p.message)));
 });
 
@@ -68,7 +68,7 @@ test('malformed key lists and foreign key options are located source errors', as
 });
 
 test('overlapping composite references remain separate and column pairs select the correct relation', async () => {
-  const source = dap(`
+  const source = thinkflow(`
     table users "users" {
       tenant_id bigint pk
       id bigint pk

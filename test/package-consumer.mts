@@ -1,7 +1,7 @@
-import { buildFigure, FigureError, toHtml, toSvg } from 'daphnis';
-import type { BuildOptions, BuiltFigure, FigureDiagnostic, SvgOptions } from 'daphnis';
+import { buildFigure, FigureError, toHtml, toSvg } from 'thinkflow';
+import type { BuildOptions, BuiltFigure, FigureDiagnostic, SvgOptions } from 'thinkflow';
 
-const source = 'daphnis 2\nbox client "Client"\nbox server "Server"\nclient -> server\nscene "request"\n  client -> server "GET"\n';
+const source = 'thinkflow\nbox client "Client"\nbox server "Server"\nclient -> server\nscene "request"\n  client -> server "GET"\n';
 const options: BuildOptions = {
   baseDir: '.', strict: true, allowFileAccess: false,
   budget: { events: 100, chain: 100 }, layoutWidth: 600,
@@ -16,7 +16,7 @@ if (!svg.startsWith('<svg ') || !html.startsWith('<!doctype html>') || warnings.
 }
 
 try {
-  await buildFigure('daphnis 2\nbox a "A"\na -> missing\n');
+  await buildFigure('thinkflow\nbox a "A"\na -> missing\n');
   throw new Error('invalid source was accepted');
 } catch (error) {
   if (!(error instanceof FigureError)) throw error;

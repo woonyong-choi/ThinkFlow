@@ -5,7 +5,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
 import vm from 'node:vm';
-import { build, dap, findAll, parseMarkup, textContent, toHtml } from './support.js';
+import { build, thinkflow, findAll, parseMarkup, textContent, toHtml } from './support.js';
 
 const playerFile = (name) => readFileSync(new URL(`../src/player/${name}.js`, import.meta.url), 'utf8');
 const CARRIED = /figurePlay\(document\.querySelector\('\.fl-figure'\), (\{.*\})\);\s*$/s;
@@ -45,7 +45,7 @@ const hasKey = (frame, prefix) => Object.keys(frame.pulses).some((key) => key.st
 const upTo = (end, step) => [...Array.from({ length: Math.floor(end / step) }, (_, i) => i * step), end];
 
 test('Q1 a frame depends only on the scene and the time: any order of earlier samples gives what a fresh model gives', async () => {
-  const mixed = await player(dap(`
+  const mixed = await player(thinkflow(`
     box a "A"
     box b "B"
     box c "C"
@@ -77,7 +77,7 @@ test('Q1 a frame depends only on the scene and the time: any order of earlier sa
 
 test('Q2 static is always the last frame, once holds it from the scene length on, loop starts over every length, and settled is the last frame in every mode', async () => {
   const modes = ['static', 'once', 'loop'];
-  const doc = await player(dap(`
+  const doc = await player(thinkflow(`
     box a "A"
     box b "B"
     value n "n" on=b from=0
@@ -116,14 +116,14 @@ test('Q2 static is always the last frame, once holds it from the scene length on
 
 test('Q3 a dot leaving a line at the instant another enters it never turns the line off or restarts its pill', async () => {
   // 1s 이동이 1s마다 이어 선 하나에 닿아 있는 구간은 [0, 3000)ms 하나다. 앞 점이 나가는 시각(1000, 2000)에 다음 점이 들어선다.
-  const flows = (speed) => dap(`
+  const flows = (speed) => thinkflow(`
     box a "A"
     box b "B"
     a -> b
     scene "s" mode=once speed=${speed} for=3s
       track a -> b at=0s every=1s time=1s
   `);
-  const beats = dap(`
+  const beats = thinkflow(`
     box a "A"
     box b "B"
     a -> b
@@ -154,7 +154,7 @@ test('Q3 a dot leaving a line at the instant another enters it never turns the l
 });
 
 test('Q4 a move against the declared direction runs on the same physical line, so the same label stays lit', async () => {
-  const doc = await player(dap(`
+  const doc = await player(thinkflow(`
     box a "A"
     box b "B"
     box c "C"
@@ -191,8 +191,8 @@ test('Q5 a packet lost before its destination gives that destination no halo and
     a -> b
     b -> c
   `;
-  const flow = (extra) => player(dap(`${head}\nscene "s" mode=once for=6s\n  track a -> b -> c at=0s time=2s ${extra}\n`));
-  const beat = (extra) => player(dap(`${head}\nscene "s" mode=once\n  a -> b time=1s ${extra}\n`));
+  const flow = (extra) => player(thinkflow(`${head}\nscene "s" mode=once for=6s\n  track a -> b -> c at=0s time=2s ${extra}\n`));
+  const beat = (extra) => player(thinkflow(`${head}\nscene "s" mode=once\n  a -> b time=1s ${extra}\n`));
   const seen = (doc, key) => upTo(doc.total(0), 10).map((time) => doc.sample(0, time)).filter((frame) => key(frame));
   const [delivered, lost] = [await flow('set="m+1"'), await flow('lost=100% set="m+1"')];
   // 배달된 점은 c에 닿는 2000ms에 값을 바꾸고 c와 값 줄에 후광(올라감 뒤 유지에서 1)을 낸다.
@@ -221,7 +221,7 @@ test('Q6 a value whose net change is nothing gets no value halo, while the arriv
     a -> b
     c -> b
   `;
-  const run = (moves) => player(dap(`${head}\nscene "s" mode=once\n${moves.map((move) => `  ${move}`).join('\n')}\n`));
+  const run = (moves) => player(thinkflow(`${head}\nscene "s" mode=once\n${moves.map((move) => `  ${move}`).join('\n')}\n`));
   const unchanged = {
     'set to the value it has': 'a -> b time=1s set="n=0"',
     'plus then minus in one update': 'a -> b time=1s set="n+1, n-1"',
@@ -243,7 +243,7 @@ test('Q6 a value whose net change is nothing gets no value halo, while the arriv
 
 test('Q7 the last frame keeps the logical end of the scene even when the rounded display length falls a hair short of it', async () => {
   // 논리 길이 9000ms, 이동 1s, 멈춤 8s, 마지막은 길이 0인 `light b`. 표시 길이는 마지막 사건의 꼬리 없이 (논리 길이 ÷ 속도)를 소수 셋째 자리로 줄인 값이다.
-  const doc = await player(dap(`
+  const doc = await player(thinkflow(`
     box a "A"
     box b "B"
     a -> b
@@ -262,7 +262,7 @@ test('Q7 the last frame keeps the logical end of the scene even when the rounded
 test('Q8 the last frame is at rest: no halo and no line pill is left over, at any speed', async () => {
   const left = [];
   for (const speed of [1, 3, 0.7]) {
-    const doc = await player(dap(`
+    const doc = await player(thinkflow(`
       box a "A"
       box b "B"
       value n "n" on=b from=0

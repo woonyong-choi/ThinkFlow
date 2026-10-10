@@ -10,7 +10,7 @@ export { DiagramFrame as figureFrame } from '../vendor/theme/ui/diagram.mjs';
 // 브라우저 스크립트 파일(src/player/). 한 스크립트로 이어 붙여 HTML에 넣는다. 순서는 상수와 함수 선언이 쓰이기 전에 있어야 하는 곳만 지키면 된다(진입은 맨 끝의 figurePlay 호출).
 const PLAYER_FILES = ['view', 'export', 'play', 'controls', 'stage', 'effects', 'responsive', 'curve', 'sample', 'values'];
 // 내려받기용 정본 템플릿을 넣어 두는 문서 머리 meta 칸의 이름. 재생기 스크립트(player/export.js)가 같은 이름을 읽는다.
-export const CANONICAL_NAME = 'daphnis-canonical';
+export const CANONICAL_NAME = 'thinkflow-canonical';
 const UI_MODULES = [['html', ['escape', 'out']], ['svg', ['renderSvgIcon']], ['icons', ['ControlIcon']]];
 const CONTROL_DATA = Object.fromEntries([...new Set(Object.values(ICON_ROLES.controls))].map(name => [name, ICON_DATA[name]]));
 // 공통 모듈마다 비공개 이름을 격리하고, 단일 문서에는 조작부가 쓰는 SVG만 넣는다.

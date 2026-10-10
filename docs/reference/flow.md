@@ -4,8 +4,8 @@
 
 ## 최소 예제
 
-```dap name=minimal
-daphnis 2
+```thinkflow name=minimal
+thinkflow
 title "요청 경로"
 
 box client "클라이언트"
@@ -19,11 +19,11 @@ client -> server "GET /orders"
 server -> db "SELECT"
 ```
 
-![요청 경로](flow-minimal.svg)<!-- dap -->
+![요청 경로](flow-minimal.svg)<!-- thinkflow -->
 
 설명과 값은 카드의 `{ }` 안에 놓습니다. 정지 그림에는 `scene`이 필요하지 않습니다.
 
-첫 줄은 언제나 `daphnis 2`입니다. 그다음 카드 줄, 선 줄, 필요하면 보기 줄(`view graph down`), 장면 줄 순서로 적습니다. 보기 줄을 생략하면 모든 카드를 담은 왼쪽에서 오른쪽 그래프 보기 하나가 기본으로 생기고, 방향이나 라벨이 필요할 때만 `view graph down "라벨"`처럼 적습니다. 장면의 `mode`는 `static`(마지막 상태 하나), `once`(한 번 재생), `loop`(되풀이)이고, 생략하면 줄이 있는 장면은 `once`, 줄이 없는 장면은 `static`입니다. 장면 안의 이동에 글을 붙이지 않은 것은 선 라벨이 이미 그 글을 보이기 때문입니다.
+첫 줄은 언제나 `thinkflow`입니다. 그다음 카드 줄, 선 줄, 필요하면 보기 줄(`view graph down`), 장면 줄 순서로 적습니다. 보기 줄을 생략하면 모든 카드를 담은 왼쪽에서 오른쪽 그래프 보기 하나가 기본으로 생기고, 방향이나 라벨이 필요할 때만 `view graph down "라벨"`처럼 적습니다. 장면의 `mode`는 `static`(마지막 상태 하나), `once`(한 번 재생), `loop`(되풀이)이고, 생략하면 줄이 있는 장면은 `once`, 줄이 없는 장면은 `static`입니다. 장면 안의 이동에 글을 붙이지 않은 것은 선 라벨이 이미 그 글을 보이기 때문입니다.
 
 ## 문법
 
@@ -35,8 +35,8 @@ server -> db "SELECT"
 
 `track`은 박자와 따로 도는 흐름입니다. 출발지마다 점이 선들을 멈춤 없이 이어 지나고, 값 줄(`value`, `on`)은 점이 닿을 때 바뀝니다.
 
-```dap name=motion
-daphnis 2
+```thinkflow name=motion
+thinkflow
 title "주문이 몰릴 때"
 
 box web "웹"
@@ -66,23 +66,23 @@ scene "동시 주문" mode=loop for=6s
   track web, app -> api -> db "주문" every=1500ms time=2s
 ```
 
-![주문이 몰릴 때](flow-motion.svg)<!-- dap -->
+![주문이 몰릴 때](flow-motion.svg)<!-- thinkflow -->
 
-큐(`queue q "큐" slots=6`)는 칸이 있는 카드이고, 찬 칸 수가 큐 이름으로 부르는 값입니다. `on q q+1`, `set="q-1@q"`처럼 같은 식으로 바꾸면 칸 수가 바뀝니다([그림 문법](../design/figure-syntax.md#큐)). 값, 조건, 대기, 예약, 손실, 장면 사이 값 유지를 한 장면씩 보려면 [flow 예제](../../examples/flow.dap)와 [queue 예제](../../examples/queue.dap)를 엽니다.
+큐(`queue q "큐" slots=6`)는 칸이 있는 카드이고, 찬 칸 수가 큐 이름으로 부르는 값입니다. `on q q+1`, `set="q-1@q"`처럼 같은 식으로 바꾸면 칸 수가 바뀝니다([그림 문법](../design/figure-syntax.md#큐)). 값, 조건, 대기, 예약, 손실, 장면 사이 값 유지를 한 장면씩 보려면 [flow 예제](../../examples/flow.thinkflow)와 [queue 예제](../../examples/queue.thinkflow)를 엽니다.
 
 ## 흔한 오류
 
-진단은 `{파일}:{줄}: {메시지}` 모양이고, 원본 문법 오류의 `code`는 `syntax`, 그림 검사의 `code`는 `check-{번호}`입니다. `daphnis check figure.dap --json`이 `code`를 줄마다 한 객체로 냅니다. 오류가 하나라도 있으면 결과 파일을 쓰지 않습니다.
+진단은 `{파일}:{줄}: {메시지}` 모양이고, 원본 문법 오류의 `code`는 `syntax`, 그림 검사의 `code`는 `check-{번호}`입니다. `thinkflow check figure.thinkflow --json`이 `code`를 줄마다 한 객체로 냅니다. 오류가 하나라도 있으면 결과 파일을 쓰지 않습니다.
 
 | 원인 | 메시지 | code | 고치는 방법 |
 |---|---|---|---|
-| 첫 문장이 `daphnis 2`가 아님 | `the first line must be "daphnis 2"` | `missing-version` | 첫 줄에 판을 적습니다 |
+| 첫 문장이 `thinkflow`가 아님 | `the first line must be "thinkflow"` | `missing-preamble` | 첫 줄에 `thinkflow`만 적습니다 |
 | 선언하지 않은 이름 | `unknown card "c". Did you mean "a"? Declared: a, b, m` | `syntax` | 이름을 고치거나 카드를 선언합니다 |
 | 같은 이름 두 번 | `the name "a" is already used (line 2)` | `syntax` | 이름을 하나로 줄입니다 |
 | 같은 방향 선 두 개 | `there is already an edge a -> b (line 4). Merge the labels into one` | `syntax` | 선을 하나로 합치고 라벨을 한 글에 적습니다 |
 | 선언하지 않은 선으로 이동 | `there is no edge between "a" and "b". Declare "a -> b" first` | `syntax` | 선을 먼저 선언합니다 |
 | 내용 없는 `once`, `loop` 장면 | `scene "s" has no lines. Add a move, show, light, reveal, or wait, or write mode=static for a still composition` | `syntax` | 박자나 `track`을 적거나, 정지 모습이면 `mode=static`을 씁니다 |
-| 둘째 판에 없는 낱말(`step`, `say`) | `unknown statement "step"` | `syntax` | `scene "이름"`처럼 문법 표에 있는 낱말을 씁니다 |
+| 지원하지 않는 낱말(`step`, `say`) | `unknown statement "step"` | `syntax` | `scene "이름"`처럼 문법 표에 있는 낱말을 씁니다 |
 | 이름을 쓴 보기 | `a view is one of graph, sequence, plot, time. Found "main". A view has no name: write view graph ...` | `syntax` | 보기 방식부터 적습니다(`view graph down`) |
 | 숫자로만 된 장면 이름 | `scene "2" is only digits, which --scene reads as a scene number. Add a word to the name, such as "step 2"` | `syntax` | 이름에 글자를 더합니다 |
 | 장면 이름 뒤 글 | `write a scene as: scene "name" [mode=...] ...` | `syntax` | 장면에는 이름 하나만 적고 설명은 문서 본문에 적습니다 |

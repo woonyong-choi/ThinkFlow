@@ -6,7 +6,7 @@
 | 관련 결정 | [그림 문법과 배치를 직접 맡고 D2 호환을 버린다](../decisions/2026-10-01-own-syntax-and-layout.md), [조건과 대기를 빌드 때 계산해 같은 시간표에 담는다](../decisions/2026-10-04-flow-conditions-in-timetable.md) |
 ## 요약
 
-그림 문법은 `.dap` 파일 하나에 문서 하나를 적는 줄 단위 문법이다. 첫 문장은 `daphnis 2`다. 그 뒤에 카드(도형, 사람, 표, API, 클래스, 칸 격자, 차트, 추적)와 선, 값을 선언하고, 필요하면 카드를 어떤 모양으로 보일지 보기(`view`)로 고른 다음, `scene` 줄부터 장면마다 움직임을 적는다. 보기를 적지 않은 카드는 기본 보기를 받는다.
+그림 문법은 `.thinkflow` 파일 하나에 문서 하나를 적는 줄 단위 문법이다. 첫 문장은 `thinkflow`다. 그 뒤에 카드(도형, 사람, 표, API, 클래스, 칸 격자, 차트, 추적)와 선, 값을 선언하고, 필요하면 카드를 어떤 모양으로 보일지 보기(`view`)로 고른 다음, `scene` 줄부터 장면마다 움직임을 적는다. 보기를 적지 않은 카드는 기본 보기를 받는다.
 
 - 문서 하나는 모형 하나다. 카드, 카드 안 칸, 연결점, 선과 라벨, 값, 보기, 장면이 모든 카드에 같은 규칙으로 놓이고, 그림 종류 문장은 없다.
 - 같은 카드가 여러 보기(그래프, 순서, 차트, 시간)에 함께 놓일 수 있다. 이름이 같아 한 카드의 상태는 하나이고, 장면 하나의 이동과 값 변화는 한 시간표에서 한 번만 계산된다. 보기마다 그려질 뿐이다. 보기는 이름이 없다.
@@ -22,7 +22,7 @@ D2와 Mermaid는 같은 뜻을 여러 모양으로 적을 수 있다. D2는 오�
 ### 장면 없이 카드와 선 그리기
 
 ```text
-daphnis 2
+thinkflow
 person user "고객"
 box api "주문 API" {
   text "주문을 검증하고 저장합니다"
@@ -38,7 +38,7 @@ api -> db "저장"
 ### 한 문서에 여러 카드와 보기 놓기
 
 ```text
-daphnis 2
+thinkflow
 title "주문 한 건"
 subtitle "고객 요청이 API 칸에서 스키마 칸으로 저장되고, 같은 사건이 호출 순서, 지연 그래프, 실제 시간에 함께 보인다"
 
@@ -108,7 +108,7 @@ scene "주문 한 건" mode=loop speed=1.5
 ### 구성 요소 그림에 요청 흐름 입히기
 
 ```text
-daphnis 2
+thinkflow
 title "Saturn 구성"
 
 person user "개발자"
@@ -135,19 +135,19 @@ scene "대화"
   engine -> db
 ```
 
-1. 사용자가 `daphnis render saturn.dap`를 실행한다.
+1. 사용자가 `thinkflow render saturn.thinkflow`를 실행한다.
 2. `system` 안 도형은 위에서 아래로, 바깥 도형은 왼쪽에서 오른쪽으로 놓인다.
 3. 첫 박자에 점이 `user`에서 `tui`로 가고, 점이 닿을 때 `tui` 카드에 `YOU` 태그 줄이 나타난다.
 4. `engine -> db` 선은 `quiet`라서 그 선을 처음 지나는 박자부터 보인다.
 ### 오타 알아채기
 
 1. AI가 위 원본의 24번째 줄을 `engine -> cdex "turn" time=3s`로 적는다.
-2. 명령이 `saturn.dap:24: unknown card "cdex". Did you mean "codex"? Declared: cli, codex, db, engine, system, tui, user`를 내고 실패한다.
+2. 명령이 `saturn.thinkflow:24: unknown card "cdex". Did you mean "codex"? Declared: cli, codex, db, engine, system, tui, user`를 내고 실패한다.
 3. AI가 이름을 고친다.
 ### 장면 사이에 값을 이어 가기
 
 ```text
-daphnis 2
+thinkflow
 title "값 유지와 읽기"
 box web "웹"
 box api "API"
@@ -181,7 +181,7 @@ scene "맞바꿈" keep="saved, mirror" set="sent=20"
 ### 잠금이 풀릴 때까지 기다리기
 
 ```text
-daphnis 2
+thinkflow
 title "잠금으로 막기"
 
 box a "작업 A"
@@ -205,7 +205,7 @@ scene "풀리면 B가 들어간다" keep="holder"
 ### 풀리지 않는 대기 남기기
 
 ```text
-daphnis 2
+thinkflow
 title "교착"
 
 box t1 "작업 1"
@@ -231,7 +231,7 @@ scene "서로 상대 것을 요청한다" keep="h1, h2" status="t1=wait, t2=wait
 ### 느려진 소비자만 표시하기
 
 ```text
-daphnis 2
+thinkflow
 title "느려진 소비자"
 
 box prod "생산자"
@@ -292,7 +292,7 @@ scene "소비자 하나가 느려진다" for=6s status="slow=warn"
 
 ### 파일 구조
 
-첫 문장은 늘 `daphnis 2`다. 그 뒤에 세 부분이 이 순서로 온다. 앞 부분으로 돌아가는 줄은 오류다.
+첫 문장은 늘 `thinkflow`다. 그 뒤에 세 부분이 이 순서로 온다. 앞 부분으로 돌아가는 줄은 오류다.
 
 | 순서 | 부분 | 줄 |
 |---|---|---|
@@ -305,7 +305,7 @@ scene "소비자 하나가 느려진다" for=6s status="slow=warn"
 
 | 머리 줄 | 뜻 | 기본값 |
 |---|---|---|
-| `daphnis 2` | 문법 판. 파일의 첫 문장이다([판과 없앤 형태](#판과-없앤-형태)) | 없음. 꼭 적는다 |
+| `thinkflow` | 시작 선언. 파일의 첫 문장이며 숫자나 옵션을 받지 않는다([시작 선언과 없앤 형태](#시작-선언과-없앤-형태)) | 없음. 꼭 적는다 |
 | `title "글"` | 문서 제목. SVG `<title>`, 목록 쪽 머리 제목 | 파일 이름 |
 | `subtitle "글"` | 문서 아래 한 줄 설명 | 없음 |
 | `pace 3s` | 점이 기준 길이 `size.packet.hop-ref`의 선을 지나는 시간. 선 길이에 비례해 이동 시간이 정해져 모든 이동이 같은 속도로 보인다(아래 이동 시간). 차트 카드에서는 계열이 자라는 시간이다 | 토큰 `duration.hop`과 `size.packet.hop-ref`, 자라는 시간은 `duration.reveal` |
@@ -612,7 +612,7 @@ trace t "결제 추적" unit=ms {
 `wait`와 `set=`를 함께 쓰면 확인은 출발 때, 갱신은 점이 닿을 때 일어나서 같은 시각의 두 요청이 둘 다 통과한다. 확인과 갱신을 한 사건으로 하려면 `reserve=`를 쓴다.
 
 ```text
-daphnis 2
+thinkflow
 title "잠금은 하나만 쥔다"
 
 box a "작업 A"
@@ -667,23 +667,22 @@ scene "같은 시각에 요청한다" for=8s
 
 - 형식: `{파일}:{줄}: {무엇이 틀렸나}. {고치는 방법}`. 경고는 `{파일}:{줄}: warning: {메시지}`다. 영어로 쓴다(code-style 메시지 규칙). 진단 하나의 모양은 `{ severity, code, line, column, message }`이다. `column`은 줄 안 1부터 센 자리다.
 - 이름 오류에는 선언된 이름 목록을 알파벳순으로 붙이고, 편집 거리가 2 이하인 이름이 있으면 `Did you mean "{이름}"?`을 붙인다.
-- 오류가 하나라도 있으면 파일을 쓰지 않는다. 문법 오류, 글꼴에 없는 글자, `data` 읽기 오류는 한 번에 모두 알린다. 파일이 비었거나 첫 문장이 `daphnis 2`가 아니면 거기서 멈춘다. 다음 줄을 읽을 규칙이 없기 때문이다.
+- 오류가 하나라도 있으면 파일을 쓰지 않는다. 문법 오류, 글꼴에 없는 글자, `data` 읽기 오류는 한 번에 모두 알린다. 파일이 비었거나 첫 문장이 `thinkflow`가 아니면 거기서 멈춘다. 다음 줄을 읽을 규칙이 없기 때문이다.
 - [그림 검사](figure-check.md)는 배치가 끝나야 돌므로, 원본 오류가 없을 때만 그 오류를 알린다.
 - 생성 예산을 넘으면 `budget-exceeded` 오류다. 필요한 양, 지금 한도, 올리는 방법(`--budget 이름=값`, Action 입력 `budget`)을 적고 파일을 쓰기 전에 끝난다. 격자 예산과 이동 글 상자 계획의 색인 예산(`chip-index`)의 이름과 기본 한도는 [칸 격자](grid.md#예산)가, 이벤트 예산(`events`, `chain`)은 [재생](playback.md#이벤트-예산)이 정한다. `--budget` 값이 틀리면 그림을 만들기 전에 사용법 오류(종료 2)다.
 - 경고는 파일을 쓰고 표준 오류에 남긴다. `--strict`면 경고도 실패다.
-- `--json`은 진단마다 한 줄을 표준 출력에 쓴다. `code`는 `syntax`(문법), `check-1`~`check-14`([그림 검사](figure-check.md) 번호), `time-limit`, `time-precision`, `value-type`(값 종류, 차트 묶음 포함), `leg-time`, `wait-stalled`, `budget-exceeded`, `invalid-speed`, `layout-unstable`(값 글 집합이 수렴하지 않음), `chart-frames`(프레임 구조가 값마다 다름), `binding-unsupported`, `missing-version`, `unsupported-version`, `invalid-version`, `unsupported-extension`, `layout`, `layout-width`, `layout-timing`, `io`, `internal`이다. 줄 하나는 `{ "file", "line", "message", "severity", "code", "column" }` 여섯 필드이고 `severity`는 `error`나 `warning`이다. 이 밖의 필드와 옛 이름의 별칭은 없다.
+- `--json`은 진단마다 한 줄을 표준 출력에 쓴다. `code`는 `syntax`(문법), `check-1`~`check-14`([그림 검사](figure-check.md) 번호), `time-limit`, `time-precision`, `value-type`(값 종류, 차트 묶음 포함), `leg-time`, `wait-stalled`, `budget-exceeded`, `invalid-speed`, `layout-unstable`(값 글 집합이 수렴하지 않음), `chart-frames`(프레임 구조가 값마다 다름), `binding-unsupported`, `missing-preamble`, `invalid-preamble`, `unsupported-extension`, `layout`, `layout-width`, `layout-timing`, `io`, `internal`이다. 줄 하나는 `{ "file", "line", "message", "severity", "code", "column" }` 여섯 필드이고 `severity`는 `error`나 `warning`이다. 이 밖의 필드와 옛 이름의 별칭은 없다.
 
-### 판과 없앤 형태
+### 시작 선언과 없앤 형태
 
-첫 문장이 `daphnis 2`가 아니면 읽지 않는다. 읽는 어댑터, 별칭, 옮기는 명령은 없고, 오류는 줄과 자리를 가지며 결과 파일을 쓰지 않는다.
+첫 문장이 `thinkflow`가 아니면 읽지 않는다. 읽는 어댑터, 별칭, 옮기는 명령은 없고, 오류는 줄과 자리를 가지며 결과 파일을 쓰지 않는다.
 
 | 입력 | `code` | 자리 | 메시지 |
 |---|---|---|---|
-| 첫 문장이 `daphnis`가 아니다 | `missing-version` | 그 문장의 첫 글자 | `the first line must be "daphnis 2"` |
-| `daphnis 1` | `unsupported-version` | 숫자 | `daphnis 1 sources are not read. Rewrite the file in daphnis 2 (docs/design/figure-syntax.md)` |
-| `daphnis 3` 이상 | `unsupported-version` | 숫자 | `this tool reads grammar version 2 ...` |
-| `daphnis 2x` 같은 틀린 꼴 | `invalid-version` | 숫자 | `write the version line as: daphnis 2` |
-| `.dap`가 아닌 파일(`render`, `check`의 입력) | `unsupported-extension` | 파일, 1줄 1자리 | `only .dap files are read` |
+| 첫 문장이 `thinkflow`가 아니다 | `missing-preamble` | 그 문장의 첫 글자 | `the first line must be "thinkflow"` |
+| `thinkflow` 뒤에 숫자나 옵션이 있다 | `invalid-preamble` | 추가한 낱말 | `write the first line as: thinkflow` |
+| 시작 선언만 있고 본문이 없다 | `invalid-preamble` | 그 문장의 첫 글자 | `the file has no figure. Declare cards after thinkflow` |
+| `.thinkflow`가 아닌 파일(`render`, `check`의 입력) | `unsupported-extension` | 파일, 1줄 1자리 | `only .thinkflow files are read` |
 | 문법 표에 없는 낱말(`flow`, `step`, `say`, 머리 `speed` 등) | `syntax` | 첫 글자 | `unknown statement "step"` |
 | 글이 둘인 `scene "이름" "설명"` | `syntax` | 둘째 글 | `write a scene as: scene "name" [mode=...] ...` |
 | 이름을 쓴 보기 `view main graph` | `syntax` | 그 줄 | `a view is one of graph, sequence, plot, time. Found "main". A view has no name: write view graph ...` |
@@ -693,7 +692,7 @@ scene "같은 시각에 요청한다" for=8s
 
 - 값 목록에 없는 색 이름(`brand`, `amber`, `teal`, `navy`, `pink`, `sky` 포함)은 일반 값 목록 오류다.
 - 옮기는 명령과 폐기 안내 옵션은 없다. 모르는 명령과 옵션은 일반 사용법 오류(종료 2)다.
-- 마크다운 이미지 줄과 SVG에 이 도구가 남기는 소유 표시는 `<!-- dap -->`와 `<!-- daphnis md v2 ... -->`뿐이다. 다른 표시가 붙은 파일과 줄, ` ```muto ` 같은 다른 울타리는 사용자의 것이라 읽거나 가져가거나 덮어쓰지 않는다.
+- 마크다운 이미지 줄과 SVG에 이 도구가 남기는 소유 표시는 `<!-- thinkflow -->`와 `<!-- thinkflow md v2 ... -->`뿐이다. 다른 표시가 붙은 파일과 줄, ` ```muto ` 같은 다른 울타리는 사용자의 것이라 읽거나 가져가거나 덮어쓰지 않는다.
 - 명령 `render`와 `md`의 `--scene n|이름`은 SVG로 만들 장면을 고른다(생략하면 첫 장면, 번호는 1부터). 숫자만으로 된 장면 이름은 문법이 받지 않아 숫자는 늘 번호다. 장면 수를 넘는 번호, 없는 이름, 장면이 없는 원본에 준 `--scene`은 오류다.
 
 ### 문법 표
@@ -704,7 +703,7 @@ scene "같은 시각에 요청한다" for=8s
 | 부분 | 자리 | 낱말 |
 |---|---|---|
 | 선언 | 테이블 블록 안 | `pk (열, ...)`, `unique (열, ...)`, `fk (열, ...) -> 테이블 (열, ...)` |
-| 판 표기 | 문서 줄 | `daphnis` |
+| 시작 선언 | 문서 줄 | `thinkflow` |
 | 머리 | 문서 줄 | `title`, `subtitle`, `pace`, `aspect`, `width` |
 | 선언 | 문서 줄 | `person`, `box`, `external`, `store`, `decision`, `queue`, `state`, `group`, `grid`, `icons`, `value`, `on node id+N`, `start`, `final`, `table`, `api id "METHOD /url" {`, `class`, `interface`, `chart id "title" type ["subtitle"] {`, `trace id "title" [unit=ms] {`, `view graph|sequence|plot|time ["label"] [{]`, `a -> b` |
 | 선언 | 격자 블록 안 | `item`, `gap` |
@@ -838,7 +837,7 @@ scene "같은 시각에 요청한다" for=8s
 
 | 요구사항 | 검증 계획 |
 |---|---|
-| 첫 문장이 `daphnis 2`가 아니거나 `.dap`가 아닌 파일이면 읽지 않고, 둘째 판에 없는 낱말(`step`, `say`, 머리 `speed`)과 글이 둘인 장면 줄은 일반 문법 오류다. 모든 오류는 `code`, 줄, 자리를 알리며 결과 파일을 쓰지 않는다. 읽는 어댑터와 옛 이름 전용 경로는 없다. | `test/grammar.test.js`가 `buildFigure`의 진단(`code`, 줄, 자리)을 표의 줄마다 확인한다. 명령줄의 동작은 `test/exports.test.js` |
+| 첫 문장이 `thinkflow`가 아니거나 `.thinkflow`가 아닌 파일이면 읽지 않고, 지원하지 않는 낱말(`step`, `say`, 머리 `speed`)과 글이 둘인 장면 줄은 일반 문법 오류다. 모든 오류는 `code`, 줄, 자리를 알리며 결과 파일을 쓰지 않는다. 읽는 어댑터와 옛 이름 전용 경로는 없다. | `test/grammar.test.js`가 `buildFigure`의 진단(`code`, 줄, 자리)을 표의 줄마다 확인한다. 명령줄의 동작은 `test/exports.test.js` |
 | 한 문서가 사람, API 칸, 스키마 칸, 값, 값에 묶인 차트 카드를 한 모형으로 읽고, 카드 종류마다 다른 연결점(API 칸, 테이블 열, 격자 칸, 추적 구간)을 쓴다. 클래스 멤버는 연결점이 아니다. | `test/cards.test.js` |
 | 보기는 이름이 없고, 보기를 적지 않은 카드는 기본 보기를 받는다(추적은 시간 보기, 선이 없는 차트는 차트 보기, 나머지는 그래프). 적은 보기와 겹쳐 그려지지 않고, 이름을 쓴 옛 꼴은 줄 번호가 붙은 오류다. 구성원, 그릴 수 있는 선, 투영 없는 이동, 순서 보기 전용 문장도 줄 번호와 함께 알린다. | `test/authoring.test.js`(기본 보기), `test/cards.test.js`(보기 규칙) |
 | 장면의 `mode`를 적지 않으면 줄이 있는 장면은 `once`, 없는 장면은 `static`이고 적은 값이 우선한다. 도형, 그룹, `show` 줄의 색은 `tone`과 `appearance`이고 옛 `fill`, `stroke`, `card`는 오류다. | `test/authoring.test.js` |
@@ -847,13 +846,13 @@ scene "같은 시각에 요청한다" for=8s
 | 값 글자 자리는 모든 장면의 글의 실제 폭이고 긴 글은 줄을 나눈다. 8자 제한이 없다. | `test/values.test.js` |
 | 값에 묶인 차트는 고정된 축, 바뀌지 않는 표식 id, 시간표의 프레임 구간을 갖고, 숫자가 아닌 값, 값 범위를 어긴 값, 묶을 수 없는 차트는 줄 번호와 함께 알린다. | `test/charts.test.js` |
 | 장면의 `mode`와 `speed`가 SVG 재생을 정하고(loop는 되풀이, once는 한 번 뒤 마지막 상태에 머묾, static은 움직임 없음), `--scene`으로 장면을 고른다. 모든 보기 판이 공유 재생기가 찾을 수 있는 id로 그려진다. | `test/exports.test.js` |
-| 예제 원본과 문서의 ` ```dap ` 블록이 현재 문법으로 읽힌다. | 예제는 `test/examples.test.js`, ` ```dap ` 블록은 `daphnis md --check`가 읽는다. 설계 문서의 ` ```text ` 예시 원본은 자동 시험이 읽지 않는다(검증 요구사항, 미완료) |
+| 예제 원본과 문서의 ` ```thinkflow ` 블록이 현재 문법으로 읽힌다. | 예제는 `test/examples.test.js`, ` ```thinkflow ` 블록은 `thinkflow md --check`가 읽는다. 설계 문서의 ` ```text ` 예시 원본은 자동 시험이 읽지 않는다(검증 요구사항, 미완료) |
 | 표의 차트 종류와 계열 수 범위는 문법 표가 정하고 이 문법은 별도 제한을 두지 않는다. | `test/charts.test.js` |
 | 사용자가 눈으로 보는 화면(탭, 시계, 전체 화면, 복사와 내려받기 조작)은 이 시험이 대신하지 않는다. | 검증 요구사항, 미완료. 실제 Chrome에서 사람이 직접 보는 검수로 따로 확인한다 |
 
 ## 단점
 
-- D2 원본을 그대로 쓸 수 없다. 첫 판 원본도 읽지 않아서 둘째 판으로 다시 써야 한다. 옮기는 명령은 두지 않았다(어댑터는 옛 문법을 영원히 남긴다).
+- D2 원본을 그대로 쓸 수 없다. 이전 문법의 원본은 현재 문법으로 다시 써야 한다. 옮기는 명령은 두지 않았다(어댑터는 옛 문법을 영원히 남긴다).
 - 도형 크기와 모양, 임의의 색을 원본에서 정할 수 없다. 색은 이름(`tone`)과 표현 방식(`appearance`)만 고른다. 특별한 강조가 필요한 그림은 표현할 수 없다.
 
 ## 대안

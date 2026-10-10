@@ -17,7 +17,7 @@
 ### 비트 필드의 10 대 6 폭
 
 ```text
-daphnis 2
+thinkflow
 title "가상 주소를 VPN과 오프셋으로 나눈다"
 
 grid va "가상 주소 (16비트)" cols=16 {
@@ -47,7 +47,7 @@ scene "바꾸기"
 ### 칸을 합치고, 비우고, 글을 길게 쓰기
 
 ```text
-daphnis 2
+thinkflow
 title "페이지 표 항목의 필드"
 
 box mmu "MMU" "주소 변환"
@@ -72,7 +72,7 @@ scene "상태 비트" mode=static
 ### 칸에서 칸으로 잇기
 
 ```text
-daphnis 2
+thinkflow
 title "가상 칸에서 페이지 표 행을 거쳐 물리 칸으로"
 
 grid virt "가상 주소 공간" rows=3 {
@@ -217,7 +217,7 @@ scene "조회"
 | 글이 긴 칸은 칸 안에서 줄을 바꾸고 모든 행의 높이가 같다. | 검증 요구사항, 미완료 |
 | 격자는 구조 그림에서 크기가 고정된 도형 하나로 배치되고, 선은 격자 테두리에 닿는다. | 검증 요구사항, 미완료 |
 | 칸 자리와 선택 사항을 어긴 원본, 격자 밖 칸, 틀린 칸 연결, 밝힐 수 없는 칸을 줄 번호와 함께 알린다. | `test/kinds.test.js`(K-grid), `test/cards.test.js`(S2) |
-| `grid`, `item`, `gap`을 쓴 둘째 판 원본이 오류 없이 읽힌다. | `test/examples.test.js`(`memory`, `stack`, `pointer` 예제) |
+| `grid`, `item`, `gap`을 쓴 원본이 오류 없이 읽힌다. | `test/examples.test.js`(`memory`, `stack`, `pointer` 예제) |
 | 문법 표에 모든 낱말과 선택 사항이 있고 문서의 표가 문법 표에서 만든 표와 같다. | `npm run grammar`가 문서의 표를 다시 쓴다. 어긋남을 자동으로 알리는 시험은 확인되지 않았다(검증 요구사항, 미완료) |
 | 칸 `light`는 도형 `light`와 같은 박자 규칙이다. | 검증 요구사항, 미완료 |
 | 칸에서 칸으로 가는 선이 칸 테두리에서 나가고 들어오며, 안쪽 칸으로 가는 선도 이웃 칸을 지나지 않는다. | `test/kinds.test.js`(K-grid)는 칸 연결 규칙만 본다. 선의 기하는 [그림 검사](figure-check.md) 3번(칸), 4번(칸 테두리)이 strict 빌드에서 같은 규칙을 지킨다 |

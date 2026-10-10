@@ -1,0 +1,52 @@
+thinkflow
+title "연결 리스트와 포인터"
+subtitle "head가 첫 노드를 가리키고, 각 노드의 next가 다음 노드의 주소를 담는다"
+
+box head "head" "첫 노드 포인터"
+grid a "노드 A · 0x10" cols=2 {
+  item av "7" col=0
+  item an "next 0x28" col=1
+}
+grid b "노드 B · 0x28" cols=2 {
+  item bv "12" col=0
+  item bn "next 0x40" col=1
+}
+grid c "노드 C · 0x40" cols=2 {
+  item cv "21" col=0
+  item cn "next null" col=1
+}
+grid fresh "새 노드 · 0x58" cols=2 {
+  item fv "15" col=0
+  item fn "next 0x28" col=1
+}
+
+value cur "cur" on=head from=0x10
+value visited "방문 수" on=head
+
+head -> a.av
+a.an -> b.bv
+b.bn -> c.cv
+a.an -> fresh.fv quiet
+fresh.fn -> b.bv quiet
+
+view graph down
+
+scene "리스트 구조" mode=static
+  light a b c
+
+scene "순회"
+  head -> a.av time=600ms set="cur=0x10, visited=1"
+  light a.av
+  a.an -> b.bv time=700ms set="cur=0x28, visited=2"
+  light b.bv
+  b.bn -> c.cv time=700ms set="cur=0x40, visited=3"
+  light c.cv c.cn
+
+scene "A 뒤에 삽입" keep="visited"
+  light fresh
+  fresh.fn -> b.bv time=700ms set="cur=0x28"
+  a.an -> fresh.fv time=700ms set="cur=0x58"
+  light a.an fresh.fv
+
+scene "반복 순회" mode=loop for=6s
+  track head -> a at=0s every=2s time=2400ms set="visited+1"

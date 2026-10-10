@@ -16,7 +16,7 @@ const KEY_LENGTH = 90;
 const FIGURE_TIME_LIMIT_MS = 5000;
 const HANG_DIR = '.local/fuzz-hang';
 // 판 2 원본의 첫 줄. 무작위 원본은 모두 이 줄로 시작하고 옛 판의 머리 줄(`flow right`)을 만들거나 바꿔 읽는 길은 없다.
-const VERSION_LINE = 'daphnis 2';
+const VERSION_LINE = 'thinkflow';
 const KINDS = ['flow', 'state', 'data', 'chart'];
 const BUILD_WORKER = new URL('./lib/fuzz-build-worker.mjs', import.meta.url);
 const HANG_MESSAGE = `HANG over ${FIGURE_TIME_LIMIT_MS}ms`;
@@ -247,7 +247,7 @@ function buildWithin(builder, source) {
 
 function saveHang(source, options, index) {
   mkdirSync(options.hangDir, { recursive: true });
-  writeFileSync(join(options.hangDir, `hang-${options.kind}-seed${options.seed}-${index}.dap`), `${source}\n`);
+  writeFileSync(join(options.hangDir, `hang-${options.kind}-seed${options.seed}-${index}.thinkflow`), `${source}\n`);
 }
 
 // cost: time O(count·build), heap O(k), stack O(1)

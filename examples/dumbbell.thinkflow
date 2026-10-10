@@ -1,0 +1,25 @@
+thinkflow
+title "인덱스 추가 전후 쿼리 지연"
+subtitle "같은 쿼리를 인덱스 추가 전과 후에 같은 데이터로 측정했다"
+
+chart latency "쿼리 p50 지연" dumbbell "예시 데이터. 쿼리마다 1,000회 측정. 가로 눈금은 로그" {
+  x "p50 지연(ms, 로그 눈금)"
+  scale log
+  series before "인덱스 없음" role=compare
+  series after "인덱스 있음" role=main
+  rule 100 "화면 응답 한도"
+  row "주문 목록 조회" before=420 before.low=380 before.high=470 after=38 after.low=33 after.high=44
+  row "상품 검색" before=1250 before.low=1100 before.high=1420 after=210 after.low=185 after.high=240
+  row "일별 매출 집계" before=3800 before.low=3500 before.high=4150 after=1900 after.low=1700 after.high=2150
+  row "회원 단건 조회" before=6 before.low=5 before.high=7 after=6.5 after.low=5.5 after.high=7.5
+}
+
+scene "전체 비교"
+
+scene "전에서 후로"
+  reveal latency.before
+  wait 1s
+  reveal latency.after
+
+scene "달라지지 않은 쿼리"
+  light latency "회원 단건 조회"

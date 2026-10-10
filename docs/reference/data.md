@@ -4,8 +4,8 @@
 
 ## 최소 예제
 
-```dap name=minimal
-daphnis 2
+```thinkflow name=minimal
+thinkflow
 title "회원과 주문"
 
 table users "users" {
@@ -24,7 +24,7 @@ scene "주문"
   show users "id 7 · kim@example.com" tag="행"
 ```
 
-![회원과 주문](data-minimal.svg)<!-- dap -->
+![회원과 주문](data-minimal.svg)<!-- thinkflow -->
 
 외래 키 선은 `fk=테이블.열`에서 생긴다. 열 줄은 `이름 타입`에 `pk`, `unique`, `nullable`, `required`, `fk=`, `ondelete=`를 이어 적는다. 외래 키 열의 `from="0..*" to="1"`은 각각 출발 테이블과 참조 대상 쪽 다중성이다. 값은 음이 아닌 정수, `*`, `0..1`이나 `1..*`처럼 순서가 맞는 범위이며 생략하면 표시하지 않는다.
 
@@ -38,8 +38,8 @@ scene "주문"
 
 한 열의 키는 위 예제처럼 열 옆에 적는다. 여러 열을 묶는 키는 테이블 안에서 `pk (열, ...)`, `unique (열, ...)`, `fk (열, ...) -> 테이블 (열, ...)`로 적는다. 괄호 문법은 열 하나에도 쓸 수 있으며 두 표기는 같은 키 모형으로 처리된다.
 
-```dap name=composite
-daphnis 2
+```thinkflow name=composite
+thinkflow
 title "조직 안에서 사용자를 찾는 주문"
 
 table users "users" {
@@ -63,7 +63,7 @@ scene "주문자 찾기"
   show users "tenant_id 3 · id 7" tag="행"
 ```
 
-![조직 안에서 사용자를 찾는 주문](data-composite.svg)<!-- dap -->
+![조직 안에서 사용자를 찾는 주문](data-composite.svg)<!-- thinkflow -->
 
 기본 키는 테이블에 하나다. 여러 열에 `pk`를 붙이면 그 열들을 묶은 기본 키 하나가 되고, 각각이 독립적인 고유 키가 되지는 않는다. `unique (tenant_id, email)`도 두 값의 조합이 고유하다는 뜻이다. 복합 키 일부를 참조하려면 그 일부에 별도의 고유 키가 있어야 한다.
 
@@ -75,7 +75,7 @@ scene "주문자 찾기"
 
 ## 장면과 움직임
 
-이동은 외래 키 선을 적은 방향으로 따라가고, 그 방향에 없으면 반대 방향을 거꾸로 따라갑니다. 같은 방향 외래 키가 둘 이상이면 `payments.order_id -> orders.id`처럼 열까지 적습니다. `light 테이블.열 테이블.열`은 열을 밝히고, `show 테이블 "글"`은 테이블 아래 카드에 예시 행을 보입니다. `nullable`과 `required`는 NULL 허용 여부를, `ondelete=cascade`와 `set-null`은 삭제 정책을 열 아래 줄에 보입니다. 같은 테이블의 서로 다른 두 열을 잇는 자기 참조 외래 키(`referrer_id bigint fk=users.id nullable`)는 카드 오른쪽 면을 도는 고리로 그립니다. 같은 열이나 카드 전체를 자기 자신에 잇는 선은 오류입니다(`an edge cannot go from "users.id" to itself`). [schema 예제](../../examples/schema.dap)가 키, 제약, 삭제 정책, 자기 참조 외래 키를 모두 씁니다.
+이동은 외래 키 선을 적은 방향으로 따라가고, 그 방향에 없으면 반대 방향을 거꾸로 따라갑니다. 같은 방향 외래 키가 둘 이상이면 `payments.order_id -> orders.id`처럼 열까지 적습니다. `light 테이블.열 테이블.열`은 열을 밝히고, `show 테이블 "글"`은 테이블 아래 카드에 예시 행을 보입니다. `nullable`과 `required`는 NULL 허용 여부를, `ondelete=cascade`와 `set-null`은 삭제 정책을 열 아래 줄에 보입니다. 같은 테이블의 서로 다른 두 열을 잇는 자기 참조 외래 키(`referrer_id bigint fk=users.id nullable`)는 카드 오른쪽 면을 도는 고리로 그립니다. 같은 열이나 카드 전체를 자기 자신에 잇는 선은 오류입니다(`an edge cannot go from "users.id" to itself`). [schema 예제](../../examples/schema.thinkflow)가 키, 제약, 삭제 정책, 자기 참조 외래 키를 모두 씁니다.
 
 ## 흔한 오류
 
@@ -88,4 +88,4 @@ scene "주문자 찾기"
 | 열 없는 테이블 | `table "t" has no columns` | `syntax` | 열을 하나 이상 둡니다 |
 | 선언하지 않은 테이블 | `unknown card "c". Did you mean "a"? Declared: a, b` | `syntax` | 이름을 고치거나 테이블을 선언합니다 |
 
-`code`는 `daphnis check figure.dap --json`으로 봅니다.
+`code`는 `thinkflow check figure.thinkflow --json`으로 봅니다.

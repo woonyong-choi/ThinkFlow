@@ -1,0 +1,73 @@
+thinkflow
+title "요청 지연 분포"
+subtitle "같은 표본 40개를 건수, 비율, 확률밀도 세 가지 눈금으로 나란히 본다"
+
+chart counts "구간별 요청 수" histogram "예시 데이터. 구간은 0~1000ms를 10개로 나눈다. 구간은 시작 값을 포함한다" {
+  x "응답 지연(ms)"
+  y "요청 수(건)"
+  bins 0 1000 10
+  sample 22
+  sample 31
+  sample 38
+  sample 45
+  sample 52
+  sample 58
+  sample 64
+  sample 71
+  sample 78
+  sample 84
+  sample 91
+  sample 100
+  sample 108
+  sample 117
+  sample 124
+  sample 133
+  sample 141
+  sample 156
+  sample 168
+  sample 177
+  sample 186
+  sample 199
+  sample 214
+  sample 233
+  sample 248
+  sample 270
+  sample 296
+  sample 318
+  sample 352
+  sample 391
+  sample 437
+  sample 486
+  sample 534
+  sample 601
+  sample 674
+  sample 748
+  sample 826
+  sample 913
+  sample 957
+  sample 1000
+}
+
+chart ratio "구간별 요청 비율" histogram "같은 표본을 JSON 파일에서 읽는다. 구간 비율의 합은 1이다" {
+  x "응답 지연(ms)"
+  y "비율(0~1)"
+  data "data/latency.json" at "/samples"
+  bins 0 1000 10 measure=probability
+}
+
+chart shape "자동 구간의 확률밀도" histogram "같은 JSON 표본. 막대 넓이의 합이 1이 된다" {
+  x "응답 지연(ms)"
+  y "밀도(1/ms)"
+  data "data/latency.json" at "/samples"
+  bins auto measure=density
+}
+
+scene "세 눈금"
+
+scene "느린 꼬리"
+  light counts x=900
+  light ratio x=900
+
+scene "100ms 경계"
+  light counts x=100
+  light ratio x=100

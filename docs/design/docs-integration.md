@@ -17,15 +17,15 @@
 
 ### 구성 요소 그림 변환
 
-1. 기여자가 `docs/assets/architecture.dap`를 고친다.
-2. 기여자가 저장소 루트에서 `python3 <스킬 폴더>/scripts/render_figures.py docs/assets/architecture.dap`를 실행한다.
-3. 스크립트가 `daphnis render --strict docs/assets/architecture.dap`를 부르고, 같은 폴더에 움직이는 SVG `architecture.svg`가 생긴다.
+1. 기여자가 `docs/assets/architecture.thinkflow`를 고친다.
+2. 기여자가 저장소 루트에서 `python3 <스킬 폴더>/scripts/render_figures.py docs/assets/architecture.thinkflow`를 실행한다.
+3. 스크립트가 `thinkflow render --strict docs/assets/architecture.thinkflow`를 부르고, 같은 폴더에 움직이는 SVG `architecture.svg`가 생긴다.
 4. 그림 검사 오류가 있으면 스크립트가 실패하고 결과 파일은 생기지 않는다.
 
 ### 실험 차트 변환
 
 1. `03-analyze`가 `results/summary.json`을 쓴다.
-2. `results/figures/accuracy.dap`의 `data "../summary.json" at "/accuracy"`가 그 값을 읽는다.
+2. `results/figures/accuracy.thinkflow`의 `data "../summary.json" at "/accuracy"`가 그 값을 읽는다.
 3. 원본에 숫자를 손으로 적지 않는다.
 
 ## 상세 설계
@@ -72,7 +72,7 @@
 
 ### 디자인 기준과 수용 게이트
 
-시각 기준은 Things 공식 사이트 [culturedcode.com/things](https://culturedcode.com/things/), [기능 페이지](https://culturedcode.com/things/features/), 공식 네이티브 앱 화면 이미지다. 제목은 제목, 재생 조작은 조작, 카드는 카드처럼 역할이 같은 요소끼리 비교한다. 앱 화면 이미지도 역할 기준으로 유효하며 클래식 macOS 앱을 통째로 기준에서 빼지 않는다. 다만 지금 쓰는 앱 이미지는 2017년 사이트 영상 화면과 라이트·다크가 함께 있는 2018년 Things 3.7 화면이라 보조 참고이고, 현재 네이티브 버전과 같다는 근거가 아니다. UML 기호, 차트, 구성도처럼 직접 대응이 없는 요소는 같은 글자·면·선 규칙을 적용한 Daphnis 확장이지 Things의 구성 요소가 아니다. 예전에 쓰던 Refero 화면은 정규화한 측정값과 재구성 예제라 보조 참고일 뿐 기준이 아니다. Things의 로고와 제품 화면은 포함하지 않으며 별도 소개·문서 사이트도 만들지 않는다.
+시각 기준은 Things 공식 사이트 [culturedcode.com/things](https://culturedcode.com/things/), [기능 페이지](https://culturedcode.com/things/features/), 공식 네이티브 앱 화면 이미지다. 제목은 제목, 재생 조작은 조작, 카드는 카드처럼 역할이 같은 요소끼리 비교한다. 앱 화면 이미지도 역할 기준으로 유효하며 클래식 macOS 앱을 통째로 기준에서 빼지 않는다. 다만 지금 쓰는 앱 이미지는 2017년 사이트 영상 화면과 라이트·다크가 함께 있는 2018년 Things 3.7 화면이라 보조 참고이고, 현재 네이티브 버전과 같다는 근거가 아니다. UML 기호, 차트, 구성도처럼 직접 대응이 없는 요소는 같은 글자·면·선 규칙을 적용한 ThinkFlow 확장이지 Things의 구성 요소가 아니다. 예전에 쓰던 Refero 화면은 정규화한 측정값과 재구성 예제라 보조 참고일 뿐 기준이 아니다. Things의 로고와 제품 화면은 포함하지 않으며 별도 소개·문서 사이트도 만들지 않는다.
 
 수용 게이트는 `npm test`와 별개의 화면 비교다. 모바일 320·390·430px와 데스크톱 실제 크기에서 공식 기준 화면과 나란히 비교하고, 라이트·다크와 정지·재생 중 상태를 확인한다. 필요한 브라우저가 없으면 게이트는 실패다. 건너뛴 검사를 통과로 세지 않는다. 자동 검사는 기능 증거이고 디자인 합격 증거가 아니며, 겹침·잘림 검사도 눈 검수를 대신하지 않는다. 정적 SVG 미리보기의 축소 이미지는 모바일 가독성 통과로 세지 않는다. 읽기용 화면은 모든 판이 같은 비율로 줄어드는 공통 맞춤과 전체화면 확대를 쓴다.
 
@@ -115,7 +115,7 @@
 
 ### 색 역할
 
-공통 색과 그림 전용 색은 공통 디자인 정본에서 관리한다. 기본 단계와 역할 토큰을 구분하며 코드와 CSS는 역할 토큰만 사용한다. Daphnis는 해시가 있는 공통 완성본 하나를 가져오고 같은 토큰을 다시 정의하지 않는다. 가져온 사본(`src/vendor/theme/`)과 생성 토큰은 손으로 고치지 않는다. 수치는 [라이트 사본](../../src/vendor/theme/tokens.json)과 [다크 사본](../../src/vendor/theme/tokens.dark.json)에서 확인하며 계산값 표를 문서에 복사하지 않는다.
+공통 색과 그림 전용 색은 공통 디자인 정본에서 관리한다. 기본 단계와 역할 토큰을 구분하며 코드와 CSS는 역할 토큰만 사용한다. ThinkFlow는 해시가 있는 공통 완성본 하나를 가져오고 같은 토큰을 다시 정의하지 않는다. 가져온 사본(`src/vendor/theme/`)과 생성 토큰은 손으로 고치지 않는다. 수치는 [라이트 사본](../../src/vendor/theme/tokens.json)과 [다크 사본](../../src/vendor/theme/tokens.dark.json)에서 확인하며 계산값 표를 문서에 복사하지 않는다.
 
 독립 SVG는 배경, 공통 정의(`defs`), 정지·재생 층과 스타일을 모두 조립한 뒤 필요한 토큰과 그 의존성을 내장한다. HTML도 차트 움직임을 포함한 최종 스타일과 그림 틀을 조립한 뒤 토큰을 고른다. 토큰 사용량을 계산한 뒤 별도 스타일이나 마크업을 덧붙이지 않는다. 두 출력에 필수 변수 정의가 있는지는 `test/exports.test.js`의 `renderers_embed_required_style_variables` 시험으로 확인한다. 기본값이 있는 선택 변수와 실제 히트맵 칸이 공급하는 강도 변수는 해당 사용 조건을 함께 확인한다.
 
@@ -198,8 +198,8 @@
 
 | 스킬 규칙 | 이 도구 |
 |---|---|
-| 변환은 `render_figures`로만 | `render_figures`가 `.dap` 원본마다 `daphnis render --strict`를 부른다. 경고도 실패다 |
-| 실험 차트의 자료 출처와 신뢰구간 | 문서 작성 과정에서 확인한다. Daphnis는 inline 행과 외부 JSON의 값·구간 유효성을 검사한다([차트](charts.md#값-출처)) |
+| 변환은 `render_figures`로만 | `render_figures`가 `.thinkflow` 원본마다 `thinkflow render --strict`를 부른다. 경고도 실패다 |
+| 실험 차트의 자료 출처와 신뢰구간 | 문서 작성 과정에서 확인한다. ThinkFlow는 inline 행과 외부 JSON의 값·구간 유효성을 검사한다([차트](charts.md#값-출처)) |
 | 원본과 만든 그림 함께 커밋 | 그대로 |
 | 변환 뒤 그림을 열어 겹침, 잘림, 빈 영역 확인 | [그림 검사](figure-check.md)는 겹침과 잘림의 자동 증거를 낸다. 눈 확인을 대신하지 않으며 빈 영역은 검사 항목이 없다 |
 | 다시 변환 뒤 `git diff` 없음 | [배치](layout.md)의 결정성 요구사항이 지킨다 |
@@ -211,12 +211,12 @@
 ### 바꾸는 순서
 
 1. 이 도구가 스킬의 다섯 그림(맥락, 구성 요소, 순서, 상태, 데이터)과 스킬이 쓰는 차트 종류를 구현하고, 모든 예제가 그림 검사를 통과한다.
-2. repo-docs-figures 스킬의 도구 표, 색표, D2 절, Vega-Lite 절을 이 도구 기준으로 다시 쓰고, `render_figures`에 `.dap` 변환을 넣는다.
+2. repo-docs-figures 스킬의 도구 표, 색표, D2 절, Vega-Lite 절을 이 도구 기준으로 다시 쓰고, `render_figures`에 `.thinkflow` 변환을 넣는다.
 3. 스킬 저장소의 형식 검사가 `total 0`이 된 뒤 skill-sync로 설치한다.
-4. 문서 저장소마다 `docs/assets/*.d2`와 `*.vl.json`을 `.dap`로 옮기고 다시 변환한다. 옮긴 뒤 D2와 Vega-Lite 변환 분기를 지운다.
+4. 문서 저장소마다 `docs/assets/*.d2`와 `*.vl.json`을 `.thinkflow`로 옮기고 다시 변환한다. 옮긴 뒤 D2와 Vega-Lite 변환 분기를 지운다.
 
 - 1번이 끝나기 전에 스킬을 바꾸지 않는다. 없는 도구를 쓰라고 적는 스킬은 스킬의 정직한 상태 규칙을 어기기 때문이다.
-- 이 도구의 다음 판은 `daphnis` 2다. 원본의 첫 비주석 의미 줄은 `daphnis 2`여야 하고, 판 1이거나 판 줄이 없으면 줄 위치와 함께 오류다. 읽는 어댑터와 옛 이름 전용 경로는 없고 읽는 확장자는 `.dap`뿐이다. 스킬의 변환 명령은 `daphnis`만 부른다.
+- 원본의 첫 비주석 의미 줄은 숫자나 옵션 없는 `thinkflow`다. 시작 선언이 없거나 잘못되면 줄 위치와 함께 오류다. 읽는 어댑터와 옛 이름 전용 경로는 없고 읽는 확장자는 `.thinkflow`뿐이다. 스킬의 변환 명령은 `thinkflow`만 부른다.
 
 ### 요구사항
 

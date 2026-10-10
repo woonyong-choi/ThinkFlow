@@ -40,7 +40,7 @@ jobs:
       - run: npm run check:sources
       - run: npm run check:figures
       - name: Check installed npm package
-        run: npm run check:package -- "$RUNNER_TEMP/daphnis-package"
+        run: npm run check:package -- "$RUNNER_TEMP/thinkflow-package"
       - name: Publish to npm
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

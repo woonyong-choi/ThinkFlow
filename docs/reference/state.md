@@ -4,8 +4,8 @@
 
 ## 최소 예제
 
-```dap name=minimal
-daphnis 2
+```thinkflow name=minimal
+thinkflow
 title "작업 상태"
 
 state queued "대기"
@@ -33,7 +33,7 @@ scene "재시도"
   failed -> queued time=700ms
 ```
 
-![작업 상태](state-minimal.svg)<!-- dap -->
+![작업 상태](state-minimal.svg)<!-- thinkflow -->
 
 `start`는 처음 상태, `final`은 끝 상태입니다. 전이마다 사건 글이 필수입니다. 같은 이동 글을 따로 적으면 선 라벨과 겹치므로 이동에는 글을 붙이지 않았습니다.
 
@@ -43,7 +43,7 @@ scene "재시도"
 
 ## 장면과 움직임
 
-장면의 이동은 전이를 따라가며 `light`로 상태나 그룹을 밝힐 수 있습니다. 자기 전이(`a -> a "재시도"`)는 상태 위의 고리로 그립니다. `start`는 없거나 하나이고, 채운 점과 겹원으로 가는 선은 이동 대상이 아닙니다. 상태에는 `show`, `clear`, `status`를 쓸 수 없습니다. 상태를 `group`으로 묶어 단계 구분을 보일 수 있고, 그룹은 전이의 끝이 될 수 없습니다. 여러 갈래 전이와 자기 전이, 그룹, 점선 전이는 [state 예제](../../examples/state.dap)에 있습니다.
+장면의 이동은 전이를 따라가며 `light`로 상태나 그룹을 밝힐 수 있습니다. 자기 전이(`a -> a "재시도"`)는 상태 위의 고리로 그립니다. `start`는 없거나 하나이고, 채운 점과 겹원으로 가는 선은 이동 대상이 아닙니다. 상태에는 `show`, `clear`, `status`를 쓸 수 없습니다. 상태를 `group`으로 묶어 단계 구분을 보일 수 있고, 그룹은 전이의 끝이 될 수 없습니다. 여러 갈래 전이와 자기 전이, 그룹, 점선 전이는 [state 예제](../../examples/state.thinkflow)에 있습니다.
 
 ## 흔한 오류
 
@@ -56,4 +56,4 @@ scene "재시도"
 | 선언하지 않은 전이로 이동 | `there is no edge between "a" and "b". Declare "a -> b" first` | `syntax` | 전이를 먼저 선언합니다 |
 | 상태에 `status` | `a state takes no status. Use status on box, circle, external, store, person, queue, decision` | `syntax` | 상자 같은 카드에 씁니다 |
 
-`code`는 `daphnis check figure.dap --json`으로 봅니다.
+`code`는 `thinkflow check figure.thinkflow --json`으로 봅니다.

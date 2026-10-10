@@ -1,4 +1,4 @@
-// Daphnis는 문법 원본과 정본 HTML만 제공하고 조작과 알림은 공통 도구 막대가 맡는다.
+// ThinkFlow는 문법 원본과 정본 HTML만 제공하고 조작과 알림은 공통 도구 막대가 맡는다.
 const REVOKE_DELAY_MS = 10_000;
 
 function bindExport(root) {
@@ -31,5 +31,5 @@ function downloadDocument() {
 // 문서 제목에서 파일 이름을 만든다. 파일 이름에 못 쓰는 글자와 공백은 줄표로 바꾼다.
 function downloadName() {
   const stem = document.title.replace(/[\\/:*?"<>|\u0000-\u001f\s]+/g, '-').replace(/^[-.]+|[-.]+$/g, '');
-  return `${stem || 'daphnis'}.html`;
+  return `${stem || 'thinkflow'}.html`;
 }

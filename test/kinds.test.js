@@ -8,7 +8,7 @@ import { headReach } from '../src/draw/arrow.js';
 import { measure } from '../src/measure/fonts.js';
 import { STYLE } from '../src/measure/texts.js';
 import { values } from '../src/vendor/theme/tokens.js';
-import { build, dap, finalValue, findAll, lineOf, num, parseMarkup, reject, stillDom, textContent, textsOf, toHtml, toSvg, visibleTexts } from './support.js';
+import { build, thinkflow, finalValue, findAll, lineOf, num, parseMarkup, reject, stillDom, textContent, textsOf, toHtml, toSvg, visibleTexts } from './support.js';
 
 const rejectedAt = async (source, needle, pattern) => {
   const problems = await reject(source);
@@ -21,7 +21,7 @@ const at = (dom, label) => {
 };
 
 test('K-arch a group holds boxes with badges, replica counts, icons and numbered edges; a quiet edge must be walked', async () => {
-  const source = (scene) => dap(`
+  const source = (scene) => thinkflow(`
     person u "User"
     group cloud "Cloud" direction=down badge="Zone" {
       box web "Web" count=3 badge="L7" icon=server
@@ -44,25 +44,25 @@ test('K-arch a group holds boxes with badges, replica counts, icons and numbered
     ['box a "A"\nbox b "B"\na -> b no=0', /./],
     ['box a "A"\nbox b "B"\na -> b no=1.5', /./],
   ]) {
-    const bad = dap(`${line}\n`);
+    const bad = thinkflow(`${line}\n`);
     assert.ok((await reject(bad)).length, line);
     assert.ok((await reject(bad)).some((p) => pattern.test(p.message)), `${line}: ${JSON.stringify(await reject(bad))}`);
   }
   // 번호는 겹쳐도 된다
-  await build(dap('box a "A"\nbox b "B"\nbox c "C"\na -> b no=1\nb -> c no=1\n'));
+  await build(thinkflow('box a "A"\nbox b "B"\nbox c "C"\na -> b no=1\nb -> c no=1\n'));
 });
 
 test('K-arch edges to a group and its own members, to itself, or twice in one direction are errors; opposite directions may coexist', async () => {
-  const group = dap('group g "G" {\n  box a "A"\n}\ng -> a\n');
+  const group = thinkflow('group g "G" {\n  box a "A"\n}\ng -> a\n');
   await rejectedAt(group, 'g -> a');
-  await rejectedAt(dap('box a "A"\na -> a\n'), 'a -> a');
-  await rejectedAt(dap('box a "A"\nbox b "B"\na -> b\na -> b "again"\n'), 'a -> b "again"', /already an edge/);
-  await build(dap('box a "A"\nbox b "B"\na -> b\nb -> a\n'));
-  await rejectedAt(dap('box a "A"\ngroup g "G" {\n}\n'), 'group g', /group "g" is empty/);
+  await rejectedAt(thinkflow('box a "A"\na -> a\n'), 'a -> a');
+  await rejectedAt(thinkflow('box a "A"\nbox b "B"\na -> b\na -> b "again"\n'), 'a -> b "again"', /already an edge/);
+  await build(thinkflow('box a "A"\nbox b "B"\na -> b\nb -> a\n'));
+  await rejectedAt(thinkflow('box a "A"\ngroup g "G" {\n}\n'), 'group g', /group "g" is empty/);
 });
 
 test('K-class members read as visibility marks; abstract and interface say so; multiplicity labels sit on their ends', async () => {
-  const source = dap(`
+  const source = thinkflow(`
     interface repo "Repo" {
       method save "(x: T): void" visibility=public
     }
@@ -83,18 +83,18 @@ test('K-class members read as visibility marks; abstract and interface say so; m
 
 test('K-class relations: multiplicity only where it means something, no inheritance loop, members unique, relations only between classes', async () => {
   const base = 'class a "A" {\n  field n "int"\n}\nclass b "B" {\n  field n "int"\n}\nbox x "X"\n';
-  await rejectedAt(dap(`${base}a -> b relation=inheritance from="1"\n`), 'relation=inheritance', /multiplicity/);
-  const loop = dap(`${base}a -> b relation=inheritance\nb -> a relation=inheritance\n`);
+  await rejectedAt(thinkflow(`${base}a -> b relation=inheritance from="1"\n`), 'relation=inheritance', /multiplicity/);
+  const loop = thinkflow(`${base}a -> b relation=inheritance\nb -> a relation=inheritance\n`);
   assert.ok((await reject(loop)).length);
-  await rejectedAt(dap('class a "A" {\n  field n "int"\n  field n "long"\n}\n'), 'field n "long"', /already/);
-  await rejectedAt(dap(`${base}a -> x relation=association\n`), 'relation=association');
-  await rejectedAt(dap(`${base}a -> b relation=nonsense\n`), 'relation=nonsense');
-  await rejectedAt(dap('class a "A" {\n  field n "int"\n'), 'class a', /./);
-  await build(dap(`${base}a -> b from="1" to="*"\n`));
+  await rejectedAt(thinkflow('class a "A" {\n  field n "int"\n  field n "long"\n}\n'), 'field n "long"', /already/);
+  await rejectedAt(thinkflow(`${base}a -> x relation=association\n`), 'relation=association');
+  await rejectedAt(thinkflow(`${base}a -> b relation=nonsense\n`), 'relation=nonsense');
+  await rejectedAt(thinkflow('class a "A" {\n  field n "int"\n'), 'class a', /./);
+  await build(thinkflow(`${base}a -> b from="1" to="*"\n`));
 });
 
 test('K-sequence messages run top to bottom in the order written; notes and branches are drawn; the participant row is the view', async () => {
-  const source = dap(`
+  const source = thinkflow(`
     person a "A"
     box b "B"
     box c "C"
@@ -129,7 +129,7 @@ test('K-sequence messages run top to bottom in the order written; notes and bran
 
 test('K-view a panel is as wide as its title needs; a long Korean or Latin title stays inside the panel and the figure, and the content stays centered inside it', async () => {
   const long = '매우 긴 한국어 패널 이름을 반복해서 적어도 그림 안에서 잘리지 않는지 확인하는 호출 순서 long-latin-identifier-name-for-a-view';
-  const views = (graphTitle) => dap(`
+  const views = (graphTitle) => thinkflow(`
     person a "A"
     box b "B"
     view graph ${graphTitle} {
@@ -165,13 +165,13 @@ test('K-view a panel is as wide as its title needs; a long Korean or Latin title
 
 test('K-sequence a message needs text; a fragment names a branch; an activation closes; an and-beat cannot carry messages', async () => {
   const head = 'person a "A"\nbox b "B"\nview sequence {\n  a\n  b\n}\nscene "s" mode=static\n';
-  await rejectedAt(dap(`${head}  a -> b\n`), '  a -> b', /needs text/);
-  await rejectedAt(dap(`${head}  a -> b "x"\n  activate b\n`), 'activate b', /deactivate/);
-  await rejectedAt(dap(`${head}  activate b\n`), 'activate b', /follows a message/);
-  await rejectedAt(dap(`${head}  fragment alt "p" choose="zz" {\n    branch "yes" {\n      a -> b "x"\n    }\n  }\n`), 'fragment alt', /branch/);
-  await rejectedAt(dap(`${head}  a -> b "x" & b -> a "y"\n`), '&', /./);
-  await rejectedAt(dap(`${head}  fragment maybe "p" {\n    branch "yes" {\n      a -> b "x"\n    }\n  }\n`), 'fragment maybe');
-  await rejectedAt(dap(`${head}  fragment alt "p" {\n    branch "yes" {\n      a -> b "x"\n`), 'fragment alt');
+  await rejectedAt(thinkflow(`${head}  a -> b\n`), '  a -> b', /needs text/);
+  await rejectedAt(thinkflow(`${head}  a -> b "x"\n  activate b\n`), 'activate b', /deactivate/);
+  await rejectedAt(thinkflow(`${head}  activate b\n`), 'activate b', /follows a message/);
+  await rejectedAt(thinkflow(`${head}  fragment alt "p" choose="zz" {\n    branch "yes" {\n      a -> b "x"\n    }\n  }\n`), 'fragment alt', /branch/);
+  await rejectedAt(thinkflow(`${head}  a -> b "x" & b -> a "y"\n`), '&', /./);
+  await rejectedAt(thinkflow(`${head}  fragment maybe "p" {\n    branch "yes" {\n      a -> b "x"\n    }\n  }\n`), 'fragment maybe');
+  await rejectedAt(thinkflow(`${head}  fragment alt "p" {\n    branch "yes" {\n      a -> b "x"\n`), 'fragment alt');
 });
 
 test('K-sequence #179 a fragment never changes what a card shows: a scene that starts with one, ends with one, nests one, disables one or has only skipped ones all keep the declared value and the shown rows', async () => {
@@ -188,7 +188,7 @@ test('K-sequence #179 a fragment never changes what a card shows: a scene that s
     ['a fragment between two scenes of one card', 'u\n  a', `scene "s" mode=static\n  u -> a "go"\n  show a "SHOWN"\n${loop}scene "t" mode=static\n`, { COUNT: true, SHOWN: true }],
   ];
   for (const [name, order, body, expected] of cases) {
-    const source = dap(head(order) + body);
+    const source = thinkflow(head(order) + body);
     const figure = await build(source);
     for (const options of [{ isStatic: true }, {}]) parseMarkup(await toSvg(figure, options));
     await toHtml(figure);
@@ -202,7 +202,7 @@ test('K-sequence #179 a fragment never changes what a card shows: a scene that s
 });
 
 test('K-state states are connected by labelled transitions; a self transition is allowed; start and final points take no label', async () => {
-  const source = dap(`
+  const source = thinkflow(`
     state s1 "Idle"
     state s2 "Busy"
     start s1
@@ -212,11 +212,11 @@ test('K-state states are connected by labelled transitions; a self transition is
   `);
   const texts = textsOf(await stillDom(source));
   for (const word of ['Idle', 'Busy', 'go', 'again']) assert.ok(texts.includes(word), word);
-  await rejectedAt(dap('state s1 "A"\nstate s2 "B"\ns1 -> s2\n'), 's1 -> s2', /label|event/);
+  await rejectedAt(thinkflow('state s1 "A"\nstate s2 "B"\ns1 -> s2\n'), 's1 -> s2', /label|event/);
 });
 
 test('K-state a self transition loops out of the card by at least three arrowhead lengths, so it reads as a loop and not as its own arrowhead', async () => {
-  const { scene } = await build(dap('state a "A"\nstate b "B"\na -> a "retry"\na -> b "go"\n'));
+  const { scene } = await build(thinkflow('state a "A"\nstate b "B"\na -> a "retry"\na -> b "go"\n'));
   const card = scene.items.find((item) => item.id === 'a');
   const loop = scene.edges.find((e) => e.from === 'a' && e.to === 'a').points;
   const { length, half } = headReach(values["border-width"].edge);
@@ -228,7 +228,7 @@ test('K-state a self transition loops out of the card by at least three arrowhea
 
 test('K-trace spans sit on a linear time axis: position follows "at", length follows "dur", for both units', async () => {
   for (const unit of ['ms', 'us', 's']) {
-    const source = dap(`
+    const source = thinkflow(`
       box a "A"
       trace t "T" unit=${unit} {
         span one "ONE" lane=a at=0 dur=100
@@ -249,7 +249,7 @@ test('K-trace spans sit on a linear time axis: position follows "at", length fol
 });
 
 test('K-trace #170 a narrow time panel preserves duration ratios and puts long labels above their spans', async () => {
-  const source = dap(`
+  const source = thinkflow(`
     box a "긴 한국어 서비스 이름이 있는 레인"
     trace t "요청 시간 추적" unit=ms {
       span first "POST /api/orders/long-request-identifier/subscriptions/long-lived-reference" lane=a at=0 dur=100
@@ -283,16 +283,16 @@ test('K-trace span rules: all three options are required, lanes are declared car
     ['span s "S" lane=a at=0 dur=0', /./],
     ['span s "S" lane=a at=-1 dur=1', /./],
   ]) {
-    const source = dap(`${head}  ${line}\n}\n`);
+    const source = thinkflow(`${head}  ${line}\n}\n`);
     await rejectedAt(source, line, pattern);
   }
-  await rejectedAt(dap(`${head}  span s "S" lane=a at=0 dur=1\n  span s "T" lane=a at=1 dur=1\n}\n`), 'span s "T"', /already/);
-  await rejectedAt(dap('box a "A"\ntrace t "T" unit=h {\n  span s "S" lane=a at=0 dur=1\n}\n'), 'trace t');
-  assert.ok((await reject(dap('box a "A"\ntrace t "T" {\n}\n'))).length, 'an empty trace');
+  await rejectedAt(thinkflow(`${head}  span s "S" lane=a at=0 dur=1\n  span s "T" lane=a at=1 dur=1\n}\n`), 'span s "T"', /already/);
+  await rejectedAt(thinkflow('box a "A"\ntrace t "T" unit=h {\n  span s "S" lane=a at=0 dur=1\n}\n'), 'trace t');
+  assert.ok((await reject(thinkflow('box a "A"\ntrace t "T" {\n}\n'))).length, 'an empty trace');
 });
 
 test('K-queue a count past its ends warns (an error under strict) while exactly empty or exactly full does not', async () => {
-  const queue = (moves) => dap(`box a "A"\nqueue q "Q" slots=2\nvalue len "len" on=a ref=q\na -> q\nscene "s" mode=static\n${moves.map((m) => `  ${m}`).join('\n')}\n`);
+  const queue = (moves) => thinkflow(`box a "A"\nqueue q "Q" slots=2\nvalue len "len" on=a ref=q\na -> q\nscene "s" mode=static\n${moves.map((m) => `  ${m}`).join('\n')}\n`);
   await build(queue(['a -> q set="q+2"']));
   await build(queue(['a -> q set="q+1"', 'a -> q set="q-1"']));
   const under = queue(['a -> q set="q-1"']);
@@ -307,7 +307,7 @@ test('K-queue a count past its ends warns (an error under strict) while exactly 
 });
 
 test('K-grid cells connect to cells, never to themselves, never to a gap, and a grid cannot take show', async () => {
-  const grid = (extra) => dap(`grid g "G" rows=2 cols=4 {\n  item a "A" cols=2\n  item b "B" col=2 cols=2\n  gap x "Rest" count=9 row=1 cols=4\n}\n${extra}`);
+  const grid = (extra) => thinkflow(`grid g "G" rows=2 cols=4 {\n  item a "A" cols=2\n  item b "B" col=2 cols=2\n  gap x "Rest" count=9 row=1 cols=4\n}\n${extra}`);
   await build(grid('g.a -> g.b\n'));
   await rejectedAt(grid('g.a -> g.a\n'), 'g.a -> g.a');
   await rejectedAt(grid('g.a -> g.x\n'), 'g.a -> g.x');

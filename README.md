@@ -1,13 +1,13 @@
-# daphnis
+# ThinkFlow
 
 English | [한국어](README.ko.md)
 
-Turn one `.dap` text source into an animated SVG figure for documentation: structure, sequences, states, schemas, classes, traces, and charts, with values that change as dots arrive.
+Turn one `.thinkflow` text source into an animated SVG figure for documentation: structure, sequences, states, schemas, classes, traces, and charts, with values that change as dots arrive.
 
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="docs/assets/daphnis-lockup-dark.svg">
-    <img src="docs/assets/daphnis-lockup-light.svg" alt="daphnis" width="260">
+    <source media="(prefers-color-scheme: dark)" srcset="docs/assets/thinkflow-dark.svg">
+    <img src="docs/assets/thinkflow-light.svg" alt="ThinkFlow" width="160">
   </picture>
 </p>
 
@@ -18,12 +18,12 @@ Turn one `.dap` text source into an animated SVG figure for documentation: struc
   </picture>
 </p>
 
-Dots in a figure start at their own times and move at their own pace, so one scene shows several flows running at once, values changing as dots arrive, a queue filling, and a message lost on the way. A source declares cards (boxes, tables, APIs, classes, grids, charts, traces) and then lists scenes. Cards that no `view` line lists get a view by default (a graph for most cards, a plot for a chart with no edges, a time view for a trace), and you write `view graph`, `view sequence`, `view plot`, or `view time` to choose yourself. The same card can appear in several views, and one event moves it in all of them. daphnis measures text with the fonts it embeds, lays out with elkjs, checks the result for overlaps, and writes an animated SVG or an HTML player.
+Dots in a figure start at their own times and move at their own pace, so one scene shows several flows running at once, values changing as dots arrive, a queue filling, and a message lost on the way. A source declares cards (boxes, tables, APIs, classes, grids, charts, traces) and then lists scenes. Cards that no `view` line lists get a view by default (a graph for most cards, a plot for a chart with no edges, a time view for a trace), and you write `view graph`, `view sequence`, `view plot`, or `view time` to choose yourself. The same card can appear in several views, and one event moves it in all of them. ThinkFlow measures text with the fonts it embeds, lays out with elkjs, checks the result for overlaps, and writes an animated SVG or an HTML player.
 
 ## How it works
 
 ```text
-daphnis 2
+thinkflow
 title "Saturn"
 
 person user "Developer"
@@ -49,20 +49,20 @@ scene "Chat"
   <img src="docs/assets/how-it-works-light.svg" alt="Figure rendered from the source above: the developer's question moves from Screen to Engine, then to Codex CLI">
 </picture>
 
-1. The first line is the grammar version, `daphnis 2`. Then come cards and edges, optional `view` lines, and scenes from `scene` on. No view is written here: the cards go into one left-to-right graph by default. A scene has one name; its `mode` (`static`, `once`, or `loop`) is `once` when the scene has lines and `static` when it is empty, unless you write it. The explanation lives in the surrounding document, not in the figure.
-2. daphnis lays out the cards inside `system` from top to bottom and the rest from left to right.
+1. The first line is `thinkflow`, without a version number. Then come cards and edges, optional `view` lines, and scenes from `scene` on. No view is written here: the cards go into one left-to-right graph by default. A scene has one name; its `mode` (`static`, `once`, or `loop`) is `once` when the scene has lines and `static` when it is empty, unless you write it. The explanation lives in the surrounding document, not in the figure.
+2. ThinkFlow lays out the cards inside `system` from top to bottom and the rest from left to right.
 3. In the first beat a dot moves from `user` to `tui`, and the card inside `tui` fills in when the dot arrives.
-4. A typo such as `engine -> cdex` stops the build with `how-it-works.dap:19: unknown card "cdex". Did you mean "codex"? Declared: codex, engine, system, tui, user`.
+4. A typo such as `engine -> cdex` stops the build with `how-it-works.thinkflow:19: unknown card "cdex". Did you mean "codex"? Declared: codex, engine, system, tui, user`.
 
 ## Installation
 
-Requirements: Node.js 20 or later. The current source uses `daphnis 2`. The npm release `0.1.3` uses the previous grammar, so install the current source for the examples in this document.
+Requirements: Node.js 20 or later. Install the current source until the first ThinkFlow npm release is published.
 
 ```sh
-npm install --save-dev github:woonyong-choi/daphnis#main
+npm install --save-dev github:woonyong-choi/ThinkFlow#main
 ```
 
-Run it with `npx daphnis <command>`. The package also includes an ESM API and TypeScript declarations for Node.js.
+Run it with `npx thinkflow <command>`. The package also includes an ESM API and TypeScript declarations for Node.js.
 
 ## Gallery
 
@@ -89,10 +89,10 @@ Start with the [detailed usage guide](docs/usage.md) (Korean) for authoring, ani
 
 ### Render one figure
 
-Save the source from [How it works](#how-it-works) as `how-it-works.dap` and run:
+Save the source from [How it works](#how-it-works) as `how-it-works.thinkflow` and run:
 
 ```sh
-npx daphnis render how-it-works.dap --html
+npx thinkflow render how-it-works.thinkflow --html
 ```
 
 ```text
@@ -100,23 +100,23 @@ how-it-works.svg
 how-it-works.html
 ```
 
-The SVG animates without scripts and plays the first scene by its `mode`; `--scene 2` or `--scene "Chat"` picks another scene. A scene name made only of digits is an error, because `--scene` would read it as a scene number. The HTML adds scene tabs and a toolbar on the figure, and a scene never advances to the next one by itself. The toolbar is the same for every figure, standalone or embedded, and holds three actions, left to right: copy the `.dap` source, download the figure as standalone HTML, and fullscreen (which also zooms). The toolbar is not set per figure in the source. There are no play, pause, speed, or repeat buttons; each scene's `mode` decides how it plays. `--static` writes a still SVG of the chosen scene's last state: no dots or pulses, values, cards, and charts at their final state, and any `light` the scene left on. A document without scenes is a still figure that shows the values it declares. An animated SVG used as an `<img>` cannot honor `prefers-reduced-motion` in Chrome; inline it, open it directly, or use `<picture>` with a `media` source that points to the `--static` SVG.
+The SVG animates without scripts and plays the first scene by its `mode`; `--scene 2` or `--scene "Chat"` picks another scene. A scene name made only of digits is an error, because `--scene` would read it as a scene number. The HTML adds scene tabs and a toolbar on the figure, and a scene never advances to the next one by itself. The toolbar is the same for every figure, standalone or embedded, and holds three actions, left to right: copy the `.thinkflow` source, download the figure as standalone HTML, and fullscreen (which also zooms). The toolbar is not set per figure in the source. There are no play, pause, speed, or repeat buttons; each scene's `mode` decides how it plays. `--static` writes a still SVG of the chosen scene's last state: no dots or pulses, values, cards, and charts at their final state, and any `light` the scene left on. A document without scenes is a still figure that shows the values it declares. An animated SVG used as an `<img>` cannot honor `prefers-reduced-motion` in Chrome; inline it, open it directly, or use `<picture>` with a `media` source that points to the `--static` SVG.
 
 ### Check a figure
 
 ```sh
-npx daphnis check how-it-works.dap --strict --json
+npx thinkflow check how-it-works.thinkflow --strict --json
 ```
 
 The command prints nothing and exits with 0 when the figure has no errors or warnings. `--strict` fails on warnings. `--json` prints one `{ file, line, message, severity, code, column }` object per diagnostic. A figure that would generate more than a budget allows (for example a grid with hundreds of thousands of cells) fails with a `budget-exceeded` error before any file is written; `--budget grid-elements=2000000` raises it, and `render`, `check`, `gallery`, and `md` all take `--budget name=value`.
 
 ### Keep figures in a Markdown document
 
-Write the source in a `dap` code block and run `daphnis md`:
+Write the source in a `thinkflow` code block and run `thinkflow md`:
 
 ````text
-```dap name=request
-daphnis 2
+```thinkflow name=request
+thinkflow
 box client "Client"
 box server "Server"
 client -> server "GET /orders"
@@ -124,12 +124,12 @@ client -> server "GET /orders"
 ````
 
 ```sh
-npx daphnis md guide.md
+npx thinkflow md guide.md
 ```
 
-The command writes `guide-request.svg` next to the document and puts `![request](guide-request.svg)<!-- dap -->` right below the block. The alt text is the block's `title`, or its name when there is no title. Run it again and nothing changes.
+The command writes `guide-request.svg` next to the document and puts `![request](guide-request.svg)<!-- thinkflow -->` right below the block. The alt text is the block's `title`, or its name when there is no title. Run it again and nothing changes.
 
-Renaming a `dap` block removes the old SVG, `--out-dir images` writes the SVG files into that folder and points the image lines there (SVG files already next to the document stay, so delete them by hand), and `--check` writes nothing and exits with 1 when a document or SVG is out of date. `--fold` shows the figure first and folds each `dap` block into a `<details>` section (`--fold-title "text"` sets the summary text), `--unfold` undoes only the folds daphnis made, and without either option a document keeps its folded state; the GitHub Action takes the same choice as the `fold` and `fold-title` inputs. A document only writes and removes the SVG files it made. If a block would write over an SVG made for another document, or over a file with no `daphnis md` mark, the command reports a conflict instead, and two runs cannot write to the same output folder at once. Any error in any block stops the command before it writes. See [Markdown](docs/design/markdown.md) for the rules.
+Renaming a `thinkflow` block removes the old SVG, `--out-dir images` writes the SVG files into that folder and points the image lines there (SVG files already next to the document stay, so delete them by hand), and `--check` writes nothing and exits with 1 when a document or SVG is out of date. `--fold` shows the figure first and folds each `thinkflow` block into a `<details>` section (`--fold-title "text"` sets the summary text), `--unfold` undoes only the folds thinkflow made, and without either option a document keeps its folded state; the GitHub Action takes the same choice as the `fold` and `fold-title` inputs. A document only writes and removes the SVG files it made. If a block would write over an SVG made for another document, or over a file with no `thinkflow md` mark, the command reports a conflict instead, and two runs cannot write to the same output folder at once. Any error in any block stops the command before it writes. See [Markdown](docs/design/markdown.md) for the rules.
 
 ### Keep them current in CI
 
@@ -137,9 +137,9 @@ This GitHub Action step fails a pull request when a source has a warning or a Ma
 
 ```yaml
 - uses: actions/checkout@v4
-- uses: woonyong-choi/daphnis@main
+- uses: woonyong-choi/ThinkFlow@main
   with:
-    paths: "docs/**/*.dap docs/**/*.md README.md"
+    paths: "docs/**/*.thinkflow docs/**/*.md README.md"
     mode: check   # check (default) or render
     strict: true  # also fail on warnings
     budget: "grid-elements=2000000"  # optional: raise generation budgets
@@ -150,18 +150,18 @@ This GitHub Action step fails a pull request when a source has a warning or a Ma
 ### Build from JavaScript or TypeScript
 
 ```js
-import { buildFigure, toSvg, toHtml } from 'daphnis';
+import { buildFigure, toSvg, toHtml } from 'thinkflow';
 
-const result = await buildFigure('daphnis 2\nbox server "Server"\n', { allowFileAccess: false });
+const result = await buildFigure('thinkflow\nbox server "Server"\n', { allowFileAccess: false });
 const svg = await toSvg(result);
 const html = await toHtml(result, 'Server');
 ```
 
 All three functions return promises. Pass the build result to the renderers unchanged and read `result.warnings` for diagnostics. Catch the exported `FigureError` and read its `problems` for source or layout errors. [The API guide](docs/usage.md#javascript에서-조립하기) defines options, diagnostic fields, and the opaque `BuiltFigure` type.
 
-### The grammar version
+### Source format
 
-A source must start with `daphnis 2`, and only `.dap` files are read. A file that starts with another version or has no version line is not read: the build stops with a diagnostic that names the line and column and writes nothing. daphnis has no command that rewrites old files, so write them in the current grammar ([Figure syntax](docs/design/figure-syntax.md#판과-없앤-형태) lists the removed statements and their replacements).
+A source must start with `thinkflow`, and only `.thinkflow` files are read. A file with a missing declaration or extra text after it is not read: the build stops with a diagnostic that names the line and column and writes nothing. ThinkFlow has no command that rewrites old files, so write them in the current grammar ([Figure syntax](docs/design/figure-syntax.md#시작-선언과-없앤-형태) lists the removed statements and their replacements).
 
 ## Features
 
@@ -175,7 +175,7 @@ A source must start with `daphnis 2`, and only `.dap` files are read. A file tha
 - Layout: elkjs layout with per-group direction, using shape sizes measured with the embedded fonts. Text is never shrunk to make a shape fit. On a narrow page the graph and chart panels are redrawn for the container width, and a panel that still does not fit shrinks together with the other panels by one shared ratio (never above its natural size); read small text in full screen and zoom. The narrow layout is built when the HTML is written and gets the same checks, so a source that passes `check` can still fail `render --html` if its text does not fit at the narrow width.
 - Figure check: overlaps, edges through nodes, crowded edges, aspect ratio, and readability.
 - Playback: an HTML player and an animated SVG from the same timeline.
-- Markdown: `daphnis md` renders the `dap` code blocks of a document and keeps the image lines below them up to date, and a GitHub Action checks them in CI.
+- Markdown: `thinkflow md` renders the `thinkflow` code blocks of a document and keeps the image lines below them up to date, and a GitHub Action checks them in CI.
 
 Not supported: 3D, maps, CAD, full BPMN, Gantt charts, CPU simulation, a real-time backend, executing API cards, and class members as edge ends. Sankey, flame graphs, and violin plots are deferred: they are not supported yet and need validation first. [Expression coverage](docs/design/expression-coverage.md) lists what each example covers, what it does not, and the known limits.
 
@@ -206,8 +206,8 @@ All documents are listed in [docs/README.md](docs/README.md).
 ## Development
 
 ```sh
-git clone https://github.com/woonyong-choi/daphnis.git
-cd daphnis
+git clone https://github.com/woonyong-choi/ThinkFlow.git
+cd ThinkFlow
 npm install
 npm test
 npm run check
@@ -218,7 +218,7 @@ npm run check:package -- /absolute/new-consumer-path
 
 The package check creates a new directory outside the repository, installs the actual tarball with public runtime dependencies, and checks CLI, Markdown and API outputs. It also compiles and runs a TypeScript consumer against the installed declarations and rejects invalid calls. The compiler stays in the development checkout. The check removes its directory afterward and needs access to the public npm registry. It does not publish a release.
 
-Shared values, CSS, icons, tabs and toolbars come from the verified bundle in `src/vendor/theme/`. Builds use the committed public copy and do not require access to its source repository. Updates pass manifest checks and figure regeneration in a PR. In a clone, run `node src/cli.js` instead of `daphnis`, and `npm run catalog` to render every example, its source and an index into `.local/examples/`.
+Shared values, CSS, icons, tabs and toolbars come from the verified bundle in `src/vendor/theme/`. Builds use the committed public copy and do not require access to its source repository. Updates pass manifest checks and figure regeneration in a PR. In a clone, run `node src/cli.js` instead of `thinkflow`, and `npm run catalog` to render every example, its source and an index into `.local/examples/`.
 
 See [CONTRIBUTING](.github/CONTRIBUTING.md) for branches, commits, and pull requests.
 

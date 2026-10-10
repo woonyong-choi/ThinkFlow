@@ -8,17 +8,17 @@ import { tmpdir } from 'node:os';
 import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { buildFigure, FigureError, toHtml, toSvg } from 'daphnis';
+import { buildFigure, FigureError, toHtml, toSvg } from 'thinkflow';
 
 export const ROOT = fileURLToPath(new URL('..', import.meta.url));
 const CLI = join(ROOT, 'src', 'cli.js');
 export const EXAMPLES = join(ROOT, 'examples');
 
-/** `daphnis 2` 머리를 붙인 원본. 본문 줄의 공통 들여쓰기는 걷어 낸다. */
-export function dap(body) {
+/** `thinkflow` 머리를 붙인 원본. 본문 줄의 공통 들여쓰기는 걷어 낸다. */
+export function thinkflow(body) {
   const lines = body.replace(/^\n/, '').split('\n');
   const indent = Math.min(...lines.filter((l) => l.trim()).map((l) => l.match(/^ */)[0].length));
-  return `daphnis 2\n${lines.map((l) => l.slice(indent)).join('\n').trimEnd()}\n`;
+  return `thinkflow\n${lines.map((l) => l.slice(indent)).join('\n').trimEnd()}\n`;
 }
 
 /** 경고도 오류로 올려(strict) 만든다. 시험이 쓰는 원본은 경고 없이 읽혀야 한다. */
@@ -215,7 +215,7 @@ export function num(node, name) {
 
 /** 임시 작업 폴더를 만들고 `files`({ 상대경로: 글 })를 쓴다. 시험이 끝나면 지운다. */
 export function workspace(t, files = {}) {
-  const dir = mkdtempSync(join(tmpdir(), 'daphnis-test-'));
+  const dir = mkdtempSync(join(tmpdir(), 'thinkflow-test-'));
   t.after(() => rmSync(dir, { recursive: true, force: true }));
   for (const [name, content] of Object.entries(files)) {
     mkdirSync(dirname(join(dir, name)), { recursive: true });
@@ -243,7 +243,7 @@ export function snapshot(dir) {
 
 export const read = (...parts) => readFileSync(join(...parts), 'utf8');
 
-/** `daphnis` 명령을 새 프로세스로 돌린다. */
+/** `thinkflow` 명령을 새 프로세스로 돌린다. */
 export function cli(args, { cwd = ROOT, input } = {}) {
   const run = spawnSync(process.execPath, [CLI, ...args], { cwd, encoding: 'utf8', input });
   return { status: run.status, stdout: run.stdout, stderr: run.stderr };

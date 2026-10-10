@@ -15,7 +15,7 @@ const MODE_LABELS = { static: '정지', once: '한 번', loop: '반복' };
 // vars: n = 본문 글자 수
 // basis: estimate
 function page(title, content) {
-  return `<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(title)} · Daphnis</title><style>${STYLES.tokens}${STYLES.control}${css}</style><script>${THEME_SCRIPT}</script></head><body><header class="catalog-header"><a href="index.html">Daphnis · 예제 갤러리</a><div class="theme app-tablist is-segmented" role="group" aria-label="테마">${THEME_BUTTONS}</div></header><main class="catalog-main">${content}</main></body></html>`;
+  return `<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${esc(title)} · ThinkFlow</title><style>${STYLES.tokens}${STYLES.control}${css}</style><script>${THEME_SCRIPT}</script></head><body><header class="catalog-header"><a href="index.html">ThinkFlow · 예제 갤러리</a><div class="theme app-tablist is-segmented" role="group" aria-label="테마">${THEME_BUTTONS}</div></header><main class="catalog-main">${content}</main></body></html>`;
 }
 
 // cost: time O(s), heap O(s), stack O(1)
@@ -40,11 +40,11 @@ export function galleryPage(entries, heading) {
   const groups = [...new Set(entries.map((entry) => entry.group))];
   const sections = groups.map((group) => {
     const cards = entries.filter((entry) => entry.group === group).map((entry) => `<article class="catalog-card" id="${entry.id}">
-<h3>${esc(entry.title)} <code>${esc(entry.id)}.dap</code></h3>
+<h3>${esc(entry.title)} <code>${esc(entry.id)}.thinkflow</code></h3>
 <p>${esc(entry.subtitle ?? '')}</p>
 <a class="catalog-preview" href="${entry.id}.html"><img src="${entry.id}.svg" alt="${esc(entry.title)} 첫 장면" loading="lazy"></a>
 ${sceneList(entry.scenes)}
-<nav class="catalog-downloads"><a href="${entry.id}.html">재생 화면 열기</a><a href="${entry.id}.svg">SVG</a><a href="${entry.id}.dap" download>원본 내려받기</a></nav>
+<nav class="catalog-downloads"><a href="${entry.id}.html">재생 화면 열기</a><a href="${entry.id}.svg">SVG</a><a href="${entry.id}.thinkflow" download>원본 내려받기</a></nav>
 ${supportList(entry.support ?? [])}
 <details><summary>원본 보기</summary><pre><code>${esc(entry.source)}</code></pre></details>
 </article>`).join('\n');

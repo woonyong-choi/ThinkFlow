@@ -12,7 +12,7 @@ const GALLERY_SCRIPT = `<script>${bindDiagramHost.toString()}; bindDiagramHost()
 // vars: n = 이름과 제목 글자 수
 // basis: estimate
 // 카드 머리와 문서 미리보기 절 제목. 원본 파일 이름(코드 글꼴)과 종류 꼬리표가 기본이다. 그림이 제목을 직접 그리는 차트는 그림 제목을 되풀이하지 않고, 그리지 않는 그림(흐름, 순서, 상태, 데이터)만 제목을 앞에 붙인다. 세 요소는 따로 놓인 flex 칸이라 간격과 기준선을 CSS가 정한다.
-function cardHead({ name, ext = '.dap', title, kind, isChart }) {
+function cardHead({ name, ext = '.thinkflow', title, kind, isChart }) {
   const heading = title && !isChart ? `<span class="title">${renderRichHtml(title)}</span>` : '';
   return `<h2>${heading}<code class="name">${escapeXml(name)}${escapeXml(ext)}</code><span class="kind">${escapeXml(kind)}</span></h2>`;
 }

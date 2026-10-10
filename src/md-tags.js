@@ -2,7 +2,7 @@
 // 한 번의 걸음이 울타리(코드 블록)와 `<details>` 태그를 함께 읽는다. 들여쓴 코드나 HTML 블록(주석 포함) 안의 울타리는 울타리가 아니고, 4칸 넘게 들여쓴 줄은 닫는 울타리가 아니므로 블록 찾기와 태그 세기가 갈라지지 않는다.
 // 줄 단위로 실제 태그만 센다. 코드 span, 여러 줄 HTML 주석, 백슬래시 이스케이프, 울타리와 들여쓴 코드 안의 태그는 세지 않는다.
 // 인용과 목록 항목은 `<details>`를 품는 칸이다. 칸이 끝나면 그 안에서 연 태그도 끝난 것으로 보므로 다른 칸의 태그는 블록의 부모가 아니다.
-// 지원하지 않는 것: 링크 참조 정의, 표 셀 경계, `<script>` 같은 원문 요소 안 태그의 브라우저 해석 차이. 목록 표시와 같은 줄에서 여는 울타리(`- ```dap`)는 울타리로 읽지 않는다.
+// 지원하지 않는 것: 링크 참조 정의, 표 셀 경계, `<script>` 같은 원문 요소 안 태그의 브라우저 해석 차이. 목록 표시와 같은 줄에서 여는 울타리(`- ```thinkflow`)는 울타리로 읽지 않는다.
 import { ATTRIBUTE, ATX, CODE_INDENT, FENCE_START, QUOTE, SETEXT, THEMATIC, closesFence, contextOf, containerStart, dedent, htmlStart, isBlank, openingFence, width } from './md-blocks.js';
 
 const RAW_TAG = /<!--|<\/?details(?=[\s/>]|$)/gi;

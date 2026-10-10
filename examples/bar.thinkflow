@@ -1,0 +1,32 @@
+thinkflow
+title "배포 전후 API 오류율"
+subtitle "엔드포인트마다 배포 전, 배포 후, 목표를 나란히 비교한다"
+
+chart errors "엔드포인트별 5xx 오류율" bar "예시 데이터. 요청 10만 건당. 막대 끝 선은 95% 신뢰구간" {
+  x "5xx 오류율(%)"
+  decimals 2
+  series before "배포 전" role=compare
+  series after "배포 후" role=main
+  series goal "목표" role=reference
+  missing "측정 없음"
+  rule 1 "SLO 1%"
+  row "GET /products" before=0.42 before.low=0.31 before.high=0.55 after=0 after.low=0 after.high=0.06 goal=0.5
+  row "GET /orders" before=1.38 before.low=1.12 before.high=1.67 after=0.71 after.low=0.55 after.high=0.9 goal=1 rule=0.8
+  row "POST /orders" before=2.24 before.low=1.9 before.high=2.61 after=1.12 after.low=0.93 after.high=1.34 goal=1
+  row "POST /payments" before=- after=0.64 after.low=0.47 after.high=0.85 goal=0.5
+  row "DELETE /carts" before=0.95 before.low=0.7 before.high=1.24 after=1.26 after.low=1.01 after.high=1.55 goal=1
+}
+
+scene "전체 비교"
+
+scene "배포 전에서 후로"
+  reveal errors.before
+  wait 1s
+  reveal errors.after
+  wait 1s
+  reveal errors.goal
+
+scene "목표를 넘은 행"
+  light errors "POST /orders"
+  wait 1s
+  light errors "DELETE /carts"

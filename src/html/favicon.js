@@ -12,7 +12,7 @@ let cached;
 /** `<link rel="icon">` 두 줄(라이트, 다크). 첫 호출에 파일을 읽고 이후는 같은 글을 돌려준다. */
 export function faviconLinks() {
   cached ??= SCHEMES.map((scheme) => {
-    const svg = readFileSync(new URL(`daphnis-favicon-${scheme}.svg`, ASSETS));
+    const svg = readFileSync(new URL(`thinkflow-favicon-${scheme}.svg`, ASSETS));
     return `<link rel="icon" type="image/svg+xml" media="(prefers-color-scheme: ${scheme})" href="data:image/svg+xml;base64,${svg.toString('base64')}">`; // tokens-allow: 브라우저 탭 아이콘은 문서 색 토큰이 닿지 않는 자리라 media가 라이트와 다크 파일을 고른다. 획 색은 로고 SVG 파일 자체의 값이다
   }).join('\n');
   return cached;

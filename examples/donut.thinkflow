@@ -1,0 +1,57 @@
+thinkflow
+title "작업 큐별 대기 비율"
+subtitle "접수된 작업이 큐에 쌓이고 빠지는 만큼 도넛 조각이 함께 바뀐다"
+
+box api "작업 접수" icon=apigw
+box worker "작업자" icon=function
+box mail "메일 큐" icon=mq
+box report "리포트 큐" icon=mq
+box image "이미지 큐" icon=mq
+box settle "정산 큐" icon=mq
+
+value mails "메일 대기" on=mail from=12
+value reports "리포트 대기" on=report from=7
+value images "이미지 대기" on=image from=20
+value settles "정산 대기" on=settle
+
+on mail mails+1
+on report reports+1
+on image images+1
+on settle settles+1
+
+api -> mail
+api -> report
+api -> image
+api -> settle
+mail -> worker
+report -> worker
+image -> worker
+settle -> worker
+
+chart share "큐별 대기 작업" donut "예시 데이터. 대기 작업 수 기준. 정산 큐는 처음에 비어 있다" {
+  row "메일" value=mails
+  row "리포트" value=reports
+  row "이미지" value=images
+  row "정산" value=settles
+}
+
+view graph down "작업 흐름"
+view plot "대기 비율" {
+  share
+}
+
+scene "평소 접수" mode=static
+  api -> mail "알림" time=700ms
+  api -> image "썸네일" time=700ms
+  api -> report "일간 집계" time=700ms
+
+scene "정산 마감" keep="mails, reports, images"
+  api -> settle "정산 요청" time=700ms
+  api -> settle "정산 요청" time=700ms
+  api -> settle "정산 요청" time=700ms
+  api -> image "영수증 이미지" time=700ms
+
+scene "작업자가 비운다" mode=loop
+  mail -> worker "처리" set="mails-1" time=700ms
+  image -> worker "처리" set="images-1" time=700ms
+  report -> worker "처리" set="reports-1" time=700ms

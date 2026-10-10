@@ -1,0 +1,58 @@
+thinkflow
+title "주문 도메인 클래스"
+subtitle "엔티티 상속, 합성과 집합, 저장소 계약과 구현을 한 그림에 둔다"
+
+interface repository "Repository<T>" {
+  method find "(id: UUID): T" visibility=public
+  method save "(item: T): void" visibility=public
+}
+group domain "도메인" direction=down {
+  class entity "BaseEntity" abstract {
+    field id "UUID" visibility=protected
+    field createdAt "Instant" visibility=protected
+    method validate "(): void" visibility=public abstract
+  }
+  class order "Order" {
+    field status "OrderStatus" visibility=private
+    method confirm "(): void" visibility=public
+    method total "(): Money" visibility=public
+  }
+  class line "OrderLine" {
+    field quantity "int" visibility=private
+    field unitPrice "Money" visibility=private
+  }
+  class customer "Customer" {
+    field email "string" visibility=private
+    field nextId "long" visibility=private static
+  }
+  class cart "Cart" {
+    method add "(sku: string): void" visibility=public
+  }
+  class product "Product" {
+    field sku "string" visibility=private
+  }
+}
+class sql-repository "SqlOrderRepository" {
+  field table "string" visibility=private static
+  method save "(item: Order): void" visibility=public
+}
+
+order -> entity relation=inheritance
+order -> line relation=composition from="1" to="1..*" "주문 줄"
+order -> customer relation=association from="*" to="1" "주문자"
+cart -> product relation=aggregation from="1" to="0..*" "담긴 상품"
+sql-repository -> repository relation=realization "계약 구현"
+sql-repository -> order relation=dependency "저장 대상"
+
+view graph down
+
+scene "클래스 구조"
+
+scene "계약과 구현"
+  sql-repository -> repository "구현" time=800ms
+  sql-repository -> order "저장" time=800ms
+
+scene "도메인 관계" mode=loop
+  order -> entity "상속" time=700ms
+  order -> line "합성" time=700ms
+  order -> customer "연관" time=700ms

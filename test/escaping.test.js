@@ -2,7 +2,7 @@
 // 시험 이름 첫 낱말(I1~I3)이 요구사항 번호이고, 번호와 계약의 대응은 docs/design/expression-coverage.md의 시험 번호 표에 있다.
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { build, dap, descendants, findAll, lineOf, parseMarkup, reject, textContent, textsOf, toHtml, toSvg, workspace } from './support.js';
+import { build, thinkflow, descendants, findAll, lineOf, parseMarkup, reject, textContent, textsOf, toHtml, toSvg, workspace } from './support.js';
 
 const HOSTILE = '<b>&"\'--]]>';
 const WORD = "<b>'--"; // 따옴표 밖에 쓰는 낱말 자리용(공백, 큰따옴표, 문장 사이 &가 없다)
@@ -13,7 +13,7 @@ const quote = (text) => `"${text.replaceAll('\\', '\\\\').replaceAll('"', '\\"')
 const everywhere = (text, word = text) => {
   const q = (label) => quote(`${label} ${text}`);
   const badge = quote(word.slice(0, 6));
-  return dap(`
+  return thinkflow(`
     title ${q('T')}
     subtitle ${q('S')}
     person u ${q('U')}
@@ -102,10 +102,10 @@ test('I1 the HTML keeps the structure of a benign twin: same elements and script
 
 test('I1 a text that tries to close the script block or comment cannot end the page script early', async () => {
   const text = `${CLOSER}<img src=x onerror=alert(1)>`;
-  const source = dap(`title ${quote(text)}\nbox a ${quote(CLOSER)}\nbox b "B"\na -> b "edge"\nscene ${quote(CLOSER)}\n  a -> b ${quote(CLOSER)}\n`);
+  const source = thinkflow(`title ${quote(text)}\nbox a ${quote(CLOSER)}\nbox b "B"\na -> b "edge"\nscene ${quote(CLOSER)}\n  a -> b ${quote(CLOSER)}\n`);
   const html = await toHtml(await build(source), `${CLOSER}name`);
   const dom = parseMarkup(html, { html: true });
-  const plain = parseMarkup(await toHtml(await build(dap('title "t"\nbox a "A"\nbox b "B"\na -> b "edge"\nscene "s"\n  a -> b "move"\n')), 'name'), { html: true });
+  const plain = parseMarkup(await toHtml(await build(thinkflow('title "t"\nbox a "A"\nbox b "B"\na -> b "edge"\nscene "s"\n  a -> b "move"\n')), 'name'), { html: true });
   const scripts = (root) => findAll(root, (n) => n.tag === 'script');
   assert.equal(scripts(dom).length, scripts(plain).length);
   assert.equal(findAll(dom, (n) => n.tag === 'img' || n.attrs.onerror !== undefined).length, 0);
@@ -114,14 +114,14 @@ test('I1 a text that tries to close the script block or comment cannot end the p
 });
 
 test('I1 a file name that is not a clean name is only ever a title: the page title is escaped text', async () => {
-  const dom = parseMarkup(await toHtml(await build(dap('box a "A"\n')), 'a<b>&"'), { html: true });
+  const dom = parseMarkup(await toHtml(await build(thinkflow('box a "A"\n')), 'a<b>&"'), { html: true });
   assert.equal(textContent(findAll(dom, (n) => n.tag === 'title')[0]), 'a<b>&"');
 });
 
 // ---- 사용자 아이콘 ----
 
 const ICON = (inner, attrs = '') => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"${attrs}>${inner}</svg>`;
-const usingIcon = (name) => dap(`icons custom "icons"\nbox a "A" icon=custom:${name}\n`);
+const usingIcon = (name) => thinkflow(`icons custom "icons"\nbox a "A" icon=custom:${name}\n`);
 
 test('I2 a user icon keeps its shapes but never its colors: every paint becomes currentColor or none', async (t) => {
   const dir = workspace(t, { 'icons/mine.svg': ICON('<title>t</title><rect x="1" y="1" width="10" height="10" fill="#ff0000"/><path d="M2 9h4" stroke="#00ff00" stroke-width="2" fill="none"/><g opacity="0.5"><circle cx="5" cy="5" r="3" fill="rgb(1,2,3)"/></g>') });
@@ -252,7 +252,7 @@ test('I2 an icon root size is a finite positive viewBox, or width and height onl
 test('I2 icon references that are missing, from an unknown set, or that reach outside the folder are located errors', async (t) => {
   const dir = workspace(t, { 'icons/mine.svg': ICON('<path d="M0 0h1"/>'), 'secret.svg': ICON('<path d="M0 0h1"/>') });
   for (const ref of ['custom:absent', 'custom:../secret', 'custom:/etc/passwd', 'nope:mine', 'nope', 'custom:']) {
-    const source = dap(`icons custom "icons"\nbox a "A" icon=${ref}\n`);
+    const source = thinkflow(`icons custom "icons"\nbox a "A" icon=${ref}\n`);
     const problems = await reject(source, { baseDir: dir });
     assert.ok(problems.some((p) => p.line === lineOf(source, 'icon=')), `${ref}: ${JSON.stringify(problems)}`);
   }
@@ -260,14 +260,14 @@ test('I2 icon references that are missing, from an unknown set, or that reach ou
 });
 
 test('I2 built-in icons: concept names and technology brands draw shapes; an unknown name is an error', async () => {
-  const plain = await toSvg(await build(dap('box a "A"\n')), { isStatic: true });
+  const plain = await toSvg(await build(thinkflow('box a "A"\n')), { isStatic: true });
   for (const name of ['server', 'server-detail', 'db', 'user', 'git', 'postgresql']) {
-    const svg = await toSvg(await build(dap(`box a "A" icon=${name}\n`)), { isStatic: true });
+    const svg = await toSvg(await build(thinkflow(`box a "A" icon=${name}\n`)), { isStatic: true });
     assert.notEqual(svg, plain, `${name} changes the picture`);
     parseMarkup(svg);
   }
   for (const name of ['not-an-icon', 'serve']) {
-    const unknown = dap(`box a "A" icon=${name}\n`);
+    const unknown = thinkflow(`box a "A" icon=${name}\n`);
     const problem = (await reject(unknown)).find(p => p.line === lineOf(unknown, 'icon='));
     assert.ok(problem);
     assert.match(problem.message, /assets\/icons\/catalog\.json/);
@@ -277,6 +277,6 @@ test('I2 built-in icons: concept names and technology brands draw shapes; an unk
 });
 
 test('I3 text with markup characters in a successful build shows as written in the SVG text', async () => {
-  const dom = parseMarkup(await toSvg(await build(dap('box a "x < y & z > w"\n')), { isStatic: true }));
+  const dom = parseMarkup(await toSvg(await build(thinkflow('box a "x < y & z > w"\n')), { isStatic: true }));
   assert.ok(textsOf(dom).some((t) => t === 'x < y & z > w'));
 });

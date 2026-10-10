@@ -1,0 +1,54 @@
+thinkflow
+title "주문 요청 분산 추적"
+subtitle "한 요청이 서비스를 지나는 호출 관계와 구간별 실제 소요 시간을 함께 본다"
+
+box gw "Gateway" icon=apigw
+box order "주문 서비스" icon=server
+box pay "결제 서비스" icon=server
+store db "주문 DB" icon=db
+
+trace t "POST /orders" unit=ms {
+  span root "요청 전체" lane=gw at=0 dur=420
+  span auth "토큰 검증" lane=gw at=8 dur=42
+  span create "주문 생성" lane=order at=60 dur=330
+  span stock "재고 확인" lane=db at=82 dur=68
+  span charge "결제 승인" lane=pay at=160 dur=190
+  span save "주문 저장" lane=db at=352 dur=38
+}
+
+trace plan "재고 쿼리 내부" unit=us {
+  span parse "파싱" lane=db at=0 dur=120
+  span plan "계획 수립" lane=db at=120 dur=480
+  span exec "실행" lane=db at=600 dur=2100
+}
+
+gw -> order
+order -> db
+order -> pay
+
+view graph down "호출 관계"
+view time "실제 시간" {
+  t
+}
+view time "DB 안쪽(마이크로초)" {
+  plan
+}
+
+scene "추적 전체"
+
+scene "요청 따라가기"
+  light t.root t.auth
+  gw -> order "POST /orders" time=700ms
+  light t.create
+  order -> db "재고" time=600ms
+  light t.stock
+  light plan.exec
+  order -> pay "결제" time=700ms
+  light t.charge
+  order -> db "저장" time=600ms
+  light t.save
+
+scene "느린 구간" mode=loop
+  light t.charge
+  order -> pay "결제" time=800ms
+  light t.create

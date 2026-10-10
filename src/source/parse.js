@@ -1,5 +1,5 @@
 // 원본 전체를 읽어 문서 모형(figure) 하나로 만든다. 줄을 머리, 선언, 시간 흐름 세 부분으로 나누고 문장마다 맡을 함수를 고른다.
-import { BLOCK_WORDS, STATEMENTS, VALUES, VERSION } from './grammar.js';
+import { BLOCK_WORDS, STATEMENTS, VALUES } from './grammar.js';
 import { BLOCK_READERS, openBlock } from './blocks.js';
 import { readDeclaration, readEdge } from './declare.js';
 import { closeGroup } from './group.js';
@@ -9,7 +9,7 @@ import { createProblems } from './problems.js';
 import { readTimeline } from './steps.js';
 import { readHeader } from './header.js';
 import { readSequenceControl, prepareSequenceFragments } from './sequence-fragments.js';
-import { readVersion } from './version.js';
+import { readPreamble } from './preamble.js';
 import { readOn, readValue } from './value.js';
 import { readView } from './view.js';
 import { validateFigure } from './validate.js';
@@ -36,17 +36,17 @@ export function parseFigure(source) {
 // basis: estimate
 /**
  * 원본을 읽고 오류와 경고를 problems에 모은다. 뒤 단계(글꼴, data) 오류와 함께 한 번에 알리기 위해 오류가 있어도 모형을 돌려준다.
- * @throws FigureError 파일이 비었거나 첫 문장이 판 표기가 아닐 때. 다음 줄을 읽을 규칙이 없기 때문이다
+ * @throws FigureError 파일이 비었거나 첫 문장이 시작 선언가 아닐 때. 다음 줄을 읽을 규칙이 없기 때문이다
  */
 export function readFigure(source, problems) {
   const statements = splitStatements(source, problems);
   const figure = emptyFigure(source);
   const ctx = { figure, problems, section: 'header', groups: [], block: undefined, step: undefined, headers: new Map(), previous: undefined };
   if (!statements.length) {
-    problems.error(1, 'the file is empty. The first line is "daphnis 2"', { code: 'missing-version' });
+    problems.error(1, 'the file is empty. The first line is "thinkflow"', { code: 'missing-preamble' });
     problems.throwIfAny();
   }
-  const body = readVersion(statements, ctx);
+  const body = readPreamble(statements, ctx);
   for (const statement of body) readStatement(statement, ctx);
   if (ctx.block) problems.error(ctx.block.card.line, ctx.block.kind === 'view' ? 'close the view block with "}"' : `close ${ctx.block.kind} "${ctx.block.card.id}" with "}"`);
   for (const group of ctx.groups) if (!group.isRejected) problems.error(group.line, `close group "${group.id}" with "}"`);
@@ -70,7 +70,6 @@ export function readFigure(source, problems) {
 function emptyFigure(source) {
   return {
     source,
-    version: VERSION,
     title: undefined,
     subtitle: undefined,
     paceMs: undefined,
@@ -116,7 +115,7 @@ function splitStatements(source, problems) {
 
 // cost: time O(1), heap O(1), stack O(1)
 // basis: estimate
-// 문장이 판 표기 자리와 파일 부분 순서에 맞는지 본다. 어기면 오류를 내고 false다.
+// 문장이 시작 선언 자리와 파일 부분 순서에 맞는지 본다. 어기면 오류를 내고 false다.
 function isPlaced(word, { tokens, line }, ctx) {
   const { problems } = ctx;
   const entry = STATEMENTS[word];
@@ -129,8 +128,8 @@ function isPlaced(word, { tokens, line }, ctx) {
     problems.error(line, `"${word}" belongs inside a ${entry.in} block`, { column: tokens[0].column });
     return false;
   }
-  if (entry.section === 'version') {
-    problems.error(line, 'the version line "daphnis 2" must be the first line of the file', { code: 'invalid-version' });
+  if (entry.section === 'preamble') {
+    problems.error(line, 'the first line declaration "thinkflow" must be the first line of the file', { code: 'invalid-preamble' });
     return false;
   }
   if (SECTIONS.indexOf(entry.section) < SECTIONS.indexOf(ctx.section)) {

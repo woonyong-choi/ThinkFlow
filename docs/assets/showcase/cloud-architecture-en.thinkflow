@@ -1,0 +1,42 @@
+thinkflow
+title "Cloud architecture"
+subtitle "Web requests reach the app server through DNS, a CDN, a load balancer, and web servers (1-6); administrators reach it through a VPN and a bastion (7-9)"
+
+person user "Web user"
+person admin "Operator" icon=admin
+group net "Internet" icon=cdn border=dashed direction=right {
+  box dns "DNS" shape=tile icon=dns
+  box cdn "CDN" shape=tile icon=cdn
+}
+group cloud "Cloud" icon=region direction=down border=dashed {
+  box lb "Balancer" shape=tile icon=lb
+  box web "Web server" shape=tile icon=server count=3
+  box app "App server" shape=tile icon=server
+  group data "Data" direction=right {
+    store db "DB primary" icon=db badge="RW"
+    store cache "Cache" icon=cache badge="RW"
+  }
+  box vpn "VPN" shape=tile icon=vpn
+  box bastion "Bastion" shape=tile icon=bastion
+}
+
+user -> dns no=1
+dns -> cdn no=2
+cdn -> lb no=3
+lb -> web no=4
+web -> app no=5
+app -> db no=6
+admin -> vpn no=7
+vpn -> bastion no=8
+bastion -> app no=9
+app -> cache
+
+view graph down
+
+scene "Request path" mode=static
+  user -> dns
+  dns -> cdn
+  cdn -> lb
+  lb -> web
+  web -> app
+  app -> db
