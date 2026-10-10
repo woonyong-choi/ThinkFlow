@@ -76,7 +76,7 @@
 1. 공통 정본의 완성본을 `src/vendor/theme/`에 가져온다. 토큰 JSON·CSS·JS, 아이콘, 스타일, 탭·프레임과 해시 manifest가 하나의 배포본이다.
 2. `npm run design:sync -- <정본 경로>`는 원본과 기존 사본을 검증한 뒤 갱신한다. 소비자가 수정한 사본은 덮어쓰지 않는다.
 3. `npm run figures` 뒤 `npm test`, `npm run check`를 실행한다. ThinkFlow에서 토큰을 합치거나 다시 생성하지 않는다.
-4. 자동 수신은 `design-update.yml`에서 전체 CI를 통과한 PR을 병합한다. `sync-homepage.yml`은 같은 디자인과 고정된 렌더러 커밋을 홈페이지로 전달한다.
+4. `ci.yml`은 디자인 수신 브랜치의 push에도 일반 필수 검사와 같은 이름으로 전체 검사를 실행한다. `design-update.yml`은 그 실행이 성공했을 때만 같은 저장소·브랜치·커밋의 PR을 준비한다. 변경 범위와 현재 브랜치 HEAD를 다시 확인하고 사용자 자동화 자격이 설정된 경우에만 보호 규칙에 따라 병합한다. 오래된 실행은 최신 커밋을 병합하지 않는다. `sync-homepage.yml`은 같은 디자인과 고정된 렌더러 커밋을 홈페이지로 전달한다.
 
 사용자 명의 자동 병합에는 이 저장소 범위의 `DESIGN_AUTOMATION_TOKEN`을 사용한다. fine-grained PAT의 Contents·Pull requests Read and write 권한이 필요하다. 등록되지 않으면 검증한 PR만 준비하며, 사용자 작성자가 아닌 PR은 인증 전환 뒤 사용자 작성 PR로 대체한다.
 

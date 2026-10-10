@@ -1,6 +1,8 @@
 name: Apply shared design
 on:
-  push:
+  workflow_run:
+    workflows: [ci]
+    types: [completed]
     branches: [build/repo-design-tokens]
 permissions:
   contents: read
@@ -8,10 +10,11 @@ concurrency:
   group: thinkflow-design-apply
   cancel-in-progress: false
 jobs:
-  validate:
-    uses: ./.github/workflows/ci.yml
   merge:
-    needs: validate
+    if: >-
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'push' &&
+      github.event.workflow_run.head_repository.full_name == github.repository
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -19,6 +22,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          ref: ${{ github.event.workflow_run.head_sha }}
           fetch-depth: 0
           persist-credentials: false
       - name: Limit automatic changes to design and generated figures
@@ -34,8 +38,13 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.DESIGN_AUTOMATION_TOKEN || github.token }}
           AUTOMATION_TOKEN: ${{ secrets.DESIGN_AUTOMATION_TOKEN }}
-          HEAD_SHA: ${{ github.sha }}
+          HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
         run: |
+          current=$(gh api "repos/$GITHUB_REPOSITORY/git/ref/heads/build/repo-design-tokens" --jq .object.sha)
+          if test "$current" != "$HEAD_SHA"; then
+            echo 'A newer design update supersedes this verified commit.' >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
           pr=$(gh pr list --head build/repo-design-tokens --state open --json number --jq '.[0].number // empty')
           if test -n "$pr" && test -n "$AUTOMATION_TOKEN"; then
             if test "$(gh pr view "$pr" --json author --jq .author.login)" != "$(gh api user --jq .login)"; then
@@ -70,7 +79,7 @@ jobs:
           test "$(gh pr view "$pr" --json headRefOid --jq .headRefOid)" = "$HEAD_SHA"
           git fetch origin main
           git merge-base --is-ancestor origin/main "$HEAD_SHA"
-          gh pr merge "$pr" --squash --match-head-commit "$HEAD_SHA" --author-email "$(git log origin/main -1 --format=%ae)" --subject 'build(repo): 공통 디자인 업데이트 적용' --body ''
+          gh pr merge "$pr" --squash --match-head-commit "$HEAD_SHA" --subject 'build(repo): 공통 디자인 업데이트 적용' --body ''
           current=$(gh api "repos/$GITHUB_REPOSITORY/git/ref/heads/build/repo-design-tokens" --jq .object.sha)
           if test "$current" = "$HEAD_SHA"; then
             gh api --method DELETE "repos/$GITHUB_REPOSITORY/git/refs/heads/build/repo-design-tokens"
