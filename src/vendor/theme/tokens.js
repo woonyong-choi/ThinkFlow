@@ -403,7 +403,10 @@ export const tokens = freeze({
     "figure-data-line": "var(--color-figure-data-line)",
     "flow-ink": {
       "gray": "var(--color-flow-ink-gray)"
-    }
+    },
+    "newsletter-button-color": "var(--color-newsletter-button-color)",
+    "primary-hover": "var(--color-primary-hover)",
+    "landing-newsletter-note-ink": "var(--color-landing-newsletter-note-ink)"
   },
   "font": {
     "sans": "var(--font-sans)",
@@ -647,7 +650,8 @@ export const tokens = freeze({
     },
     "focus-offset": "var(--spacing-focus-offset)",
     "icon": "var(--spacing-icon)",
-    "control": "var(--spacing-control)"
+    "control": "var(--spacing-control)",
+    "newsletter-button-margin": "var(--spacing-newsletter-button-margin)"
   },
   "radius": {
     "lg": "var(--radius-lg)",
@@ -674,7 +678,9 @@ export const tokens = freeze({
     "prose-pre-radius": "var(--radius-prose-pre-radius)",
     "key-radius": "var(--radius-key-radius)",
     "search-result-radius": "var(--radius-search-result-radius)",
-    "prose-rounded-radius": "var(--radius-prose-rounded-radius)"
+    "prose-rounded-radius": "var(--radius-prose-rounded-radius)",
+    "newsletter-input-radius": "var(--radius-newsletter-input-radius)",
+    "newsletter-button-radius": "var(--radius-newsletter-button-radius)"
   },
   "shadow": {
     "help-hover-shadow": "var(--shadow-help-hover-shadow)",
@@ -685,7 +691,8 @@ export const tokens = freeze({
     "key-shadow": "var(--shadow-key-shadow)",
     "platform-hover-shadow": "var(--shadow-platform-hover-shadow)",
     "platform-active-shadow": "var(--shadow-platform-active-shadow)",
-    "diagram": "var(--shadow-diagram)"
+    "diagram": "var(--shadow-diagram)",
+    "action-shadow": "var(--shadow-action-shadow)"
   },
   "text": {
     "body-sm": "var(--text-body-sm)",
@@ -727,7 +734,9 @@ export const tokens = freeze({
       "15": "var(--text-figure-15)",
       "22": "var(--text-figure-22)"
     },
-    "figure-meta": "var(--text-figure-meta)"
+    "figure-meta": "var(--text-figure-meta)",
+    "landing-newsletter-note": "var(--text-landing-newsletter-note)",
+    "newsletter-button-font": "var(--text-newsletter-button-font)"
   },
   "leading": {
     "body-sm": "var(--leading-body-sm)",
@@ -749,7 +758,8 @@ export const tokens = freeze({
     "prose-heading-line": "var(--leading-prose-heading-line)",
     "platform-line": "var(--leading-platform-line)",
     "search-message-line": "var(--leading-search-message-line)",
-    "diagram-body": "var(--leading-diagram-body)"
+    "diagram-body": "var(--leading-diagram-body)",
+    "newsletter-button-line": "var(--leading-newsletter-button-line)"
   },
   "tracking": {
     "text": "var(--tracking-text)"
@@ -1142,7 +1152,16 @@ export const tokens = freeze({
     "card-radius": "var(--primitive-card-radius)",
     "body-text": "var(--primitive-body-text)",
     "blur": "var(--primitive-blur)",
-    "toc-underline": "var(--primitive-toc-underline)"
+    "toc-underline": "var(--primitive-toc-underline)",
+    "newsletter-input-radius": "var(--primitive-newsletter-input-radius)",
+    "newsletter-button-font": "var(--primitive-newsletter-button-font)",
+    "newsletter-button-padding": "var(--primitive-newsletter-button-padding)",
+    "newsletter-button-margin": "var(--primitive-newsletter-button-margin)",
+    "newsletter-button-radius": "var(--primitive-newsletter-button-radius)",
+    "primary-hover": "var(--primitive-primary-hover)",
+    "action-shadow": "var(--primitive-action-shadow)",
+    "action-focus": "var(--primitive-action-focus)",
+    "landing-newsletter-note-ink": "var(--primitive-landing-newsletter-note-ink)"
   },
   "breakpoint": {
     "mobile": "var(--breakpoint-mobile)",
@@ -1321,7 +1340,9 @@ export const tokens = freeze({
     "prose-fineprint-margin": "var(--component-prose-fineprint-margin)",
     "card-summary-lines": "var(--component-card-summary-lines)",
     "illustration-project-placeholder-stroke": "var(--component-illustration-project-placeholder-stroke)",
-    "table-padding": "var(--component-table-padding)"
+    "table-padding": "var(--component-table-padding)",
+    "newsletter-button-padding": "var(--component-newsletter-button-padding)",
+    "action-focus": "var(--component-action-focus)"
   },
   "outline-width": {
     "focus": "var(--outline-width-focus)"
@@ -1733,7 +1754,10 @@ export const values = freeze({
     "figure-data-line": "#2576eb",
     "flow-ink": {
       "gray": "#ffffff"
-    }
+    },
+    "newsletter-button-color": "#4f91fb",
+    "primary-hover": "#649fff",
+    "landing-newsletter-note-ink": "#9299a4"
   },
   "font": {
     "sans": "Pretendard, \"Pretendard Variable\", -apple-system, BlinkMacSystemFont, \"Apple SD Gothic Neo\", sans-serif",
@@ -1977,7 +2001,8 @@ export const values = freeze({
     },
     "focus-offset": "calc(4px * 0.375)",
     "icon": 24,
-    "control": 36
+    "control": 36,
+    "newsletter-button-margin": 4.24
   },
   "radius": {
     "lg": 8,
@@ -2004,7 +2029,9 @@ export const values = freeze({
     "prose-pre-radius": ".5em",
     "key-radius": ".4em",
     "search-result-radius": "0.5em",
-    "prose-rounded-radius": "1em"
+    "prose-rounded-radius": "1em",
+    "newsletter-input-radius": 6.4,
+    "newsletter-button-radius": 7.632
   },
   "shadow": {
     "help-hover-shadow": "0 4px 8px rgba(0,0,0,.06), 0 8px 16px rgba(0,0,0,.06)",
@@ -2015,7 +2042,8 @@ export const values = freeze({
     "key-shadow": "inset 0 0 0 1px rgba(0,20,49,.18)",
     "platform-hover-shadow": "0 1px 4px rgba(0,0,0,.16)",
     "platform-active-shadow": "inset 0 1px 2px rgba(0,0,0,.1)",
-    "diagram": "0 2px 8px rgba(0,0,0,.10), 0 0 2px rgba(0,0,0,.10)"
+    "diagram": "0 2px 8px rgba(0,0,0,.10), 0 0 2px rgba(0,0,0,.10)",
+    "action-shadow": "0 2px 4px rgba(0,0,0,.05)"
   },
   "text": {
     "body-sm": 14,
@@ -2057,7 +2085,9 @@ export const values = freeze({
       "15": 15,
       "22": 22
     },
-    "figure-meta": 11
+    "figure-meta": 11,
+    "landing-newsletter-note": 15.2,
+    "newsletter-button-font": 16.96
   },
   "leading": {
     "body-sm": 1.43,
@@ -2079,7 +2109,8 @@ export const values = freeze({
     "prose-heading-line": 1.1,
     "platform-line": 1.3,
     "search-message-line": 1.4,
-    "diagram-body": 1.6
+    "diagram-body": 1.6,
+    "newsletter-button-line": "calc(4px * 5)"
   },
   "tracking": {
     "text": -0.3
@@ -2472,7 +2503,16 @@ export const values = freeze({
     "card-radius": 18,
     "body-text": 18,
     "blur": 5,
-    "toc-underline": "#4f91fb"
+    "toc-underline": "#4f91fb",
+    "newsletter-input-radius": 6.4,
+    "newsletter-button-font": 16.96,
+    "newsletter-button-padding": "7.1232px 16.96px",
+    "newsletter-button-margin": 4.24,
+    "newsletter-button-radius": 7.632,
+    "primary-hover": "#649fff",
+    "action-shadow": "0 2px 4px rgba(0,0,0,.05)",
+    "action-focus": "0 0 0 2px rgba(37,118,235,.5)",
+    "landing-newsletter-note-ink": "#9299a4"
   },
   "breakpoint": {
     "mobile": 560,
@@ -2651,7 +2691,9 @@ export const values = freeze({
     "prose-fineprint-margin": ".125em 0 1.4em",
     "card-summary-lines": 2,
     "illustration-project-placeholder-stroke": 7,
-    "table-padding": ".3em .5em"
+    "table-padding": ".3em .5em",
+    "newsletter-button-padding": "7.1232px 16.96px",
+    "action-focus": "0 0 0 2px rgba(37,118,235,.5)"
   },
   "outline-width": {
     "focus": 3

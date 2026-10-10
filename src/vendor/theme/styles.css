@@ -58,6 +58,8 @@ body > main { overflow-x: clip; }
 .app-logo { display: inline-flex; align-items: center; gap: var(--spacing-gap-xs); flex: none; min-width: var(--spacing-nav-width); height: var(--spacing-nav-height); white-space: nowrap; }
 .app-header .app-logo { color: var(--color-body); font-weight: var(--font-weight-bold); }
 .app-logo-icon { display: inline-flex; flex: none; color: var(--color-action-link); }
+.app-logo-brand { display: inline-flex; color: var(--color-landing-title-color); }
+.app-logo-brand :is(img, svg) { display: block; width: auto; height: var(--text-body-text); }
 .app-canvas { background: var(--color-canvas); }
 .app-footer { background: var(--color-canvas); padding-block: var(--spacing-gap-lg); }
 .app-footer-bar { display: flex; flex-wrap: wrap; gap: var(--spacing-gap-xs) var(--spacing-gap); align-items: center; justify-content: space-between; border-top: var(--border-width-thin) solid var(--color-ui-line); padding-top: calc(var(--spacing-gap) / 3); }
@@ -195,6 +197,7 @@ iframe[data-diagram].is-fullscreen { position: fixed; inset: 0; z-index: var(--z
 .app-tooltip { border-bottom: var(--border-width-thin) dotted currentColor; cursor: help; }
 .app-remote { padding: var(--spacing-control-inset-block) var(--spacing-control-inset-inline); line-height: 1; color: var(--color-control-link); border: 0; border-radius: var(--radius-control-radius); background: transparent; cursor: pointer; }
 .app-remote:hover { color: var(--color-control-link); background: var(--color-control-hover); }
+.app-remote, .app-remote:hover, .app-remote:focus-visible { text-decoration: none; }
 .app-remote:active { background: var(--color-control-active); }
 .app-remote.is-playing { color: var(--color-control-muted); }
 .app-remote.is-playing:hover { background: var(--color-control-active); }
@@ -216,6 +219,18 @@ button.app-tooltip { padding: 0; background: none; color: var(--color-control-li
 .app-remote:active { color: var(--color-control-active-ink); }
 .app-inline-button { border: var(--border-width-thin) solid var(--color-ui-line); border-radius: var(--radius-button-radius); padding: var(--spacing-gap-xs) var(--spacing-gap-sm); color: var(--color-action-link); background: var(--color-soft); font: inherit; cursor: pointer; }
 .app-inline-button:hover { background: var(--color-help-hover); }
+/* 구독 입력과 제출 버튼. */
+.app-newsletter { width: var(--container-form); max-width: 100%; margin: 0 auto calc(var(--text-landing-review-font) * var(--leading-feature-body-line)); font-size: var(--text-landing-review-font); line-height: var(--leading-feature-line); text-align: center; }
+.app-newsletter-email { width: 100%; height: var(--spacing-control); margin-bottom: var(--spacing-underline); padding: var(--spacing-platform-button-y); background: var(--color-ui-card); border-radius: var(--radius-newsletter-input-radius); }
+.app-newsletter-note { margin: var(--spacing-landing-panel-gap) 0; font-size: var(--text-landing-newsletter-note); text-align: left; color: var(--color-control-muted); }
+.app-newsletter-note a { color: inherit; text-decoration: underline; }
+/* 구독 버튼은 한글 대체 글꼴의 normal 행간에도 높이를 유지한다. */
+.app-newsletter button { margin-bottom: var(--spacing-newsletter-button-margin); padding: var(--component-newsletter-button-padding); font-size: var(--text-newsletter-button-font); font-weight: var(--font-weight-bold); line-height: var(--leading-newsletter-button-line); color: var(--color-ui-card); background: var(--color-newsletter-button-color); border: var(--border-width-thin) solid transparent; border-radius: var(--radius-newsletter-button-radius); }
+.app-newsletter button:hover { background: var(--color-primary-hover); box-shadow: var(--shadow-action-shadow); text-decoration: none; }
+.app-newsletter button:active { background: var(--color-feature-tab-selected); }
+.app-newsletter button:focus { outline: 0; box-shadow: var(--component-action-focus); }
+.app-newsletter :disabled { opacity: var(--opacity-landing-logo-opacity); cursor: default; }
+.app-newsletter button:disabled:hover { background: var(--color-newsletter-button-color); box-shadow: none; }
 /* 아이콘 도형은 assets/icons에서 읽고 배치는 이 공통 조각에서 정한다. */
 .app-article-icon { display: inline-block; flex: none; width: var(--spacing-article-icon); height: var(--spacing-article-icon); }
 .app-control-icon { width: var(--icon-size-small); height: var(--icon-size-small); }
@@ -673,14 +688,14 @@ button.app-tooltip { padding: 0; background: none; color: var(--color-control-li
 
 .app-post-cover { margin-block: 0 var(--spacing-post-paragraph-margin); overflow: hidden; border-radius: var(--radius-prose-rounded-radius); background: var(--color-soft); }
 .app-post-cover > img { display: block; width: 100%; height: auto; }
-/* 홈: 소개 히어로, 제품·후기·인용 절, 개인 발행 히어로, 인터뷰·기술 흐름, 연락 절. */
-.app-hero-logo { width: var(--spacing-reference-logo); margin: auto auto var(--spacing-hero-logo-gap); }
+/* 홈: 소개 히어로, 제품·후기·인용 절, 개인 발행 히어로, 인터뷰·기술 흐름, 구독 절. */
+.app-hero-logo { display: block; width: var(--spacing-reference-logo); height: auto; margin: auto auto var(--spacing-hero-logo-gap); color: var(--color-landing-title-color); }
 .app-cinema { width: 100%; max-width: var(--spacing-player-limit); margin: var(--spacing-hero-top) auto 0; }
 .app-cinema video { display: block; width: 100%; aspect-ratio: var(--aspect-ratio-video); background: var(--color-code); }
 .app-speech { background: var(--color-action-link); color: var(--color-ui-card); border-radius: var(--radius-card-radius); padding: var(--spacing-gap); font-size: var(--text-intro-text); max-width: var(--container-form); }
 .app-landing { overflow: hidden; }
 .app-landing-hero { background: var(--color-canvas); }
-.app-hero-copy { width: var(--container-intro); max-width: var(--spacing-hero-max); margin: auto; padding-block: var(--spacing-hero-top); font-size: var(--text-intro-text); line-height: var(--leading-line-intro); text-align: center; }
+.app-hero-copy { width: var(--container-intro); max-width: var(--spacing-hero-max); margin: auto; padding-block: calc(var(--spacing-hero-top) + var(--spacing-gap-sm)) var(--spacing-hero-top); font-size: var(--text-intro-text); line-height: var(--leading-line-intro); text-align: center; }
 .app-hero-copy .app-hero-logo { max-width: 75%; margin-bottom: calc(var(--text-intro-text) * 1.5); }
 .app-hero-title { margin: 0 auto calc(var(--text-intro-text) * 1.5); font-size: var(--text-section-title); font-weight: var(--font-weight-bold); line-height: var(--leading-landing-title-line); color: var(--color-landing-title-color); }
 .app-hero-description { color: var(--color-description-color); margin: var(--spacing-landing-description-margin) auto; }
@@ -701,7 +716,11 @@ button.app-tooltip { padding: 0; background: none; color: var(--color-control-li
 .app-landing-features { padding-bottom: 0; background: var(--color-feature-canvas); }
 .app-landing-collage { width: var(--spacing-collage-crop); margin-left: var(--spacing-collage-outset); }
 .app-landing-collage img { display: block; width: 100%; }
-.app-landing-interviews { background: var(--color-canvas); }
+.app-landing-interviews, .app-landing-newsletter { background: var(--color-canvas); }
+.app-landing-newsletter .app-caption { text-align: center; }
+.app-landing-newsletter .app-newsletter { margin-bottom: var(--spacing-landing-nav-gap); }
+.app-landing-newsletter .app-newsletter-email { height: auto; line-height: normal; }
+.app-landing-newsletter .app-newsletter-note { color: var(--color-landing-newsletter-note-ink); }
 .app-landing-social { display: flex; align-items: center; justify-content: center; gap: var(--spacing-gap-sm); margin: var(--spacing-landing-panel-gap) auto var(--spacing-landing-heading-space); }
 .app-landing-social img { width: var(--spacing-icon); height: var(--spacing-icon); opacity: var(--opacity-landing-logo-opacity); }
 .app-landing-social a:hover img { opacity: 1; }

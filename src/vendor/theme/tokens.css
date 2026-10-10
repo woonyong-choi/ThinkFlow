@@ -330,6 +330,9 @@
   --color-category-cyan-dark-effect: #4ddae9;
   --color-figure-data-line: var(--color-action-link);
   --color-flow-ink-gray: var(--color-gray-0);
+  --color-newsletter-button-color: var(--primitive-toc-underline);
+  --color-primary-hover: var(--primitive-primary-hover);
+  --color-landing-newsletter-note-ink: var(--primitive-landing-newsletter-note-ink);
   --font-sans: Pretendard, "Pretendard Variable", -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
   --font-figure-sans: FigSans, FigSansSym, FigSansMath, ui-sans-serif, -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
@@ -538,6 +541,7 @@
   --spacing-focus-offset: calc(var(--spacing-unit) * 0.375);
   --spacing-icon: var(--primitive-icon);
   --spacing-control: var(--primitive-control);
+  --spacing-newsletter-button-margin: var(--primitive-newsletter-button-margin);
   --radius-lg: 8px;
   --radius-full: 999px;
   --radius-sm: 4px;
@@ -563,6 +567,8 @@
   --radius-key-radius: var(--primitive-key-radius);
   --radius-search-result-radius: var(--primitive-search-result-radius);
   --radius-prose-rounded-radius: var(--primitive-prose-rounded-radius);
+  --radius-newsletter-input-radius: var(--primitive-newsletter-input-radius);
+  --radius-newsletter-button-radius: var(--primitive-newsletter-button-radius);
   --shadow-help-hover-shadow: var(--primitive-help-hover-shadow);
   --shadow-landing-review-shadow: var(--primitive-landing-review-shadow);
   --shadow-feature-tab-shadow: var(--primitive-feature-tab-shadow);
@@ -572,6 +578,7 @@
   --shadow-platform-hover-shadow: var(--primitive-platform-hover-shadow);
   --shadow-platform-active-shadow: var(--primitive-platform-active-shadow);
   --shadow-diagram: var(--primitive-figure-shadow);
+  --shadow-action-shadow: var(--primitive-action-shadow);
   --text-body-sm: 14px;
   --text-heading: 36px;
   --text-section-title: var(--primitive-section-title);
@@ -610,6 +617,8 @@
   --text-figure-15: 15px;
   --text-figure-22: 22px;
   --text-figure-meta: 11px;
+  --text-landing-newsletter-note: var(--primitive-landing-review-copy);
+  --text-newsletter-button-font: var(--primitive-newsletter-button-font);
   --leading-body-sm: 1.43;
   --leading-heading: 1.2;
   --leading-normal: 1.5;
@@ -630,6 +639,7 @@
   --leading-platform-line: var(--primitive-platform-line);
   --leading-search-message-line: var(--leading-line-body);
   --leading-diagram-body: 1.6;
+  --leading-newsletter-button-line: calc(var(--spacing-unit) * 5);
   --tracking-text: -0.3px;
   --font-weight-prose-script-weight: var(--primitive-prose-script-weight);
   --font-weight-semibold: 600;
@@ -1017,6 +1027,15 @@
   --primitive-body-text: 18px;
   --primitive-blur: 5px;
   --primitive-toc-underline: #4f91fb;
+  --primitive-newsletter-input-radius: 6.4px;
+  --primitive-newsletter-button-font: 16.96px;
+  --primitive-newsletter-button-padding: 7.1232px 16.96px;
+  --primitive-newsletter-button-margin: 4.24px;
+  --primitive-newsletter-button-radius: 7.632px;
+  --primitive-primary-hover: #649fff;
+  --primitive-action-shadow: 0 2px 4px rgba(0,0,0,.05);
+  --primitive-action-focus: 0 0 0 2px rgba(37,118,235,.5);
+  --primitive-landing-newsletter-note-ink: #9299a4;
   --breakpoint-mobile: 560px;
   --breakpoint-support-pair: 400px;
   --breakpoint-product-pair: 480px;
@@ -1170,6 +1189,8 @@
   --component-card-summary-lines: var(--primitive-card-summary-lines);
   --component-illustration-project-placeholder-stroke: var(--primitive-illustration-project-placeholder-stroke);
   --component-table-padding: var(--primitive-table-padding);
+  --component-newsletter-button-padding: var(--primitive-newsletter-button-padding);
+  --component-action-focus: var(--primitive-action-focus);
   --outline-width-focus: 3px;
   --stroke-width-control: var(--spacing-0-5);
   color-scheme: light;
