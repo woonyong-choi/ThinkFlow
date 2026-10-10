@@ -109,8 +109,9 @@ export function readTrack({ tokens, line }, ctx) {
   const legTimes = readLegs(found.legs, { lineCount: path.length, timeMs, line, ctx });
   sources.forEach((source, i) => {
     // 출발 시각을 적지 않으면 출발지가 every 안에서 고르게 엇갈려 출발한다.
-    const start = atMs ?? Math.round(((everyMs ?? 0) * i) / sources.length);
-    ctx.step.tracks.push({ path: [source, ...path], source, data: texts[0]?.value, atMs: start, everyMs, timeMs, tone: tone ?? toneOfSource(source, ctx), sets, lost, legTimes, ...(condition ? { condition } : {}), line });
+    const start = atMs ?? ((everyMs ?? 0) * i) / sources.length;
+    const atPhase = atMs === undefined && everyMs !== undefined ? { index: i, count: sources.length } : undefined;
+    ctx.step.tracks.push({ path: [source, ...path], source, data: texts[0]?.value, atMs: start, ...(atPhase ? { atPhase } : {}), everyMs, timeMs, tone: tone ?? toneOfSource(source, ctx), sets, lost, legTimes, ...(condition ? { condition } : {}), line });
   });
 }
 
