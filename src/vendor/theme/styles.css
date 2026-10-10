@@ -58,7 +58,7 @@ body > main { overflow-x: clip; }
 .app-logo { display: inline-flex; align-items: center; gap: var(--spacing-gap-xs); flex: none; min-width: var(--spacing-nav-width); height: var(--spacing-nav-height); white-space: nowrap; }
 .app-header .app-logo { color: var(--color-body); font-weight: var(--font-weight-bold); }
 .app-logo-icon { display: inline-flex; flex: none; color: var(--color-action-link); }
-.app-logo-brand { display: inline-flex; color: var(--color-landing-title-color); }
+.app-logo-brand { display: inline-flex; padding-inline: var(--spacing-1-5); color: var(--color-landing-title-color); }
 .app-logo-brand :is(img, svg) { display: block; width: auto; height: var(--text-body-text); }
 .app-canvas { background: var(--color-canvas); }
 .app-footer { background: var(--color-canvas); padding-block: var(--spacing-gap-lg); }
@@ -689,14 +689,17 @@ button.app-tooltip { padding: 0; background: none; color: var(--color-control-li
 .app-post-cover { margin-block: 0 var(--spacing-post-paragraph-margin); overflow: hidden; border-radius: var(--radius-prose-rounded-radius); background: var(--color-soft); }
 .app-post-cover > img { display: block; width: 100%; height: auto; }
 /* 홈: 소개 히어로, 제품·후기·인용 절, 개인 발행 히어로, 인터뷰·기술 흐름, 구독 절. */
-.app-hero-logo { display: block; width: var(--spacing-reference-logo); height: auto; margin: auto auto var(--spacing-hero-logo-gap); color: var(--color-landing-title-color); }
+.app-hero-logo, .app-hero-wordmark { display: block; margin: auto auto var(--spacing-hero-logo-gap); color: var(--color-landing-title-color); }
+.app-hero-logo { width: var(--spacing-reference-logo); height: auto; }
+.app-hero-wordmark { width: auto; height: var(--text-5xl); max-width: 100%; object-fit: contain; }
 .app-cinema { width: 100%; max-width: var(--spacing-player-limit); margin: var(--spacing-hero-top) auto 0; }
 .app-cinema video { display: block; width: 100%; aspect-ratio: var(--aspect-ratio-video); background: var(--color-code); }
 .app-speech { background: var(--color-action-link); color: var(--color-ui-card); border-radius: var(--radius-card-radius); padding: var(--spacing-gap); font-size: var(--text-intro-text); max-width: var(--container-form); }
 .app-landing { overflow: hidden; }
 .app-landing-hero { background: var(--color-canvas); }
 .app-hero-copy { width: var(--container-intro); max-width: var(--spacing-hero-max); margin: auto; padding-block: calc(var(--spacing-hero-top) + var(--spacing-gap-sm)) var(--spacing-hero-top); font-size: var(--text-intro-text); line-height: var(--leading-line-intro); text-align: center; }
-.app-hero-copy .app-hero-logo { max-width: 75%; margin-bottom: calc(var(--text-intro-text) * 1.5); }
+.app-hero-copy :is(.app-hero-logo, .app-hero-wordmark) { margin-bottom: calc(var(--text-intro-text) * 1.5); }
+.app-hero-copy .app-hero-logo { max-width: 75%; }
 .app-hero-title { margin: 0 auto calc(var(--text-intro-text) * 1.5); font-size: var(--text-section-title); font-weight: var(--font-weight-bold); line-height: var(--leading-landing-title-line); color: var(--color-landing-title-color); }
 .app-hero-description { color: var(--color-description-color); margin: var(--spacing-landing-description-margin) auto; }
 .app-hero-description, .app-landing-heading > p { word-break: keep-all; overflow-wrap: anywhere; }
@@ -726,7 +729,8 @@ button.app-tooltip { padding: 0; background: none; color: var(--color-control-li
 .app-landing-social a:hover img { opacity: 1; }
 @media (max-width: 734px) {
   .app-hero-copy { font-size: var(--text-mobile-intro); }
-  .app-hero-copy .app-hero-logo { margin-bottom: calc(var(--text-mobile-intro) * 1.5); }
+  .app-hero-copy :is(.app-hero-logo, .app-hero-wordmark) { margin-bottom: calc(var(--text-mobile-intro) * 1.5); }
+  .app-hero-wordmark { height: var(--text-heading); }
 }
 @media (prefers-reduced-motion: reduce) { .app-nav a:hover { transition: none; } }
 .app-landing-heading .app-landing-social { display: block; margin: var(--spacing-landing-description-margin) auto; }

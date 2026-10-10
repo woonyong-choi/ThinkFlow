@@ -45,7 +45,7 @@
     "analytics": "chart-line-data",
     "apigw": "gateway",
     "architecture": "hierarchy",
-    "bastion": "user-settings",
+    "bastion": "proxy",
     "calendar-dots": "calendar-days",
     "calendar-event": "calendar-day",
     "calendar-later": "calendar-down",
@@ -59,7 +59,7 @@
     "cost": "coins",
     "data-structures": "graph",
     "db": "database",
-    "ddos": "security",
+    "ddos": "firewall",
     "debugging": "bug",
     "deploy": "box-up",
     "design-system": "color-swatch",
@@ -73,7 +73,7 @@
     "indexing": "index",
     "inference": "brain-sparkle",
     "interaction": "hand-click",
-    "lb": "network",
+    "lb": "load-balancer",
     "logsearch": "search",
     "math-greater": "chevron-right",
     "mobile": "phone-mobile",
@@ -89,19 +89,19 @@
     "rag": "hybrid-search",
     "refactoring": "code-block",
     "refresh-right": "refresh",
-    "region": "cloud",
+    "region": "cloud-pin",
     "retrospective": "change-history",
     "serialization": "data-representation",
     "state": "workflow",
-    "subnet": "lock",
+    "subnet": "network",
     "task-check": "checkbox-check",
     "team": "users",
     "testing": "checkbox-check",
     "tracing": "route",
     "training": "brain-settings",
     "version-control": "git-branch",
-    "vpc": "cloud",
-    "vpn": "security",
+    "vpc": "cloud-lock",
+    "vpn": "secured-network",
     "vulnerability": "shield-warning"
   },
   "controls": {
@@ -223,7 +223,7 @@
       "label": "Kotlin",
       "source": "https://raw.githubusercontent.com/devicons/devicon/v2.17.0/icons/kotlin/kotlin-plain.svg",
       "variant": "plain",
-      "treatment": "neutral monochrome",
+      "treatment": "theme-aware neutral monochrome; shape unchanged",
       "library": "devicon",
       "version": "v2.17.0",
       "license": "MIT"
@@ -232,7 +232,7 @@
       "label": "C#",
       "source": "https://raw.githubusercontent.com/devicons/devicon/v2.17.0/icons/csharp/csharp-plain.svg",
       "variant": "plain",
-      "treatment": "neutral monochrome",
+      "treatment": "theme-aware neutral monochrome; shape unchanged",
       "library": "devicon",
       "version": "v2.17.0",
       "license": "MIT"
@@ -241,7 +241,7 @@
       "label": "Rust",
       "source": "https://raw.githubusercontent.com/devicons/devicon/v2.17.0/icons/rust/rust-original.svg",
       "variant": "original",
-      "treatment": "source colors",
+      "treatment": "theme-aware neutral monochrome; shape unchanged",
       "library": "devicon",
       "version": "v2.17.0",
       "license": "MIT"
@@ -268,7 +268,7 @@
       "label": "JavaScript",
       "source": "https://raw.githubusercontent.com/devicons/devicon/v2.17.0/icons/javascript/javascript-original.svg",
       "variant": "original",
-      "treatment": "source colors",
+      "treatment": "background removed; original monogram retained; theme-aware neutral monochrome",
       "library": "devicon",
       "version": "v2.17.0",
       "license": "MIT"
@@ -277,7 +277,7 @@
       "label": "TypeScript",
       "source": "https://raw.githubusercontent.com/devicons/devicon/v2.17.0/icons/typescript/typescript-original.svg",
       "variant": "original",
-      "treatment": "source colors",
+      "treatment": "background removed; original monogram retained; source blue; mask preserves monochrome",
       "library": "devicon",
       "version": "v2.17.0",
       "license": "MIT"
@@ -304,7 +304,7 @@
       "label": "Next.js",
       "source": "https://raw.githubusercontent.com/devicons/devicon/v2.17.0/icons/nextjs/nextjs-plain.svg",
       "variant": "plain",
-      "treatment": "flat monochrome",
+      "treatment": "theme-aware neutral monochrome; shape unchanged",
       "library": "devicon",
       "version": "v2.17.0",
       "license": "MIT"
@@ -331,7 +331,7 @@
       "label": "Kubernetes",
       "source": "https://raw.githubusercontent.com/devicons/devicon/v2.17.0/icons/kubernetes/kubernetes-original.svg",
       "variant": "original",
-      "treatment": "source colors",
+      "treatment": "background removed; original wheel retained; source blue",
       "library": "devicon",
       "version": "v2.17.0",
       "license": "MIT"
@@ -340,7 +340,7 @@
       "label": "PostgreSQL",
       "source": "https://raw.githubusercontent.com/devicons/devicon/v2.17.0/icons/postgresql/postgresql-original.svg",
       "variant": "original",
-      "treatment": "source colors",
+      "treatment": "source blue on light surfaces; lighter blue on dark surfaces; internal highlights are negative space; black underlay removed",
       "library": "devicon",
       "version": "v2.17.0",
       "license": "MIT"
@@ -349,7 +349,7 @@
       "label": "Redis",
       "source": "https://raw.githubusercontent.com/devicons/devicon/v2.17.0/icons/redis/redis-original.svg",
       "variant": "original",
-      "treatment": "source colors",
+      "treatment": "source colors; negative internal symbols and layer seams",
       "library": "devicon",
       "version": "v2.17.0",
       "license": "MIT"
@@ -367,7 +367,7 @@
       "label": "Linux",
       "source": "https://raw.githubusercontent.com/devicons/devicon/v2.17.0/icons/linux/linux-plain.svg",
       "variant": "plain",
-      "treatment": "flat monochrome",
+      "treatment": "theme-aware neutral monochrome; shape unchanged",
       "library": "devicon",
       "version": "v2.17.0",
       "license": "MIT"
@@ -506,7 +506,7 @@
       "library": "simple-icons",
       "version": "16.33.0",
       "license": "CC0-1.0",
-      "treatment": "neutral monochrome; currentColor added; shape unchanged"
+      "treatment": "original dolphin symbol isolated and enlarged within unchanged viewBox; theme-aware neutral monochrome"
     },
     "nginx": {
       "label": "NGINX",
@@ -15690,7 +15690,7 @@
     "slide-design": {
       "file": "documents/slide-design.svg",
       "category": "documents",
-      "label": "slide design"
+      "label": "Slide design"
     },
     "slide-eraser": {
       "file": "documents/slide-eraser.svg",
@@ -15830,7 +15830,7 @@
     "slide": {
       "file": "documents/slide.svg",
       "category": "documents",
-      "label": "slide"
+      "label": "Slide"
     },
     "source-detail": {
       "file": "documents/source-detail.svg",

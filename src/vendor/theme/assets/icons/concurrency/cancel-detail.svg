@@ -1,1 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48" color="#3d4856" role="img"><title>취소</title><desc>취소 · detail</desc><g stroke-linecap="round" stroke-linejoin="round"><g transform="translate(0.00000 0.00000) scale(1.00000)"><rect x="4" y="4" width="40" height="40" rx="10" fill="#f64f82" stroke="#d84270" stroke-width="2.8"/><path d="M16 16L32 32M32 16L16 32" fill="none" stroke="#ffffff" stroke-width="4.5"/></g></g></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48" color="#3d4856" role="img">
+<title>취소</title>
+<desc>진행하던 작업의 실행을 취소하고 후속 흐름을 중단</desc>
+<g stroke-linecap="round" stroke-linejoin="round">
+<path d="M4 10H14M4 38H14" fill="none" stroke="#a4a8ae" stroke-width="3" /><path d="M3 24H12" fill="none" stroke="#639bfa" stroke-width="2.5" /><path d="M9 21L12 24L9 27" fill="none" stroke="#639bfa" stroke-width="2.5" /><defs><mask id="cancel" maskUnits="userSpaceOnUse" x="0" y="0" width="48" height="48"><rect width="48" height="48" fill="white"/><path d="M25 18L37 30M37 18L25 30" fill="none" stroke="black" stroke-width="4" /></mask></defs><g mask="url(#cancel)"><rect x="17" y="7" width="28" height="34" rx="8" fill="#f64f82" stroke="none" stroke-width="2"/></g>
+</g>
+</svg>

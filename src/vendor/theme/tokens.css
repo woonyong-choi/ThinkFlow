@@ -619,6 +619,7 @@
   --text-figure-meta: 11px;
   --text-landing-newsletter-note: var(--primitive-landing-review-copy);
   --text-newsletter-button-font: var(--primitive-newsletter-button-font);
+  --text-5xl: var(--spacing-12);
   --leading-body-sm: 1.43;
   --leading-heading: 1.2;
   --leading-normal: 1.5;
@@ -1129,6 +1130,7 @@
   --icon-cloud: var(--primitive-icon-cloud);
   --icon-cloud-edge: var(--primitive-icon-cloud-edge);
   --icon-device-screen: var(--primitive-icon-device-screen);
+  --icon-brand-postgresql: #336791;
   --container-page: var(--primitive-page);
   --container-body-width: var(--primitive-body-width);
   --container-intro: var(--primitive-intro);
@@ -1303,6 +1305,8 @@
   --color-platform-hover: var(--color-control-hover);
   --color-platform-active: var(--color-feature-tab-background);
   --color-flow-ink-gray: var(--color-gray-933);
+  --icon-neutral: var(--color-ink);
+  --icon-brand-postgresql: #6495bb;
   color-scheme: dark;
   }
 }
@@ -1413,6 +1417,8 @@
   --color-platform-hover: var(--color-control-hover);
   --color-platform-active: var(--color-feature-tab-background);
   --color-flow-ink-gray: var(--color-gray-933);
+  --icon-neutral: var(--color-ink);
+  --icon-brand-postgresql: #6495bb;
   color-scheme: dark;
 }
 [data-theme='light'] {
@@ -1522,5 +1528,7 @@
   --color-platform-hover: var(--primitive-platform-hover);
   --color-platform-active: var(--primitive-platform-active);
   --color-flow-ink-gray: var(--color-gray-0);
+  --icon-neutral: var(--primitive-help-title-color);
+  --icon-brand-postgresql: #336791;
   color-scheme: light;
 }

@@ -1,1 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48" color="#3d4856" role="img"><title>엔드포인트</title><desc>엔드포인트 · detail</desc><g stroke-linecap="round" stroke-linejoin="round"><g transform="translate(1.06667 1.66389) scale(0.95556)"><path d="M3 9H18V24H27" fill="none" stroke="#a4a8ae" stroke-width="3"/><circle cx="36" cy="24" r="9" fill="#c7ddff" stroke="#90b4ee" stroke-width="2.7"/><circle cx="36" cy="24" r="3" fill="#639bfa" stroke="none" stroke-width="3"/><path d="M-3 -25 360 1491H571L204 -25Z" transform="translate(8.413 39) scale(0.005371 -0.005371)" fill="#a4a8ae"/><path d="M12 0 395 547 28 1062H371L559 770L757 1062H1087L727 559L1120 0H775L559 329L341 0Z" transform="translate(11.469 39) scale(0.005371 -0.005371)" fill="#a4a8ae"/></g></g></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48" color="#3d4856" role="img">
+<title>엔드포인트</title>
+<desc>요청이 도착하는 하나의 주소 · 상세</desc>
+<g stroke-linecap="round" stroke-linejoin="round">
+<path d="M5 24H21" fill="none" stroke="#a4a8ae" stroke-width="3.5"/><defs><mask id="cut-111" x="0" y="0" width="48" height="48" maskUnits="userSpaceOnUse"><rect width="48" height="48" fill="white"/><circle cx="33" cy="24" r="5" fill="black"/></mask></defs><g mask="url(#cut-111)"><circle cx="33" cy="24" r="12" fill="#639bfa"/></g><path d="M5 12L18 12M14.40 8.40L18 12L14.40 15.60" fill="none" stroke="#ffbf00" stroke-width="2.6"/><path d="M5 36h9" fill="none" stroke="#a4a8ae" stroke-width="2.6"/>
+</g>
+</svg>

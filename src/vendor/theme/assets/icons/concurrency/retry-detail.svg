@@ -1,1 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48" color="#3d4856" role="img"><title>재시도</title><desc>재시도 · detail</desc><g stroke-linecap="round" stroke-linejoin="round"><g transform="translate(1.06667 1.06667) scale(0.95556)"><circle cx="24" cy="24" r="21" fill="#c7ddff" stroke="#90b4ee" stroke-width="2.8"/><path d="M33 15A12 12 0 1 0 36 27" fill="none" stroke="#2465c7" stroke-width="3.8"/><path d="M33 9V17H25" fill="none" stroke="#2465c7" stroke-width="3.8"/><circle cx="24" cy="24" r="1.8" fill="#2465c7" stroke="none" stroke-width="3"/></g></g></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48" color="#3d4856" role="img">
+<title>재시도</title>
+<desc>실패한 작업을 같은 시작 지점에서 다시 시도</desc>
+<g stroke-linecap="round" stroke-linejoin="round">
+<path d="M37 11A18 18 0 1 0 41 30" fill="none" stroke="#639bfa" stroke-width="3.5" /><path d="M37 5V12H30" fill="none" stroke="#639bfa" stroke-width="3.5" /><defs><mask id="retry-task" maskUnits="userSpaceOnUse" x="0" y="0" width="48" height="48"><rect width="48" height="48" fill="white"/><path d="M20 25H27M24 22L27 25L24 28" fill="none" stroke="black" stroke-width="2.2" /></mask></defs><g mask="url(#retry-task)"><rect x="16" y="17" width="15" height="16" rx="4" fill="#a4a8ae" stroke="none" stroke-width="2"/></g>
+</g>
+</svg>

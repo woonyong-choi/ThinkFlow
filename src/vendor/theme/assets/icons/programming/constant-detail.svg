@@ -1,1 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48" color="#3d4856" role="img"><title>상수</title><desc>상수 · detail</desc><g stroke-linecap="round" stroke-linejoin="round"><g transform="translate(-2.46154 -2.46154) scale(1.10256)"><rect x="7" y="6" width="34" height="36" rx="7" fill="#ffbf00" stroke="#edb300" stroke-width="2.8"/><path d="M638 0V295H38V541L674 1472H910V542H1092V295H910V0ZM638 542V1043L301 542Z" transform="translate(13.433 30) scale(0.009277 -0.009277)" fill="#ffffff"/><path d="M1036 261V0H51Q67 148 147.0 280.5Q227 413 463 632Q653 809 696 872Q754 959 754 1044Q754 1138 703.5 1188.5Q653 1239 564 1239Q476 1239 424.0 1186.0Q372 1133 364 1010L84 1038Q109 1270 241.0 1371.0Q373 1472 571 1472Q788 1472 912.0 1355.0Q1036 1238 1036 1064Q1036 965 1000.5 875.5Q965 786 888 688Q837 623 704.0 501.0Q571 379 535.5 339.0Q500 299 478 261Z" transform="translate(24.000 30) scale(0.009277 -0.009277)" fill="#ffffff"/><path d="M14 35L34 35" fill="none" stroke="#ffffff" stroke-width="2.5"/><path d="M15 12L25 12" fill="none" stroke="#ffe1b5" stroke-width="2.4"/></g></g></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48" color="#3d4856" role="img">
+<title>상수</title>
+<desc>잠긴 값과 등호로 바뀌지 않는 상수를 표현</desc>
+<g stroke-linecap="round" stroke-linejoin="round">
+<defs><mask id="cut" maskUnits="userSpaceOnUse" x="0" y="0" width="48" height="48"><rect width="48" height="48" fill="white"/><path d="M16 19V16A8 8 0 0 1 32 16V19M15 24H33M15 31H33" fill="none" stroke="black" stroke-width="3" /><path d="M13 36H35" fill="none" stroke="black" stroke-width="2.5" /></mask></defs><g mask="url(#cut)"><rect x="5" y="5" width="38" height="38" rx="8" fill="#ffbf00" stroke="none" stroke-width="0" /></g>
+</g>
+</svg>

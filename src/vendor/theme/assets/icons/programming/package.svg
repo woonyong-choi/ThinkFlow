@@ -1,1 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48" color="#3d4856" role="img"><title>패키지</title><desc>패키지 · simple</desc><g stroke-linecap="round" stroke-linejoin="round"><g transform="translate(0.80899 -0.88202) scale(0.96629)"><path d="M8 14L21 6Q24 4 27 6L40 14Q43 16 43 20V34Q43 37 40 39L27 46Q24 47 21 46L8 39Q5 37 5 34V20Q5 16 8 14Z" fill="#ffbf00" stroke="#edb300" stroke-width="2.8"/><path d="M6 16L24 25L42 16M24 25V45" fill="none" stroke="#edb300" stroke-width="2.8"/><path d="M16 10L33 19V27L28 30V22L11 13Z" fill="#ffffff" stroke="none" stroke-width="3.25"/></g></g></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48" color="#3d4856" role="img">
+<title>패키지</title>
+<desc>테이프로 봉한 상자와 접힌 면으로 패키지 묶음을 표현</desc>
+<g stroke-linecap="round" stroke-linejoin="round">
+<defs><mask id="cut" maskUnits="userSpaceOnUse" x="0" y="0" width="48" height="48"><rect width="48" height="48" fill="white"/><path d="M7 16L24 26L41 16M24 26V42" fill="none" stroke="black" stroke-width="2.6" /><path d="M16 10L33 20V27" fill="none" stroke="black" stroke-width="3" /></mask></defs><g mask="url(#cut)"><path d="M7 14L22 5Q24 4 26 5L41 14Q43 15 43 18V33Q43 35 41 36L26 45Q24 46 22 45L7 36Q5 35 5 33V18Q5 15 7 14Z" fill="#ffbf00" stroke="none" stroke-width="0" /></g>
+</g>
+</svg>

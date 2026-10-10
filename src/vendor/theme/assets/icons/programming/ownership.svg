@@ -1,1 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48" color="#3d4856" role="img"><title>소유권</title><desc>소유권 · simple</desc><g stroke-linecap="round" stroke-linejoin="round"><g transform="translate(0.53429 0.04286) scale(0.98286)"><rect x="4" y="4" width="20" height="22" rx="5" fill="#528aee" stroke="#528aee" stroke-width="2.8"/><path d="M12 0 395 547 28 1062H371L559 770L757 1062H1087L727 559L1120 0H775L559 329L341 0Z" transform="translate(9.273 20) scale(0.008301 -0.008301)" fill="#ffffff"/><rect x="26" y="28" width="18" height="17" rx="4" fill="#ffbf00" stroke="#edb300" stroke-width="2.5"/><path d="M14 26V35Q14 38 18 38H26" fill="none" stroke="#a4a8ae" stroke-width="3.1"/></g></g></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48" color="#3d4856" role="img">
+<title>소유권</title>
+<desc>하나의 변수에서 하나의 자원으로 이어지는 단일 소유 관계</desc>
+<g stroke-linecap="round" stroke-linejoin="round">
+<defs><mask id="owner" maskUnits="userSpaceOnUse" x="0" y="0" width="48" height="48"><rect width="48" height="48" fill="white"/><path d="M11 12L19 21M19 12L11 21" fill="none" stroke="black" stroke-width="2.8" /></mask></defs><g mask="url(#owner)"><rect x="5" y="5" width="20" height="24" rx="5" fill="#528aee" stroke="none" stroke-width="0" /></g><path d="M15 32V35Q15 39 20 39H27" fill="none" stroke="#a4a8ae" stroke-width="2.8" /><defs><mask id="value" maskUnits="userSpaceOnUse" x="0" y="0" width="48" height="48"><rect width="48" height="48" fill="white"/></mask></defs><g mask="url(#value)"><rect x="29" y="29" width="15" height="15" rx="4" fill="#ffbf00" stroke="none" stroke-width="0" /></g>
+</g>
+</svg>

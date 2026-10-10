@@ -1,1 +1,15 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48" color="#3d4856" role="img"><title>알고리즘</title><desc>알고리즘 · detail</desc><g stroke-linecap="round" stroke-linejoin="round"><g transform="translate(0.80899 1.05056) scale(0.96629)"><path d="M24 14V22M24 32V36H9V40M24 36H39V40" fill="none" stroke="#a4a8ae" stroke-width="3"/><rect x="14" y="3" width="20" height="11" rx="3.5" fill="#c6cbd2" stroke="#a4a8ae" stroke-width="2.7"/><path d="M22 17Q24 15 26 17L32 23Q34 25 32 27L26 33Q24 35 22 33L16 27Q14 25 16 23Z" fill="#ffbf00" stroke="#edb300" stroke-width="2.7"/><rect x="3" y="39" width="12" height="7" rx="2.5" fill="#639bfa" stroke="none" stroke-width="3"/><rect x="33" y="39" width="12" height="7" rx="2.5" fill="#28a779" stroke="none" stroke-width="3"/><path d="M20 8.5L28 8.5" fill="none" stroke="#ffffff" stroke-width="2.6"/><circle cx="24" cy="25" r="2.3" fill="#ffffff" stroke="none" stroke-width="3"/></g></g></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48" color="#3d4856" role="img">
+<title>알고리즘</title>
+<desc>입력 처리와 조건, 성립 여부에 따른 두 결과</desc>
+<g stroke-linecap="round" stroke-linejoin="round">
+<defs><mask id="outcomes" maskUnits="userSpaceOnUse" x="2" y="36" width="44" height="11"><rect x="2" y="36" width="44" height="11" fill="white"/><path d="M7 41L9 43L13 39M36 39L40 43M40 39L36 43" fill="none" stroke="black" stroke-width="1.8"/></mask></defs>
+<path d="M24 12V18M17 25H10V35M31 25H38V35" fill="none" stroke="#a4a8ae" stroke-width="2.6"/>
+<path d="M7.5 32.5L10 35L12.5 32.5M35.5 32.5L38 35L40.5 32.5" fill="none" stroke="#a4a8ae" stroke-width="2.4"/>
+<rect x="14" y="4" width="20" height="8" rx="3" fill="none" stroke="#a4a8ae" stroke-width="2"/>
+<path d="M19 8H29" fill="none" stroke="#a4a8ae" stroke-width="2"/>
+<path d="M22 18Q24 16 26 18L31 23Q33 25 31 27L26 32Q24 34 22 32L17 27Q15 25 17 23Z" fill="none" stroke="#edb300" stroke-width="2.4"/>
+<path d="M22 23Q22 20.5 24 20.5Q27 20.5 27 23Q27 24.5 24 25.5" fill="none" stroke="#edb300" stroke-width="1.8"/>
+<circle cx="24" cy="29" r="1.1" fill="#edb300"/>
+<g mask="url(#outcomes)"><rect x="4" y="37" width="13" height="9" rx="2.5" fill="#639bfa"/><rect x="31" y="37" width="13" height="9" rx="2.5" fill="#a4a8ae"/></g>
+</g>
+</svg>

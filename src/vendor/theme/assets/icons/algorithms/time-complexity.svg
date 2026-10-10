@@ -1,1 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48" color="#3d4856" role="img"><title>시간 복잡도</title><desc>시간 복잡도 · simple</desc><g stroke-linecap="round" stroke-linejoin="round"><g transform="translate(1.06667 1.06667) scale(0.95556)"><rect x="3" y="3" width="42" height="42" rx="8" fill="#ffffff" stroke="#a4a8ae" stroke-width="2.8"/><path d="M10 12V37H37" fill="none" stroke="#c6cbd2" stroke-width="2.5"/><path d="M13 33Q25 32 35 12" fill="none" stroke="#639bfa" stroke-width="3.3"/><circle cx="34" cy="34" r="7" fill="#ffffff" stroke="#a4a8ae" stroke-width="2.2"/><path d="M34 30V34L37 36" fill="none" stroke="#639bfa" stroke-width="2.2"/></g></g></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48" color="#3d4856" role="img">
+<title>시간 복잡도</title>
+<desc>입력 증가에 따른 실행 시간 곡선과 시계</desc>
+<g stroke-linecap="round" stroke-linejoin="round">
+<path d="M6 5V37H27" fill="none" stroke="#a4a8ae" stroke-width="2.6" /><path d="M11 31C22 29 28 22 33 7" fill="none" stroke="#639bfa" stroke-width="3.3" /><circle cx="35" cy="36" r="10" fill="none" stroke="#a4a8ae" stroke-width="2.7"/><path d="M35 29V36L39 39" fill="none" stroke="#639bfa" stroke-width="2.6" />
+</g>
+</svg>

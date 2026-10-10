@@ -736,7 +736,8 @@ export const tokens = freeze({
     },
     "figure-meta": "var(--text-figure-meta)",
     "landing-newsletter-note": "var(--text-landing-newsletter-note)",
-    "newsletter-button-font": "var(--text-newsletter-button-font)"
+    "newsletter-button-font": "var(--text-newsletter-button-font)",
+    "5xl": "var(--text-5xl)"
   },
   "leading": {
     "body-sm": "var(--leading-body-sm)",
@@ -1272,7 +1273,10 @@ export const tokens = freeze({
     "idea-edge": "var(--icon-idea-edge)",
     "cloud": "var(--icon-cloud)",
     "cloud-edge": "var(--icon-cloud-edge)",
-    "device-screen": "var(--icon-device-screen)"
+    "device-screen": "var(--icon-device-screen)",
+    "brand": {
+      "postgresql": "var(--icon-brand-postgresql)"
+    }
   },
   "container": {
     "page": "var(--container-page)",
@@ -2087,7 +2091,8 @@ export const values = freeze({
     },
     "figure-meta": 11,
     "landing-newsletter-note": 15.2,
-    "newsletter-button-font": 16.96
+    "newsletter-button-font": 16.96,
+    "5xl": 48
   },
   "leading": {
     "body-sm": 1.43,
@@ -2623,7 +2628,10 @@ export const values = freeze({
     "idea-edge": "#edb300",
     "cloud": "#639bfa",
     "cloud-edge": "#528aee",
-    "device-screen": "#e9eaeb"
+    "device-screen": "#e9eaeb",
+    "brand": {
+      "postgresql": "#336791"
+    }
   },
   "container": {
     "page": 900,

@@ -1,1 +1,18 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48" color="#3d4856" role="img"><title>데이터</title><desc>데이터 · detail</desc><g stroke-linecap="round" stroke-linejoin="round"><g transform="translate(1.05866 -0.38268) scale(0.96089)"><rect x="3" y="6" width="23" height="27" rx="5" fill="#ffffff" stroke="#a4a8ae" stroke-width="2.8"/><path d="M1471 0H1149L1021 333H435L314 0H0L571 1466H884ZM926 580 724 1124 526 580Z" transform="translate(7.639 26) scale(0.009277 -0.009277)" fill="#639bfa"/><rect x="25" y="23" width="20" height="22" rx="5" fill="#ffe1b5" stroke="#edb300" stroke-width="2.5"/><path d="M87 1185V1446H1048V1242Q929 1125 806.0 906.0Q683 687 618.5 440.5Q554 194 555 0H284Q291 304 409.5 620.0Q528 936 726 1185Z" transform="translate(30.551 39) scale(0.007812 -0.007812)" fill="#edb300"/></g></g></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48" color="#3d4856" role="img">
+<title>데이터</title>
+<desc>필드와 값으로 구성된 레코드와 수치 데이터</desc>
+<g stroke-linecap="round" stroke-linejoin="round">
+<defs><mask id="data-record-overlap" maskUnits="userSpaceOnUse" x="0" y="0" width="48" height="48"><rect width="48" height="48" fill="white"/><rect x="22.5" y="21.5" width="24" height="25" rx="6.5" fill="black"/></mask></defs>
+<g mask="url(#data-record-overlap)">
+<rect x="3" y="6" width="25" height="28" rx="5" fill="none" stroke="#a4a8ae" stroke-width="2.5"/>
+<rect x="8" y="12" width="4" height="4" rx="1.2" fill="#528aee"/>
+<rect x="8" y="21" width="4" height="4" rx="1.2" fill="#528aee"/>
+<path d="M16 14H22M16 23H20" fill="none" stroke="#a4a8ae" stroke-width="2.8"/>
+</g>
+<rect x="24" y="23" width="21" height="22" rx="5" fill="none" stroke="#edb300" stroke-width="2.5"/>
+<path d="M29 38H40" fill="none" stroke="#edb300" stroke-width="2.2"/>
+<rect x="28" y="32" width="3" height="7" rx="1.2" fill="#edb300"/>
+<rect x="33" y="28" width="3" height="11" rx="1.2" fill="#edb300"/>
+<rect x="38" y="30" width="3" height="9" rx="1.2" fill="#edb300"/>
+</g>
+</svg>
