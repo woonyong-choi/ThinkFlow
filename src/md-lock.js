@@ -62,8 +62,38 @@ function clearStale(path, seen) {
 
 // cost: time O(1), heap O(1), stack O(1), io 5
 // basis: estimate
-// 잠금 파일 하나를 잡는다. 잡으면 { held: { path, nonce } }, 못 잡으면 { busy }, 폴더에 만들 수 없으면(권한 등) 빈 결과다(쓰기 단계가 같은 이유로 알린다).
+// 잠금 파일 작업이 실패하면 쓰기를 진행하지 않고 IO 진단으로 끝낸다.
+function lockError(path, error) {
+  return { busy: { path, code: 'io', message: `cannot acquire or release the folder lock: ${error.code ?? 'unknown error'}` } };
+}
+
+// 낡은 잠금을 읽고 치운 뒤 새 잠금을 쓰는 과정 전체를 한 실행만 수행한다.
+// guard 주인이 죽었는지 판단하다가 같은 경쟁을 되풀이하지 않도록 남은 guard는 수동 복구만 허용한다.
 function lockOne(dir) {
+  const guard = join(dir, `${LOCK_NAME}.guard`);
+  try {
+    mkdirSync(guard);
+  } catch (error) {
+    if (error.code !== 'EEXIST') return lockError(guard, error);
+    return { busy: { path: guard, message: 'another thinkflow md is acquiring this folder lock. If no thinkflow md is running, remove this guard directory by hand and run again' } };
+  }
+  let lock;
+  try {
+    lock = lockGuarded(dir);
+  } catch (error) {
+    lock = lockError(join(dir, LOCK_NAME), error);
+  } finally {
+    try {
+      rmdirSync(guard);
+    } catch (error) {
+      if (lock?.held) releaseHeld([lock.held]);
+      lock = lockError(guard, error);
+    }
+  }
+  return lock;
+}
+
+function lockGuarded(dir) {
   const path = join(dir, LOCK_NAME);
   const info = { pid: process.pid, host: hostname(), created: new Date().toISOString(), nonce: randomUUID() };
   for (let attempt = 0; attempt < 2; attempt++) {
@@ -71,7 +101,7 @@ function lockOne(dir) {
       writeFileSync(path, `${JSON.stringify(info)}\n`, { flag: 'wx' });
       return { held: { path, nonce: info.nonce } };
     } catch (error) {
-      if (error.code !== 'EEXIST') return {};
+      if (error.code !== 'EEXIST') return lockError(path, error);
     }
     const seen = readLock(path);
     if (!seen) return refusal(path, undefined, 'the lock file cannot be read or has an unknown format');
@@ -103,7 +133,7 @@ function releaseHeld(held) {
 // vars: d = 출력 폴더 수
 // basis: estimate
 /**
- * 출력 폴더마다 잠금을 잡는다. 없는 폴더는 만든다(실패하면 그 폴더는 건너뛴다).
+ * 문서와 출력 폴더마다 잠금을 잡는다. 없는 폴더는 만들고 실패하면 앞서 잡은 잠금을 풀고 IO 진단을 돌려준다.
  * 하나라도 못 잡으면 이미 잡은 것을 풀고 { busy: { path, message } }를 돌려준다. 모두 잡으면 { release }를 돌려주고, release는 자기 nonce의 잠금만 풀며 이 호출이 만든 빈 폴더를 치운다.
  */
 export function acquireLocks(dirs) {
@@ -120,8 +150,9 @@ export function acquireLocks(dirs) {
     let first;
     try {
       first = mkdirSync(dir, { recursive: true });
-    } catch {
-      continue;
+    } catch (error) {
+      release();
+      return lockError(dir, error);
     }
     if (first) made.push({ first, dir });
     const lock = lockOne(dir);

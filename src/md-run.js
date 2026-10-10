@@ -210,10 +210,11 @@ function checkOutDir(dir, json) {
 export async function runMd(args) {
   const json = args.flags.has('json');
   if (!checkOutDir(args['out-dir'], json)) return 1;
-  // --check는 아무것도 쓰지 않으므로 잠그지 않는다. 쓰는 실행은 검사부터 쓰기까지 출력 폴더를 잠가 두 프로세스의 경쟁을 막는다.
-  const locks = args.flags.has('check') ? { release() {} } : acquireLocks(args.inputs.map((input) => args['out-dir'] ?? dirname(input)));
+  // --check는 아무것도 쓰지 않으므로 잠그지 않는다. 문서의 실제 폴더와 그림 폴더를 함께 잠가 --out-dir가 달라도 같은 문서를 동시에 고치지 못한다.
+  const lockDirs = args.inputs.flatMap((input) => [dirname(realPath(input)), args['out-dir'] ?? dirname(input)]);
+  const locks = args.flags.has('check') ? { release() {} } : acquireLocks(lockDirs);
   if (locks.busy) {
-    report(locks.busy.path, [problem(locks.busy.message, 'md-locked')], json);
+    report(locks.busy.path, [problem(locks.busy.message, locks.busy.code ?? 'md-locked')], json);
     return 1;
   }
   try {
