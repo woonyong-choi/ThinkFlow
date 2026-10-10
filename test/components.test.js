@@ -38,6 +38,25 @@ const hasClass = (node, name) => classes(node).includes(name);
 // 구조가 같은지 비교하려고 요소를 태그, 속성, 자식으로 푼 값.
 const shape = (node) => (node.text !== undefined ? node.text : { tag: node.tag, attrs: node.attrs, children: node.children.map(shape) });
 
+// U9의 실행 환경별 삽입 ID만 정규화하고 마스크 정의와 참조 관계는 유지한다.
+function iconShape(svg) {
+  const dom = parseMarkup(svg);
+  const nodes = descendants(dom);
+  const ids = new Map();
+  for (const node of nodes.filter((node) => node.attrs.id)) {
+    assert.ok(!ids.has(node.attrs.id), 'icon ids are unique');
+    ids.set(node.attrs.id, `reference-${ids.size}`);
+  }
+  for (const node of nodes) {
+    if (node.attrs.id) node.attrs.id = ids.get(node.attrs.id);
+    if (!node.attrs.mask || node.attrs.mask === 'none') continue;
+    const reference = /^url\(#([^)]*)\)$/.exec(node.attrs.mask)?.[1];
+    assert.ok(ids.has(reference), 'mask reference has a definition');
+    node.attrs.mask = `url(#${ids.get(reference)})`;
+  }
+  return shape(dom);
+}
+
 // ---- 카드 ----
 
 const CARDS = thinkflow(`
@@ -403,7 +422,11 @@ test('U9 every page has one frame, one toolbar and one tab row: the toolbar sits
   const script = textContent(findAll(parseMarkup(html, { html: true }), node => node.tag === 'script').at(-1));
   const names = Object.keys(getIconCatalog().controls);
   const drawn = runInNewContext(`${script}\nfunction figurePlay() {}\n${JSON.stringify(names)}.map(ToolIcon);`, { document: { querySelector: () => null }, matchMedia: () => ({ matches: false }) });
-  assert.deepEqual(Array.from(drawn), names.map(ToolIcon));
+  assert.deepEqual(Array.from(drawn, iconShape), names.map((name) => iconShape(ToolIcon(name))));
+  const masked = Array.from(drawn).find((svg) => svg.includes('<mask '));
+  assert.ok(masked, 'the control set exercises a mask');
+  assert.throws(() => iconShape(masked.replace(/<mask\b[\s\S]*?<\/mask>/, '')), /mask reference has a definition/);
+  assert.throws(() => iconShape(masked.replace(/mask="url\(#[^"]+\)"/, 'mask="url(#missing)"')), /mask reference has a definition/);
   for (const [, name] of html.matchAll(/getPropertyValue\(['"](--[\w-]+)['"]\)/g)) {
     assert.ok(html.includes(`${name}:`), `runtime token ${name} survives CSS pruning`);
   }

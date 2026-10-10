@@ -1,7 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48" color="#3d4856" role="img">
 <title>코드</title>
-<desc>코드의 여는 괄호와 닫는 괄호 및 표현식</desc>
-<g stroke-linecap="round" stroke-linejoin="round">
-<defs><mask id="cut" maskUnits="userSpaceOnUse" x="0" y="0" width="48" height="48"><rect width="48" height="48" fill="white"/><path d="M17 20L12 25L17 30M31 20L36 25L31 30M27 17L22 33" fill="none" stroke="black" stroke-width="3" /><path d="M12 11H18" fill="none" stroke="black" stroke-width="2.2" /></mask></defs><g mask="url(#cut)"><rect x="5" y="5" width="38" height="38" rx="8" fill="#528aee" stroke="none" stroke-width="0" /></g>
-</g>
+<desc>넉넉한 안쪽 여백과 둥근 코드 기호가 있는 중성 명령 키의 앞쪽 깊이</desc>
+<g data-name="color" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="42" height="42" rx="12" fill="#35404c" stroke="none" stroke-width="2.4"/><rect x="5" y="4" width="38" height="35" rx="10" fill="#434e5a" stroke="none" stroke-width="2.4"/><path d="M17 17L11 24L17 31M31 17L37 24L31 31M27 15L21 33" fill="none" stroke="#ffffff" stroke-width="3.3"/></g>
+<g data-name="monochrome" display="none" stroke-linecap="round" stroke-linejoin="round"><defs><mask id="cut-3" x="0" y="0" width="48" height="48" maskUnits="userSpaceOnUse"><rect x="0" y="0" width="48" height="48" rx="0" fill="white" stroke="none" stroke-width="2.4"/><path d="M17 17L11 24L17 31M31 17L37 24L31 31M27 15L21 33" fill="none" stroke="black" stroke-width="3.3"/></mask></defs><g mask="url(#cut-3)"><rect x="3" y="3" width="42" height="42" rx="12" fill="#35404c" stroke="none" stroke-width="2.4"/></g></g>
 </svg>

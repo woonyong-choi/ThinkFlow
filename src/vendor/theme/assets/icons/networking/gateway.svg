@@ -1,7 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48" color="#3d4856" role="img">
 <title>게이트웨이</title>
-<desc>서로 다른 네트워크를 잇는 관문</desc>
-<g stroke-linecap="round" stroke-linejoin="round">
-<path d="M4 24h11M33 24h11" fill="none" stroke="#a4a8ae" stroke-width="3"/><path d="M16 40V12Q16 5 24 5Q32 5 32 12V40H26V14Q26 12 24 12Q22 12 22 14V40Z" fill="#639bfa"/>
-</g>
+<desc>네트워크 경계의 열린 통로를 왼쪽에서 오른쪽으로 통과하는 요청</desc>
+<g data-name="color"><g stroke-linecap="round" stroke-linejoin="round"><rect x="13" y="3" width="20" height="42" rx="5" fill="#a5a7a9" stroke="none" stroke-width="3"/><rect x="18" y="17" width="10" height="14" rx="3" fill="#ffffff" stroke="none" stroke-width="3"/><path d="M3 24H44M36 17L44 24L36 31" fill="none" stroke="#1c60c2" stroke-width="3.5"/></g></g>
+<g data-name="monochrome" display="none"><g stroke-linecap="round" stroke-linejoin="round"><defs><mask id="gateway-channel" x="0" y="0" width="48" height="48" maskUnits="userSpaceOnUse"><rect x="0" y="0" width="48" height="48" rx="0" fill="white" stroke="none" stroke-width="3"/><path d="M3 24H44M36 17L44 24L36 31" fill="none" stroke="black" stroke-width="8.5"/></mask></defs><g mask="url(#gateway-channel)"><defs><mask id="gateway-opening" x="0" y="0" width="48" height="48" maskUnits="userSpaceOnUse"><rect x="0" y="0" width="48" height="48" rx="0" fill="white" stroke="none" stroke-width="3"/><rect x="18" y="17" width="10" height="14" rx="3" fill="black" stroke="none" stroke-width="3"/></mask></defs><g mask="url(#gateway-opening)"><rect x="13" y="3" width="20" height="42" rx="5" fill="currentColor" stroke="none" stroke-width="3"/></g></g><path d="M3 24H44M36 17L44 24L36 31" fill="none" stroke="currentColor" stroke-width="3.5"/></g></g>
 </svg>

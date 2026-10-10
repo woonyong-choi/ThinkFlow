@@ -936,11 +936,11 @@
   --primitive-icon-yellow: #ffbf00;
   --primitive-icon-size-card: 48px;
   --primitive-icon-size-proof: 96px;
-  --primitive-icon-outline: #a4a8ae;
-  --primitive-icon-detail: #c6cbd2;
-  --primitive-icon-accent: #2465c7;
-  --primitive-icon-accent-soft: #c7ddff;
-  --primitive-icon-accent-edge: #90b4ee;
+  --primitive-icon-outline: #a5a7a9;
+  --primitive-icon-detail: #cfd0d3;
+  --primitive-icon-accent: #1c60c2;
+  --primitive-icon-accent-soft: #c9ddff;
+  --primitive-icon-accent-edge: #9ebef0;
   --primitive-icon-positive: #28a779;
   --primitive-icon-critical: #f64f82;
   --primitive-icon-critical-edge: #d84270;
@@ -1036,6 +1036,13 @@
   --primitive-action-shadow: 0 2px 4px rgba(0,0,0,.05);
   --primitive-action-focus: 0 0 0 2px rgba(37,118,235,.5);
   --primitive-landing-newsletter-note-ink: #9299a4;
+  --primitive-icon-brand-nginx: #009639;
+  --primitive-icon-device-case: #23262a;
+  --primitive-icon-device-case-dark: #89929b;
+  --primitive-icon-device-glass: #27313a;
+  --primitive-icon-device-glass-opacity: 0.102;
+  --primitive-icon-key-surface: #434e5a;
+  --primitive-icon-sheet: #f9fafb;
   --breakpoint-mobile: 560px;
   --breakpoint-support-pair: 400px;
   --breakpoint-product-pair: 480px;
@@ -1130,6 +1137,12 @@
   --icon-cloud-edge: var(--primitive-icon-cloud-edge);
   --icon-device-screen: var(--primitive-icon-device-screen);
   --icon-brand-postgresql: #336791;
+  --icon-brand-nginx: var(--primitive-icon-brand-nginx);
+  --icon-device-case: var(--primitive-icon-device-case);
+  --icon-device-glass: var(--primitive-icon-device-glass);
+  --icon-device-glass-opacity: var(--primitive-icon-device-glass-opacity);
+  --icon-key-surface: var(--primitive-icon-key-surface);
+  --icon-sheet: var(--primitive-icon-sheet);
   --container-page: var(--primitive-page);
   --container-body-width: var(--primitive-body-width);
   --container-intro: var(--primitive-intro);
@@ -1306,6 +1319,7 @@
   --color-flow-ink-gray: var(--color-gray-933);
   --icon-neutral: var(--color-ink);
   --icon-brand-postgresql: #6495bb;
+  --icon-device-case: var(--primitive-icon-device-case-dark);
   color-scheme: dark;
   }
 }
@@ -1418,6 +1432,7 @@
   --color-flow-ink-gray: var(--color-gray-933);
   --icon-neutral: var(--color-ink);
   --icon-brand-postgresql: #6495bb;
+  --icon-device-case: var(--primitive-icon-device-case-dark);
   color-scheme: dark;
 }
 [data-theme='light'] {
@@ -1529,5 +1544,6 @@
   --color-flow-ink-gray: var(--color-gray-0);
   --icon-neutral: var(--primitive-help-title-color);
   --icon-brand-postgresql: #336791;
+  --icon-device-case: var(--primitive-icon-device-case);
   color-scheme: light;
 }

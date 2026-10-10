@@ -1161,7 +1161,14 @@ export const tokens = freeze({
     "primary-hover": "var(--primitive-primary-hover)",
     "action-shadow": "var(--primitive-action-shadow)",
     "action-focus": "var(--primitive-action-focus)",
-    "landing-newsletter-note-ink": "var(--primitive-landing-newsletter-note-ink)"
+    "landing-newsletter-note-ink": "var(--primitive-landing-newsletter-note-ink)",
+    "icon-brand-nginx": "var(--primitive-icon-brand-nginx)",
+    "icon-device-case": "var(--primitive-icon-device-case)",
+    "icon-device-case-dark": "var(--primitive-icon-device-case-dark)",
+    "icon-device-glass": "var(--primitive-icon-device-glass)",
+    "icon-device-glass-opacity": "var(--primitive-icon-device-glass-opacity)",
+    "icon-key-surface": "var(--primitive-icon-key-surface)",
+    "icon-sheet": "var(--primitive-icon-sheet)"
   },
   "breakpoint": {
     "mobile": "var(--breakpoint-mobile)",
@@ -1274,8 +1281,14 @@ export const tokens = freeze({
     "cloud-edge": "var(--icon-cloud-edge)",
     "device-screen": "var(--icon-device-screen)",
     "brand": {
-      "postgresql": "var(--icon-brand-postgresql)"
-    }
+      "postgresql": "var(--icon-brand-postgresql)",
+      "nginx": "var(--icon-brand-nginx)"
+    },
+    "device-case": "var(--icon-device-case)",
+    "device-glass": "var(--icon-device-glass)",
+    "device-glass-opacity": "var(--icon-device-glass-opacity)",
+    "key-surface": "var(--icon-key-surface)",
+    "sheet": "var(--icon-sheet)"
   },
   "container": {
     "page": "var(--container-page)",
@@ -2416,11 +2429,11 @@ export const values = freeze({
     "icon-yellow": "#ffbf00",
     "icon-size-card": 48,
     "icon-size-proof": 96,
-    "icon-outline": "#a4a8ae",
-    "icon-detail": "#c6cbd2",
-    "icon-accent": "#2465c7",
-    "icon-accent-soft": "#c7ddff",
-    "icon-accent-edge": "#90b4ee",
+    "icon-outline": "#a5a7a9",
+    "icon-detail": "#cfd0d3",
+    "icon-accent": "#1c60c2",
+    "icon-accent-soft": "#c9ddff",
+    "icon-accent-edge": "#9ebef0",
     "icon-positive": "#28a779",
     "icon-critical": "#f64f82",
     "icon-critical-edge": "#d84270",
@@ -2515,7 +2528,14 @@ export const values = freeze({
     "primary-hover": "#649fff",
     "action-shadow": "0 2px 4px rgba(0,0,0,.05)",
     "action-focus": "0 0 0 2px rgba(37,118,235,.5)",
-    "landing-newsletter-note-ink": "#9299a4"
+    "landing-newsletter-note-ink": "#9299a4",
+    "icon-brand-nginx": "#009639",
+    "icon-device-case": "#23262a",
+    "icon-device-case-dark": "#89929b",
+    "icon-device-glass": "#27313a",
+    "icon-device-glass-opacity": 0.102,
+    "icon-key-surface": "#434e5a",
+    "icon-sheet": "#f9fafb"
   },
   "breakpoint": {
     "mobile": 560,
@@ -2606,13 +2626,13 @@ export const values = freeze({
   },
   "icon": {
     "paper": "#ffffff",
-    "outline": "#a4a8ae",
-    "detail": "#c6cbd2",
+    "outline": "#a5a7a9",
+    "detail": "#cfd0d3",
     "neutral": "#3d4856",
     "neutral-edge": "#35404c",
-    "accent": "#2465c7",
-    "accent-soft": "#c7ddff",
-    "accent-edge": "#90b4ee",
+    "accent": "#1c60c2",
+    "accent-soft": "#c9ddff",
+    "accent-edge": "#9ebef0",
     "positive": "#28a779",
     "critical": "#f64f82",
     "critical-soft": "#ffd5e1",
@@ -2628,8 +2648,14 @@ export const values = freeze({
     "cloud-edge": "#528aee",
     "device-screen": "#e9eaeb",
     "brand": {
-      "postgresql": "#336791"
-    }
+      "postgresql": "#336791",
+      "nginx": "#009639"
+    },
+    "device-case": "#23262a",
+    "device-glass": "#27313a",
+    "device-glass-opacity": 0.102,
+    "key-surface": "#434e5a",
+    "sheet": "#f9fafb"
   },
   "container": {
     "page": 900,

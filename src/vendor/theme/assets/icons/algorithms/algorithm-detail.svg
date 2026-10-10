@@ -1,15 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48" color="#3d4856" role="img">
 <title>알고리즘</title>
-<desc>입력 처리와 조건, 성립 여부에 따른 두 결과</desc>
-<g stroke-linecap="round" stroke-linejoin="round">
-<defs><mask id="outcomes" maskUnits="userSpaceOnUse" x="2" y="36" width="44" height="11"><rect x="2" y="36" width="44" height="11" fill="white"/><path d="M7 41L9 43L13 39M36 39L40 43M40 39L36 43" fill="none" stroke="black" stroke-width="1.8"/></mask></defs>
-<path d="M24 12V18M17 25H10V35M31 25H38V35" fill="none" stroke="#a4a8ae" stroke-width="2.6"/>
-<path d="M7.5 32.5L10 35L12.5 32.5M35.5 32.5L38 35L40.5 32.5" fill="none" stroke="#a4a8ae" stroke-width="2.4"/>
-<rect x="14" y="4" width="20" height="8" rx="3" fill="none" stroke="#a4a8ae" stroke-width="2"/>
-<path d="M19 8H29" fill="none" stroke="#a4a8ae" stroke-width="2"/>
-<path d="M22 18Q24 16 26 18L31 23Q33 25 31 27L26 32Q24 34 22 32L17 27Q15 25 17 23Z" fill="none" stroke="#edb300" stroke-width="2.4"/>
-<path d="M22 23Q22 20.5 24 20.5Q27 20.5 27 23Q27 24.5 24 25.5" fill="none" stroke="#edb300" stroke-width="1.8"/>
-<circle cx="24" cy="29" r="1.1" fill="#edb300"/>
-<g mask="url(#outcomes)"><rect x="4" y="37" width="13" height="9" rx="2.5" fill="#639bfa"/><rect x="31" y="37" width="13" height="9" rx="2.5" fill="#a4a8ae"/></g>
-</g>
+<desc>시작과 조건 판단, 두 실행 결과가 구별되는 알고리즘의 조건 질문</desc>
+<g data-name="color" stroke-linecap="round" stroke-linejoin="round"><path d="M24 10V15M14 23H8V33M34 23H40V33M5 30L8 33L11 30M37 30L40 33L43 30" fill="none" stroke="#a5a7a9" stroke-width="3"/><path d="M21.5 14.5Q24 12 26.5 14.5L34.5 22.5Q37 25 34.5 27.5L26.5 35.5Q24 38 21.5 35.5L13.5 27.5Q11 25 13.5 22.5Z" fill="#edb300" stroke="none" stroke-width="2.4"/><path d="M24 16L33 25L24 34L15 25Z" fill="#ffbf00" stroke="none" stroke-width="2.4"/><rect x="14" y="2" width="20" height="9" rx="4.5" fill="#a5a7a9" stroke="none" stroke-width="2.4"/><rect x="1" y="37" width="15" height="10" rx="4" fill="#639bfa" stroke="none" stroke-width="2.4"/><rect x="32" y="37" width="15" height="10" rx="4" fill="#f64f82" stroke="none" stroke-width="2.4"/><path d="M21 22Q21 18.5 24.5 18.5Q28 18.5 28 22Q28 24 24 25.5V26.5" fill="none" stroke="#35404c" stroke-width="2.4"/><circle cx="24" cy="31" r="1.3" fill="#35404c" stroke="none" stroke-width="2.4"/></g>
+<g data-name="monochrome" display="none" stroke-linecap="round" stroke-linejoin="round"><defs><mask id="cut-1" x="0" y="0" width="48" height="48" maskUnits="userSpaceOnUse"><rect x="0" y="0" width="48" height="48" rx="0" fill="white" stroke="none" stroke-width="2.4"/><path d="M21 22Q21 18.5 24.5 18.5Q28 18.5 28 22Q28 24 24 25.5V26.5" fill="none" stroke="black" stroke-width="2.4"/><circle cx="24" cy="31" r="1.3" fill="black" stroke="none" stroke-width="2.4"/></mask></defs><g mask="url(#cut-1)"><path d="M24 10V15M14 23H8V33M34 23H40V33M5 30L8 33L11 30M37 30L40 33L43 30" fill="none" stroke="#a5a7a9" stroke-width="3"/><path d="M21.5 14.5Q24 12 26.5 14.5L34.5 22.5Q37 25 34.5 27.5L26.5 35.5Q24 38 21.5 35.5L13.5 27.5Q11 25 13.5 22.5Z" fill="#a5a7a9" stroke="none" stroke-width="2.4"/><rect x="14" y="2" width="20" height="9" rx="4.5" fill="#a5a7a9" stroke="none" stroke-width="2.4"/><rect x="1" y="37" width="15" height="10" rx="4" fill="#639bfa" stroke="none" stroke-width="2.4"/><rect x="32" y="37" width="15" height="10" rx="4" fill="#f64f82" stroke="none" stroke-width="2.4"/></g></g>
 </svg>

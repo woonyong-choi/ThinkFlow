@@ -165,10 +165,13 @@
   },
   "kinds": {
     "concept": "document",
-    "build": "terminal",
-    "troubleshooting": "search",
+    "architecture": "hierarchy",
     "experiment": "flask",
-    "retrospective": "change-history"
+    "troubleshooting": "bug",
+    "build": "code-block",
+    "review": "code-review",
+    "retrospective": "change-history",
+    "project": "briefcase"
   },
   "libraries": [
     {
@@ -340,7 +343,7 @@
       "label": "PostgreSQL",
       "source": "https://raw.githubusercontent.com/devicons/devicon/v2.17.0/icons/postgresql/postgresql-original.svg",
       "variant": "original",
-      "treatment": "source blue on light surfaces; lighter blue on dark surfaces; internal highlights are negative space; black underlay removed",
+      "treatment": "source blue on light surfaces; lighter blue on dark surfaces; original opaque white internal marks in color and negative space only in monochrome; black underlay removed",
       "library": "devicon",
       "version": "v2.17.0",
       "license": "MIT"
@@ -349,7 +352,7 @@
       "label": "Redis",
       "source": "https://raw.githubusercontent.com/devicons/devicon/v2.17.0/icons/redis/redis-original.svg",
       "variant": "original",
-      "treatment": "source colors; negative internal symbols and layer seams",
+      "treatment": "original source colors and opaque white symbols in color; negative internal symbols and layer seams in monochrome",
       "library": "devicon",
       "version": "v2.17.0",
       "license": "MIT"
@@ -515,7 +518,7 @@
       "library": "simple-icons",
       "version": "16.33.0",
       "license": "CC0-1.0",
-      "treatment": "neutral monochrome; currentColor added; shape unchanged"
+      "treatment": "brand green through a shared color token; white N on the original hexagon in color; original cutout in monochrome; geometry unchanged"
     },
     "prometheus": {
       "label": "Prometheus",
@@ -3320,7 +3323,7 @@
     "zoom-in": {
       "file": "actions/zoom-in.svg",
       "category": "actions",
-      "label": "zoom in"
+      "label": "zoom-in"
     },
     "zoom-money": {
       "file": "actions/zoom-money.svg",
@@ -3335,7 +3338,7 @@
     "zoom-out": {
       "file": "actions/zoom-out.svg",
       "category": "actions",
-      "label": "zoom out"
+      "label": "zoom-out"
     },
     "zoom-pan": {
       "file": "actions/zoom-pan.svg",
@@ -3405,7 +3408,7 @@
     "brain-circuit": {
       "file": "algorithms/brain-circuit.svg",
       "category": "algorithms",
-      "label": "brain circuit"
+      "label": "brain-circuit"
     },
     "brain-cognitive": {
       "file": "algorithms/brain-cognitive.svg",
@@ -3945,7 +3948,7 @@
     "chart-line": {
       "file": "analytics/chart-line.svg",
       "category": "analytics",
-      "label": "chart line"
+      "label": "chart-line"
     },
     "chart-lines": {
       "file": "analytics/chart-lines.svg",
@@ -12835,7 +12838,7 @@
     "phone-mobile": {
       "file": "devices/phone-mobile.svg",
       "category": "devices",
-      "label": "phone mobile"
+      "label": "phone-mobile"
     },
     "photo-sensor": {
       "file": "devices/photo-sensor.svg",
@@ -21395,7 +21398,7 @@
     "download-bottom": {
       "file": "files-io/download-bottom.svg",
       "category": "files-io",
-      "label": "download bottom"
+      "label": "download-bottom"
     },
     "download-multiple": {
       "file": "files-io/download-multiple.svg",
@@ -21495,7 +21498,7 @@
     "file-copy": {
       "file": "files-io/file-copy.svg",
       "category": "files-io",
-      "label": "file copy"
+      "label": "file-copy"
     },
     "file-corrupt": {
       "file": "files-io/file-corrupt.svg",
@@ -34470,7 +34473,7 @@
     "cloud-pin": {
       "file": "networking/cloud-pin.svg",
       "category": "networking",
-      "label": "cloud pin"
+      "label": "cloud-pin"
     },
     "cloud-prohibited": {
       "file": "networking/cloud-prohibited.svg",
@@ -34885,7 +34888,7 @@
     "secured-network": {
       "file": "networking/secured-network.svg",
       "category": "networking",
-      "label": "secured network"
+      "label": "secured-network"
     },
     "security-wifi": {
       "file": "networking/security-wifi.svg",
@@ -39335,7 +39338,7 @@
     "user-settings": {
       "file": "people/user-settings.svg",
       "category": "people",
-      "label": "user settings"
+      "label": "user-settings"
     },
     "user-share": {
       "file": "people/user-share.svg",
@@ -41655,7 +41658,7 @@
     "code-block": {
       "file": "programming/code-block.svg",
       "category": "programming",
-      "label": "code block"
+      "label": "code-block"
     },
     "code-bracket": {
       "file": "programming/code-bracket.svg",
@@ -41730,7 +41733,7 @@
     "code-review": {
       "file": "programming/code-review.svg",
       "category": "programming",
-      "label": "code review"
+      "label": "code-review"
     },
     "code-text-edit": {
       "file": "programming/code-text-edit.svg",

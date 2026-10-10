@@ -1,12 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48" color="#3d4856" role="img">
 <title>알고리즘</title>
-<desc>처리 뒤 조건을 판단하고 두 결과로 분기</desc>
-<g stroke-linecap="round" stroke-linejoin="round">
-<path d="M24 12V18M17 25H10V35M31 25H38V35" fill="none" stroke="#a4a8ae" stroke-width="2.6"/>
-<path d="M7.5 32.5L10 35L12.5 32.5M35.5 32.5L38 35L40.5 32.5" fill="none" stroke="#a4a8ae" stroke-width="2.4"/>
-<rect x="14" y="4" width="20" height="8" rx="3" fill="#c6cbd2" stroke="#a4a8ae" stroke-width="2"/>
-<path d="M22 18Q24 16 26 18L31 23Q33 25 31 27L26 32Q24 34 22 32L17 27Q15 25 17 23Z" fill="#ffbf00" stroke="#edb300" stroke-width="2"/>
-<rect x="4" y="38" width="12" height="7" rx="2.5" fill="#639bfa" stroke="#528aee" stroke-width="2"/>
-<rect x="32" y="38" width="12" height="7" rx="2.5" fill="#c6cbd2" stroke="#a4a8ae" stroke-width="2"/>
-</g>
+<desc>시작과 조건 판단, 두 실행 결과가 구별되는 알고리즘</desc>
+<g data-name="color" stroke-linecap="round" stroke-linejoin="round"><path d="M24 10V15M14 23H8V33M34 23H40V33M5 30L8 33L11 30M37 30L40 33L43 30" fill="none" stroke="#a5a7a9" stroke-width="3"/><path d="M21.5 14.5Q24 12 26.5 14.5L34.5 22.5Q37 25 34.5 27.5L26.5 35.5Q24 38 21.5 35.5L13.5 27.5Q11 25 13.5 22.5Z" fill="#edb300" stroke="none" stroke-width="2.4"/><path d="M24 16L33 25L24 34L15 25Z" fill="#ffbf00" stroke="none" stroke-width="2.4"/><rect x="14" y="2" width="20" height="9" rx="4.5" fill="#a5a7a9" stroke="none" stroke-width="2.4"/><rect x="1" y="37" width="15" height="10" rx="4" fill="#639bfa" stroke="none" stroke-width="2.4"/><rect x="32" y="37" width="15" height="10" rx="4" fill="#f64f82" stroke="none" stroke-width="2.4"/></g>
+<g data-name="monochrome" display="none" stroke-linecap="round" stroke-linejoin="round"><path d="M24 10V15M14 23H8V33M34 23H40V33M5 30L8 33L11 30M37 30L40 33L43 30" fill="none" stroke="#a5a7a9" stroke-width="3"/><path d="M21.5 14.5Q24 12 26.5 14.5L34.5 22.5Q37 25 34.5 27.5L26.5 35.5Q24 38 21.5 35.5L13.5 27.5Q11 25 13.5 22.5Z" fill="#a5a7a9" stroke="none" stroke-width="2.4"/><rect x="14" y="2" width="20" height="9" rx="4.5" fill="#a5a7a9" stroke="none" stroke-width="2.4"/><rect x="1" y="37" width="15" height="10" rx="4" fill="#639bfa" stroke="none" stroke-width="2.4"/><rect x="32" y="37" width="15" height="10" rx="4" fill="#f64f82" stroke="none" stroke-width="2.4"/></g>
 </svg>

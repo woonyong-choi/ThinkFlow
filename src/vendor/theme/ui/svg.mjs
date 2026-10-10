@@ -3,7 +3,7 @@ import { escape } from './html.mjs';
 
 const SHAPES = Object.freeze({
   svg: ['viewBox', 'width', 'height', 'xmlns', 'version', 'role', 'aria-hidden', 'focusable'],
-  g: [], defs: [],
+  g: ['display'], defs: [],
   mask: ['x', 'y', 'width', 'height', 'maskUnits', 'maskContentUnits', 'mask-type'],
   path: ['d'], rect: ['x', 'y', 'width', 'height', 'rx', 'ry'],
   circle: ['cx', 'cy', 'r'], ellipse: ['cx', 'cy', 'rx', 'ry'],
@@ -16,6 +16,7 @@ const WORDS = Object.freeze({
   'fill-rule': ['nonzero', 'evenodd'], 'clip-rule': ['nonzero', 'evenodd'],
   maskUnits: ['userSpaceOnUse', 'objectBoundingBox'], maskContentUnits: ['userSpaceOnUse', 'objectBoundingBox'],
   'mask-type': ['alpha', 'luminance'], role: ['img', 'presentation'],
+  display: ['inline', 'none'],
   'aria-hidden': ['true', 'false'], focusable: ['true', 'false'], version: ['1.0', '1.1', '2.0'],
 });
 const NUMBER = String.raw`[+-]?(?:\d+\.?\d*|\.\d+)(?:[eE][+-]?\d+)?`;
@@ -61,7 +62,7 @@ export function renderSvgIcon(text, { className = '', prefix, monochrome = false
 function parseSvg(text) {
   if (typeof text !== 'string' || text.length > MAX_LENGTH) throw new TypeError('invalid icon SVG size');
   const source = text.replace(/<!--[\s\S]*?-->/g, '').replace(/^\s*<\?xml\s[^?]*\?>/, '');
-  const state = { stack: [], elements: [], ids: new Map(), references: [], root: null };
+  const state = { stack: [], elements: [], ids: new Map(), references: [], variants: new Set(), root: null };
   let end = 0;
   let count = 0;
   for (const match of source.matchAll(TAG)) {
@@ -71,9 +72,12 @@ function parseSvg(text) {
     end = match.index + match[0].length;
   }
   if (!state.root || state.stack.length || source.slice(end).trim()) throw new Error('icon SVG must contain one closed svg element');
-  for (const target of state.references) {
-    if (state.ids.get(target) !== 'mask') throw new Error(`icon mask does not exist: ${target}`);
+  for (const { target, variant } of state.references) {
+    const mask = state.ids.get(target);
+    if (mask?.tag !== 'mask') throw new Error(`icon mask does not exist: ${target}`);
+    if (mask.variant !== variant) throw new Error('icon mask cannot cross presentation variants');
   }
+  if (state.variants.size && (state.variants.size !== 2 || state.elements.some(element => !element.variant))) throw new Error('icon needs exactly two complete presentation variants');
   return { viewBox: viewBoxOf(state.root.attrs), root: state.root, elements: state.elements };
 }
 
@@ -82,24 +86,32 @@ function readElement([, closing, tag, raw, selfClosing], state) {
   if (closing) {
     const opened = state.stack.pop();
     if (raw.trim() || selfClosing || opened?.tag !== tag) throw new Error(`unmatched icon closing element: ${tag}`);
-    if (tag !== 'svg' && !opened.hidden) state.elements.push({ tag, closing: true });
+    if (tag !== 'svg' && !opened.hidden) state.elements.push({ tag, closing: true, variant: opened.variant });
     return;
   }
   const parent = state.stack.at(-1);
   if (tag === 'svg' ? state.root || parent : !parent) throw new Error('icon SVG must have one svg root');
   const attrs = readAttributes(raw, tag);
+  const namedVariant = ['color', 'monochrome'].includes(attrs['data-name']) ? attrs['data-name'] : undefined;
+  if (namedVariant) {
+    if (tag !== 'g' || parent?.tag !== 'svg' || state.variants.has(namedVariant)) throw new Error('icon presentation variants must be unique root groups');
+    if (namedVariant === 'monochrome' ? attrs.display !== 'none' : attrs.display && attrs.display !== 'inline') throw new Error('icon defaults to its color presentation');
+    state.variants.add(namedVariant);
+  }
+  if (attrs.display && !namedVariant) throw new Error('icon display is only allowed on presentation variants');
+  const variant = namedVariant ?? parent?.variant;
   const hidden = Boolean(parent?.hidden || tag === 'title' || tag === 'desc');
   const isMask = Boolean(parent?.isMask || tag === 'mask');
   const paint = { ...parent?.paint, fill: attrs.fill ?? parent?.paint.fill ?? 'black', stroke: attrs.stroke ?? parent?.paint.stroke ?? 'none' };
   if (attrs.color) paint.color = attrs.color;
-  const element = { tag, attrs, hidden, isMask, paint, selfClosing: Boolean(selfClosing) };
+  const element = { tag, attrs, hidden, isMask, paint, variant, selfClosing: Boolean(selfClosing) };
   if (tag === 'svg') state.root = element;
   else if (!hidden) state.elements.push(element);
   if (!hidden && attrs.id) {
     if (state.ids.has(attrs.id)) throw new Error(`duplicate icon id: ${attrs.id}`);
-    state.ids.set(attrs.id, tag);
+    state.ids.set(attrs.id, { tag, variant });
   }
-  if (!hidden && attrs.mask && attrs.mask !== 'none') state.references.push(attrs.mask.slice(5, -1));
+  if (!hidden && attrs.mask && attrs.mask !== 'none') state.references.push({ target: attrs.mask.slice(5, -1), variant });
   if (!selfClosing) state.stack.push(element);
 }
 
@@ -183,7 +195,8 @@ function svgBody({ root, elements }, options = {}) {
   const rootAttrs = { ...root.attrs };
   for (const name of OMITTED) delete rootAttrs[name];
   if (options.monochrome && rootAttrs.fill === undefined) rootAttrs.fill = 'currentColor';
-  return `<g${attributes({ ...root, attrs: rootAttrs }, options)}>${elements.map(element => {
+  const selected = options.monochrome ? 'monochrome' : 'color';
+  return `<g${attributes({ ...root, attrs: rootAttrs }, options)}>${elements.filter(element => !element.variant || element.variant === selected).map(element => {
     if (element.closing) return `</${element.tag}>`;
     return `<${element.tag}${attributes(element, options)}${element.selfClosing ? '/>' : '>'}`;
   }).join('')}</g>`;
@@ -192,6 +205,7 @@ function svgBody({ root, elements }, options = {}) {
 function attributes(element, { prefix, monochrome = false }) {
   const attrs = { ...element.attrs };
   delete attrs['data-name'];
+  if (element.variant) delete attrs.display;
   if (monochrome && !element.isMask) delete attrs.color;
   // mask의 상속 색도 고정해야 바깥 visible paint를 단색으로 바꿀 때 의미가 바뀌지 않는다.
   if (monochrome && element.tag === 'mask') Object.assign(attrs, element.paint);

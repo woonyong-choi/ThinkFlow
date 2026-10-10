@@ -2,6 +2,6 @@
 <title>이벤트 루프</title>
 <desc>대기 중인 이벤트를 하나씩 꺼내 실행하고 다시 순환</desc>
 <g stroke-linecap="round" stroke-linejoin="round">
-<path d="M37 12A18 18 0 1 0 41 29" fill="none" stroke="#639bfa" stroke-width="3.3" /><path d="M37 6V13H30" fill="none" stroke="#639bfa" stroke-width="3.3" /><defs><mask id="event" maskUnits="userSpaceOnUse" x="0" y="0" width="48" height="48"><rect width="48" height="48" fill="white"/><path d="M22 22H27M22 26H25" fill="none" stroke="black" stroke-width="1.8" /></mask></defs><g mask="url(#event)"><rect x="19" y="18" width="11" height="12" rx="3" fill="#a4a8ae" stroke="none" stroke-width="2"/></g><circle cx="7" cy="33" r="3.5" fill="#ffbf00" stroke="none" stroke-width="2"/><path d="M35 35L38 32" fill="none" stroke="#28a779" stroke-width="2.8" />
+<path d="M37 12A18 18 0 1 0 41 29" fill="none" stroke="#639bfa" stroke-width="3.3" /><path d="M37 6V13H30" fill="none" stroke="#639bfa" stroke-width="3.3" /><defs><mask id="event" maskUnits="userSpaceOnUse" x="0" y="0" width="48" height="48"><rect width="48" height="48" fill="white"/><path d="M22 22H27M22 26H25" fill="none" stroke="black" stroke-width="1.8" /></mask></defs><g mask="url(#event)"><rect x="19" y="18" width="11" height="12" rx="3" fill="#a5a7a9" stroke="none" stroke-width="2"/></g><circle cx="7" cy="33" r="3.5" fill="#ffbf00" stroke="none" stroke-width="2"/><path d="M35 35L38 32" fill="none" stroke="#28a779" stroke-width="2.8" />
 </g>
 </svg>

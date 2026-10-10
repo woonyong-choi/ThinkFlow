@@ -2,6 +2,6 @@
 <title>병렬성</title>
 <desc>여러 실행 자원이 같은 시간에 각각 작업을 진행</desc>
 <g stroke-linecap="round" stroke-linejoin="round">
-<defs><mask id="lanes" maskUnits="userSpaceOnUse" x="0" y="0" width="48" height="48"><rect width="48" height="48" fill="white"/><path d="M11 12.5H18M11 24.5H18M11 36.5H18" fill="none" stroke="black" stroke-width="2.5" /></mask></defs><g mask="url(#lanes)"><rect x="6" y="9" width="36" height="7" rx="3" fill="#639bfa" stroke="none" stroke-width="2"/><rect x="6" y="21" width="36" height="7" rx="3" fill="#ffbf00" stroke="none" stroke-width="2"/><rect x="6" y="33" width="36" height="7" rx="3" fill="#28a779" stroke="none" stroke-width="2"/></g><path d="M3 6V43M45 6V43" fill="none" stroke="#a4a8ae" stroke-width="2.1" />
+<defs><mask id="lanes" maskUnits="userSpaceOnUse" x="0" y="0" width="48" height="48"><rect width="48" height="48" fill="white"/><path d="M11 12.5H18M11 24.5H18M11 36.5H18" fill="none" stroke="black" stroke-width="2.5" /></mask></defs><g mask="url(#lanes)"><rect x="6" y="9" width="36" height="7" rx="3" fill="#639bfa" stroke="none" stroke-width="2"/><rect x="6" y="21" width="36" height="7" rx="3" fill="#ffbf00" stroke="none" stroke-width="2"/><rect x="6" y="33" width="36" height="7" rx="3" fill="#28a779" stroke="none" stroke-width="2"/></g><path d="M3 6V43M45 6V43" fill="none" stroke="#a5a7a9" stroke-width="2.1" />
 </g>
 </svg>
