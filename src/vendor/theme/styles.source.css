@@ -723,7 +723,7 @@ button.app-tooltip { padding: 0; background: none; color: var(--color-control-li
 .app-landing-features { padding-bottom: 0; background: var(--color-feature-canvas); }
 .app-landing-collage { width: var(--spacing-collage-crop); margin-left: var(--spacing-collage-outset); }
 .app-landing-collage img { display: block; width: 100%; }
-.app-landing-interviews, .app-landing-newsletter { background: var(--color-canvas); }
+.app-landing-newsletter { background: var(--color-canvas); }
 .app-landing-newsletter .app-caption { text-align: center; }
 .app-landing-newsletter .app-newsletter { margin-bottom: var(--spacing-landing-nav-gap); }
 .app-landing-newsletter .app-newsletter-email { height: auto; line-height: normal; }
@@ -782,7 +782,7 @@ button.app-tooltip { padding: 0; background: none; color: var(--color-control-li
 }
 .app-player-button.is-compact { width: calc(var(--spacing-flow-control-size) * 2); height: calc(var(--spacing-flow-control-size) * 2); min-width: 0; min-height: 0; }
 .app-technology { display: flex; flex-direction: column; align-items: center; flex: none; width: calc(var(--icon-size-card) + var(--spacing-gap)); gap: var(--spacing-gap-sm); color: var(--color-ui-muted); font-size: var(--text-small-text); }
-.app-technology > a { display: flex; justify-content: center; width: 100%; padding-block: var(--spacing-gap-xs); border-radius: var(--radius-help-radius); }
+.app-technology > a { display: flex; align-items: center; justify-content: center; width: calc(var(--icon-size-medium) + 2 * var(--spacing-gap-xs)); aspect-ratio: 1; border-radius: var(--radius-help-radius); }
 .app-technology img { display: block; width: var(--icon-size-medium); height: var(--icon-size-medium); object-fit: contain; }
 .app-technology > a, .app-interview-card { position: relative; transition: background-color var(--duration-help-motion) var(--ease-icon-easing), box-shadow var(--duration-help-motion) var(--ease-icon-easing), transform var(--duration-help-motion) var(--ease-icon-easing); }
 .app-technology > a:focus-visible, .app-interview-card:focus-within { background: var(--color-help-hover); box-shadow: var(--shadow-help-hover-shadow); }

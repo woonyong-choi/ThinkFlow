@@ -18,6 +18,6 @@ export function SocialIcon(name, className = 'app-social-icon') {
 }
 
 export function ControlIcon(name, className = '') {
-  const graphic = roleIcon('controls', name, className || 'app-control-icon', true);
+  const graphic = roleIcon('controls', name, className || 'app-control-icon', !['play', 'pause'].includes(ICON_ROLES.controls[name]));
   return out(graphic.replace('<svg ', `<svg data-control-icon="${name}" `));
 }
