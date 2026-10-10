@@ -27,6 +27,7 @@
   --color-search-hover: var(--primitive-search-hover);
   --color-help-hover: var(--primitive-help-hover);
   --color-help-title-color: var(--primitive-help-title-color);
+  --color-prose-pre-background: var(--primitive-help-bg);
   --color-action-link: var(--primitive-link);
   --color-category-blue-light-border: #1e6bd6;
   --color-category-blue-light-ink: #1161cb;
@@ -45,11 +46,13 @@
   --primitive-link: #2576eb;
   --primitive-small-text: 15px;
   --primitive-tiny-text: 13px;
+  --primitive-help-bg: #f6f7fa;
   --primitive-help-border: #ebecef;
   --primitive-search-hover: #d9e6ff;
   --primitive-help-hover: #ebf1ff;
   --primitive-help-title-color: #3d4856;
   --primitive-figure-ui-accent: #3c84f3;
+  --primitive-figure-dark-bg: #26272b;
   --primitive-figure-dark-node: #303136;
   --primitive-figure-dark-edge: #50535b;
   --primitive-figure-dark-separator: #454850;
@@ -85,6 +88,7 @@
   --color-search-hover: var(--primitive-figure-dark-selection);
   --color-help-hover: var(--primitive-figure-dark-hover);
   --color-help-title-color: var(--primitive-figure-dark-muted);
+  --color-prose-pre-background: var(--primitive-figure-dark-bg);
   color-scheme: dark;
   }
 
@@ -103,6 +107,7 @@
   --color-search-hover: var(--primitive-figure-dark-selection);
   --color-help-hover: var(--primitive-figure-dark-hover);
   --color-help-title-color: var(--primitive-figure-dark-muted);
+  --color-prose-pre-background: var(--primitive-figure-dark-bg);
   color-scheme: dark;
 }
 [data-theme='light'] {
@@ -120,6 +125,7 @@
   --color-search-hover: var(--primitive-search-hover);
   --color-help-hover: var(--primitive-help-hover);
   --color-help-title-color: var(--primitive-help-title-color);
+  --color-prose-pre-background: var(--primitive-help-bg);
   color-scheme: light;
 }
 /* 그림 안 글자와 모양. HTML 재생기와 움직이는 SVG가 같이 쓴다. */

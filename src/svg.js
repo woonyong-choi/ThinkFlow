@@ -51,17 +51,19 @@ export async function toSvg(result, { scene: selector = 0, isStatic = false, nam
   const motion = charts.length ? STYLES.chart + chartMotionCss(timeline.growMs, charts.flatMap((c) => c.drawn.dotAts)) : '';
   const place = (layer, className) => `<g${className ? ` class="${className}"` : ''} transform="translate(${r((width - layer.content.width) / 2)} 0)">\n${layer.content.svg}\n</g>`;
   const layers = stillLayer ? `${place(motionLayer, 'fl-motion')}\n${place({ content: { ...stillLayer.content, svg: scopeIds(stillLayer.content.svg, 'still-') } }, 'fl-still')}` : place(motionLayer);
-  return `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="fl" width="${r(shownWidth)}" height="${r(shownHeight)}" viewBox="0 0 ${r(width)} ${r(height)}" role="img" data-scene="${si}" data-mode="${mode}">
+  const head = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="fl" width="${r(shownWidth)}" height="${r(shownHeight)}" viewBox="0 0 ${r(width)} ${r(height)}" role="img" data-scene="${si}" data-mode="${mode}">
 <title>${escapeXml(plainText(title))}</title>
-<style>${fonts}
-${tokensFor(STYLES.figure + paintCss(result.scene) + motion + STYLES.status + motionLayer.css.join('\n') + layers)}${STYLES.figure}${paintCss(result.scene)}${motion}${hasStatus(timeline) ? STYLES.status : ''}
+`;
+  const styles = `${STYLES.figure}${paintCss(result.scene)}${motion}${hasStatus(timeline) ? STYLES.status : ''}
 ${motionLayer.css.join('\n')}${stillLayer ? `\n${stillLayer.css.join('\n')}\n${STILL_CSS}` : ''}
-</style>
-<defs>${figureDefs(figure)}${patternDefs(charts.map(({ drawn }) => drawn))}</defs>
+`;
+  const body = `<defs>${figureDefs(figure)}${patternDefs(charts.map(({ drawn }) => drawn))}</defs>
 <rect x="${values["border-width"].thin / 2}" y="${values["border-width"].thin / 2}" width="${r(width - values["border-width"].thin)}" height="${r(height - values["border-width"].thin)}" rx="${values.radius["card-radius"]}" fill="${tokens.color["prose-pre-background"]}"/>
 ${layers}
 </svg>
 `;
+  // 배경, defs와 정지 층까지 완성한 뒤 문서 전체가 쓰는 토큰을 남긴다.
+  return `${head}<style>${fonts}\n${tokensFor(head + fonts + styles + body)}${styles}</style>\n${body}`;
 }
 
 // 움직임 줄이기에서 보이는 층. 움직임 층(SMIL, keyframes)은 스크립트 없이 CSS 미디어 질의 하나로 숨기고 마지막 모습 층을 보인다. 문서에 직접 넣은(인라인) SVG에서 동작한다(실제 Chrome으로 확인). `<img>`로 넣은 SVG는 Chrome이 이 질의를 평가하지 않아 움직임 줄이기에서도 처음 모습이므로, 그 자리에서는 `<picture>`의 `media` 소스로 정지 SVG를 골라야 한다.

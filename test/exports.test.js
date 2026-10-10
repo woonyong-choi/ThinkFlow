@@ -103,6 +103,18 @@ test('X6 builds are deterministic: the same source gives byte-identical SVG and 
   assert.deepEqual(await outputs(first), a, 'rendering again from the same result changes nothing');
 });
 
+// #214: 독립 SVG는 배경과 정지·재생 층이 읽는 변수 정의를 함께 싣는다.
+test('toSvg_embeds_every_referenced_style_variable', async () => {
+  const result = await build(MOVE('loop'));
+  for (const isStatic of [false, true]) {
+    const svg = await toSvg(result, { isStatic });
+    const defined = new Set([...svg.matchAll(/(--[\w-]+)\s*:/g)].map((match) => match[1]));
+    const referenced = new Set([...svg.matchAll(/var\(\s*(--[\w-]+)/g)].map((match) => match[1]));
+
+    assert.deepEqual([...referenced].filter((name) => !defined.has(name)).sort(), [], `isStatic=${isStatic}`);
+  }
+});
+
 // ---- 정본 내려받기와 단독 HTML ----
 
 const DOC = dap(`
