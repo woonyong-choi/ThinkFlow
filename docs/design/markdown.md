@@ -296,7 +296,7 @@ GitHub 마크다운은 ` ```thinkflow ` 블록을 코드로 보이고 아래 이
 | 다른 울타리 안의 thinkflow 줄은 그리지 않는다. 3칸까지 들여쓴 블록과 목록 칸 안의 블록은 그리고, 들여쓴 코드와 HTML 주석 안은 읽지도 고치지도 않으며, 4칸 들여쓴 줄은 울타리를 닫지 못한다. | `test/markdown.test.js`(M4, M9) |
 | CRLF 문서는 CRLF로 다시 쓰고 두 번째 실행은 바꾸지 않는다. | `test/markdown.test.js`(M8) |
 | 옵션은 명령마다 받는 것만 받는다. | `test/cli.test.js`(L2, L3, L7) |
-| 패키지에는 실행에 필요한 파일, 로고 SVG, 라이선스, NOTICE만 든다. | 직접 확인하는 자동 시험이 아직 확인되지 않았다(검증 요구사항, 미완료) |
+| 패키지에는 실행에 필요한 파일, 로고 SVG, 라이선스, NOTICE만 든다. | `test/package.test.js`(P1), `npm run check:package`: 실제 tarball의 허용 파일 목록 검사 |
 | 패키지를 설치해 실행할 수 있다. | `npm run check:package`: 실제 tarball 설치, CLI의 check·render·md와 공개 API 출력 대조. Node 20·22 CI와 릴리스가 실행 |
 | 공개 API의 타입과 구조화 진단을 설치 소비자가 사용하고 잘못된 호출은 컴파일에서 거부한다. | `test/package.test.js`, `npm run check:package`의 TypeScript 소비자 |
 | Action이 저장소 CI에서 돈다. | `ci.yml`의 `action` 작업 |
