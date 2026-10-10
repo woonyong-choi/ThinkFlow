@@ -40,11 +40,14 @@ export function tickLabels(ticks) {
   return ticks.map((t) => String(Number(t.toPrecision(15))));
 }
 
+/** 원본 값이 아니라 계산으로 얻은 비율(%)을 쓰는 기본 소수 자릿수. 머리 줄 `decimals`가 있으면 그것을 쓴다. 계산한 비율은 입력 값의 자릿수가 아니라 이 수만큼만 읽힌다. */
+export const SHARE_PLACES = 1;
+
 // cost: time O(n), heap O(n), stack O(1)
 // vars: n = 값 수
 // basis: estimate
 /** 값 목록에 쓰인 가장 긴 소수 자릿수(상한 DECIMALS_MAX). 1000 이상 값은 k, M 표기라 세지 않는다. */
-export function decimalPlaces(list) {
+function decimalPlaces(list) {
   const places = list.filter((v) => Math.abs(v) < 1000).map((v) => (String(Number(v.toPrecision(12))).split('e')[0].split('.')[1] ?? '').length);
   return Math.min(DECIMALS_MAX, Math.max(0, ...places));
 }
@@ -71,12 +74,12 @@ export function seriesFormats(chart) {
   return chart.series.map((s) => valueFormat(chart.rows.map((row) => row.values[s.id]).filter((v) => typeof v === 'number'), chart.decimals));
 }
 
-/** 덤벨 바뀐 비율 글자. 줄면 −, 늘면 +. 첫 값이 0이거나 비율이 숫자 범위를 넘으면(0에 가장 가까운 정규 수에서 1로 간 값) 빈 글이다. */
+/** 덤벨 바뀐 비율 글자. 줄면 −, 늘면 +, 같으면 부호 없이 0%. 부호는 반올림 전 비율로 정한다. 첫 값이 0이거나 비율이 숫자 범위를 넘으면(0에 가장 가까운 정규 수에서 1로 간 값) 빈 글이다. */
 export function formatChange(before, after) {
   const ratio = ((after - before) * 100) / before;
   if (before === 0 || !Number.isFinite(ratio)) return '';
-  const change = roundHalfAway(ratio);
-  return `${change < 0 ? '−' : '+'}${Math.abs(change)}%`;
+  const sign = ratio < 0 ? '−' : ratio > 0 ? '+' : '';
+  return `${sign}${Math.abs(roundHalfAway(ratio))}%`;
 }
 
 /** 값이 너무 가까워 눈금이 겹치는 축. build.js가 줄 번호가 있는 입력 진단으로 바꾼다. */

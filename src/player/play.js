@@ -1,188 +1,137 @@
 // 브라우저에서 돈다. html.js가 HTML 안에 그대로 넣는다(src/player/ 파일을 이어 붙인다).
-// 시간표의 박자 상태를 그대로 그린다. 상태를 다시 계산하지 않는다(docs/architecture.md 불변 조건).
-// 이 파일은 재생기 본체다: 시작, 시계, 박자 이동, 설명 글. 역할별로 파일이 나뉜다: 단추와 탭과 진행 고리(controls.js), 그림 그리기(stage.js), 이동 곡선(curve.js), 전체 화면과 확대(view.js).
+// 시간표를 그대로 그린다. 상태를 다시 계산하지 않는다(docs/architecture.md 불변 조건).
+// 이 파일은 재생기 본체다: 시작, 시계, 장면 들어가기. 역할별로 파일이 나뉜다: 시각마다의 모습(sample.js), 탭(controls.js), 그림 그리기(stage.js, values.js), 이동 곡선(curve.js), 도구 막대와 전체 화면과 확대(view.js), 문법 복사와 HTML 다운로드(export.js).
+// 시계는 장면에 들어선 뒤 흐른 표시 시각 하나(clock.elapsed)다. 프레임 사이에 시간을 자르거나 버리지 않고 시작 기준 시각에서 바로 재므로 어긋남이 쌓이지 않는다.
 
-const PLAYER_RATES = [1, 2, 0.5];
-// 설명 글이 바뀔 때 앞 글이 사라지고 뒤 글이 나타나는 각 시간(ms)을 담은 토큰 변수. 움직이는 SVG와 같은 토큰이다.
-const CAPTION_FADE_VAR = '--duration-caption-fade';
 const REDUCED_MOTION = matchMedia('(prefers-reduced-motion: reduce)');
 
-// cost: time O(s + c) 시작, 프레임마다 O(h + k), heap O(s + c), stack O(1)
-// vars: s = 도형 수, c = 선 수, h = 한 박자의 이동 수, k = 카드 있는 도형 수
-// basis: estimate
 /**
  * 재생기를 붙인다.
  * @param root `.fl-figure` 요소
- * @param data { segs, steps, cardCounts, edgeEnds, seriesCount, rowCount, metrics }
+ * @param data html/content.js가 만든 재생 데이터. steps는 { label, mode, speed } 객체이고 mode는 static, once, loop, speed는 양수다. 다르면 오류다.
  */
 function figurePlay(root, data) {
   const player = createPlayer(root, data);
-  bindControls(root, player);
-  highlightOnHover(player.stage);
-  figureView(root, data.metrics);
-  centerCanvas(root);
-  setPlaying(player, player.clock.isPlaying);
-  REDUCED_MOTION.addEventListener('change', () => REDUCED_MOTION.matches && settleReducedMotion(player));
-  if (data.segs.length) {
-    enterSegment(player, 0);
-    requestAnimationFrame(player.tick);
-  } else {
-    // 시간 흐름이 없는 그림은 단계 이름과 설명이 없어 탭과 설명 줄을 숨기고 재생 단추와 배속만 둔다.
-    // 차트는 다 자란 채 멈춰 있다가 재생을 누르면 되풀이한다.
-    root.querySelector('.fl-tabs').hidden = true;
-    root.querySelector('.fl-context').hidden = true;
-    player.ring.draw(0);
+  if (document.documentElement.classList.contains('embedded')) fitEmbedded(root, data);
+  figureView(root, data, bindResponsiveScene(root, player));
+  document.addEventListener('visibilitychange', () => syncClock(player));
+  REDUCED_MOTION.addEventListener('change', () => REDUCED_MOTION.matches && settleScene(player));
+  // 시간 흐름이 없는 그림은 다 자란 모양 그대로 움직이지 않고 탭도 없다(도구 막대는 쓸 수 있다). 장면이 하나뿐이어도 탭이 없다.
+  root.querySelector('.fl-foot').hidden = !data.segs.length || player.scenes.length < 2;
+  if (data.segs.length) enterScene(player, 0);
+}
+
+// 본문에 삽입된 재생기(iframe)는 본문 폭에 맞춰 줄이되 원래 크기보다 키우지 않는다. 판이 하나뿐인 그림은 둘레 여백을 걷은 보기 영역(tight)으로 맞춘다.
+// 판이 여럿이면 판 상자가 서로 이어 붙어 있어 여백을 걷지 않고 장면 폭을 그대로 쓴다.
+function fitEmbedded(root, data) {
+  const panels = root.querySelector('.dp-panels');
+  const svgs = panels.querySelectorAll('svg.fl');
+  const { tight } = data;
+  const isTight = svgs.length === 1 && tight;
+  if (isTight) {
+    svgs[0].setAttribute('viewBox', `${tight.x} ${tight.y} ${tight.w} ${tight.h}`);
+    svgs[0].style.aspectRatio = `${tight.w} / ${tight.h}`;
+    svgs[0].parentElement.style.setProperty('--panel-w', tight.w);
   }
+  const width = isTight ? tight.w : data.width;
+  panels.style.setProperty('--view-w', width);
+  panels.style.maxWidth = `${width}px`;
 }
 
-// cost: time O(s + r), heap O(1), stack O(1)
-// vars: s = 계열 수, r = 차트 행 수
-// basis: estimate
-// 움직임 줄이기가 켜지면 바로 멈추고, 지금 단계까지 공개된 계열을 다 자란 정지 상태로 바꾼다. 꺼질 때는 아무것도 하지 않는다(재생은 사용자가 누른다).
-function settleReducedMotion(player) {
-  const { data, clock, stage } = player;
-  setPlaying(player, false);
-  if (data.segs.length) drawChartState(stage, data.segs[clock.index], false);
-  else stage.svg.classList.remove('chart-loop');
-}
-
-// cost: time O(1), heap O(1), stack O(1)
-// basis: estimate
-// 사용자가 재생을 눌러 시계가 흐를 때만 차트를 움직인다.
-function mayAnimate(clock) {
-  return clock.isPlaying;
-}
-
-// cost: time O(1), heap O(1), stack O(1)
-// basis: estimate
-// 화면이 캔버스 폭보다 좁으면 그림 영역이 가로로 스크롤된다. 내용이 캔버스보다 좁은 그림은 내용이 캔버스 가운데에 있다(viewBox 왼쪽이 음수, 왼쪽 빈 판의 폭이 그 크기).
-// 시작 위치는 화면 가운데이되 그림의 왼쪽 끝을 넘지 않는다. 그림이 화면에 들어오면 가운데에 있고, 그림이 화면보다 넓으면 왼쪽 끝(이름과 축)부터 보인다.
-// 캔버스를 꽉 채우는 차트와 넓은 그림은 viewBox 왼쪽이 0이라 왼쪽 끝에서 시작한다. 화면 크기가 바뀌어도 다시 맞춘다.
-function centerCanvas(root) {
-  const canvas = root.querySelector('.fl-canvas');
-  const svg = root.querySelector('svg.fl');
-  const place = () => {
-    const { x, width } = svg.viewBox.baseVal;
-    const leftMargin = Math.max(0, -x) * (svg.getBoundingClientRect().width / width);
-    canvas.scrollLeft = Math.min((canvas.scrollWidth - canvas.clientWidth) / 2, leftMargin);
-  };
-  place();
-  addEventListener('resize', place);
-}
-
-// cost: time O(s + c), heap O(s + c), stack O(1)
-// vars: s = 도형 수, c = 선 수
-// basis: estimate
-// 재생기 상태 한 덩어리. 시계, 그림, 탭, 고리, 설명 줄이 이 객체 하나로 이어진다.
+// 재생기 상태 한 덩어리. 시계, 그림, 장면 모델, 탭이 이 객체 하나로 이어진다. 장면 모델은 데이터에서 만들고, 좁은 배치로 바뀌면 그 배치의 데이터로 다시 만든다.
 function createPlayer(root, data) {
-  const pauseButton = root.querySelector('.fl-pause');
+  const scenes = data.segs.length ? buildScenes(data) : [];
   const player = {
     data,
+    scenes,
+    scene: -1,
+    frame: undefined,
     stage: createStage(root, data),
     clock: createClock(),
-    stepSegs: data.steps.map((_, si) => data.segs.filter((s) => s.si === si)),
-    hasCaption: data.segs.some((s) => s.caption),
-    caption: root.querySelector('.fl-caption'),
-    position: root.querySelector('.fl-position'),
-    captionText: undefined,
-    captionFade: undefined,
-    pause: { button: pauseButton, icon: pauseButton.querySelector('.fl-pause-icon') },
-    ring: createRing(pauseButton),
     tabs: [],
+    // 다음 프레임 요청(없으면 undefined). 시계가 흐르는 동안에만 요청하고, 멈춘 모습(정지, 한 번이 끝남, 길이 0, 가려짐)은 프레임을 요청하지 않는다.
+    request: undefined,
     tick: (now) => drawFrame(player, now),
   };
-  player.tabs = createTabs(root.querySelector('.fl-tabs'), player);
+  player.tabs = bindTabs(root.querySelector('.app-tablist'), (si) => selectScene(player, si));
   return player;
 }
 
 // ---- 시계 ----
 
-// cost: time O(1), heap O(1), stack O(1)
-// basis: estimate
+/**
+ * elapsed는 장면에 들어선 뒤 흐른 표시 시각(ms)이다. anchor는 흐르는 동안 `프레임 시각 - elapsed`이고, 없으면 다음 프레임의 시각이 기준이 된다(들어올 때, 다시 보일 때).
+ * isPlaying은 시계가 지금 흐르는지, wantsPlay는 장면이 재생을 원하는지다. 문서가 가려지면 isPlaying만 꺼지고 다시 보이면 멈춘 자리에서 이어진다. ended는 마지막 모습에서 멈췄는지다.
+ */
 function createClock() {
-  return {
-    index: 0,
-    elapsed: 0,
-    before: performance.now(),
-    isPlaying: false,
-    rate: PLAYER_RATES[0],
-  };
+  return { elapsed: 0, anchor: undefined, isPlaying: false, wantsPlay: false, ended: false };
 }
 
-// cost: time O(1), heap O(1), stack O(1)
-// basis: estimate
-function nextRate(rate) {
-  return PLAYER_RATES[(PLAYER_RATES.indexOf(rate) + 1) % PLAYER_RATES.length];
-}
-
-// cost: time O(1), heap O(1), stack O(1)
-// basis: estimate
-// 박자 seg가 속한 탭(step) 전체 시간 중 지금까지 지난 비율(0~1).
-function tabProgress(player, seg) {
-  const steps = player.stepSegs[seg.si];
-  const start = steps[0].t0;
-  const end = steps.at(-1).t1;
-  return (seg.t0 - start + Math.min(player.clock.elapsed, seg.t1 - seg.t0)) / (end - start);
-}
-
-// cost: time O(h + k), heap O(1), stack O(1)
-// vars: h = 박자의 이동 수, k = 카드가 바뀌는 도형 수
-// basis: estimate
-// 프레임마다 시계를 흘리고, 점과 카드를 옮기고, 재생 단추 고리를 채운다.
+// 프레임마다 시계를 프레임 시각에 맞추고 그 순간의 모습을 그린다. 한 번 장면은 표시 길이가 끝나면 마지막 모습에서 멈추고 더는 프레임을 요청하지 않는다.
 function drawFrame(player, now) {
-  const { clock, data } = player;
-  if (clock.isPlaying) clock.elapsed += (now - clock.before) * clock.rate;
-  clock.before = now;
-  const seg = data.segs[clock.index];
+  const { clock } = player;
+  player.request = undefined;
   if (clock.isPlaying) {
-    advanceStage(player.stage, seg, clock.elapsed);
-    player.ring.draw(tabProgress(player, seg));
-    if (clock.elapsed >= seg.t1 - seg.t0) enterSegment(player, (clock.index + 1) % data.segs.length);
+    clock.anchor ??= now - clock.elapsed;
+    clock.elapsed = now - clock.anchor;
+    renderScene(player);
+    if (player.scenes[player.scene].mode === 'once' && clock.elapsed >= player.scenes[player.scene].presentationMs) settleScene(player);
   }
-  requestAnimationFrame(player.tick);
+  requestFrame(player);
 }
 
-// cost: time O(s + c + k + r), heap O(h), stack O(1)
-// vars: s = 도형 수, c = 선 수, k = 카드 내용 수 합, r = 차트 행 수, h = 이동 수
-// basis: estimate
-// 박자 i로 들어간다. 시계를 0으로 돌리고 그림, 설명, 탭, 고리를 그 박자 상태로 맞춘다.
-function enterSegment(player, i) {
-  const { clock, data } = player;
-  const seg = data.segs[i];
-  clock.index = i;
+// 시계가 흐를 때만 다음 프레임을 요청한다. 이미 요청했으면 겹쳐 요청하지 않는다.
+function requestFrame(player) {
+  if (player.clock.isPlaying && player.request === undefined) player.request = requestAnimationFrame(player.tick);
+}
+
+// 문서가 가려지면 시계를 멈추고, 다시 보이면 멈춘 자리에서 잇는다.
+function syncClock(player) {
+  const { clock } = player;
+  const wasPlaying = clock.isPlaying;
+  clock.isPlaying = clock.wantsPlay && !document.hidden;
+  if (clock.isPlaying && !wasPlaying) clock.anchor = undefined;
+  requestFrame(player);
+}
+
+// 지금 시계의 모습을 그린다. 같은 시각이면 몇 번을 그려도, 어떤 시각을 거쳐 왔어도 같은 그림이다.
+function renderScene(player) {
+  player.frame = sampleScene(player.scenes[player.scene], player.data, player.clock.elapsed, player.clock.ended);
+  paintFrame(player.stage, player.data, player.frame);
+}
+
+// ---- 장면 ----
+
+// 장면 si로 들어간다. 언제나 시간 0, 처음 값에서 시작한다. 정지 장면과 움직임 줄이기는 곧바로 마지막 모습이고, 나머지는 곧바로 재생을 시작한다.
+function enterScene(player, si) {
+  const { clock } = player;
+  player.scene = si;
+  player.tabs.select(si);
+  player.tabs.buttons[si].ownerDocument.getElementById('scene-panel').setAttribute('aria-labelledby', player.tabs.buttons[si].id);
   clock.elapsed = 0;
-  drawSegmentState(player.stage, seg, mayAnimate(clock));
-  showCaption(player, seg.caption);
-  markTabs(player.tabs, seg.si);
-  player.position.textContent = `${seg.si + 1} / ${data.steps.length}`;
-  resetPackets(player.stage, seg);
-  advanceStage(player.stage, seg, 0);
-  syncChartMotion(player.stage, clock);
-  player.ring.draw(tabProgress(player, seg));
+  clock.anchor = undefined;
+  clock.ended = false;
+  // 표시 길이가 0인 장면(움직임도 효과도 없는 장면)은 흘릴 시간이 없어 곧바로 마지막 모습이다. 진행률을 길이로 나누지 않는다.
+  clock.wantsPlay = player.scenes[si].mode !== 'static' && !REDUCED_MOTION.matches && player.scenes[si].presentationMs > 0;
+  clock.isPlaying = clock.wantsPlay && !document.hidden;
+  if (clock.wantsPlay) renderScene(player);
+  else settleScene(player);
+  requestFrame(player);
 }
 
-// cost: time O(n), heap O(n), stack O(1)
-// vars: n = 설명 글자 수
-// basis: estimate
-// 설명 글을 바꾼다. 앞 글이 다 사라진 뒤 뒤 글이 나타난다(순차 페이드). 같은 글이면 그대로 두고, 첫 글과 움직임 줄이기 설정에서는 바로 바꾼다.
-function showCaption(player, text) {
-  const { caption } = player;
-  caption.hidden = !player.hasCaption;
-  if (text === player.captionText) return;
-  const isFirst = player.captionText === undefined;
-  player.captionText = text;
-  player.captionFade?.cancel();
-  const fadeMs = parseFloat(getComputedStyle(caption).getPropertyValue(CAPTION_FADE_VAR));
-  const fill = () => caption.replaceChildren(...richNodes(text, htmlCode));
-  if (isFirst || !player.clock.isPlaying || !fadeMs || REDUCED_MOTION.matches) {
-    fill();
-    return;
-  }
-  const out = caption.animate([{ opacity: getComputedStyle(caption).opacity }, { opacity: 0 }], { duration: fadeMs, fill: 'forwards' });
-  player.captionFade = out;
-  out.finished.then(() => {
-    fill();
-    player.captionFade = caption.animate([{ opacity: 0 }, { opacity: 1 }], { duration: fadeMs });
-    out.cancel();
-  }, () => {});
+// 지금 장면의 탭을 다시 누르면 아무 일도 없다. 다른 장면의 탭은 그 장면에 새로 들어간다. 장면에서 나갔다 돌아오면 처음부터다.
+function selectScene(player, si) {
+  if (si !== player.scene) enterScene(player, si);
+}
+
+// 지금 장면을 마지막 모습에서 멈춘다. 시계는 서고 후광과 점은 없다. 움직임 줄이기가 켜질 때, 정지 장면에 들어갈 때, 한 번 장면이 끝날 때 쓴다.
+// 움직임 줄이기가 꺼져도 다시 재생하지 않는다(다음 장면에 들어갈 때까지 이 모습이다).
+function settleScene(player) {
+  const { clock } = player;
+  if (player.scene < 0) return;
+  clock.wantsPlay = false;
+  clock.isPlaying = false;
+  clock.ended = true;
+  clock.elapsed = player.scenes[player.scene].presentationMs;
+  renderScene(player);
 }

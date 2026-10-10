@@ -1,8 +1,8 @@
 // 그림 검사가 함께 쓰는 사각형, 선분, 부모 관계 계산.
 import { ROOT, TOUCH } from '../layout/model.js';
+import { headBox } from '../layout/titles.js';
 import { FIT_SLACK } from '../measure/fonts.js';
-import { groupHead, sizePill } from '../measure/sizes.js';
-import { values } from '../tokens.js';
+import { sizePill } from '../measure/sizes.js';
 
 /** 도형과 그룹 안쪽으로 들어가야 선이 지나간 것으로 보는 안쪽 여백 */
 export const THROUGH_INSET = 1;
@@ -15,9 +15,9 @@ export function drawnBox(it) {
   return { x: it.x - side, y: it.y - (it.marginTop ?? 0), w: it.w + side * 2, h: it.h + (it.marginTop ?? 0) + (it.marginBottom ?? 0) };
 }
 
-// 그룹 제목 글이 차지하는 사각형. 그리는 자리는 draw/figure.js drawGroup이다.
+// 그룹 제목 덩어리(아이콘 탭과 제목 글)가 차지하는 사각형. 그리는 자리는 draw/figure.js drawGroup과 drawGroupTab이다.
 export function titleBox(g) {
-  return { x: g.x + g.titleDx, y: g.y, w: groupHead(g).w, h: values.size.group.title };
+  return headBox(g, g.titleDx);
 }
 
 export function pillBox(e) {
@@ -27,6 +27,9 @@ export function pillBox(e) {
 
 /** 알림 메시지에 쓸 선 알약 이름. 라벨이 없으면 번호다. */
 export const labelOf = (edge) => edge.label ?? `#${edge.no}`;
+
+/** 서로 다른 장면에서만 보이는 두 선(순서 보기 메시지는 장면마다 같은 행을 쓴다)은 함께 보이지 않는다. 그래프의 선은 장면 번호가 없어 늘 함께 본다. */
+export const isCoVisible = (a, b) => a.si === undefined || b.si === undefined || a.si === b.si;
 
 export function overlaps(a, b) {
   return a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h;

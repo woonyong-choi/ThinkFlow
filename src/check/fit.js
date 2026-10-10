@@ -1,14 +1,19 @@
 // 1번: 글이 자기 칸 안쪽에 들어간다. 크기는 잰 글로 정하므로 구조 그림의 실패는 이 도구의 버그다.
+// 도형의 글은 모두 측정이 놓은 text(measure/texts.js)이고 그리는 쪽과 같은 값이라, 이 검사는 text의 글 사각형(textSpan)이 칸 안에 드는지 한 번에 읽는다.
+// 종류마다 다른 것은 칸의 모양(마름모, 원, 격자 칸)과 같은 줄 글끼리 겹치지 않는지(표 열의 이름과 형식, 내용 줄의 태그와 본문과 표시와 값)뿐이다.
 import { FIT_SLACK, measure } from '../measure/fonts.js';
-import { CARD, GRID, STYLE, groupTitleWidth } from '../measure/sizes.js';
-import { values } from '../tokens.js';
+import { PAD } from '../measure/card.js';
+import { CONTENT } from '../measure/content.js';
+import { GRID, groupTitleWidth } from '../measure/sizes.js';
+import { TYPE_GAP } from '../measure/table.js';
+import { STYLE, textSpan } from '../measure/texts.js';
+import { values } from '../vendor/theme/tokens.js';
 import { fits } from './geometry.js';
 
-const SPACE = values.space;
-const INNER_X = SPACE['9'];
+const ORIGIN = { x: 0, y: 0 };
 
-// cost: time O(s·k·r·n + g + h·l), heap O(1), stack O(1)
-// vars: s = 도형 수, k = 도형당 카드 내용 수, r = 카드 줄 수, n = 줄 글자 수, g = 그룹 수, h = 이동 수, l = 글 상자 줄 수
+// cost: time O(s·(t + k·r·n) + g + h·l), heap O(1), stack O(1)
+// vars: s = 도형 수, t = 도형 text 수, k = 도형당 카드 내용 수, r = 카드 줄 수, n = 줄 글자 수, g = 그룹 수, h = 이동 수, l = 글 상자 줄 수
 // basis: estimate
 export function checkFits({ scene, timeline }, problems) {
   const fail = (line, what, where) => problems.error(line, `[check 1] internal: ${what} does not fit in ${where}. Please report this`);
@@ -24,74 +29,79 @@ export function checkFits({ scene, timeline }, problems) {
 function checkChipFits(timeline, fail) {
   const hops = timeline.segs.flatMap((seg) => seg.hops);
   for (const hop of hops) {
-    for (const l of hop.data ?? []) if (!fits(measure(l, STYLE.chip.size, STYLE.chip.face), values.size.chip['max-width'])) fail(hop.line ?? 1, `moving text "${l}"`, 'the text box');
+    for (const l of hop.data ?? []) if (!fits(measure(l, STYLE.chip.size, STYLE.chip.face), values.spacing.figure.chip["max-width"])) fail(hop.line ?? 1, `moving text "${l}"`, 'the text box');
   }
 }
 
-// cost: time O(k·r·n), heap O(1), stack O(1)
-// vars: k = 카드 내용 수, r = 카드 줄 수, n = 줄 글자 수
+// 글 사각형(textSpan)이 가로 구간 [left, right] 안에 드는가
+const isInside = (span, { left, right }) => span.x >= left - FIT_SLACK && span.x + span.width <= right + FIT_SLACK;
+
+// 이름과 부제가 앉을 수 있는 가로 구간(도형 왼쪽이 원점). 가운데에 놓인 글의 구간이다: 마름모는 내접 사각형 비율로 넓힌 만큼, 원은 지름에서 안쪽 여백 하나를 뺀 폭이다.
+function roomOf(it) {
+  const centered = (room) => ({ left: (it.w - room) / 2, right: (it.w + room) / 2 });
+  if (it.shape === 'decision') return centered(it.w / 2 - PAD.x);
+  if (it.shape === 'circle') return centered(it.w - PAD.x);
+  const pad = it.tile ? values.spacing.figure.node["tile-pad"] : PAD.x;
+  return { left: pad, right: it.w - pad };
+}
+
+// cost: time O(t + k·r·n), heap O(t), stack O(1)
+// vars: t = 도형 text 수, k = 카드 내용 수, r = 카드 줄 수, n = 줄 글자 수
 // basis: estimate
 function checkItemFits(it, fail) {
-  const room = labelRoom(it);
-  for (const l of it.labelLines ?? []) if (!fits(measure(l, STYLE.label.size, STYLE.label.face), room)) fail(it.line, `label "${l}"`, `node "${it.id}"`);
-  for (const l of it.subLines ?? []) if (!fits(measure(l, STYLE.sub.size, STYLE.sub.face), room)) fail(it.line, `subtitle "${l}"`, `node "${it.id}"`);
-  if (it.shape === 'table') for (const c of it.columns) if (!fits(columnWidth(c), it.w - INNER_X * 2)) fail(it.line, `column "${c.name}"`, `table "${it.id}"`);
-  if (it.shape === 'grid') checkGridFits(it, fail);
-  if (it.card) checkCardFits(it, fail);
+  const where = `${it.shape} "${it.id}"`;
+  const room = roomOf(it);
+  const check = (texts, within) => {
+    for (const t of texts) if (!isInside(textSpan(ORIGIN, t), within)) fail(it.line, `text "${t.text}"`, where);
+  };
+  check(it.texts ?? [], room);
+  for (const row of it.tableRows ?? []) {
+    check(row.texts, room);
+    checkColumnGap(row, it, fail);
+  }
+  for (const cell of it.cells ?? []) check(cell.texts, { left: cell.x + GRID.cellPadX, right: cell.x + cell.w - GRID.cellPadX });
+  if (it.content) checkContentFits(it, fail);
 }
 
-// cost: time O(c·l), heap O(1), stack O(1)
-// vars: c = 칸 수, l = 칸 글 줄 수
+// 열 이름(키 표시 포함)과 같은 줄의 형식이 서로 겹치지 않고 간격을 지킨다.
+function checkColumnGap(row, it, fail) {
+  const [name, type] = ['cell', 'cell type'].map((role) => textSpan(ORIGIN, row.texts.find((t) => t.role === role)));
+  if (!fits(name.x + name.width + TYPE_GAP, type.x)) fail(it.line, `column "${row.id}"`, `${it.shape} "${it.id}"`);
+}
+
+// cost: time O(k·r²), heap O(1), stack O(1)
+// vars: k = 카드 내용 수, r = 카드 줄 수
 // basis: estimate
-// 격자 칸 글: 칸 너비에서 좌우 안쪽 간격을 뺀 폭에 줄이 들어간다.
-function checkGridFits(it, fail) {
-  const lines = it.cells.flatMap((c) => c.lines.map((l) => ({ cell: c, text: l })));
-  for (const { cell, text } of lines) if (!fits(measure(text, STYLE.item.size, STYLE.item.face), cell.w - GRID.cellPadX * 2)) fail(it.line, `cell "${cell.id}" text "${text}"`, `grid "${it.id}"`);
-}
-
-// 이름과 부제가 쓸 수 있는 폭. 사람은 몸통 아래 바깥 여백까지, 마름모는 내접 사각형 비율로 넓힌 만큼, 원은 지름에서 안쪽 간격 하나를 뺀 폭이다.
-function labelRoom(it) {
-  if (it.shape === 'person') return it.w + (it.marginSide ?? 0) * 2;
-  if (it.shape === 'decision') return it.w / 2 - INNER_X;
-  if (it.shape === 'circle') return it.w - INNER_X;
-  return it.w - (it.tile ? values.size.node['tile-pad'] : INNER_X) * 2;
-}
-
-function columnWidth(c) {
-  const tagW = c.pk || c.fk || c.unique ? measure('UNQ', STYLE.tag.size, STYLE.tag.face) + SPACE['3'] : 0;
-  return measure(c.name, STYLE.cell.size, STYLE.cell.face) + tagW + measure(c.type, STYLE.type.size, STYLE.type.face) + SPACE['8'];
-}
-
-// cost: time O(k·r·n), heap O(1), stack O(1)
-// vars: k = 카드 내용 수, r = 카드 줄 수, n = 줄 글자 수
-// basis: estimate
-// 카드 줄: 태그와 표시를 뺀 폭에 글 줄이, 카드 높이에 내용 전체가 들어간다.
-function checkCardFits(it, fail) {
-  const { card } = it;
-  const inner = card.w - CARD.side * 2;
-  for (const layout of card.layouts) {
-    if (!fits(layout.height, card.h)) fail(it.line, 'card content', `the card of "${it.id}"`);
-    for (const rowLayout of layout.rows) checkRowFits(rowLayout, { it, inner }, fail);
+// 카드 줄: 카드 높이에 내용 전체가 들어가고, 모든 글이 내용 면 안쪽 구간에 든다.
+function checkContentFits(it, fail) {
+  const { content } = it;
+  const within = { left: CONTENT.side, right: content.w - CONTENT.side };
+  for (const layout of content.layouts) {
+    if (!fits(layout.height, content.h)) fail(it.line, 'card content', `the card of "${it.id}"`);
+    for (const laid of layout.rows) checkRowFits(laid, { it, within }, fail);
   }
 }
 
-// cost: time O(r·n), heap O(1), stack O(1)
-// vars: r = 줄 수, n = 줄 글자 수
+// cost: time O(t²), heap O(t), stack O(1)
+// vars: t = 줄의 text 수
 // basis: estimate
-function checkRowFits({ row, isHeading, tagW, lines, graph }, { it, inner }, fail) {
+// 줄 하나: 태그, 본문, 오른쪽 표시와 값은 안쪽 구간에 들고, 같은 줄에서 왼쪽부터 서로 겹치지 않는다. 관계 그래프는 이름 알약이 안쪽 구간에 든다.
+function checkRowFits(laid, { it, within }, fail) {
   const where = `the card of "${it.id}"`;
-  const line = row.line ?? it.line;
-  if (graph) {
-    if (graph.nodes.some((n) => !fits(n.x + n.w, inner))) fail(line, 'mini graph', where);
-    return;
+  const line = laid.row.line ?? it.line;
+  if (laid.chart && (!fits(laid.chart.width, it.content.w) || !fits(laid.chart.height, laid.height))) fail(line, 'embedded chart', where);
+  if (laid.graph && laid.graph.nodes.some((n) => !isInside({ x: laid.graph.at.x + n.x, width: n.w }, within))) fail(line, 'mini graph', where);
+  const spans = laid.texts.map((t) => ({ t, ...textSpan(ORIGIN, t) }));
+  const valued = [...(laid.valueSlot?.texts.values() ?? [])].map((t) => ({ t, ...textSpan(ORIGIN, t) }));
+  for (const span of [...spans, ...valued]) if (!isInside(span, within)) fail(line, `card text "${span.t.text}"`, where);
+  const sameLine = (a, b) => Math.abs(a.center - b.center) < FIT_SLACK;
+  for (const [i, a] of spans.entries()) {
+    for (const b of spans.slice(i + 1)) {
+      const [first, second] = a.x <= b.x ? [a, b] : [b, a];
+      if (sameLine(a, b) && !fits(first.x + first.width, second.x)) fail(line, `card text "${second.t.text}"`, where);
+    }
+    for (const v of valued) if (sameLine(a, v) && !fits(a.x + a.width, v.x)) fail(line, `value of "${a.t.text}"`, where);
   }
-  const markW = row.mark ? measure(row.mark, STYLE.mark.size, STYLE.mark.face) + SPACE['3'] : 0;
-  if (isHeading && !fits(measure(row.tag.toUpperCase(), STYLE.tag.size, STYLE.tag.face) + SPACE['4'] + markW, inner)) fail(line, `tag "${row.tag}"`, where);
-  const style = row.isMono ? STYLE.mono : STYLE.row;
-  lines.forEach((l, li) => {
-    const indent = li === 0 && !isHeading ? tagW + markW : 0;
-    if (!fits(measure(l, style.size, style.face) + indent, inner)) fail(line, `card text "${l}"`, where);
-  });
 }
 
 // cost: time O(r·n), heap O(r), stack O(1)

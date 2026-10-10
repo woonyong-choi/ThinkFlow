@@ -2,7 +2,13 @@
 import { CHIP_GAP, sizeChip } from '../chip.js';
 import { findClashes } from '../chip-clash.js';
 import { issuesOfHop } from '../chip-plan.js';
+import { visibleShare } from '../chip-motion.js';
 import { chipLines, chipObstacles } from '../draw/boxes.js';
+import { flattenRoute } from '../route.js';
+import { values } from '../vendor/theme/tokens.js';
+
+// 박자 이동의 글 상자가 보여야 하는 비율의 하한(chip-plan.js와 같은 토큰)
+const SHARE_MIN = values.scale['chip-visible-share'];
 
 // cost: time O(h·(k·p + k·a)), heap O(a), stack O(1)
 // vars: h = 글 상자 있는 이동 수, k = 재는 지점 수(21), p = 경로 점 수, a = 글자 사각형 수
@@ -56,8 +62,14 @@ function reportChip(hop, { scene, issues, path }, problems) {
     return;
   }
   const covered = issues.find((issue) => issue.hits.length);
-  if (covered && hop.track !== undefined) {
+  if (!covered) return;
+  if (hop.track !== undefined) {
     const hidden = Math.round((issues.filter((issue) => issue.hits.length).length / issues.length) * 100);
     problems.warn(hop.line ?? 1, `[check 7] moving text "${text}" is hidden for ${hidden}% of the time it is on screen because it would cover "${covered.hits[0]}" at ${percent(covered.at)}% of ${path}. Shorten the moving text or lengthen the edge so the text fits between the shapes`);
-  } else if (covered) problems.warn(hop.line ?? 1, `[check 7] moving text "${text}" covers "${covered.hits[0]}" at ${percent(covered.at)}% of ${path}, wherever it is placed (above, below, lifted, or beside the dot). Shorten the moving text or move the edge away from the shape or label`);
+    return;
+  }
+  // 박자 이동의 글은 정보라서 보이는 시간이 SHARE_MIN 이상이어야 한다. 모자라면 숨는 시간을 알린다.
+  const share = visibleShare({ route: flattenRoute(scene.edges[hop.edge].points), hop, chip: sizeChip(hop.data) }, hop.chipPath);
+  if (share >= SHARE_MIN) return;
+  problems.warn(hop.line ?? 1, `[check 7] moving text "${text}" is hidden for ${Math.round((1 - share) * 100)}% of the time it is on screen because it would cover "${covered.hits[0]}" at ${percent(covered.at)}% of ${path}. Shorten the moving text or lengthen the edge so the text fits beside the dot`);
 }

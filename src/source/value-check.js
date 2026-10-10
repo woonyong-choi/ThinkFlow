@@ -16,6 +16,23 @@ export function checkValues(figure, names, problems) {
   if (!problems.errors.length) checkSets(figure, byId, problems);
 }
 
+// cost: time O(v), heap O(1), stack O(1)
+// vars: v = 보기 수
+// basis: estimate
+/** 카드 내용(값 줄, show, clear)을 그리는 그래프 보기에 이 카드가 놓였는지. 순서 보기의 참여자는 머리만 그려 카드 내용을 그리지 않는다. */
+export const isCardDrawn = (figure, id) => figure.views.some((view) => view.strategy === 'graph' && view.cardIds?.includes(id));
+
+// cost: time O(v·n), heap O(1), stack O(1)
+// vars: v = 값 수, n = 보기 수
+// basis: estimate
+/** 값이 놓일 카드(`on=`)가 그래프 보기에 놓였는지 본다. 보기를 다 정한 뒤 부른다. 순서 보기에만 있는 카드는 값 줄을 그릴 자리가 없어 줄 번호 오류다. */
+export function checkValuesShown(figure, names, problems) {
+  for (const value of figure.values.filter((v) => !v.queue && v.on !== undefined)) {
+    const target = names.get(value.on);
+    if (target && CARD_SHAPES.includes(target.shape) && !isCardDrawn(figure, value.on)) problems.error(value.line, `value "${value.id}" is on "${value.on}", which no graph view shows. A sequence view draws only the head. Put "${value.on}" in a graph view`);
+  }
+}
+
 // cost: time O(s·k), heap O(1), stack O(1)
 // vars: s = 단계 수, k = 단계의 keep 항목 수
 // basis: estimate
@@ -36,7 +53,7 @@ function checkKeeps(figure, byId, problems) {
 function checkDeclaration(value, { byId, names, figure }, problems) {
   const target = names.get(value.on);
   if (value.on !== undefined && !target && !figure.rejectedNames.has(value.on)) problems.error(value.line, unknownName('node', value.on, figure.nodes.map((n) => n.id)));
-  else if (target && !CARD_SHAPES.includes(target.shape)) problems.error(value.line, `a ${target.shape} has no card. Put a value on ${CARD_SHAPES.slice(0, 4).join(', ')}`);
+  else if (target && !CARD_SHAPES.includes(target.shape)) problems.error(value.line, `a ${target.shape} has no card. Put a value on ${CARD_SHAPES.join(', ')}`);
   if (value.ref === undefined) return;
   if (!byId.has(value.ref)) problems.error(value.line, unknownName('value', value.ref, byId.keys()));
   else checkChain(value, byId, problems);

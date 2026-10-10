@@ -1,114 +1,42 @@
-// 도형 하나의 윤곽을 그린다. 상자, 원통, 사람, 갈림길, 원, 상태 점, 테이블, 격자. 이름과 카드는 draw/figure.js가 그린다.
-import { STACK_STEP, bodyOf } from '../measure/decor.js';
-import { queueSlots } from '../measure/queue.js';
-import { STYLE } from '../measure/sizes.js';
-import { centerBaseline, escapeXml, renderRich, roundCoord as r } from '../text.js';
-import { tokens, values } from '../tokens.js';
-import { drawGrid } from './grid.js';
-import { fillOf } from './paint.js';
+// 도형 하나의 윤곽을 그린다. 원통, 갈림길, 원, 상태 점은 모양 자체가 뜻이라 여기서 따로 그리고, 나머지는 모두 카드(draw/card.js)다.
+// 이름과 내용은 draw/figure.js가 그린다.
+import { roundCoord as r } from '../text.js';
+import { tokens } from '../vendor/theme/tokens.js';
+import { drawCard } from './card.js';
+import { SURFACE_FILL, surfaceOutline } from './surface.js';
 
-const SPACE = values.space;
-const SIZE = values.size;
-const RADIUS = values.radius;
-/** 선, 바깥 도형 테두리, 점선 경계 그룹이 함께 쓰는 점선(stroke-dasharray) */
-export const LINE_DASH = `${values.dash.line} ${values.dash.gap}`;
-
-// 윤곽 모양. 채우기와 선은 부르는 쪽이 정한다.
+// 윤곽 모양. 채우기와 선은 부르는 쪽이 정한다. 카드 종류는 모두 카드 면(surfaceOutline)이다.
 const geometry = {
-  store: (it) => [`<path d="M${r(it.x)} ${r(it.y)} a ${r(it.w / 2)} ${it.marginTop} 0 0 1 ${r(it.w)} 0 v ${r(it.h)} a ${r(it.w / 2)} ${it.marginTop} 0 0 1 ${r(-it.w)} 0 z"`],
-  person: (it) => {
-    const head = SIZE.person.head / 2;
-    return [
-      `<circle cx="${r(it.x + it.w / 2)}" cy="${r(it.y - SIZE.person.shoulder - SPACE['1'] - head)}" r="${r(head)}"`,
-      `<path d="M${r(it.x)} ${r(it.y + it.h)} V ${r(it.y)} A ${r(it.w / 2)} ${SIZE.person.shoulder} 0 0 1 ${r(it.x + it.w)} ${r(it.y)} V ${r(it.y + it.h)} Z"`,
-    ];
-  },
-  circle: (it) => [`<circle cx="${r(it.x + it.w / 2)}" cy="${r(it.y + it.h / 2)}" r="${r(it.w / 2)}"`],
-  queue: (it) => [`<rect x="${r(it.x)}" y="${r(it.y)}" width="${r(it.w)}" height="${r(it.h)}" rx="${values.simple2['node-corner']}"`],
-  rect: (it) => {
-    const { x, y, w, h } = bodyOf(it);
-    return [`<rect x="${r(x)}" y="${r(y)}" width="${r(w)}" height="${r(h)}" rx="${values.simple2['node-corner']}"`];
-  },
+  store: (it) => `<path d="M${r(it.x)} ${r(it.y)} a ${r(it.w / 2)} ${it.marginTop} 0 0 1 ${r(it.w)} 0 v ${r(it.h)} a ${r(it.w / 2)} ${it.marginTop} 0 0 1 ${r(-it.w)} 0 z"`,
+  circle: (it) => `<circle cx="${r(it.x + it.w / 2)}" cy="${r(it.y + it.h / 2)}" r="${r(it.w / 2)}"`,
 };
 
 // cost: time O(1), heap O(1), stack O(1)
 // basis: estimate
-/** 도형 윤곽 조각(닫지 않은 글). 후광이 같은 윤곽을 다시 그린다. 상자, 외부 도형, 타일은 앞 상자(몸통)다. */
+/** 도형 윤곽 조각(닫지 않은 글). 후광과 배경 면이 같은 윤곽을 다시 그린다. 카드는 앞 상자(몸통)의 면 윤곽이다. */
 export function outlineOf(it) {
-  return (geometry[it.shape] ?? geometry.rect)(it);
+  return (geometry[it.shape] ?? surfaceOutline)(it);
 }
 
 // cost: time O(c), heap O(out), stack O(1)
-// vars: c = 테이블 열 수, out = 만든 SVG 글자 수
+// vars: c = 부분 수, out = 만든 SVG 글자 수
 // basis: estimate
 export function drawShape(it, stroke, paint) {
   const { x, y, w, h } = it;
   const cx = x + w / 2;
-  const fill = `fill="${it.fill ? fillOf(it.fill) : tokens.color.node}"`;
+  const fill = SURFACE_FILL;
   switch (it.shape) {
     case 'store':
-      return `${geometry.store(it)[0]} ${fill} ${stroke}/><path d="M${r(x)} ${r(y)} a ${r(w / 2)} ${it.marginTop} 0 0 0 ${r(w)} 0" fill="none" ${stroke}/>`;
-    case 'person':
-      return geometry.person(it).map((g) => `${g} ${fill} ${stroke}/>`).join('');
+      return `${geometry.store(it)} ${fill} ${stroke}/><path d="M${r(x)} ${r(y)} a ${r(w / 2)} ${it.marginTop} 0 0 0 ${r(w)} 0" fill="none" ${stroke}/>`;
     case 'decision':
       return `<polygon points="${r(cx)},${r(y)} ${r(x + w)},${r(y + h / 2)} ${r(cx)},${r(y + h)} ${r(x)},${r(y + h / 2)}" ${fill} ${stroke}/>`;
     case 'circle':
-      return `${geometry.circle(it)[0]} ${fill} ${stroke}/>`;
-    case 'queue':
-      return `${geometry.queue(it)[0]} ${fill} ${stroke}/>${emptySlots(it)}`;
+      return `${geometry.circle(it)} ${fill} ${stroke}/>`;
     case 'start':
       return `<circle cx="${r(cx)}" cy="${r(y + h / 2)}" r="${r(w / 2)}" fill="${tokens.color.fg}" ${stroke}/>`;
     case 'final':
       return `<circle cx="${r(cx)}" cy="${r(y + h / 2)}" r="${r(w / 2)}" fill="none" ${stroke}/><circle cx="${r(cx)}" cy="${r(y + h / 2)}" r="${r(w / 4)}" fill="${tokens.color.fg}"/>`;
-    case 'table':
-      return drawTable(it, stroke, paint);
-    case 'grid':
-      return drawGrid(it, stroke, paint);
     default:
-      return drawBox(it, stroke, fill);
+      return drawCard(it, stroke, paint);
   }
-}
-
-// cost: time O(1), heap O(1), stack O(1)
-// basis: estimate
-// 상자와 외부 도형. 복제 개수(count)가 있으면 뒤 윤곽 두 겹이 오른쪽 아래로 비쳐 보인다. 앞 상자(몸통)는 bodyOf가 정한다.
-function drawBox(it, stroke, fill) {
-  const dash = it.shape === 'external' ? ` stroke-dasharray="${LINE_DASH}"` : '';
-  const steps = Array.from({ length: (it.stack ?? 0) / STACK_STEP }, (_, k) => it.stack / STACK_STEP - k);
-  return [...steps, 0].map((k) => `${geometry.rect({ ...it, x: it.x + k * STACK_STEP, y: it.y + k * STACK_STEP })[0]} ${fill} ${stroke}${dash}/>`).join('');
-}
-
-// cost: time O(c), heap O(out), stack O(1)
-// vars: c = 열 수, out = 만든 SVG 글자 수
-// basis: estimate
-// 테이블: 머리 칸, 열마다 이름과 표시(PK, FK, UNQ), 타입. 열 줄은 밝히기 대상이다.
-function drawTable(it, stroke, { decorate, glyphs }) {
-  const rowH = it.rowH;
-  const frame = `<rect x="${r(it.x)}" y="${r(it.y)}" width="${r(it.w)}" height="${r(it.h)}" rx="${values.simple2['node-corner']}" fill="${tokens.color.node}" ${stroke}/>`;
-  glyphs.add(it.label, 'medium');
-  const header = `<text x="${r(it.x + it.w / 2)}" y="${r(centerBaseline(it.y + rowH / 2, STYLE.label.size))}" class="label">${renderRich(it.label)}</text>`;
-  const rows = it.columns.map((c, k) => {
-    const key2 = `${it.id}.${c.name}`;
-    const y = it.y + rowH * (k + 1);
-    const key = c.pk ? 'PK' : c.fk ? 'FK' : c.unique ? 'UNQ' : '';
-    glyphs.add(c.name, 'regular');
-    glyphs.add(c.type, 'mono');
-    glyphs.add(key, 'semibold');
-    const baseline = r(centerBaseline(y + rowH / 2, STYLE.cell.size));
-    return (
-      `<g class="fl-part" data-part="${escapeXml(key2)}"><rect x="${r(it.x + values.border.thin)}" y="${r(y)}" width="${r(it.w - values.border.thin * 2)}" height="${r(rowH)}" class="part-bg ${decorate('part', 0, key2)}"/>` +
-      `<line x1="${r(it.x)}" x2="${r(it.x + it.w)}" y1="${r(y)}" y2="${r(y)}" class="col-line"/>` +
-      `<text x="${r(it.x + SPACE['9'])}" y="${baseline}" class="cell">${escapeXml(c.name)}${key ? `<tspan class="key" dx="${SPACE['3']}">${key}</tspan>` : ''}</text>` +
-      `<text x="${r(it.x + it.w - SPACE['9'])}" y="${baseline}" class="cell type">${escapeXml(c.type)}</text></g>`
-    );
-  });
-  return frame + header + rows.join('');
-}
-
-// cost: time O(s), heap O(s), stack O(1)
-// vars: s = 칸 수
-// basis: estimate
-// 큐의 빈 칸: 무채색 면에 외곽선(도형 면 위 대비 3). 찬 칸은 그 위에 값 층(draw/values.js)이 같은 자리에 얹는다.
-function emptySlots(it) {
-  return queueSlots(it).map((s) => `<rect x="${r(s.x)}" y="${r(s.y)}" width="${r(s.w)}" height="${r(s.h)}" rx="${RADIUS.sm}" fill="${tokens.color.figure['queue-empty']}" stroke="${tokens.color.outline}" stroke-width="${values.border.thin}"/>`).join('');
 }

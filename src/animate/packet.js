@@ -4,10 +4,11 @@ import { CHIP_GAP, sizeChip } from '../chip.js';
 import { keySpline, MOVE, timeAtPosition } from '../easing.js';
 import { discreteWindows } from './discrete.js';
 import { chipFadeAnimate, cutFadeAnimate, cutMotionKeys, visibleSpans } from './flow-packet.js';
-import { STYLE } from '../measure/sizes.js';
+import { STYLE } from '../measure/texts.js';
 import { ratio } from '../format.js';
 import { renderRich, roundCoord as r } from '../text.js';
-import { tokens, values } from '../tokens.js';
+import { toneColors } from '../tone.js';
+import { tokens, values } from '../vendor/theme/tokens.js';
 
 const MOVE_SPLINE = keySpline(MOVE);
 const LINEAR = '0 0 1 1';
@@ -25,11 +26,14 @@ export function drawPacket(clock, { seg, hop, name }, glyphs) {
   const start = seg.t0 + (hop.at ?? 0);
   // 단계 끝에서 잘리는 점(cut)은 끝에서 숨고, 나머지는 이동이 끝나면 숨는다.
   const [from, to] = [clock.keyTime(start), clock.keyTime(start + (hop.cut ?? hop.ms))];
-  const color = hop.tone ? tokens.color.flow[hop.tone] : tokens.color.state.active;
-  const chip = hop.data ? drawChip(hop.data, { glyphs, color: hop.tone ? color : undefined }) + pushChip(clock, start, hop) : '';
+  const tone = hop.tone ? toneColors(hop.tone) : undefined;
+  const color = tone?.fill ?? tokens.color.state.active;
+  const ink = tone?.ink ?? tokens.color.state['on-active'];
+  const outline = tone?.outline;
+  const chip = hop.data ? drawChip(hop.data, { glyphs, color: hop.tone ? color : undefined, outline }) + pushChip(clock, start, hop) : '';
   const chipMarkup = hop.chipFade ? `<g>${chipFadeAnimate(clock, start, hop.chipFade)}<g>${chip}</g></g>` : `<g>${chip}</g>`;
   const body =
-    `<g class="${name}" opacity="0"><circle r="${values.size.packet.halo}" fill="${color}" opacity="${values.opacity.halo}"/><circle r="${values.size.packet.radius}" fill="${color}"/>${chip ? chipMarkup : ''}` +
+    `<g class="${name}" opacity="0" fill="${ink}"><circle r="${values.spacing.figure.packet.halo}" fill="${color}" opacity="${values.opacity.halo}"/><circle r="${values.spacing.figure.packet.radius}" fill="${color}"${outline ? ` stroke="${outline}" stroke-width="${values["border-width"].edge}"` : ''}/>${chip ? chipMarkup : ''}` +
     (hop.gaps?.length ? discreteWindows(clock, visibleSpans(start, hop)) : showWindow(clock, from, to)) +
     moveMotion(clock, [from, to], { hop, start }) +
     `</g>`;
@@ -39,13 +43,13 @@ export function drawPacket(clock, { seg, hop, name }, glyphs) {
 // cost: time O(l·n), heap O(out), stack O(1)
 // vars: l = 줄 수, n = 글자 수, out = 만든 SVG 글자 수
 // basis: estimate
-// 점 위에 뜨는 글 상자. 줄은 시간표가 이미 나눴다. tone 색이 있는 점은 면과 테두리가 그 색이다.
-function drawChip(lines, { glyphs, color }) {
+// 점 위에 뜨는 글 상자. 줄은 시간표가 이미 나눴다. 흐름색의 외곽선 역할이 있으면 면과 별도로 적용한다.
+function drawChip(lines, { glyphs, color, outline }) {
   for (const line of lines) glyphs.add(line, STYLE.chip.face);
   const { w, h } = sizeChip(lines);
   const top = -h - CHIP_GAP;
   return (
-    `<rect x="${r(-w / 2)}" y="${r(top)}" width="${r(w)}" height="${r(h)}" rx="${values.radius.lg}" fill="${color ?? tokens.color.state['active-fill']}"${color ? ` stroke="${color}" stroke-width="${values.border.edge}"` : ''}/>` +
+    `<rect x="${r(-w / 2)}" y="${r(top)}" width="${r(w)}" height="${r(h)}" rx="${values.radius.lg}" fill="${color ?? tokens.color.state['active-fill']}"${color ? ` stroke="${outline ?? color}" stroke-width="${values["border-width"].edge}"` : ''}/>` +
     lines.map((line, li) => `<text x="0" y="${r(top + STYLE.chip.line * (li + 1))}" class="chip">${renderRich(line)}</text>`).join('')
   );
 }
@@ -54,10 +58,10 @@ function drawChip(lines, { glyphs, color }) {
 // basis: estimate
 // 보임 창. 이산 값이라 구간 끝에서 바로 바뀌고, 시작과 끝이 0이나 1이면 겹치는 keyTime을 만들지 않는다. 시작에서 바로 사라지는 점(사라짐 0%)은 한 번도 보이지 않는다.
 function showWindow(clock, from, to) {
-  if (to <= from) return `<animate attributeName="opacity" dur="${clock.duration}" repeatCount="indefinite" calcMode="discrete" keyTimes="0" values="0"/>`;
+  if (to <= from) return `<animate attributeName="opacity" dur="${clock.duration}" ${clock.smil} calcMode="discrete" keyTimes="0" values="0"/>`;
   const keys = [[0, 0], [from, 1], [to, 0]].filter(([at], i, all) => i === 0 || at > all[i - 1][0]);
   if (from === 0) keys.splice(0, 1, [0, 1]);
-  return `<animate attributeName="opacity" dur="${clock.duration}" repeatCount="indefinite" calcMode="discrete" keyTimes="${keys.map(([at]) => at).join(';')}" values="${keys.map(([, on]) => on).join(';')}"/>`;
+  return `<animate attributeName="opacity" dur="${clock.duration}" ${clock.smil} calcMode="discrete" keyTimes="${keys.map(([at]) => at).join(';')}" values="${keys.map(([, on]) => on).join(';')}"/>`;
 }
 
 // cost: time O(1), heap O(1), stack O(1)
@@ -74,7 +78,7 @@ function moveMotion(clock, [from, to], { hop, start: departure }) {
   const last = keys.length - 1;
   const splines = keys.slice(0, last).map(([, , spline]) => spline);
   return (
-    `<animateMotion dur="${clock.duration}" repeatCount="indefinite" calcMode="spline" keyTimes="${keys.map(([at]) => at).join(';')}" keySplines="${splines.join(';')}" keyPoints="${keys.map(([, point]) => ratio(point)).join(';')}">` +
+    `<animateMotion dur="${clock.duration}" ${clock.smil} calcMode="spline" keyTimes="${keys.map(([at]) => at).join(';')}" keySplines="${splines.join(';')}" keyPoints="${keys.map(([, point]) => ratio(point)).join(';')}">` +
     `<mpath href="#${pathId}" xlink:href="#${pathId}"/></animateMotion>`
   );
 }
@@ -85,7 +89,7 @@ function moveMotion(clock, [from, to], { hop, start: departure }) {
 // 키 사이를 선형으로 잇는 이동(단계 끝에서 잘리는 점). 곡선 일부만 지나서 곡선 하나로 그릴 수 없다.
 function linearMotion(clock, pathId, keys) {
   return (
-    `<animateMotion dur="${clock.duration}" repeatCount="indefinite" calcMode="linear" keyTimes="${keys.map(([at]) => at).join(';')}" keyPoints="${keys.map(([, point]) => ratio(point)).join(';')}">` +
+    `<animateMotion dur="${clock.duration}" ${clock.smil} calcMode="linear" keyTimes="${keys.map(([at]) => at).join(';')}" keyPoints="${keys.map(([, point]) => ratio(point)).join(';')}">` +
     `<mpath href="#${pathId}" xlink:href="#${pathId}"/></animateMotion>`
   );
 }
@@ -110,5 +114,5 @@ function pushChip(clock, start, hop) {
 // 지점 사이를 시간에 선형으로 잇는 SMIL 값 하나. 글 상자 옮김(transform)과 흐려짐(opacity)이 같은 키 시각을 쓴다.
 function animateOf(clock, { name, type }, { keyTimes, values: levels }) {
   const tag = type ? 'animateTransform' : 'animate';
-  return `<${tag} attributeName="${name}"${type ? ` type="${type}"` : ''} dur="${clock.duration}" repeatCount="indefinite" calcMode="linear" keyTimes="${keyTimes}" values="${levels.join(';')}"/>`;
+  return `<${tag} attributeName="${name}"${type ? ` type="${type}"` : ''} dur="${clock.duration}" ${clock.smil} calcMode="linear" keyTimes="${keyTimes}" values="${levels.join(';')}"/>`;
 }

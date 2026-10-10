@@ -1,8 +1,0 @@
-flow right
-box a "A"
-box b "B"
-a -> b "보냄"
-step "옛 태그 색"
-  a -> b "x"
-  show a "첫째" tag="old" tone=blue
-  show b "둘째" tag="older" tone=orange

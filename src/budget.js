@@ -6,7 +6,7 @@ import { FigureError, makeDiagnostic } from './source/problems.js';
  * 예산 이름 → { limit, unit }. limit은 기본 한도이고 unit은 진단 글이 세는 단위다. 새 예산은 여기에 이름과 기본 한도를 더하고, 기본 한도는 측정으로 정해 근거를 문서에 적는다.
  * 격자의 두 예산은 docs/design/grid.md 예산 절의 측정에서 정했다.
  */
-export const BUDGETS = Object.freeze({
+const BUDGETS =Object.freeze({
   'grid-elements': { limit: 500_000, unit: 'SVG elements drawn by grids' },
   'grid-path-commands': { limit: 1_000_000, unit: 'path commands in the empty-area paths of grids' },
   // 흐름 조건과 대기를 계산하는 이벤트(docs/design/playback.md 이벤트 예산). 기본 한도는 같은 문서의 측정에서 정했다.
@@ -25,7 +25,7 @@ export const BUDGET_NAMES = Object.keys(BUDGETS);
  * `이름=값` 글 하나를 읽는다. 이름이 목록에 없거나 값이 양의 안전한 정수가 아니면 { error }다.
  * @returns { name, value } | { error }
  */
-export function parseBudgetPair(text) {
+function parseBudgetPair(text) {
   const match = /^([^=]*)=(.*)$/.exec(text);
   if (!match) return { error: `--budget takes name=value, found "${text}". Names: ${BUDGET_NAMES.join(', ')}` };
   const [, name, raw] = match;

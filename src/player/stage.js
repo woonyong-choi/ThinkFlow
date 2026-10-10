@@ -1,204 +1,247 @@
-// 브라우저에서 돈다(play.js와 한 스크립트로 이어 붙는다). 그림(SVG) 조각을 찾아 박자 상태를 그리고 점과 글 상자를 옮긴다.
+// 브라우저에서 돈다(play.js와 한 스크립트로 이어 붙는다). 그림(SVG) 조각을 찾아 두고, 표본 추출기(sample.js)가 돌려준 모습을 그대로 그린다.
+// 그림은 모습의 함수다. 이전 프레임, 웹 애니메이션 끝 알림, 요소 충돌에서 사건을 읽지 않고 같은 모습을 몇 번 그려도 같다.
+// 도형과 그룹은 논리 id로 찾는다. 같은 카드가 여러 판에 그려지면 도형 번호(#n-번호)는 다르지만 논리 id가 같고, 모든 그림 요소가 같은 모습으로 맞춰진다.
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
 
-// ---- 그림 그리기 ----
+// ---- 그림 조각 ----
 
-// cost: time O(s + c + r), heap O(s + c + r), stack O(1)
-// vars: s = 도형 수, c = 선 수, r = 차트 행 수
-// basis: estimate
-// 그림(SVG) 조각을 한 번 찾아 둔 묶음. 점, 카드 대기열 같은 그림 쪽 상태도 여기에 둔다.
+// 논리 id 목록(번호 순서)을 { id: 번호[] }로. 같은 id가 여러 번 나오면 번호가 여럿이다.
+function indicesById(ids) {
+  const map = new Map();
+  ids.forEach((id, i) => map.set(id, [...(map.get(id) ?? []), i]));
+  return map;
+}
+
+/**
+ * 그림(SVG) 조각을 한 번 찾아 둔 묶음. 점과 마지막으로 그린 모습처럼 그림 쪽에 남는 것도 여기에 둔다.
+ * 판마다 SVG 한 장이고 요소 id는 판을 가로질러 하나뿐이므로, 판 묶음(.dp-panels) 전체에서 찾는다.
+ */
 function createStage(root, data) {
-  const svg = root.querySelector('svg.fl');
-  const all = (selector) => [...svg.querySelectorAll(selector)];
+  const view = root.querySelector('.dp-panels');
+  const find = (selector) => view.querySelector(selector);
+  const all = (selector) => [...view.querySelectorAll(selector)];
   return {
-    svg,
+    view,
     metrics: data.metrics,
-    edgeEnds: data.edgeEnds,
+    edgePanels: data.edgePanels,
+    trackPanels: data.trackPanels,
+    chartMeta: data.chartMeta,
     cardCounts: data.cardCounts,
-    packetLayer: svg.querySelector('.fl-packets'),
-    nodes: data.cardCounts.map((_, i) => svg.querySelector(`#n-${i}`)),
-    groups: all('.fl-group'),
-    edges: data.edgeEnds.map((_, j) => withLabel(svg.querySelector(`#e-${j}`), svg.querySelector(`#l-${j}`))),
-    paths: data.edgeEnds.map((_, j) => svg.querySelector(`#p-${j}`)),
-    trackPaths: Array.from({ length: data.trackCount ?? 0 }, (_, k) => svg.querySelector(`#tp-${k}`)),
+    packetLayers: all('.fl-packets'),
+    nodes: data.itemIds.map((_, i) => find(`#n-${i}`)),
+    nodesById: indicesById(data.itemIds),
+    cardEls: data.cardCounts.map((count, i) => Array.from({ length: count }, (_, k) => find(`#n-${i}-c${k}`))),
+    groups: data.groupIds.map((_, j) => find(`#g-${j}`)),
+    groupsById: indicesById(data.groupIds),
+    edges: data.edgePanels.map((_, j) => ({ line: find(`#e-${j}`), label: find(`#l-${j}`) })),
+    paths: data.edgePanels.map((_, j) => find(`#p-${j}`)),
+    trackPaths: Array.from({ length: data.trackCount ?? 0 }, (_, k) => find(`#tp-${k}`)),
     values: data.values ?? [],
-    valueEls: createValueEls(svg, data),
-    pendingOn: [],
-    pendingPulses: [],
+    valueEls: createValueEls(view, data),
+    rowEls: createRowEls(view),
     parts: all('.fl-part'),
-    seriesEls: Array.from({ length: data.seriesCount }, (_, i) => all(`.cs-${i}`)),
-    labelEls: all('.chart-label.shift'),
-    rowEls: Array.from({ length: data.rowCount }, (_, k) => all(`.cr-${k}`)),
-    isStill: data.segs.length === 0,
+    sceneEls: all('[data-si]'),
+    statusEls: all('.fl-status'),
+    charts: createChartEls(view, data),
     packets: [],
-    pendingCards: [],
+    // 마지막으로 그린 박자와 요소별 값. 같은 값을 다시 쓰지 않으려고 둔다(그린 결과는 모습만으로 정해진다).
+    painted: { key: '', si: undefined, cards: {}, chartFrames: {}, marks: new Set(), lights: {} },
+    written: new WeakMap(),
+    overlays: [],
   };
 }
 
-// cost: time O(1), heap O(1), stack O(1)
-// basis: estimate
-// 선 묶음과 알약 묶음(점 층 위에 따로 그려진다)의 class를 함께 바꾸는 손잡이. 알약이 없으면 선만 바꾼다.
-function withLabel(edge, label) {
-  const both = (act) => (name, on) => [edge, label].forEach((el) => el && act(el.classList, name, on));
-  return { classList: { toggle: both((list, name, on) => list.toggle(name, on)), add: both((list, name) => list.add(name)), remove: both((list, name) => list.remove(name)) } };
+// 차트 카드마다 그려진 곳(같은 차트가 여러 판에 있으면 모두)의 계열(cs-번호) 요소, 행(cr-번호) 요소, 행 이름 요소. 요소는 그 차트의 data-chart 안에서만 찾아 다른 차트에 번지지 않는다.
+function createChartEls(view, data) {
+  return Object.fromEntries(
+    Object.entries(data.chartMeta ?? {}).map(([cardId, meta]) => {
+      const roots = [...view.querySelectorAll(`[data-chart="${CSS.escape(cardId)}"]`)];
+      const within = (selector) => roots.flatMap((chart) => [...chart.querySelectorAll(selector)]);
+      return [cardId, { series: meta.series.map((_, s) => within(`.cs-${s}`)), rows: meta.rowKeys.map((_, k) => within(`.cr-${k}`)) }];
+    }),
+  );
 }
 
-// cost: time O(n·c), heap O(n·c), stack O(1)
-// vars: n = 도형 수, c = 선 수
-// basis: estimate
-// 도형에 마우스를 올리면 닿은 선을 밝힌다. 조용한 선도 그때 보인다.
-function highlightOnHover(stage) {
-  stage.nodes.forEach((g, i) => {
-    const touching = stage.edgeEnds.map((e, j) => (e[0] === i || e[1] === i ? stage.edges[j] : null)).filter(Boolean);
-    g?.addEventListener('mouseenter', () => touching.forEach((e) => e.classList.add('hover')));
-    g?.addEventListener('mouseleave', () => touching.forEach((e) => e.classList.remove('hover')));
-  });
+// 요소 el의 속성 name을 value로 쓴다. 지금 값과 같으면 쓰지 않는다.
+function writeAttr(stage, el, name, value) {
+  const seen = stage.written.get(el) ?? {};
+  if (seen[name] === value) return;
+  stage.written.set(el, { ...seen, [name]: value });
+  el.setAttribute(name, value);
 }
 
-// cost: time O(s + c + k + r), heap O(1), stack O(1)
-// vars: s = 도형 수, c = 선 수, k = 카드 내용 수 합, r = 차트 행 수
-// basis: estimate
-// 박자 seg의 상태를 그린다. 점이 도착하는 도형의 카드는 cardsAt 시각에 바뀐다.
-function drawSegmentState(stage, seg, mayGrow) {
-  stage.isFlow = Boolean(seg.pulses);
-  stage.nodes.forEach((g, n) => g?.classList.toggle('on', seg.nodesOn.includes(n)));
-  stage.groups.forEach((g, n) => g.classList.toggle('on', seg.groupsOn.includes(n)));
-  stage.edges.forEach((e, j) => e?.classList.toggle('on', seg.edgesOn.includes(j)));
-  stage.parts.forEach((p) => p.classList.toggle('on', seg.partsOn.includes(p.dataset.part)));
-  showCards(stage, seg.cardsBefore);
-  stage.pendingCards = Object.entries(seg.cardsAt).map(([n, at]) => ({ n: Number(n), at }));
-  stage.pendingOn = pendingLights(stage, seg);
-  stage.pendingPulses = [...(seg.pulses ?? [])];
-  drawValueState(stage, seg, seg.t0);
-  drawChartState(stage, seg, mayGrow);
+// 보였다 사라지는 변형(값 글자, 큐 찬 칸, 상태 알약, 카드 내용 층)을 켜거나 끈다. 불투명도 0인 요소는 접근성 트리에 남으므로 보임(visibility)도 같이 쓴다. 변형은 서로 들어 있지 않고 안쪽은 visibility를 정하지 않는다.
+function showVariant(stage, el, isShown) {
+  writeAttr(stage, el, 'opacity', isShown ? 1 : 0);
+  writeAttr(stage, el, 'visibility', isShown ? 'visible' : 'hidden');
 }
 
-// cost: time O(e + s), heap O(e + s), stack O(1)
-// vars: e = 처음 닿는 선 수, s = 처음 닿는 도형과 그룹 수
-// basis: estimate
-// 흐름 구간에서 점이 처음 닿는 시각에 켜질 선, 도형, 그룹. 구간 처음부터 켜진 것은 이미 켜져 있어 뺀다.
-function pendingLights(stage, seg) {
-  const timed = (at, els, on) => Object.entries(at ?? {}).filter(([i]) => !on.includes(Number(i))).map(([i, ms]) => ({ el: els[i], at: ms }));
-  return [...timed(seg.edgesAt, stage.edges, seg.edgesOn), ...timed(seg.nodesAt, stage.nodes, seg.nodesOn), ...timed(seg.groupsAt, stage.groups, seg.groupsOn)];
+// 요소 el의 스타일 속성(사용자 정의 속성 포함) name을 value로 쓴다. 지금 값과 같으면 쓰지 않는다.
+function writeStyle(stage, el, name, value) {
+  const seen = stage.written.get(el) ?? {};
+  const key = `style:${name}`;
+  if (seen[key] === value) return;
+  stage.written.set(el, { ...seen, [key]: value });
+  el.style.setProperty(name, value);
 }
 
-// cost: time O(k), heap O(1), stack O(1)
-// vars: k = 카드 있는 도형 수
-// basis: estimate
-function showCards(stage, cards, only) {
-  stage.cardCounts.forEach((count, n) => {
-    if (!count || (only !== undefined && only !== n)) return;
-    const shown = cards[n];
-    for (let k = 0; k < count; k++) stage.svg.querySelector(`#n-${n}-c${k}`).setAttribute('opacity', shown === k ? 1 : 0);
-    const frame = stage.nodes[n].querySelector('.fl-card');
-    frame.classList.toggle('on', shown !== undefined && !stage.isFlow);
-    frame.classList.toggle('filled', shown !== undefined);
-  });
+// ---- 그리기 ----
+
+/**
+ * 모습(frame)을 그린다. 박자가 바뀌었을 때만 박자 전체 상태(상태 알약, 차트 계열, 점)를 새로 맞추고, 나머지는 프레임마다 모습의 값만 쓴다.
+ * @param frame sampleScene이 돌려준 모습
+ */
+function paintFrame(stage, data, frame) {
+  const seg = data.segs[frame.seg];
+  const key = `${frame.seg}:${frame.phase}`;
+  paintScene(stage, frame.si);
+  if (stage.painted.key !== key) paintSegment(stage, seg, frame);
+  stage.painted.key = key;
+  paintCards(stage, frame.cards);
+  paintHeld(stage, frame.held);
+  paintEdges(stage, frame);
+  paintValues(stage, frame);
+  paintChartFrames(stage, data, frame.charts);
+  paintPulses(stage, frame.pulses);
+  stage.packets.forEach((packet) => packet.move(frame.elapsed));
+  driveChartMotion(stage, frame);
 }
 
-// cost: time O(r + s), heap O(1), stack O(1)
-// vars: r = 차트 행 수, s = 계열 수
-// basis: estimate
-// 차트: 드러낸 계열을 보이고, 이 박자에 드러내는 계열은 자라는 움직임을 다시 건다(mayGrow가 거짓이면 걸지 않고 다 자란 채 둔다). light가 있으면 나머지 행을 흐린다.
-function drawChartState(stage, seg, mayGrow) {
-  stage.seriesEls.forEach((els, s) => {
-    const isGrowing = mayGrow && seg.growing.includes(s);
-    for (const el of els) {
-      el.classList.toggle('hidden', !seg.series.includes(s));
-      el.classList.remove('play');
-      if (isGrowing) {
-        el.getBoundingClientRect();
-        el.classList.add('play');
-      }
-    }
-  });
-  stage.labelEls.forEach((el, k) => el.style.setProperty('--label-shift', `${seg.labelShifts[k] ?? 0}px`));
-  stage.rowEls.forEach((els, k) => els.forEach((el) => el.classList.toggle('dim', seg.lights.length > 0 && !seg.lights.includes(k))));
+// 순서 보기의 메시지, 메모, 구획, 활성 막대는 자기 장면(`data-si`)이 보일 때만 보인다. 장면이 바뀔 때 한 번 맞춘다. 장면에 들어서는 때와 다시 들어서는 때, 마지막 모습은 모두 같은 장면 번호의 요소만 보인다.
+function paintScene(stage, si) {
+  if (stage.painted.si === si) return;
+  stage.painted.si = si;
+  for (const el of stage.sceneEls) el.classList.toggle('fl-off', Number(el.dataset.si) !== si);
 }
 
-// cost: time O(a), heap O(a), stack O(1)
-// vars: a = 차트 움직임 수
-// basis: estimate
-// 차트 움직임(막대, 선, 값 글자, 점의 CSS 애니메이션)을 박자 시계에 맞춘다. CSS 애니메이션은 브라우저 시계를 따로 따르므로
-// 정지면 멈추고 재개하면 잇고, 배속이면 재생 속도를 같게 한다. 모델 상태는 다시 계산하지 않는다(상태는 시간표가 정한다).
-// 이미 끝난 움직임은 건드리지 않는다. play()는 끝난 움직임을 처음부터 다시 돌리기 때문이다.
-function syncChartMotion(stage, clock) {
-  // 시간 흐름 없는 차트는 되풀이 움직임(chart-loop)을 재생을 켤 때 건다. 건 뒤에는 정지와 재개를 아래 반복문이 맡는다.
-  if (stage.isStill && clock.isPlaying) stage.svg.classList.add('chart-loop');
-  for (const animation of stage.svg.getAnimations({ subtree: true })) {
-    if (!animation.animationName?.startsWith('chart-')) continue;
-    animation.playbackRate = clock.rate;
-    if (!clock.isPlaying && animation.playState === 'running') animation.pause();
-    else if (clock.isPlaying && animation.playState === 'paused') animation.play();
+// 박자 전체에서 변하지 않는 상태. 상태 알약, 차트 계열(보임과 자람), 점. 마지막 모습(phase가 final)이면 계열이 다 자란 채이고 점이 없다.
+function paintSegment(stage, seg, frame) {
+  stage.statusEls.forEach((el) => showVariant(stage, el, Boolean(seg.status?.includes(el.dataset.st))));
+  drawChartState(stage, seg, frame.phase === 'play');
+  stage.packets.forEach((packet) => packet.remove());
+  stage.packets = frame.phase === 'play' ? seg.hops.map((hop) => createPacket(hop, stage)) : [];
+  stage.painted.cards = {};
+}
+
+// 도형(논리 id)마다 보일 카드. 바뀐 도형만 다시 쓰고, 같은 도형이 여러 판에 있으면 모두 쓴다. 카드 층이 있는 판만 쓰고, 카드 층이 있는 판이 하나도 없으면(머리만 그리는 순서 보기뿐) 건너뛴다.
+// 판 순서에 따라 첫 판이 카드 층이 없는 순서 보기일 수 있어 첫 번호만 보지 않는다.
+function paintCards(stage, cards) {
+  for (const [id, indices] of stage.nodesById) {
+    if (!indices.some((i) => stage.cardCounts[i]) || stage.painted.cards[id] === `${cards[id]}`) continue;
+    stage.painted.cards[id] = `${cards[id]}`;
+    for (const i of indices) if (stage.cardCounts[i]) showCard(stage, i, cards[id]);
   }
 }
 
-// cost: time O(h), heap O(h), stack O(1)
-// vars: h = 박자의 이동 수
-// basis: estimate
-function resetPackets(stage, seg) {
-  stage.packets.forEach((p) => p.remove());
-  stage.packets = seg.hops.map((hop) => createPacket(hop, stage));
-  stage.packets.forEach((packet) => packet.move(0));
+function showCard(stage, i, shown) {
+  stage.cardEls[i].forEach((layer, k) => showVariant(stage, layer, shown === k));
+  stage.nodes[i].querySelector('.fl-card')?.classList.toggle('filled', shown !== undefined);
 }
 
-// cost: time O(h + k), heap O(1), stack O(1)
-// vars: h = 박자의 이동 수, k = 카드가 바뀌는 도형 수
-// basis: estimate
-// 점을 옮기고, 도착한 도형의 카드를 바꾼다.
-function advanceStage(stage, seg, elapsed) {
-  stage.packets.forEach((packet) => packet.move(elapsed));
-  stage.pendingCards = stage.pendingCards.filter(({ n, at }) => {
-    if (elapsed < at) return true;
-    showCards(stage, seg.cards, n);
-    return false;
-  });
-  stage.pendingOn = stage.pendingOn.filter(({ el, at }) => {
-    if (elapsed < at) return true;
-    el?.classList.add('on');
-    return false;
-  });
-  stage.pendingPulses = stage.pendingPulses.filter(({ n, at }) => {
-    if (elapsed < at) return true;
-    if (elapsed - at < stage.metrics.pulseMs) pulseNode(stage, n);
-    return false;
-  });
-  drawValueState(stage, seg, seg.t0 + elapsed);
+// 켜진 도형, 그룹(논리 id)과 시간 보기의 부분, 차트 밝히기를 모습의 값대로 맞춘다.
+function paintHeld(stage, held) {
+  const lit = new Set(held.lit);
+  const parts = new Set(held.parts);
+  for (const [id, indices] of stage.nodesById) for (const i of indices) stage.nodes[i].classList.toggle('on', lit.has(id));
+  for (const [id, indices] of stage.groupsById) for (const j of indices) stage.groups[j].classList.toggle('on', lit.has(id));
+  stage.parts.forEach((part) => part.classList.toggle('on', parts.has(part.dataset.part)));
+  paintLights(stage, held.lights);
 }
 
-// cost: time O(1), heap O(1), stack O(1)
-// basis: estimate
-// 점이 닿은 도형의 후광을 한 번 깜빡인다. 도형은 켜지지 않고 테두리도 그대로다.
-function pulseNode(stage, n) {
-  stage.nodes[n]?.querySelector('.fl-halo')?.animate([{ opacity: 1 }, { opacity: 0 }], { duration: stage.metrics.pulseMs });
+// 밝힌 행이 있는 차트는 나머지 행을 흐린다. 밝힌 행이 없으면 흐리지 않는다. 차트마다 따로다.
+function paintLights(stage, lights) {
+  for (const [cardId, els] of Object.entries(stage.charts)) {
+    const lit = lights[cardId] ?? [];
+    const key = lit.join('\u0001');
+    if (stage.painted.lights[cardId] === key) continue;
+    stage.painted.lights[cardId] = key;
+    stage.chartMeta[cardId].rowKeys.forEach((name, k) => els.rows[k].forEach((el) => el.classList.toggle('dim', lit.length > 0 && !lit.includes(name))));
+  }
 }
 
-// cost: time O(l), heap O(l), stack O(1)
-// vars: l = 글 상자 줄 수
-// basis: estimate
-// 점과 글 상자. 글 상자 줄과 자리는 시간표가 움직이는 SVG와 같게 정해 넘긴다.
+/**
+ * 선과 고정 알약. 선은 점이 하나 이상 올라 있는 동안 is-current이고, 선과 알약은 켜 둔 선(held)이거나 알약 색이 남아 있는 동안 on이다.
+ * 알약은 늘 그대로 보인다(글자와 중립 알약 바탕을 투명하게 하지 않는다). 점이 올라 있다가 비면 알약의 활성 색(--pill-tint, 1에서 0)만 줄어들어 중립으로 돌아온다.
+ * 조용한 선(quiet)의 보임은 켜 둔 선이거나 알약 색이 남은 동안 `on`이 정한다. 켜 둔 선은 점이 지나간 뒤에도 남을 수 있지만 알약의 활성 색을 붙들지 않는다.
+ */
+function paintEdges(stage, frame) {
+  const held = new Set(frame.held.edges);
+  stage.edges.forEach(({ line, label }, j) => {
+    if (!line) return;
+    const tint = frame.edges[j]?.pill ?? 0;
+    line.classList.toggle('is-current', Boolean(frame.edges[j]?.active));
+    for (const el of [line, label]) el?.classList.toggle('on', held.has(j) || tint > 0);
+    // 알약 색은 라벨 묶음과 선 묶음(관계 끝 글 `edgelabel`이 안에 있다)이 같은 세기를 읽는다.
+    for (const el of [line, label]) if (el) writeStyle(stage, el, '--pill-tint', String(tint));
+  });
+}
+
+// ---- 차트 계열 ----
+
+// 차트마다 따로: 드러낸 계열을 보이고, 이 박자에 드러내는 계열은 자라는 움직임을 다시 건다(mayGrow가 거짓이면 걸지 않고 다 자란 채 둔다). 시간표에 이 차트의 상태가 없으면 모든 계열이 보인다.
+function drawChartState(stage, seg, mayGrow) {
+  for (const [cardId, els] of Object.entries(stage.charts)) {
+    const state = seg.charts[cardId];
+    const names = stage.chartMeta[cardId].series;
+    els.series.forEach((list, s) => {
+      const isGrowing = mayGrow && state?.growing.includes(names[s]);
+      for (const el of list) {
+        el.classList.toggle('hidden', state !== undefined && !state.series.includes(names[s]));
+        el.classList.remove('play');
+        if (isGrowing) {
+          el.getBoundingClientRect();
+          el.classList.add('play');
+        }
+      }
+    });
+  }
+}
+
+// 차트 움직임(막대, 선, 값 글자, 점의 CSS 애니메이션)을 박자 안 논리 시각에 둔다. 브라우저 시계를 따로 따르지 않게 늘 멈춰 두고 currentTime을 모습의 시각으로 쓴다.
+// 마지막 모습은 끝까지 감는다. 시간이 거꾸로 가거나 건너뛰어도 같은 결과다.
+function driveChartMotion(stage, frame) {
+  for (const animation of stage.view.getAnimations({ subtree: true })) {
+    if (!animation.animationName?.startsWith('chart-')) continue;
+    animation.pause();
+    if (frame.phase === 'final') animation.finish();
+    else animation.currentTime = frame.elapsed;
+  }
+}
+
+// ---- 점과 글 상자 ----
+
+// 점과 글 상자. 글 상자 줄과 자리는 시간표가 움직이는 SVG와 같게 정해 넘긴다. move(elapsed)는 박자 안 시각에서 점의 자리와 보임만 정한다.
+// 점은 그 선이 있는 판의 점 층에 놓는다. 선 번호와 흐름 길 번호가 판을 가로질러 하나뿐이어서 판은 data.edgePanels, data.trackPanels가 알려 준다.
 function createPacket(hop, stage) {
   const { metrics } = stage;
-  const path = hop.track === undefined ? stage.paths[hop.edge] : stage.trackPaths[hop.track];
+  const isTrack = hop.track !== undefined;
+  const path = isTrack ? stage.trackPaths[hop.track] : stage.paths[hop.edge];
+  const layer = stage.packetLayers[isTrack ? stage.trackPanels[hop.track] : stage.edgePanels[hop.edge]];
+  if (hop.tone !== undefined && !metrics.tones?.[hop.tone]) throw new Error(`이동의 색 이름이 정본이 아니다: ${JSON.stringify(hop.tone)}(가능: ${Object.keys(metrics.tones ?? {}).join(', ')})`);
   const color = hop.tone ? metrics.tones[hop.tone] : metrics.active;
+  const outline = metrics.toneOutlines?.[hop.tone];
   const g = document.createElementNS(SVG_NS, 'g');
   g.setAttribute('class', 'fl-packet');
-  g.innerHTML = `<circle r="${metrics.halo}" fill="${color}" opacity="${metrics.haloOpacity}"/><circle r="${metrics.packet}" fill="${color}"/>`;
-  stage.packetLayer.appendChild(g);
-  const chip = hop.data ? createChip(hop.data, { stage, color: hop.tone ? color : undefined }) : undefined;
+  g.style.opacity = 0;
+  g.setAttribute('fill', metrics.toneInks?.[hop.tone] ?? metrics.chipInk);
+  g.innerHTML = `<circle r="${metrics.halo}" fill="${color}" opacity="${metrics.haloOpacity}"/><circle r="${metrics.packet}" fill="${color}"${outline ? ` stroke="${outline}" stroke-width="${metrics.chipStroke}"` : ''}/>`;
+  layer.appendChild(g);
+  const chip = hop.data ? createChip(hop.data, { layer, metrics, color: hop.tone ? color : undefined, outline }) : undefined;
   if (chip) g.appendChild(chip.g);
   const length = path.getTotalLength();
   const slide = chipSlide(hop, metrics);
+  const end = hop.cut ?? hop.ms;
+  let isDrawn = false;
   return {
     remove: () => g.remove(),
-    // cost: time O(g + l), heap O(1), stack O(1)
-    // vars: g = 도형 안을 지나는 구간 수, l = 글 상자 경로 지점 수
-    // basis: estimate
     move(elapsed) {
       const t = elapsed - (hop.at ?? 0);
+      const isLive = t >= 0 && t < end;
+      if (!isLive && !isDrawn) return;
+      isDrawn = isLive;
       const p = Math.min(1, Math.max(0, t / hop.ms));
-      const eased = progressAt(metrics.move, p);
+      const eased = progressAt(metrics.move, p, hop.pace);
       const point = path.getPointAtLength(length * (hop.isBack ? 1 - eased : eased));
       g.setAttribute('transform', `translate(${point.x} ${point.y})`);
       if (chip) {
@@ -207,41 +250,29 @@ function createPacket(hop, stage) {
         chip.g.style.opacity = opacity * chipFadeAt(hop.chipFade, t);
       }
       const isInside = (hop.gaps ?? []).some(([from, to]) => eased > from && eased < to);
-      g.style.opacity = isShown(hop, t, isInside) ? cutFade(hop, t, metrics) : 0;
+      g.style.opacity = isLive && !isInside ? cutFade(hop, t, metrics) : 0;
     },
   };
 }
 
-// cost: time O(1), heap O(1), stack O(1)
-// basis: estimate
-// 점이 보이는 때인지. 이동 시작 전, 도형 안(isInside), 끝에 닿은 뒤, 단계 끝에서 잘린 뒤(hop.cut)는 보이지 않는다.
-function isShown(hop, t, isInside) {
-  return t >= 0 && t < (hop.cut ?? hop.ms) && !isInside;
-}
-
-// cost: time O(1), heap O(1), stack O(1)
-// basis: estimate
 // 단계 끝에서 잘리는 점(hop.cut)이 끝 앞 cutFadeMs 동안 서서히 사라지는 불투명도. 그 밖의 점은 1이다.
 function cutFade(hop, t, metrics) {
   return hop.cut === undefined ? 1 : Math.min(1, (hop.cut - t) / metrics.cutFadeMs);
 }
 
-// cost: time O(l), heap O(l), stack O(1)
-// vars: l = 글 상자 줄 수
-// basis: estimate
-function createChip(lines, { stage, color }) {
-  const { metrics } = stage;
+function createChip(lines, { layer, metrics, color, outline }) {
   const chip = document.createElementNS(SVG_NS, 'g');
   const rect = document.createElementNS(SVG_NS, 'rect');
   rect.setAttribute('rx', metrics.chipRadius);
   rect.setAttribute('fill', color ?? metrics.chipFill);
   if (color) {
-    rect.setAttribute('stroke', color);
+    rect.setAttribute('stroke', outline ?? color);
     rect.setAttribute('stroke-width', metrics.chipStroke);
   }
   chip.appendChild(rect);
   const texts = lines.map((line) => createChipLine(line, chip));
-  stage.packetLayer.appendChild(chip);
+  // 글 폭은 그림 안에 있어야 잴 수 있어 점 층에 잠깐 붙인다. 점 묶음(g)이 곧 이 요소를 데려간다.
+  layer.appendChild(chip);
   const w = Math.max(...texts.map((t) => t.getComputedTextLength())) + metrics.chipPadX;
   const h = texts.length * metrics.chipLine + metrics.chipPadY;
   const top = -h - metrics.chipGap;
@@ -253,9 +284,6 @@ function createChip(lines, { stage, color }) {
   return { g: chip, w, h };
 }
 
-// cost: time O(n), heap O(n), stack O(1)
-// vars: n = 글자 수
-// basis: estimate
 function createChipLine(line, chip) {
   const text = document.createElementNS(SVG_NS, 'text');
   text.setAttribute('class', 'chip');

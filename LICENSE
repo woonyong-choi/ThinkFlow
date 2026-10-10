@@ -22,6 +22,8 @@ SOFTWARE.
 
 ---
 
-Third-party material: the icons in src/icons/carbon/ are IBM Carbon icons under the Apache License 2.0
-(see src/icons/LICENSE and NOTICE). The icons in src/icons/simple-icons/ come from Simple Icons (CC0 1.0 for
-the library, plus the per-icon licenses and trademark notices in NOTICE). All of them are modified: color only.
+Third-party material: the icons in src/icons/simple-icons/ come from Simple Icons (CC0 1.0 for the library,
+plus the per-icon licenses, including Apache License 2.0 for the Apache Kafka logo in src/icons/LICENSE, and the
+trademark notices in NOTICE). They are modified: color only. The player control icons in src/icons/controls.js keep the
+names and arrangement of Lucide (ISC) icons, some derived from Feather (MIT); the texts are in src/icons/LICENSE. The fonts the figures embed as subsets (Pretendard,
+Noto Sans, Noto Sans Math, JetBrains Mono) are under the SIL Open Font License 1.1; see NOTICE.

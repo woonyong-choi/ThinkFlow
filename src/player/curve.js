@@ -25,20 +25,42 @@ function solveBezier(a, b, target) {
   return (low + high) / 2;
 }
 
-// cost: time O(STEPS), heap O(1), stack O(1)
-// vars: STEPS = BISECT_STEPS
+// cost: time O(STEPS + l), heap O(1), stack O(1)
+// vars: STEPS = BISECT_STEPS, l = pace의 구간 수(pace가 없으면 0)
 // basis: estimate
-// 시간 비율 p에서 이동 곡선의 진행 비율. easing.js의 timeAt과 같은 곡선을 반대 방향으로 푼다.
-function progressAt([x1, y1, x2, y2], p) {
-  return bezierAxis(y1, y2, solveBezier(x1, x2, p));
+// 시간 비율 p에서 점이 있는 경로 길이 비율. 이동 곡선을 푼 진행 비율에, 구간별 이동 시간(pace)이 있으면 그 꺾은선을 한 번 더 건다. easing.js의 같은 이름 함수와 같은 값이다.
+function progressAt([x1, y1, x2, y2], p, pace) {
+  const progress = bezierAxis(y1, y2, solveBezier(x1, x2, p));
+  return pace ? paceLength(pace, progress) : progress;
 }
 
-// cost: time O(STEPS), heap O(1), stack O(1)
-// vars: STEPS = BISECT_STEPS
+// cost: time O(STEPS + l), heap O(1), stack O(1)
+// vars: STEPS = BISECT_STEPS, l = pace의 구간 수(pace가 없으면 0)
 // basis: estimate
-// 진행 비율 f에 닿는 시간 비율. easing.js의 timeAt과 같다.
-function timeAtProgress([x1, y1, x2, y2], f) {
-  return bezierAxis(x1, x2, solveBezier(y1, y2, f));
+// progressAt의 반대. 경로 길이 비율 f에 닿는 시간 비율이다. pace가 있으면 꺾은선을 먼저 거꾸로 푼다.
+function timeAtProgress([x1, y1, x2, y2], f, pace) {
+  return bezierAxis(x1, x2, solveBezier(y1, y2, pace ? paceProgress(pace, f) : f));
+}
+
+// cost: time O(l), heap O(1), stack O(1)
+// vars: l = 구간 수
+// basis: estimate
+// 꺾은선 pace(`[시간 비율, 길이 비율]` 목록)에서 이동 곡선을 건 진행 비율 progress의 경로 길이 비율. src/easing.js의 paceLength와 같다.
+function paceLength(pace, progress) {
+  const k = Math.min(pace.length - 2, Math.max(0, pace.findLastIndex(([at]) => at <= progress)));
+  const [[t0, l0], [t1, l1]] = [pace[k], pace[k + 1]];
+  return t1 > t0 ? l0 + ((l1 - l0) * (Math.min(1, Math.max(0, progress)) - t0)) / (t1 - t0) : l1;
+}
+
+// cost: time O(l), heap O(1), stack O(1)
+// vars: l = 구간 수
+// basis: estimate
+// paceLength의 반대. 경로 길이 비율 length에 닿는 진행 비율. src/easing.js의 paceProgress와 같다.
+function paceProgress(pace, length) {
+  const reached = pace.findIndex(([, l]) => l >= length);
+  const k = reached < 0 ? pace.length - 2 : Math.max(0, reached - 1);
+  const [[t0, l0], [t1, l1]] = [pace[k], pace[k + 1]];
+  return l1 > l0 ? t0 + ((t1 - t0) * (Math.min(1, Math.max(0, length)) - l0)) / (l1 - l0) : t0;
 }
 
 // cost: time O(STEPS·k), 프레임마다 O(k), heap O(k), stack O(1)
@@ -47,7 +69,7 @@ function timeAtProgress([x1, y1, x2, y2], f) {
 // 글 상자 옮김과 불투명도. 빌드 때 시간표에 담은 경로 지점별 [진행 비율, dx, dy, opacity]를 움직이는 SVG의 SMIL(지점이 점에 닿는 시각 사이를 선형)과 같게 시간 비율 p에서 보간한다. [dx, dy, opacity]를 돌려준다.
 function chipSlide(hop, metrics) {
   const path = hop.chipPath ?? [];
-  const times = path.map(([at]) => timeAtProgress(metrics.move, at));
+  const times = path.map(([at]) => timeAtProgress(metrics.move, at, hop.pace));
   return (p) => {
     if (!path.length) return [0, 0, 1];
     const k = times.findLastIndex((time) => time <= p);

@@ -1,6 +1,6 @@
 // 3번, 4번, 5번: 선이 도형을 지나지 않고, 끝이 연결점에 있고, 다른 선과 붙지 않는다.
 import { CROWD, TOUCH } from '../layout/model.js';
-import { THROUGH_INSET, capitalize, drawnBox, near, onBorder, segmentHits } from './geometry.js';
+import { THROUGH_INSET, capitalize, drawnBox, isCoVisible, near, onBorder, segmentHits } from './geometry.js';
 
 // cost: time O(e·(s + g)·p·d), heap O(1), stack O(1)
 // vars: e = 선 수, s = 도형 수, g = 그룹 수, p = 경로 점 수, d = 그룹 깊이
@@ -38,11 +38,11 @@ function checkCells(e, grids, problems) {
 // cost: time O(e), heap O(1), stack O(1)
 // vars: e = 선 수
 // basis: estimate
-// 4번: 선 끝이 도형별 연결점 규칙 자리에 있다(docs/design/layout.md 연결점). 순서 그림은 메시지가 생명선에서 시작하고 끝나므로 보지 않는다. 실패는 이 도구의 버그다.
-export function checkEnds({ edges, scene, figure }, problems) {
-  if (figure.kind === 'sequence') return;
-  const rects = new Map([...scene.items, ...scene.groups].map((it) => [it.id, it]));
-  for (const e of edges) {
+// 4번: 선 끝이 도형별 연결점 규칙 자리에 있다(docs/design/layout.md 연결점). 순서 보기의 메시지는 생명선에서 시작하고 끝나므로 보지 않는다. 실패는 이 도구의 버그다.
+export function checkEnds({ edges, scene }, problems) {
+  // 같은 카드가 여러 보기에 그려질 수 있어 선 끝은 그 선이 속한 보기의 카드와 견준다.
+  for (const e of edges.filter((edge) => edge.strategy !== 'sequence')) {
+    const rects = new Map([...scene.items, ...scene.groups].filter((it) => it.view === e.view).map((it) => [it.id, it]));
     for (const [end, point, way, part] of [[e.from, e.points[0], 'out', { column: e.fromColumn, cell: e.fromCell }], [e.to, e.points.at(-1), 'in', { column: e.toColumn, cell: e.toCell }]]) {
       const id = end.split('.')[0];
       const it = rects.get(id);
@@ -67,9 +67,8 @@ function cellRect(it, id) {
 function isPortPlace(p, it, { way, column, cell }) {
   const side = way === 'out' ? it.x + it.w : it.x;
   if (it.shape === 'grid' && cell) return onBorder(p, cellRect(it, cell));
-  if (it.shape === 'table' && column) return near(p.x, it.isBracket ? it.x + it.w : side) && near(p.y, it.y + it.rowH * (it.columns.findIndex((c) => c.name === column) + 1.5));
+  if ((it.shape === 'table' || it.shape === 'api') && column) return near(p.x, it.isBracket ? it.x + it.w : side) && near(p.y, it.y + it.tableRows[it.columns.findIndex((c) => c.name === column)].center);
   if (it.shape === 'decision') return near(p.x, side) && near(p.y, it.y + it.h / 2);
-  if (it.shape === 'person' && it.direction === 'down') return near(p.x, side) && onBorder(p, it);
   // 원통은 뚜껑 윤곽까지가 선이 닿는 면이라 그린 사각형으로 본다.
   if (it.shape === 'store') {
     const drawn = drawnBox(it);
@@ -83,10 +82,11 @@ function isPortPlace(p, it, { way, column, cell }) {
 // cost: time O(e²·p²), heap O(1), stack O(1)
 // vars: e = 선 수, p = 경로 점 수
 // basis: estimate
-// 5번: 다른 두 선의 나란한 구간이 CROWD보다 가깝게 겹치지 않는다. 같은 도형에서 함께 나가거나 함께 들어오는 두 선은 그 도형 쪽 끝 선분(경계에서 첫 꺾임까지)을 보지 않는다.
+// 5번: 다른 두 선의 나란한 구간이 CROWD보다 가깝게 겹치지 않는다. 같은 도형에서 함께 나가거나 함께 들어오는 두 선은 그 도형 쪽 끝 선분(경계에서 첫 꺾임까지)을 보지 않는다. 서로 다른 장면에서만 보이는 두 선은 함께 보이지 않아 보지 않는다.
 export function checkCrowding({ edges, family }, problems) {
   edges.forEach((a, i) => {
     for (const b of edges.slice(i + 1)) {
+      if (!isCoVisible(a, b)) continue;
       const skip = sharedEndSegments(a, b);
       const isClose = segments(a).some((sa, ia) => segments(b).some((sb, ib) => !skip(ia, ib) && crowded(sa, sb)));
       if (isClose) problems.error(a.line, `[check 5] edges ${a.from} -> ${a.to} and ${b.from} -> ${b.to} (line ${b.line}) run too close. ${capitalize(family.hint)}`);

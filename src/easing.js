@@ -1,7 +1,7 @@
 // 3차 베지어 곡선 움직임. 토큰 easing의 [x1, y1, x2, y2]를 쓴다. x는 시간 비율, y는 진행 비율이다.
 // player/curve.js에도 같은 계산이 있다. 브라우저 코드는 이 파일을 불러올 수 없어 따로 둔다.
 
-import { values } from './tokens.js';
+import { values } from './vendor/theme/tokens.js';
 
 const STEPS = 30;
 
@@ -9,7 +9,7 @@ const STEPS = 30;
 // basis: estimate
 /** 토큰 easing 이름의 [x1, y1, x2, y2] */
 export function curveOf(name) {
-  return values.easing[name].match(/[\d.]+/g).map(Number);
+  return values.ease[name].match(/[\d.]+/g).map(Number);
 }
 
 function axis(a, b, t) {

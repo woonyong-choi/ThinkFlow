@@ -24,8 +24,15 @@ export function checkId(token, { line, ctx }, pattern) {
   return true;
 }
 
-export function currentGroup(ctx) {
+function currentGroup(ctx) {
   return ctx.groups.at(-1)?.id;
+}
+
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+/** 형식이 틀려 버린 블록 줄도 `{`로 끝나면, 안쪽 줄을 이 블록의 줄로 읽어 넘기도록 버린 카드 자리를 연다. card는 블록 종류가 안쪽 줄을 담는 빈 목록을 가진 카드 조각이다. */
+export function skipBlock(kind, card, { tokens, line }, ctx) {
+  if (tokens.at(-1).type === 'open') ctx.block = { kind, card: { ...card, isRejected: true, line }, line };
 }
 
 // cost: time O(d), heap O(1), stack O(1)

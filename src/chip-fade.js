@@ -1,7 +1,7 @@
 // 이동 글 상자 계획의 마무리. 겹치는 지점을 흐리게 하고, 60fps 프레임마다 다시 재고, 같은 직선 위의 지점을 줄이고, 그림 검사가 볼 문제를 모은다.
 import { boxAt, CHIP_FRAME_MS, CHIP_VISIBLE_MIN, dotAt, isHit, NODE_MS } from './chip-motion.js';
 import { positionAt } from './easing.js';
-import { values } from './tokens.js';
+import { values } from './vendor/theme/tokens.js';
 
 // 흐려짐 시간(토큰)
 const FADE_MS = values.duration['chip-fade'];
@@ -93,15 +93,16 @@ function isStraight(points, from, to) {
 // cost: time O(r·g), heap O(r), stack O(1)
 // vars: r = 머무는 지점 수, g = 도형 안을 지나는 구간 수
 // basis: estimate
-// 그림 검사가 보는 지점별 문제. 겹침이 흐려짐으로 가려졌고 흐려진 시간이 이동의 FADE_SHARE_MAX 이하면 알리지 않는다(그림 밖은 흐려도 알린다).
+// 그림 검사가 보는 지점별 문제. 겹침이 흐려짐으로 가려졌고 흐려진 시간이 이동의 FADE_SHARE_MAX 이하면 알리지 않는다(그림 밖은 흐려도 알린다). isShownEnough(박자 이동만)가 있으면 그 값이 이 판정을 대신한다.
 // 흐름의 점이 도형 안을 지나는 구간(hop.gaps)은 점이 보이지 않아 글 상자도 보이지 않으므로, 흐려진 시간과 이동 시간 모두에서 뺀다.
-export function issuesOf(points, hop) {
+export function issuesOf(points, hop, isShownEnough) {
   const issues = points.map((p) => {
     const at = positionAt(p.t / hop.ms, hop.pace);
     return { at, isOutside: p.slot.isOutside, hits: p.slot.hits, isClean: p.slot.isClean, isInside: Boolean(hop.gaps?.some(([from, to]) => at > from && at < to)) };
   });
   const seen = issues.filter((issue) => !issue.isInside);
   const unclean = seen.filter((issue) => !issue.isClean).length;
-  const isTolerated = unclean * NODE_MS <= (hop.gaps ? seen.length * NODE_MS : hop.ms) * FADE_SHARE_MAX;
+  // 박자 이동은 흐려진 시간이 아니라 실제로 보이는 비율(isShownEnough, chip-plan.js)로 가린다. 흐려진 지점의 이웃도 같이 사라지므로 흐려진 지점이 적어도 보이는 시간이 모자랄 수 있다.
+  const isTolerated = isShownEnough ?? unclean * NODE_MS <= (hop.gaps ? seen.length * NODE_MS : hop.ms) * FADE_SHARE_MAX;
   return issues.map(({ at, isOutside, hits }) => ({ at, isOutside, hits: isTolerated ? [] : hits }));
 }

@@ -1,6 +1,6 @@
 // 2번과 6번: 글과 도형이 겹치지 않는다. 차트는 산점도 점 이름끼리 겹치지 않는 것만 본다.
 import { textBoxes } from '../draw/boxes.js';
-import { labelOf, overlaps, segmentHits, THROUGH_INSET } from './geometry.js';
+import { isCoVisible, labelOf, overlaps, segmentHits, THROUGH_INSET } from './geometry.js';
 
 // cost: time O((l + t)² + (l + t)·s), heap O(1), stack O(1)
 // vars: l = 선 라벨 수, t = 그룹 제목 수, s = 도형 수
@@ -11,6 +11,8 @@ export function checkLabels({ pills, titles, boxes, family, statuses, figure, sc
   checkStatusPills({ statuses, pills, boxes, figure, scene }, problems);
   pills.forEach((a, i) => {
     for (const b of pills.slice(i + 1)) {
+      // 서로 다른 장면의 라벨은 함께 보이지 않으므로 겹침을 보지 않는다.
+      if (!isCoVisible(a.edge, b.edge)) continue;
       if (overlaps(a, b)) problems.error(a.edge.line, `[check 2] edge label "${labelOf(a.edge)}" overlaps edge label "${labelOf(b.edge)}" (line ${b.edge.line}). Shorten a label or ${family.hint}`);
     }
     for (const box of boxes) {

@@ -1,4 +1,5 @@
-// 흐름 단계 문장(`step ... for=시간`, `track a -> b -> c ...`)을 읽는다. 선이 있는지와 시간이 맞는지는 flow-check.js가 확인한다.
+// 흐름 장면 문장(`scene ... for=시간`, `track a -> b -> c ...`)을 읽는다. 선이 있는지와 시간이 맞는지는 flow-check.js가 확인한다.
+import { autoTone } from '../tone.js';
 import { readMoveOptions, readTime } from './move-options.js';
 import { readOptions } from './options.js';
 import { valueNames } from './grammar.js';
@@ -19,7 +20,7 @@ const LEG_EPSILON_MS = 1e-6;
  * @returns { forMs, keep, sets, status }. forMs는 단계 길이(ms)이고 없거나 틀리면 undefined, keep은 { id, line } 목록, sets는 단계 시작 재설정 식 목록, status는 `{ node, kind }` 목록이다(없으면 빈 목록)
  */
 export function readStepOptions(options, { line, ctx }) {
-  const found = readOptions(options, { scopes: ['step'], what: 'a step', line, ctx });
+  const found = readOptions(options, { scopes: ['scene'], what: 'a scene', line, ctx });
   return { forMs: readStepLength(found.for, { line, ctx }), keep: readKeep(found.keep, { line, ctx }), sets: readStepSets(found.set, { line, ctx }), status: readStatus(found.status, { line, ctx }) };
 }
 
@@ -37,20 +38,16 @@ function readStepLength(text, { line, ctx }) {
 // cost: time O(n), heap O(n), stack O(1)
 // vars: n = 상태 항목 수
 // basis: estimate
-// `status="도형=종류, 도형=종류"`를 `{ node, kind }` 목록으로. 도형이 있는지와 상태를 받는 도형인지는 validate.js가 본다. 구조 그림(flow)에서만 쓴다.
+// `status="도형=종류, 도형=종류"`를 `{ node, kind }` 목록으로. 도형이 있는지와 상태를 받는 도형인지는 validate.js가 본다.
 function readStatus(text, { line, ctx }) {
   if (text === undefined) return [];
-  if (ctx.figure.kind !== 'flow') {
-    ctx.problems.error(line, 'status belongs to flow figures only, where steps light shapes');
-    return [];
-  }
   const kinds = valueNames('status');
   const entries = [];
   for (const part of text.split(',').map((item) => item.trim())) {
     const [node, kind, ...more] = part.split('=').map((piece) => piece.trim());
     if (!node || !kind || more.length) ctx.problems.error(line, `${STATUS_FORM}. Found "${part}"`);
     else if (!kinds.includes(kind)) ctx.problems.error(line, `status kind is one of ${kinds.join(', ')}. Found "${kind}"`);
-    else if (entries.some((entry) => entry.node === node)) ctx.problems.error(line, `status names "${node}" twice in one step. Keep one kind per shape`);
+    else if (entries.some((entry) => entry.node === node)) ctx.problems.error(line, `status names "${node}" twice in one scene. Keep one kind per shape`);
     else entries.push({ node, kind });
   }
   return entries;
@@ -59,15 +56,14 @@ function readStatus(text, { line, ctx }) {
 // cost: time O(k), heap O(k), stack O(1)
 // vars: k = keep 항목 수
 // basis: estimate
-// `keep="값, 값"`. 값 이름 꼴이 아닌 항목, 같은 이름 두 번, 앞 단계가 없는 첫 단계의 keep은 오류다. 이름이 선언됐는지와 참조 값인지는 value-check.js가 확인한다.
+// `keep="값, 값"`. 값 이름 꼴이 아닌 항목, 같은 이름 두 번, 앞 장면이 없는 첫 장면의 keep은 오류다. 이름이 선언됐는지와 참조 값인지는 value-check.js가 확인한다.
 function readKeep(text, { line, ctx }) {
   if (text === undefined) return [];
-  if (ctx.figure.kind !== 'flow') ctx.problems.error(line, 'keep belongs to flow figures only, where value lines declare what is kept');
-  if (!ctx.figure.steps.length) ctx.problems.error(line, 'keep carries values over from the step before, and the first step has none. Remove keep=, since the first step starts from from=');
+  if (!ctx.figure.steps.length) ctx.problems.error(line, 'keep carries values over from the scene before, and the first scene has none. Remove keep=, since the first scene starts from from=');
   const kept = [];
   for (const id of text.split(',').map((item) => item.trim())) {
     if (!ID_PATTERN.test(id)) ctx.problems.error(line, `keep is a list of value names such as keep="a, b". Found "${id}"`);
-    else if (kept.some((k) => k.id === id)) ctx.problems.error(line, `"${id}" is kept twice in one step. Write each value once`);
+    else if (kept.some((k) => k.id === id)) ctx.problems.error(line, `"${id}" is kept twice in one scene. Write each value once`);
     else kept.push({ id, line });
   }
   return kept;
@@ -76,25 +72,21 @@ function readKeep(text, { line, ctx }) {
 // cost: time O(e), heap O(e), stack O(1)
 // vars: e = 식 수
 // basis: estimate
-// 단계 `set="식, 식"`. 단계가 시작할 때 값을 정하므로 `@도형`은 쓸 수 없다.
+// 장면 `set="식, 식"`. 장면이 시작할 때 값을 정하므로 `@도형`은 쓸 수 없다.
 function readStepSets(text, { line, ctx }) {
   if (text === undefined) return [];
-  if (ctx.figure.kind !== 'flow') {
-    ctx.problems.error(line, 'set belongs to flow figures only, where value lines declare what changes');
-    return [];
-  }
   const sets = readSets(text, { line, ctx });
-  if (sets.some((e) => e.at !== undefined)) ctx.problems.error(line, 'a step set applies when the step starts, so it takes no @node. Put @node in a set= of a move or track');
+  if (sets.some((e) => e.at !== undefined)) ctx.problems.error(line, 'a scene set applies when the scene starts, so it takes no @node. Put @node in a set= of a move or track');
   return sets;
 }
 
 // cost: time O(1), heap O(1), stack O(1)
 // basis: estimate
-/** 한 단계에 박자 줄(이동, show, light, say, wait)과 흐름 줄(track)을 섞으면 오류다. 한 단계의 시간이 두 가지 뜻이 되기 때문이다. */
+/** 한 장면에 박자 줄(이동, show, light, wait)과 흐름 줄(track)을 섞으면 오류다. 한 장면의 시간이 두 가지 뜻이 되기 때문이다. */
 export function checkMixedStep(word, line, ctx) {
   const { step, problems } = ctx;
-  if (word === 'track' && step.beats.length) problems.error(line, 'a step takes beats (moves, show, light, say, wait) or tracks, not both. Put the track in its own step');
-  else if (word !== 'track' && step.tracks.length) problems.error(line, `a step with tracks takes no "${word === 'hop' ? 'a -> b' : word}" line. Put it in its own step`);
+  if (word === 'track' && step.beats.length) problems.error(line, 'a scene takes beats (moves, show, light, wait) or tracks, not both. Put the track in its own scene');
+  else if (word !== 'track' && step.tracks.length) problems.error(line, `a scene with tracks takes no "${word === 'hop' ? 'a -> b' : word}" line. Put it in its own scene`);
 }
 
 // cost: time O(t + n·e), heap O(t + n·e), stack O(1)
@@ -167,16 +159,12 @@ function checkLegSum(times, { timeMs, line, ctx }) {
   return false;
 }
 
-// 이름 없이 자동으로 받는 흐름 색의 순서. 첫째 출발지는 브랜드 파랑, 둘째는 보라, 셋째부터는 진한 회색이다.
-const AUTO_TONES = ['brand', 'purple', 'gray'];
-
-// cost: time O(v), heap O(1), stack O(1)
-// vars: v = 점 색 수
+// cost: time O(1), heap O(1), stack O(1)
 // basis: estimate
-// tone을 적지 않은 흐름의 색. 그림 전체에서 출발지 이름마다 AUTO_TONES 순서(브랜드 파랑, 보라, 그다음은 모두 진한 회색)로 받고, 같은 이름은 늘 같은 색이다.
+// tone을 적지 않은 흐름의 색. 그림 전체에서 출발지 이름마다 범주 색 순서(tone.js autoTone)로 받고, 같은 이름은 늘 같은 색이다.
 function toneOfSource(source, ctx) {
   ctx.sourceTones ??= new Map();
-  if (!ctx.sourceTones.has(source)) ctx.sourceTones.set(source, AUTO_TONES[Math.min(ctx.sourceTones.size, AUTO_TONES.length - 1)]);
+  if (!ctx.sourceTones.has(source)) ctx.sourceTones.set(source, autoTone(ctx.sourceTones.size));
   return ctx.sourceTones.get(source);
 }
 

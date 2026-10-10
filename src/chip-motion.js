@@ -1,7 +1,8 @@
+import { roundTo } from './format.js';
 // 이동 하나의 글 상자를 시각마다 재는 도구. 계획(chip-plan.js)과 흐려짐(chip-fade.js), 테스트가 같은 점 위치와 보간을 쓴다.
 import { CHIP_GAP, isOutsideFigure, OVERLAP_SLACK, overlapArea } from './chip.js';
 import { positionAt, timeAtPosition } from './easing.js';
-import { values } from './tokens.js';
+import { values } from './vendor/theme/tokens.js';
 import { pointAlong } from './route.js';
 
 /** 60fps 프레임 하나의 길이(ms). 글 상자 계획과 검증이 이 간격으로 잰다. */
@@ -56,6 +57,8 @@ export function dotAt({ route, hop, dots }, t) {
   if (dots?.has(key)) return dots.get(key);
   const progress = positionAt(Math.min(1, t / hop.ms), hop.pace);
   const point = pointAlong(route, hop.isBack ? 1 - progress : progress);
+  point.x = roundTo(point.x, 9);
+  point.y = roundTo(point.y, 9);
   dots?.set(key, point);
   return point;
 }

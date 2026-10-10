@@ -1,41 +1,27 @@
-data right
-title "쇼핑몰 데이터베이스"
-subtitle "주문은 사용자를, 주문 항목은 주문과 상품을, 결제는 주문을 가리킵니다"
+daphnis 2
+title "쇼핑몰 스키마"
+subtitle "주문은 사용자를, 주문 항목은 주문과 상품을 외래 키로 가리킨다"
 
 table users "users" {
   id bigint pk
-  email varchar
-  created_at timestamp
-}
-table orders "orders" {
-  id bigint pk
-  user_id bigint fk=users.id
-  status varchar
+  email text unique required
 }
 table products "products" {
   id bigint pk
-  name varchar
-  price "numeric(10, 2)"
+  price "numeric(10, 2)" required
+}
+table orders "orders" {
+  id bigint pk
+  user_id bigint fk=users.id required ondelete=restrict
+  status text required
 }
 table order_items "order_items" {
-  order_id bigint fk=orders.id
-  product_id bigint fk=products.id
-  quantity int
-}
-table payments "payments" {
   id bigint pk
-  order_id bigint fk=orders.id
-  amount "numeric(10, 2)"
+  order_id bigint fk=orders.id required ondelete=cascade
+  product_id bigint fk=products.id required
 }
 
-step "주문하기" "주문 행은 주문한 사용자를 가리킵니다"
-  light orders.user_id users.id
-  orders -> users "user_id 7"
-step "항목 담기" "항목 행은 주문과 상품을 가리킵니다"
-  light order_items.order_id orders.id
-  light order_items.product_id products.id
-  order_items -> orders "order_id 1042"
-  order_items -> products "product_id 31"
-step "결제하기" "결제 행은 정산하는 주문을 가리킵니다"
-  light payments.order_id orders.id
-  payments -> orders "order_id 1042"
+view graph down
+
+scene "외래 키" mode=static
+  light orders.user_id order_items.order_id order_items.product_id

@@ -1,18 +1,18 @@
 // 점 위에 뜨는 글 상자의 크기와 자리. 움직이는 SVG, 재생기, 그림 검사가 시간표에 담은 같은 계획을 쓴다(docs/design/playback.md 이동 글).
 import { FIGURE_PAD } from './canvas.js';
 import { FIT_SLACK, measure, wrap } from './measure/fonts.js';
-import { STYLE } from './measure/sizes.js';
-import { values } from './tokens.js';
+import { STYLE } from './measure/texts.js';
+import { values } from './vendor/theme/tokens.js';
 
-const SPACE = values.space;
+const SPACE = values.spacing;
 /** 글 상자와 점 사이 간격 */
-export const CHIP_GAP = SPACE['6'];
+export const CHIP_GAP = SPACE["3"];
 /** 글 상자가 판 위아래 끝에서 떨어져야 하는 거리. 그림 둘레 여백(FIGURE_PAD)이다. */
-export const CHIP_MARGIN = FIGURE_PAD;
+const CHIP_MARGIN = FIGURE_PAD;
 // 이름 글자와 겹친 넓이가 이 값 이하면 겹침 없음으로 본다(잰 글 폭의 반올림 차이)
 export const OVERLAP_SLACK = 0.5;
 /** 글 상자가 도형, 글자, 알약, 다른 선, 그룹 틀에서 떨어져야 하는 최소 간격. 비켜 놓는 자리는 이만큼 띄운다. */
-export const CHIP_CLEAR = SPACE['2'];
+export const CHIP_CLEAR = SPACE["1"];
 // 가리는 것을 비켜 올리거나 내리는 최대 거리
 const LIFT_MAX = CHIP_GAP * 4;
 // 후보 선택 순서 가중치. 점 위 0, 올림 0.3, 점 아래 1, 옆으로 비킴 2(가까움)와 4(멂). 아래 줄의 옆 후보도 이 값에 더해 순서가 섞이지 않는다
@@ -36,13 +36,13 @@ const ROW_TOP = {
 // basis: estimate
 /** 글 상자 크기. 줄은 시간표가 이미 나눴다. */
 export function sizeChip(lines) {
-  const w = Math.max(...lines.map((line) => measure(line, STYLE.chip.size, STYLE.chip.face))) + SPACE['9'];
-  return { w, h: lines.length * STYLE.chip.line + SPACE['4'] };
+  const w = Math.max(...lines.map((line) => measure(line, STYLE.chip.size, STYLE.chip.face))) + SPACE["4-5"];
+  return { w, h: lines.length * STYLE.chip.line + SPACE["2"] };
 }
 
 /** 글 상자 글을 토큰 `size.chip.max-width` 너비의 줄로 나눈다. HTML과 SVG가 같은 줄을 쓴다. */
 export function wrapChip(text) {
-  return wrap(text, values.size.chip['max-width'], STYLE.chip);
+  return wrap(text, values.spacing.figure.chip["max-width"], STYLE.chip);
 }
 
 /** 두 사각형의 겹친 넓이 */
@@ -54,27 +54,13 @@ export function overlapArea(a, b) {
 // vars: a = 피할 사각형 수
 // basis: estimate
 /**
- * 점 point 위의 글 상자 자리. 후보마다 아래 순서로 견주어 가장 나은 것을 쓴다.
- * 1. 그림 안에 있다. 2. 피할 사각형(글자, 도형 테두리, 선 라벨 알약)과 겹치지 않는다(겹치면 겹친 넓이가 작은 쪽). 3. 판 위아래 끝에서 CHIP_MARGIN 이상 떨어진다.
- * 4. 선택 순서는 점 위 그대로, 가리는 것을 비켜 조금 더 올린 자리, 선 반대쪽(점 아래)과 그것을 조금 더 내린 자리, 가리는 사각형의 양 끝에 붙게 옆으로 비킨 자리(점에서 글 상자 반 폭과 간격 안), 그보다 멀리 옆으로 비킨 자리다.
+ * 점 point 위의 글 상자 후보 모두. 후보마다 desc(세로 줄, 가로 기준, 여백 종류)와 그 글 `key`가 있다. 같은 desc는 점이 움직여도 같은 종류의 자리라, chipCandidateAt이 다른 점에서 다시 만든다.
+ * 선택 순서는 점 위 그대로, 가리는 것을 비켜 조금 더 올린 자리, 선 반대쪽(점 아래)과 그것을 조금 더 내린 자리, 가리는 사각형의 양 끝에 붙게 옆으로 비킨 자리(점에서 글 상자 반 폭과 간격 안), 그보다 멀리 옆으로 비킨 자리다.
  * 멀리 비킨 자리는 글 상자가 점에서 떨어져 보이지만, 점이 노드 안에서 출발해 도형을 벗어날 때까지 글 상자를 선을 따라 노드 밖에 두어 점이 따라잡게 하는 마지막 수단이다. 그래도 겹치면 그림 검사(check.js)가 경고한다.
  * 옆으로는 그림 밖으로 나가지 않게 밀어 넣는다. 가장자리 여백(CHIP_GAP)을 지킨 자리가 가리면 여백을 CHIP_CLEAR까지 줄인 자리를 쓴다. 가려지지 않는 자리가 여백보다 앞선다.
- * @param field { scene, avoid }. scene은 { width, height }, avoid는 { x, y, w, h, name }[]
- * @returns { dx, dy, box, isOutside, hits }. dx, dy는 점 위 기본 자리에서 옮긴 양, box는 그림 좌표의 글 상자 사각형이다. hits는 겹친 이름 목록이다
- */
-export function placeChip(point, chip, field) {
-  const best = chipCandidates(point, chip, field).reduce((a, b) => (compare(a.rank, b.rank) <= 0 ? a : b));
-  const { rank, key, desc, ...placed } = best;
-  return placed;
-}
-
-// cost: time O(a²), heap O(a), stack O(1)
-// vars: a = 피할 사각형 수
-// basis: estimate
-/**
- * 점 point 위의 글 상자 후보 모두. 후보마다 desc(세로 줄, 가로 기준, 여백 종류)와 그 글 `key`가 있다. 같은 desc는 점이 움직여도 같은 종류의 자리라, chipCandidateAt이 다른 점에서 다시 만든다.
  * isWide면 가리지 않는 사각형이라도 글 상자 높이 안에 있으면 그 옆 줄을 후보로 더한다(이동 계획용). 점이 다가가면 곧 가릴 사각형 바로 옆 자리를 이동 내내 이어 쓰기 위해서다.
- * @returns { key, desc, dx, dy, box, isOutside, hits, rank }[]. rank는 [그림 밖, 겹친 넓이, 가까운 선 넓이, 위아래 끝 여백 부족, 가장자리 여백 부족, 선택 순서]이고 작을수록 낫다
+ * @param field { scene, avoid, isWide, index }. scene은 { width, height }, avoid는 { x, y, w, h, name }[]
+ * @returns { key, desc, dx, dy, box, isOutside, hits, rank }[]. dx, dy는 점 위 기본 자리에서 옮긴 양, box는 그림 좌표의 글 상자 사각형, hits는 겹친 이름 목록이다. rank는 [그림 밖, 겹친 넓이, 가까운 선 넓이, 위아래 끝 여백 부족, 가장자리 여백 부족, 선택 순서]이고 작을수록 낫다
  */
 export function chipCandidates(point, chip, { scene, avoid = [], isWide = false, index }) {
   const ctx = { point, chip, scene, avoid, isWide, index };
@@ -177,12 +163,12 @@ function candidateAt({ point, chip, scene, avoid, index }, { row, x, order: side
   const box = { x: x - chip.w / 2, y: row.top, w: chip.w, h: chip.h };
   // 선과 그룹 틀은 최소 간격 안에 들어와도 순위만 낮춘다.
   const padded = { x: box.x - CHIP_CLEAR, y: box.y - CHIP_CLEAR, w: box.w + CHIP_CLEAR * 2, h: box.h + CHIP_CLEAR * 2 };
-  const { hits, pillHits, area, nearArea } = overlapsOf({ box, padded }, avoid, index?.near(padded));
+  const { hits, area, nearArea } = overlapsOf({ box, padded }, avoid, index?.near(padded));
   const isOutside = isOutsideFigure(box, scene);
   const isTight = row.top < CHIP_MARGIN - FIT_SLACK || row.top + chip.h > scene.height - CHIP_MARGIN + FIT_SLACK;
   const isCrowded = Math.min(box.x, scene.width - box.x - box.w) < CHIP_GAP - FIT_SLACK;
   const order = row.order + sideOrder + (Math.abs(x - point.x) + Math.abs(row.dy)) * SHIFT_WEIGHT;
-  return { dx: x - point.x, dy: row.dy, box, isOutside, hits, pillHits, rank: [Number(isOutside), area, nearArea, Number(isTight), Number(isCrowded), order], key: desc.key, desc };
+  return { dx: x - point.x, dy: row.dy, box, isOutside, hits, rank: [Number(isOutside), area, nearArea, Number(isTight), Number(isCrowded), order], key: desc.key, desc };
 }
 
 // cost: time O(m), heap O(h), stack O(1)
@@ -191,26 +177,16 @@ function candidateAt({ point, chip, scene, avoid, index }, { row, x, order: side
 // 글 상자와 겹치는 도형, 글자, 알약의 이름과 겹친 넓이 합, 선과 그룹 틀(soft)과 간격을 둔 상자의 겹친 넓이 합. ids는 잴 번호(오름차순)이고 없으면 모두 잰다.
 function overlapsOf({ box, padded }, avoid, ids) {
   const hits = [];
-  const pillHits = [];
   let [area, nearArea] = [0, 0];
   for (let k = 0; k < (ids ? ids.length : avoid.length); k++) {
     const o = avoid[ids ? ids[k] : k];
     if (o.soft) nearArea += overlapArea(padded, o);
     else if (overlapArea(box, o) > OVERLAP_SLACK) {
       hits.push(o.name);
-      if (o.isPill) pillHits.push(o.name);
       area += overlapArea(box, o);
     }
   }
-  return { hits, pillHits, area, nearArea };
-}
-
-// cost: time O(r), heap O(1), stack O(1)
-// vars: r = 순위 항목 수(6)
-// basis: estimate
-function compare(a, b) {
-  for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) return a[i] - b[i];
-  return 0;
+  return { hits, area, nearArea };
 }
 
 /** 사각형이 그림 밖으로 나가는지(잰 글 폭의 반올림 차이는 넘긴다) */

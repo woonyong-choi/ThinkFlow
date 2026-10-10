@@ -1,7 +1,7 @@
 // 구조, 상태, 데이터 관계 그림을 elkjs로 배치한다. 그룹마다 따로 배치하고, 그룹 경계를 넘는 선은 경계마다 연결점을 거친다(docs/design/layout.md).
 import ELK from 'elkjs/lib/elk.bundled.js';
 import { ASPECT_MAX, canvasOf, displayRatio } from '../canvas.js';
-import { values } from '../tokens.js';
+import { values } from '../vendor/theme/tokens.js';
 import { toElk } from './elk.js';
 import { LayoutError } from './error.js';
 import { buildModel } from './model.js';
@@ -17,39 +17,62 @@ const FOLD_TRIES = 4;
 
 let engine;
 
-// cost: time O((2 + FOLD_TRIES)·elk(s + e) + e·d), heap O(s + e·d), stack O(d)
+/** 배치 목표는 표시 배율이 아니므로 그래프 보기가 있는 문서에서만 받는다. */
+export function checkLayoutWidth(figure, width, problems) {
+  if (width === undefined) return;
+  if (!Number.isFinite(width) || width <= 0) problems.error(figure.line, 'layoutWidth must be a positive finite number');
+  if (!figure.views?.some((view) => view.strategy === 'graph')) problems.error(figure.line, 'layoutWidth is only for documents with a graph view');
+}
+
+// cost: time O(elk), heap O(s + e), stack O(1)
+// vars: elk = 배치 시간, s = 도형 수, e = 선 수
+// basis: estimate
+// 구조 그림 배치. 배치가 끝내 실패하면 원인 선의 줄 번호가 있는 오류로 바꿔 알린다(내부 오류로 끝내지 않는다).
+export async function layoutOrFail(figure, sizes, { problems, width }) {
+  try {
+    return await layoutGraph(figure, sizes, width);
+  } catch (error) {
+    if (!(error instanceof LayoutError)) throw error;
+    problems.error(error.line ?? figure.line, `${error.message}. Change a group direction, remove "aspect", or break the cycle into fewer back edges`, { code: 'layout' });
+    return problems.throwIfAny();
+  }
+}
+
+// cost: time O((3 + FOLD_TRIES)·elk(s + e) + e·d), heap O(s + e·d), stack O(d)
 // vars: s = 도형 수, e = 선 수, d = 그룹 깊이, elk = elkjs 층 배치 시간
 // basis: estimate
 /**
  * 그림을 배치한다.
  * @param sizes Map<도형 id, sizeNode 결과>
+ * @param layoutWidth 배치가 들어갈 목표 폭. 표시 배율이나 글자 크기는 바꾸지 않는다
  * @returns { items, groups, edges, width, height }. items는 도형 사각형(배치 사각형과 바깥 여백), edges는 경로 점과 라벨 자리
  */
-export async function layoutGraph(figure, sizes) {
+async function layoutGraph(figure, sizes, layoutWidth = canvasOf(figure)) {
   engine ??= new ELK();
   try {
-    return await place(figure, sizes);
+    return await place(figure, sizes, layoutWidth);
   } catch (first) {
     // 처음 배치가 실패하면 줄 바꿈과 모델 순서 없이 한 번 더 한다. 이것도 실패하면 줄 번호가 있는 배치 오류로 알린다.
     try {
-      return await place({ ...figure, aspect: undefined, safeLayout: true }, sizes);
+      return await place({ ...figure, aspect: undefined, safeLayout: true }, sizes, layoutWidth);
     } catch {
       throw first instanceof LayoutError ? first : new LayoutError(first.message, figure.line);
     }
   }
 }
 
-// cost: time O((2 + FOLD_TRIES)·elk(s + e) + e·d), heap O(s + e·d), stack O(d)
+// cost: time O((3 + FOLD_TRIES)·elk(s + e) + e·d), heap O(s + e·d), stack O(d)
 // vars: s = 도형 수, e = 선 수, d = 그룹 깊이, elk = elkjs 층 배치 시간
 // basis: estimate
 // 배치 한 번. 안전 배치(safeLayout)는 자동 접기와 방향 돌리기를 하지 않는다.
-async function place(figure, sizes) {
+async function place(figure, sizes, layoutWidth) {
   let best = await arrange(figure, sizes);
-  if (best.laid.width > canvasOf(figure) && figure.aspect === undefined && !figure.safeLayout) best = await fitCanvas(figure, sizes, best);
+  const canAdapt = figure.aspect === undefined || layoutWidth < canvasOf(figure);
+  if (best.laid.width > layoutWidth && canAdapt && !figure.safeLayout) best = await fitCanvas({ ...figure, aspect: undefined }, sizes, { flat: best, canvas: layoutWidth });
   const scene = readElk(best.laid, best.model);
   // 제목이 선을 비킬 자리가 없는 그룹은 너비를 넓혀 한 번 더 배치한다(그림 검사 13번).
   const blocked = scene.groups.filter((g) => g.isTitleBlocked).map((g) => g.id);
-  return blocked.length && !figure.wideGroups ? place({ ...figure, wideGroups: new Set(blocked) }, sizes) : scene;
+  return blocked.length && !figure.wideGroups ? place({ ...figure, wideGroups: new Set(blocked) }, sizes, layoutWidth) : scene;
 }
 
 // cost: time O(elk(s + e) + e·d), heap O(s + e·d), stack O(d)
@@ -85,18 +108,18 @@ function hasColumnEdges(figure) {
   return figure.edges.some((e) => e.fromColumn || e.toColumn);
 }
 
-// cost: time O((2 + FOLD_TRIES)·elk(s + e)), heap O(s + e), stack O(d)
+// cost: time O((3 + FOLD_TRIES)·elk(s + e)), heap O(s + e), stack O(d)
 // vars: s = 도형 수, e = 선 수, d = 그룹 깊이, elk = elkjs 층 배치 시간
 // basis: estimate
 /**
  * 한 줄 배치가 캔버스보다 넓을 때 글자 크기를 지키는 배치를 찾는다. 후보 순서는 이렇다.
  * 1. 바깥 방향을 돌린다(right는 down으로). 선이 줄 사이를 돌아오지 않아 접기보다 선이 짧다. 열을 이은 테이블이 있고 이것이 폭에 들지 않으면 열 선을 오른쪽 면으로 모은 묶음 배치도 본다.
  * 2. 자동 비율로 접는다. 폭에 들 때까지 비율을 낮춰 가며 FOLD_TRIES번까지 본다.
+ * 3. 별도의 좁은 목표 폭에서도 넘치면 한 층당 도형 하나인 세로 후보를 비교한다. 관계나 사건 순서는 바꾸지 않는다.
  * 캔버스에 들고 비율이 알맞은 범위(FIT_MIN~FIT_MAX) 안인 첫 후보를 쓴다. 범위 안인 후보가 없으면 캔버스에 드는 후보 가운데 범위에 가장 가까운 것을 쓴다.
  * 캔버스에 드는 후보가 없으면 가장 좁은 배치를 쓰고, 표시 폭만 줄인다(docs/design/layout.md 그림 크기).
  */
-async function fitCanvas(figure, sizes, flat) {
-  const canvas = canvasOf(figure);
+async function fitCanvas(figure, sizes, { flat, canvas }) {
   let narrowest = flat;
   const fitting = [];
   const consider = (candidate) => {
@@ -109,13 +132,24 @@ async function fitCanvas(figure, sizes, flat) {
   if (consider(turned)) return turned;
   // 열을 이은 테이블은 세로로 돌려도 들어오는 선이 왼쪽 면이라 아래 도형이 계단처럼 밀려 폭에 들지 않는다. 선이 모두 오른쪽 면인 묶음 배치로 한 번 더 본다.
   if (hasColumnEdges(figure)) {
-    const bracket = await arrange({ ...figure, direction: TURNED[figure.direction], isBracket: true }, sizes);
-    if (consider(bracket)) return bracket;
+    for (const direction of [TURNED[figure.direction], figure.direction]) {
+      const bracket = await arrange({ ...figure, direction, isBracket: true }, sizes);
+      if (consider(bracket)) return bracket;
+    }
   }
   let aspect = values.scale['fold-aspect'];
   for (let i = 0; i < FOLD_TRIES; i++, aspect *= values.scale['fold-step']) {
     const folded = await arrange({ ...figure, aspect }, sizes);
     if (consider(folded)) return folded;
+  }
+  // 좁은 목표 폭에서 가로 형제가 남으면 한 층에 하나씩 놓는 세로 후보를 비교한다. 도형과 연결은 그대로 ELK에 맡긴다.
+  if (canvas < canvasOf(figure) && narrowest.laid.width > canvas) {
+    consider(await arrange({ ...figure, direction: 'down', aspect: undefined, oneNodePerLayer: true }, sizes));
+    if (narrowest.laid.width > canvas && figure.groups.length) {
+      const grouped = await arrange({ ...figure, direction: 'down', aspect: undefined, oneNodePerLayer: true, compactGroups: true }, sizes);
+      // 그룹까지 길게 풀어도 목표 폭에 들지 않으면 기존 후보를 유지한다.
+      if (grouped.laid.width <= canvas) consider(grouped);
+    }
   }
   return fitting.sort((a, b) => ratioMiss(a.laid, canvas) - ratioMiss(b.laid, canvas))[0] ?? narrowest;
 }

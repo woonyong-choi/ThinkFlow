@@ -17,7 +17,7 @@ export function applyReserve(engine, launch, t) {
   engine.count(1, { line: launch.line, t });
   const before = new Map(launch.reserve.map((e) => [engine.root(e.id), textOf(e.id)]));
   const changed = runAtomicUpdate(launch.reserve, { state, byId, onWrite: engine.noteWrite(t) });
-  noteRowChanges(rows, textOf, { t: msOfTicks(t), isMerged: true });
+  noteRowChanges(rows, textOf, { t: msOfTicks(t) });
   for (const id of changed) engine.reserved.add(engine.root(id));
   engine.run.conditions.reserves?.push({ si: engine.si, line: launch.line, node: launch.node, t: msOfTicks(t), writes: changed.map((id) => ({ id, from: before.get(engine.root(id)), to: textOf(id) })) });
 }

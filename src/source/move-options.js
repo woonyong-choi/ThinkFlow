@@ -1,6 +1,5 @@
 // 이동 줄과 흐름 줄이 함께 쓰는 선택 사항(time=, tone=, set=). 문법 표(grammar.js)의 `hop.*`, `track.*` 항목대로 읽고, 시간과 값 바꾸기 식을 한 규칙으로 해석한다.
 import { parseCondition } from './condition.js';
-import { optionsOf } from './grammar.js';
 import { readOptions } from './options.js';
 import { readSets } from './value.js';
 import { isOverTimeLimit, overLimitMessage, parseTime } from './values.js';
@@ -20,9 +19,7 @@ const LOST_MAX = 100;
  */
 export function readMoveOptions(options, { scope, line, ctx, isStuck = false }) {
   const found = readOptions(options, { scopes: [scope], what: WHAT[scope], line, ctx });
-  const isSetKnown = 'set' in optionsOf(scope) && ctx.figure.kind === 'flow';
-  if (found.set !== undefined && !isSetKnown) ctx.problems.error(line, 'set belongs to flow figures only, where value lines declare what changes');
-  return { found, timeMs: readTime(found.time, { key: 'time', line, ctx }), tone: found.tone, sets: found.set === undefined || !isSetKnown ? [] : readSets(found.set, { line, ctx }), lost: readLost(found.lost, { line, ctx }), condition: readCondition(found, { isStuck, line, ctx }) };
+  return { found, timeMs: readTime(found.time, { key: 'time', line, ctx }), tone: found.tone, sets: found.set === undefined ? [] : readSets(found.set, { line, ctx }), lost: readLost(found.lost, { line, ctx }), condition: readCondition(found, { isStuck, line, ctx }) };
 }
 
 // cost: time O(c), heap O(c), stack O(d)
@@ -30,12 +27,14 @@ export function readMoveOptions(options, { scope, line, ctx, isStuck = false }) 
 // basis: estimate
 // 조건 선택 사항 묶음(`when`, `wait`, `timeout`, `else`, `stuck`, `reserve`). 구조 그림(flow)에서만 쓰고, `timeout`, `else`, `stuck`은 `wait`가 있어야 하며 `else`는 `timeout`이 있어야 한다.
 // `when`이나 `wait`가 있으면 그 단계와 그림이 조건 처리를 거친다고 표시한다. 하나도 안 썼으면 undefined다.
+// 시퀀스 구획(fragment) 안에서는 `when`, `wait`, `reserve`의 시간 계약이 없으므로 그 줄에서 오류다.
 function readCondition(found, { isStuck, line, ctx }) {
   const has = ['when', 'wait', 'timeout', 'else', 'reserve'].filter((key) => found[key] !== undefined);
   if (!has.length && !isStuck) return undefined;
   const { problems } = ctx;
-  if (ctx.figure.kind !== 'flow') {
-    problems.error(line, `${[...has, ...(isStuck ? ['stuck'] : [])].join(', ')} belongs to flow figures only, where values decide what a dot does`);
+  const barred = ['when', 'wait', 'reserve'].filter((key) => found[key] !== undefined);
+  if (ctx.sequenceBlocks?.length && barred.length) {
+    problems.error(line, `${barred.join(', ')} cannot be used inside a fragment. Put the move outside the fragment`);
     return undefined;
   }
   const ids = ctx.figure.values.map((v) => v.id);
@@ -77,10 +76,6 @@ function readReserve(text, { line, ctx }) {
 // `lost=60%`를 경로 전체 길이의 비율(0에서 1)로. `%`가 없거나 0 이상 100 이하가 아니면 오류다. 구조 그림(flow)에서만 쓴다.
 function readLost(text, { line, ctx }) {
   if (text === undefined) return undefined;
-  if (ctx.figure.kind !== 'flow') {
-    ctx.problems.error(line, 'lost belongs to flow figures only, where a dot has a path to be lost on');
-    return undefined;
-  }
   const percent = PERCENT_PATTERN.exec(text);
   if (!percent || Number(percent[1]) > LOST_MAX) {
     ctx.problems.error(line, `lost is a percent from 0% to ${LOST_MAX}% of the path, such as lost=60%. Found "${text}"`);

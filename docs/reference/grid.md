@@ -1,11 +1,11 @@
 # 칸 격자
 
-`grid`는 비트 필드, 배열, 스택, 행렬을 칸 단위로 그립니다. 구조 그림(`flow`) 안에서 도형 하나로 놓이고, 선은 칸 하나에서 나가고 들어옵니다.
+`grid`는 비트 필드, 배열, 스택, 행렬을 칸 단위로 그립니다. 그래프 보기 안에서 카드 하나로 놓이고, 선은 칸 하나에서 나가고 들어옵니다.
 
 ## 최소 예제
 
 ```dap name=minimal
-flow down
+daphnis 2
 title "주소를 둘로 나누기"
 
 grid addr "주소 (8비트)" cols=8 {
@@ -16,11 +16,13 @@ box table "페이지 표"
 
 addr.page -> table "조회"
 
-step "나누기" "윗 5비트는 페이지 번호이고 아랫 3비트는 위치입니다"
-  light addr.page
-  light addr.offset
-step "조회" "페이지 번호가 페이지 표로 갑니다"
-  addr.page -> table
+view graph down
+
+scene "나누기" mode=static
+  light addr.page addr.offset
+
+scene "조회"
+  addr.page -> table time=700ms
 ```
 
 ![주소를 둘로 나누기](grid-minimal.svg)<!-- dap -->
@@ -29,11 +31,11 @@ step "조회" "페이지 번호가 페이지 표로 갑니다"
 
 ## 문법
 
-줄 종류와 선택 사항은 [그림 문법](../design/figure-syntax.md#호환-규칙)의 문법 표가 정본이고, 칸 격자의 줄과 크기와 배치는 [칸 격자](../design/grid.md)에 있습니다.
+줄 종류와 선택 사항은 [그림 문법](../design/figure-syntax.md#문법-표)의 문법 표가 정본이고, 칸 격자의 줄과 크기와 배치는 [칸 격자](../design/grid.md)에 있습니다.
 
-## 단계와 움직임
+## 장면과 움직임
 
-`light 격자.칸`은 칸 하나를 밝히고 `light 격자`는 틀을 밝힙니다. 칸에서 칸으로, 칸에서 도형으로 점이 가는 이동은 `격자.칸 -> 도형`처럼 적습니다. 생략한 칸은 `gap 이름 "글" count=N`으로 적고, 선이나 이동의 끝이나 밝힘 대상이 될 수 없습니다.
+`light 격자.칸`은 칸 하나를 밝히고 `light 격자`는 틀을 밝힙니다. 칸에서 칸으로, 칸에서 카드로 점이 가는 이동은 `격자.칸 -> 카드`처럼 적습니다. 생략한 칸은 `gap 이름 "글" count=N`으로 적고, 선이나 이동의 끝이나 밝힘 대상이 될 수 없습니다. 주소 변환은 [memory 예제](../../examples/memory.dap), 호출 스택은 [stack 예제](../../examples/stack.dap), 노드와 포인터는 [pointer 예제](../../examples/pointer.dap)가 보입니다.
 
 ## 흔한 오류
 

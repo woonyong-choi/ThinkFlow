@@ -5,6 +5,20 @@ import { hrefAttr } from '../href.js';
 import { faviconLinks } from './favicon.js';
 import { THEME_BUTTONS, THEME_SCRIPT } from './theme.js';
 
+const GALLERY_SCRIPT = `<script>
+// 그림 쪽이 알려 준 본문 높이로 iframe 높이를 맞추고(그림 아래 빈 공간을 없애기 위해서다), 새로 뜬 그림에는 현재 테마를 보낸다.
+addEventListener('message', (e) => {
+  const frame = [...document.querySelectorAll('iframe')].find((f) => f.contentWindow === e.source);
+  if (!frame) return;
+  if (typeof e.data?.figureFullscreen === 'boolean') {
+    frame.classList.toggle('full', e.data.figureFullscreen);
+    document.documentElement.classList.toggle('has-full-figure', Boolean(document.querySelector('iframe.full')));
+  }
+  if (e.data?.figureHeight && !frame.classList.contains('full')) frame.style.height = e.data.figureHeight + 'px';
+  if (e.data?.themeRequest) frame.contentWindow.postMessage({ theme: savedTheme() }, '*');
+});
+</script>`;
+
 // cost: time O(n), heap O(n), stack O(1)
 // vars: n = 이름과 제목 글자 수
 // basis: estimate
@@ -41,27 +55,19 @@ export function toGallery(figures, heading) {
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${escapeXml(heading)}</title>
 ${faviconLinks()}
-<style>${STYLES.listingFonts}${STYLES.tokens}${STYLES.control}${STYLES.gallery}</style>
+<style>${STYLES.tokens}${STYLES.control}${STYLES.gallery}</style>
 <script>${THEME_SCRIPT}</script>
 </head>
 <body>
 <div class="top">
 <h1>${escapeXml(heading)}</h1>
 <p>그림 ${figures.length}개 · <a href="document.html">문서 안 모습 보기</a></p>
-<div class="theme" role="group" aria-label="테마">${THEME_BUTTONS}</div>
+<div class="theme app-tablist is-segmented" role="group" aria-label="테마">${THEME_BUTTONS}</div>
 </div>
 <main>
 ${cards}
 </main>
-<script>
-// 그림 쪽이 알려 준 본문 높이로 iframe 높이를 맞추고(그림 아래 빈 공간을 없애기 위해서다), 새로 뜬 그림에는 현재 테마를 보낸다.
-addEventListener('message', (e) => {
-  const frame = [...document.querySelectorAll('iframe')].find((f) => f.contentWindow === e.source);
-  if (!frame) return;
-  if (e.data?.figureHeight) frame.style.height = e.data.figureHeight + 'px';
-  if (e.data?.themeRequest) frame.contentWindow.postMessage({ theme: savedTheme() }, '*');
-});
-</script>
+${GALLERY_SCRIPT}
 </body>
 </html>
 `;
@@ -76,7 +82,7 @@ addEventListener('message', (e) => {
  */
 export function toDocument(figures, heading) {
   const sections = figures
-    .map((f) => `${cardHead(f)}\n<p class="figure"><img src="${hrefAttr(`${f.href}.svg`)}" alt="${escapeXml(plainText(f.title || f.name))}"></p>`)
+    .map((f) => `${cardHead(f)}\n<p class="figure-open"><a href="${hrefAttr(`${pageOf(f)}.html`)}">글자를 크게 보고 재생하기</a></p>\n<p class="figure"><a href="${hrefAttr(`${pageOf(f)}.html`)}" aria-label="${escapeXml(plainText(f.title || f.name))} 크게 보기"><img src="${hrefAttr(`${f.href}.svg`)}" alt="${escapeXml(plainText(f.title || f.name))}"></a></p>`)
     .join('\n');
   return `<!doctype html>
 <html lang="ko">
@@ -85,17 +91,17 @@ export function toDocument(figures, heading) {
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>${escapeXml(heading)} 문서 미리보기</title>
 ${faviconLinks()}
-<style>${STYLES.listingFonts}${STYLES.tokens}${STYLES.control}${STYLES.document}</style>
+<style>${STYLES.tokens}${STYLES.control}${STYLES.document}</style>
 <script>${THEME_SCRIPT}</script>
 </head>
 <body>
 <div class="bar">
 <a href="index.html">목록으로</a>
-<div class="theme" role="group" aria-label="테마">${THEME_BUTTONS}</div>
+<div class="theme app-tablist is-segmented" role="group" aria-label="테마">${THEME_BUTTONS}</div>
 </div>
 <article>
 <h1>${escapeXml(heading)}</h1>
-<p>문서에 넣은 모습 그대로 보는 미리보기다. 그림은 움직이는 SVG 파일을 img로 넣은 것이라 회색 판이 흰 문서 위에서 그림 경계를 만든다.</p>
+<p>문서에 넣는 SVG의 전체 구성을 보는 미리보기입니다. 그림은 화면 폭에 맞춰 전체가 보이고, 전체화면에서는 확대하고 이동할 수 있습니다.</p>
 ${sections}
 </article>
 </body>

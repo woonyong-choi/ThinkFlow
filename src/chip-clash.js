@@ -4,10 +4,10 @@ import { CHIP_FRAME_MS, CHIP_VISIBLE_MIN, chipStateAt } from './chip-motion.js';
 import { OVERLAP_SLACK, overlapArea, sizeChip } from './chip.js';
 import { positionAt } from './easing.js';
 import { flattenRoute } from './route.js';
-import { values } from './tokens.js';
+import { values } from './vendor/theme/tokens.js';
 
 /** 글 상자가 숨고 다시 나타나는 시간(ms). 이동 글 상자 흐려짐 토큰과 같다. */
-export const CHIP_HIDE_FADE_MS = values.duration['chip-fade'];
+const CHIP_HIDE_FADE_MS = values.duration['chip-fade'];
 
 // cost: time O(k), heap O(1), stack O(1)
 // vars: k = 키 수

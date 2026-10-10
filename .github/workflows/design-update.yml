@@ -1,0 +1,68 @@
+name: Apply shared design
+on:
+  push:
+    branches: [build/repo-design-tokens]
+permissions:
+  contents: read
+concurrency:
+  group: daphnis-design-apply
+  cancel-in-progress: false
+jobs:
+  validate:
+    uses: ./.github/workflows/ci.yml
+  merge:
+    needs: validate
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      actions: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Limit automatic changes to design and generated figures
+        run: |
+          git fetch origin main
+          git diff --name-only origin/main...HEAD > changed-files.txt
+          test -s changed-files.txt
+          if grep -Ev '^(src/vendor/theme/|docs/.*\.svg$|docs/design/figure-syntax\.md$)' changed-files.txt; then
+            echo '::error::The update includes renderer source changes.'
+            exit 1
+          fi
+      - name: Merge the verified update and sync homepage
+        env:
+          GH_TOKEN: ${{ github.token }}
+          HEAD_SHA: ${{ github.sha }}
+        run: |
+          pr=$(gh pr list --head build/repo-design-tokens --state open --json number --jq '.[0].number // empty')
+          if test -z "$pr"; then
+            cat > design-pr.md <<'BODY'
+          ## 변경
+          - 공통 디자인 산출물과 이를 사용해 재생성한 문서 그림을 적용한다.
+
+          ## 문서
+          - 문법 안내와 그림은 기존 생성 명령으로 갱신한다.
+
+          ## 검증
+          - Node 20·22 테스트, 토큰·원본·그림 검사와 Action 검증 통과.
+          - 테스트 변경: 없음.
+
+          ## 가정
+          - 이 브랜치는 검증한 공통 디자인 동기화 전용이다.
+
+          ## 확인할 곳
+          - 렌더러 소스가 바뀌면 자동 병합을 중단한다.
+          BODY
+            pr=$(gh pr create --base main --head build/repo-design-tokens --title 'build(repo): 공통 디자인 업데이트 적용' --body-file design-pr.md)
+          fi
+          test "$(gh pr view "$pr" --json headRefOid --jq .headRefOid)" = "$HEAD_SHA"
+          git fetch origin main
+          git merge-base --is-ancestor origin/main "$HEAD_SHA"
+          gh pr merge "$pr" --squash --match-head-commit "$HEAD_SHA" --author-email "$(git log origin/main -1 --format=%ae)" --subject 'build(repo): 공통 디자인 업데이트 적용' --body ''
+          current=$(gh api "repos/$GITHUB_REPOSITORY/git/ref/heads/build/repo-design-tokens" --jq .object.sha)
+          if test "$current" = "$HEAD_SHA"; then
+            gh api --method DELETE "repos/$GITHUB_REPOSITORY/git/refs/heads/build/repo-design-tokens"
+          fi
+          gh workflow run sync-homepage.yml --ref main

@@ -1,17 +1,17 @@
 // 그림 원본을 배치 모형으로 바꾼다. 그룹 나무, 도형, 선 조각을 만든다. 선 하나는 넘는 경계마다 조각 하나가 더해진다(docs/design/layout.md).
 import { walkUp } from '../source/ancestry.js';
-import { values } from '../tokens.js';
+import { values } from '../vendor/theme/tokens.js';
 import { orderByFlow } from './order.js';
 import { isInnerEdge } from './cell-ports.js';
 import { addPort, endpoint } from './ports.js';
 
-const SIZE = values.size;
+const SIZE = values.spacing.figure;
 /** 가장 바깥 그룹의 내부 이름. 원본 이름은 소문자, 숫자, `-`뿐이라 `_`가 든 이 이름과 부딪히지 않는다. */
 export const ROOT = '__root';
 /** 두 좌표가 같다고 보는 거리. 배치 읽기와 그림 검사가 같은 값을 쓴다. */
 export const TOUCH = 0.5;
 /** 같은 면의 선 끝이 이보다 가까워지면 붙어 보인다(그림 검사 5번). 배치도 이 값으로 선 끝을 비킨다. */
-export const CROWD = values.space['2-5'];
+export const CROWD = values.spacing["1-25"];
 
 // cost: time O(s + e·d), heap O(s + e·d), stack O(1)
 // vars: s = 도형 수, e = 선 수, d = 그룹 깊이
@@ -31,7 +31,8 @@ export function buildModel(figure, sizes) {
   const edges = [...marks.filter((e) => e.isStart), ...figure.edges.map((e, i) => ({ ...e, index: i })), ...marks.filter((e) => !e.isStart)];
   const pieces = new Map();
   for (const edge of edges) pieces.set(edge.index, splitEdge(edge, nodes, containers));
-  const model = { containers, nodes, edges, pieces, isSafe: figure.safeLayout === true };
+  // sweep은 박자 이동 글 상자가 선 옆을 쓸고 지나는 폭 Map<선 번호, { x, y }>이다(chip-room.js). 배치 뒤 선 옆에 놓는 그룹 제목과 끝 라벨이 비킨다.
+  const model = { containers, nodes, edges, pieces, isSafe: figure.safeLayout === true, sweep: figure.chipSweep ?? new Map() };
   orderByFlow(model);
   return model;
 }
@@ -49,8 +50,8 @@ function buildContainers(figure) {
 }
 
 // 그룹의 테두리 모양, 배지, 아이콘, 면과 테두리 색 선택 사항. 배치와 그리기가 그룹 이름으로 찾는 값이다.
-export function decorOf({ border, badge, icon, iconData, fill, stroke }) {
-  return { border, badge, icon, iconData, fill, stroke };
+export function decorOf({ border, badge, icon, iconData, tone, appearance }) {
+  return { border, badge, icon, iconData, tone, appearance };
 }
 
 // cost: time O(d), heap O(d), stack O(1)
@@ -67,12 +68,12 @@ function directionOf(parent, containers, figure) {
 // basis: estimate
 // 상태 그림의 처음 점과 끝 겹원을 도형과 선으로 더한다. 이 선은 이동 대상이 아니다.
 function addStateMarks(figure, nodes, containers) {
-  if (figure.kind !== 'state') return;
+  if (!figure.start && !figure.finals.length) return;
   figure.markEdges = [];
   // start가 없으면 처음 점과 그 선을 그리지 않는다.
   const marks = [...(figure.start ? [{ id: '__start', shape: 'start', from: '__start', to: figure.start.id }] : []), ...figure.finals.map((f, i) => ({ id: `__final${i}`, shape: 'final', from: f.id, to: `__final${i}` }))];
   marks.forEach((m, i) => {
-    const size = { w: SIZE.node['state-dot'], h: SIZE.node['state-dot'], marginTop: 0, marginBottom: 0, labelLines: [], subLines: [] };
+    const size = { w: SIZE.node['state-dot'], h: SIZE.node['state-dot'], marginTop: 0, marginBottom: 0 };
     nodes.set(m.id, { id: m.id, shape: m.shape, label: '', size, ports: [], parent: ROOT, direction: figure.direction });
     if (m.shape === 'start') containers.get(ROOT).children.unshift(m.id);
     else containers.get(ROOT).children.push(m.id);

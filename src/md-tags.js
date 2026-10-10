@@ -1,9 +1,9 @@
-// md 명령이 문서의 HTML `<details>` 태그를 세는 규칙(docs/design/markdown.md 원본 접기 절 사용자 details). 파일은 다루지 않는다.
-// 줄 단위로 CommonMark의 블록 구조(인용, 목록 항목, HTML 블록, 문단, 들여쓴 코드)를 따라가며 실제 태그만 센다.
-// 코드 span, 여러 줄 HTML 주석, 백슬래시 이스케이프, 울타리와 들여쓴 코드 안의 태그는 세지 않는다.
+// md 명령이 문서 줄을 CommonMark 블록 구조(인용, 목록 항목, HTML 블록, 문단, 들여쓴 코드, 울타리)로 따라가며 읽는 규칙(docs/design/markdown.md 원본 접기 절 사용자 details). 파일은 다루지 않는다.
+// 한 번의 걸음이 울타리(코드 블록)와 `<details>` 태그를 함께 읽는다. 들여쓴 코드나 HTML 블록(주석 포함) 안의 울타리는 울타리가 아니고, 4칸 넘게 들여쓴 줄은 닫는 울타리가 아니므로 블록 찾기와 태그 세기가 갈라지지 않는다.
+// 줄 단위로 실제 태그만 센다. 코드 span, 여러 줄 HTML 주석, 백슬래시 이스케이프, 울타리와 들여쓴 코드 안의 태그는 세지 않는다.
 // 인용과 목록 항목은 `<details>`를 품는 칸이다. 칸이 끝나면 그 안에서 연 태그도 끝난 것으로 보므로 다른 칸의 태그는 블록의 부모가 아니다.
-// 지원하지 않는 것: 링크 참조 정의, 표 셀 경계, `<script>` 같은 원문 요소 안 태그의 브라우저 해석 차이.
-import { ATTRIBUTE, ATX, CODE_INDENT, QUOTE, SETEXT, THEMATIC, containerStart, dedent, htmlStart, isBlank, width } from './md-blocks.js';
+// 지원하지 않는 것: 링크 참조 정의, 표 셀 경계, `<script>` 같은 원문 요소 안 태그의 브라우저 해석 차이. 목록 표시와 같은 줄에서 여는 울타리(`- ```dap`)는 울타리로 읽지 않는다.
+import { ATTRIBUTE, ATX, CODE_INDENT, FENCE_START, QUOTE, SETEXT, THEMATIC, closesFence, contextOf, containerStart, dedent, htmlStart, isBlank, openingFence, width } from './md-blocks.js';
 
 const RAW_TAG = /<!--|<\/?details(?=[\s/>]|$)/gi;
 const INLINE_TAG = new RegExp(String.raw`<(\/?)details(?:${ATTRIBUTE})*\s*\/?>`, 'iy');
@@ -35,12 +35,9 @@ function codeEnd(text, from) {
 
 // cost: time O(1), heap O(1), stack O(1)
 // basis: estimate
-// 태그 하나를 센다. 앞에서 연 것이 없는데 닫으면 짝 없는 닫기로 기록한다. 이 도구가 만든 감싸기 줄(skip)은 세지 않는다.
+// 태그 하나를 사건으로 적는다. 몇 개나 열려 있는지는 이 도구가 만든 감싸기 줄을 알고 나서 detailsBefore가 센다.
 function count(s, line, kind) {
-  if (s.skip.has(line)) return;
-  if (kind === 'open') s.stack.push(s.containers.at(-1)?.id ?? 0);
-  else if (s.stack.length) s.stack.pop();
-  else if (!s.broken) Object.assign(s, { broken: true, brokenAt: line + 1 });
+  s.events.push({ kind, line, container: s.containers.at(-1)?.id ?? 0 });
 }
 
 // cost: time O(n), heap O(1), stack O(1)
@@ -118,15 +115,12 @@ function addText(s, text, line) {
 // cost: time O(c), heap O(1), stack O(1)
 // vars: c = 닫는 칸 수
 // basis: estimate
-// 앞에서 kept개만 남기고 칸을 닫는다. 닫는 칸에서 연 태그도 끝난다. 문단과 HTML 블록도 끝난다.
+// 앞에서 kept개만 남기고 칸을 닫는다. 닫는 칸에서 연 태그도 끝난다(사건 end). 문단과 HTML 블록도 끝난다.
 function closeFrom(s, kept) {
   if (kept >= s.containers.length) return;
   flush(s);
   s.html = undefined;
-  while (s.containers.length > kept) {
-    const { id } = s.containers.pop();
-    while (s.stack.at(-1) === id) s.stack.pop();
-  }
+  while (s.containers.length > kept) s.events.push({ kind: 'end', container: s.containers.pop().id });
 }
 
 // cost: time O(c·n), heap O(n), stack O(1)
@@ -153,9 +147,9 @@ function matchContainers(s, line) {
 // cost: time O(n), heap O(1), stack O(1)
 // vars: n = 줄 글자 수
 // basis: estimate
-// 인용이나 항목에 이어지지 않은 줄이 앞 문단에 이어 붙는지(lazy continuation). 새 칸이나 블록을 여는 줄은 이어 붙지 않는다.
+// 인용이나 항목에 이어지지 않은 줄이 앞 문단에 이어 붙는지(lazy continuation). 새 칸이나 블록(울타리 포함)을 여는 줄은 이어 붙지 않는다.
 function isLazy(s, rest) {
-  if (!s.para || isBlank(rest) || containerStart(rest, true) || ATX.test(rest) || THEMATIC.test(rest) || htmlStart(rest, true)) return false;
+  if (!s.para || isBlank(rest) || containerStart(rest, true) || ATX.test(rest) || THEMATIC.test(rest) || FENCE_START.test(rest) || htmlStart(rest, true)) return false;
   return true;
 }
 
@@ -168,6 +162,7 @@ function rawLine(s, text, line) {
     s.html = undefined;
     return;
   }
+  s.raw.add(line);
   if (s.html.scan) scanRaw(s, text, line);
   if (s.html.end?.test(text)) s.html = undefined;
 }
@@ -191,21 +186,50 @@ function leaf(s, rest, line) {
     s.html = html;
     return rawLine(s, rest, line);
   }
-  if (width(rest) >= CODE_INDENT && !s.para) return undefined;
+  if (width(rest) >= CODE_INDENT && !s.para) {
+    s.code.add(line);
+    s.raw.add(line);
+    return undefined;
+  }
   return addText(s, rest, line);
+}
+
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+// 울타리 줄 하나를 코드 줄로 적는다.
+function markFenced(s, line) {
+  for (const set of [s.code, s.raw]) set.add(line);
+}
+
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+// 열려 있는 울타리가 이 줄을 담으면 true. 담지 않으면(인용이 끝났다) 울타리를 끝내고 false다. 닫는 울타리 줄이면 울타리를 닫는다.
+function continuesFence(s, line) {
+  const { fence } = s;
+  if (fence.ctx.rest(s.lines[line]) === undefined) {
+    s.fences.push({ ...fence, end: 'quote' });
+    s.fence = undefined;
+    return false;
+  }
+  markFenced(s, line);
+  if (closesFence(s.lines[line], fence)) {
+    s.fences.push({ ...fence, end: 'closed', close: line });
+    s.fence = undefined;
+  }
+  return true;
 }
 
 // cost: time O(c·n), heap O(n), stack O(1)
 // vars: c = 열린 칸 수, n = 줄 글자 수
 // basis: estimate
-// 줄 하나를 읽는다. 울타리 안 줄은 건너뛰고, 여는 울타리 줄은 칸만 갱신하고 블록 앞 상태를 기록한다.
+// 줄 하나를 읽는다. 열린 울타리 안 줄은 울타리가 가져가고, 그 밖의 줄은 칸을 정리한 뒤 울타리를 여는 줄이거나 블록 한 줄이다.
+// 울타리를 여는 줄은 칸만 갱신하고 블록 앞 상태를 사건 block으로 남긴다.
 function feed(s, line) {
-  const opens = s.fences.opens.has(line);
-  if (s.fences.fenced.has(line) && !opens) return;
+  if (s.fence && continuesFence(s, line)) return undefined;
   const { rest, matched } = matchContainers(s, s.lines[line]);
   const all = matched === s.containers.length;
-  if (s.html && all && !opens) return rawLine(s, rest, line);
-  if (!all && !opens && isLazy(s, rest)) return addText(s, rest, line);
+  if (s.html && all) return rawLine(s, rest, line);
+  if (!all && isLazy(s, rest)) return addText(s, rest, line);
   closeFrom(s, matched);
   let remainder = rest;
   for (let start = containerStart(remainder, Boolean(s.para)); start; start = containerStart(remainder, Boolean(s.para))) {
@@ -213,10 +237,13 @@ function feed(s, line) {
     s.containers.push({ ...start.node, id: ++s.ids });
     remainder = start.rest;
   }
-  if (!opens) return leaf(s, remainder, line);
+  const open = openingFence(s.lines[line], s.quotes);
+  if (!open || width(remainder) >= CODE_INDENT) return leaf(s, remainder, line);
   flush(s);
   s.html = undefined;
-  if (s.blocks.has(line)) s.seen.set(line, { depth: s.stack.length, broken: s.broken, brokenAt: s.brokenAt });
+  markFenced(s, line);
+  s.events.push({ kind: 'block', line });
+  s.fence = { ...open, at: line, ctx: contextOf(open), base: Math.max(0, width(open.indent) - width(remainder)) };
   return undefined;
 }
 
@@ -224,14 +251,40 @@ function feed(s, line) {
 // vars: n = 문서 줄 수, c = 열린 칸 수
 // basis: estimate
 /**
+ * 문서 줄을 한 번 따라가며 울타리와 `<details>` 태그를 읽는다. quotes가 false면 인용(`>`) 안 울타리는 울타리가 아니다.
+ * 인용 안 울타리는 인용이 끝나기 전에 닫혀야 한다. 인용 표시 없는 줄을 만나면 울타리가 거기서 끝난다.
+ * @returns { fences, code, raw, events }. fences는 울타리마다 { at, close?, end, leader, quote, indent, char, length, info, ctx, base }(base는 목록 칸이 차지한 칸 수, at, close는 0부터 센 줄 번호, end는 'closed', 'quote'(인용이 먼저 끝남), 'eof'(문서 끝까지 안 닫힘)),
+ *   code는 코드로 읽는 줄 번호 집합(울타리 줄과 들여쓴 코드), raw는 거기에 HTML 블록 줄을 더한 집합(이 도구가 읽거나 바꾸지 않는 줄), events는 detailsBefore가 읽는 태그와 칸 사건이다
+ */
+export function scanDocument(lines, quotes) {
+  const s = { lines, quotes, containers: [], ids: 0, fence: undefined, fences: [], events: [], code: new Set(), raw: new Set(), comment: false };
+  for (let line = 0; line < lines.length; line++) feed(s, line);
+  if (s.fence) s.fences.push({ ...s.fence, end: 'eof' });
+  return { fences: s.fences, code: s.code, raw: s.raw, events: s.events };
+}
+
+// cost: time O(e), heap O(e), stack O(1)
+// vars: e = 사건 수
+// basis: estimate
+/**
  * 블록마다 그 앞까지 열려 있는 사용자 `<details>` 깊이를 읽는다.
- * @param lines 문서 줄(줄바꿈 없음)
- * @param fences findBlocks(lines, true)의 { fenced, opens }. 울타리 안 줄은 세지 않는다
+ * @param events scanDocument의 events(인용 안 울타리까지 읽은 걸음이어야 한다)
  * @param wanted { blocks, skip }. blocks는 깊이를 알고 싶은 블록의 여는 울타리 줄 번호 집합, skip은 이 도구가 만든 감싸기 태그 줄 번호 집합이다
  * @returns 여는 울타리 줄 번호에서 { depth, broken, brokenAt }로. broken은 앞에서 짝 없는 `</details>`를 만났다는 뜻이고 brokenAt은 그 첫 줄 번호(1부터)다
  */
-export function detailsBefore(lines, fences, wanted) {
-  const s = { lines, fences, ...wanted, containers: [], stack: [], seen: new Map(), ids: 0, broken: false, brokenAt: 0, comment: false };
-  for (let line = 0; line < lines.length; line++) feed(s, line);
-  return s.seen;
+export function detailsBefore(events, { blocks, skip }) {
+  const open = [];
+  const seen = new Map();
+  let broken = false;
+  let brokenAt = 0;
+  for (const event of events) {
+    if (event.kind === 'end') while (open.at(-1) === event.container) open.pop();
+    else if (event.kind === 'block') {
+      if (blocks.has(event.line)) seen.set(event.line, { depth: open.length, broken, brokenAt });
+    } else if (skip.has(event.line)) continue;
+    else if (event.kind === 'open') open.push(event.container);
+    else if (open.length) open.pop();
+    else if (!broken) [broken, brokenAt] = [true, event.line + 1];
+  }
+  return seen;
 }

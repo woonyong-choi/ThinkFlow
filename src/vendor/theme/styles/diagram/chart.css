@@ -1,0 +1,278 @@
+/* 차트 글자와 자라는 움직임. 차트 SVG 안에 들어가고, README 이미지에서도 보이게 되풀이한다. */
+.fl .chart-label {
+  font-size: var(--text-tiny-text);
+  fill: var(--color-fg);
+}
+
+.fl .chart-value,
+.fl .chart-tick,
+.fl .chart-unit {
+  font-variant-numeric: tabular-nums;
+  font-size: var(--text-figure-meta);
+  fill: var(--color-muted);
+}
+
+.fl .chart-value {
+  fill: var(--color-fg);
+}
+
+/* 글자 뒤 바탕 면과 받침 선은 차트가 놓인 면의 색이다. 차트 보기는 그림 바탕(설명 판), 차트 카드는 카드 면이다(켜진 카드는 켜진 면). 받는 쪽은 차트 묶음(.fl-chart)의 color를 currentColor로 읽는다. */
+.fl {
+  --chart-ground: var(--color-prose-pre-background);
+}
+
+.fl .fl-node {
+  --chart-ground: var(--fx-face);
+}
+
+.fl .fl-node.on {
+  --chart-ground: var(--fx-face-on);
+}
+
+/* 카드 본문의 차트는 바깥 카드의 강조 면이 아니라 실제로 놓인 본문 면을 따른다. */
+.fl .fl-layer {
+  --chart-ground: var(--color-card);
+}
+
+/* 바탕 색은 차트 묶음의 color로 내려 보낸다. 움직이는 SVG는 켜진 카드에서 이 color만 바꾸고(사용자 정의 속성 keyframes는 시작 때 값이 굳어 테마가 바뀌어도 따라가지 않는다), 받는 쪽은 currentColor로 읽는다. 차트 안에서 color를 정하는 요소(방향선 역할 class)는 받는 쪽을 감싸지 않는다. */
+.fl .fl-chart {
+  color: var(--chart-ground);
+}
+
+/* 값은 별도 바탕 면 위에 그려 작은 크기에서도 획이 글자 안을 덮지 않는다. */
+.fl .chart-text-bg {
+  fill: currentColor;
+}
+
+/* 합이 0이라 비율이 정해지지 않는 원·도넛의 빈 고리는 격자와 같은 중립 선이다. */
+.fl .chart-empty {
+  stroke: var(--color-data-grid);
+  stroke-width: var(--border-width-thin);
+}
+
+.fl .chart-tick {
+  text-anchor: middle;
+}
+
+.fl .chart-unit {
+  text-anchor: end;
+}
+
+.fl .chart-value.start {
+  text-anchor: start;
+}
+
+.fl .chart-value.end {
+  text-anchor: end;
+}
+
+/* 값 글자는 계열과 상관없이 글자색이다. 계열은 막대, 점, 띠 색으로만 전하고 강조 계열(ours, second)은 굵기로만 구분한다. */
+.fl .chart-value.ours,
+.fl .chart-value.second {
+  font-weight: var(--font-weight-semibold);
+}
+
+.fl .chart-name.end {
+  text-anchor: end;
+}
+
+.fl .chart-missing {
+  font-size: var(--text-figure-meta);
+  font-style: italic;
+  fill: var(--color-muted);
+}
+
+.fl .chart-ratio {
+  font-variant-numeric: tabular-nums;
+  font-size: var(--text-tiny-text);
+  font-weight: var(--font-weight-semibold);
+  text-anchor: end;
+  fill: var(--color-fg);
+}
+
+.fl .chart-legend,
+.fl .chart-name,
+.fl .chart-rule-label {
+  font-size: var(--text-figure-meta);
+  fill: var(--color-muted);
+}
+
+.fl .chart-tick.end,
+.fl .chart-rule-label.end {
+  text-anchor: end;
+}
+
+.fl .chart-unit.start {
+  text-anchor: start;
+}
+
+/* 칸 색은 변수로 계산해 다크 모드 heat-low를 따라간다. --s는 칸 강도(0~1)다. 보간은 OKLab이고 fill 속성의 대체 색(chart/oklab.js)과 같다. */
+.fl .chart-heat {
+  fill: color-mix(in oklab, var(--color-data-heat-high) calc(var(--s) * 100%), var(--color-data-heat-low));
+}
+
+/* 누적 조각 안의 계열 번호 키. 글자색과 가장자리 색은 조각의 범주 값을 속성으로 받는다. */
+.fl .chart-seg-key {
+  font-variant-numeric: tabular-nums;
+  font-size: var(--text-figure-meta);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* 끝 이름은 계열의 글자용 색(속성)으로 쓰고 값 글자와 같은 크기의 보통 굵기다(end-labels.js가 regular로 잰다). */
+.fl .chart-end-label {
+  font-size: var(--text-figure-meta);
+}
+
+/* 끝 이름 안내선은 계열 테두리 색(속성)의 가는 선이다. */
+.fl .chart-leader {
+  fill: none;
+  stroke-linejoin: round;
+}
+
+/* 기대값 계열의 선과 범례 선분은 점선이다. 실제값 선에는 쓰지 않는다. */
+.fl .chart-dashed {
+  stroke-dasharray: var(--dash-line) var(--dash-gap);
+}
+
+.fl .chart-pattern {
+  stroke: none;
+}
+
+.fl .chart-cell {
+  --ink: var(--color-data-heat-ink);
+  font-variant-numeric: tabular-nums;
+  font-size: var(--text-figure-meta);
+  text-anchor: middle;
+  fill: var(--ink);
+}
+
+.fl .chart-cell.on {
+  --ink: var(--color-data-heat-ink-on);
+}
+
+.fl .chart-axis,
+.fl .chart-grid {
+  stroke: var(--color-data-grid);
+  stroke-width: var(--border-width-thin);
+}
+
+.fl .chart-zero {
+  stroke: var(--color-muted);
+  stroke-width: var(--border-width-tag);
+}
+
+.fl .chart-break {
+  fill: none;
+  stroke: var(--color-muted);
+  stroke-width: var(--border-width-tag);
+}
+
+.fl .chart-rule {
+  stroke: var(--color-muted);
+  stroke-width: var(--border-width-thin);
+  stroke-dasharray: var(--dash-line) var(--dash-gap);
+}
+
+.fl .chart-whisker,
+.fl .chart-median,
+.fl .chart-ci {
+  stroke: var(--color-figure-data-line);
+  stroke-width: var(--border-width-tag);
+}
+
+.fl .chart-rule-casing {
+  stroke: currentColor;
+  stroke-width: var(--border-width-casing);
+}
+
+.fl .chart-interval {
+  fill: none;
+  stroke: var(--color-muted);
+  stroke-width: var(--border-width-edge);
+}
+
+.fl .chart-band {
+  fill-opacity: var(--opacity-band);
+}
+
+.fl .chart-range {
+  stroke-linecap: round;
+  stroke-opacity: var(--opacity-range);
+}
+
+.fl .chart-after {
+  stroke: currentColor;
+  stroke-width: var(--border-width-tag);
+}
+
+.fl .chart-box {
+  fill: var(--color-node);
+  stroke: var(--color-data-main);
+  stroke-width: var(--border-width-tag);
+}
+
+/* 방향선(덤벨 화살표, 산점도 link)은 몸통과 화살촉이 한 덩어리로 같은 자리에서 나타난다(pop). 둥근 끝은 화살촉 꼭지의 둥근 접합과 이어진다. */
+.fl .chart-arrow,
+.fl .chart-link {
+  stroke: currentColor;
+  stroke-width: var(--border-width-strong);
+  stroke-linecap: round;
+}
+
+/* 방향선의 색 역할(draw/arrow.js CHART_ARROW). 역할 class가 `color`를 한 번 정하고, 그 class를 단 몸통과 같은 class로 감싼 마커 정의(HTML 문서에서는 `.fl` 밖)가 같은 색을 읽는다. */
+.arrow-main {
+  color: var(--color-data-main);
+}
+
+.arrow-muted {
+  color: var(--color-muted);
+}
+
+/* pathLength 1인 선이 stroke-dashoffset으로 그려진다. 선 차트의 선이 쓴다. */
+.fl .draw {
+  stroke-dasharray: 1;
+}
+
+.fl .grow {
+  transform-box: fill-box;
+  transform-origin: left center;
+}
+
+.fl .hidden {
+  opacity: 0;
+}
+
+.fl .dim {
+  opacity: var(--opacity-dim);
+}
+
+/* 글자는 면보다 덜 흐려, 흐린 행에서도 글자가 바탕과 대비 4.5 이상이다(opacity.dim-ink). */
+.fl .ink.dim {
+  opacity: var(--opacity-dim-ink);
+}
+
+/* 계열 보임과 행 흐림은 재생기가 시각마다 정한 상태라 불투명도에 전환을 걸지 않는다(같은 시각의 모습이 실제 시간이나 앞 기록에 따르지 않는다). */
+
+/* 히트맵은 값과 색 강도의 대응을 강조 상태와 무관하게 보존한다. 밝힌 칸은 글자를 굵게 해 구분하고 면 색과 글자 색은 그대로다. */
+.fl .chart-heat-cell.dim,
+.fl .chart-cell.ink.dim {
+  opacity: 1;
+}
+
+/* 굵게 하는 범위는 밝히지 않은 칸이 있는 그 차트 카드뿐이다(한 판의 다른 차트 카드는 받지 않는다). */
+.fl [data-chart]:has(.chart-cell.dim) .chart-cell.ink:not(.dim) {
+  font-weight: var(--font-weight-semibold);
+}
+
+/* 세로 막대는 원시 건수의 최종 높이를 유지하며 움직임 감소 설정을 따른다. */
+@media (prefers-reduced-motion: reduce) {
+  .fl .rise,
+  .fl .chart-waterfall-growth {
+    /* stylelint-disable-next-line declaration-no-important -- SVG의 단계별 keyframes보다 사용자 움직임 설정을 우선한다. */
+    animation: none !important;
+  }
+}
+
+.fl .chart-waterfall-total {
+  font-weight: var(--font-weight-semibold);
+}

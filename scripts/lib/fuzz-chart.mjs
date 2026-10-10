@@ -26,7 +26,7 @@ function intervalWords({ id, value, scale, floor }, rnd) {
 // 막대 차트: 행마다 값, 신뢰구간, 가끔 행 기준(`rule=값`)과 공통 기준선을 섞는다. 계열은 가끔 둘이다.
 function randomBar(rnd, scale) {
   const ids = rnd.next() < TWO_SERIES_CHANCE ? ['a', 'b'] : ['a'];
-  const lines = ['chart bar', 'x "비율(%)"', ...ids.map((id) => `series ${id} "계열 ${id}"`)];
+  const lines = ['x "비율(%)"', ...ids.map((id) => `series ${id} "계열 ${id}"`)];
   if (rnd.next() < SHARED_RULE_CHANCE) lines.push(`rule ${amount(rnd, scale)} "공통"`);
   for (let i = 0; i < CHART_ROWS_MIN + rnd.int(CHART_ROWS_SPREAD); i++) {
     const values = ids.map((id) => ({ id, value: amount(rnd, scale) }));
@@ -39,7 +39,7 @@ function randomBar(rnd, scale) {
 // 차이 차트: 부호가 섞인 값과 신뢰구간, 가끔 모두 0인 값과 음수 기준선
 function randomDifference(rnd, scale) {
   const isFlat = rnd.next() < ALL_ZERO_CHANCE;
-  const lines = ['chart difference', 'x "차이(%p)"', 'series d "차이"'];
+  const lines = ['x "차이(%p)"', 'series d "차이"'];
   if (rnd.next() < SHARED_RULE_CHANCE) lines.push(`rule ${-amount(rnd, scale)} "기준선"`);
   for (let i = 0; i < CHART_ROWS_MIN + rnd.int(CHART_ROWS_SPREAD); i++) {
     const value = isFlat ? 0 : Number((amount(rnd, scale) - amount(rnd, scale)).toFixed(VALUE_DIGITS));
@@ -51,7 +51,7 @@ function randomDifference(rnd, scale) {
 // 선 차트: 가끔 `zero off`를 쓰고, 값 범위를 0 근처 밖(음수 포함)에 둔다. 기준선은 값 범위 안팎을 오간다.
 function randomLine(rnd, scale) {
   const base = amount(rnd, scale) * (rnd.next() < NEGATIVE_BASE_CHANCE ? -1 : 1);
-  const lines = ['chart line', 'y "값(%)"', ...(rnd.next() < ZERO_OFF_CHANCE ? ['zero off'] : []), 'series a "A"'];
+  const lines = ['y "값(%)"', ...(rnd.next() < ZERO_OFF_CHANCE ? ['zero off'] : []), 'series a "A"'];
   if (rnd.next() < SHARED_RULE_CHANCE) lines.push(`rule ${Number((base + amount(rnd, scale / 10)).toFixed(VALUE_DIGITS))} "목표"`);
   for (let i = 0; i < CHART_ROWS_MIN + rnd.int(CHART_ROWS_SPREAD * 5); i++) {
     const value = Number((base + amount(rnd, scale / 10)).toFixed(VALUE_DIGITS));
@@ -63,8 +63,10 @@ function randomLine(rnd, scale) {
 // cost: time O(r), heap O(r), stack O(1)
 // vars: r = 행 수
 // basis: estimate
-// 차트 원본 하나. 종류와 값 크기를 섞어 행 기준, 차이 차트, 0 시작 해제와 기준선 라벨 자리를 시험한다.
+// 차트 카드 선언 하나(`chart c "차트" 종류 { ... }`, 판 줄은 부르는 쪽이 쓴다). 종류와 값 크기를 섞어 행 기준, 차이 차트, 0 시작 해제와 기준선 라벨 자리를 시험한다.
 export function randomChart(rnd) {
   const builders = { bar: randomBar, difference: randomDifference, line: randomLine };
-  return builders[rnd.pick(CHART_TYPES)](rnd, rnd.pick(MAGNITUDES)).join('\n');
+  const type = rnd.pick(CHART_TYPES);
+  const body = builders[type](rnd, rnd.pick(MAGNITUDES));
+  return [`chart c "차트" ${type} {`, ...body.map((line) => `  ${line}`), '}'].join('\n');
 }

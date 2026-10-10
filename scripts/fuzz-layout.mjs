@@ -15,6 +15,8 @@ const KEY_LENGTH = 90;
 // 그림 하나를 만드는 데 허용하는 시간. 보통 수십 ms라 이를 넘으면 배치가 멈춘 것이다.
 const FIGURE_TIME_LIMIT_MS = 5000;
 const HANG_DIR = '.local/fuzz-hang';
+// 판 2 원본의 첫 줄. 무작위 원본은 모두 이 줄로 시작하고 옛 판의 머리 줄(`flow right`)을 만들거나 바꿔 읽는 길은 없다.
+const VERSION_LINE = 'daphnis 2';
 const KINDS = ['flow', 'state', 'data', 'chart'];
 const BUILD_WORKER = new URL('./lib/fuzz-build-worker.mjs', import.meta.url);
 const HANG_MESSAGE = `HANG over ${FIGURE_TIME_LIMIT_MS}ms`;
@@ -197,8 +199,8 @@ function declareEdges(ids, rnd, { kind, cells }) {
 // 표마다 열 둘과, 앞 표를 가리키는 외래 키 열을 가끔 둔다.
 function declareTables(count, rnd) {
   return Array.from({ length: count }, (_, i) => {
-    const target = i > 0 && rnd.next() < FK_CHANCE ? `\n  ref bigint fk=n${rnd.int(i)}.id` : '';
-    return `table n${i} "n${i}" {\n  id bigint pk\n  name varchar${target}\n}`;
+    const target = i > 0 && rnd.next() < FK_CHANCE ? `\n  ref "bigint" fk=n${rnd.int(i)}.id` : '';
+    return `table n${i} "n${i}" {\n  id "bigint" pk\n  name "varchar"${target}\n}`;
   });
 }
 
@@ -206,9 +208,9 @@ function declareTables(count, rnd) {
 // vars: n = 도형 수, m = 선 수
 // basis: estimate
 function randomSource(rnd, { kind, isAspectOff }) {
-  if (kind === 'chart') return randomChart(rnd);
+  if (kind === 'chart') return `${VERSION_LINE}\n${randomChart(rnd)}`;
   const ids = Array.from({ length: NODE_MIN + rnd.int(NODE_SPREAD) }, (_, i) => `n${i}`);
-  const lines = [`${kind} ${rnd.pick(DIRECTIONS)}`];
+  const lines = [VERSION_LINE];
   if (rnd.next() < ASPECT_CHANCE && !isAspectOff) lines.push(`aspect ${rnd.pick(ASPECTS)}`);
   if (kind === 'data') return [...lines, ...declareTables(ids.length, rnd)].join('\n');
   let parts = declareNodes(ids, rnd, kind);

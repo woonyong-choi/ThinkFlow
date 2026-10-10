@@ -1,36 +1,50 @@
-flow right
-title "대화에서 기억 그래프 키우기"
+daphnis 2
+title "가상 주소를 물리 주소로 바꾸기"
+subtitle "8비트 주소의 윗부분은 페이지 표에서 프레임 번호로 바뀌고, 아랫부분은 그대로 이어진다"
 
-person user "사용자"
-group memory "기억 엔진" direction=down {
-  box extract "추출기" "LLM"
-  box resolve "개체 정리" "같은 사람 합치기"
-  store graph "기억 그래프"
+box cpu "CPU" "load 0x4A"
+grid va "가상 주소 (8비트)" cols=8 {
+  item vpn "VPN (5비트)" col=0 cols=5
+  item off "오프셋 (3비트)" col=5 cols=3
 }
-box answer "답변" "질의 시점"
+grid pt "페이지 표" rows=4 cols=3 {
+  item hv "VPN" row=0 col=0
+  item hf "프레임" row=0 col=1
+  item hp "권한" row=0 col=2
+  item v9 "9" row=1 col=0
+  item f9 "4" row=1 col=1
+  item p9 "RW" row=1 col=2
+  item v12 "12" row=2 col=0
+  item f12 "11" row=2 col=1
+  item p12 "R" row=2 col=2
+  gap rest "나머지 항목" row=3 col=0 cols=3 count=29
+}
+grid pa "물리 주소 (8비트)" cols=8 {
+  item pfn "PFN (5비트)" col=0 cols=5
+  item off "오프셋 (3비트)" col=5 cols=3
+}
 
-user -> extract "대화"
-extract -> resolve
-resolve -> graph
-graph -> answer
-user -> answer "질문" quiet
+value loads "처리한 접근" on=cpu
 
-step "첫 대화" "처음 들은 사실로 그래프를 시작한다"
-  user -> extract "민지는 3월에 토스로 옮겼어"
-  show extract "민지" tag="person"
-  show extract "토스" tag="org" meta="3월"
-  extract -> resolve
-  resolve -> graph
-  show graph graph "민지 -> 토스" lit="민지"
-step "다음 대화" "같은 사람이 다른 이름으로 나와도 한 개체로 합친다"
-  user -> extract "김민지가 결제팀을 맡았대"
-  show extract "김민지 = 민지" tag="person"
-  extract -> resolve
-  show resolve "김민지 → 민지" tag="merge" tone=purple
-  resolve -> graph
-  show graph graph "민지 -> 토스; 토스 -> 결제팀; 민지 -> 결제팀" lit="민지, 결제팀"
-step "질문" "질문이 오면 쓰지 않던 선이 나타난다"
-  show graph graph "민지 -> 토스; 토스 -> 결제팀; 민지 -> 결제팀" lit="민지, 결제팀"
-  user -> answer "민지 지금 어디 팀이야?"
-  graph -> answer "민지 → 결제팀"
-  show answer "토스 결제팀" tag="answer" tone=gray mark="✓"
+cpu -> va "load 0x4A" no=1
+va.vpn -> pt.v9 "VPN 9" no=2
+pt.f9 -> pa.pfn "프레임 4" no=3
+va.off -> pa.off "그대로" no=4
+
+view graph down
+
+scene "주소 구조" mode=static
+  light va.vpn va.off pa.pfn pa.off
+
+scene "주소 변환"
+  cpu -> va time=600ms set="loads+1"
+  light va.vpn
+  va.vpn -> pt.v9 time=700ms
+  light pt.f9 pt.p9
+  pt.f9 -> pa.pfn time=700ms
+  light pa.pfn
+  va.off -> pa.off time=700ms
+  light pa.off
+
+scene "연속 접근" mode=loop keep="loads"
+  track cpu -> va at=0s every=1500ms time=900ms set="loads+1"

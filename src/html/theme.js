@@ -6,11 +6,11 @@ const THEME_MODES = [
   ['light', '라이트'],
   ['dark', '다크'],
 ];
+/** 고른 테마를 기억하는 localStorage 키. 목록 쪽이 쓰고, 목록 밖에서 열린 재생 화면도 같은 키를 읽는다. */
+export const THEME_KEY = 'daphnis-theme';
 export const THEME_BUTTONS = THEME_MODES.map(([mode, label]) => `<button type="button" data-mode="${mode}" aria-pressed="false">${label}</button>`).join('');
 export const THEME_SCRIPT = `
-const THEME_KEY = 'daphnis-theme';
-// 옛 이름의 저장 키. 읽기만 하고, 새 키가 없을 때 한 판 동안 이어 받는다.
-const LEGACY_THEME_KEY = 'mutoscope-theme';
+const THEME_KEY = '${THEME_KEY}';
 // cost: time O(1), heap O(1), stack O(1)
 // vars: 단추 3개
 // basis: estimate
@@ -28,7 +28,7 @@ function applyTheme(mode) {
 }
 function savedTheme() {
   try {
-    return localStorage.getItem(THEME_KEY) ?? localStorage.getItem(LEGACY_THEME_KEY);
+    return localStorage.getItem(THEME_KEY);
   } catch {
     return null;
   }

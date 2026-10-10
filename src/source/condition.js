@@ -1,11 +1,10 @@
 // 흐름 조건식(`when="…"`, `wait="…"`)의 자체 파서와 계산기. 값 이름, 숫자, `'낱말'`, 비교, `&&`, `||`, `!`, 괄호만 읽는다.
 // 글자를 코드로 실행하지 않는다(eval, Function 없음). 문법은 docs/design/figure-syntax.md 조건과 대기 절이다.
-import { VALUE_MAX } from './grammar.js';
 import { unknownName } from './problems.js';
 import { NUMBER_PATTERN } from './words.js';
 
 /** 조건식 글자 수 상한. 평가 비용에 상한을 두기 위해서다. */
-export const CONDITION_MAX = 200;
+const CONDITION_MAX = 200;
 
 const COMPARISONS = new Set(['=', '!=', '<', '<=', '>', '>=']);
 const ORDERED = new Set(['<', '<=', '>', '>=']);
@@ -145,10 +144,9 @@ class ConditionParser {
 
 // cost: time O(1), heap O(1), stack O(1)
 // basis: estimate
-// `'낱말'`은 8자 이하의 공백 없는 글자이고 숫자 꼴이면 따옴표 없이 쓴다.
+// `'낱말'`은 공백 없는 글자이고 숫자 꼴이면 따옴표 없이 쓴다. 길이는 값 글자 자리가 실제 글꼴 폭으로 늘어나므로 제한하지 않는다.
 function checkWord(value) {
   if (value === '' || /\s/.test(value)) throw new ConditionError(`a word in a condition has no spaces and is not empty. Found '${value}'`);
-  if ([...value].length > VALUE_MAX) throw new ConditionError(`a word in a condition is at most ${VALUE_MAX} characters. Found '${value}'`);
   if (NUMBER_PATTERN.test(value)) throw new ConditionError(`write the number ${value} without quotes. Quotes make a word`);
   return { kind: 'word', value };
 }

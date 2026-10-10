@@ -1,7 +1,7 @@
 // 사라짐(`lost=60%`)의 경계 판정. 시간표 계산(값, 후광, 선 켜짐, 카드 도착)이 같은 규칙을 쓴다(docs/design/playback.md 사라짐).
 
 /** 경로 길이 비율을 견주는 오차. 퍼센트 글(`62.5%`)을 비율로 바꿀 때 생기는 부동소수점 오차를 같은 값으로 본다. */
-export const LOST_EPSILON = 1e-9;
+const LOST_EPSILON = 1e-9;
 
 // cost: time O(1), heap O(1), stack O(1)
 // basis: estimate

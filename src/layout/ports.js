@@ -1,14 +1,14 @@
 // 도형과 그룹의 연결점. 선 끝이 어디에 닿는지, 몸통 도형의 연결점을 어디에 놓는지를 정한다(docs/design/layout.md 도형 크기와 연결점, 연결점 순서).
-import { values } from '../tokens.js';
+import { values } from '../vendor/theme/tokens.js';
 import { cellPort, circlePort } from './cell-ports.js';
 
-const SIZE = values.size;
+const SIZE = values.spacing.figure;
 const SIDE_OUT = { right: 'EAST', down: 'SOUTH' };
 const SIDE_IN = { right: 'WEST', down: 'NORTH' };
 
-/** 사람과 원통. 바깥 여백까지 배치 사각형에 넣고, 연결점을 몸통 범위에 고정하는 도형이다. */
+/** 원통. 바깥 여백까지 배치 사각형에 넣고, 연결점을 몸통 범위에 고정하는 도형이다. */
 export function isBodyShape(n) {
-  return n.shape === 'person' || n.shape === 'store';
+  return n.shape === 'store';
 }
 
 // 그룹 경계 연결점. 나가는 선은 바깥 방향의 앞쪽 면, 들어오는 선은 뒤쪽 면이다.
@@ -40,11 +40,9 @@ export function endpoint(id, end, nodes) {
 function portSpec(node, end) {
   const { way, edge, flow } = end;
   const column = way === 'out' ? edge.fromColumn : edge.toColumn;
-  if (node.shape === 'table' && column) return columnPort(node, way, column);
+  if ((node.shape === 'table' || node.shape === 'api') && column) return columnPort(node, way, column);
   if (node.shape === 'grid' && (way === 'out' ? edge.fromCell : edge.toCell)) return cellPort(node, end);
   if (node.shape === 'circle') return circlePort(node, way);
-  // 사람과 원통은 바깥 여백(머리, 이름표, 뚜껑)까지 배치 사각형에 넣으므로, 선이 몸통에만 닿도록 모든 선에 연결점을 둔다.
-  if (node.shape === 'person') return { side: way === 'out' ? 'EAST' : 'WEST' };
   if (node.shape === 'decision') return { side: way === 'out' ? 'EAST' : 'WEST', position: { x: way === 'out' ? node.size.w : 0, y: node.size.h / 2 } };
   if (node.shape === 'store') return { side: storeSide(way === 'in' ? flow.direction : node.direction, way) };
   // 그룹 경계를 넘는 선은 도형 자신의 그룹 방향이 선이 놓이는 방향과 다를 때만 선이 놓이는 방향의 면에 닿는다(같으면 elkjs가 같은 면을 고른다).
@@ -59,7 +57,7 @@ function portSpec(node, end) {
 function columnPort(node, way, column) {
   const row = node.columns.findIndex((c) => c.name === column);
   const isEast = way === 'out' || node.isBracket;
-  return { side: isEast ? 'EAST' : 'WEST', position: { x: isEast ? node.size.w : 0, y: node.size.rowH * (row + 1.5) } };
+  return { side: isEast ? 'EAST' : 'WEST', position: { x: isEast ? node.size.w : 0, y: node.size.tableRows[row].center } };
 }
 
 function storeSide(direction, way) {

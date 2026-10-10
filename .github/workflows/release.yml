@@ -37,7 +37,8 @@ jobs:
       - run: npm ci
       - run: npm test
       - run: npm run check
-      - run: node src/cli.js check examples/*.dap docs/assets/*.dap --strict
+      - run: npm run check:sources
+      - run: npm run check:figures
       - name: Publish to npm
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

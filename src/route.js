@@ -1,6 +1,6 @@
 // 경로 점을 SVG path로 바꾼다. 점은 옮기지 않고 꺾이는 모서리만 둥글게 한다.
 import { coord as roundCoord } from './format.js';
-import { values } from './tokens.js';
+import { values } from './vendor/theme/tokens.js';
 
 // 둥근 모서리(곡선)를 직선 몇 개로 펴서 길이를 재는 칸 수
 const CURVE_STEPS = 16;

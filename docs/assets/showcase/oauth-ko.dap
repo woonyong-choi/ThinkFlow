@@ -1,17 +1,21 @@
-sequence
+daphnis 2
 title "OAuth 인가 코드와 PKCE"
+subtitle "사용자가 인가 서버에서 직접 로그인하고, 코드와 원래 비밀값을 함께 내야 토큰을 받는다"
 
 person user "사용자"
 box app "앱"
 box auth "인가 서버"
 external api "리소스 API"
 
-step "인가" "사용자가 인가 서버에서 직접 로그인합니다"
+view sequence {
+  user app auth api
+}
+
+scene "인가와 토큰" mode=static
   user -> app "로그인 누름"
   app -> auth "`authorize` 요청"
-  note auth "`challenge = S256(verifier)`를 저장합니다"
+  note auth "`challenge = S256(verifier)` 저장"
   auth -> app "redirect ?code" dashed
-step "토큰" "코드와 원래 비밀값을 함께 내야 토큰을 줍니다"
   app -> auth "token (code + verifier)"
   auth -> app "`access_token` 발급" dashed
   app -> api "`GET /me` 호출"

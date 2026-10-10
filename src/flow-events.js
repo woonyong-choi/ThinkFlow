@@ -1,7 +1,7 @@
 // 흐름 조건과 대기(`when`, `wait`, `timeout`, `else`)의 이벤트 처리. 값, 조건, 대기를 시간표를 만들 때 한 번 계산한다(docs/design/playback.md 이벤트 순서).
 // 실제 시계, 난수, 재생 상태를 읽지 않는다. 조건을 쓰지 않는 단계는 이 파일을 거치지 않는다(createStepEngine이 불리지 않는다).
 import { eventBudgetError } from './budget.js';
-import { EventHeap, setTargets, stepReads, timeLimitError, typeError } from './event-support.js';
+import { EventHeap, setTargets, timeLimitError, typeError } from './event-support.js';
 import { isPassed } from './lost.js';
 import { evalCondition } from './source/condition.js';
 import { TIME_LIMIT_MS } from './source/values.js';
@@ -9,9 +9,6 @@ import { msOfTicks, TICKS_PER_MS } from './time-grid.js';
 import { applyReserve } from './flow-reserve.js';
 import { noteRowChanges, resetWriters, runUpdate, spansOf, startValues } from './timeline-values.js';
 import { rootOf, valueTable } from './values.js';
-
-/** 이벤트 처리를 시작한 단계 수. 조건을 쓰지 않는 그림에서 0이어야 한다(호출 수 시험이 읽는다). */
-export const engineStats = { steps: 0 };
 
 // 이벤트 시각은 시간표 눈금(0.00001ms)의 정수 번호다. 같은 번호여야 같은 시각이고 반올림하지 않는다(src/time-grid.js).
 // 시간표에 담는 값(변화, 대기, 건너뜀, 교착의 시각)만 ms로 바꾼다.
@@ -45,7 +42,6 @@ class StepEngine {
     this.state = new Map(figure.values.filter((v) => v.ref === undefined).map((v) => [v.id, v.from]));
     this.followers = new Map();
     for (const v of figure.values.filter((value) => value.ref !== undefined)) this.followers.set(this.root(v.id), (this.followers.get(this.root(v.id)) ?? 0) + 1);
-    this.isMerged = figure.hasRead && stepReads(figure, step);
     resetWriters(figure, { writers: run.writers, span: { t0 }, keep: start?.keep });
     if (start) startValues(start, { state: this.state, textOf: this.textOf, byId: this.byId, onWrite: (e) => run.writers.set(this.root(e.id), { line: e.line, at: t0, isSet: true }) });
     this.rows = figure.values.map((v) => ({ si, id: v.id, node: v.on, t0, t1: t0, initial: this.textOf(v.id), changes: [], ...(v.queue ? { slots: v.slots } : {}) }));
@@ -81,9 +77,9 @@ class StepEngine {
    * 점이 도형에 닿는 일은 값을 바꾸지 않아도 이벤트 하나라서, 대기가 남았는데 닿을 점이 있으면 처리할 이벤트가 남은 것이다.
    */
   scheduleArrivals(plan, { launch, startAt }) {
-    const { heap, figure, isMerged } = this;
+    const { heap, figure } = this;
     const at = (k) => startAt + plan.arrivals[k];
-    const push = ({ k, order, ei = 0 }, { kind, exprs, line }) => heap.push({ key: [at(k), 0, kind, launch.order, order, ei], kind: 'update', exprs, line, isMerged });
+    const push = ({ k, order, ei = 0 }, { kind, exprs, line }) => heap.push({ key: [at(k), 0, kind, launch.order, order, ei], kind: 'update', exprs, line });
     for (let k = 1; k < plan.nodes.length && isPassed(plan.fracs[k], plan.lost); k++) {
       push({ k, order: k }, { kind: 2, exprs: [], line: launch.line });
       figure.arrivals.forEach((a, ai) => a.node === plan.nodes[k] && a.sets.length && push({ k, order: ai }, { kind: 0, exprs: a.sets, line: a.line }));
@@ -158,12 +154,10 @@ class StepEngine {
   applyUpdates(items, t) {
     const { state, byId, rows, textOf } = this;
     this.prior.clear();
-    for (const { exprs, line, isMerged } of items) {
+    for (const { exprs, line } of items) {
       this.count(1, { line, t });
-      for (const group of isMerged ? [exprs] : exprs.map((e) => [e])) {
-        runUpdate(group, { state, textOf, byId, onWrite: this.noteWrite(t) });
-        noteRowChanges(rows, textOf, { t: msOfTicks(t), isMerged });
-      }
+      runUpdate(exprs, { state, textOf, byId, onWrite: this.noteWrite(t) });
+      noteRowChanges(rows, textOf, { t: msOfTicks(t) });
     }
     return new Set([...this.prior].filter(([id, text]) => state.get(id) !== text).map(([id]) => id));
   }
@@ -171,22 +165,32 @@ class StepEngine {
   // cost: time O(w·n), heap O(w), stack O(1)
   // vars: w = 대기 수, n = 조건 AST 노드 수
   // basis: estimate
-  // 순위 3: 값이 바뀌었으면 그 값을 읽는 대기를 선언 순서로 다시 평가해 참이면 풀어 출발시키고, 거짓이어도 제한 시간이 지났으면 시간 초과로 끝낸다. 같은 시각에 풀림과 시간 초과가 겹치면 풀림이 이긴다.
+  // 순위 3: 값이 바뀌었으면 그 값을 읽는 대기를 선언 순서로 다시 평가해 참이면 풀어 출발시킨다. 시간 초과는 여기서 정하지 않는다(expireWaits).
   settleWaits(changed, t) {
     for (const entry of [...this.pending].sort((a, b) => a.launch.order - b.launch.order || a.seq - b.seq)) {
       const { launch } = entry;
-      const isRead = entry.roots.some((root) => changed.has(root));
-      if (isRead) this.count(1, { line: launch.line, t });
-      if (isRead && this.test(launch.wait, 'wait', launch)) {
-        this.endWait(entry, { t, end: 'released' });
+      if (!entry.roots.some((root) => changed.has(root))) continue;
+      this.count(1, { line: launch.line, t });
+      if (!this.test(launch.wait, 'wait', launch)) continue;
+      this.endWait(entry, { t, end: 'released' });
+      this.count(1, { line: launch.line, t });
+      this.runLaunch(launch, { t, via: 'release' });
+    }
+  }
+
+  // cost: time O(w), heap O(1), stack O(1)
+  // vars: w = 대기 수
+  // basis: estimate
+  // 이 시각의 처리가 더 일어나지 않을 때 제한 시간이 지난 대기를 시간 초과로 끝내고 `else` 점을 출발시킨다. 같은 시각의 출발이 뒤 회차에 거는 갱신과 `reserve=`가 먼저 대기를 풀 수 있어야
+  // 같은 시각에 풀림과 시간 초과가 겹칠 때 풀림이 이긴다. 시간 초과로 새 이벤트가 생기면 부른 쪽이 이 시각을 한 번 더 돈다.
+  expireWaits(t) {
+    for (const entry of [...this.pending].sort((a, b) => a.launch.order - b.launch.order || a.seq - b.seq)) {
+      if (entry.deadline > t) continue;
+      const { launch } = entry;
+      this.endWait(entry, { t, end: 'timeout' });
+      if (launch.elsePlan) {
         this.count(1, { line: launch.line, t });
-        this.runLaunch(launch, { t, via: 'release' });
-      } else if (entry.deadline <= t) {
-        this.endWait(entry, { t, end: 'timeout' });
-        if (launch.elsePlan) {
-          this.count(1, { line: launch.line, t });
-          this.launchDot(launch, { t, via: 'else' });
-        }
+        this.launchDot(launch, { t, via: 'else' });
       }
     }
   }
@@ -220,20 +224,25 @@ class StepEngine {
   // basis: estimate
   // 한 시각의 이벤트를 위 표의 순위(갱신, 풀린 대기, 출발)로 처리한다. 출발 도형에 닿는 것으로 정한 `@도형` 갱신은 출발과 같은 시각이라,
   // 처리가 새 이벤트를 같은 시각에 더하면 같은 시각을 한 번 더 돈다. 이 연쇄는 chain 예산이 끊는다.
+  // 시간 초과는 이 시각의 회차가 모두 끝난 뒤에 정한다(expireWaits). 시간 초과로 새 이벤트가 생기면 그 회차를 다시 돈다.
   processSlot(t) {
     if (t > TICK_LIMIT) throw timeLimitError(this.heap.peek(), this.step);
     this.chain = 0;
     this.lastT = t;
+    const isBusy = () => (this.dropStale() && this.heap.peek().key[0] === t) || this.reserved.size > 0;
     do {
-      const items = [];
-      while (this.heap.size && this.heap.peek().key[0] === t) items.push(this.heap.pop());
-      const updates = items.filter((item) => item.kind === 'update');
-      // 예약이 바꾼 값을 읽는 대기도 같은 시각에 다시 평가한다(원자 예약). 예약이 남기면 이 시각을 한 번 더 돈다.
-      const changed = new Set([...(updates.length ? this.applyUpdates(updates, t) : []), ...this.reserved]);
-      this.reserved.clear();
-      this.settleWaits(changed, t);
-      this.runDepartures(items.filter((item) => item.kind === 'depart'), t);
-    } while ((this.dropStale() && this.heap.peek().key[0] === t) || this.reserved.size > 0);
+      do {
+        const items = [];
+        while (this.heap.size && this.heap.peek().key[0] === t) items.push(this.heap.pop());
+        const updates = items.filter((item) => item.kind === 'update');
+        // 예약이 바꾼 값을 읽는 대기도 같은 시각에 다시 평가한다(원자 예약). 예약이 남기면 이 시각을 한 번 더 돈다.
+        const changed = new Set([...(updates.length ? this.applyUpdates(updates, t) : []), ...this.reserved]);
+        this.reserved.clear();
+        this.settleWaits(changed, t);
+        this.runDepartures(items.filter((item) => item.kind === 'depart'), t);
+      } while (isBusy());
+      this.expireWaits(t);
+    } while (isBusy());
   }
 
   // cost: time O(n·log n), heap O(1), stack O(1)
@@ -273,7 +282,7 @@ class StepEngine {
   // cost: time O(w), heap O(w), stack O(1)
   // vars: w = 값 수
   // basis: estimate
-  /** 단계가 끝난 시각 t1로 값 줄을 마무리한다. 값 줄마다 값이 보이는 구간(periods)과 밝히는 구간(flashes)이 붙는다. */
+  /** 단계가 끝난 시각 t1로 값 줄을 마무리한다. 값 줄마다 값이 보이는 구간(periods)이 붙는다. */
   finish(t1) {
     return this.rows.map((row) => {
       const done = { ...row, t1 };
@@ -290,6 +299,5 @@ class StepEngine {
  * @param args { figure, step, si, t0, start, run }. t0는 단계 시작 시각(그림 전체 ms), start는 단계 시작 값(`keep`, 단계 `set=`)이고 run은 시간표를 지나며 이어지는 값 { limits, conditions, writers }다
  */
 export function createStepEngine(args) {
-  engineStats.steps++;
   return new StepEngine(args);
 }

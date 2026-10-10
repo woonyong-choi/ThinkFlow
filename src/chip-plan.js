@@ -1,3 +1,4 @@
+import { roundTo } from './format.js';
 // 이동 하나의 글 상자 계획. 자리 바꿈을 가장 적게 하고, 꼭 바꿔야 하면 짧게 미끄러지고, 그것도 안 되면 그 구간만 흐리게 한다(docs/design/playback.md 이동 글).
 import { CHIP_GAP, chipCandidateAt, chipCandidates, descOf, sizeChip } from './chip.js';
 import { resolveBudget, indexBudgetError } from './budget.js';
@@ -7,10 +8,7 @@ import { cutPath, dotAt, NODE_MS, visibleShare } from './chip-motion.js';
 import { addSlides, SWITCH_COST } from './chip-slide.js';
 import { positionAt } from './easing.js';
 import { flattenRoute } from './route.js';
-import { values } from './tokens.js';
-
-export { CHIP_FRAME_MS, CHIP_VISIBLE_MIN, chipStateAt } from './chip-motion.js';
-export { CHIP_STEP_MAX } from './chip-slide.js';
+import { values } from './vendor/theme/tokens.js';
 
 // 글 상자와 점 사이가 이보다 멀면 떨어졌다고 본다(가리는 것을 비켜 올린 최대 거리까지는 붙은 것이다)
 const DETACH_GAP = CHIP_GAP * 2 + CHIP_GAP * 4;
@@ -22,13 +20,11 @@ const MARGIN_COST = 500;
 const ORDER_COST = 100;
 // 계획을 세울 때 이동 시간의 상한(ms). 이보다 긴 이동은 이 시간짜리 이동으로 계획을 세운다. 계획 지점과 후보는 이 시간에 비례해 늘므로 상한이 없으면 메모리가 이동 시간에 비례한다.
 // 계획 경로는 이동 진행 비율로 담고 점의 위치도 진행 비율의 함수라서, 같은 계획이 긴 이동에도 그대로 맞는다. 예제 가운데 가장 긴 이동(13.4초)보다 길어 기존 그림은 바뀌지 않는다.
-export const PLAN_MAX_MS = 20000;
+const PLAN_MAX_MS = 20000;
 // 글 상자(흐름과 박자 이동 모두)는 자기 점에서 이 거리(px, 상자 가장자리와 점 중심) 안에만 둔다. 이를 넘는 후보는 비용을 재지 않고 제외한다(점 옆 기본 자리는 늘 이 안이다)
-const ATTACH_MAX = values.size.packet['chip-reach'];
-// 박자 이동의 글 상자가 보여야 하는 비율의 하한. 못 넘으면 도형 이름을 가리는 자리도 쓴다(선 라벨 알약은 가리지 않는다)
+const ATTACH_MAX = values.spacing.figure.packet["chip-reach"];
+// 박자 이동의 글 상자가 보여야 하는 비율의 하한. 못 넘으면 도형 윤곽을 덮는 자리도 쓴다(글자, 아이콘, 카드와 큐 안, 선 라벨 알약과 상태 알약은 어떤 경우에도 덮지 않는다)
 const SHARE_MIN = values.scale['chip-visible-share'];
-// 보이는 채로 가리는 자리의 비용(겹친 넓이 px²마다). 적게 가리는 자리를 고르게 한다
-const SHOWN_HIT_COST = 1000;
 
 // 이동에 맞춘 계획의 문제 목록. 그림 검사가 같은 계획을 다시 세우지 않고 쓴다. { scene, issues }
 const plannedIssues = new WeakMap();
@@ -82,7 +78,7 @@ export function issuesOfHop(scene, hop, avoid) {
  * 흐름(track) 이동은 이어 붙인 경로 hop.route를 따라가고, 지나는 선 모두(hop.edges)를 피할 대상에서 뺀다.
  * @returns { path, issues }. path는 이동 진행 비율 at(오름차순)마다 [at, dx, dy, opacity]이고, issues는 지점마다 { at, isOutside, hits }다
  */
-export function planChip(scene, realHop, avoid) {
+function planChip(scene, realHop, avoid) {
   return planWithin(scene, realHop, { avoid, limits: resolveBudget() });
 }
 
@@ -92,23 +88,24 @@ export function planChip(scene, realHop, avoid) {
 // planChip과 같고, 올린 예산(limits)으로 색인 예산을 검사한다. 그림을 만드는 쪽(planHops)이 쓴다.
 function planWithin(scene, realHop, { avoid, limits }) {
   const hop = realHop.ms > PLAN_MAX_MS ? { ...realHop, ms: PLAN_MAX_MS } : realHop;
-  const plan = planWith(scene, hop, { avoid, limits, isRelaxed: false });
+  const plan = planWith(scene, hop, { avoid, limits, isFallback: false });
   if (hop.track !== undefined) return plan;
   const move = { route: hop.route ?? flattenRoute(scene.edges[hop.edge].points), hop, chip: sizeChip(hop.data) };
   if (visibleShare(move, plan.path) >= SHARE_MIN) return plan;
-  // 박자 이동의 글은 정보라서, 깨끗한 자리가 모자라 숨는 시간이 길면 도형 이름을 가리더라도 점 옆에 보인다.
-  const shown = planWith(scene, hop, { avoid, limits, isRelaxed: true });
+  // 박자 이동의 글은 정보라서, 깨끗한 자리가 모자라 숨는 시간이 길면 도형 윤곽(isFrame)을 덮더라도 점 옆에 보인다. 글자, 아이콘, 카드와 큐 안, 알약은 이때도 피한다.
+  const shown = planWith(scene, hop, { avoid, limits, isFallback: true });
   return visibleShare(move, shown.path) > visibleShare(move, plan.path) ? shown : plan;
 }
 
 // cost: time O(n·k·m + L·n·b²·s·m), heap O(n·k), stack O(1)
 // vars: n = 계획 지점 수, k = 자리 종류 수, m = 글 상자 둘레 칸에 걸린 사각형 수, L = 미끄러짐 배수 수(3), b = BEAM, s = 미끄러짐 프레임 수
 // basis: measured npm run perf
-// 계획 한 번. isRelaxed면 선 라벨 알약만 가리면 안 되는 것으로 보고 도형과 글자는 가려도 숨기지 않는다.
-function planWith(scene, hop, { avoid, limits, isRelaxed }) {
+// 계획 한 번. 처음 계획은 윤곽을 포함한 모든 사각형을 피한다. isFallback이면 도형 윤곽(isFrame)만 덮어도 되는 것으로 보고, 글자와 아이콘, 카드와 큐 안(isInner), 알약은 처음 계획과 똑같이 어떤 자리에서도 가리지 않는다.
+function planWith(scene, hop, { avoid, limits, isFallback }) {
   const own = hop.edges ?? [hop.edge];
-  const ctx = { scene, hop, isRelaxed, chip: sizeChip(hop.data), field: avoid.filter((o) => !own.includes(o.edge)), route: hop.route ?? flattenRoute(scene.edges[hop.edge].points), dots: new Map(), frames: new Map() };
-  ctx.hard = ctx.field.filter((o) => !o.soft && (!isRelaxed || o.isPill));
+  const field = avoid.filter((o) => !own.includes(o.edge) && (isFallback ? !o.isFrame : !o.isInner));
+  const ctx = { scene, hop, chip: sizeChip(hop.data), field, route: hop.route ?? flattenRoute(scene.edges[hop.edge].points), dots: new Map(), frames: new Map() };
+  ctx.hard = ctx.field.filter((o) => !o.soft);
   checkIndexBudget(ctx, limits);
   ctx.hardIndex = gridOf(ctx.hard);
   ctx.index = gridOf(ctx.field);
@@ -123,7 +120,8 @@ function planWith(scene, hop, { avoid, limits, isRelaxed }) {
   // 이분 탐색의 오차를 없애 첫 지점은 정확히 0, 끝 지점은 정확히 1로 둔다.
   path[0][0] = 0;
   path.at(-1)[0] = 1;
-  return { path, issues: issuesOf(rest, hop) };
+  const isBeat = hop.track === undefined;
+  return { path, issues: issuesOf(rest, hop, isBeat ? visibleShare({ route: ctx.route, hop, chip: ctx.chip }, path) >= SHARE_MIN : undefined) };
 }
 
 // cost: time O(a), heap O(1), stack O(1)
@@ -154,7 +152,6 @@ function usefulDescs(ctx, times) {
   const known = times.map((t) => {
     const found = new Map();
     for (const c of chipCandidates(dotAt(ctx, t), ctx.chip, { scene: ctx.scene, avoid: ctx.field, isWide: true, index: ctx.index })) {
-      if (ctx.isRelaxed) c.hits = c.pillHits;
       found.set(c.key, c);
       if (!c.isOutside && c.hits.length === 0) descs.set(c.key, c.desc);
     }
@@ -175,9 +172,8 @@ function slotsAt(ctx, t, { descs, known }) {
   descs.forEach((desc, key) => {
     const c = known.get(key) ?? chipCandidateAt(point, ctx.chip, { scene: ctx.scene, avoid: ctx.field, desc, index: ctx.index });
     // c는 이 이동 계획만 쓰는 후보라 그대로 고쳐 쓴다.
-    if (ctx.isRelaxed) c.hits = c.pillHits;
     c.point = point;
-    c.cost = isWithinReach(c.box, point) ? unaryCost(c, point, ctx.isRelaxed) : Infinity;
+    c.cost = isWithinReach(c.box, point) ? unaryCost(c, point) : Infinity;
     c.isClean = !c.isOutside && c.hits.length === 0;
     slots.set(key, c);
   });
@@ -188,7 +184,7 @@ function slotsAt(ctx, t, { descs, known }) {
 // basis: estimate
 // 글 상자 사각형과 점 중심 사이 거리(px)
 function gapOf(box, point) {
-  return Math.hypot(Math.max(box.x - point.x, 0, point.x - box.x - box.w), Math.max(box.y - point.y, 0, point.y - box.y - box.h));
+  return roundTo(Math.hypot(Math.max(box.x - point.x, 0, point.x - box.x - box.w), Math.max(box.y - point.y, 0, point.y - box.y - box.h)), 9);
 }
 
 // 글 상자가 점에 붙어 있다고 볼 거리 안인지(흐름의 글 상자 후보 분류)
@@ -197,8 +193,8 @@ const isWithinReach = (box, point) => gapOf(box, point) <= ATTACH_MAX;
 // cost: time O(1), heap O(1), stack O(1)
 // basis: estimate
 // 후보 하나의 한 지점 비용. 겹침이나 그림 밖은 흐려져야 하므로 가장 크다.
-function unaryCost({ rank: [, area, near, tight, crowded, order], box, isOutside, hits }, point, isRelaxed) {
-  const unclean = (isOutside || hits.length ? UNCLEAN_COST : 0) + (isRelaxed ? area * SHOWN_HIT_COST : area * Number(hits.length > 0 || isOutside));
+function unaryCost({ rank: [, area, near, tight, crowded, order], box, isOutside, hits }, point) {
+  const unclean = (isOutside || hits.length ? UNCLEAN_COST : 0) + area * Number(hits.length > 0 || isOutside);
   const gap = gapOf(box, point);
   return unclean + near * NEAR_COST + (tight + crowded) * MARGIN_COST + order * ORDER_COST + Math.max(0, gap - DETACH_GAP) * DETACH_COST_PER_PX;
 }

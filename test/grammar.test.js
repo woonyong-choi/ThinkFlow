@@ -1,293 +1,191 @@
-// 문법: 원본 읽기 규칙, 오류 진단, 판과 폐기, 문법 표와 문서 일치.
-// 근거 표기: 설계 = docs/design 요구사항 표의 행, 계약 = 공개 문법과 진단 모양(figure-syntax.md), 버그 = 재현된 오류(이슈 번호나 커밋).
+// 판 표기와 줄·낱말·이름 규칙. 공개 진입점은 buildFigure(원본) 하나이고, 거절은 줄 번호와 자리가 있는 진단으로만 본다.
+// 시험 이름 첫 낱말(V1~V7)이 요구사항 번호이고, 번호와 계약의 대응은 docs/design/expression-coverage.md의 시험 번호 표에 있다.
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
-import { fileURLToPath } from 'node:url';
-import { buildFigure } from '../src/build.js';
-import { DOC_END, DOC_START, renderGrammarTables } from '../src/source/grammar-doc.js';
-import { KINDS, OPTIONS, STATEMENTS, VALUES, VERSION } from '../src/source/grammar.js';
-import { parseFigure } from '../src/source/parse.js';
-import { docExamples, errorsOf } from './helpers.js';
+import { build, dap, reject, stillDom, textsOf, valueOf } from './support.js';
 
-// 2행 2열 격자를 여는 줄까지(그 뒤에 칸 줄을 이어 쓴다)
-const GRID_OPEN = 'flow right\ngrid g "G" rows=2 cols=2 {\n';
-const BASE = 'flow right\nbox a "A"\nbox b "B"\na -> b\n';
+const CARD = 'box a "A"\n';
 
-// cost: time O(1), heap O(1), stack O(1)
-// basis: estimate
-// 문법 표에 임시 항목을 넣고 일이 끝나면 지운다. 표 한 곳이 파서, 검증, migrate를 모두 움직이는지 보려고 표를 직접 고친다.
-function withEntry(table, name, entry, run) {
-  table[name] = entry;
-  try {
-    return run();
-  } finally {
-    delete table[name];
-  }
-}
-
-const problemsOf = (source) => {
-  try {
-    parseFigure(source);
-    return [];
-  } catch (error) {
-    return error.problems;
-  }
-};
-
-// 근거: 설계 figure-syntax.md, figure-kinds.md, charts.md 요구사항 "문서의 모든 예시 원본이 오류와 경고 없이 읽힌다"
-test('docExamples_every_design_doc_example_builds_without_errors_or_warnings', async () => {
-  // 문서 예시의 경로 "../summary.json"이 test/fixtures/summary.json을 가리키게 하는 기준 폴더다.
-  const baseDir = fileURLToPath(new URL('./fixtures/charts/', import.meta.url));
-
-  for (const { file, source } of docExamples()) {
-    const { warnings } = await buildFigure(source, { baseDir, strict: true });
-
-    assert.deepEqual(warnings, [], `${file}: ${source.split('\n')[0]}`);
+test('V1 the first statement must be "daphnis 2": every other version line is a located error with its own code', async () => {
+  const cases = [
+    ['box a "A"\n', 'missing-version', 1, 1],
+    ['', 'missing-version', undefined, undefined],
+    ['# only a comment\n', 'missing-version', undefined, undefined],
+    [`daphnis 1\n${CARD}`, 'unsupported-version', 1, 9],
+    [`daphnis 3\n${CARD}`, 'unsupported-version', 1, 9],
+    [`daphnis 20\n${CARD}`, 'unsupported-version', 1, 9],
+    [`daphnis 2x\n${CARD}`, 'invalid-version', 1, 9],
+    [`daphnis two\n${CARD}`, 'invalid-version', 1, 9],
+    [`daphnis\n${CARD}`, 'invalid-version', undefined, undefined],
+    [`${CARD}daphnis 2\n`, 'missing-version', 1, 1],
+  ];
+  for (const [source, code, line, column] of cases) {
+    const problems = await reject(source);
+    assert.equal(problems.length, 1, JSON.stringify(source));
+    assert.equal(problems[0].severity, 'error');
+    assert.equal(problems[0].code, code, JSON.stringify(source));
+    if (line !== undefined) assert.deepEqual([problems[0].line, problems[0].column], [line, column], JSON.stringify(source));
+    assert.ok(problems[0].line >= 0 && problems[0].column >= 0);
   }
 });
 
-const MALFORMED = [
-  // 설계 figure-syntax.md 요구사항 "세 부분 순서, 낱말 공백, 이름 형식, 값 형식을 어긴 줄을 줄 번호와 함께 알린다"
-  { rule: '세 부분 순서', source: 'flow right\nbox a "A"\ntitle "t"', expect: /^3: .*must come before the declare part/ },
-  { rule: '낱말 공백: 기호', source: 'flow right\nbox a "A"\nbox b "B"\na->b', expect: /put spaces around "->"/ },
-  { rule: '낱말 공백: 붙은 화살표는 오류 하나(68ec356)', source: 'flow right\nbox a "A"\nbox b "B"\na ->b', expect: ['4: put spaces around "->" in "->b"'] },
-  { rule: '낱말 공백: 선택 사항 등호', source: 'flow right\ngroup g "G" direction= down {\nbox a "A"\n}', expect: /without spaces around "="/ },
-  { rule: '이름 형식: 끝 대시와 겹 대시', source: 'flow right\nbox a- "A"\nbox b--c "B"', expect: /not a valid name/, count: 2 },
-  { rule: '이름 형식: 버린 선언이 이름 없음 오류를 더하지 않음(#5)', source: 'flow right\ngroup a "A" {\n  box Step "나"\n}\nbox c "C"\nStep -> c', count: 1, expect: /^3: "Step" is not a valid name/ },
-  { rule: '이름 형식: 계열 이름 대문자', source: 'chart bar\nseries Quiet "A"\nrow "x" Quiet=1', expect: /^2: "Quiet" is not a valid series name/m },
-  { rule: '이름 형식: 테이블 이름 대문자', source: 'data right\ntable Users "u" {\n  id bigint\n}', expect: /not a valid name/ },
-  { rule: '이름 형식: 열 이름은 글자로 시작', source: 'data right\ntable u "u" {\n  1id bigint\n}', expect: /a column name uses letters/ },
-  { rule: '값 형식: 빈 글(68ec356)', source: 'flow right\nbox a ""\nbox b "B" \nb -> a "  "', expect: /empty/i, count: 2 },
-  { rule: '값 형식: 0인 시간', source: 'flow right\nspeed 0ms\nbox a "A"', expect: /speed as a time/ },
-  { rule: '값 형식: 열 타입의 기호는 따옴표 글(#5)', source: 'data right\ntable t "T" {\n  name varchar(255)\n}', expect: /write a type with symbols as quoted text/ },
-  { rule: '값 형식: 모르는 tone', source: 'flow right\nbox a "A"\nstep "s"\n  show a "x" tag="t" tone=pink', expect: /tone is one of brand, purple, green, gray, red/ },
-  { rule: '값 형식: tag 없는 tone', source: 'flow right\nbox a "A"\nstep "s"\n  show a "x" tone=teal', expect: /tone colors a tag/ },
-  { rule: '값 형식: clear로 시작하는 카드', source: 'flow right\nbox a "A"\nstep "s"\n  clear a', expect: /cannot start with clear/ },
-  { rule: '값 형식: 종류를 모르면 첫 줄 오류만(68ec356)', source: '# 설명\nflo right\nbox a "A\n', count: 1, expect: /./ },
-  { rule: '예상 못한 낱말: 객체 속성 이름이 낱말이어도 죽지 않음(68ec356)', source: 'flow right\nconstructor a "A"', expect: /unknown statement "constructor"/ },
-  // 설계 figure-syntax.md 요구사항 "같은 방향 선 두 개, 자기 자신으로 가는 선, 그룹과 안 도형 사이 선을 막는다"
-  { rule: '선: 같은 방향 두 개', source: 'flow right\nbox a "A"\nbox b "B"\na -> b\na -> b "x"', expect: /already an edge a -> b/ },
-  { rule: '선: 자기 자신', source: 'flow right\nbox a "A"\na -> a', expect: /to itself/ },
-  { rule: '선: 그룹과 안 도형', source: 'flow right\ngroup g "G" {\nbox a "A"\n}\ng -> a', expect: /join a group and a node inside it/ },
-  // 설계 figure-kinds.md 요구사항 "종류 사이 규칙 표의 오류 칸마다 오류를 낸다", "start는 없거나 하나", "외래 키는 pk나 unique 열만"
-  { rule: '종류: 순서 그림의 group', source: 'sequence\nbox a "A"\ngroup g "G" {\n}', expect: /"group" is not allowed in a sequence figure\. Remove the line/ },
-  { rule: '종류: 상태 그림의 show', source: 'state down\nstate a "A"\nstart a\nstep "s"\n  show a "x"', expect: /"show" is not allowed in a state figure/ },
-  { rule: '종류: 열 이름은 데이터 그림에만', source: 'flow right\nbox a "A"\nbox b "B"\na -> b\nstep "s"\n  a.x -> b.y', expect: /names a column, which only data figures have/ },
-  { rule: '종류: 상태 start 둘', source: 'state down\nstate a "A"\nstate b "B"\nstart a\nstart b\na -> b "go"', expect: /already a start state/ },
-  { rule: '종류: 외래 키는 pk나 unique만', source: 'data right\ntable a "a" {\n  id bigint pk\n  name varchar\n}\ntable b "b" {\n  a_name varchar fk=a.name\n}', expect: /pk or unique/ },
-  { rule: '종류: 순서 그림 note는 바로 앞 메시지의 참여자만', source: 'sequence\nbox a "A"\nbox b "B"\nbox c "C"\nstep "s"\n  a -> b "m"\n  note c "x"', expect: /participants of the message above/ },
-  { rule: '종류: 순서 그림은 참여자가 있어야 함(68ec356)', source: 'sequence\nstep "s"\n  wait 1s', expect: ['1: a sequence figure needs at least one participant'] },
-  // 설계 grid.md 요구사항 "칸 자리와 선택 사항을 어긴 원본, 격자 밖 칸, 칸 연결을 줄 번호와 함께 알린다"
-  { rule: '격자: 칸이 겹침', source: `${GRID_OPEN}item a "A" cols=2\n  item b "B" col=1\n}`, expect: /^4: item "b" overlaps item "a" \(line 3\)/ },
-  { rule: '격자: 합친 칸이 아래로 겹침', source: `${GRID_OPEN}item a "A" rows=2\n  gap b "B" count=2 row=1\n}`, expect: /^4: gap "b" overlaps item "a" \(line 3\)/ },
-  { rule: '격자: 행 밖', source: `${GRID_OPEN}item a "A" row=2\n}`, expect: /^3: item "a" ends at row 3 but grid "g" has rows=2/ },
-  { rule: '격자: 열 밖(합친 칸)', source: `${GRID_OPEN}item a "A" col=1 cols=2\n}`, expect: /^3: item "a" ends at column 3 but grid "g" has cols=2/ },
-  { rule: '격자: 크기 0', source: 'flow right\ngrid g "G" rows=0 {\n  item a "A"\n}', expect: /^2: rows is a whole number of 1 or more\. Found "0"/ },
-  { rule: '격자: 소수 인덱스', source: `${GRID_OPEN}item a "A" col=1.5\n}`, expect: /^3: col is a whole number of 0 or more\. Found "1\.5"/ },
-  { rule: '격자: 음수 인덱스', source: `${GRID_OPEN}item a "A" row=-1\n}`, expect: /^3: row is a whole number of 0 or more\. Found "-1"/ },
-  { rule: '격자: 같은 칸 이름', source: `${GRID_OPEN}item a "A"\n  item a "B" col=1\n}`, expect: /^4: the name "a" is already used in grid "g" \(line 3\)/ },
-  { rule: '격자: gap은 count 필수', source: `${GRID_OPEN}gap a "…"\n}`, expect: /^3: a gap needs count=/ },
-  { rule: '격자: item의 모르는 선택 사항', source: `${GRID_OPEN}item a "A" count=3\n}`, expect: /^3: an item takes row=, col=, rows=, cols=\. Found "count"/ },
-  { rule: '격자: 같은 선택 사항 두 번', source: `${GRID_OPEN}item a "A" col=0 col=1\n}`, expect: /^3: "col" is written twice/ },
-  { rule: '격자: 격자 안의 다른 문장', source: `${GRID_OPEN}box a "A"\n  item b "B"\n}`, expect: /^3: a grid holds only item and gap lines/ },
-  { rule: '격자: 격자 밖의 item', source: 'flow right\nitem a "A"', expect: /^2: "item" belongs inside a grid/ },
-  { rule: '격자: 닫지 않음', source: 'flow right\ngrid g "G" {\n  item a "A"', expect: /^2: close grid "g" with "}"/ },
-  { rule: '격자: 칸 없는 격자', source: 'flow right\ngrid g "G" {\n}', expect: /^2: grid "g" has no cells/ },
-  { rule: '격자: 선 끝의 모르는 칸은 가까운 이름을 제안', source: `${GRID_OPEN}  item across "A"\n}\nbox b "B"\nb -> g.acros`, expect: /^6: unknown cell "acros"\. Did you mean "across"\? Declared: across/ },
-  { rule: '격자: gap은 선 끝이 될 수 없음', source: `${GRID_OPEN}  gap a "…" count=2\n}\nbox b "B"\nb -> g.a`, expect: /^6: "g\.a" is a gap, which stands for omitted entries\. Connect an item instead/ },
-  { rule: '격자: 같은 칸으로 가는 선', source: `${GRID_OPEN}  item a "A"\n}\ng.a -> g.a`, expect: /^5: an edge cannot go from "g\.a" to itself/ },
-  { rule: '격자: 칸이 아닌 점 이름', source: `${GRID_OPEN}  item a "A"\n}\nbox b "B"\nb -> g.a.c`, expect: /write a cell as grid\.item\. Found "g\.a\.c"/ },
-  { rule: '격자: 한 격자의 두 칸을 잇는 선은 라벨이 없음', source: `${GRID_OPEN}  item a "A"\n  item b "B" col=1\n}\ng.a -> g.b "x"`, expect: /^6: an edge between two cells of one grid takes no label/ },
-  { rule: '격자: 같은 칸 사이 같은 방향 선 두 개', source: `${GRID_OPEN}  item a "A"\n}\nbox b "B"\nb -> g.a\nb -> g.a "x"`, expect: /already an edge b -> g\.a/ },
-  { rule: '선: head 값은 목록 안', source: 'flow right\nbox a "A"\nbox b "B"\na -> b head=left', expect: /head is one of end, both, none/ },
-  { rule: '선: head 두 번', source: 'flow right\nbox a "A"\nbox b "B"\na -> b head=both head=none', expect: /"head" is written twice/ },
-  { rule: '도형: shape 값은 목록 안', source: 'flow right\nbox a "A" shape=triangle', expect: /shape is one of rect, circle/ },
-  { rule: '도형: 원은 부제가 없음', source: 'flow right\nbox a "A" "부제" shape=circle', expect: /a circle takes a name only/ },
-  { rule: '도형: shape는 box만', source: 'flow right\nstore a "A" shape=circle', expect: /^2: the subtitle must be quoted text/ },
-  { rule: '격자: light에 모르는 칸은 가까운 이름을 제안', source: `${GRID_OPEN}item across "A"\n}\nstep "s"\n  light g.acros`, expect: /unknown cell "acros"\. Did you mean "across"\? Declared: across/ },
-  { rule: '격자: gap은 밝히지 못함', source: `${GRID_OPEN}gap a "…" count=2\n}\nstep "s"\n  light g.a`, expect: /"g\.a" is a gap, which stands for omitted entries/ },
-  { rule: '격자: 카드는 없음', source: `${GRID_OPEN}  item a "A"\n}\nstep "s"\n  show g "x"`, expect: /a grid has no card/ },
-  { rule: '격자: flow에서만', source: 'state right\ngrid g "G" {\n  item a "A"\n}', expect: /"grid" is not allowed in a state figure/ },
-  // 설계 figure-syntax.md 번호, 배지, 아이콘, 복제 개수 절의 오류
-  { rule: '복제 개수는 2 이상', source: 'flow right\nbox a "A" count=1', expect: /count is a whole number of 2 or more/ },
-  { rule: '선 번호는 1 이상 정수', source: 'flow right\nbox a "A"\nbox b "B"\na -> b no=0', expect: /no is a whole number of 1 or more\. Found "0"/ },
-  { rule: '배지는 8자 이하', source: 'flow right\nbox a "A" badge="123456789"', expect: /badge is at most 8 characters/ },
-  { rule: '원은 배지와 아이콘이 없음', source: 'flow right\nbox a "A" shape=circle badge="X"', expect: /a circle takes a name only\. Remove the badge or icon/ },
-  { rule: '배지와 아이콘은 흐름 그림에서만', source: 'sequence\nbox a "A" badge="X"', expect: /^2: badge belongs to flow figures only/ },
-  { rule: '캔버스 폭은 standard나 wide', source: 'flow right\nwidth huge\nbox a "A"', expect: /^2: width is "standard" or "wide"/ },
-  { rule: '타일은 아이콘이 있어야 함', source: 'flow right\nbox a "A" shape=tile', expect: /^2: a tile is an icon card\. Add icon=name/ },
-  { rule: '그룹 테두리는 solid나 dashed', source: 'flow right\ngroup g "G" border=dotted {\nbox a "A"\n}', expect: /border is one of solid, dashed/ },
-  { rule: '아이콘: 모르는 이름은 가까운 이름을 제안', source: 'flow right\nbox a "A" icon=servr', expect: /^2: unknown icon "servr"\. Did you mean "server"\?/ },
-  { rule: '아이콘: 등록하지 않은 세트', source: 'flow right\nbox a "A" icon=nhn:lb', expect: /unknown icon set "nhn"\. .*Register it first: icons nhn/ },
-  { rule: '아이콘: 기본 세트 이름은 등록할 수 없음', source: 'flow right\nicons builtin "x"\nbox a "A"', expect: /"builtin" is the built-in icon set/ },
-  // 설계 charts.md 줄 표: point 줄의 x는 가로값 키
-  { rule: '차트: 선 차트 계열 이름 x', source: 'chart line\nseries x "X"\npoint x=1 x=2', expect: /cannot be named "x"/ },
-];
-
-// 근거: 설계 figure-syntax.md, figure-kinds.md 요구사항 표(위 표의 rule 칸에 행별로 적음)
-test('parseFigure_malformed_source_reports_the_line_and_the_rule', () => {
-  for (const { rule, source, expect, count } of MALFORMED) {
-    const errors = errorsOf(source);
-
-    if (Array.isArray(expect)) assert.deepEqual(errors, expect, rule);
-    else assert.match(errors.join('\n'), expect, rule);
-    if (count) assert.equal(errors.length, count, `${rule}: ${errors.join(' | ')}`);
+test('V1 comments, blank lines, a BOM and Windows line endings may surround the version line', async () => {
+  for (const source of [`# note\n\ndaphnis 2\n${CARD}`, `﻿daphnis 2\n${CARD}`, `daphnis 2\r\n${CARD.replace('\n', '\r\n')}`, `  daphnis 2  # trailing\n${CARD}`]) {
+    assert.deepEqual(textsOf(await stillDom(source)), ['A'], JSON.stringify(source));
   }
 });
 
-const VALID = [
-  // 계약 figure-syntax.md: 이름 자리에서는 예약어를 이름으로 쓴다(#6)
-  { form: '모든 이름 자리의 예약어', source: 'flow right\nbox data "데이터"\nbox store "저장"\nbox q1 "1분기"\nbox step "단계"\nbox title "제목"\ndata -> store\nstep -> q1\nstep "s"\n  show title "x"\n  data -> store' },
-  { form: '데이터 그림의 예약어 이름', source: 'data right\ntable row "행" {\n  id bigint pk\n}\ntable key "키" {\n  id bigint pk\n  row_id bigint fk=row.id\n}\nstep "s"\n  light row.id key' },
-  { form: '상태 그림의 start와 final 이름', source: 'state right\nstate start "시작"\nstate final "끝"\nstart start\nfinal final\nstart -> final "go"\nstep "s"\n  light start' },
-  { form: '순서 그림의 note 이름', source: 'sequence\nbox x "X"\nbox note "N"\nstep "s"\n  x -> note "m"\n  note note "n"' },
-  { form: '선택 사항 낱말 이름', source: 'flow right\nbox quiet "q"\nbox dashed "d"\nquiet -> dashed "x" quiet dashed\nstep "s"\n  quiet -> dashed' },
-  { form: '열 이름 pk와 unique', source: 'data right\ntable pk "t" {\n  pk bigint pk\n  unique varchar unique\n}' },
-  { form: '계열 이름 reveal 낱말', source: 'chart bar\nseries mono "A"\nrow "r" mono=1\nstep "s"\n  reveal mono' },
-  { form: '낱말 daphnis 이름', source: 'flow right\nbox daphnis "도구"\nbox b "B"\ndaphnis -> b\n' },
-  // 계약 figure-syntax.md: 열 이름은 대문자와 예약어를 허용한다(#6)
-  { form: '열 이름 대문자와 외래 키', source: 'data right\ntable users "users" {\n  userId bigint pk\n  createdAt timestamp\n}\ntable posts "posts" {\n  authorId bigint fk=users.userId\n}' },
-  { form: '열 이름 예약어', source: 'data right\ntable orders "orders" {\n  state varchar\n  id bigint pk\n}' },
-  // 계약 figure-syntax.md: start는 없어도 되고 상태는 자기 자신으로 갈 수 있다(#6, d25c8b0)
-  { form: 'start 없는 상태 그림', source: 'state down\nstate a "A"\nstate b "B"\na -> b "go"' },
-  { form: '상태 그림의 자기 전이', source: 'state right\nstate a "A"\nstart a\na -> a "retry"' },
-  // 계약 figure-syntax.md: 주석, 줄바꿈, 공백 (68ec356에서 CR, BOM, 유니코드 공백이 낱말 나누기를 멈추게 했다)
-  { form: '따옴표 밖 #은 주석', source: 'flow right\nbox api "API"# 설명\nbox b "B#1"\napi -> b# 쓰기' },
-  { form: 'CRLF', source: 'flow right\r\nbox a "A"\r\n' },
-  { form: 'BOM', source: '﻿flow right\nbox a "A"' },
-  { form: '유니코드 공백', source: 'flow right\nbox a "A" \nbox　b "B"' },
-  // 설계 grid.md 요구사항 "칸 단위 연결점": 칸을 선 끝으로, head와 shape는 생략하면 지금 뜻이다
-  { form: '칸에서 칸으로 가는 선과 이동', source: 'flow right\ngrid g "G" cols=2 {\n  item a "A"\n  item b "B" col=1\n}\ngrid h "H" {\n  item c "C"\n}\ng.a -> h.c\ng -> h\ng.a -> g.b\nstep "s"\n  g.a -> h.c\n  g.a -> g.b' },
-  { form: '양끝 표식과 원 도형', source: 'flow right\nbox a "A"\nbox sum "⊕" shape=circle\nbox b "B" "부제" shape=rect\na -> sum head=both\nsum -> b head=none\na -> b head=end' },
-  // 설계 grid.md 요구사항 "grid, item, gap을 이름으로 쓴 옛 원본이 문맥으로 구별되어 그대로 읽힌다"(호환 판정 H1)
-  { form: '격자 낱말을 도형 이름으로', source: 'flow right\nbox grid "격자"\nbox item "항목"\nbox gap "간격"\ngrid -> item\nitem -> gap\nstep "s"\n  light grid item\n  grid -> item' },
-  { form: '격자 낱말을 데이터 열 이름으로', source: 'data right\ntable t "t" {\n  grid bigint pk\n  item varchar\n  gap varchar\n}\nstep "s"\n  light t.grid t.item' },
-  { form: '격자 낱말을 칸 이름으로, 칸 이름이 격자마다 같음', source: 'flow right\ngrid grid "격자" cols=2 {\n  item item "A"\n  gap gap "…" count=2 col=1\n}\ngrid item "다른" {\n  item item "B"\n}\nstep "s"\n  light grid.item item.item' },
-  { form: '그룹 안 격자의 rows와 cols 생략', source: 'flow right\ngroup view "화면" {\n  grid g "한 칸" {\n    item only "칸"\n  }\n}' },
-  // 설계 figure-syntax.md 번호, 배지, 아이콘, 복제 개수 절
-  { form: '번호, 배지, 아이콘, 복제 개수', source: 'flow right\nicons mine "x"\ngroup g "G" badge="B" icon=region {\nbox a "A" icon=server\n}\nbox b "B" count=3 badge="BB" icon=mine:chip\na -> b "x" no=1' },
-  { form: '타일과 점선 테두리 그룹', source: 'flow right\ngroup g "G" border=dashed icon=region {\nbox a "A" shape=tile icon=server count=3\n}\nbox b "B"\na -> b no=2' },
-  { form: '낱말 count, no를 이름으로', source: 'flow right\nbox count "L"\nbox no "N"\nbox width "W"\ncount -> no\nno -> width\n' },
-  { form: '새 tone 이름', source: 'flow right\nbox a "A"\nstep "s"\n  show a "x" tag="t" tone=teal' },
-];
-
-// 근거: 계약 figure-syntax.md 문법(예약어 이름, 열 이름, start, 주석, 줄바꿈)과 버그 68ec356, #6
-test('parseFigure_valid_forms_read_without_errors', () => {
-  for (const { form, source } of VALID) assert.deepEqual(errorsOf(source), [], form);
+test('V2 no legacy adapter: old names and removed statements are plain syntax errors with no migration advice', async () => {
+  const removed = [
+    ['step "x"', 'unknown statement'],
+    ['say a "x"', 'unknown statement'],
+    ['flow right', 'unknown statement'],
+    ['sequence', 'unknown statement'],
+    ['speed 2', 'unknown statement'],
+  ];
+  for (const [line, expected] of removed) {
+    const problems = await reject(`daphnis 2\n${CARD}${line}\n`);
+    assert.equal(problems.length, 1, line);
+    assert.equal(problems[0].code, 'syntax');
+    assert.equal(problems[0].line, 3, line);
+    assert.equal(problems[0].column, 1, line);
+    assert.ok(problems[0].message.includes(expected), problems[0].message);
+  }
+  for (const source of ['mutoscope 2\nbox a "A"\n', 'muto 2\nbox a "A"\n']) {
+    for (const problem of await reject(source)) assert.doesNotMatch(problem.message, /migrat|convert|upgrade|renam/i);
+  }
+  // 글이 둘인 장면 줄은 설명 글을 받지 않는다.
+  const scene = await reject(dap(`${CARD}scene "name" "description"\n  a -> a\n`));
+  assert.ok(scene.some((p) => p.line === 3 && p.code === 'syntax'));
 });
 
-// 근거: 설계 figure-syntax.md 요구사항 "선언하지 않은 이름과 비슷한 이름을 함께 알린다"
-test('parseFigure_unknown_name_suggests_the_nearest_declared_name', () => {
-  const errors = errorsOf('flow right\nbox codex "C"\nbox engine "E"\nengine -> cdex');
-
-  assert.match(errors[0], /^4: unknown node "cdex"\. Did you mean "codex"\? Declared: codex, engine$/);
+test('V3 words are separated by spaces: "->" and "=" need the documented spacing, and options cannot repeat', async () => {
+  const cases = [
+    ['box a "A"\nbox b "B"\na->b\n', 4],
+    ['box a "A" icon = server\n', 2],
+    ['box a "A" icon=server icon=db\n', 2],
+    ['box a "A" badge=api\n', 2],
+    ['box a "A" badge="LB"tone=red\n', 2],
+    ['box a "A"\nbox b "B"\na -> b quiet=yes\n', 4],
+    ['box a ""\n', 2],
+    ['box a "   "\n', 2],
+    ['box a "unterminated\n', 2],
+    ['box a "bad \\q escape"\n', 2],
+    ['box a "A" {\n', 2],
+  ];
+  for (const [body, line] of cases) {
+    const problems = await reject(`daphnis 2\n${body}`);
+    assert.ok(problems.some((p) => p.line === line && p.code === 'syntax'), `${JSON.stringify(body)} -> ${JSON.stringify(problems)}`);
+  }
 });
 
-// 근거: 설계 figure-syntax.md 요구사항 "이동은 같은 방향 선을 먼저, 없으면 반대 방향 선을 거꾸로 따라간다"
-test('parseFigure_hop_follows_the_same_direction_edge_first_then_the_reverse_one', () => {
-  const both = parseFigure('flow right\nbox a "A"\nbox b "B"\na -> b\nb -> a\nstep "s"\n  b -> a').figure.steps[0].beats[0].hops[0];
-  const single = parseFigure('flow right\nbox a "A"\nbox b "B"\na -> b\nstep "s"\n  b -> a').figure.steps[0].beats[0].hops[0];
-
-  assert.deepEqual([both.edge, both.isBack], [1, false]);
-  assert.deepEqual([single.edge, single.isBack], [0, true]);
+test('V3 text escapes are exactly \\" and \\\\, and quotes may hold # and unicode', async () => {
+  assert.deepEqual(textsOf(await stillDom(dap(`box a "say \\"hi\\" \\\\ # 한글"\n`))), ['say "hi" \\ # 한글']);
 });
 
-// 근거: 설계 figure-syntax.md 요구사항 "오류를 모두 모아 알리고 파일을 쓰지 않는다"(파일 쓰기는 cli.test.js)
-test('parseFigure_all_errors_are_reported_together', () => {
-  const errors = errorsOf('flow right\nbox Step "S"\nbox a "A"\na -> zz\na->b');
-
-  assert.equal(errors.length, 3);
+test('V4 header lines come first, then declarations, then scenes; going back is an error and a repeated header too', async () => {
+  const cases = [
+    ['box a "A"\ntitle "late"\n', 3],
+    ['title "one"\ntitle "two"\nbox a "A"\n', 3],
+    ['box a "A"\nscene "s" mode=static\n  light a\nbox b "B"\n', 5],
+    ['subtitle "x"\ntitle "y"\nbox a "A"\npace 2s\n', 5],
+  ];
+  for (const [body, line] of cases) {
+    const problems = await reject(`daphnis 2\n${body}`);
+    assert.ok(problems.some((p) => p.line === line), `${JSON.stringify(body)} -> ${JSON.stringify(problems)}`);
+  }
 });
 
-// 근거: 계약 figure-syntax.md 글 안 백틱: 짝이 맞지 않으면 그 줄의 오류
-test('buildFigure_unpaired_backtick_is_an_error_at_its_line', async () => {
-  await assert.rejects(buildFigure('flow\nbox a "가 `x"\n', {}), (error) => /not paired/.test(error.problems[0].message) && error.problems[0].line === 2);
+test('V5 ids are lower-case words joined by single hyphens; one name space covers cards, groups and values', async () => {
+  for (const id of ['A', '1a', 'a-', 'a--b', '-a', 'a_b', 'é']) {
+    const problems = await reject(`daphnis 2\nbox ${id} "A"\n`);
+    assert.ok(problems.some((p) => p.line === 2), id);
+  }
+  for (const id of ['a', 'a1', 'a-b', 'a-b-2']) await build(`daphnis 2\nbox ${id} "A"\n`);
+  const clashes = [
+    'box a "A"\nbox a "B"\n',
+    'box a "A"\nvalue a "n" from=0\n',
+    'box a "A"\nvalue n "n" from=0\nvalue n "m" from=1\n',
+    'box a "A"\ngroup a "G" {\n  box b "B"\n}\n',
+  ];
+  for (const body of clashes) {
+    const problems = await reject(`daphnis 2\n${body}`);
+    assert.ok(problems.some((p) => /already used/.test(p.message)), body);
+  }
 });
 
-// 근거: 계약 figure-syntax.md 진단의 모양 { severity, code, line, column, message }
-test('parseFigure_error_diagnostic_has_severity_code_line_column_and_message', () => {
-  const [error] = problemsOf('flow right\nbox a "A"\na->b');
-
-  assert.deepEqual(error, { severity: 'error', code: 'syntax', line: 3, column: 1, message: 'put spaces around "->" in "a->b"' });
+test('V5 statement and option words can be ids, and a second word "->" makes any first word a move source', async () => {
+  const source = dap(`
+    box data "D"
+    box scene "S"
+    value n "n" on=data from=0
+    table row "R" {
+      id bigint pk
+    }
+    scene -> data
+    scene "go" mode=static
+      scene -> data "send" set="n+1"
+  `);
+  const dom = await stillDom(source);
+  for (const label of ['D', 'S', 'R']) assert.ok(textsOf(dom).includes(label), label);
+  assert.equal(valueOf(dom, 'n'), '1');
 });
 
-// 근거: 계약 figure-syntax.md 호환 규칙 "판": 판 줄이 없으면 판 1, 있으면 그 판으로 읽고, 첫 문장이어야 하며, 이름으로도 쓸 수 있다
-test('parseFigure_version_line_sets_the_version_and_defaults_to_1', () => {
-  assert.equal(parseFigure(BASE).figure.version, 1);
-  const { figure } = parseFigure(`daphnis 1\n# 주석\n${BASE}`);
-  assert.deepEqual([figure.version, figure.kind, figure.line], [1, 'flow', 3]);
-  assert.match(errorsOf(`${BASE}daphnis 1\n`)[0], /^5: the version line/);
-  assert.match(errorsOf('daphnis 1\n')[0], /no figure/);
+test('V6 a mistyped name reports what exists and what was meant', async () => {
+  const problems = await reject(dap(`box codex "Codex"\nbox engine "E"\nengine -> cdex\n`));
+  const unknown = problems.find((p) => /unknown card/.test(p.message));
+  assert.ok(unknown);
+  assert.equal(unknown.line, 4);
+  assert.match(unknown.message, /Did you mean "codex"\?/);
+  assert.match(unknown.message, /Declared: codex, engine/);
 });
 
-// 근거: 계약 figure-syntax.md 호환 규칙: 진단 code unsupported-version, invalid-version, version-required
-test('parseFigure_version_problems_have_a_stable_code', () => {
-  const [unsupported] = problemsOf(`daphnis ${VERSION + 1}\n${BASE}`);
-  assert.equal(unsupported.code, 'unsupported-version');
-  assert.match(unsupported.message, new RegExp(`version ${VERSION + 1}`));
-  for (const line of ['daphnis', 'daphnis 0', 'daphnis one', 'daphnis 1 2', 'daphnis "1"']) assert.equal(problemsOf(`${line}\n${BASE}`)[0].code, 'invalid-version', line);
-  withEntry(STATEMENTS, 'future', { since: VERSION + 1, section: 'declare', kinds: ['flow'] }, () => {
-    const [error] = problemsOf(`${BASE}future x\n`);
-
-    assert.equal(error.code, 'version-required');
-    assert.match(error.message, new RegExp(`daphnis ${VERSION + 1}`));
-  });
+test('V6 every independent error is reported at once, in line order, with the same five fields', async () => {
+  const problems = await reject(dap(`box a ""\nbox b "B" badge=toolongbadge\nstep "x"\nbox c "C" icon = server\n`));
+  assert.deepEqual(problems.map((p) => p.line), [2, 3, 4, 5]);
+  assert.deepEqual(problems.map((p) => p.line), [...problems.map((p) => p.line)].sort((x, y) => x - y));
+  for (const problem of problems) assert.deepEqual(Object.keys(problem).sort(), ['code', 'column', 'line', 'message', 'severity']);
 });
 
-// 근거: 계약 figure-syntax.md 호환 규칙 "폐기": 폐기 값은 새 이름으로 읽고 deprecated 진단과 fix(줄, 열, 길이, 글)를 낸다
-test('parseFigure_deprecated_value_reads_as_its_replacement_and_gives_a_fix', () => {
-  const entry = { since: 1, deprecated: { since: 1, replace: 'purple', note: 'use the new name' } };
-  withEntry(VALUES.tone.items, 'mauve', entry, () => {
-    const { figure, deprecations } = parseFigure(`${BASE}step "s"\n  a -> b\n  show b "x" tag="t" tone=mauve\n`);
-
-    assert.equal(figure.steps[0].beats[0].ops[0].row.tone, 'purple');
-    assert.deepEqual(deprecations.map((d) => [d.severity, d.code, d.line, d.column]), [['deprecated', 'deprecated-value', 7, 27]]);
-    assert.deepEqual(deprecations[0].fix, { line: 7, column: 27, length: 5, text: 'purple' });
-    assert.match(deprecations[0].message, /tone value "mauve" is deprecated since version 1.*Use "purple".*use the new name/);
-  });
+test('V6 a malformed block header or a rejected name is one error: its inner lines and its group add none', async () => {
+  const cases = [
+    'table users {\n  id int pk\n}\n',
+    'api a {\n  id int\n}\n',
+    'class k {\n  field n "int"\n}\n',
+    'group g "G" {\n  grid Bad "x" {\n  }\n}\nbox a "A"\n',
+  ];
+  for (const body of cases) assert.equal((await reject(dap(body))).length, 1, body);
 });
 
-// 근거: 계약 figure-syntax.md 호환 규칙 "폐기": 낱말, 선택 사항 키, 그림 종류도 같은 규칙. 이름 자리의 글은 바꾸지 않는다
-test('parseFigure_deprecated_statement_option_and_kind_read_as_replacements_but_names_are_kept', () => {
-  withEntry(STATEMENTS, 'oldbox', { since: 1, deprecated: { since: 1, replace: 'box' } }, () => {
-    withEntry(OPTIONS, 'group.dir', { since: 1, type: 'word', values: 'direction', deprecated: { since: 1, replace: 'direction' } }, () => {
-      withEntry(KINDS, 'diagram', { since: 1, deprecated: { since: 1, replace: 'flow' }, argument: 'direction' }, () => {
-        const { figure, deprecations } = parseFigure('diagram down\noldbox a "A"\ngroup g "G" dir=right {\n  box b "B"\n}\n');
-        const named = parseFigure('flow right\nbox oldbox "이름"\nbox b "B"\noldbox -> b\n');
-
-        assert.deepEqual([figure.kind, figure.nodes[0].shape, figure.groups[0].direction], ['flow', 'box', 'right']);
-        assert.deepEqual(deprecations.map((d) => d.code), ['deprecated-kind', 'deprecated-statement', 'deprecated-option']);
-        assert.deepEqual([named.figure.nodes[0].id, named.deprecations.length], ['oldbox', 0]);
-      });
-    });
-  });
+test('V6 each rejection names its real cause and counts what the limit counts', async () => {
+  const decimals = (value) => `chart c "T" bar {\n  x "x(u)"\n  decimals ${value}\n  series v "v"\n  row "A" v=1\n}\n`;
+  await build(dap(decimals('2')));
+  const cases = [
+    ['class k "K" abstract=yes {\n  field x "int"\n}\n', 2, /Found "abstract"/],
+    ['class k "K" {\n  field x "int" static=yes\n}\n', 3, /static takes no value/],
+    ['box a "A"\nscene "s" mode=once\n  light a "x"\n', 4, /"a" is a box, not a chart/],
+    ['state s "S"\nvalue v "V" on=s\n', 3, /Put a value on box, external, store, person, table, api/],
+    [`box a "A" badge="${'😀'.repeat(9)}"\n`, 2, /at most 8 characters\. Found 9/],
+    ['box a "A"\nvalue v "V" on=a from=1000000000000000000000\n', 3, /under 1e15/],
+    ...['0x2', '1e0', '2.0', '7'].map((value) => [decimals(value), 4, /whole number from 0 to 6/]),
+  ];
+  for (const [body, line, message] of cases) {
+    const problems = await reject(dap(body));
+    assert.ok(problems.some((p) => p.line === line && message.test(p.message)), `${JSON.stringify(body)} -> ${JSON.stringify(problems)}`);
+  }
 });
 
-// 근거: 계약 figure-syntax.md 호환 규칙: 문법 표의 항목마다 판이 현재 판 이하이고, 값 없는 낱말(flag)은 별칭을 두지 않는다
-test('grammar_every_entry_has_a_valid_version_and_flags_have_no_deprecated_alias', () => {
-  const entries = [...Object.entries(KINDS), ...Object.entries(STATEMENTS), ...Object.entries(OPTIONS), ...Object.entries(VALUES).flatMap(([list, { items }]) => Object.entries(items).map(([name, item]) => [`${list}.${name}`, item]))];
-
-  for (const [name, item] of entries) assert.ok(Number.isInteger(item.since) && item.since >= 1 && item.since <= VERSION, name);
-  for (const [key, option] of Object.entries(OPTIONS)) if (option.type === 'flag') assert.equal(option.deprecated, undefined, key);
-});
-
-// 근거: 설계 figure-syntax.md 요구사항 "문법 표와 이 문서의 표가 같다"
-test('grammarDoc_figure_syntax_tables_equal_the_tables_made_from_the_grammar', () => {
-  const doc = readFileSync(new URL('../docs/design/figure-syntax.md', import.meta.url), 'utf8');
-  const written = doc.slice(doc.indexOf(DOC_START) + DOC_START.length, doc.indexOf(DOC_END)).trim();
-  const tables = renderGrammarTables();
-
-  assert.equal(written, tables, 'run npm run grammar to rewrite the tables in docs/design/figure-syntax.md');
-  for (const word of Object.keys(STATEMENTS)) assert.ok(tables.includes(`\`${STATEMENTS[word].display ?? word}\``), word);
-  for (const key of Object.keys(OPTIONS)) assert.ok(tables.includes(`\`${key}\``), key);
-});
-
-// 근거: 규칙 docs-integration.md 변환과 검사 "원본과 만든 그림 함께 커밋": README 예시 원본은 만든 그림의 원본과 같다
-test('readme_example_equals_the_source_of_the_rendered_asset', () => {
-  const read = (path) => readFileSync(new URL(path, import.meta.url), 'utf8');
-  const block = (readme) => /## (?:How it works|작동 방식)\n\n```text\n(flow right[\s\S]*?)```/.exec(read(readme))[1];
-
-  assert.equal(block('../README.md'), read('../docs/assets/how-it-works.dap'));
-  assert.equal(block('../README.ko.md'), read('../docs/assets/how-it-works.dap'));
+test('V7 ports are card.part with exactly one dot; classes expose no ports and plain boxes have no parts', async () => {
+  const base = `table t "T" {\n  id bigint pk\n}\nclass k "K" {\n  field n "int"\n}\nbox b "B"\n`;
+  const cases = [
+    ['b -> t.id.x\n', /card\.part/],
+    ['b -> k.n\n', /not ports/],
+    ['b -> b.part\n', /no parts/],
+    ['b -> t.nope\n', /nope/],
+  ];
+  for (const [edge, message] of cases) {
+    const problems = await reject(dap(`${base}${edge}`));
+    assert.ok(problems.some((p) => message.test(p.message)), `${edge} -> ${JSON.stringify(problems)}`);
+  }
+  await build(dap(`${base}b -> t.id\n`));
 });

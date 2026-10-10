@@ -3,9 +3,9 @@
 import { readFileSync, realpathSync } from 'node:fs';
 import { basename, dirname, join, relative, resolve, sep } from 'node:path';
 
-const MARK = /^<!-- (daphnis|mutoscope) md (v2 )?(.+) -->$/;
-// 표시 글의 판 번호. 판 번호 없는 옛 표시는 `%`를 인코딩하지 않아 새 표시와 글자가 겹칠 수 있어 따로 다룬다.
+// 소유 표시는 `daphnis md v2`뿐이다. 판 번호가 없거나 이름이 다른 표시는 이 도구의 표시가 아니다.
 const VERSION = 'v2';
+const MARK = new RegExp(`^<!-- daphnis md ${VERSION} (.+) -->$`);
 
 // cost: time O(d), heap O(d), stack O(d), io d
 // vars: d = 경로 깊이
@@ -46,7 +46,7 @@ export const svgMark = (owner) => `<!-- daphnis md ${VERSION} ${owner.text} -->`
 // cost: time O(n), heap O(n), stack O(1), io 1
 // vars: n = 파일 글자 수
 // basis: estimate
-// 이미 있는 SVG의 표시 { name, versioned, text }. 앞 세 줄에서 찾고, 표시가 없거나 읽지 못하면 undefined다.
+// 이미 있는 SVG의 표시 글. 앞 세 줄에서 찾고, 표시가 없거나 읽지 못하면 undefined다.
 function markOf(path) {
   let head;
   try {
@@ -56,7 +56,7 @@ function markOf(path) {
   }
   for (const line of head) {
     const found = MARK.exec(line.replace(/\r$/, ''));
-    if (found) return { name: found[1], versioned: Boolean(found[2]), text: found[3] };
+    if (found) return found[1];
   }
   return undefined;
 }
@@ -65,13 +65,11 @@ function markOf(path) {
 // vars: n = 파일 글자 수
 // basis: estimate
 /**
- * 이미 있는 SVG가 이 문서 것인지 판정한다. kind는 'mine', 'other'(다른 문서나 소유를 정할 수 없는 옛 표시, text를 함께 돌려줌), 'unmarked'(표시 없는 파일)다.
- * 판 번호가 있는 표시는 표시 글이 이 문서의 표시 글과 같을 때만 이 문서 것이다.
- * 판 번호 없는 옛 표시(`daphnis md`, `mutoscope md`)는 `%`를 인코딩하지 않아 `x--y`와 `x%2D-y` 같은 경로를 가를 수 없다. 표시 글에 `%`가 없고 이 문서의 경로와 글자가 같을 때만 이 문서 것이고, 그 밖에는 다른 후보 문서가 지금 디스크에 있는지와 무관하게 소유를 정하지 않는다.
+ * 이미 있는 SVG가 이 문서 것인지 판정한다. kind는 'mine'(표시 글이 이 문서의 표시 글과 같음), 'other'(다른 문서의 표시, text를 함께 돌려줌), 'unmarked'(`daphnis md v2` 표시가 없는 파일)다.
+ * 다른 표시(판 번호 없는 `daphnis md` 등)는 표시 없는 파일과 같아서 사용자 파일로 남는다. 이 도구가 가져가거나 덮어쓰거나 지우지 않는다.
  */
 export function ownership(path, owner) {
-  const mark = markOf(path);
-  if (!mark) return { kind: 'unmarked' };
-  const same = mark.versioned ? mark.text === owner.text : !mark.text.includes('%') && mark.text === owner.raw;
-  return same ? { kind: 'mine' } : { kind: 'other', text: mark.text };
+  const text = markOf(path);
+  if (text === undefined) return { kind: 'unmarked' };
+  return text === owner.text ? { kind: 'mine' } : { kind: 'other', text };
 }

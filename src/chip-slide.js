@@ -1,6 +1,7 @@
+import { roundTo } from './format.js';
 // 이동 하나의 글 상자 계획에서 자리를 바꾸는 미끄러짐. 앞 지점의 깨끗한 자리에서 지금 지점의 깨끗한 자리로 미끄러질 수 있는 길을 동적 계획 표에 더한다(docs/design/playback.md 이동 글).
 import { boxAt, CHIP_FRAME_MS, dotAt, isHit, NODE_MS } from './chip-motion.js';
-import { values } from './tokens.js';
+import { values } from './vendor/theme/tokens.js';
 
 /** 글 상자가 점의 움직임에 더해 한 프레임에 움직일 수 있는 최대 거리(px). 미끄러지는 속도의 상한이다. */
 export const CHIP_STEP_MAX = 6;
@@ -106,7 +107,7 @@ function cleanOf(slots, costOf) {
 // 두 자리 사이를 시간에 선형으로 미끄러질 때 속도가 상한 이하이고 모든 프레임이 깨끗한지. 가운데 프레임이 가장 먼저 걸리므로 가운데부터 잰다.
 function canSlide(ctx, [first, last], [a, b]) {
   const span = last.t - first.t;
-  if (Math.hypot(b.dx - a.dx, b.dy - a.dy) / (span / CHIP_FRAME_MS) > CHIP_STEP_MAX) return false;
+  if (roundTo(Math.hypot(b.dx - a.dx, b.dy - a.dy) / (span / CHIP_FRAME_MS), 9) > CHIP_STEP_MAX) return false;
   const frames = frameTimes(ctx, first.t);
   const count = framesBefore(frames, last.t);
   const middle = count >> 1;

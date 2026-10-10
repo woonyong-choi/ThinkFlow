@@ -1,4 +1,4 @@
-// 조건과 대기의 이벤트 처리(flow-events.js)가 쓰는 도우미: 시각 순으로 꺼내는 힙, 값 종류 오류, 단계가 읽기 식을 쓰는지.
+// 조건과 대기의 이벤트 처리(flow-events.js)가 쓰는 도우미: 시각 순으로 꺼내는 힙, 값 종류 오류, 닿는 도형별 식 묶기, 시간 상한 오류.
 import { isPassed } from './lost.js';
 import { FigureError, makeDiagnostic } from './source/problems.js';
 import { TIME_LIMIT_MS } from './source/values.js';
@@ -73,15 +73,6 @@ export class EventHeap {
 /** 값 종류가 맞지 않는 조건의 오류(`value-type`). 줄은 조건을 쓴 이동이나 흐름 줄이다. */
 export function typeError(message, { line, key, text }) {
   return new FigureError([makeDiagnostic({ severity: 'error', line, message: `${key}="${text}" cannot be evaluated: ${message}` }, { code: 'value-type' })]);
-}
-
-// cost: time O(s)
-// vars: s = 단계의 식 수
-// basis: estimate
-/** 이 단계가 읽기 식(`:=`)을 쓰는지. `on` 줄, 단계 `set=`, 이동과 흐름의 `set=`을 본다. 읽기 식이 든 단계만 갱신을 묶어 읽고 쓴다. */
-export function stepReads(figure, step) {
-  const has = (sets) => (sets ?? []).some((e) => e.op === ':=');
-  return figure.arrivals.some((a) => has(a.sets)) || has(step.sets) || step.beats.some((beat) => beat.hops.some((hop) => has(hop.sets) || has(hop.condition?.reserve))) || step.tracks.some((track) => has(track.sets) || has(track.condition?.reserve));
 }
 
 // cost: time O(s), heap O(s), stack O(1)

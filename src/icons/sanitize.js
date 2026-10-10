@@ -1,6 +1,8 @@
 // 아이콘 SVG 파일을 그림에 넣어도 안전한 모양만 남긴다. 허용한 요소와 속성만 다시 쓰고, 색은 모두 currentColor로 바꾼다(색은 그림이 역할 토큰으로 칠한다).
 // 허용 밖의 요소(script, image, style, use, 그라디언트 같은 것)나 글자는 오류다. 사용자가 등록한 세트의 파일이 그림 안에서 코드나 외부 자원을 부르지 못하게 하기 위해서다.
 
+import { ICON_GRID } from './index.js';
+
 const SHAPE_ATTRS = {
   g: [],
   path: ['d'],
@@ -15,7 +17,9 @@ const SHAPE_ATTRS = {
 const PAINT_ATTRS = ['fill', 'stroke'];
 const NUMBER_ATTRS = ['stroke-width', 'stroke-miterlimit', 'opacity', 'fill-opacity', 'stroke-opacity'];
 const WORD_ATTRS = { 'stroke-linecap': ['butt', 'round', 'square'], 'stroke-linejoin': ['miter', 'round', 'bevel'], 'fill-rule': ['nonzero', 'evenodd'], 'clip-rule': ['nonzero', 'evenodd'] };
-const NUMBER_PATTERN = /^-?(\d+\.?\d*|\.\d+)(e-?\d+)?(px)?$/i;
+const NUMBER = String.raw`[+-]?(?:\d+\.?\d*|\.\d+)(?:e[+-]?\d+)?`;
+const PLAIN_PATTERN = new RegExp(`^${NUMBER}$`, 'i');
+const NUMBER_PATTERN = new RegExp(`^${NUMBER}(?:px)?$`, 'i');
 const SAFE_PATTERNS = { d: /^[MmLlHhVvCcSsQqTtAaZz\d\s.,+\-eE]*$/, points: /^[\d\s.,+\-eE]*$/, transform: /^[a-z\d\s.,()+\-]*$/i };
 const SIZE_MAX = 65536;
 const ELEMENT_MAX = 600;
@@ -28,10 +32,10 @@ const SKIPPED = /<!--[\s\S]*?-->|<\?[\s\S]*?\?>|<!DOCTYPE[^>]*>|<(title|desc|met
 // vars: n = 파일 글자 수, d = 요소 깊이
 // basis: estimate
 /**
- * SVG 글을 { viewBox: [x, y, w, h], body }로 줄인다. body는 허용한 요소만 다시 쓴 `<g>` 하나다.
- * @throws Error 허용 밖의 요소, 속성, 글자가 있거나 크기를 알 수 없을 때. 메시지는 고칠 방법을 말한다
+ * SVG 글을 { body }로 줄인다. body는 허용한 요소만 다시 쓴 `<g>` 하나이고, 틀(viewBox)을 등록부의 24 격자(ICON_GRID)에 가운데 맞추는 변환까지 이 안에 있어 그리는 쪽은 언제나 격자 하나만 본다.
+ * @throws Error 허용 밖의 요소, 속성, 글자가 있거나 크기를 알 수 없거나 격자에 맞출 수 없을 때. 메시지는 고칠 방법을 말한다
  */
-export function sanitizeIcon(text) {
+export function sanitizeIcon(text, { preserveColor = false } = {}) {
   if (text.length > SIZE_MAX) throw new Error(`the icon file is over ${SIZE_MAX} characters`);
   const rest = text.replace(SKIPPED, '');
   const tags = [...rest.matchAll(TAG_PATTERN)];
@@ -41,14 +45,24 @@ export function sanitizeIcon(text) {
   const [root, ...inner] = tags;
   if (root?.[2] !== 'svg' || root[1]) throw new Error('the icon file must start with an <svg> element');
   const rootAttrs = readAttrs(root[3]);
-  return { viewBox: viewBoxOf(rootAttrs), body: `<g${paintOf(rootAttrs, { isRoot: true })}>${shapes(inner)}</g>` };
+  return { body: `<g${gridFit(viewBoxOf(rootAttrs))}${paintOf(rootAttrs, { isRoot: true, preserveColor })}>${shapes(inner, preserveColor)}</g>` };
+}
+
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+// 틀을 격자 한가운데에 앉히는 변환 속성. 긴 변이 격자와 같고 원점이 0이면 없다. 배율과 이동은 반올림 없이 적고, 유한한 0 아닌 수로 나타낼 수 없으면 오류다.
+function gridFit([x, y, w, h]) {
+  const scale = ICON_GRID / Math.max(w, h);
+  const [tx, ty] = [(ICON_GRID - w * scale) / 2 - x * scale, (ICON_GRID - h * scale) / 2 - y * scale];
+  if (!(scale > 0) || ![scale, tx, ty].every(Number.isFinite)) throw new Error('the icon size is too large or too small to fit the icon grid; use a viewBox of ordinary size');
+  return scale === 1 && !tx && !ty ? '' : ` transform="translate(${tx} ${ty}) scale(${scale})"`;
 }
 
 // cost: time O(t), heap O(t), stack O(1)
 // vars: t = 요소 수
 // basis: estimate
 // 요소 목록(여는 태그와 닫는 태그)을 허용한 모양만 다시 쓴 글로.
-function shapes(tags) {
+function shapes(tags, preserveColor) {
   const out = [];
   const open = [];
   for (const [, closing, name, rawAttrs, selfClosing] of tags) {
@@ -60,7 +74,7 @@ function shapes(tags) {
       continue;
     }
     const attrs = readAttrs(rawAttrs);
-    out.push(`<${name}${shapeAttrs(name, attrs)}${paintOf(attrs, { isRoot: false })}${selfClosing ? '/>' : '>'}`);
+    out.push(`<${name}${shapeAttrs(name, attrs)}${paintOf(attrs, { isRoot: false, preserveColor })}${selfClosing ? '/>' : '>'}`);
     if (!selfClosing) open.push(name);
   }
   if (open.length) throw new Error(`the icon does not close <${open.at(-1)}>`);
@@ -86,10 +100,11 @@ function shapeAttrs(name, attrs) {
   return [...SHAPE_ATTRS[name], 'transform'].filter((key) => key in attrs).map((key) => ` ${key}="${safe(key, attrs[key])}"`).join('');
 }
 
-// 좌표 값 하나. 종류별 글자 규칙을 어기면 오류다.
+// 좌표 값 하나. 종류별 글자 규칙을 어기면 오류다. 숫자 값은 유한해야 한다(1e309는 무한대라 거절).
 function safe(key, value) {
   const pattern = SAFE_PATTERNS[key] ?? NUMBER_PATTERN;
-  if (!pattern.test(value.trim())) throw new Error(`the icon has an unsupported ${key} value "${value.slice(0, 20)}"`);
+  const isFiniteNumber = pattern !== NUMBER_PATTERN || Number.isFinite(Number.parseFloat(value));
+  if (!pattern.test(value.trim()) || !isFiniteNumber) throw new Error(`the icon has an unsupported ${key} value "${value.slice(0, 20)}"`);
   return value.trim();
 }
 
@@ -97,10 +112,10 @@ function safe(key, value) {
 // vars: a = 속성 수
 // basis: estimate
 // 칠하기 속성. 색은 none이 아니면 currentColor다. 뿌리 요소(isRoot)는 fill이 없으면 currentColor로 칠하고, 안쪽 요소는 적은 것만 쓴다.
-function paintOf(attrs, { isRoot }) {
+function paintOf(attrs, { isRoot, preserveColor }) {
   const paints = PAINT_ATTRS.filter((key) => key in attrs || (isRoot && key === 'fill')).map((key) => {
     const value = (attrs[key] ?? 'currentColor').trim().toLowerCase();
-    return ` ${key}="${value === 'none' || value === 'transparent' ? 'none' : 'currentColor'}"`;
+    return ` ${key}="${value === 'none' || value === 'transparent' ? 'none' : preserveColor && /^#[0-9a-f]{3,8}$/.test(value) ? value : 'currentColor'}"`;
   });
   const numbers = NUMBER_ATTRS.filter((key) => key in attrs).map((key) => ` ${key}="${safe(key, attrs[key])}"`);
   const words = Object.entries(WORD_ATTRS).filter(([key, list]) => key in attrs && list.includes(attrs[key])).map(([key]) => ` ${key}="${attrs[key]}"`);
@@ -110,11 +125,21 @@ function paintOf(attrs, { isRoot }) {
 // cost: time O(1), heap O(1), stack O(1)
 // vars: viewBox 값 4개
 // basis: estimate
-// 뿌리 요소의 viewBox. 없으면 width, height로 만든다.
+// 뿌리 요소의 viewBox. 적었다면 유한한 숫자 넷에 폭과 높이가 양수여야 하고, 틀리면 width, height로 넘어가지 않고 오류다. 아예 없을 때만 width, height(px 허용)로 만든다.
 function viewBoxOf(attrs) {
-  const box = (attrs.viewBox ?? '').trim().split(/[\s,]+/).map(Number);
-  if (box.length === 4 && box.every(Number.isFinite) && box[2] > 0 && box[3] > 0) return box;
-  const [w, h] = [Number.parseFloat(attrs.width), Number.parseFloat(attrs.height)];
+  if ('viewBox' in attrs) {
+    const box = attrs.viewBox.trim().split(/[\s,]+/);
+    const [x, y, w, h] = box.map((token) => (PLAIN_PATTERN.test(token) ? Number.parseFloat(token) : Number.NaN));
+    if (box.length === 4 && [x, y, w, h].every(Number.isFinite) && w > 0 && h > 0) return [x, y, w, h];
+    throw new Error(`the icon has an invalid viewBox "${attrs.viewBox.slice(0, 40)}"; it needs four finite numbers with a positive width and height`);
+  }
+  const [w, h] = [dimensionOf(attrs.width), dimensionOf(attrs.height)];
   if (w > 0 && h > 0) return [0, 0, w, h];
-  throw new Error('the icon needs a viewBox or a width and height on <svg>');
+  throw new Error('the icon needs a viewBox, or a finite positive width and height, on <svg>');
+}
+
+// width, height 하나. 글 전체가 숫자(px만 허용)이고 유한해야 하며, 아니면 NaN이다.
+function dimensionOf(text) {
+  const value = NUMBER_PATTERN.test(text?.trim() ?? '') ? Number.parseFloat(text) : Number.NaN;
+  return Number.isFinite(value) ? value : Number.NaN;
 }

@@ -1,6 +1,6 @@
 // 흐름(track)이 지나는 길. 한 점이 여러 선을 멈춤 없이 지나도록 선 경로를 이어 붙인 보이지 않는 path를 `<defs>`에 둔다. 점(animateMotion의 mpath)과 재생기가 이 path를 따라간다.
 import { routePolyline } from '../route.js';
-import { values } from '../tokens.js';
+import { values } from '../vendor/theme/tokens.js';
 
 // cost: time O(p), heap O(p), stack O(1)
 // vars: p = 이어 붙인 경로 점 수

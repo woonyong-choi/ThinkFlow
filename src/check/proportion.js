@@ -1,10 +1,10 @@
 // 9번과 10번: 그림 비율과 문서 폭에서 읽힘.
 import { ASPECT_MAX, canvasOf, displayRatio } from '../canvas.js';
 import { ROOT } from '../layout/model.js';
-import { values } from '../tokens.js';
+import { values } from '../vendor/theme/tokens.js';
 
 // 가장 작은 글 토큰. 그림이 줄어들어도 이보다 작은 글이 되면 읽히지 않는다.
-const MIN_READABLE = Math.min(...Object.values(values.size.text));
+const MIN_READABLE = Math.min(...Object.values(values.text.figure));
 // 줄인 글 크기 비교에서 반올림을 넘기 위한 여유
 const SIZE_SLACK = 0.01;
 
@@ -13,6 +13,8 @@ const SIZE_SLACK = 0.01;
 // basis: estimate
 // 9번: 보이는 가로세로 비율(내용이 캔버스보다 좁으면 캔버스 폭 기준). 문서 폭 안에 드는 그림은 보지 않는다. 비율을 줄이는 쪽의 그룹 방향이 있으면 그것을, 없으면 aspect를 권한다.
 export function checkAspect({ figure, scene }, problems) {
+  // 비율은 그래프 보기 하나뿐인 문서의 그림 모양을 가리킨다. 보기가 여럿이면 쌓은 판의 비율이라 그림 모양을 고칠 방법이 판마다 다르다.
+  if (figure.views.length !== 1 || figure.views[0].strategy !== 'graph') return;
   const canvas = canvasOf(figure);
   const ratio = displayRatio(scene.width, scene.height, canvas);
   if (ratio <= ASPECT_MAX && ratio >= 1 / ASPECT_MAX) return;
@@ -47,7 +49,7 @@ export function checkReadable({ figure, scene }, problems) {
 
 // 10번 경고의 고치는 방법. aspect를 적으면 자동 맞춤(방향 돌리기, 접기)을 하지 않으므로 먼저 aspect를 지우라고 알린다.
 function readableFix({ figure, scene }) {
-  if (figure.kind === 'sequence') return 'Use fewer participants or shorter messages';
+  if (figure.views.every((view) => view.strategy === 'sequence')) return 'Use fewer participants or shorter messages';
   if (figure.aspect !== undefined) return 'Remove the aspect line so the tool can turn or fold the figure to fit, or set a smaller aspect';
   return scene.groups.length ? 'Make the figure narrower with group directions, or write the flow as down' : 'Write the flow as down, or shorten the labels';
 }

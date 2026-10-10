@@ -1,0 +1,65 @@
+/* 입력 데이터는 SVG 축소와 독립된 시스템 글꼴로 읽고 넓은 표만 내부에서 이동한다. */
+.fl-data {
+  max-width: var(--spacing-figure-figure-canvas);
+  margin: var(--spacing-3) auto 0;
+  font-size: var(--text-small-text);
+  line-height: var(--leading-diagram-body);
+  color: var(--color-fg);
+}
+
+.fl-data summary {
+  min-height: var(--spacing-figure-control-inner);
+  box-sizing: border-box;
+  padding: var(--spacing-1-5) var(--spacing-2);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+}
+
+.fl-data summary:hover {
+  background: var(--color-help-hover);
+}
+
+.fl-data summary:focus-visible,
+.fl-data-scroll:focus-visible {
+  outline: var(--outline-width-focus) solid var(--color-ui-focus);
+  outline-offset: var(--spacing-0-5);
+}
+
+.fl-data p {
+  margin: var(--spacing-1-5) 0;
+  overflow-wrap: anywhere;
+  color: var(--color-muted);
+}
+
+.fl-data-scroll {
+  max-width: 100%;
+  overflow: auto;
+}
+
+.fl-data table {
+  width: 100%;
+  font-variant-numeric: tabular-nums;
+  border-collapse: collapse;
+}
+
+.fl-data caption {
+  padding: var(--spacing-1-5) var(--spacing-2);
+  text-align: left;
+  font-weight: var(--font-weight-semibold);
+}
+
+.fl-data th,
+.fl-data td {
+  padding: var(--spacing-1-5) var(--spacing-2);
+  text-align: right;
+  white-space: nowrap;
+  border-bottom: var(--border-width-hair) solid var(--color-ui-line);
+}
+
+.fl-data th {
+  font-weight: var(--font-weight-semibold);
+}
+
+.fl-data th:first-child {
+  text-align: left;
+}

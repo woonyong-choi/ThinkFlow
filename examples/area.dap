@@ -1,0 +1,30 @@
+daphnis 2
+title "시간대별 요청 처리량"
+subtitle "읽기와 쓰기 요청이 0을 기준으로 겹쳐 그려진다"
+
+chart load "초당 요청 수" area "예시 데이터. 0에서 시작하는 면적. 배치 작업은 새벽에만 있다" {
+  x "시각(시)"
+  y "처리량(req/s)"
+  series read "읽기" role=main
+  series write "쓰기" role=compare
+  series batch "배치"
+  point x=0 read=120 write=40 batch=310
+  point x=4 read=80 write=25 batch=420
+  point x=8 read=640 write=180 batch=60
+  point x=12 read=980 write=260 batch=0
+  point x=16 read=870 write=310 batch=0
+  point x=20 read=1120 write=420 batch=40
+  point x=24 read=300 write=90 batch=280
+}
+
+scene "하루 전체"
+
+scene "계열 하나씩 겹쳐 보기"
+  reveal load.read
+  wait 1s
+  reveal load.write
+  wait 1s
+  reveal load.batch
+
+scene "피크 시각"
+  light load x=20

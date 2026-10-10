@@ -1,444 +1,345 @@
-// CLI: 명령 결과 파일, 종료 코드, 오류 출력, --json 필드, gallery(docs/design/figure-check.md, playback.md). 호환 필드와 종료 코드는 compat.test.js.
+// 명령줄: render, check, gallery의 결과 파일, 종료 코드, 표준 출력과 오류, 이름 겹침과 쓰기 실패 때의 원자성.
+// 모두 새 프로세스로 돌려 파일과 출력으로만 본다. 시험 이름 첫 낱말(L1~L8)이 요구사항 번호이고, 대응은 docs/design/expression-coverage.md의 시험 번호 표에 있다.
 import assert from 'node:assert/strict';
-import { existsSync, mkdirSync, readdirSync, readFileSync, symlinkSync, writeFileSync } from 'node:fs';
-import { join } from 'node:path';
+import { lstatSync, mkdirSync, readdirSync, realpathSync, symlinkSync } from 'node:fs';
+import { join, resolve } from 'node:path';
 import { test } from 'node:test';
-import { fileURLToPath } from 'node:url';
-import { spawnSync } from 'node:child_process';
-import { runCli as run, withFolder } from './helpers.js';
+import { cli, dap, findAll, parseMarkup, read, snapshot, textContent, workspace } from './support.js';
 
-const CLI = fileURLToPath(new URL('../src/cli.js', import.meta.url));
-const FLOW = 'flow right\nbox a "A"\nbox b "B"\na -> b\nstep "s"\n  a -> b "x"\n';
-const BAR = 'chart bar\nseries s "S"\nrow "r" s=1\n';
-// 한 번도 지나지 않는 quiet 선(경고 11번)이 있는 원본
-const QUIET = 'flow right\nbox a "A"\nbox b "B"\na -> b "보냄" quiet\nb -> a\nstep "s"\n  b -> a\n';
-const BAD = 'flow right\nbox a "A"\na -> zz\n';
+const TWO_SCENES = dap('box a "A"\nbox b "B"\na -> b\nscene "first" mode=static\n  a -> b\nscene "second" mode=once\n  b -> a\n');
+const BAD = dap('box a ""\n');
+const files = (dir) => readdirSync(dir).sort();
+const oneLine = (text) => text.trim().split('\n').length === 1;
 
-// 근거: 계약 package.json bin "daphnis": 명령은 심볼릭 링크로 실행되어도 사용법을 낸다
-test('main_run_through_symlink_prints_usage', () => {
-  withFolder((folder) => {
-    const link = join(folder, 'daphnis');
-    symlinkSync(CLI, link);
-
-    const result = spawnSync(process.execPath, [link], { encoding: 'utf8' });
-
-    assert.equal(result.status, 2);
-    assert.match(result.stderr, /usage/);
-  });
+test('L1 render writes {name}.svg next to the source and prints exactly the paths it wrote', (t) => {
+  const dir = workspace(t, { 'x.dap': TWO_SCENES });
+  const run = cli(['render', 'x.dap'], { cwd: dir });
+  assert.equal(run.status, 0);
+  assert.equal(run.stderr, '');
+  const printed = run.stdout.trim().split('\n');
+  assert.equal(printed.length, 1);
+  assert.equal(realpathSync(resolve(dir, printed[0])), realpathSync(join(dir, 'x.svg')));
+  assert.deepEqual(files(dir), ['x.dap', 'x.svg']);
+  assert.match(read(dir, 'x.svg'), /^<svg /);
 });
 
-// 근거: 계약 playback.md 결과 "움직이는 SVG {이름}.svg 하나, --html이면 재생기 HTML"
-test('main_render_writes_svg_and_html', () => {
-  withFolder((folder) => {
-    writeFileSync(join(folder, 'a.dap'), FLOW);
-
-    const result = run(['render', 'a.dap', '--html'], folder);
-
-    assert.equal(result.status, 0, result.stderr);
-    assert.ok(existsSync(join(folder, 'a.svg')) && existsSync(join(folder, 'a.html')));
-  });
+test('L1 --out puts the files elsewhere (creating the folder), --html adds the page, --static makes the picture still', (t) => {
+  const dir = workspace(t, { 'x.dap': TWO_SCENES });
+  const run = cli(['render', 'x.dap', '--out', 'deep/out', '--html', '--static'], { cwd: dir });
+  assert.equal(run.status, 0);
+  assert.equal(run.stdout.trim().split('\n').length, 2);
+  assert.deepEqual(files(join(dir, 'deep/out')), ['x.html', 'x.svg']);
+  assert.equal(parseMarkup(read(dir, 'deep/out/x.svg')).attrs['data-mode'], 'static');
+  assert.match(read(dir, 'deep/out/x.html'), /^<!doctype html>/);
+  assert.deepEqual(files(dir), ['deep', 'x.dap']);
 });
 
-// 근거: 설계 figure-check.md 요구사항 "오류가 있으면 그림 파일을 쓰지 않는다", figure-syntax.md "오류를 모두 모아 알리고 파일을 쓰지 않는다"
-test('main_render_with_an_error_writes_no_file_and_reports_the_line', () => {
-  withFolder((folder) => {
-    writeFileSync(join(folder, 'bad.dap'), 'flow right\nbox a "A"\na -> zz\n');
-
-    const result = run(['render', 'bad.dap'], folder);
-
-    assert.equal(result.status, 1);
-    assert.match(result.stderr, /^bad\.dap:3: unknown node "zz"/m);
-    assert.ok(!existsSync(join(folder, 'bad.svg')));
-  });
-});
-
-// 근거: 감사 C1 "gallery --strict가 strict를 버림", C2 "빈 입력을 그림 0개인 정상 gallery로 만듦", C3 "오류 파일만 건너뛰고 나머지를 씀"(AGENTS "오류가 있으면 결과 파일을 쓰지 않음"), 옵션은 gallery가 받는 것만(figure-check.md 명령)
-test('main_gallery_fails_without_writing_any_file_when_the_input_must_not_pass', () => {
-  const cases = [
-    { name: 'strict_warning', files: { 'q.dap': QUIET }, args: ['--strict'], status: 1, stderr: /q\.dap:4: .*quiet edge/ },
-    { name: 'error_next_to_a_good_file', files: { 'good.dap': FLOW, 'bad.dap': BAD }, args: [], status: 1, stderr: /bad\.dap:3: unknown node "zz"/ },
-    { name: 'no_dap_files', files: { 'note.txt': 'x' }, args: [], status: 1, stderr: /no \.dap files/ },
-    { name: 'static_is_not_a_gallery_option', files: { 'good.dap': FLOW }, args: ['--static'], status: 2, stderr: /--static is not for gallery/ },
-    { name: 'json_is_not_a_gallery_option', files: { 'good.dap': FLOW }, args: ['--json'], status: 2, stderr: /--json is not for gallery/ },
-  ];
-  for (const { name, files, args, status, stderr } of cases) {
-    withFolder((folder) => {
-      for (const [file, text] of Object.entries(files)) writeFileSync(join(folder, file), text);
-
-      const result = run(['gallery', '.', '--out', 'out', ...args], folder);
-
-      assert.equal(result.status, status, name);
-      assert.match(result.stderr, stderr, name);
-      assert.ok(!existsSync(join(folder, 'out')), `${name}: no result file`);
-    });
+test('L1 --scene picks a scene by number (from 1) or by name; a scene that does not exist is exit 1 with nothing written', (t) => {
+  const dir = workspace(t, { 'x.dap': TWO_SCENES });
+  const sceneOf = (selector, out) => {
+    const run = cli(['render', 'x.dap', '--scene', selector, '--out', out], { cwd: dir });
+    return { run, scene: run.status === 0 ? parseMarkup(read(dir, out, 'x.svg')).attrs['data-scene'] : undefined };
+  };
+  assert.equal(sceneOf('1', 'o1').scene, '0');
+  assert.equal(sceneOf('2', 'o2').scene, '1');
+  assert.equal(sceneOf('second', 'o3').scene, '1');
+  for (const bad of ['3', '0', 'nope']) {
+    const { run } = sceneOf(bad, `bad-${bad}`);
+    assert.equal(run.status, 1, bad);
+    assert.match(run.stderr, new RegExp(`--scene: no scene "${bad}"\\. Scenes: 1 "first", 2 "second"`), 'the message names what the user typed, not an internal index');
+    assert.ok(!files(dir).includes(`bad-${bad}`), 'nothing written');
   }
 });
 
-// 근거: 감사 C1 반대 사례 "경고만 있는 원본은 --strict 없이는 통과하고, --strict 뒤에 다른 옵션이 붙어도 gallery가 받는 옵션은 그대로 받는다"
-test('main_gallery_still_writes_the_files_for_a_warning_without_strict_and_accepts_its_options', () => {
-  withFolder((folder) => {
-    writeFileSync(join(folder, 'q.dap'), QUIET);
-
-    const plain = run(['gallery', '.', '--out', 'plain'], folder);
-    const flagged = run(['gallery', '.', '--out', 'flagged', '--html', '--no-deprecated'], folder);
-
-    for (const [result, out] of [[plain, 'plain'], [flagged, 'flagged']]) {
-      assert.equal(result.status, 0, result.stderr);
-      assert.ok(['q.svg', 'q.html', 'index.html', 'document.html'].every((file) => existsSync(join(folder, out, file))), out);
-    }
-  });
+test('L1 a --scene that does not exist is reported once per source with its file name, as --json lines when asked, exit 1, nothing written', (t) => {
+  const dir = workspace(t, { 'one.dap': TWO_SCENES, 'two.dap': dap('box b "B"\n') });
+  const before = snapshot(dir);
+  const plain = cli(['render', 'one.dap', 'two.dap', '--scene', '9', '--out', 'o'], { cwd: dir });
+  assert.equal(plain.status, 1);
+  assert.equal(plain.stdout, '');
+  assert.deepEqual(plain.stderr.trim().split('\n').map((line) => /^(\S+\.dap): --scene: no scene "9"\./.exec(line)?.[1]), ['one.dap', 'two.dap']);
+  const json = cli(['render', 'one.dap', 'two.dap', '--scene', '9', '--out', 'o', '--json'], { cwd: dir });
+  assert.equal(json.status, 1);
+  assert.equal(json.stderr, '');
+  const lines = json.stdout.trim().split('\n').map((line) => JSON.parse(line));
+  assert.deepEqual(lines.map((d) => [d.file, d.severity, d.code]), [['one.dap', 'error', 'scene'], ['two.dap', 'error', 'scene']]);
+  assert.deepEqual(lines.map((d) => d.message), ['--scene: no scene "9". Scenes: 1 "first", 2 "second"', '--scene: no scene "9". This figure has no scenes']);
+  const named = JSON.parse(cli(['render', 'one.dap', '--scene', 'nope', '--out', 'o', '--json'], { cwd: dir }).stdout);
+  assert.equal(named.message, '--scene: no scene "nope". Scenes: 1 "first", 2 "second"');
+  assert.deepEqual(snapshot(dir), before);
 });
 
-// 근거: 설계 figure-check.md 요구사항 "--json 출력이 한 줄에 메시지 하나다"와 진단 필드 { file, line, ..., severity, code, column }
-test('main_json_prints_one_message_per_line_with_the_documented_fields', () => {
-  withFolder((folder) => {
-    writeFileSync(join(folder, 'bad.dap'), 'flow right\nbox Step "S"\nbox a "A"\na -> zz\n');
-
-    const lines = run(['check', 'bad.dap', '--json'], folder).stdout.trim().split('\n');
-
-    assert.equal(lines.length, 2);
-    for (const line of lines) assert.deepEqual(Object.keys(JSON.parse(line)), ['file', 'line', 'lines', 'check', 'level', 'message', 'severity', 'code', 'column']);
-    assert.deepEqual(lines.map((line) => JSON.parse(line).code), ['syntax', 'syntax']);
-  });
+test('L2 an error exits 1, reports "file:line: message" on stderr, writes nothing, and prints nothing on stdout', (t) => {
+  const dir = workspace(t, { 'bad.dap': BAD });
+  const run = cli(['render', 'bad.dap', '--out', 'o'], { cwd: dir });
+  assert.equal(run.status, 1);
+  assert.equal(run.stdout, '');
+  assert.match(run.stderr, /^bad\.dap:2: /m);
+  assert.deepEqual(files(dir), ['bad.dap']);
 });
 
-// 근거: 버그 68ec356 "덧붙는 오류를 줄이면서도 문법 오류와 글꼴 없는 글자 오류를 함께 알린다", 설계 figure-syntax.md "오류를 모두 모아 알린다"
-test('main_check_reports_syntax_and_glyph_errors_together', () => {
-  withFolder((folder) => {
-    writeFileSync(join(folder, 'bad.dap'), 'flow right\nbox a "A 😀"\nbox b "B"\na -> cdex\n');
-
-    const { stderr } = run(['check', 'bad.dap'], folder);
-
-    assert.match(stderr, /bad\.dap:2: the font has no glyph/);
-    assert.match(stderr, /bad\.dap:4: unknown node "cdex"/);
-  });
+test('L2 --json prints one JSON line per diagnostic with exactly six fields', (t) => {
+  const dir = workspace(t, { 'bad.dap': dap('box a ""\nbox b ""\n') });
+  const run = cli(['render', 'bad.dap', '--json'], { cwd: dir });
+  assert.equal(run.status, 1);
+  const lines = run.stdout.trim().split('\n').map((line) => JSON.parse(line));
+  assert.equal(lines.length, 2);
+  for (const line of lines) {
+    assert.deepEqual(Object.keys(line).sort(), ['code', 'column', 'file', 'line', 'message', 'severity']);
+    assert.equal(line.file, 'bad.dap');
+    assert.equal(line.severity, 'error');
+    assert.equal(line.code, 'syntax');
+  }
+  assert.deepEqual(lines.map((l) => l.line), [2, 3]);
 });
 
-// 근거: 버그 68ec356 "읽을 수 없는 파일은 한 줄 메시지로 알리고 나머지 파일은 계속 검사한다"
-test('main_missing_file_reports_one_line_and_checks_the_rest', () => {
-  withFolder((folder) => {
-    writeFileSync(join(folder, 'ok.dap'), 'flow right\naspect 1.6\nbox a "A"\nbox b "B"\na -> b\n');
-
-    const { stderr, status } = run(['check', 'nope.dap', 'ok.dap'], folder);
-
-    assert.equal(status, 1);
-    assert.equal(stderr.trim(), 'nope.dap: cannot read the file: ENOENT');
-  });
+test('L2 a warning still writes (exit 0, "warning:" on stderr); --strict turns it into a failure that writes nothing', (t) => {
+  const warned = dap('box a "A"\nbox b "B"\na -> b "same"\nscene "s"\n  a -> b "same"\n');
+  const dir = workspace(t, { 'w.dap': warned });
+  const lenient = cli(['render', 'w.dap', '--out', 'lenient'], { cwd: dir });
+  assert.equal(lenient.status, 0);
+  assert.match(lenient.stderr, /^w\.dap:\d+: warning: /m);
+  assert.deepEqual(files(join(dir, 'lenient')), ['w.svg']);
+  const strict = cli(['render', 'w.dap', '--out', 'strict', '--strict'], { cwd: dir });
+  assert.equal(strict.status, 1);
+  assert.ok(!files(dir).includes('strict'));
 });
 
-// 근거: 설계 playback.md 요구사항 "재생기 안에는 그림 바탕 판이 없고, SVG 파일에만 있다"(점 격자 없는 둥근 판)
-test('main_render_svg_keeps_the_rounded_plate_and_the_html_player_has_none', () => {
-  withFolder((folder) => {
-    writeFileSync(join(folder, 'b.dap'), BAR);
-
-    const result = run(['render', 'b.dap', '--html'], folder);
-    const svg = readFileSync(join(folder, 'b.svg'), 'utf8');
-    const html = readFileSync(join(folder, 'b.html'), 'utf8');
-
-    assert.equal(result.status, 0, result.stderr);
-    assert.match(svg, /<rect x="[\d.]+" y="[\d.]+" width="[\d.]+" height="[\d.]+" rx="\d+" fill="var\(--simple2-canvas-fill\)"/);
-    assert.ok(!html.includes('<rect width="100%" height="100%"'));
-    for (const text of [svg, html]) assert.ok(!text.includes('fl-dots'));
-  });
+test('L2 usage mistakes exit 2 and write nothing: no arguments, unknown command, unknown option, an option without its value, a bad budget', (t) => {
+  const dir = workspace(t, { 'x.dap': TWO_SCENES });
+  for (const args of [[], ['frobnicate', 'x.dap'], ['render', 'x.dap', '--nope'], ['render', 'x.dap', '--out'], ['render', 'x.dap', '--budget', 'events'], ['render', 'x.dap', '--budget', 'nothing=5'], ['render', 'x.dap', '--budget', 'events=0'], ['render']]) {
+    const run = cli(args, { cwd: dir });
+    assert.equal(run.status, 2, JSON.stringify(args));
+    assert.match(run.stderr, /usage|unknown|needs|budget/i, JSON.stringify(args));
+  }
+  assert.deepEqual(files(dir), ['x.dap']);
 });
 
-// 근거: 설계 playback.md 요구사항 "gallery가 문서 미리보기를 쓴다"와 layout.md 카드 머리 "파일 이름과 꼬리표, 그림이 제목을 그리지 않을 때만 제목"
-test('main_gallery_writes_the_index_and_the_document_preview_with_each_figure_and_a_card_head', () => {
-  withFolder((folder) => {
-    writeFileSync(join(folder, 'a.dap'), 'flow right\ntitle "흐름 제목"\nbox a "A"\n');
-    writeFileSync(join(folder, 'b.dap'), 'chart bar\ntitle "차트 제목"\nseries s "S"\nrow "r" s=1\n');
-
-    const result = run(['gallery', '.', '--out', 'out'], folder);
-    const page = (name) => readFileSync(join(folder, 'out', `${name}.html`), 'utf8');
-
-    assert.equal(result.status, 0, result.stderr);
-    assert.match(page('index'), /src="\.\/a\.html"/);
-    assert.match(page('index'), /src="\.\/b\.html"/);
-    assert.match(page('index'), /href="document\.html"/);
-    assert.match(page('document'), /<img src="\.\/a\.svg"/);
-    assert.match(page('document'), /<img src="\.\/b\.svg"/);
-    for (const name of ['index', 'document']) {
-      assert.match(page(name), /<h2><span class="title">흐름 제목<\/span><code class="name">a\.dap<\/code><span class="kind">flow<\/span><\/h2>/);
-      assert.match(page(name), /<h2><code class="name">b\.dap<\/code><span class="kind">bar<\/span><\/h2>/);
-      for (const mode of ['system', 'light', 'dark']) assert.match(page(name), new RegExp(`data-mode="${mode}"`));
-    }
-  });
+test('L2 an empty or repeated option value, an empty file name and a second gallery folder are usage errors that write nothing', (t) => {
+  const dir = workspace(t, { 'x.dap': TWO_SCENES, 'g/a.dap': dap('box a "A"\n'), 'h/b.dap': dap('box b "B"\n') });
+  const before = snapshot(dir);
+  const mistakes = [
+    [['render', 'x.dap', '--out', ''], /--out needs a value/],
+    [['render', 'x.dap', '--out', 'a', '--out', 'b'], /--out is given twice/],
+    [['render', 'x.dap', '--scene', '1', '--scene', '2'], /--scene is given twice/],
+    [['render', 'x.dap', '--budget', ''], /--budget needs a value/],
+    [['render', ''], /file name cannot be empty/],
+    [['gallery', 'g', 'h'], /gallery takes one folder, not 2/],
+  ];
+  for (const [args, message] of mistakes) {
+    const run = cli(args, { cwd: dir });
+    assert.equal(run.status, 2, JSON.stringify(args));
+    assert.match(run.stderr, message, JSON.stringify(args));
+    assert.equal(run.stdout, '');
+  }
+  assert.deepEqual(snapshot(dir), before);
 });
 
-const NAMED_BOX = (id) => `flow right\ntitle "${id} figure"\nbox a "A"\n`;
-const iframeSrcs = (page) => [...page.matchAll(/<iframe src="([^"]+)"/g)].map((m) => m[1].replace(/^\.\//, ''));
-
-// 근거: 이슈 #73 "갤러리 예약 이름(index, document) 원본이 목록 파일을 덮어쓴다". 모든 원본의 재생 화면과 목록 파일은 서로 다른 출력 파일이다
-test('main_gallery_keeps_a_source_named_index_or_document_apart_from_the_list_and_preview_files', () => {
-  withFolder((folder) => {
-    for (const name of ['index', 'document', 'plain']) writeFileSync(join(folder, `${name}.dap`), NAMED_BOX(name));
-
-    const result = run(['gallery', '.', '--out', 'out'], folder);
-    const read = (file) => readFileSync(join(folder, 'out', file), 'utf8');
-    const srcs = iframeSrcs(read('index.html'));
-
-    assert.equal(result.status, 0, result.stderr);
-    assert.equal(srcs.length, 3);
-    assert.ok(!srcs.includes('index.html') && !srcs.includes('document.html'), `재생 화면이 목록 파일을 가리킨다: ${srcs}`);
-    assert.equal(new Set(srcs).size, 3);
-    for (const [src, name] of srcs.map((src, i) => [src, ['document', 'index', 'plain'][i]])) {
-      assert.ok(read(src).includes(`${name} figure`), `${src}는 ${name} 그림의 재생 화면이다`);
-      assert.ok(!read(src).includes('<iframe'), `${src}는 목록이 아니다`);
-    }
-    assert.match(read('document.html'), /<img src="\.\/index\.svg"/);
-    assert.ok(existsSync(join(folder, 'out', 'index.svg')) && existsSync(join(folder, 'out', 'document.svg')));
-  });
+test('L2 -- ends the options: a source whose name starts with "-" renders, and without -- it is an unknown option', (t) => {
+  const dir = workspace(t, { '-odd.dap': TWO_SCENES });
+  assert.equal(cli(['render', '-odd.dap'], { cwd: dir }).status, 2);
+  const run = cli(['render', '--out', 'o', '--', '-odd.dap'], { cwd: dir });
+  assert.equal(run.status, 0, run.stderr);
+  assert.deepEqual(files(join(dir, 'o')), ['-odd.svg']);
+  assert.equal(cli(['check', '--', '-odd.dap', '--strict'], { cwd: dir }).status, 1, 'after -- every argument is a file name, so --strict is a missing source');
 });
 
-// 근거: 이슈 #73 완료 조건 "출력 이름 충돌을 쓰기 전에 검증한다, 충돌 시 기존 파일 보존"
-test('main_gallery_refuses_clashing_output_names_before_writing_and_keeps_existing_files', () => {
-  const cases = [{ name: 'player_name_taken', files: ['index', 'index-player'] }];
-  for (const { name, files } of cases) {
-    withFolder((folder) => {
-      for (const file of files) writeFileSync(join(folder, `${file}.dap`), NAMED_BOX(file));
-      mkdirSync(join(folder, 'out'));
-      writeFileSync(join(folder, 'out', 'index.html'), 'keep');
+test('L2 only .dap files are sources; any other extension or a missing file is a one-line error and nothing is written', (t) => {
+  const dir = workspace(t, { 'x.txt': TWO_SCENES, 'x.muto': TWO_SCENES });
+  for (const input of ['x.txt', 'x.muto', 'absent.dap']) {
+    const run = cli(['render', input], { cwd: dir });
+    assert.equal(run.status, 1, input);
+    assert.ok(oneLine(run.stderr), `${input}: ${run.stderr}`);
+  }
+  assert.deepEqual(cli(['render', 'x.txt', '--json'], { cwd: dir }).stdout.trim().split('\n').map((l) => JSON.parse(l).code), ['unsupported-extension']);
+  assert.deepEqual(files(dir), ['x.muto', 'x.txt']);
+});
 
-      const result = run(['gallery', '.', '--out', 'out'], folder);
+test('L3 check validates like render and writes nothing', (t) => {
+  const dir = workspace(t, { 'x.dap': TWO_SCENES, 'bad.dap': BAD });
+  assert.deepEqual(cli(['check', 'x.dap'], { cwd: dir }), { status: 0, stdout: '', stderr: '' });
+  assert.equal(cli(['check', 'bad.dap'], { cwd: dir }).status, 1);
+  assert.deepEqual(files(dir), ['bad.dap', 'x.dap']);
+});
 
-      assert.equal(result.status, 1, name);
-      assert.match(result.stderr, /would be written twice/, name);
-      assert.deepEqual(readdirSync(join(folder, 'out')), ['index.html'], name);
-      assert.equal(readFileSync(join(folder, 'out', 'index.html'), 'utf8'), 'keep', name);
-    });
+test('L4 --budget raises a limit the figure would otherwise exceed; without it the figure is refused before anything is written', (t) => {
+  const busy = dap('box a "A"\nbox b "B"\nvalue n "n" on=b from=0\na -> b\nscene "s" mode=static for=4s\n  track a -> b at=0s every=100ms time=50ms wait="n>=0" set="n+1"\n');
+  const dir = workspace(t, { 'busy.dap': busy });
+  const refused = cli(['render', 'busy.dap', '--budget', 'events=20', '--out', 'o', '--json'], { cwd: dir });
+  assert.equal(refused.status, 1);
+  assert.deepEqual(refused.stdout.trim().split('\n').map((l) => JSON.parse(l).code), ['budget-exceeded']);
+  assert.ok(!files(dir).includes('o'));
+  assert.equal(cli(['render', 'busy.dap', '--out', 'o'], { cwd: dir }).status, 0);
+});
+
+test('L5 #176 two sources that would write the same file are refused before anything is written, whatever hides the clash', (t) => {
+  const dir = workspace(t, { 'a/x.dap': dap('box first "FIRST"\n'), 'b/x.dap': dap('box second "SECOND"\n'), 'c/X.dap': dap('box third "THIRD"\n'), 'd/é.dap': dap('box d "D"\n'), 'e/é.dap': dap('box e "E"\n') });
+  const clashes = [['a/x.dap', 'b/x.dap'], ['a/x.dap', 'c/X.dap'], ['d/é.dap', 'e/é.dap'], ['a/x.dap', 'a/x.dap']];
+  for (const inputs of clashes) {
+    const before = snapshot(dir);
+    const run = cli(['render', ...inputs, '--out', 'out'], { cwd: dir });
+    assert.equal(run.status, 1, inputs.join(' '));
+    assert.match(run.stderr, /would be written twice/);
+    assert.deepEqual(snapshot(dir), before, `${inputs.join(' ')}: nothing was written, not even the folder`);
+    assert.equal(run.stdout, '');
+  }
+  const json = cli(['render', 'a/x.dap', 'b/x.dap', '--out', 'out', '--json'], { cwd: dir });
+  assert.equal(JSON.parse(json.stdout.trim().split('\n')[0]).code, 'output-collision');
+  // 각자 자기 폴더에 쓰면 겹치지 않는다
+  assert.equal(cli(['render', 'a/x.dap', 'b/x.dap'], { cwd: dir }).status, 0);
+  assert.match(read(dir, 'a/x.svg'), /FIRST/);
+  assert.match(read(dir, 'b/x.svg'), /SECOND/);
+  // --html도 같은 이름을 다투므로 .svg가 다른 이름이어도 .html이 겹치면 거절한다
+  const withHtml = cli(['render', 'a/x.dap', 'b/x.dap', '--html', '--out', 'out2'], { cwd: dir });
+  assert.equal(withHtml.status, 1);
+});
+
+test('L5 #176 two outputs that are existing symbolic links to one file are one output: refused before any write, both links and the target untouched', (t) => {
+  const dir = workspace(t, { 'a.dap': dap('box a "A"\n'), 'b.dap': dap('box b "B"\n'), 'target.svg': 'the shared target' });
+  mkdirSync(join(dir, 'out'));
+  symlinkSync(join(dir, 'target.svg'), join(dir, 'out/a.svg'));
+  symlinkSync(join(dir, 'target.svg'), join(dir, 'out/b.svg'));
+  const before = snapshot(dir);
+  const run = cli(['render', 'a.dap', 'b.dap', '--out', 'out'], { cwd: dir });
+  assert.equal(run.status, 1);
+  assert.match(run.stderr, /would be written twice/);
+  assert.equal(run.stdout, '');
+  assert.deepEqual(snapshot(dir), before, 'neither link was replaced and the target kept its text');
+  const json = cli(['render', 'a.dap', 'b.dap', '--out', 'out', '--json'], { cwd: dir });
+  assert.equal(JSON.parse(json.stdout.trim().split('\n')[0]).code, 'output-collision');
+  assert.deepEqual(snapshot(dir), before);
+  // 링크 하나만 쓰면 충돌이 아니다: 링크는 그대로 두고 가리키는 파일을 바꾼다
+  assert.equal(cli(['render', 'a.dap', '--out', 'out'], { cwd: dir }).status, 0);
+  assert.equal(lstatSync(join(dir, 'out/a.svg')).isSymbolicLink(), true);
+  assert.match(read(dir, 'target.svg'), /^<svg /);
+});
+
+test('L6 #177 an output that is a symbolic link to nothing is not silently replaced by a file: one io line, exit 1, the link stays', (t) => {
+  const dir = workspace(t, { 'x.dap': TWO_SCENES });
+  mkdirSync(join(dir, 'out'));
+  symlinkSync(join(dir, 'missing.svg'), join(dir, 'out/x.svg'));
+  const before = snapshot(dir);
+  const run = cli(['render', 'x.dap', '--out', 'out', '--json'], { cwd: dir });
+  assert.equal(run.status, 1);
+  const lines = run.stdout.trim().split('\n').map((line) => JSON.parse(line));
+  assert.deepEqual(lines.map((l) => l.code), ['io']);
+  assert.match(lines[0].message, /symbolic link/);
+  assert.deepEqual(snapshot(dir), before);
+  const plain = cli(['render', 'x.dap', '--out', 'out'], { cwd: dir });
+  assert.equal(plain.status, 1);
+  assert.ok(oneLine(plain.stderr), plain.stderr);
+  assert.deepEqual(snapshot(dir), before);
+});
+
+test('L1 a file with no scenes is refused for --scene in render, whatever the value; without --scene it renders one still picture', (t) => {
+  const dir = workspace(t, { 'plain.dap': dap('box a "A"\n') });
+  for (const value of ['1', 'first']) {
+    const run = cli(['render', 'plain.dap', '--scene', value, '--out', 'o'], { cwd: dir });
+    assert.equal(run.status, 1, value);
+    assert.match(run.stderr, /--scene: no scene .*no scenes/);
+    assert.deepEqual(files(dir), ['plain.dap']);
+  }
+  assert.equal(cli(['render', 'plain.dap', '--out', 'o'], { cwd: dir }).status, 0);
+});
+
+test('L3 check refuses every option that only writes output, as a usage error that touches nothing', (t) => {
+  const dir = workspace(t, { 'x.dap': TWO_SCENES });
+  const before = snapshot(dir);
+  for (const args of [['--html'], ['--static'], ['--out', 'o'], ['--scene', '1'], ['--title', 'T']]) {
+    const run = cli(['check', 'x.dap', ...args], { cwd: dir });
+    assert.equal(run.status, 2, args.join(' '));
+    assert.match(run.stderr, new RegExp(`${args[0]} is not for check`));
+    assert.equal(run.stdout, '');
+  }
+  assert.equal(cli(['render', 'x.dap', '--title', 'T'], { cwd: dir }).status, 2);
+  assert.deepEqual(snapshot(dir), before);
+});
+
+test('L6 #177 a write that cannot happen is one stderr line and exit 1, leaving every existing file as it was', (t) => {
+  const dir = workspace(t, { 'x.dap': TWO_SCENES, 'blocker': 'i am a file', 'o/x.svg': 'old picture', 'o/x.html/keep.txt': 'inside a folder' });
+  const scenarios = [
+    ['render', 'x.dap', '--out', 'blocker'],
+    ['render', 'x.dap', '--out', 'blocker/inner'],
+    ['render', 'x.dap', '--out', 'o', '--html'],
+  ];
+  for (const args of scenarios) {
+    const before = snapshot(dir);
+    const run = cli(args, { cwd: dir });
+    assert.equal(run.status, 1, args.join(' '));
+    assert.ok(oneLine(run.stderr), `${args.join(' ')}: ${JSON.stringify(run.stderr)}`);
+    assert.doesNotMatch(run.stderr, /\n\s+at |node:internal|Error:/);
+    assert.equal(run.stdout, '');
+    assert.deepEqual(snapshot(dir), before, args.join(' '));
   }
 });
 
-// 근거: 이슈 #73. 대소문자만 다른 `INDEX.html`은 대소문자를 가리지 않는 파일 시스템에서 `index.html`과 같은 파일이다
-test('main_gallery_treats_reserved_names_case_insensitively', () => {
-  withFolder((folder) => {
-    writeFileSync(join(folder, 'INDEX.dap'), NAMED_BOX('INDEX'));
-
-    const result = run(['gallery', '.', '--out', 'out'], folder);
-    const srcs = iframeSrcs(readFileSync(join(folder, 'out', 'index.html'), 'utf8'));
-
-    assert.equal(result.status, 0, result.stderr);
-    assert.equal(srcs.length, 1);
-    assert.notEqual(srcs[0].toLowerCase(), 'index.html');
-    assert.ok(readFileSync(join(folder, 'out', srcs[0]), 'utf8').includes('INDEX figure'));
-  });
+test('L6 a successful render replaces an old output completely and leaves no temporary files', (t) => {
+  const dir = workspace(t, { 'x.dap': TWO_SCENES, 'o/x.svg': 'old picture', 'o/x.html': 'old page' });
+  assert.equal(cli(['render', 'x.dap', '--out', 'o', '--html'], { cwd: dir }).status, 0);
+  assert.deepEqual(files(join(dir, 'o')), ['x.html', 'x.svg']);
+  assert.match(read(dir, 'o/x.svg'), /^<svg /);
+  assert.match(read(dir, 'o/x.html'), /^<!doctype html>/);
 });
 
-// 근거: 이슈 완료 조건 "옛 명령 mutoscope가 같은 그림을 낸다", D08 별칭. 옛 이름으로 실행하면 stderr에만 폐기 안내를 쓴다
-test('main_old_command_name_renders_the_same_svg_and_only_stderr_gets_the_deprecation_notice', () => {
-  withFolder((folder) => {
-    const link = join(folder, 'mutoscope');
-    symlinkSync(CLI, link);
-    writeFileSync(join(folder, 'a.dap'), FLOW);
+// ---- gallery ----
 
-    const current = spawnSync(process.execPath, [CLI, 'render', 'a.dap', '--out', 'new'], { cwd: folder, encoding: 'utf8' });
-    const old = spawnSync(process.execPath, [link, 'render', 'a.dap', '--out', 'old'], { cwd: folder, encoding: 'utf8' });
-    const json = spawnSync(process.execPath, [link, 'check', 'a.dap', '--json'], { cwd: folder, encoding: 'utf8' });
-
-    assert.equal(current.stderr, '');
-    assert.equal(old.status, 0, old.stderr);
-    assert.match(old.stderr, /deprecated: the "mutoscope" command is now "daphnis"/);
-    assert.equal(readFileSync(join(folder, 'old/a.svg'), 'utf8'), readFileSync(join(folder, 'new/a.svg'), 'utf8'));
-    assert.equal(json.stdout, '');
-    assert.match(json.stderr, /deprecated/);
-  });
+test('L7 gallery writes every figure as SVG and page plus the list page and the document preview', (t) => {
+  const dir = workspace(t, { 'g/a.dap': dap('box a "A"\n'), 'g/b c.dap': dap('title "Second"\nbox b "B"\n'), 'g/notes.txt': 'not a source' });
+  const run = cli(['gallery', 'g', '--title', 'Mine'], { cwd: dir });
+  assert.equal(run.status, 0);
+  assert.deepEqual(files(join(dir, 'g/out')), ['a.html', 'a.svg', 'b c.html', 'b c.svg', 'document.html', 'index.html']);
+  const index = parseMarkup(read(dir, 'g/out/index.html'), { html: true });
+  const frames = findAll(index, (n) => n.tag === 'iframe').map((n) => n.attrs.src);
+  assert.deepEqual(frames.sort(), ['./a.html', './b%20c.html']);
+  assert.ok(findAll(index, (n) => n.tag === 'title').some((n) => textContent(n).includes('Mine')));
 });
 
-// 근거: 이슈 결정 "`.muto`는 계속 읽고 폐기 안내만 낸다". 같은 그림이고 종료 코드는 그대로, 안내는 새 확장자를 알린다
-test('cli_old_extension_is_read_with_only_a_deprecation_notice', () => {
-  withFolder((folder) => {
-    writeFileSync(join(folder, 'a.dap'), FLOW);
-    writeFileSync(join(folder, 'b.muto'), FLOW);
-
-    const result = run(['render', 'b.muto'], folder);
-    run(['render', 'a.dap'], folder);
-    const gallery = run(['gallery', '.', '--out', 'out'], folder);
-
-    assert.equal(result.status, 0, result.stderr);
-    assert.match(result.stderr, /^b\.muto: deprecated: the \.muto extension is now \.dap\. Rename the file to b\.dap$/m);
-    assert.ok(readFileSync(join(folder, 'b.svg'), 'utf8').replace('<title>b</title>', '<title>a</title>') === readFileSync(join(folder, 'a.svg'), 'utf8'), '같은 원본이면 이름 말고는 같은 SVG');
-    assert.equal(gallery.status, 0, gallery.stderr);
-    assert.match(readFileSync(join(folder, 'out/index.html'), 'utf8'), /<code class="name">b\.muto<\/code>/);
-  });
+test('L7 gallery reserves index.html and document.html; a source with such a name gets a "-player" page and the list stays the list', (t) => {
+  const dir = workspace(t, { 'g/index.dap': dap('box i "I"\n'), 'g/Document.dap': dap('box d "D"\n') });
+  assert.equal(cli(['gallery', 'g'], { cwd: dir }).status, 0);
+  assert.deepEqual(files(join(dir, 'g/out')), ['Document-player.html', 'Document.svg', 'document.html', 'index-player.html', 'index.html', 'index.svg']);
+  assert.match(read(dir, 'g/out/index.html'), /index-player\.html/);
 });
 
-const CHECK_TIMEOUT_MS = 5000;
-const nestedGroups = (inner, outer = 'g') => `flow right\ngroup ${outer} "G" {\ngroup ${inner} "H" {\nbox a "A"\n}\n}\nbox b "B"\na -> b\n`;
-
-// 근거: 이슈 #71 "중첩 그룹에 같은 이름을 쓰면 파서가 멈춘다". 제한 시간 안에 syntax 오류와 중복 선언 줄을 돌려주고, 이름만 바꾼 대조군은 통과한다
-test('check_nested_group_with_the_same_name_returns_a_syntax_error_with_the_declaration_line_in_time', () => {
-  withFolder((folder) => {
-    writeFileSync(join(folder, 'duplicate.dap'), nestedGroups('g'));
-    writeFileSync(join(folder, 'control.dap'), nestedGroups('h'));
-
-    const duplicate = spawnSync(process.execPath, [CLI, 'check', 'duplicate.dap', '--json'], { cwd: folder, encoding: 'utf8', timeout: CHECK_TIMEOUT_MS });
-    const control = spawnSync(process.execPath, [CLI, 'check', 'control.dap', '--json'], { cwd: folder, encoding: 'utf8', timeout: CHECK_TIMEOUT_MS });
-
-    assert.equal(duplicate.error, undefined, '제한 시간 안에 끝난다');
-    assert.equal(duplicate.status, 1);
-    const found = duplicate.stdout.trim().split('\n').map((line) => JSON.parse(line));
-    assert.equal(found.length, 1, '중복 하나만 알린다');
-    assert.equal(found[0].code, 'syntax');
-    assert.equal(found[0].line, 3);
-    assert.match(found[0].message, /the name "g" is already used \(line 2\)/);
-    assert.equal(control.status, 0, control.stderr);
-  });
+test('L7 gallery is all or nothing: a source with an error, no source at all, or a name clash writes nothing', (t) => {
+  const dir = workspace(t, { 'bad/ok.dap': dap('box a "A"\n'), 'bad/bad.dap': BAD, 'empty/readme.txt': 'x', 'clash/Same.dap': dap('box a "A"\n'), 'clash/same.dap': dap('box b "B"\n') });
+  for (const folder of ['bad', 'empty']) {
+    const before = snapshot(dir);
+    const run = cli(['gallery', folder], { cwd: dir });
+    assert.equal(run.status, 1, folder);
+    assert.deepEqual(snapshot(dir), before, folder);
+  }
+  // 대소문자만 다른 두 원본은 같은 폴더에 둘 다 만들 수 있는 파일 시스템에서만 시험할 수 있다
+  if (files(join(dir, 'clash')).length !== 2) return t.skip('this filesystem folds case: two sources that differ only by case cannot coexist');
+  const run = cli(['gallery', 'clash'], { cwd: dir });
+  assert.equal(run.status, 1);
+  assert.match(run.stderr, /would be written twice/);
+  assert.ok(!files(join(dir, 'clash')).includes('out'));
 });
 
-// 근거: 이슈 #71 "부모 관계에 순환이 생기는 경로". 바깥 그룹 이름을 더 깊은 곳에서 다시 선언해도, 같은 이름의 형제나 도형을 써도 유한 시간에 중복 오류가 된다
-test('check_duplicate_names_end_in_a_duplicate_error_for_every_nesting_shape', () => {
-  const cases = [
-    { name: 'two_levels_down', source: 'flow right\ngroup g "G" {\ngroup h "H" {\ngroup g "I" {\nbox a "A"\n}\n}\n}\nbox b "B"\na -> b\n', line: 4, first: 2 },
-    { name: 'siblings', source: 'flow right\ngroup g "G" {\nbox a "A"\n}\ngroup g "H" {\nbox c "C"\n}\na -> c\n', line: 5, first: 2 },
-    { name: 'node_inside_group_of_same_name', source: 'flow right\ngroup g "G" {\nbox g "A"\n}\nbox b "B"\ng -> b\n', line: 2, first: 3 },
-  ];
-  withFolder((folder) => {
-    for (const { name, source, line, first } of cases) {
-      writeFileSync(join(folder, `${name}.dap`), source);
-
-      const result = spawnSync(process.execPath, [CLI, 'check', `${name}.dap`, '--json'], { cwd: folder, encoding: 'utf8', timeout: CHECK_TIMEOUT_MS });
-
-      assert.equal(result.error, undefined, `${name}: 제한 시간 안에 끝난다`);
-      assert.equal(result.status, 1, name);
-      const messages = result.stdout.trim().split('\n').map((entry) => JSON.parse(entry));
-      assert.deepEqual(messages.map((m) => [m.line, m.code]), [[line, 'syntax']], name);
-      assert.match(messages[0].message, new RegExp(`already used \\(line ${first}\\)`), name);
-    }
-  });
+test('L7 gallery refuses render-only options, and a write that cannot happen leaves the output folder as it was', (t) => {
+  const dir = workspace(t, { 'g/a.dap': dap('box a "A"\n'), 'g/b.dap': dap('box b "B"\n'), 'g/out/b.html/keep.txt': 'folder in the way' });
+  for (const option of ['--static', '--json']) assert.equal(cli(['gallery', 'g', option], { cwd: dir }).status, 2, option);
+  const before = snapshot(dir);
+  const run = cli(['gallery', 'g'], { cwd: dir });
+  assert.equal(run.status, 1);
+  assert.ok(oneLine(run.stderr), JSON.stringify(run.stderr));
+  assert.deepEqual(snapshot(dir), before);
 });
 
-// 근거: 이슈 #71 "순환 방문도 방어한다". 부모가 순환인 모형이 검증에 들어와도 멈추지 않고 순환을 알리는 예외로 끝난다
-test('validateFigure_stops_with_a_cycle_error_instead_of_looping_on_a_parent_cycle', () => {
-  const script = `
-    import { validateFigure } from ${JSON.stringify(new URL('../src/source/validate.js', import.meta.url).href)};
-    import { createProblems } from ${JSON.stringify(new URL('../src/source/problems.js', import.meta.url).href)};
-    const figure = { kind: 'flow', nodes: [{ id: 'a', parent: 'g', line: 4 }, { id: 'b', line: 7 }], groups: [{ id: 'g', parent: 'g', line: 2 }], edges: [{ from: 'a', to: 'b', line: 8 }], values: [], steps: [], rejectedNames: new Set(), chart: { series: [] } };
-    try { validateFigure(figure, createProblems()); console.log('returned'); } catch (error) { console.log(error.message); }
-  `;
-
-  const result = spawnSync(process.execPath, ['--input-type=module', '-e', script], { encoding: 'utf8', timeout: CHECK_TIMEOUT_MS });
-
-  assert.equal(result.error, undefined, '제한 시간 안에 끝난다');
-  assert.match(result.stdout, /parent cycle/);
+test('L7 gallery links are plain relative paths: odd names are percent-encoded so a name can never become a URL scheme', (t) => {
+  const dir = workspace(t, { 'g/javascript:alert(1).dap': dap('box a "A"\n'), 'g/a#b?c.dap': dap('box b "B"\n') });
+  assert.equal(cli(['gallery', 'g'], { cwd: dir }).status, 0);
+  const index = parseMarkup(read(dir, 'g/out/index.html'), { html: true });
+  const urls = findAll(index, (n) => n.attrs.src !== undefined || n.attrs.href !== undefined).flatMap((n) => [n.attrs.src, n.attrs.href]).filter((u) => u && !u.startsWith('data:') && u !== '#');
+  for (const url of urls) assert.doesNotMatch(url, /^[a-z][a-z0-9+.-]*:/i, url);
+  assert.ok(urls.some((u) => u.startsWith('./a%23b%3Fc')));
 });
 
-// 근거: 이슈 #69 "갤러리 파일명이 URL 스킴으로 해석된다". 목록과 문서 미리보기가 파일명을 href와 src에 경로 조각 인코딩과 `./` 접두로만 쓴다
-test('gallery_links_a_scheme_like_file_name_only_as_an_encoded_explicit_relative_path', () => {
-  withFolder((folder) => {
-    writeFileSync(join(folder, 'javascript:parent.__daphnisAudit=1;void(0).dap'), FLOW);
-    writeFileSync(join(folder, 'javascript:parent.__daphnisAudit=2;void(0).muto'), FLOW);
-
-    const result = run(['gallery', '.', '--out', 'out'], folder);
-
-    assert.equal(result.status, 0, result.stderr);
-    for (const page of ['index.html', 'document.html']) {
-      const html = readFileSync(join(folder, 'out', page), 'utf8');
-      const links = [...html.matchAll(/\b(?:href|src)="([^"]*)"/g)].map((m) => m[1]).filter((url) => !url.startsWith('data:') && !['index.html', 'document.html'].includes(url));
-      assert.ok(links.length > 0, page);
-      assert.deepEqual(links.filter((url) => !url.startsWith('./')), [], `${page}: 모든 파일 링크는 ./로 시작한다`);
-      assert.ok(!/(?:href|src)="javascript/i.test(html), `${page}: 스킴으로 시작하는 링크가 없다`);
-      assert.ok(html.includes('./javascript%3Aparent.__daphnisAudit%3D1%3Bvoid%280%29') && html.includes('./javascript%3Aparent.__daphnisAudit%3D2%3Bvoid%280%29'), `${page}: 경로 조각은 퍼센트 인코딩이다`);
-    }
-  });
-});
-
-// 근거: 설계 charts.md "머리와 선언 줄": 잘못된 차트 헤더는 지원하는 종류를 알려 주는 1번 줄 구문 오류다
-test('check_chart_header_without_or_with_a_wrong_type_is_a_line_1_syntax_error_not_an_internal_one', () => {
-  withFolder((folder) => {
-    for (const [source, found] of [['chart\n', ''], ['chart bogus\n', 'bogus'], ['chart bogus\nrow "A" s=1\n', 'bogus']]) {
-      writeFileSync(join(folder, 'h.dap'), source);
-
-      const result = run(['check', 'h.dap', '--json'], folder);
-      const diagnostics = result.stdout.trim().split('\n').map((line) => JSON.parse(line));
-
-      assert.equal(result.status, 1, source);
-      assert.deepEqual(diagnostics.map((d) => [d.code, d.line]), [['syntax', 1]], `${source}: ${result.stdout}`);
-      assert.match(diagnostics[0].message, /bar, .*heatmap/, source);
-      if (found) assert.ok(diagnostics[0].message.includes(`"${found}"`), diagnostics[0].message);
-    }
-  });
-});
-
-// 근거: 계약 figure-syntax.md 호환 규칙: 확장자 폐기 안내는 옛 확장자 입력 파일마다 한 번이다
-test('cli_migrate_reports_the_old_extension_once_per_input_file_and_none_for_the_new_extension', () => {
-  withFolder((folder) => {
-    for (const name of ['legacy.muto', 'other.muto', 'current.dap']) writeFileSync(join(folder, name), FLOW);
-    const countOf = (stream, name) => stream.split('\n').filter((line) => line.includes('deprecated-extension') && line.includes(name)).length;
-
-    const one = run(['migrate', 'legacy.muto', '--json'], folder);
-    const many = run(['migrate', 'legacy.muto', 'other.muto', 'current.dap', '--json'], folder);
-    const text = run(['migrate', 'legacy.muto'], folder);
-
-    assert.equal(one.status, 0, one.stderr);
-    assert.equal(countOf(one.stderr + one.stdout, 'legacy.muto'), 1, one.stderr);
-    assert.deepEqual([countOf(many.stderr + many.stdout, 'legacy.muto'), countOf(many.stderr + many.stdout, 'other.muto'), countOf(many.stderr + many.stdout, 'current.dap')], [1, 1, 0]);
-    assert.equal(text.stderr.split('\n').filter((line) => line.includes('the .muto extension')).length, 1, text.stderr);
-    assert.equal(text.stdout, '');
-  });
-});
-
-// 근거: 이슈 #103 완료 조건 "유한한 시간 둘의 합이 상한을 넘으면 진단을 내고 결과 파일을 쓰지 않는다". 각각은 상한 안이고 합만 1ms 넘는다
-test('main_render_with_a_total_time_over_the_limit_exits_1_and_writes_no_file', () => {
-  const head = 'flow right\nbox a "A"\nbox b "B"\na -> b\n';
-  withFolder((folder) => {
-    writeFileSync(join(folder, 'long.dap'), `${head}step "one" for=1800000ms\n  track a -> b time=1ms\nstep "two" for=1800001ms\n  track a -> b time=1ms\n`);
-    writeFileSync(join(folder, 'edge.dap'), `${head}step "one" for=1800000ms\n  track a -> b time=1ms\nstep "two" for=1800000ms\n  track a -> b time=1ms\n`);
-
-    const over = run(['render', 'long.dap', '--html'], folder);
-    const exact = run(['render', 'edge.dap', '--html'], folder);
-
-    assert.equal(over.status, 1);
-    assert.match(over.stderr, /^long\.dap:7: the figure runs longer than the limit of 1h \(3600000ms\)/m);
-    assert.ok(!existsSync(join(folder, 'long.svg')) && !existsSync(join(folder, 'long.html')));
-    assert.equal(exact.status, 0, exact.stderr);
-    assert.ok(existsSync(join(folder, 'edge.svg')) && existsSync(join(folder, 'edge.html')));
-  });
-});
-
-// 근거: 이슈 #103 완료 조건 "끝없이 생성 원본이 출발 배열을 만들기 전에 진단으로 끝난다". 수정 전에는 힙 200MB 안에서 메모리 부족으로 죽던 원본이다. 자식 프로세스에 힙 제한과 제한 시간을 둬서 되돌아와도 시험이 멈추거나 메모리를 다 쓰지 않는다
-test('main_render_of_the_endless_departure_source_ends_with_a_time_limit_diagnostic_and_no_file', () => {
-  const source = 'flow right\nbox a "A"\nbox b "B"\na -> b\nstep "Load" for=100000000000000020000ms\n  track a -> b time=1ms at=100000000000000000000ms every=100ms\n';
-  withFolder((folder) => {
-    writeFileSync(join(folder, 'endless.dap'), source);
-
-    const result = spawnSync(process.execPath, ['--max-old-space-size=200', CLI, 'render', 'endless.dap', '--html'], { cwd: folder, encoding: 'utf8', timeout: 20000 });
-
-    assert.equal(result.status, 1, `${result.signal} ${result.stderr.slice(-300)}`);
-    assert.match(result.stderr, /^endless\.dap:5: for is over the limit of 1h \(3600000ms\)/m);
-    assert.match(result.stderr, /^endless\.dap:6: at is over the limit of 1h \(3600000ms\)/m);
-    assert.ok(!existsSync(join(folder, 'endless.svg')) && !existsSync(join(folder, 'endless.html')));
-  });
-});
-
-// 근거: 이슈 #110 완료 조건 "60초, 600초, 3600초 이동의 최대 메모리 차이가 정해진 한도 안". 시간 상한 안의 가장 긴 글 상자 이동(3595초, 3600초는 자동 체류가 더해져 상한을 넘는다)까지 모두 힙 300MB 안에서 끝난다.
-// 수정 전에는 600초에서 힙이 모자라 죽었다. 자식 프로세스에 힙 제한과 제한 시간을 둬서 되돌아와도 시험이 멈추거나 메모리를 다 쓰지 않는다
-for (const seconds of [60, 600, 3595]) {
-  test(`main_check_and_render_of_a_${seconds}s_chip_move_finish_inside_a_300MB_heap`, () => {
-    const source = `flow right\nbox a "A"\nbox b "B"\na -> b\nstep "Long"\n  a -> b "요청" time=${seconds}s\n`;
-    withFolder((folder) => {
-      writeFileSync(join(folder, 'long.dap'), source);
-
-      const options = { cwd: folder, encoding: 'utf8', timeout: 30000 };
-      const check = spawnSync(process.execPath, ['--max-old-space-size=300', CLI, 'check', 'long.dap'], options);
-      const render = spawnSync(process.execPath, ['--max-old-space-size=300', CLI, 'render', 'long.dap', '--html'], options);
-
-      assert.equal(check.status, 0, `${check.signal} ${check.stderr.slice(-300)}`);
-      assert.equal(render.status, 0, `${render.signal} ${render.stderr.slice(-300)}`);
-      assert.ok(existsSync(join(folder, 'long.svg')) && existsSync(join(folder, 'long.html')));
-    });
-  });
-}
-
-// 근거: 이슈 #103 완료 조건 "정밀도 원본은 내부 오류가 아니라 6번 줄의 시간 정밀도 입력 진단". 원본 그대로 힙 200MB와 제한 시간에서 실행한다
-test('main_render_of_the_precision_source_reports_a_time_precision_diagnostic_on_line_6_and_no_file', () => {
-  const source = 'flow right\nbox a "A"\nbox b "B"\na -> b\nstep "T" for=3599999.0000000005ms\n  track a -> b time=1ms at=3599999ms every=0.000000000001ms\n';
-  withFolder((folder) => {
-    writeFileSync(join(folder, 'precision.dap'), source);
-
-    const result = spawnSync(process.execPath, ['--max-old-space-size=200', CLI, 'render', 'precision.dap', '--html'], { cwd: folder, encoding: 'utf8', timeout: 20000 });
-
-    assert.equal(result.status, 1, `${result.signal} ${result.stderr.slice(-300)}`);
-    assert.match(result.stderr, /^precision\.dap:6: time precision is not supported: .* Raise every= or lower at=$/m);
-    assert.ok(!existsSync(join(folder, 'precision.svg')) && !existsSync(join(folder, 'precision.html')));
-  });
+test('L8 rendering twice, in two processes, gives the same bytes', (t) => {
+  const dir = workspace(t, { 'x.dap': TWO_SCENES });
+  cli(['render', 'x.dap', '--out', 'one', '--html'], { cwd: dir });
+  cli(['render', 'x.dap', '--out', 'two', '--html'], { cwd: dir });
+  assert.equal(read(dir, 'one/x.svg'), read(dir, 'two/x.svg'));
+  assert.equal(read(dir, 'one/x.html'), read(dir, 'two/x.html'));
 });

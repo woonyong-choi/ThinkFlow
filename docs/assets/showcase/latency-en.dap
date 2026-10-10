@@ -1,18 +1,18 @@
-chart dumbbell
-title "p95 latency by endpoint"
-subtitle "Example data. Mean of 5 runs per endpoint, before and after adding a cache"
-x "Latency (ms)"
+daphnis 2
+title "Before and after adding a cache"
+subtitle "The p95 latency of the same 1,000 requests per endpoint, measured without and with a cache"
 
-series before "Before" role=compare
-series after "After" role=main
+chart latency "p95 latency per endpoint" dumbbell "Example data. The horizontal scale is logarithmic" {
+  x "p95 latency (ms, log scale)"
+  scale log
+  series base "No cache" role=compare
+  series cached "Cached" role=main
+  row "GET /products" base=480 cached=42
+  row "GET /orders" base=650 cached=120
+  row "GET /search" base=1800 cached=340
+  row "POST /orders" base=420 cached=410
+}
 
-row "GET /search" before=840 before.low=790 before.high=900 after=210 after.low=190 after.high=235
-row "GET /feed" before=620 before.low=580 before.high=670 after=240 after.low=215 after.high=270
-row "POST /checkout" before=450 before.low=420 before.high=490 after=380 after.low=350 after.high=410
-row "GET /profile" before=180 before.low=165 before.high=200 after=60 after.low=52 after.high=70
-
-step "Before" "Without the cache, search and feed requests are slow"
-  reveal before
-step "After" "With the cache, every endpoint gets faster and search drops the most"
-  reveal after
-  light "GET /search"
+scene "Before and after" mode=static
+  reveal latency.base
+  reveal latency.cached

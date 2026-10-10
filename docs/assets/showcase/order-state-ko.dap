@@ -1,5 +1,6 @@
-state down
+daphnis 2
 title "주문 상태"
+subtitle "결제가 끝나면 출고되고 수령으로 끝나며, 취소는 다른 끝 상태다"
 
 state created "생성됨"
 state paid "결제됨"
@@ -16,10 +17,9 @@ shipped -> delivered "수령 확인"
 created -> cancelled "결제 실패"
 paid -> cancelled "고객 취소" dashed
 
-step "정상 주문" "결제가 끝나면 출고되고 수령으로 끝납니다"
-  created -> paid "39,000원"
-  paid -> shipped
-  shipped -> delivered
-step "취소" "결제 뒤에도 출고 전이면 취소할 수 있습니다"
-  created -> paid
-  paid -> cancelled "환불"
+view graph down
+
+scene "정상 주문" mode=static
+  created -> paid time=700ms
+  paid -> shipped time=700ms
+  shipped -> delivered time=700ms

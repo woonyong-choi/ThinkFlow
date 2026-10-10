@@ -3,12 +3,14 @@ import { arrivalOffsetMs } from './easing.js';
 import { ratio } from './format.js';
 import { hopMs, lengthMs } from './hop-ms.js';
 import { isPassed } from './lost.js';
-import { flattenRoute, routeLength } from './route.js';
+import { trackGeometry, trackInstances } from './track-geometry.js';
+import { mirrorPace } from './track-pace.js';
 import { makeDiagnostic, FigureError } from './source/problems.js';
 import { TIME_LIMIT_MS } from './source/values.js';
 import { checkMoveInputs, gridPlan, inputTicks, msOfTicks, TICKS_PER_MS } from './time-grid.js';
+import { chartSegState } from './timeline-charts.js';
 import { createSeg } from './timeline-seg.js';
-import { values } from './tokens.js';
+import { values } from './vendor/theme/tokens.js';
 
 const FLOW_STEP_MS = values.duration['flow-step'];
 // 한 그림이 그릴 수 있는 점 수의 하드 상한. 경고 기준(`scale.flow-dots-max`)의 열 배다. 경고선 위에서 그림은 느려질 뿐이지만 이 선을 넘으면 입력이 처리 예산을 넘으므로 그리지 않는다.
@@ -19,36 +21,31 @@ const DOTS_LIMIT = values.scale['flow-dots-max'] * 10;
 // basis: estimate
 // 흐름 하나가 지나는 길. 구간마다 선 경로를(거꾸로 선이면 뒤집어) 이어 붙이고, 이동 시간은 구간 시간(선 길이 비례)의 합이다. time=이 있으면 경로 전체의 시간이다.
 // 도형을 지나는 곳은 구간이 끝나는 점과 다음 구간이 시작하는 점을 잇는 직선이고(모서리를 둥글리지 않는다), 그 길이도 경로 길이에 센다. route는 그려지는 길을 편 점 목록이다. fracs[k]는 k번째 도형 경계에 닿는 길이 비율, gaps는 도형 안을 지나는 비율 구간이다.
+// 경로가 든 그래프 보기가 여럿이면 첫 보기가 이동 시간과 속도를 정하고, 나머지(mirrors)는 같은 시각에 같은 도형에 닿도록 자기 기하에 맞춘 길만 따로 둔다.
 function planTrack(track, { scene, speed }) {
-  const parts = track.legs.map((leg) => (leg.isBack ? [...scene.edges[leg.edge].points].reverse() : scene.edges[leg.edge].points));
-  const lengths = parts.map((part) => routeLength(flattenRoute(part)));
-  const joins = parts.slice(1).map((part, i) => Math.hypot(part[0].x - parts[i].at(-1).x, part[0].y - parts[i].at(-1).y));
-  const total = lengths.reduce((sum, length) => sum + length, 0) + joins.reduce((sum, length) => sum + length, 0);
-  const fracs = [0];
-  const gaps = [];
-  let covered = 0;
-  lengths.forEach((length, i) => {
-    covered += length;
-    fracs.push(covered / total);
-    if (i < joins.length) {
-      gaps.push([covered / total, (covered + joins[i]) / total]);
-      covered += joins[i];
-    }
-  });
-  fracs[fracs.length - 1] = 1;
+  const [owner, ...others] = trackInstances(track);
+  const { lengths, joins, ...geometry } = trackGeometry({ path: track.path, legs: owner.legs }, scene);
   const legs = track.legTimes ? legPlan(track, { lengths: lengths.map((length, i) => length + (joins[i] ?? 0)), speed }) : undefined;
   return {
-    parts,
-    route: parts.flatMap((part) => flattenRoute(part)),
-    edges: [...new Set(track.legs.map((leg) => leg.edge))],
-    legEdges: track.legs.map((leg) => leg.edge),
-    names: track.path,
-    nodes: track.path.map((id) => id.split('.')[0]),
-    fracs,
-    gaps,
-    ms: legs?.ms ?? track.timeMs ?? parts.reduce((sum, part) => sum + hopMs(part, speed), 0),
+    ...geometry,
+    ms: legs?.ms ?? track.timeMs ?? geometry.parts.reduce((sum, part) => sum + hopMs(part, speed), 0),
     ...(legs ? { pace: legs.pace } : {}),
+    mirrors: others.map((instance) => ({ view: instance.view, ...omitLengths(trackGeometry({ path: track.path, legs: instance.legs }, scene)) })),
+    view: owner.view,
   };
+}
+
+const omitLengths = ({ lengths, joins, ...geometry }) => geometry;
+
+// cost: time O(m·l²), heap O(m·l), stack O(1)
+// vars: m = 다른 보기 수, l = 흐름의 선 수
+// basis: estimate
+// 첫 보기가 이동 시간(눈금에 올린 뒤의 ms)을 정한 다음, 다른 보기마다 같은 ms와 같은 도형 도착 시각을 갖는 plan을 만든다. 도형 후광의 도착 시각은 첫 보기만 읽는다.
+function mirrorPlans(plan) {
+  return plan.mirrors.map((mirror) => {
+    const pace = mirrorPace(plan, plan.pace, mirror);
+    return { ...mirror, ms: plan.ms, ...(pace ? { pace } : {}) };
+  });
 }
 
 // cost: time O(l), heap O(l), stack O(1)
@@ -106,7 +103,7 @@ export function departureCount(track, lengthMs) {
 // 이 단계의 점 수를 그림 전체 합계에 더하고, 한도를 넘으면 출발 시각 배열을 만들기 전에 오류로 끝낸다.
 function reserveDots(step, lengthMs, { run, limit }) {
   for (const track of step.tracks) {
-    run.dots = (run.dots ?? 0) + departureCount(track, lengthMs);
+    run.dots = (run.dots ?? 0) + departureCount(track, lengthMs) * trackInstances(track).length;
     if (run.dots > limit) throw new FigureError([makeDiagnostic({ severity: 'error', line: track.line, message: `[check 14] the flows would draw ${run.dots} dots, over the limit of ${limit}. Raise every=, shorten for=, or remove a track` }, { code: 'check-14' })]);
   }
 }
@@ -142,17 +139,20 @@ function departureTicks(track, lengthTicks) {
 // vars: d = 흐름의 출발 수, l = 흐름의 구간 수, p = 경로의 도형 수
 // basis: estimate
 /**
- * 흐름 하나의 출발마다 점(hops), 처음 닿는 선의 시각(edgesAt), 도형에 닿는 후광(pulses)을 모은다.
+ * 흐름 하나의 출발마다 점(hops)과 도형에 닿는 후광(pulses)을 모은다.
  * 단계 끝까지 도착하지 못하는 점과 사라지는 점(lost)은 그려지는 시간(cut)에서 끝나고, 사라지기 전에 통과하지 못한 도형은 후광도 선 켜짐도 없다.
  * 선은 점이 그 선에 들어선 지점(첫 선은 0, 그다음은 도형 안 구간을 지난 비율)이 사라지는 비율보다 앞일 때만 켜진다.
  */
-function trackEvents(plan, { track, index, length, chips, starts }, { hops, edgesAt, pulses }) {
+function trackEvents(plan, { track, index, length, chips, starts }, { hops, pulses }) {
   // 눈금에 올린 이동(plan.arrivals)은 닿는 시각도 눈금 번호로 더해 이벤트 처리와 같은 시각을 쓴다
-  const arrival = (at, k) => (plan.arrivals ? msOfTicks(Math.round(at * TICKS_PER_MS) + plan.arrivals[k]) : at + arrivalOffsetMs(plan.fracs[k], plan.ms, plan.pace));
+  const arrival = (view, at, k) => (view.arrivals ? msOfTicks(Math.round(at * TICKS_PER_MS) + view.arrivals[k]) : at + arrivalOffsetMs(view.fracs[k], view.ms, view.pace));
   const lostMs = track.lost === undefined ? Infinity : arrivalOffsetMs(track.lost, plan.ms, plan.pace);
-  for (const at of starts) hops.push({ track: index, edges: plan.edges, gaps: plan.gaps, isBack: false, at, ms: plan.ms, ...cutOf(Math.min(lostMs, at + plan.ms > length ? length - at : Infinity)), ...(plan.pace ? { pace: plan.pace } : {}), to: plan.nodes.at(-1), data: track.data === undefined ? undefined : chips(track.data), ...(track.tone ? { tone: track.tone } : {}), line: track.line });
-  for (const at of starts) plan.nodes.slice(1).forEach((id, k) => isPassed(plan.fracs[k + 1], track.lost) && pulses.push({ id, at: arrival(at, k + 1) }));
-  if (starts.length) plan.legEdges.forEach((edge, k) => isPassed(k === 0 ? 0 : plan.gaps[k - 1][1], track.lost) && (edgesAt[edge] = Math.min(edgesAt[edge] ?? Infinity, arrival(starts[0], k))));
+  // 이동 하나는 보기마다 점 하나다. 길이 다른 보기도 같은 출발, 이동 시간, 사라지는 시각을 쓰고 도형 후광(pulses)은 이름 하나라 첫 보기의 도착으로 한 번만 건다.
+  const views = [plan, ...mirrorPlans(plan)];
+  for (const at of starts) {
+    views.forEach((view, v) => hops.push({ track: index + v, edges: view.edges, legEdges: view.legEdges, gaps: view.gaps, isBack: false, at, ms: plan.ms, ...cutOf(Math.min(lostMs, at + plan.ms > length ? length - at : Infinity)), ...(view.pace ? { pace: view.pace } : {}), to: plan.nodes.at(-1), data: track.data === undefined ? undefined : chips(track.data), ...(track.tone ? { tone: track.tone } : {}), line: track.line }));
+  }
+  for (const at of starts) plan.nodes.slice(1).forEach((id, k) => isPassed(plan.fracs[k + 1], track.lost) && pulses.push({ id, at: arrival(plan, at, k + 1) }));
 }
 
 // 그려지는 시간(cut) 필드. 단계 끝이나 사라짐으로 잘리지 않으면(Infinity) 필드가 없다.
@@ -165,7 +165,7 @@ const cutOf = (cut) => (cut === Infinity ? {} : { cut });
  * 조건을 쓴 흐름 단계의 점. 출발마다 이벤트 처리에 넘겨 `when`이 거짓인 출발은 점을 만들지 않고(출발 수에는 들어간다), `wait`가 풀린 출발은 풀린 시각(`at`)에 출발하며,
  * 시간 초과로 끝난 대기는 `else` 도형으로 가는 점을 출발시킨다. 점의 이동, 선 켜짐, 후광은 조건이 없는 흐름과 같은 규칙(trackEvents)이다.
  */
-function conditionalTracks(plans, { step, first, length, chips, run, scene, engine }, out) {
+function conditionalTracks(plans, { step, indexes, length, chips, run, scene, engine }, out) {
   const t0 = run.t;
   const base = (id) => id.split('.')[0];
   const lengthTicks = inputTicks(length, { line: step.line, key: 'for' });
@@ -185,17 +185,19 @@ function conditionalTracks(plans, { step, first, length, chips, run, scene, engi
     if (isElse) branches.push({ launch, rel: msOfTicks(at) });
     else starts[launch.track].push(msOfTicks(at));
   }
-  plans.forEach((plan, i) => trackEvents(plan, { track: step.tracks[i], index: first + i, length, chips, starts: starts[i].sort((a, b) => a - b) }, out));
+  plans.forEach((plan, i) => trackEvents(plan, { track: step.tracks[i], index: indexes[i], length, chips, starts: starts[i].sort((a, b) => a - b) }, out));
   for (const { launch, rel } of branches) branchEvents(step.tracks[launch.track], { plan: launch.elsePlan, rel, length, chips }, out);
 }
 
-// cost: time O(1), heap O(1), stack O(1)
+// cost: time O(v), heap O(v), stack O(1)
+// vars: v = 흐름이 지나는 그래프 보기 수
 // basis: estimate
-// 시간 초과 분기 점 하나. 출발 도형에서 `else` 도형으로 가는 선 하나를 지난다. 글과 색은 흐름에서 이어받고, 단계 끝까지 도착하지 못하면 그 끝에서 잘린다.
-function branchEvents(track, { plan, rel, length, chips }, { hops, edgesAt, pulses }) {
-  const { edge, isBack } = track.elseLeg;
-  hops.push({ edge, isBack: Boolean(isBack), at: rel, ms: plan.ms, ...cutOf(rel + plan.ms > length ? length - rel : Infinity), to: plan.nodes.at(-1), data: track.data === undefined ? undefined : chips(track.data), ...(track.tone ? { tone: track.tone } : {}), line: track.line });
-  edgesAt[edge] = Math.min(edgesAt[edge] ?? Infinity, rel);
+// 시간 초과 분기 점. 출발 도형에서 `else` 도형으로 가는 선을 보기마다 하나씩 같은 시각에 지난다(이동 시간은 첫 보기가 정한다). 글과 색은 흐름에서 이어받고, 단계 끝까지 도착하지 못하면 그 끝에서 잘린다.
+function branchEvents(track, { plan, rel, length, chips }, { hops, pulses }) {
+  for (const { elseLeg } of trackInstances(track)) {
+    const { edge, isBack } = elseLeg;
+    hops.push({ edge, isBack: Boolean(isBack), at: rel, ms: plan.ms, ...cutOf(rel + plan.ms > length ? length - rel : Infinity), to: plan.nodes.at(-1), data: track.data === undefined ? undefined : chips(track.data), ...(track.tone ? { tone: track.tone } : {}), line: track.line });
+  }
   pulses.push({ id: plan.nodes.at(-1), at: msOfTicks(Math.round(rel * TICKS_PER_MS) + plan.arrivals.at(-1)) });
 }
 
@@ -204,7 +206,7 @@ function branchEvents(track, { plan, rel, length, chips }, { hops, edgesAt, puls
 // basis: estimate
 /**
  * 흐름 단계 하나의 구간. 구간 길이는 단계의 for=이고, 없으면 토큰 duration.flow-step이다.
- * 선은 점이 처음 닿는 시각에 켜지고 단계 끝까지 남는다(edgesAt). 도형은 켜 두지 않고 점이 닿을 때마다 후광만 깜빡인다(pulses: { id, at }).
+ * 선은 점이 올라 있는 동안만 활성이고(이동의 길 계획), 도형은 켜 두지 않고 점이 닿을 때마다 후광만 깜빡인다(pulses: { id, at }).
  * @param run 시간표를 지나며 이어지는 값 { figure, speed, t, tracks, ... }
  * @param deps { scene, cards, chips, dotsLimit? }. dotsLimit은 그림 전체 점 수의 하드 상한이고(기본 `scale.flow-dots-max`의 열 배), 넘으면 FigureError다
  * @param step 단계 { step, si, engine }. engine은 조건을 쓴 단계의 이벤트 처리 그릇(flow-events.js)이고, 있으면 출발 시각과 건너뜀을 그 결과로 정한다
@@ -217,35 +219,41 @@ export function flowSeg({ step, si, engine }, run, { scene, cards, chips, dotsLi
     checkMoveInputs(track, track.line);
     return gridPlan(plan, { line: track.line });
   });
-  const first = run.tracks.length;
-  run.tracks.push(...plans.map((plan, i) => ({ parts: plan.parts, route: plan.route, names: plan.names, gaps: plan.gaps, line: step.tracks[i].line })));
+  // 흐름 하나는 지나는 그래프 보기마다 길 하나를 시간표의 tracks에 둔다(첫 보기가 앞). indexes[i]는 흐름 i의 첫 보기 길 번호, source는 문서 전체에서 센 흐름 번호다.
+  const source = run.tracks.reduce((count, track) => Math.max(count, track.source + 1), 0);
+  const indexes = [];
+  step.tracks.forEach((track, i) => {
+    indexes.push(run.tracks.length);
+    const { mirrors, view, ...owner } = plans[i];
+    for (const geometry of [{ ...owner, view }, ...mirrors]) run.tracks.push({ parts: geometry.parts, route: geometry.route, names: geometry.names, gaps: geometry.gaps, line: track.line, source: source + i, view: geometry.view });
+  });
   const length = step.forMs ?? FLOW_STEP_MS;
   reserveDots(step, length, { run, limit: dotsLimit });
   const hops = [];
-  const edgesAt = {};
   const pulses = [];
-  if (engine) conditionalTracks(plans, { step, first, length, chips, run, scene, engine }, { hops, edgesAt, pulses });
-  else plans.forEach((plan, i) => trackEvents(plan, { track: step.tracks[i], index: first + i, length, chips, starts: departures(step.tracks[i], length) }, { hops, edgesAt, pulses }));
+  if (engine) conditionalTracks(plans, { step, indexes, length, chips, run, scene, engine }, { hops, pulses });
+  else plans.forEach((plan, i) => trackEvents(plan, { track: step.tracks[i], index: indexes[i], length, chips, starts: departures(step.tracks[i], length) }, { hops, pulses }));
   const start = cards.starts.get(step) ?? {};
   const seg = createSeg(run, {
     line: step.line,
     si,
     bi: 0,
     length,
-    labelShifts: [],
     move: length,
     hops,
-    edgesOn: [],
     nodesOn: [],
     partsOn: [],
     card: { before: start, after: start, at: {} },
-    caption: step.caption ?? '',
-    growing: run.hasReveal || si > 0 ? [] : run.seriesIds,
-    lights: [],
+    charts: chartSegState(run, { charts: new Map() }, { si, bi: 0 }),
     status: step.status,
-    extra: { edgesAt, nodesAt: {}, pulses: pulses.filter(({ at }) => at < length) },
+    // 단계 끝(for=)에 닿는 점도 이 단계의 사건이다. 닿지 못하고 잘리는 점(끝 뒤에 닿는 점)만 후광이 없다.
+    extra: { pulses: pulses.filter(({ at }) => at <= length) },
   });
   if (engine) return { segs: [seg], moves: [] };
-  const moves = hops.map((hop) => ({ ...plans[hop.track - first], start: seg.t0 + hop.at, sets: step.tracks[hop.track - first].sets, lost: step.tracks[hop.track - first].lost }));
+  // 값은 흐름의 사건 하나에 한 번만 바뀐다. 다른 보기의 점은 같은 사건의 모양이라 값을 바꾸는 이동이 아니다.
+  const moves = hops.flatMap((hop) => {
+    const i = indexes.indexOf(hop.track);
+    return i < 0 ? [] : [{ ...plans[i], start: seg.t0 + hop.at, sets: step.tracks[i].sets, lost: step.tracks[i].lost }];
+  });
   return { segs: [seg], moves };
 }

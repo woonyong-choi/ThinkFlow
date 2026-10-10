@@ -1,18 +1,18 @@
-// 원본 전체를 읽어 그림 모형(figure)으로 만든다. 줄을 머리, 선언, 시간 흐름 세 부분으로 나누고 문장마다 맡을 함수를 고른다.
-import { readChartDeclaration } from './chart.js';
-import { readColumn, readDeclaration, readEdge } from './declare.js';
+// 원본 전체를 읽어 문서 모형(figure) 하나로 만든다. 줄을 머리, 선언, 시간 흐름 세 부분으로 나누고 문장마다 맡을 함수를 고른다.
+import { BLOCK_WORDS, STATEMENTS, VALUES, VERSION } from './grammar.js';
+import { BLOCK_READERS, openBlock } from './blocks.js';
+import { readDeclaration, readEdge } from './declare.js';
 import { closeGroup } from './group.js';
-import { readGrid, readGridLine } from './grid.js';
 import { readIcons } from './icons.js';
-import { DECIMALS_MAX, DEFAULT_VERSION, KINDS, STATEMENTS, VALUES, VERSION, valueNames } from './grammar.js';
 import { tokenizeLine } from './lexer.js';
-import { normalizeKind, normalizeStatement } from './normalize.js';
 import { createProblems } from './problems.js';
 import { readTimeline } from './steps.js';
+import { readHeader } from './header.js';
+import { readSequenceControl, prepareSequenceFragments } from './sequence-fragments.js';
+import { readVersion } from './version.js';
 import { readOn, readValue } from './value.js';
+import { readView } from './view.js';
 import { validateFigure } from './validate.js';
-import { isOverTimeLimit, overLimitMessage, parseTime } from './values.js';
-import { NUMBER_PATTERN } from './words.js';
 
 const SECTIONS = ['header', 'declare', 'timeline'];
 
@@ -20,15 +20,15 @@ const SECTIONS = ['header', 'declare', 'timeline'];
 // vars: n = 원본 글자 수, s = 문장 수, k = 이름 수
 // basis: estimate
 /**
- * 원본을 그림 모형으로 읽는다.
- * @returns { figure, warnings, deprecations }. figure 형식은 emptyFigure 주석
+ * 원본을 문서 모형으로 읽는다.
+ * @returns { figure, warnings }. figure 형식은 emptyFigure 주석
  * @throws FigureError 오류가 하나라도 있을 때. 오류를 모두 담는다
  */
 export function parseFigure(source) {
   const problems = createProblems(source);
   const figure = readFigure(source, problems);
   problems.throwIfAny();
-  return { figure, warnings: problems.warnings, deprecations: problems.deprecations };
+  return { figure, warnings: problems.warnings };
 }
 
 // cost: time O(n + s·k), heap O(n), stack O(1)
@@ -36,73 +36,44 @@ export function parseFigure(source) {
 // basis: estimate
 /**
  * 원본을 읽고 오류와 경고를 problems에 모은다. 뒤 단계(글꼴, data) 오류와 함께 한 번에 알리기 위해 오류가 있어도 모형을 돌려준다.
- * @throws FigureError 파일이 비었거나 종류를 모를 때. 다음 줄을 읽을 규칙이 없기 때문이다
+ * @throws FigureError 파일이 비었거나 첫 문장이 판 표기가 아닐 때. 다음 줄을 읽을 규칙이 없기 때문이다
  */
 export function readFigure(source, problems) {
   const statements = splitStatements(source, problems);
-  const figure = emptyFigure();
-  const ctx = { figure, problems, version: DEFAULT_VERSION, section: 'header', groups: [], table: undefined, grid: undefined, step: undefined, headers: new Map(), previous: undefined };
+  const figure = emptyFigure(source);
+  const ctx = { figure, problems, section: 'header', groups: [], block: undefined, step: undefined, headers: new Map(), previous: undefined };
   if (!statements.length) {
-    problems.error(1, 'the file is empty. Start with a kind such as "flow right"');
+    problems.error(1, 'the file is empty. The first line is "daphnis 2"', { code: 'missing-version' });
     problems.throwIfAny();
   }
-  const [kindStatement, ...body] = readVersion(statements, ctx);
-  readKind(kindStatement, ctx);
-  // 종류를 모르면 다음 줄의 규칙을 정할 수 없어 여기서 멈춘다. 그 밖의 오류는 끝까지 모아 한 번에 알린다.
-  if (!figure.kind) {
-    // 낱말 나누기는 모든 줄을 먼저 보지만, 종류를 모르면 그 뒤 줄의 오류는 뜻이 없어 첫 문장 오류만 남긴다.
-    problems.errors.splice(0, problems.errors.length, ...problems.errors.filter((e) => e.line <= kindStatement.line));
-    problems.throwIfAny();
-  }
+  const body = readVersion(statements, ctx);
   for (const statement of body) readStatement(statement, ctx);
-  if (ctx.table) problems.error(ctx.table.line, `close table "${ctx.table.id}" with "}"`);
-  if (ctx.grid && !ctx.grid.isRejected) problems.error(ctx.grid.line, `close grid "${ctx.grid.id}" with "}"`);
+  if (ctx.block) problems.error(ctx.block.card.line, ctx.block.kind === 'view' ? 'close the view block with "}"' : `close ${ctx.block.kind} "${ctx.block.card.id}" with "}"`);
   for (const group of ctx.groups) if (!group.isRejected) problems.error(group.line, `close group "${group.id}" with "}"`);
+  for (const block of ctx.sequenceBlocks ?? []) problems.error(block.line, 'close the sequence block with }');
+  prepareSequenceFragments(figure, problems);
+  // 색을 고르지 않은 카드(표, API, 클래스, 차트 등)도 중립 면(plain)이라는 값을 모형에 담는다.
+  for (const card of figure.nodes) card.appearance ??= VALUES.appearance.default;
   validateFigure(figure, problems);
   return figure;
 }
 
-// cost: time O(1), heap O(1), stack O(1)
-// basis: estimate
-// 첫 문장이 판 표기(`daphnis 1`)면 그 판을 정하고 뺀 나머지 문장을 돌려준다. 판 표기가 없으면 DEFAULT_VERSION이다.
-// 모르는 판이거나 판 표기만 있고 그림이 없으면 읽을 규칙이 없어 여기서 멈춘다.
-function readVersion(statements, ctx) {
-  const [first, ...rest] = statements;
-  const [head, number, extra] = first.tokens;
-  if (head.type !== 'word' || STATEMENTS[head.value]?.section !== 'version' || first.tokens[1]?.type === 'arrow') return statements;
-  const { problems } = ctx;
-  const legacy = STATEMENTS[head.value].deprecated;
-  if (legacy) {
-    const message = `statement word "${head.value}" is deprecated since version ${legacy.since} and now reads as "${legacy.replace}". Use "${legacy.replace}"`;
-    problems.deprecate(first.line, message, { code: 'deprecated-statement', column: head.column, fix: { line: first.line, column: head.column, length: head.value.length, text: legacy.replace } });
-  }
-  const version = /^[1-9]\d*$/.test(number?.value ?? '') && number.type === 'word' && !extra ? Number(number.value) : undefined;
-  if (version === undefined) problems.error(first.line, `write the version line as: daphnis ${VERSION}`, { code: 'invalid-version' });
-  else if (version > VERSION) {
-    problems.error(first.line, `this tool reads grammar version ${VERSION === 1 ? '1' : `1 to ${VERSION}`}. The file says version ${version}. Update daphnis, or write a version it supports`, { code: 'unsupported-version', column: number.column });
-  } else ctx.version = ctx.figure.version = version;
-  problems.throwIfAny();
-  if (!rest.length) {
-    problems.error(first.line, 'the file has no figure. Write a kind such as "flow right" after the version line');
-    problems.throwIfAny();
-  }
-  return rest;
-}
-
 /**
- * 비어 있는 그림 모형.
- * nodes: { id, shape, label, sub, parent, line, columns? }, groups: { id, label, direction, parent, line },
- * edges: { from, to, label, quiet, dashed, line, fromColumn?, toColumn? }, steps: { label, caption, line, beats, tracks, forMs, keep, sets }
+ * 비어 있는 문서 모형.
+ * source: 받은 원본 글 그대로(줄바꿈 CRLF, 첫 글자 포함). 읽기 전에 고치지 않고 정리하지 않는다. 문법 복사가 이 글을 쓴다.
+ * nodes: { id, shape, label, sub, parent, tone, appearance, line, columns?, members?, cells?, plot?, spans? },
+ * groups: { id, label, direction, parent, tone, appearance, line },
+ * edges: { from, to, label, quiet, dashed, head, no, line, relation?, fromColumn?, toColumn?, fromCell?, toCell?, fromSpan?, toSpan? },
+ * views: { id, strategy, direction, label, members, line, isImplicit }. id는 v1, v2, ...로 resolveViews가 붙인다,
+ * steps: { label, mode, speed, line, beats, tracks, forMs, keep, sets, status }
  */
-function emptyFigure() {
+function emptyFigure(source) {
   return {
-    version: DEFAULT_VERSION,
-    kind: undefined,
-    chartType: undefined,
-    direction: VALUES.direction.default,
+    source,
+    version: VERSION,
     title: undefined,
     subtitle: undefined,
-    speedMs: undefined,
+    paceMs: undefined,
     aspect: undefined,
     // 캔버스 폭 선택: standard(생략과 같음)나 wide
     width: undefined,
@@ -113,18 +84,16 @@ function emptyFigure() {
     // `icons` 줄로 등록한 사용자 아이콘 세트 { name, path, line }
     iconSets: [],
     edges: [],
+    views: [],
     // `value` 줄로 선언한 값 { id, label, on, from, ref, line }
     values: [],
     // `on` 줄로 선언한 도착 값 바꾸기 { node, sets, line }
     arrivals: [],
-    // 읽기 식(`:=`)을 하나라도 썼는지. 안 쓴 원본은 시간표가 읽기 처리를 거치지 않는다.
-    hasRead: false,
     // `when`이나 `wait`를 하나라도 썼는지. 안 쓴 원본은 시간표가 이벤트 처리를 거치지 않는다.
     hasConditions: false,
     hasReserve: false,
     start: undefined,
     finals: [],
-    chart: { series: [], rules: [], missing: undefined, data: undefined, x: undefined, y: undefined, scale: VALUES.scale.default, scaleLine: undefined, zero: VALUES.zero.default, zeroLine: undefined, decimals: undefined, rows: [], links: [] },
     steps: [],
   };
 }
@@ -147,54 +116,29 @@ function splitStatements(source, problems) {
 
 // cost: time O(1), heap O(1), stack O(1)
 // basis: estimate
-// 그림 종류 문장. `flow right`, `sequence`, `chart bar` 꼴이다.
-function readKind(statement, ctx) {
-  const { line, tokens } = statement;
-  const { figure, problems } = ctx;
-  normalizeKind(statement, ctx);
-  const [kind, second, ...rest] = tokens;
-  if (kind.type !== 'word' || !(kind.value in KINDS)) {
-    problems.error(line, `start the file with a kind: ${Object.keys(KINDS).join(', ')}. Found "${kind.value}"`);
-    return;
-  }
-  figure.kind = kind.value;
-  figure.line = line;
-  if (rest.length) problems.error(line, 'the kind statement takes at most one more word');
-  if (kind.value === 'sequence') {
-    if (second) problems.error(line, '"sequence" takes no direction');
-  } else if (kind.value === 'chart') {
-    if (!second || !valueNames('chartType').includes(second.value)) {
-      problems.error(line, `write "chart" with a type: ${valueNames('chartType').join(', ')}${second ? `. Found "${second.value}"` : ''}`);
-      // 종류를 모르면 종류에 기대는 규칙을 고를 수 없다. 종류를 모르는 그림처럼 여기서 멈춘다.
-      figure.kind = undefined;
-    } else figure.chartType = second.value;
-  } else if (second) {
-    if (!valueNames('direction').includes(second.value)) problems.error(line, `direction is "right" or "down". Found "${second.value}"`);
-    else figure.direction = second.value;
-  }
-}
-
-// cost: time O(1), heap O(1), stack O(1)
-// basis: estimate
-// 문장이 이 그림 종류에서 쓸 수 있고, 판 표기 자리와 파일 부분 순서에 맞는지 본다. 어기면 오류를 내고 false다.
+// 문장이 판 표기 자리와 파일 부분 순서에 맞는지 본다. 어기면 오류를 내고 false다.
 function isPlaced(word, { tokens, line }, ctx) {
-  const { figure, problems } = ctx;
-  const section = STATEMENTS[word]?.section ?? 'declare';
-  if (STATEMENTS[word] && !STATEMENTS[word].kinds.includes(figure.kind)) {
-    problems.error(line, `"${word === 'hop' || word === 'edge' ? 'a -> b' : word}" is not allowed in a ${figure.kind} figure. Remove the line or change the kind statement`);
+  const { problems } = ctx;
+  const entry = STATEMENTS[word];
+  if (!entry) {
+    problems.error(line, `unknown statement "${word}"`);
     if (tokens.at(-1).type === 'open') ctx.groups.push({ isRejected: true, line });
     return false;
   }
-  if (section === 'version') {
-    problems.error(line, 'the version line "daphnis N" must be the first line of the file', { code: 'invalid-version' });
+  if (entry.in) {
+    problems.error(line, `"${word}" belongs inside a ${entry.in} block`, { column: tokens[0].column });
     return false;
   }
-  if (SECTIONS.indexOf(section) < SECTIONS.indexOf(ctx.section)) {
-    problems.error(line, `"${word}" belongs to the ${section} part, which must come before the ${ctx.section} part`);
+  if (entry.section === 'version') {
+    problems.error(line, 'the version line "daphnis 2" must be the first line of the file', { code: 'invalid-version' });
     return false;
   }
-  if (section === 'timeline' && word !== 'step' && !ctx.step) {
-    problems.error(line, 'start the timeline with a "step" line');
+  if (SECTIONS.indexOf(entry.section) < SECTIONS.indexOf(ctx.section)) {
+    problems.error(line, `"${word}" belongs to the ${entry.section} part, which must come before the ${ctx.section} part`);
+    return false;
+  }
+  if (entry.section === 'timeline' && word !== 'scene' && !ctx.step) {
+    problems.error(line, 'start the timeline with a "scene" line');
     return false;
   }
   return true;
@@ -207,18 +151,14 @@ function isPlaced(word, { tokens, line }, ctx) {
 function readStatement(statement, ctx) {
   const { tokens, line } = statement;
   const { problems } = ctx;
-  if (ctx.grid) {
-    readGridLine(statement, ctx);
+  if (ctx.block) {
+    BLOCK_READERS[ctx.block.kind](statement, ctx);
     return;
   }
-  if (ctx.table) {
-    normalizeStatement(statement, { word: 'column', isHeadWord: false }, ctx);
-    readColumn(statement, ctx);
-    return;
-  }
+  if (readSequenceControl(statement, ctx)) return;
   const [head, second] = tokens;
   if (statement.hasLexError) {
-    // 그룹 여는 줄이면 닫는 `}`가 짝을 찾도록 자리만 연다.
+    // 그룹이나 블록을 여는 줄이면 닫는 `}`가 짝을 찾도록 자리만 연다.
     if (tokens.at(-1).type === 'open') ctx.groups.push({ isRejected: true, line });
     return;
   }
@@ -231,18 +171,16 @@ function readStatement(statement, ctx) {
     problems.error(line, 'start a statement with a word, not with quoted text or an option');
     return;
   }
-  const arrowWord = ctx.section === 'timeline' ? 'hop' : 'edge';
-  const word = normalizeStatement(statement, { word: isArrowLine ? arrowWord : head.value, isHeadWord: !isArrowLine }, ctx);
-  const section = STATEMENTS[word]?.section ?? 'declare';
+  const word = isArrowLine ? (ctx.section === 'timeline' ? 'hop' : 'edge') : head.value;
   if (!isPlaced(word, statement, ctx)) return;
-  ctx.section = section;
-  readByPart({ word, section }, statement, ctx);
+  ctx.section = STATEMENTS[word].section;
+  readByPart({ word, section: ctx.section }, statement, ctx);
 }
 
 // cost: time O(t), heap O(t), stack O(1)
 // vars: t = 문장 낱말 수
 // basis: estimate
-// 정해진 부분(머리, 시간 흐름, 선, 차트 선언, 선언)의 읽는 함수로 보낸다.
+// 정해진 부분(머리, 시간 흐름, 선, 값, 보기, 선언)의 읽는 함수로 보낸다.
 function readByPart({ word, section }, statement, ctx) {
   const { line } = statement;
   if (section === 'header') {
@@ -253,46 +191,10 @@ function readByPart({ word, section }, statement, ctx) {
     readTimeline(word, statement, ctx);
     ctx.previous = word;
   } else if (word === 'edge') readEdge(statement, ctx);
-  else if (word === 'grid') readGrid(statement, ctx);
+  else if (Object.hasOwn(BLOCK_WORDS, word)) openBlock(word, statement, ctx);
   else if (word === 'icons') readIcons(statement, ctx);
   else if (word === 'value') readValue(statement, ctx);
   else if (word === 'on') readOn(statement, ctx);
-  else if (ctx.figure.kind === 'chart') readChartDeclaration(statement, ctx);
+  else if (word === 'view') readView(statement, ctx);
   else readDeclaration(statement, ctx);
-}
-
-// cost: time O(1), heap O(1), stack O(1)
-// basis: estimate
-// 머리 줄 하나. 값은 글, 시간, 숫자, 낱말 중 하나다.
-function readHeader({ tokens, line }, { figure, problems }) {
-  const [head, value, extra] = tokens;
-  if (extra) problems.error(line, `"${head.value}" takes one value`);
-  const key = head.value;
-  if (['title', 'subtitle', 'x', 'y'].includes(key)) {
-    if (value?.type !== 'text') problems.error(line, `write ${key} as quoted text: ${key} "..."`);
-    else if (key === 'x' || key === 'y') Object.assign(figure.chart, { [key]: value.value, [`${key}Line`]: line });
-    else figure[key] = value.value;
-  } else if (key === 'speed') {
-    const ms = parseTime(value?.value);
-    if (value?.type === 'word' && ms === undefined && isOverTimeLimit(value.value)) problems.error(line, overLimitMessage('speed', value.value), { code: 'time-limit' });
-    else if (value?.type !== 'word' || ms === undefined) problems.error(line, 'write speed as a time such as 900ms or 2s');
-    else figure.speedMs = ms;
-  } else if (key === 'aspect') {
-    const ratio = Number(value?.value);
-    if (value?.type !== 'word' || !NUMBER_PATTERN.test(value.value) || !Number.isFinite(ratio) || !(ratio > 0)) problems.error(line, 'write aspect as a positive number such as 1.6');
-    else figure.aspect = ratio;
-  } else if (key === 'width') {
-    if (!valueNames('width').includes(value?.value)) problems.error(line, `width is ${valueNames('width').map((v) => `"${v}"`).join(' or ')}`);
-    else figure.width = value.value;
-  } else if (key === 'decimals') {
-    const places = Number(value?.value);
-    if (value?.type !== 'word' || !Number.isInteger(places) || places < 0 || places > DECIMALS_MAX) problems.error(line, `write decimals as a whole number from 0 to ${DECIMALS_MAX}, such as decimals 2`);
-    else figure.chart.decimals = places;
-  } else if (key === 'scale') {
-    if (!valueNames('scale').includes(value?.value)) problems.error(line, `scale is ${valueNames('scale').map((v) => `"${v}"`).join(' or ')}`);
-    else Object.assign(figure.chart, { scale: value.value, scaleLine: line });
-  } else if (key === 'zero') {
-    if (!valueNames('zero').includes(value?.value)) problems.error(line, `zero is ${valueNames('zero').map((v) => `"${v}"`).join(' or ')}`);
-    else Object.assign(figure.chart, { zero: value.value, zeroLine: line });
-  }
 }

@@ -1,0 +1,56 @@
+name: Sync homepage renderer and design
+on:
+  push:
+    branches: [main]
+    paths: ['src/**', 'package*.json', 'scripts/sync-homepage.mjs', '.github/workflows/sync-homepage.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: homepage-design-export
+  cancel-in-progress: false
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: daphnis
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify the imported design
+        working-directory: daphnis
+        run: node scripts/check-design.mjs
+      - uses: actions/checkout@v4
+        with:
+          repository: woonyong-choi/homepage
+          path: homepage
+          ref: main
+          fetch-depth: 0
+          ssh-key: ${{ secrets.HOMEPAGE_DEPLOY_KEY }}
+      - name: Prepare the update branch
+        working-directory: homepage
+        run: |
+          git config user.name "$(git log origin/main -1 --format=%an)"
+          git config user.email "$(git log origin/main -1 --format=%ae)"
+          if git show-ref --verify --quiet refs/remotes/origin/build/repo-design-tokens; then
+            git switch --track origin/build/repo-design-tokens
+            git merge --no-edit origin/main
+          else
+            git switch -c build/repo-design-tokens origin/main
+          fi
+      - name: Export the matching renderer and design
+        env:
+          RENDERER_SHA: ${{ github.sha }}
+        run: node daphnis/scripts/sync-homepage.mjs homepage "$RENDERER_SHA"
+      - name: Push the update when content changes
+        working-directory: homepage
+        run: |
+          if test -z "$(git status --porcelain -- src/vendor/theme package.json package-lock.json)"; then
+            echo 'Homepage already uses this renderer and design.'
+            exit 0
+          fi
+          git add src/vendor/theme package.json package-lock.json
+          git commit -m 'build(repo): 도표 렌더러와 공통 디자인 업데이트'
+          git push origin HEAD:build/repo-design-tokens

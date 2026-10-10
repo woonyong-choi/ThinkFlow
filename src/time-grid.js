@@ -12,7 +12,7 @@ const GRID_TOLERANCE = 1e-3;
 // cost: time O(1), heap O(1), stack O(1)
 // basis: estimate
 /** 지원하지 않는 시간 정밀도 오류(`time-precision`). 줄은 그 시간을 쓴 줄이다. */
-export function precisionError(line, message) {
+function precisionError(line, message) {
   return new FigureError([makeDiagnostic({ severity: 'error', line, message: `time precision is not supported: ${message}` }, { code: 'time-precision' })]);
 }
 

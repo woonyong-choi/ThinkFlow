@@ -1,11 +1,11 @@
 // 칸 격자의 칸 단위 연결점과 통로. 선이 칸의 어느 면에서 나가고 들어오는지, 안쪽 칸으로 가는 선이 어느 통로로 도는지를 격자 좌표(왼쪽 위가 원점)로 정한다(docs/design/grid.md 칸 단위 연결).
-import { values } from '../tokens.js';
+import { values } from '../vendor/theme/tokens.js';
 
-const SPACE = values.space;
+const SPACE = values.spacing;
 /** 통로 한 줄(선 하나가 지나는 줄) 사이 간격. 배치가 선 사이에 두는 간격(`elk.spacing.edgeEdge`)과 같은 값이다. */
-export const LANE_STEP = SPACE['5'];
+const LANE_STEP =SPACE["2-5"];
 // 제목 글 양옆으로 선이 비켜야 하는 여유
-const TITLE_CLEAR = SPACE['6'];
+const TITLE_CLEAR = SPACE["3"];
 const SIDES = { out: ['EAST', 'SOUTH'], in: ['WEST', 'NORTH'] };
 
 // cost: time O(k), heap O(k), stack O(1)
@@ -119,7 +119,7 @@ function assignTracks(items, { rows, w }) {
   return { gutter: inner ? (inner + 1) * LANE_STEP : 0, bottom: Math.max(GAP_BOTTOM, ((counts.get(rows - 1) ?? 0) + 1) * LANE_STEP), tracks };
 }
 
-const GAP_BOTTOM = SPACE['6'];
+const GAP_BOTTOM = SPACE["3"];
 
 // cost: time O(1), heap O(1), stack O(1)
 // basis: estimate

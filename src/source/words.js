@@ -8,3 +8,4 @@ export const COLUMN_PATTERN = /^[A-Za-z][A-Za-z0-9_]*$/;
 export const FK_PATTERN = /^[a-z][a-z0-9]*(_[a-z0-9]+)*\.[A-Za-z][A-Za-z0-9_]*$/;
 export const TIME_PATTERN = /^(\d+(?:\.\d+)?)(ms|s)$/;
 export const NUMBER_PATTERN = /^-?\d+(?:\.\d+)?$/;
+export const INTEGER_PATTERN = /^\d+$/;

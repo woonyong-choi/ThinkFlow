@@ -1,6 +1,5 @@
 // 칸 격자(`grid id "글" rows=N cols=N {` ... `}`)를 읽는다. 칸은 `item`과 `gap` 줄이고, 칸 자리는 격자 안의 논리 인덱스다(docs/design/figure-kinds.md 칸 격자).
-import { checkId, parentFor } from './names.js';
-import { normalizeStatement } from './normalize.js';
+import { checkId, parentFor, rejectName } from './names.js';
 import { readOptions } from './options.js';
 import { findOverlaps } from './grid-space.js';
 import { ID_PATTERN } from './words.js';
@@ -13,8 +12,9 @@ export function readGrid({ tokens, line }, ctx) {
   const [, id, label, ...rest] = tokens;
   const isOpen = tokens.at(-1).type === 'open';
   if (!checkId(id, { line, ctx }, ID_PATTERN)) {
+    rejectName(id, ctx);
     // 안쪽 줄을 이 격자의 줄로 읽어 넘기도록 버린 격자 자리를 연다.
-    if (isOpen) [ctx.grid, ctx.gridNames] = [{ isRejected: true, cells: [] }, new Map()];
+    if (isOpen) ctx.block = { kind: 'grid', card: { isRejected: true, cells: [], line }, names: new Map(), line };
     return;
   }
   if (label?.type !== 'text') ctx.problems.error(line, `write grid as: grid ${id.value} "name" rows=N cols=N {`);
@@ -22,9 +22,8 @@ export function readGrid({ tokens, line }, ctx) {
   const numbers = readOptions(rest.filter((t) => t.type !== 'open'), { scopes: ['grid'], what: 'a grid', line, ctx });
   const grid = { id: id.value, shape: 'grid', label: label?.value ?? '', rows: numbers.rows ?? 1, cols: numbers.cols ?? 1, cells: [], parent: parentFor(id, ctx), line };
   ctx.figure.nodes.push(grid);
-  if (isOpen) ctx.grid = grid;
-  // 칸 이름 찾기용 표. 그림 모형에는 넣지 않는다.
-  if (isOpen) ctx.gridNames = new Map();
+  // 칸 이름 찾기용 표(names)는 문서 모형에 넣지 않는다.
+  if (isOpen) ctx.block = { kind: 'grid', card: grid, names: new Map(), line };
 }
 
 // cost: time O(t), heap O(t), stack O(1)
@@ -39,7 +38,7 @@ export function readGridLine(statement, ctx) {
     return;
   }
   if (statement.hasLexError) return;
-  const word = head.type === 'word' ? normalizeStatement(statement, { word: head.value, isHeadWord: true }, ctx) : undefined;
+  const word = head.type === 'word' ? head.value : undefined;
   if (word === 'item' || word === 'gap') readCell(word, statement, ctx);
   else ctx.problems.error(line, `a grid holds only item and gap lines, then "}". Found "${head.value}"`);
 }
@@ -50,7 +49,8 @@ export function readGridLine(statement, ctx) {
 // `item id "글" [row=] [col=] [rows=] [cols=]`, `gap id "글" count=N [row=] [col=] [rows=] [cols=]`
 function readCell(word, { tokens, line }, ctx) {
   const [, id, label, ...rest] = tokens;
-  const { grid, problems } = ctx;
+  const { problems } = ctx;
+  const grid = ctx.block.card;
   const form = word === 'item' ? 'item id "text" [row=0] [col=0] [rows=1] [cols=1]' : 'gap id "text" count=N [row=0] [col=0] [rows=1] [cols=1]';
   if (!checkId(id, { line, ctx }, ID_PATTERN)) return;
   if (label?.type !== 'text') {
@@ -59,13 +59,13 @@ function readCell(word, { tokens, line }, ctx) {
   }
   const numbers = readOptions(rest, { scopes: optionsScopes(word), what: `an ${word}`, line, ctx });
   if (word === 'gap' && numbers.count === undefined) problems.error(line, `a gap needs count=, the number of omitted entries: ${form}`);
-  const known = ctx.gridNames.get(id.value);
+  const known = ctx.block.names.get(id.value);
   if (known) {
     problems.error(line, `the name "${id.value}" is already used in grid "${grid.id}" (line ${known.line})`);
     return;
   }
   const cell = { id: id.value, kind: word, label: label.value, row: numbers.row ?? 0, col: numbers.col ?? 0, rows: numbers.rows ?? 1, cols: numbers.cols ?? 1, count: numbers.count, line };
-  ctx.gridNames.set(cell.id, cell);
+  ctx.block.names.set(cell.id, cell);
   grid.cells.push(cell);
 }
 
@@ -79,9 +79,9 @@ function optionsScopes(word) {
 // basis: estimate
 // `}`. 격자가 비었거나, 칸이 격자 밖으로 나가거나, 칸끼리 겹치면 오류다. 격자 안에 든 칸만 쓸기로 겹침을 보므로 행×열이 아니라 선언한 칸 수에 비례한다.
 function closeGrid({ tokens, line }, ctx) {
-  const { grid, problems } = ctx;
-  ctx.grid = undefined;
-  ctx.gridNames = undefined;
+  const { problems } = ctx;
+  const grid = ctx.block.card;
+  ctx.block = undefined;
   if (tokens.length > 1) problems.error(line, 'put "}" on its own line');
   if (grid.isRejected) return;
   if (!grid.cells.length) problems.error(grid.line, `grid "${grid.id}" has no cells. Add item or gap lines, or remove the grid`);

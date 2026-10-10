@@ -1,8 +1,18 @@
-chart box
-title "응답 지연 분포"
-subtitle "예시 데이터. 요청 1,000개"
-x "지연(ms)"
+daphnis 2
+title "엔드포인트별 응답 시간 분포"
+subtitle "배포 전 일주일 동안 요청마다 잰 응답 시간의 퍼짐을 비교한다"
 
-row "캐시 적중" min=12 q1=18 median=22 q3=31 max=58
-row "캐시 없음" min=120 q1=180 median=230 q3=310 max=620
-row "콜드 스타트" min=400 q1=520 median=610 q3=780 max=1400
+chart spread "응답 시간 분포" box "예시 데이터. 상자는 가운데 50%, 중앙선은 중앙값, 가로선은 최소와 최대" {
+  x "응답 시간(ms)"
+  row "GET /products" min=8 q1=14 median=19 q3=27 max=64
+  row "GET /orders" min=22 q1=41 median=58 q3=83 max=240
+  row "POST /orders" min=65 q1=110 median=148 q3=230 max=690
+  row "POST /payments" min=180 q1=260 median=340 q3=520 max=1900
+}
+
+scene "전체 분포"
+
+scene "퍼짐이 큰 쪽"
+  light spread "POST /payments"
+  wait 1s
+  light spread "GET /products"

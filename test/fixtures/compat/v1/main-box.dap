@@ -1,8 +1,0 @@
-chart box
-title "응답 지연 분포"
-subtitle "예시 데이터. 요청 1,000개"
-x "지연(ms)"
-
-row "캐시 적중" min=12 q1=18 median=22 q3=31 max=58
-row "캐시 없음" min=120 q1=180 median=230 q3=310 max=620
-row "콜드 스타트" min=400 q1=520 median=610 q3=780 max=1400

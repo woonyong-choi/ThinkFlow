@@ -1,0 +1,6 @@
+/* 단계별 도형 상태 알약의 글자. 기호와 테두리는 상태 색이고 글자는 fg다. 상태를 쓰는 그림에만 넣는다. */
+.fl .status-text {
+  font-size: var(--text-figure-meta);
+  font-weight: var(--font-weight-semibold);
+  fill: var(--color-fg);
+}

@@ -1,0 +1,146 @@
+/* 여러 그림을 모은 목록 쪽. 시스템 테마에서는 루트가 라이트와 다크를 모두 허용해 iframe 그림도 OS 설정을 따른다. */
+:root {
+  color-scheme: light dark;
+}
+
+body {
+  margin: 0;
+  padding: var(--spacing-12) var(--spacing-6);
+  font-family: var(--font-sans);
+  letter-spacing: var(--tracking-text);
+  color: var(--color-fg);
+  background: var(--color-page);
+}
+
+.top {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-6);
+  align-items: center;
+  margin-bottom: var(--spacing-7);
+}
+
+h1 {
+  margin: 0 0 var(--spacing-1-5);
+  font-size: var(--text-heading);
+  font-weight: var(--font-weight-weight-title);
+  line-height: var(--leading-heading);
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+
+.top p {
+  grid-column: 1;
+  margin: 0;
+  font-size: var(--text-figure-15);
+  color: var(--color-muted);
+}
+
+.top a {
+  color: var(--color-ui-link);
+}
+
+.theme {
+  margin-left: auto;
+}
+
+main {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, var(--spacing-figure-gallery-column)), 1fr));
+  gap: var(--spacing-12);
+  /* 카드를 줄에서 가장 긴 카드 높이로 늘이지 않는다. 짧은 그림 아래 빈 공간을 막기 위해서다. */
+  align-items: start;
+}
+
+/* 제목과 조작은 문서 면에 놓고, 설명 그림만 별도 판을 가진다. */
+section {
+  overflow: hidden;
+  background: var(--color-page);
+}
+
+header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--spacing-0-5) var(--spacing-4);
+  padding: var(--spacing-6);
+}
+
+h2 {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-0-5) var(--spacing-1-5);
+  align-items: baseline;
+  min-width: 0;
+  margin: 0;
+  font: var(--font-weight-semibold) var(--text-figure-22) var(--font-sans);
+}
+
+/* 백틱으로 감싼 글은 코드 글꼴로 그린다. */
+code {
+  font-family: var(--font-mono);
+  letter-spacing: normal;
+}
+
+/* 제목을 먼저 읽고 파일 이름과 종류는 다음 줄에서 확인한다. */
+.title {
+  flex-basis: 100%;
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+.name {
+  font-size: var(--text-figure-13);
+  font-weight: normal;
+  color: var(--color-muted);
+  overflow-wrap: anywhere;
+}
+
+.kind {
+  font-size: var(--text-figure-11);
+  color: var(--color-muted);
+}
+
+nav {
+  display: flex;
+  grid-column: 1;
+  gap: var(--spacing-2-5);
+  align-self: center;
+}
+
+nav a {
+  font-size: var(--text-figure-13);
+  color: var(--color-ui-link);
+  text-decoration: none;
+}
+
+nav a:focus-visible {
+  outline: var(--outline-width-focus) solid var(--color-ui-focus);
+  outline-offset: var(--spacing-0-5);
+}
+
+iframe {
+  display: block;
+  width: 100%;
+  height: var(--spacing-figure-gallery-frame);
+  border: 0;
+}
+
+/* 모바일에서 전체 화면 API가 없는 경우에도 삽입 그림을 브라우저 창 전체로 연다. */
+iframe.full {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-index-overlay);
+  height: 100%;
+  min-height: 100%;
+  max-height: 100%;
+  background: var(--color-page);
+}
+
+.has-full-figure {
+  overflow: hidden;
+}
+
+.top, main {
+  max-width: var(--container-diagram);
+  margin-left: auto;
+  margin-right: auto;
+}

@@ -1,4 +1,4 @@
-flow right
+daphnis 2
 title "Saturn"
 
 person user "Developer"
@@ -12,7 +12,7 @@ user -> tui "input"
 tui -> engine "JSON-RPC"
 engine -> codex "app-server request"
 
-step "Chat" "Input goes through the screen to the engine"
+scene "Chat"
   user -> tui "question"
   show tui "why does this test fail?" tag="you"
   tui -> engine

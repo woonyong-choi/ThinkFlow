@@ -1,0 +1,59 @@
+daphnis 2
+title "결제 승인과 후처리 순서"
+subtitle "요청, 조건 분기, 재시도, 병렬 후처리, 작업자 생명주기를 시간 순서로 본다"
+
+person user "고객"
+box gw "주문 서비스"
+external pg "결제사 PG"
+table orders "orders" {
+  id bigint pk
+  status text required
+}
+queue jobs "알림 큐" slots=4
+box worker "알림 작업자"
+
+view sequence {
+  user gw pg jobs worker orders
+}
+
+scene "결제 요청" mode=static
+  user -> gw "주문하기"
+  gw -> pg "승인 요청"
+  note pg "카드 한도 확인"
+  fragment alt "승인 결과" choose="승인" {
+    branch "승인" {
+      pg -> gw "승인 번호" dashed
+      gw -> orders "결제 완료 저장"
+    }
+    branch "거절" {
+      pg -> gw "거절 사유" dashed
+      gw -> user "다른 카드 안내" dashed
+    }
+  }
+
+scene "재시도와 후처리"
+  fragment loop "PG 응답 지연 시 재시도" times=2 {
+    gw -> pg "상태 조회"
+    pg -> gw "처리 중" dashed
+  }
+  fragment par "후처리를 동시에" {
+    branch "알림" {
+      gw -> jobs "알림 적재" set="jobs+1"
+    }
+    branch "적립" {
+      gw -> orders "포인트 적립"
+    }
+  }
+  fragment opt "쿠폰이 있을 때만" run=off {
+    gw -> orders "쿠폰 사용 처리"
+  }
+  gw -> user "주문 완료" dashed
+
+scene "작업자 생명주기" mode=loop
+  jobs -> worker "작업자 생성" create
+  activate worker
+  worker -> worker "알림 문구 만들기"
+  note worker "템플릿 적용"
+  worker -> user "알림 전송" dashed
+  deactivate worker
+  jobs -> worker "작업 끝" destroy

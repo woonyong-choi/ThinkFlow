@@ -2,7 +2,7 @@
 // 시간표가 한 번 계산한 값(hop.gaps, hop.cut, hop.chipFade)을 SMIL로 옮기기만 한다.
 import { arrivalOffsetMs, MOVE, positionAt, timeAt } from '../easing.js';
 import { ratio } from '../format.js';
-import { values } from '../tokens.js';
+import { values } from '../vendor/theme/tokens.js';
 
 const CUT_FADE_MS = values.duration['cut-fade'];
 // 잘리는 점의 이동을 이동 곡선에서 재는 지점 수. 잘린 점은 곡선 일부만 지나 SMIL 곡선 하나로 그릴 수 없어 선형 구간으로 잇는다.
@@ -28,7 +28,7 @@ export function visibleSpans(start, hop) {
 export function chipFadeAnimate(clock, start, keys) {
   const timed = keys.map(([at, shown]) => [clock.keyTime(start + at), shown]).filter(([time], i, all) => i === 0 || (time > all[i - 1][0] && time <= 1));
   const full = [...(timed[0][0] > 0 ? [[0, timed[0][1]]] : []), ...timed, ...(timed.at(-1)[0] < 1 ? [[1, timed.at(-1)[1]]] : [])];
-  return `<animate attributeName="opacity" dur="${clock.duration}" repeatCount="indefinite" calcMode="linear" keyTimes="${full.map(([at]) => at).join(';')}" values="${full.map(([, shown]) => ratio(shown)).join(';')}"/>`;
+  return `<animate attributeName="opacity" dur="${clock.duration}" ${clock.smil} calcMode="linear" keyTimes="${full.map(([at]) => at).join(';')}" values="${full.map(([, shown]) => ratio(shown)).join(';')}"/>`;
 }
 
 // cost: time O(1), heap O(1), stack O(1)
@@ -37,7 +37,7 @@ export function chipFadeAnimate(clock, start, keys) {
 export function cutFadeAnimate(clock, start, hop) {
   const end = start + hop.cut;
   const keys = [[0, 1], [clock.keyTime(end - CUT_FADE_MS), 1], [clock.keyTime(end), 0], [1, 0]].filter(([time], i, all) => i === 0 || time > all[i - 1][0]);
-  return `<animate attributeName="opacity" dur="${clock.duration}" repeatCount="indefinite" calcMode="linear" keyTimes="${keys.map(([at]) => at).join(';')}" values="${keys.map(([, shown]) => shown).join(';')}"/>`;
+  return `<animate attributeName="opacity" dur="${clock.duration}" ${clock.smil} calcMode="linear" keyTimes="${keys.map(([at]) => at).join(';')}" values="${keys.map(([, shown]) => shown).join(';')}"/>`;
 }
 
 // cost: time O(l·PACE_SAMPLES), heap O(l·PACE_SAMPLES), stack O(1)

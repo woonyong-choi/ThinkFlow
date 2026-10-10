@@ -1,16 +1,16 @@
 // elkjs 결과를 그림 좌표로 바꾼다. 그룹 경계 연결점에서 끊긴 선 조각은 이어 붙인다(docs/design/layout.md 선 그리기).
 import { hasPill, isOnLinePill, sizePill } from '../measure/sizes.js';
-import { values } from '../tokens.js';
+import { values } from '../vendor/theme/tokens.js';
 import { LayoutError } from './error.js';
 import { withLeads } from './cell-ports.js';
 import { placeTitles } from './titles.js';
 import { CROWD, ROOT, TOUCH, decorOf } from './model.js';
 
-const SETTLE = values.space['4'];
+const SETTLE = values.spacing["2"];
 // 번호 알약을 얹을 구간 안 자리(구간 길이 비율). 가운데를 먼저 보고 양옆으로 간다.
 const RUN_FRACTIONS = [0.5, 0.35, 0.65, 0.2, 0.8];
 // 선 옆에 두는 라벨 알약과 선 사이 간격
-const BESIDE_GAP = values.space['3'];
+const BESIDE_GAP = values.spacing["1-5"];
 
 // cost: time O(s + e·(d + p)), heap O(s + e·p), stack O(d)
 // vars: s = 도형 수, e = 선 수, d = 그룹 깊이, p = 경로 점 수
@@ -30,10 +30,56 @@ export function readElk(laid, model) {
     const near = (end) => (other) => other.at !== `${edge.index}:${end}`;
     const start = settleEnd(joined[i], freeRect(edge.from, rects), crowd.get(edge.from)?.filter(near('start')));
     const points = dropCollinear(settleEnd(start.reverse(), freeRect(edge.to, rects), crowd.get(edge.to)?.filter(near('end'))).reverse());
-    return { ...edge, points, labelAt: labels.get(`label::${edge.index}`) ?? (model.isSafe ? undefined : numberOnlyLabel(edge, points, items)) ?? (edge.quiet && hasPill(edge) ? besideLabel(points, sizePill(edge.label, edge.no), laid.width) : undefined) };
+    return { ...edge, points, ...(edge.relation ? { endpointLabels: readMultiplicities(edge, labels) } : {}), labelAt: labels.get(`label::${edge.index}`) ?? (model.isSafe ? undefined : numberOnlyLabel(edge, points, items)) ?? (edge.quiet && hasPill(edge) ? besideLabel(points, sizePill(edge.label, edge.no), laid.width) : undefined) };
   });
-  placeTitles(groups, edges);
+  clearEndLabels(edges, { items, sweep: model.sweep });
+  placeTitles(groups, edges, model.sweep);
   return { items, groups, edges, width: laid.width, height: laid.height };
+}
+
+// cost: time O(l·(c + s + e·p + l)), heap O(c), stack O(1)
+// vars: l = 끝 라벨 수, c = 옆 폭 사각형 수, s = 도형 수, e = 선 수, p = 경로 점 수
+// basis: estimate
+// 끝 라벨(다중성)이 박자 이동 글 상자가 쓸고 지나는 다른 선의 옆 폭(sweep) 안에 있으면 자기 끝 구간의 반대쪽으로 옮긴다. 옮긴 자리가 옆 폭, 도형, 다른 선, 다른 라벨과 만나면 그대로 둔다.
+function clearEndLabels(edges, { items, sweep }) {
+  if (!sweep.size) return;
+  const lanes = edges.filter((e) => sweep.has(e.index)).flatMap((e) => e.points.slice(1).map((p, i) => laneOf(e.points[i], p, sweep.get(e.index), e.index)));
+  const lines = edges.flatMap((o) => o.points.slice(1).map((p, i) => laneOf(o.points[i], p, { x: 0, y: 0 }, o.index)));
+  const labels = edges.flatMap((e) => (e.endpointLabels ?? []).map((label) => ({ e, label })));
+  for (const { e, label } of labels) {
+    const inLane = (box) => lanes.some((lane) => lane.edge !== e.index && meets(box, lane));
+    if (!inLane(labelBox(label))) continue;
+    const [a, b] = label.end === 'from' ? [e.points[0], e.points[1]] : [e.points.at(-1), e.points.at(-2)];
+    const moved = a.x === b.x ? { x: 2 * a.x - label.x, y: label.y } : { x: label.x, y: 2 * a.y - label.y };
+    const box = labelBox({ ...label, ...moved });
+    const others = labels.filter((o) => o.label !== label).map((o) => labelBox(o.label));
+    if (inLane(box) || items.some((it) => meets(box, it)) || others.some((o) => meets(box, o)) || lines.some((l) => meets(box, l))) continue;
+    Object.assign(label, moved);
+  }
+}
+
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+// 구간을 옆 폭만큼 넓힌 사각형. 세로 구간은 x로, 가로 구간은 y로 넓힌다.
+function laneOf(a, b, sweep, edge) {
+  const [dx, dy] = a.x === b.x ? [sweep.x, 0] : [0, sweep.y];
+  return { x: Math.min(a.x, b.x) - dx, y: Math.min(a.y, b.y) - dy, w: Math.abs(a.x - b.x) + dx * 2, h: Math.abs(a.y - b.y) + dy * 2, edge };
+}
+
+const labelBox = (label) => ({ x: label.x - label.w / 2, y: label.y - label.h / 2, w: label.w, h: label.h });
+const meets = (p, q) => p.x < q.x + q.w && q.x < p.x + p.w && p.y < q.y + q.h && q.y < p.y + p.h;
+
+// cost: time O(n), heap O(n), stack O(1)
+// vars: n = 다중성 표시 글자 수
+// basis: estimate
+function readMultiplicities(edge, labels) {
+  return ['from', 'to'].flatMap((end) => {
+    const text = edge[`${end}Multiplicity`];
+    if (text === undefined) return [];
+    const position = labels.get(`multiplicity::${edge.index}::${end}`);
+    if (!position) throw new LayoutError(`missing multiplicity label for ${edge.from} -> ${edge.to}`, edge.line);
+    return [{ end, text, ...position, ...sizePill(text) }];
+  });
 }
 
 // cost: time O(p·f·s), heap O(p), stack O(1)

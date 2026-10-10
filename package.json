@@ -32,22 +32,23 @@
     "NOTICE"
   ],
   "bin": {
-    "daphnis": "src/cli.js",
-    "mutoscope": "src/cli.js"
+    "daphnis": "src/cli.js"
   },
   "scripts": {
-    "test": "node --test test/*.test.js",
+    "test": "node --test --test-concurrency=2 test/*.test.js",
     "grammar": "node scripts/build-grammar-doc.mjs",
     "fuzz": "node scripts/fuzz-layout.mjs",
     "perf": "node scripts/perf-chips.mjs",
     "checkdoc": "node scripts/build-check-doc.mjs",
-    "palette": "node scripts/build-palette.mjs",
-    "tokens": "node scripts/build-tokens.mjs src/tokens.json --out src",
-    "check": "node scripts/sync-theme.mjs --check && node scripts/build-tokens.mjs src/tokens.json --check && node scripts/check-tokens.mjs src && node scripts/check-cost-comments.mjs src test && node scripts/check-size.mjs src scripts",
-    "examples": "node src/cli.js gallery examples --out examples/out --title \"\uc608\uc81c\"",
+    "check": "node scripts/check-design.mjs && node src/vendor/theme/ui/build/check-tokens.mjs src --tokens src/vendor/theme/tokens.json",
+    "check:sources": "node src/cli.js check examples/*.dap docs/assets/*.dap docs/assets/showcase/*.dap --strict",
+    "check:figures": "node scripts/run-md.mjs --check --strict && node scripts/build-showcase.mjs --check",
+    "check:advisory": "node scripts/check-cost-comments.mjs --advisory src test && node scripts/check-size.mjs --advisory src scripts",
+    "examples": "node scripts/build-catalog.mjs",
     "showcase": "node scripts/build-showcase.mjs",
-    "figures": "npm run examples && node src/cli.js render docs/assets/how-it-works.dap && npm run showcase && node src/cli.js md $(git grep -l '^```dap' -- '*.md')",
-    "theme:sync": "node scripts/sync-theme.mjs"
+    "figures": "npm run catalog && node src/cli.js render docs/assets/how-it-works.dap && npm run showcase && node scripts/run-md.mjs",
+    "catalog": "npm run examples",
+    "design:sync": "node src/vendor/theme/ui/build/sync.mjs"
   },
   "engines": {
     "node": ">=20"
@@ -58,12 +59,16 @@
     "elkjs": "^0.9.3",
     "fontkit": "^2.0.4",
     "jetbrains-mono": "^1.0.6",
+    "postcss": "8.5.29",
     "pretendard": "^1.3.9",
     "subset-font": "^2.9.0"
   },
   "devDependencies": {
-    "@carbon/colors": "^11.59.0",
-    "@woonyong-choi/design-tokens": "github:woonyong-choi/design-tokens#v0.1.1",
     "playwright-core": "^1.63.0"
+  },
+  "exports": {
+    ".": "./src/index.js",
+    "./design-manifest.json": "./src/vendor/theme/manifest.json",
+    "./package.json": "./package.json"
   }
 }

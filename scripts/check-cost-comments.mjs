@@ -1,33 +1,39 @@
 // 비용 주석(`// cost:`)이 있어야 하는데 없는 JavaScript 함수를 찾는다.
-// 사용: node scripts/check-cost-comments.mjs <폴더나 파일 ...>
+// 사용: node scripts/check-cost-comments.mjs [--advisory] <폴더나 파일 ...>
 // 출력: `{경로}:{줄}: {함수 이름}: {이유}` 줄들과 마지막 `total {개수}`. 개수가 0이 아니면 종료 코드 1.
+// `--advisory`는 찾은 항목을 같은 모양으로 알리되 항목 때문에는 실패하지 않는다(종료 코드 0). 사용법 오류와 없는 대상은 두 방식 모두 종료 코드 2다.
 // 비용 주석은 시간 O(1), 할당 없음, 재귀 없음, I/O 없음인 함수만 생략할 수 있다.
 // 이 검사는 그 판정을 다 할 수 없으므로, 반복, 컬렉션 순회, 재귀, I/O가 보이는 함수만 본다.
 // 대상 선언: `function`, 블록 본문 화살표 함수, 클래스 메서드. 글자 판정(`\w`, `\b`)은 유니코드 글자도 낱말 글자로 본다.
-import { readdirSync, readFileSync, statSync } from 'node:fs';
+// 이 검사는 정규식으로 줄을 읽는 유지보수 힌트이며 비용 분석이나 정확성의 증거가 아니다. 호출 이름이 같으면 재귀로, `.map(`·`.join(` 같은
+// 호출과 `...` 전개는 모두 반복으로, `await`는 I/O로 보는 거친 판정이라 틀린 항목과 놓친 함수가 있다. 항목을 없애려고 근거 없는 점근 표기를 적지 않는다.
+import { readFileSync, statSync } from 'node:fs';
 import { extname } from 'node:path';
+import { unicodePattern } from '../src/vendor/theme/ui/build/lib/tokens-patterns.mjs';
+import { iterFiles } from '../src/vendor/theme/ui/build/lib/walk-files.mjs';
 
 // 생성 파일 첫 줄 표시. 토큰 생성물과 일반적인 `@generated` 표시
 const GENERATED_MARKS = ['생성물, 손으로 고치지 않음', '@generated'];
 const SKIP_DIRS = new Set(['node_modules', 'dist', 'build', 'coverage', 'target', '.git', '.venv', 'venv', '__pycache__']);
 const SCRIPT_EXTS = new Set(['.js', '.mjs', '.cjs', '.ts', '.jsx', '.tsx']);
 const COMMENT_MARK = '//';
-const USAGE = 'usage: check-cost-comments.mjs targets [targets ...]';
+const USAGE = 'usage: check-cost-comments.mjs [--advisory] targets [targets ...]';
 
-// 유니코드 낱말 글자와 낱말 경계. 패턴 글자의 `\w`(글자 묶음 안에서만 씀)와 `\b`를 이것으로 바꾼다.
-const WORD_CHARS = String.raw`\p{L}\p{N}_`;
-const WORD_BOUNDARY = `(?:(?<=[${WORD_CHARS}])(?![${WORD_CHARS}])|(?<![${WORD_CHARS}])(?=[${WORD_CHARS}]))`;
+// 이 검사가 보는 파일: 스크립트 확장자 파일. 건너뛰는 폴더는 설치물과 빌드 결과 폴더다.
+// 플래그 없는 정규식(`exec`와 `test`가 상태를 갖지 않는다). 낱말 판정은 유니코드 글자를 낱말 글자로 본다.
+const unicode = (source, flags = '') => unicodePattern(source, flags);
+const SOURCES = { wants: (name) => SCRIPT_EXTS.has(extname(name).toLowerCase()), skipDirs: SKIP_DIRS };
 
 // 각 패턴의 이름 그룹은 `name`
 const DECLARATIONS = [
-  unicodePattern(String.raw`^\s*(?:export\s+(?:default\s+)?)?(?:async\s+)?function\s*\*?\s*(?<name>[\w]+)\s*\(`),
-  unicodePattern(
+  unicode(String.raw`^\s*(?:export\s+(?:default\s+)?)?(?:async\s+)?function\s*\*?\s*(?<name>[\w]+)\s*\(`),
+  unicode(
     String.raw`^\s*(?:export\s+)?(?:const|let|var)\s+(?<name>[\w]+)\s*(?::[^=]+)?=\s*(?:async\s+)?(?:\([^)]*\)|[\w]+)\s*(?::[^=]+)?=>\s*\{`,
   ),
-  unicodePattern(
+  unicode(
     String.raw`^\s*(?:(?:static|async|get|set|public|private|protected|readonly)\s+|\*\s*)*(?<name>#?[\w]+)\s*=\s*(?:async\s+)?(?:\([^)]*\)|[\w]+)\s*=>\s*\{`,
   ),
-  unicodePattern(
+  unicode(
     String.raw`^\s*(?:(?:static|async|get|set|public|private|protected)\s+|\*\s*)*(?<name>#?(?!(?:if|for|while|switch|catch|return|function)\b)[\w]+)\s*\([^)]*\)\s*(?::[^{]+)?\{`,
   ),
 ];
@@ -35,12 +41,12 @@ const DECLARATIONS = [
 const DOC_OR_ATTRIBUTE = /^\s*(?:@|#\[|\/\/\/|\/\/!|\/\*\*|\*|\*\/)/;
 const STRING = /"""[\s\S]*?"""|'''[\s\S]*?'''|'(?:[^'\\\n]|\\[^\n])*'|"(?:[^"\\\n]|\\[^\n])*"|`(?:[^`\\]|\\[^\n])*`/g;
 const LINE_STRING = /'(?:[^'\\]|\\[^\n])*'|"(?:[^"\\]|\\[^\n])*"|`(?:[^`\\]|\\[^\n])*`/g;
-const LOOP = unicodePattern(
+const LOOP = unicode(
   String.raw`\b(?:for|while)\b|\.(?:map|filter|reduce|forEach|some|every|find|findIndex|flatMap|sort|join|includes|indexOf)\(|\.\.\.[\w]|Object\.(?:keys|values|entries|fromEntries)\(`,
   '',
 );
 // `.exec(`는 정규식 메서드라 제외한다(앞에 점이 없는 호출만 프로세스 실행으로 본다).
-const IO = unicodePattern(
+const IO = unicode(
   String.raw`\bfetch\(|(?<![.\w])(?:readFile|writeFile|readdir|mkdir|rm|spawn|exec|execFile)(?:Sync)?\(|\bconsole\.|\bawait\b`,
   '',
 );
@@ -50,25 +56,28 @@ const EXPRESSION_BODY = /\)\s*(?::[^={]+)?=(?![=>])/;
 // cost: time O(N), heap O(r), stack O(d), io f
 // vars: N = 전체 줄 수, r = 찾은 수, f = 파일 수, d = 폴더 깊이
 // basis: estimate
-/** 찾은 함수를 출력한다. 하나라도 있으면 1로 끝낸다. */
+/** 찾은 함수를 출력한다. 하나라도 있으면 1로 끝낸다. `--advisory`면 있어도 0으로 끝낸다. */
 function main(argv) {
-  const targets = parseArgs(argv);
+  const { targets, isAdvisory } = parseArgs(argv);
   const results = [];
-  for (const path of iterFiles(targets)) results.push(...checkFile(path));
+  for (const path of iterFiles(targets, SOURCES)) results.push(...checkFile(path));
   for (const { path, line, name, reason } of results) console.log(`${path}:${line}: ${name}: ${reason}`);
   console.log(`total ${results.length}`);
-  return results.length ? 1 : 0;
+  return results.length && !isAdvisory ? 1 : 0;
 }
 
-// cost: time O(a), heap O(a), stack O(1)
+// cost: time O(a), heap O(a), stack O(1), io a
 // vars: a = 인자 수
 // basis: estimate
-/** 대상 목록을 읽는다. 형식이 틀리면 사용법을 알리고 2로 끝낸다. */
+/** 대상 목록과 `--advisory`를 읽는다. 형식이 틀리거나 없는 대상이면 사용법을 알리고 2로 끝낸다. */
 function parseArgs(argv) {
-  const unknown = argv.find((arg) => arg.startsWith('-') && arg !== '-');
+  const unknown = argv.find((arg) => arg.startsWith('-') && arg !== '-' && arg !== '--advisory');
   if (unknown) exitWithUsage(`unrecognized arguments: ${unknown}`);
-  if (!argv.length) exitWithUsage('the following arguments are required: targets');
-  return argv;
+  const targets = argv.filter((arg) => arg !== '--advisory');
+  if (!targets.length) exitWithUsage('the following arguments are required: targets');
+  const missing = targets.find((target) => !statSync(target, { throwIfNoEntry: false }));
+  if (missing) exitWithUsage(`no such file or directory: ${missing}`);
+  return { targets, isAdvisory: argv.includes('--advisory') };
 }
 
 // cost: time O(1), heap O(1), stack O(1), io 1
@@ -76,14 +85,6 @@ function parseArgs(argv) {
 function exitWithUsage(message) {
   console.error(`${USAGE}\ncheck-cost-comments.mjs: error: ${message}`);
   process.exit(2);
-}
-
-// cost: time O(n), heap O(n), stack O(1)
-// vars: n = 패턴 글자 수
-// basis: estimate
-/** 패턴의 `\w`를 유니코드 낱말 글자로, `\b`를 유니코드 낱말 경계로 바꾼 정규식을 만든다. */
-function unicodePattern(source, flags = '') {
-  return new RegExp(source.replaceAll(String.raw`\b`, WORD_BOUNDARY).replaceAll(String.raw`\w`, WORD_CHARS), `${flags}u`);
 }
 
 // cost: time O(n·b), heap O(n), stack O(1), io 1
@@ -184,7 +185,7 @@ function findCostReason(name, body) {
     .map((line) => line.split(COMMENT_MARK)[0])
     .join('\n');
   if (LOOP.test(text)) return 'loop or iteration without cost comment';
-  if (unicodePattern(String.raw`\b${escapeRegExp(name)}\s*\(`).test(text)) return 'recursion without cost comment';
+  if (unicode(String.raw`\b${escapeRegExp(name)}\s*\(`).test(text)) return 'recursion without cost comment';
   if (IO.test(text)) return 'io without cost comment';
   return null;
 }
@@ -227,53 +228,6 @@ function hasDocAbove(lines, costIndex) {
     if (!stripped.startsWith(COMMENT_MARK)) return false;
   }
   return false;
-}
-
-// cost: time O(f), heap O(d), stack O(d), io f
-// vars: f = 파일 수, d = 폴더 깊이
-// basis: estimate
-/** 검사할 파일 경로. 폴더는 정렬 순서로 내려가고, 한 폴더의 파일을 하위 폴더보다 먼저 낸다. */
-function* iterFiles(targets) {
-  for (const target of targets) {
-    const stat = statSync(target, { throwIfNoEntry: false });
-    if (stat?.isFile()) {
-      if (SCRIPT_EXTS.has(extname(target).toLowerCase())) yield target;
-      continue;
-    }
-    if (stat?.isDirectory()) yield* walkFiles(target);
-  }
-}
-
-// cost: time O(f), heap O(d), stack O(d), io f
-// vars: f = 폴더 아래 파일 수, d = 폴더 깊이
-// basis: estimate
-function* walkFiles(folder) {
-  const files = [];
-  const dirs = [];
-  for (const entry of readdirSync(folder, { withFileTypes: true })) (entry.isDirectory() ? dirs : files).push(entry.name);
-  for (const name of files.sort(compareText)) {
-    if (SCRIPT_EXTS.has(extname(name).toLowerCase())) yield joinPath(folder, name);
-  }
-  for (const name of dirs.sort(compareText)) {
-    if (!SKIP_DIRS.has(name)) yield* walkFiles(joinPath(folder, name));
-  }
-}
-
-// cost: time O(g), heap O(g), stack O(1)
-// vars: g = 경로 글자 수
-// basis: estimate
-/** 폴더와 이름을 잇는다. 사용자가 준 폴더 표기(`./src`)를 그대로 남긴다. */
-function joinPath(folder, name) {
-  return folder.endsWith('/') ? `${folder}${name}` : `${folder}/${name}`;
-}
-
-// cost: time O(g), heap O(1), stack O(1)
-// vars: g = 글자 수
-// basis: estimate
-/** 코드 포인트 순서 비교. */
-function compareText(a, b) {
-  if (a === b) return 0;
-  return a < b ? -1 : 1;
 }
 
 process.exitCode = main(process.argv.slice(2));

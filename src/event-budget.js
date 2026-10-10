@@ -1,7 +1,7 @@
 // 조건과 대기의 이벤트 예산 사전 검사와 끝나지 않는 대기의 경고. 이벤트 처리 자체는 flow-events.js다(docs/design/playback.md 이벤트 예산, 대기가 끝나는 때).
 import { eventBudgetError } from './budget.js';
 import { departureCount } from './timeline-flow.js';
-import { values } from './tokens.js';
+import { values } from './vendor/theme/tokens.js';
 
 const FLOW_STEP_MS = values.duration['flow-step'];
 

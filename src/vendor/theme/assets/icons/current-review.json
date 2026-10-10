@@ -1,0 +1,724 @@
+{
+  "version": 1,
+  "reviewedAt": "2026-10-08",
+  "sizes": [
+    24,
+    32,
+    48
+  ],
+  "reference": "https://culturedcode.com/things/support/",
+  "scope": "Chrome의 실제 발행 렌더러 12페이지에서 142개 항목을 세 크기로 관측했다. 모티프·곡률·면·내부 여백·축소 표현을 검토하며 사용자 승인이나 픽셀 동일성 판정은 아니다.",
+  "userApproval": "not-established",
+  "entries": {
+    "detail-data-structures": {
+      "fingerprint": "4c9d3849aebdf1ef6397c0671ed6dfb8796d8677c23a300e1a93c0b669d58d59",
+      "observation": "두 푸른 블록과 꺾인 연결선 사이의 여백을 확인했다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "detail-algorithm": {
+      "fingerprint": "e5a0e4a6fb497d24e28a678996206022c5f233b720a922c63467bf2e0b6d542d",
+      "observation": "주황 판단 마름모와 두 푸른 결과가 세 크기에서 분리된다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "detail-operating-system": {
+      "fingerprint": "41a246daa6a39d2ec40f0b498fa8dfbe402ae02b9fc3832fc345d66a2f22cc30",
+      "observation": "검정 데스크톱 패널과 겹친 밝은 창이 유지된다. 스탠드 있는 관측 화면과 구분된다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "detail-processor": {
+      "fingerprint": "357ce061cc96cc7558e388a9c60b311b2de0b803fcd67e120c4327b83a8186e1",
+      "observation": "검정 칩과 밝은 코어가 분리된다. 작은 크기의 핀 수를 줄인 변형을 확인했다.",
+      "smallSize": "24px는 핀 수를 줄이고 코어를 유지한다."
+    },
+    "detail-memory": {
+      "fingerprint": "a9fd0b5d5662492c8b03c4a8eb7c8de8acde218530d11803e8b7b4f2a9c0b7c4",
+      "observation": "기판의 두 칩과 아래 접점이 구분된다. 칩 사이의 흰 간격이 남는다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "detail-runtime": {
+      "fingerprint": "f4c5d3631fe34b6077b0ee41864a56c7b7ace9dd5251965d742b8f7218f04121",
+      "observation": "검정 창 안의 재생 삼각형을 유지한다. CLI의 꺾쇠·밑줄과 다르다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "detail-concurrency": {
+      "fingerprint": "6d4f27773fa9a6f1d483970cf80d2724c3f962bcdaba9aaf8ea2a1cebe13d032",
+      "observation": "파란 타일 안에서 서로 다른 구간을 점유하는 작업 면이 나뉜다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "detail-network": {
+      "fingerprint": "5392654766316625c187e3b76e1bb4634e415b7051a07177decf71b2563285a6",
+      "observation": "라우터와 안테나가 본체의 경계를 유지한다. 작은 신호와 상태등은 보조 표현이다.",
+      "smallSize": "안테나와 본체로 식별하고 신호·상태등의 세부는 제목을 보조한다."
+    },
+    "detail-api": {
+      "fingerprint": "7ac8cf658d0923321709c4d352bfc44217fe4954d085841920d1fed4986cbf40",
+      "observation": "맞은편 두 커넥터의 가운데 틈과 바깥 선을 확인했다.",
+      "smallSize": "24px에서는 커넥터의 작은 접점보다 두 몸체의 연결 실루엣을 읽는다."
+    },
+    "detail-architecture": {
+      "fingerprint": "3c6e6be2e41f2c86cbcfb8d95a8741378e76e8fa98a787e565d0d8301bc6c8c4",
+      "observation": "윗 노드 하나와 아래 두 노드의 계층을 유지한다. 같은 장비를 쓰는 cluster와 면을 구분한다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "detail-queue": {
+      "fingerprint": "f473b82a04a8acf4133c876134f8f2dc214c3e67fa2787d3279b433452720ea1",
+      "observation": "세 메시지를 담은 프레임과 아래 처리 방향의 분리를 확인했다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "detail-event": {
+      "fingerprint": "bdd4504918ccf70be6d938280c3316b24d3de0ba136a338bd03e663d0812f611",
+      "observation": "분홍 바탕 안의 흰 종과 아래 추를 확인했다. 바깥 장식선은 없다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "detail-scheduler": {
+      "fingerprint": "cce3f8ce97532ca2d20977601ae795c2f308f60c0e4eb666cf3658f128969296",
+      "observation": "달력 외곽과 우하단 시계가 겹치는 구성이다. 시계 원은 캔버스 안에 남는다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "detail-workflow": {
+      "fingerprint": "6c63057260754856c5aecb8990ac8276e4ac33590b18377dea168869025fb87c",
+      "observation": "시작 블록에서 완료 체크까지 단방향으로 이어진다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "detail-serialization": {
+      "fingerprint": "c1a5d432a6659577736c941761e09babc7abfd1e893d0aad2c82719c0d75fcca",
+      "observation": "접힌 문서 안의 중괄호가 양쪽 가장자리와 떨어져 있다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "detail-package": {
+      "fingerprint": "e0cd9a24f31384077dc71eb7a3c3a3d498075e23b6f840239eb351541b451fd8",
+      "observation": "두 퍼즐 조각의 맞물림과 색면 경계를 확인했다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "detail-database": {
+      "fingerprint": "08ce068150a1888818d6801ec4479a0fc7a5ab27aa5d199a9e9d11b6ad947c74",
+      "observation": "원통의 상판과 두 저장 층 사이의 밝은 줄이 유지된다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "detail-transaction": {
+      "fingerprint": "86c266f2f957da581313ca82d546c5380c1834527b63e6c486a951a156c638c1",
+      "observation": "한 타일 안의 작업 면과 확정 체크가 분리된다. 일반 testing의 체크 하나와 다르다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "detail-indexing": {
+      "fingerprint": "4f90a2735b3fbddc46060ffebc13bb0ede6304e680fd8314db4fb3e5fc3cac51",
+      "observation": "문서와 돋보기 조합을 유지한다. 원형만 있는 search와 구분된다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "detail-cache": {
+      "fingerprint": "eeabf27957e0b7801495a11bdfd7c60192779e125d6d7475a8987999288f6a9d",
+      "observation": "주황 타일 안의 번개가 외곽에 닿지 않는다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "detail-search": {
+      "fingerprint": "571b1066908f7b6b6c96860c515df1d6ddbe8ec554065334feb54079def411df",
+      "observation": "푸른 렌즈와 아래 손잡이의 단순한 실루엣을 유지한다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "detail-replication": {
+      "fingerprint": "4d301a5158bcc81b57a3138abb41b4b7336b4f74a83879dacf7b9275bc519e7b",
+      "observation": "앞뒤 문서의 어긋난 외곽과 동일한 줄을 확인했다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "detail-migration": {
+      "fingerprint": "f275dbea17c10b3e74181b4bc27e78752777f4f82bef3750945e646aa292a5f1",
+      "observation": "서로 분리된 두 저장소와 오른쪽 이동 화살표를 확인했다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "detail-backup": {
+      "fingerprint": "6013646561e9cf34fa9c08b58cc9742075ae0344d3feb0d5d26184c8a6229ecf",
+      "observation": "저장 매체 위의 되돌림 원호와 끝점을 확인했다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "detail-pipeline": {
+      "fingerprint": "97615493f1e4f68cf0b414ea3601edf8d687fea6ba00d5fc375bf73f2bc37676",
+      "observation": "초록 타일 안에서 이어진 세 단계가 같은 연결선 위에 남는다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "detail-analytics": {
+      "fingerprint": "13dbdbfadce20400af2d70a481976e966b7115fcaf8d16a5db6c4e4c3be70da5",
+      "observation": "옅은 프레임 안에서 높이가 다른 세 막대와 기준선을 확인했다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "detail-server": {
+      "fingerprint": "37f8a9a734368e4732624de3a14b3cc252dbbdaa1d612176cc7eca6ed72cf3cf",
+      "observation": "짙은 랙 안의 밝은 세 슬롯이 분리된다. 상태등은 보조 표현이다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "detail-cloud": {
+      "fingerprint": "1a60e6ceaa764ddf24268d4f58321882cef94ad8e13f56be9190a4970455fff3",
+      "observation": "추가 기호 없는 푸른 구름의 원호와 평평한 아래 면을 확인했다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "detail-container": {
+      "fingerprint": "3a5096f60c3142482d0abd18cebc1d66af82736b7a4ed162508fa649e2e46df1",
+      "observation": "파란 화물 면 안의 세 잠금 봉이 서로 붙지 않는다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "detail-cluster": {
+      "fingerprint": "40e66bc79bc29da91da8c808148fbb4906954dfddf1e218ae121bd1725eb0e8b",
+      "observation": "같은 장비 세 대와 가운데 연결선이 유지된다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "detail-gateway": {
+      "fingerprint": "5751385d288bae40d887a3effc0680a2ac0e7d6643bca328f1d5dee13378c6d8",
+      "observation": "여러 입력선이 하나의 어두운 문을 지나 오른쪽으로 나간다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "detail-scaling": {
+      "fingerprint": "7e7b2d6f42c1524973aa06be0c9b7d79e1229382c201734d3aa0b0f894812faf",
+      "observation": "높이가 증가하는 세 막대가 별개 면으로 유지된다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "detail-deploy": {
+      "fingerprint": "52de17b00bd9752c30c460ec331804a5eb31c96358b98d5d0fe89183feeaa4bb",
+      "observation": "주황 포장 상자와 위쪽 푸른 화살표가 분리된다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "detail-monitoring": {
+      "fingerprint": "e536373e2e5c94ea76376e934e0b55975929844262138cb839f49c92773aa0a8",
+      "observation": "밝은 파형이 어두운 모니터 안에 남는다. 받침으로 OS 패널과 구분된다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "detail-logs": {
+      "fingerprint": "80bff98146301ab05ca1e436f47bcdd2ffc2fd823268f0eaee522fd9ffa724c9",
+      "observation": "문서 안의 꺾쇠와 순서 있는 줄을 확인했다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "detail-tracing": {
+      "fingerprint": "f966c2df87b5079deb0681a6307372872f14020d0fab21b423c2397767df829f",
+      "observation": "프레임 안의 세 추적 구간이 세로 위치와 시작점을 달리한다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "detail-globe": {
+      "fingerprint": "5cdd0453505c5a1da51d7cbb917e2c5b5d21729c0f76e4fd6d29b30600560f87",
+      "observation": "원형 외곽과 경선·위선이 세 크기에서 유지된다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "detail-cost": {
+      "fingerprint": "4317ad0124869644d89686f1ae2cc7c66ec667f8dc74798f8a63e4abbcd03b67",
+      "observation": "주황 동전 외곽과 흰 원화 기호를 확인했다. 장식용이며 상태를 전달하지 않는다.",
+      "smallSize": "노란 면의 흰 기호를 단독 정보나 조작 버튼으로 사용하지 않는다."
+    },
+    "detail-browser": {
+      "fingerprint": "1fada8fe72da06d5a14bd18a871d1115b850c11fec08c92bc7d08604b8e37997",
+      "observation": "상단 창 제어점과 아래 콘텐츠 칸이 나뉜다. 제어점 색은 보조 표현이다.",
+      "smallSize": "24px의 창 제어점은 장식이며 제목 없이 상태를 전달하지 않는다."
+    },
+    "detail-components": {
+      "fingerprint": "d7586b2629bb408fe9dc610669db1ff5cca62f7c7c6a401e17bbf394d23d9597",
+      "observation": "제목 막대·입력 윤곽·작은 버튼의 세 역할이 구분된다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "detail-state": {
+      "fingerprint": "3ecad3596aea21de7c25d93ac1f492bbab08ba8fb12e48efbe7e7ae25fec6575",
+      "observation": "초록 트랙과 오른쪽 원형 손잡이 사이의 밝은 간격을 확인했다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "detail-accessibility": {
+      "fingerprint": "b2b7d71618cdc3c46a496593c63e783948ae0e978522806c017762f8593285ed",
+      "observation": "푸른 원 안의 머리와 팔다리 실루엣이 유지된다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "detail-mobile": {
+      "fingerprint": "bb5079bbc724ee53008e9a7a04f2418b1dd36a646fdca873337881183f471e32",
+      "observation": "검정 세로 베젤과 옅은 화면이 분리된다. 큰 화면의 상단 홈과 작은 변형을 확인했다.",
+      "smallSize": "24px에서는 베젤·화면만 유지한 변형을 사용한다."
+    },
+    "detail-interaction": {
+      "fingerprint": "3ae138c7f4b8ee9d8700f139e06e190ec08e636bb330e586cf0183fdd2dffcde",
+      "observation": "어두운 타일 안의 손과 세운 손가락이 남는다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "detail-design-system": {
+      "fingerprint": "aa5a87336a0d1c011e80b3e64dd2aa0b02a3e05f6024c7c0b375ec4d3bc77db6",
+      "observation": "색 견본 판과 옆 자가 서로 다른 실루엣으로 유지된다.",
+      "smallSize": "24px의 자 눈금은 읽기 정보가 아니며 견본과 자의 실루엣을 사용한다."
+    },
+    "detail-security": {
+      "fingerprint": "77f3628a1255fc89d20d7ed27214f634407d119c76ac3a35ade28f4eee8f8a12",
+      "observation": "초록 방패 안의 완료 체크를 확인했다. 취약점의 균열과 다르다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "detail-key": {
+      "fingerprint": "b9de6d27d38ce00bfb2fb209c457b8211aaf061c0a84d83c43a6ff11bad9a3db",
+      "observation": "주황 면 안에서 원형 머리·구멍·열쇠 끝이 분리된다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "detail-lock": {
+      "fingerprint": "c727c5d4b81d6a5e83152039ec51fd50278926051d103967491646adb3e3eb52",
+      "observation": "둥근 고리와 짙은 몸체의 경계, 가운데 열쇠구멍을 확인했다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "detail-firewall": {
+      "fingerprint": "2ffd9827eab3575a0dfdc5cc0b7b88209309989690f83c4486a950b2ed10d9a3",
+      "observation": "벽돌 줄과 우하단 불꽃의 의도된 겹침을 확인했다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "detail-encryption": {
+      "fingerprint": "9a1d99ee9d6c4ad41d51d2d97f04e1003b9ca20833d8f4ff39acf02aeac04e79",
+      "observation": "옅은 문서와 우하단 짙은 자물쇠가 함께 보인다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "detail-vulnerability": {
+      "fingerprint": "1281892d7af613197499370bc22d87b4eb265b261a4c6cdb3d98a47881acf4f5",
+      "observation": "분홍 방패 안의 흰 열린 균열을 확인했다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "detail-privacy": {
+      "fingerprint": "779e96b5f8fad4c5fd3d972ab55bc09377897891e810064812bbd43a8413071b",
+      "observation": "식별 카드의 인물·줄과 가려진 어두운 칸이 구분된다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "detail-model": {
+      "fingerprint": "b11ea9db083ddb8af95dc53173875db90b902d9a1779b548f2005f3c47ddcff4",
+      "observation": "다섯 학습 노드와 연결을 확인했다. 중심 처리 뒤 결과가 나오는 inference와 다르다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "detail-training": {
+      "fingerprint": "f04cfcf503a2c70abbaee9d458f84744b3fa910edef50c8bd74f4f054caff128",
+      "observation": "펼친 초록 책의 중앙 접힘과 양쪽 학습 줄이 유지된다. 예전 모델 도형 설명은 수정한다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "detail-inference": {
+      "fingerprint": "02715e971ad25b698dd16cabc7a0cd6638656e28490d2466b1137c63e8d51be0",
+      "observation": "두 입력에서 가운데 처리 노드와 하나의 결과로 이어지는 방향을 확인했다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "detail-dataset": {
+      "fingerprint": "59ea76b3c54abe4ccd69bfbb380714c52011261921d68353ccf999987b44095a",
+      "observation": "겹친 두 표와 노란 강조 셀이 프레임 안에 남는다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "detail-embedding": {
+      "fingerprint": "c07862376332d54b43ab0f370a5d594348472e74130d0e2bf3ddc842993811e3",
+      "observation": "푸른 프레임 안에서 점들의 공간 배치가 유지된다.",
+      "smallSize": "24px에서 점을 줄인 변형을 사용하며 점 개수 자체는 의미를 전달하지 않는다."
+    },
+    "detail-rag": {
+      "fingerprint": "2861fcbb290353bdfab26d8d8d486b307d3cc202ef5b7c7269e2cf47c1ab7279",
+      "observation": "참고 문서 앞의 푸른 응답 말풍선을 확인했다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "detail-agent": {
+      "fingerprint": "59bade2c599cf8ca040a8384df59828dcf2b864aac458904c0ceb7478a0904e8",
+      "observation": "어두운 로봇 외곽과 밝은 얼굴, 위 안테나가 유지된다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "detail-prompt": {
+      "fingerprint": "77828cfe42e4e5297529147f3a3c6c4ccbfa0da6ad99a9c923b10d00f3fa94e9",
+      "observation": "푸른 말풍선 안의 세 입력 줄과 아래 꼬리가 유지된다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "detail-evaluation": {
+      "fingerprint": "b8197d7cef9799cd52e040472d4deb0ab572a2e9e65bdb12ed68905381f4241b",
+      "observation": "클립보드와 초록 체크·결과 줄을 확인했다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "detail-vision": {
+      "fingerprint": "226149541a3e2bb5688c33ae1f89f3dda791553d8c423c4b42e21ac0b0a740b6",
+      "observation": "문서 바깥의 네 스캔 모서리가 외곽과 겹치지 않는다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "detail-audio": {
+      "fingerprint": "7522bf8eb8f0546b432b107cec9d4ed1feeecded2caf42ce0d55cc1a744b1086",
+      "observation": "푸른 면 안의 높이가 다른 세로 파형을 확인했다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "detail-terminal": {
+      "fingerprint": "ab5910f1facee6c4d41dd0b54c50b3aa944197662a72eac89763e491d9ad7f19",
+      "observation": "짙은 타일 안의 흰 꺾쇠와 밑줄 사이에 여백이 남는다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "detail-version-control": {
+      "fingerprint": "f59f9c5f2ad7d5224900e44474b045f42acdea2a597deecadab14ea9b16b194e",
+      "observation": "주황 커밋 원과 분기선의 연결을 확인했다. Git 브랜드의 마름모와는 별개다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "detail-build": {
+      "fingerprint": "30421ec41a367ae36e3e055a2ee435215e45e92e6230301e182cee8e9d703622",
+      "observation": "파란 타일 안에서 흰 망치와 작은 작업 면이 분리된다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "detail-testing": {
+      "fingerprint": "d47b3d613713ef571dd2824dd90486e89eb201f2d91975deba6c61e1b1ec03c0",
+      "observation": "초록 타일 안의 체크가 여백을 유지한다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "detail-debugging": {
+      "fingerprint": "c45820dd2a3b17f80ad9b321b6f68d0aba948a07c47aa7f47a9d65ddea8c5d35",
+      "observation": "분홍 몸체와 검정 머리·다리의 간격을 확인했다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "detail-performance": {
+      "fingerprint": "a3171ce35053b992819c303a0f9215336bbd3a10cf59de0bf542027f0e7c32c9",
+      "observation": "노란 초시계의 위 버튼·바늘과 왼쪽 속도선을 확인했다. 로켓이나 속도계가 아니다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "detail-refactoring": {
+      "fingerprint": "2e1613d6db349b1333c783c5157541bcfc036685ee21f83658499305c7288959",
+      "observation": "나란한 두 코드 열의 바탕과 줄 정렬 차이를 확인했다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "detail-code-review": {
+      "fingerprint": "b4239b398c6692596eb7839b470c37c748ba17b1a35860f680bb12521aecf33a",
+      "observation": "밝은 푸른 말풍선 안에서 진한 코드 꺾쇠 두 개가 분리된다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "detail-person": {
+      "fingerprint": "981d24d0ea87e34d8114aef83d5788f5e73e8a52d2ac11f16cc144347c26484b",
+      "observation": "짙은 타일 안의 원형 머리와 반원 어깨 사이에 간격이 남는다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "detail-team": {
+      "fingerprint": "d849bb2fe0089ed786d0035983efb16537fa3ca6c212e84b24c9cdaf9f79346b",
+      "observation": "앞 사람과 뒤 두 사람의 크기·명암 차이를 확인했다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "detail-administrator": {
+      "fingerprint": "768bec435dd104bcd84f9d8e1dd60250f3ac10cfa881458c2f05b52f2033fab5",
+      "observation": "공통 프로필의 우하단에 주황 방패가 붙는다. 작은 크기에도 방패는 주제의 일부로 남는다.",
+      "smallSize": "우하단 방패는 글 유형 배지가 아닌 주제 자체의 도형이다."
+    },
+    "detail-portfolio": {
+      "fingerprint": "a2b4dea6428a0ba6de9fcbb47c6c122d2bb7f2bcd2f02e76656a7992c35c8bfe",
+      "observation": "주황 작품 보드 세 장의 어긋난 가장자리와 앞면 내용을 확인했다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "detail-project": {
+      "fingerprint": "22a5f0e3c724d54668357c4ce1e84b43d40c2192e7fb5f2af0c6978c863c4ee8",
+      "observation": "청록 폴더의 탭과 가운데 코드 꺾쇠가 유지된다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "detail-document": {
+      "fingerprint": "555c31d97232ea670170a4b5115096f8ec9fde7406457b28e142ab0c8622e3a5",
+      "observation": "접힌 모서리와 본문 줄이 옅은 문서 외곽 안에 남는다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "detail-idea": {
+      "fingerprint": "e9f1734937c3c1378f1b105708dca28bdbb6118b3b5dca910ec68c053c1f937f",
+      "observation": "노란 타일 안의 흰 전구와 아래 받침을 확인했다. 의미는 제목이 전달한다.",
+      "smallSize": "노란 면의 흰 기호를 단독 정보나 조작 버튼으로 사용하지 않는다."
+    },
+    "detail-experiment": {
+      "fingerprint": "5c1de9f75313ff86e383c89a6fa67c900295bcbaed99fda73995f738b96b668a",
+      "observation": "회색 플라스크 외곽과 푸른 액체가 분리된다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "detail-retrospective": {
+      "fingerprint": "bad4bd010acf1feb91ad9b4d4580e62f55afbec8d795343ad8d6db745c578794",
+      "observation": "노트의 우하단 되돌림 원호와 화살표 끝이 유지된다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "detail-incident": {
+      "fingerprint": "db7b4bd01e80f8c397161498a651e9b1fcf83fbddb4247f91a1fff64fe038234",
+      "observation": "분홍 타일 안의 느낌표 줄과 점 사이에 간격이 남는다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "detail-watch": {
+      "fingerprint": "1ef8366f8e54ab21d237ca6810fb98c4fe961affcf6b6e61549d24bf88593d6b",
+      "observation": "검정 손목 띠·본체와 옅은 화면이 분리된다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "detail-tablet": {
+      "fingerprint": "4f679ea382a4be7b5c6c454fc66ac0c27f423665999e42d65a03bc23d1c6c043",
+      "observation": "가로 베젤과 밝은 화면을 유지한다. 작은 변형에서 세부 버튼을 덜어냈다.",
+      "smallSize": "24px에서는 베젤 버튼을 생략한다."
+    },
+    "detail-laptop": {
+      "fingerprint": "16c63dd6c9cdefb82a84d4fca8d9467ddcd012c4574ac9f313aa88335df454ee",
+      "observation": "가로 화면과 아래 대칭 받침이 분리되어 태블릿과 구분된다.",
+      "smallSize": "24px의 단순한 받침과 화면을 함께 읽는다."
+    },
+    "brand-python": {
+      "fingerprint": "0a6a0bda5230cb3644aa0a47b061f48410aff62ca055e978d4f68f9db7b5e711",
+      "observation": "파랑·노랑 몸체가 분리되고 바닥 그림자나 그라데이션이 없다.",
+      "smallSize": "24px에서 주 실루엣을 유지한다. 기술 이름을 접근 가능한 텍스트로 함께 제공한다."
+    },
+    "brand-kotlin": {
+      "fingerprint": "91389b700733ef2deb31b78d4f02c9511dce7df9417b2a1b4461b84f0b274f8d",
+      "observation": "보라색 없는 어두운 K 실루엣을 유지한다.",
+      "smallSize": "24px에서 주 실루엣을 유지한다. 기술 이름을 접근 가능한 텍스트로 함께 제공한다."
+    },
+    "brand-csharp": {
+      "fingerprint": "d144f6d6d475d1a1e5a9b6362e62ef976c319e5722a7f7284c07094fded92ced",
+      "observation": "짙은 육각형 안의 C와 작은 #을 확인했다.",
+      "smallSize": "24px에서는 세부 획이 촘촘해진다. 기술 이름과 함께 사용하며 단독 조작에 쓰지 않는다."
+    },
+    "brand-rust": {
+      "fingerprint": "c927bb3ecc7b0917f6e0536e8bf5fa4dbb3fe73780d145b5b432fa09983bb818",
+      "observation": "검정 톱니 원과 R을 확인했다.",
+      "smallSize": "24px에서는 세부 획이 촘촘해진다. 기술 이름과 함께 사용하며 단독 조작에 쓰지 않는다."
+    },
+    "brand-java": {
+      "fingerprint": "b1773b2949136643622f6c26c9a334011c4da3b6c73e1fa63f36d75eea3fb6c3",
+      "observation": "붉은 증기와 푸른 잔을 확인했다.",
+      "smallSize": "24px에서는 세부 획이 촘촘해진다. 기술 이름과 함께 사용하며 단독 조작에 쓰지 않는다."
+    },
+    "brand-c": {
+      "fingerprint": "a194c105431f4719db0c0d71deacd8be5abdc4d27551039a8ef491b974cbcad9",
+      "observation": "옅은 회색 C를 유지한다. 제목과 함께 쓰는 장식 로고다.",
+      "smallSize": "24px에서 주 실루엣을 유지한다. 기술 이름을 접근 가능한 텍스트로 함께 제공한다."
+    },
+    "brand-javascript": {
+      "fingerprint": "76aabdfaf8ee48ee918860437be64ead57c233773d798c35244d8e11fafdb628",
+      "observation": "노란 사각형과 JS 문자가 유지된다.",
+      "smallSize": "24px에서 주 실루엣을 유지한다. 기술 이름을 접근 가능한 텍스트로 함께 제공한다."
+    },
+    "brand-typescript": {
+      "fingerprint": "36ae7dfbbaf7e937ccf93b9e3a946364f0f8db2a9e5ea4eae1c4f2375195345b",
+      "observation": "파란 사각형과 TS 문자가 유지된다.",
+      "smallSize": "24px에서 주 실루엣을 유지한다. 기술 이름을 접근 가능한 텍스트로 함께 제공한다."
+    },
+    "brand-spring": {
+      "fingerprint": "743bcca88338f09eda614cb7c558155a056e5b9d440729eaf02a9131809e37e5",
+      "observation": "초록 원과 흰 잎 실루엣을 확인했다.",
+      "smallSize": "24px에서 주 실루엣을 유지한다. 기술 이름을 접근 가능한 텍스트로 함께 제공한다."
+    },
+    "brand-react": {
+      "fingerprint": "e19cac56bbd283f631d90d4980cb542d1a399f194f948975bbb837d7986cdc6b",
+      "observation": "청록 원자 궤도와 중심점을 확인했다.",
+      "smallSize": "24px에서는 세부 획이 촘촘해진다. 기술 이름과 함께 사용하며 단독 조작에 쓰지 않는다."
+    },
+    "brand-nextjs": {
+      "fingerprint": "66a87d0c951e223cccd00f0f6a9cb96b86ef3abc486f181cd66c02705aab20a2",
+      "observation": "짙은 원과 흰 N의 대비를 확인했다.",
+      "smallSize": "24px에서 주 실루엣을 유지한다. 기술 이름을 접근 가능한 텍스트로 함께 제공한다."
+    },
+    "brand-nodejs": {
+      "fingerprint": "a083534e5c643933a2c29bbce0eb9bbdf00ee270d5e825ff181b407246e9d9ba",
+      "observation": "초록 육각형과 내부 면의 경계를 확인했다.",
+      "smallSize": "24px에서는 세부 획이 촘촘해진다. 기술 이름과 함께 사용하며 단독 조작에 쓰지 않는다."
+    },
+    "brand-docker": {
+      "fingerprint": "86e0d039e3366693b8b341a846f0ad84ac137184047dfcabbbfb1a0a7e0a33d1",
+      "observation": "가로로 긴 고래와 등에 실린 컨테이너를 유지한다.",
+      "smallSize": "24px에서 주 실루엣을 유지한다. 기술 이름을 접근 가능한 텍스트로 함께 제공한다."
+    },
+    "brand-kubernetes": {
+      "fingerprint": "07e84e9db8bd6ab4b2e8f933707a39433ab2b966d8aa2adf7d27dd07f889a480",
+      "observation": "푸른 육각형과 흰 바퀴를 확인했다.",
+      "smallSize": "24px에서는 세부 획이 촘촘해진다. 기술 이름과 함께 사용하며 단독 조작에 쓰지 않는다."
+    },
+    "brand-postgresql": {
+      "fingerprint": "c83b499ed4c3b4c3748e8b125bfea630452debb2b5c4296f054268bd18783ce4",
+      "observation": "푸른 코끼리의 흰 내부 선과 코의 실루엣을 확인했다.",
+      "smallSize": "24px에서는 세부 획이 촘촘해진다. 기술 이름과 함께 사용하며 단독 조작에 쓰지 않는다."
+    },
+    "brand-redis": {
+      "fingerprint": "fde3c934f6b4a6e7412dfd304ac4c560baf0e47d9aaaded291fd6f56b946c16e",
+      "observation": "붉은 세 층과 흰 상단 표식을 확인했다.",
+      "smallSize": "24px에서 주 실루엣을 유지한다. 기술 이름을 접근 가능한 텍스트로 함께 제공한다."
+    },
+    "brand-git": {
+      "fingerprint": "ac3a43d58983ff231793a4d92f329eee8733ef45c637b36abd388023e150e51e",
+      "observation": "주황 마름모 안의 분기선과 원이 남는다.",
+      "smallSize": "24px에서 주 실루엣을 유지한다. 기술 이름을 접근 가능한 텍스트로 함께 제공한다."
+    },
+    "brand-linux": {
+      "fingerprint": "23b125d449917fdb79718a2b638b366da0699d3e5eb789041af99bcf16f7b842",
+      "observation": "단색 펭귄의 머리·밝은 배·발이 유지된다.",
+      "smallSize": "24px에서 주 실루엣을 유지한다. 기술 이름을 접근 가능한 텍스트로 함께 제공한다."
+    },
+    "base-data-structures": {
+      "fingerprint": "4c9d3849aebdf1ef6397c0671ed6dfb8796d8677c23a300e1a93c0b669d58d59",
+      "observation": "기본 호출과 상세 마스터의 세 크기를 대조했다. 두 푸른 블록과 꺾인 연결선 사이의 여백을 확인했다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "base-algorithm": {
+      "fingerprint": "e5a0e4a6fb497d24e28a678996206022c5f233b720a922c63467bf2e0b6d542d",
+      "observation": "기본 호출과 상세 마스터의 세 크기를 대조했다. 주황 판단 마름모와 두 푸른 결과가 세 크기에서 분리된다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "base-operating-system": {
+      "fingerprint": "41a246daa6a39d2ec40f0b498fa8dfbe402ae02b9fc3832fc345d66a2f22cc30",
+      "observation": "기본 호출과 상세 마스터의 세 크기를 대조했다. 검정 데스크톱 패널과 겹친 밝은 창이 유지된다. 스탠드 있는 관측 화면과 구분된다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "base-network": {
+      "fingerprint": "5392654766316625c187e3b76e1bb4634e415b7051a07177decf71b2563285a6",
+      "observation": "기본 호출과 상세 마스터의 세 크기를 대조했다. 라우터와 안테나가 본체의 경계를 유지한다. 작은 신호와 상태등은 보조 표현이다.",
+      "smallSize": "안테나와 본체로 식별하고 신호·상태등의 세부는 제목을 보조한다."
+    },
+    "base-processor": {
+      "fingerprint": "357ce061cc96cc7558e388a9c60b311b2de0b803fcd67e120c4327b83a8186e1",
+      "observation": "기본 호출과 상세 마스터의 세 크기를 대조했다. 검정 칩과 밝은 코어가 분리된다. 작은 크기의 핀 수를 줄인 변형을 확인했다.",
+      "smallSize": "24px는 핀 수를 줄이고 코어를 유지한다."
+    },
+    "base-architecture": {
+      "fingerprint": "3c6e6be2e41f2c86cbcfb8d95a8741378e76e8fa98a787e565d0d8301bc6c8c4",
+      "observation": "기본 호출과 상세 마스터의 세 크기를 대조했다. 윗 노드 하나와 아래 두 노드의 계층을 유지한다. 같은 장비를 쓰는 cluster와 면을 구분한다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "base-search": {
+      "fingerprint": "571b1066908f7b6b6c96860c515df1d6ddbe8ec554065334feb54079def411df",
+      "observation": "기본 호출과 상세 마스터의 세 크기를 대조했다. 푸른 렌즈와 아래 손잡이의 단순한 실루엣을 유지한다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "base-testing": {
+      "fingerprint": "d47b3d613713ef571dd2824dd90486e89eb201f2d91975deba6c61e1b1ec03c0",
+      "observation": "기본 호출과 상세 마스터의 세 크기를 대조했다. 초록 타일 안의 체크가 여백을 유지한다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "base-idea": {
+      "fingerprint": "e9f1734937c3c1378f1b105708dca28bdbb6118b3b5dca910ec68c053c1f937f",
+      "observation": "기본 호출과 상세 마스터의 세 크기를 대조했다. 노란 타일 안의 흰 전구와 아래 받침을 확인했다. 의미는 제목이 전달한다.",
+      "smallSize": "노란 면의 흰 기호를 단독 정보나 조작 버튼으로 사용하지 않는다."
+    },
+    "base-event": {
+      "fingerprint": "bdd4504918ccf70be6d938280c3316b24d3de0ba136a338bd03e663d0812f611",
+      "observation": "기본 호출과 상세 마스터의 세 크기를 대조했다. 분홍 바탕 안의 흰 종과 아래 추를 확인했다. 바깥 장식선은 없다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "base-document": {
+      "fingerprint": "555c31d97232ea670170a4b5115096f8ec9fde7406457b28e142ab0c8622e3a5",
+      "observation": "기본 호출과 상세 마스터의 세 크기를 대조했다. 접힌 모서리와 본문 줄이 옅은 문서 외곽 안에 남는다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "base-database": {
+      "fingerprint": "08ce068150a1888818d6801ec4479a0fc7a5ab27aa5d199a9e9d11b6ad947c74",
+      "observation": "기본 호출과 상세 마스터의 세 크기를 대조했다. 원통의 상판과 두 저장 층 사이의 밝은 줄이 유지된다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "base-cache": {
+      "fingerprint": "eeabf27957e0b7801495a11bdfd7c60192779e125d6d7475a8987999288f6a9d",
+      "observation": "기본 호출과 상세 마스터의 세 크기를 대조했다. 주황 타일 안의 번개가 외곽에 닿지 않는다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "base-deploy": {
+      "fingerprint": "52de17b00bd9752c30c460ec331804a5eb31c96358b98d5d0fe89183feeaa4bb",
+      "observation": "기본 호출과 상세 마스터의 세 크기를 대조했다. 주황 포장 상자와 위쪽 푸른 화살표가 분리된다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "base-terminal": {
+      "fingerprint": "ab5910f1facee6c4d41dd0b54c50b3aa944197662a72eac89763e491d9ad7f19",
+      "observation": "기본 호출과 상세 마스터의 세 크기를 대조했다. 짙은 타일 안의 흰 꺾쇠와 밑줄 사이에 여백이 남는다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "base-experiment": {
+      "fingerprint": "5c1de9f75313ff86e383c89a6fa67c900295bcbaed99fda73995f738b96b668a",
+      "observation": "기본 호출과 상세 마스터의 세 크기를 대조했다. 회색 플라스크 외곽과 푸른 액체가 분리된다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "base-retrospective": {
+      "fingerprint": "bad4bd010acf1feb91ad9b4d4580e62f55afbec8d795343ad8d6db745c578794",
+      "observation": "기본 호출과 상세 마스터의 세 크기를 대조했다. 노트의 우하단 되돌림 원호와 화살표 끝이 유지된다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "base-portfolio": {
+      "fingerprint": "a2b4dea6428a0ba6de9fcbb47c6c122d2bb7f2bcd2f02e76656a7992c35c8bfe",
+      "observation": "기본 호출과 상세 마스터의 세 크기를 대조했다. 주황 작품 보드 세 장의 어긋난 가장자리와 앞면 내용을 확인했다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "base-project": {
+      "fingerprint": "22a5f0e3c724d54668357c4ce1e84b43d40c2192e7fb5f2af0c6978c863c4ee8",
+      "observation": "기본 호출과 상세 마스터의 세 크기를 대조했다. 청록 폴더의 탭과 가운데 코드 꺾쇠가 유지된다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "base-security": {
+      "fingerprint": "77f3628a1255fc89d20d7ed27214f634407d119c76ac3a35ade28f4eee8f8a12",
+      "observation": "기본 호출과 상세 마스터의 세 크기를 대조했다. 초록 방패 안의 완료 체크를 확인했다. 취약점의 균열과 다르다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "base-person": {
+      "fingerprint": "981d24d0ea87e34d8114aef83d5788f5e73e8a52d2ac11f16cc144347c26484b",
+      "observation": "기본 호출과 상세 마스터의 세 크기를 대조했다. 짙은 타일 안의 원형 머리와 반원 어깨 사이에 간격이 남는다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "base-team": {
+      "fingerprint": "d849bb2fe0089ed786d0035983efb16537fa3ca6c212e84b24c9cdaf9f79346b",
+      "observation": "기본 호출과 상세 마스터의 세 크기를 대조했다. 앞 사람과 뒤 두 사람의 크기·명암 차이를 확인했다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "base-administrator": {
+      "fingerprint": "768bec435dd104bcd84f9d8e1dd60250f3ac10cfa881458c2f05b52f2033fab5",
+      "observation": "기본 호출과 상세 마스터의 세 크기를 대조했다. 공통 프로필의 우하단에 주황 방패가 붙는다. 작은 크기에도 방패는 주제의 일부로 남는다.",
+      "smallSize": "우하단 방패는 글 유형 배지가 아닌 주제 자체의 도형이다."
+    },
+    "base-server": {
+      "fingerprint": "37f8a9a734368e4732624de3a14b3cc252dbbdaa1d612176cc7eca6ed72cf3cf",
+      "observation": "기본 호출과 상세 마스터의 세 크기를 대조했다. 짙은 랙 안의 밝은 세 슬롯이 분리된다. 상태등은 보조 표현이다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "base-cloud": {
+      "fingerprint": "1a60e6ceaa764ddf24268d4f58321882cef94ad8e13f56be9190a4970455fff3",
+      "observation": "기본 호출과 상세 마스터의 세 크기를 대조했다. 추가 기호 없는 푸른 구름의 원호와 평평한 아래 면을 확인했다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "base-queue": {
+      "fingerprint": "f473b82a04a8acf4133c876134f8f2dc214c3e67fa2787d3279b433452720ea1",
+      "observation": "기본 호출과 상세 마스터의 세 크기를 대조했다. 세 메시지를 담은 프레임과 아래 처리 방향의 분리를 확인했다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "base-lock": {
+      "fingerprint": "c727c5d4b81d6a5e83152039ec51fd50278926051d103967491646adb3e3eb52",
+      "observation": "기본 호출과 상세 마스터의 세 크기를 대조했다. 둥근 고리와 짙은 몸체의 경계, 가운데 열쇠구멍을 확인했다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "base-key": {
+      "fingerprint": "b9de6d27d38ce00bfb2fb209c457b8211aaf061c0a84d83c43a6ff11bad9a3db",
+      "observation": "기본 호출과 상세 마스터의 세 크기를 대조했다. 주황 면 안에서 원형 머리·구멍·열쇠 끝이 분리된다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "base-firewall": {
+      "fingerprint": "2ffd9827eab3575a0dfdc5cc0b7b88209309989690f83c4486a950b2ed10d9a3",
+      "observation": "기본 호출과 상세 마스터의 세 크기를 대조했다. 벽돌 줄과 우하단 불꽃의 의도된 겹침을 확인했다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "base-monitoring": {
+      "fingerprint": "e536373e2e5c94ea76376e934e0b55975929844262138cb839f49c92773aa0a8",
+      "observation": "기본 호출과 상세 마스터의 세 크기를 대조했다. 밝은 파형이 어두운 모니터 안에 남는다. 받침으로 OS 패널과 구분된다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "base-mobile": {
+      "fingerprint": "bb5079bbc724ee53008e9a7a04f2418b1dd36a646fdca873337881183f471e32",
+      "observation": "기본 호출과 상세 마스터의 세 크기를 대조했다. 검정 세로 베젤과 옅은 화면이 분리된다. 큰 화면의 상단 홈과 작은 변형을 확인했다.",
+      "smallSize": "24px에서는 베젤·화면만 유지한 변형을 사용한다."
+    },
+    "base-gateway": {
+      "fingerprint": "5751385d288bae40d887a3effc0680a2ac0e7d6643bca328f1d5dee13378c6d8",
+      "observation": "기본 호출과 상세 마스터의 세 크기를 대조했다. 여러 입력선이 하나의 어두운 문을 지나 오른쪽으로 나간다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "base-container": {
+      "fingerprint": "3a5096f60c3142482d0abd18cebc1d66af82736b7a4ed162508fa649e2e46df1",
+      "observation": "기본 호출과 상세 마스터의 세 크기를 대조했다. 파란 화물 면 안의 세 잠금 봉이 서로 붙지 않는다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "base-scaling": {
+      "fingerprint": "7e7b2d6f42c1524973aa06be0c9b7d79e1229382c201734d3aa0b0f894812faf",
+      "observation": "기본 호출과 상세 마스터의 세 크기를 대조했다. 높이가 증가하는 세 막대가 별개 면으로 유지된다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "base-globe": {
+      "fingerprint": "5cdd0453505c5a1da51d7cbb917e2c5b5d21729c0f76e4fd6d29b30600560f87",
+      "observation": "기본 호출과 상세 마스터의 세 크기를 대조했다. 원형 외곽과 경선·위선이 세 크기에서 유지된다.",
+      "smallSize": "24px에서도 주 실루엣을 유지하며 인접한 제목과 함께 읽는다."
+    },
+    "badge-concept": {
+      "fingerprint": "44ed5dd50ece9b62afa31edc4ca751b0c6f30229eb64031e95635e25900c7438",
+      "observation": "푸른 원 안의 정보 기호가 문서 우하단에 놓인다.",
+      "smallSize": "48·32px에서 표식을 표시하고 24px에서는 표식 없이 같은 문서 도형을 사용한다."
+    },
+    "badge-build": {
+      "fingerprint": "24fe5a3c42a1a4336e56f622d0bdcf6a3c0ba8380ac005668953751f247faaf0",
+      "observation": "짙은 원 안의 코드 꺾쇠가 문서 우하단에 놓인다.",
+      "smallSize": "48·32px에서 표식을 표시하고 24px에서는 표식 없이 같은 문서 도형을 사용한다."
+    },
+    "badge-troubleshooting": {
+      "fingerprint": "25be6ecdf89829157026121ba75ff0d224a91dcc75ed9f65856174536ff04aca",
+      "observation": "주황 원 안의 느낌표가 문서 우하단에 놓인다.",
+      "smallSize": "48·32px에서 표식을 표시하고 24px에서는 표식 없이 같은 문서 도형을 사용한다."
+    },
+    "badge-experiment": {
+      "fingerprint": "854768f36affd17009e8f31d748bf81ac3f0eb07defb555377cc8f181b5c82ca",
+      "observation": "청록 원 안의 플라스크가 문서 우하단에 놓인다.",
+      "smallSize": "48·32px에서 표식을 표시하고 24px에서는 표식 없이 같은 문서 도형을 사용한다."
+    },
+    "badge-retrospective": {
+      "fingerprint": "1c5b8852498a3e27c237b23db5a51a69526cb35889d114921c06e48532f60a83",
+      "observation": "초록 원 안의 되돌림 화살표가 문서 우하단에 놓인다.",
+      "smallSize": "48·32px에서 표식을 표시하고 24px에서는 표식 없이 같은 문서 도형을 사용한다."
+    }
+  }
+}

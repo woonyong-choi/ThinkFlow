@@ -1,0 +1,67 @@
+daphnis 2
+title "주문이 몰릴 때의 흐름"
+subtitle "웹, 앱, 제휴사 주문이 겹치면 처리 중 개수와 재고가 연달아 바뀐다"
+pace 1.5s
+
+box web "웹" icon=desktop
+box app "앱" icon=mobile
+external partner "제휴사"
+box api "주문 API" icon=server
+decision stocked "재고 있음?"
+box lock "재고 잠금"
+store db "재고 DB" icon=db
+box pay "결제" icon=server
+box notice "대기 안내" tone=yellow appearance=filled
+
+value stock "재고" on=db from=120
+value shown "앱에 보이는 재고" on=app ref=stock
+value pending "처리 중" on=api
+value holder "잠금 소유" on=lock from=none
+
+on api pending+1
+on db pending-1, stock-1
+
+web -> api
+app -> api
+partner -> api
+api -> stocked "확인"
+stocked -> lock "예"
+stocked -> notice "품절" quiet
+lock -> db
+api -> pay
+web -> notice quiet
+app -> notice quiet
+
+view graph down
+
+scene "구조"
+
+scene "두 채널의 주문"
+  web -> api "웹 주문" time=800ms & app -> api "앱 주문" time=800ms
+  show api "검증 완료" tag="접수" tone=blue appearance=filled meta="2건" mark="OK" mono
+  api -> stocked time=500ms
+  stocked -> lock time=500ms
+  lock -> db "차감" time=700ms
+  show db graph "재고 -> 차감" lit="차감"
+  api -> pay "결제" tone=orange time=800ms
+  clear api
+
+scene "동시 주문" mode=loop speed=1.5 for=8s
+  track web, app, partner -> api -> stocked -> lock -> db "주문" every=2s time=2400ms
+  track partner -> api -> pay at=1s every=3s time=2s tone=red lost=60%
+
+scene "재고 확인 뒤 차감" keep="stock" set="holder=none"
+  web -> api "주문" time=700ms
+  api -> stocked time=500ms
+  stocked -> lock time=500ms when="stock>0" set="holder=web"
+  lock -> db "차감" time=700ms set="stock-1, holder=none"
+
+scene "품절" set="stock=0"
+  web -> api "주문" time=700ms
+  api -> stocked time=500ms
+  stocked -> notice "품절 안내" time=600ms
+
+scene "같은 순간의 잠금" for=8s status="lock=wait, notice=warn"
+  track web -> api -> stocked -> lock at=0s time=2400ms wait="holder='none'" reserve="holder=web" timeout=3s else=notice
+  track app -> api -> stocked -> lock at=0s time=2400ms wait="holder='none'" reserve="holder=app" timeout=3s else=notice
+  track web -> api -> stocked -> lock at=5s time=2400ms when="holder='web'" set="holder=none"

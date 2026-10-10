@@ -11,11 +11,12 @@
 //   </details>
 //   <!-- /daphnis fold v1 {id} -->       끝 표식
 // 접지 않은 배치는 블록 아래 `(빈 줄) 그림`이다. 표식 두 줄과 그 사이 모양이 정확히 맞는 것만 이 도구가 만든 감싸기로 읽고, 그 밖의 `<details>`는 사용자 것이다.
-import { contextOf, findBlocks, imageLine, isMarkedImage } from './md.js';
+import { contextOf } from './md-blocks.js';
+import { findBlocks, imageLine, isMarkedImage } from './md.js';
 import { detailsBefore } from './md-tags.js';
 
-export const FOLD_VERSION = 'v1';
-export const DEFAULT_TITLE = '그림 원본';
+const FOLD_VERSION = 'v1';
+const DEFAULT_TITLE = '그림 원본';
 const MARK = /^<!-- (\/?)daphnis fold (v\d+) ((?:name|n)=[a-z0-9-]+) -->$/;
 // 표식처럼 보이는 줄. 정확한 모양이 아니어도 고아 표식으로 알리려고 느슨하게 찾는다.
 const MARK_LIKE = /^(?:[ \t]*>)*[ \t]*<!--\s*\/?daphnis fold\b/;
@@ -28,7 +29,7 @@ const ESCAPES = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&
 // vars: t = 제목 글자 수
 // basis: estimate
 /** 제목을 HTML 글로 바꾼다. 특수 문자는 문자 참조로 쓴다. */
-export const escapeHtml = (text) => text.replace(/[&<>"']/g, (c) => ESCAPES[c]);
+const escapeHtml = (text) => text.replace(/[&<>"']/g, (c) => ESCAPES[c]);
 
 // cost: time O(b), heap O(b), stack O(1)
 // vars: b = 블록 수
@@ -71,11 +72,11 @@ function wrapperAround(lines, block, ctx) {
 // cost: time O(n), heap O(b), stack O(1)
 // vars: n = 문서 줄 수, b = 블록 수
 // basis: estimate
-// 표식처럼 보이지만 어느 감싸기에도 속하지 않는 줄(울타리 밖)의 오류들.
-function strayMarks(lines, { fenced }, wrappers) {
+// 표식처럼 보이지만 어느 감싸기에도 속하지 않는 줄(울타리와 들여쓴 코드 밖)의 오류들.
+function strayMarks(lines, { code }, wrappers) {
   const owned = new Set(wrappers.flatMap((w) => (w ? [w.start, w.end] : [])));
   const message = 'this daphnis fold mark is not part of an intact wrapper. A wrapper is the start mark, the image line, a blank line, <details>, <summary>, a blank line, the dap block, a blank line, </details>, and the end mark with the same id, all with the block\'s indentation. Nothing was changed; repair or delete these lines by hand';
-  return lines.flatMap((line, i) => (!fenced.has(i) && !owned.has(i) && MARK_LIKE.test(line) ? [{ line: i + 1, message }] : []));
+  return lines.flatMap((line, i) => (!code.has(i) && !owned.has(i) && MARK_LIKE.test(line) ? [{ line: i + 1, message }] : []));
 }
 
 // cost: time O(n·c + b), heap O(n), stack O(1)
@@ -85,8 +86,8 @@ function strayMarks(lines, { fenced }, wrappers) {
 // broken은 짝 없는 `</details>`를 만났다는 뜻이고 brokenAt은 그 줄 번호(1부터)다.
 function userDetails(lines, found, wrappers) {
   const skip = new Set(wrappers.flatMap((w, k) => (w ? [w.start + 3, found.blocks[k].close + 2] : [])));
-  const fences = found.quotes ? found : findBlocks(lines, true);
-  const seen = detailsBefore(lines, fences, { blocks: new Set(found.blocks.map((block) => block.open)), skip });
+  const { events } = found.quotes ? found : findBlocks(lines, true);
+  const seen = detailsBefore(events, { blocks: new Set(found.blocks.map((block) => block.open)), skip });
   return found.blocks.map((block) => seen.get(block.open));
 }
 
@@ -121,9 +122,9 @@ function wantsFold({ wrapper, user }, mode) {
 
 // cost: time O(1), heap O(1), stack O(1)
 // basis: estimate
-// 닫는 울타리 뒤에 있던 이 도구의 이미지 줄(앞에 빈 줄 하나가 있어도 된다)이 차지한 줄 수. 없으면 0이다.
-export function oldImageSpan(lines, from, ctx) {
-  const marked = (i) => lines[i] !== undefined && ctx.rest(lines[i]) !== undefined && isMarkedImage(ctx.rest(lines[i]));
+// 닫는 울타리 뒤에 있던 이 도구의 이미지 줄(앞에 빈 줄 하나가 있어도 된다)이 차지한 줄 수. 없으면 0이다. 들여쓴 코드와 HTML 블록(raw) 안의 줄은 사용자 글이다.
+function oldImageSpan({ lines, raw }, from, ctx) {
+  const marked = (i) => lines[i] !== undefined && !raw.has(i) && ctx.rest(lines[i]) !== undefined && isMarkedImage(ctx.rest(lines[i]));
   if (marked(from)) return 1;
   return ctx.isBlank(lines[from]) && lines[from] !== undefined && marked(from + 1) ? 2 : 0;
 }
@@ -136,7 +137,7 @@ const summaryOf = (wrapper, title) => (title === undefined ? (wrapper?.summary ?
 // cost: time O(1), heap O(1), stack O(1)
 // basis: estimate
 // 블록 하나가 차지하는 줄 범위 { from, to }(그림과 감싸기 포함)와 블록 앞뒤에 새로 쓸 줄들 { before, after }.
-function planItem(lines, item, { mode, title, image }) {
+function planItem(lines, item, { mode, title, image, raw }) {
   const { block, wrapper, ctx, id } = item;
   const { wrap, blank } = ctx;
   const folded = wantsFold(item, mode);
@@ -146,7 +147,7 @@ function planItem(lines, item, { mode, title, image }) {
     block,
     ctx,
     from: wrapper ? wrapper.start : block.open,
-    to: wrapper ? wrapper.end : block.close + oldImageSpan(lines, block.close + 1, ctx),
+    to: wrapper ? wrapper.end : block.close + oldImageSpan({ lines, raw }, block.close + 1, ctx),
     before: folded ? head : [],
     after: folded ? tail : [blank, image],
   };
@@ -160,14 +161,14 @@ function planItem(lines, item, { mode, title, image }) {
  * 이 도구가 만들었지만 블록이 없어진 이미지 줄(울타리 밖)은 지운다. 이미 맞으면 같은 내용이다(멱등).
  * 그림 줄 뒤에 글이 바로 이어지면 빈 줄을 하나 더 둔다.
  * @param doc { lines, ends } 줄 내용과 각 줄의 줄바꿈(마지막 줄은 '')
- * @param inspected inspectFold의 결과 items와 findBlocks의 fenced
+ * @param inspected inspectFold의 결과 items와 findBlocks의 raw(읽거나 바꾸지 않는 줄)와 quotes
  * @param options { mode, title, images }. images는 블록 순서대로 { alt, href }
  * @returns { text, end? }[]. end가 없는 줄은 새 줄이라 문서의 줄바꿈을 쓴다
  */
-export function layoutDocument({ lines, ends }, { items, fenced, quotes }, options) {
+export function layoutDocument({ lines, ends }, { items, raw, quotes }, options) {
   const orphan = (line) => isMarkedImage(quotes ? line.replace(/^(?:[ \t]*>[ \t]?)+/, '') : line);
   const plans = new Map(items.map((item, k) => {
-    const plan = planItem(lines, item, { ...options, image: imageLine(item.ctx.wrap, options.images[k].alt, options.images[k].href) });
+    const plan = planItem(lines, item, { ...options, raw, image: imageLine(item.ctx.wrap, options.images[k].alt, options.images[k].href) });
     return [plan.from, plan];
   }));
   const out = [];
@@ -175,7 +176,7 @@ export function layoutDocument({ lines, ends }, { items, fenced, quotes }, optio
   for (let i = 0; i < lines.length; i++) {
     const plan = plans.get(i);
     if (!plan) {
-      if (fenced.has(i) || !orphan(lines[i])) keep(i);
+      if (raw.has(i) || !orphan(lines[i])) keep(i);
       continue;
     }
     out.push(...plan.before.map((text) => ({ text })));
@@ -205,7 +206,7 @@ export function joinLines(entries, eol) {
 export function findForMode(lines, mode) {
   const full = findBlocks(lines, true);
   if (mode !== 'keep') return full;
-  const marked = new Set(inspectFold(lines, full, 'keep').items.filter(({ block, wrapper, ctx }) => block.quote && (wrapper || oldImageSpan(lines, block.close + 1, ctx) > 0)).map(({ block }) => block));
+  const marked = new Set(inspectFold(lines, full, 'keep').items.filter(({ block, wrapper, ctx }) => block.quote && (wrapper || oldImageSpan({ lines, raw: full.raw }, block.close + 1, ctx) > 0)).map(({ block }) => block));
   if (!marked.size) return findBlocks(lines, false);
   return { ...full, blocks: full.blocks.filter((block) => !block.quote || marked.has(block)), errors: full.errors.filter((error) => !error.quote) };
 }

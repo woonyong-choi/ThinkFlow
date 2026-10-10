@@ -7,12 +7,12 @@ import { hostname } from 'node:os';
 import { dirname, join } from 'node:path';
 import { realPath } from './md-owner.js';
 
-export const LOCK_NAME = '.daphnis-md.lock';
+const LOCK_NAME = '.daphnis-md.lock';
 
 // cost: time O(1), heap O(1), stack O(1), io 1
 // basis: estimate
 // 잠금 파일의 내용. 읽지 못하거나 형식이 틀리면 undefined다.
-export function readLock(path) {
+function readLock(path) {
   try {
     const info = JSON.parse(readFileSync(path, 'utf8'));
     const ok = Number.isInteger(info.pid) && info.pid > 0 && typeof info.host === 'string' && typeof info.nonce === 'string' && typeof info.created === 'string';
@@ -46,8 +46,7 @@ function refusal(path, info, reason) {
 // cost: time O(1), heap O(1), stack O(1), io 4
 // basis: estimate
 // 읽어 둔 낡은 잠금(seen)을 치운다. 바로 지우지 않고 고유 이름으로 rename한 뒤 그 파일의 nonce가 읽어 둔 것과 같을 때만 지운다. 다르면 그 사이에 다른 프로세스가 새 잠금을 잡은 것이라 되돌리지 않고 진단으로 끝낸다. 치웠으면 undefined다.
-function clearStale(path, seen, hooks) {
-  hooks.beforeClear?.(path);
+function clearStale(path, seen) {
   const moved = `${path}.${randomUUID()}.stale`;
   try {
     renameSync(path, moved);
@@ -64,7 +63,7 @@ function clearStale(path, seen, hooks) {
 // cost: time O(1), heap O(1), stack O(1), io 5
 // basis: estimate
 // 잠금 파일 하나를 잡는다. 잡으면 { held: { path, nonce } }, 못 잡으면 { busy }, 폴더에 만들 수 없으면(권한 등) 빈 결과다(쓰기 단계가 같은 이유로 알린다).
-function lockOne(dir, hooks) {
+function lockOne(dir) {
   const path = join(dir, LOCK_NAME);
   const info = { pid: process.pid, host: hostname(), created: new Date().toISOString(), nonce: randomUUID() };
   for (let attempt = 0; attempt < 2; attempt++) {
@@ -79,7 +78,7 @@ function lockOne(dir, hooks) {
     if (seen.host !== info.host) return refusal(path, seen, 'the lock belongs to another host, so it is not cleared automatically');
     const state = pidState(seen.pid);
     if (state !== 'gone') return refusal(path, seen, state === 'alive' ? 'another daphnis md is writing to this folder' : 'the lock owner cannot be checked (permission denied), so it is not cleared automatically');
-    const refused = clearStale(path, seen, hooks);
+    const refused = clearStale(path, seen);
     if (refused) return refused;
   }
   return refusal(path, readLock(path), 'the lock was taken again while it was being cleared');
@@ -89,7 +88,7 @@ function lockOne(dir, hooks) {
 // vars: h = 잡은 잠금 수
 // basis: estimate
 /** 잡은 잠금을 푼다. 파일의 nonce가 자기 것일 때만 지운다. 다른 프로세스의 잠금이거나 이미 없으면 아무것도 지우지 않는다. */
-export function releaseHeld(held) {
+function releaseHeld(held) {
   for (const { path, nonce } of held) {
     if (readLock(path)?.nonce !== nonce) continue;
     try {
@@ -106,9 +105,8 @@ export function releaseHeld(held) {
 /**
  * 출력 폴더마다 잠금을 잡는다. 없는 폴더는 만든다(실패하면 그 폴더는 건너뛴다).
  * 하나라도 못 잡으면 이미 잡은 것을 풀고 { busy: { path, message } }를 돌려준다. 모두 잡으면 { release }를 돌려주고, release는 자기 nonce의 잠금만 풀며 이 호출이 만든 빈 폴더를 치운다.
- * @param hooks 시험이 경쟁 상황을 재현하는 자리({ beforeClear })
  */
-export function acquireLocks(dirs, hooks = {}) {
+export function acquireLocks(dirs) {
   const held = [];
   const made = [];
   // cost: time O(d), heap O(1), stack O(1), io 3d
@@ -126,7 +124,7 @@ export function acquireLocks(dirs, hooks = {}) {
       continue;
     }
     if (first) made.push({ first, dir });
-    const lock = lockOne(dir, hooks);
+    const lock = lockOne(dir);
     if (lock.busy) {
       release();
       return { busy: lock.busy };

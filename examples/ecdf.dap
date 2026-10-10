@@ -1,0 +1,47 @@
+daphnis 2
+title "배포 방식별 응답 시간 누적분포"
+subtitle "각 곡선의 y는 그 값 이하로 끝난 요청의 비율이다"
+
+chart cdf "응답 시간 ECDF" ecdf "예시 데이터. 계열마다 요청 표본 8개 안팎. 측정 실패는 표본에서 뺀다" {
+  x "응답 시간(ms)"
+  y "누적 비율"
+  series blue "블루 환경" role=main
+  series canary "카나리" role=compare
+  series rolling "롤링 업데이트"
+  sample 42 series=blue
+  sample 48 series=blue
+  sample 48 series=blue
+  sample 55 series=blue
+  sample 61 series=blue
+  sample 74 series=blue
+  sample 96 series=blue
+  sample 140 series=blue
+  sample 51 series=canary
+  sample 58 series=canary
+  sample 66 series=canary
+  sample 79 series=canary
+  sample 102 series=canary
+  sample 133 series=canary
+  sample 188 series=canary
+  sample 260 series=canary
+  sample - series=canary
+  sample 47 series=rolling
+  sample 63 series=rolling
+  sample 91 series=rolling
+  sample 138 series=rolling
+  sample 175 series=rolling
+  sample 232 series=rolling
+  sample 410 series=rolling
+}
+
+scene "세 방식"
+
+scene "방식 순서대로"
+  reveal cdf.blue
+  wait 1s
+  reveal cdf.canary
+  wait 1s
+  reveal cdf.rolling
+
+scene "100ms 지점"
+  light cdf x=102

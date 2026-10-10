@@ -1,5 +1,5 @@
 // 원본의 시간과 숫자 값을 읽는다.
-import { MIN_VALUE } from './chart-rules.js';
+import { MIN_VALUE } from './chart-limits.js';
 import { NUMBER_PATTERN, TIME_PATTERN } from './words.js';
 
 /** 시간 값 하나, 단계 하나의 길이, 그림 전체 시간의 상한(ms). 1시간이다. 1시간보다 긴 문서 그림 재생은 쓸모가 없어 정한 정책 상한이고, 부동소수점 정밀도를 보장하지 않는다(출발 시각의 정밀도는 따로 검사한다). */

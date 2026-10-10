@@ -1,5 +1,6 @@
-state down
+daphnis 2
 title "Order states"
+subtitle "A paid order ships and ends when it is delivered, and cancellation is the other end state"
 
 state created "Created"
 state paid "Paid"
@@ -10,16 +11,15 @@ start created
 final delivered
 final cancelled
 
-created -> paid "Payment approved"
-paid -> shipped "Dispatch"
-shipped -> delivered "Receipt confirmed"
-created -> cancelled "Payment failed"
-paid -> cancelled "Customer cancels" dashed
+created -> paid "payment approved"
+paid -> shipped "shipped out"
+shipped -> delivered "receipt confirmed"
+created -> cancelled "payment failed"
+paid -> cancelled "customer cancels" dashed
 
-step "Normal order" "After payment the order ships and ends with receipt"
-  created -> paid "$39"
-  paid -> shipped
-  shipped -> delivered
-step "Cancellation" "A paid order can still be cancelled before it ships"
-  created -> paid
-  paid -> cancelled "Refund"
+view graph down
+
+scene "Normal order" mode=static
+  created -> paid time=700ms
+  paid -> shipped time=700ms
+  shipped -> delivered time=700ms

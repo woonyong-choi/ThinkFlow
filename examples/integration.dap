@@ -1,0 +1,64 @@
+daphnis 2
+title "주문 한 건이 남기는 흔적"
+subtitle "같은 사건이 구조, 호출 순서, 지표 차트, 실제 시간에 한 번씩 반영된다"
+
+person user "고객"
+box gw "Gateway" icon=apigw {
+  text "주문 요청을 결제 서비스로 전달합니다"
+  value p95 "p95(ms)" from=120
+  chart trend "결제 p95 추이" line "예시 데이터. 마지막 점이 Gateway 카드의 p95 값이다" {
+    x "측정 순서"
+    y "p95(ms)"
+    zero off
+    series ms "p95"
+    rule 200 "SLO"
+    point x=1 ms=112
+    point x=2 ms=118
+    point x=3 ms=p95
+  }
+}
+box pay "결제 서비스" icon=server {
+  text "결제 요청을 처리합니다"
+  value pending "결제 대기"
+}
+api create "POST /orders" {
+  body "OrderRequest"
+  created "201 Order"
+}
+table orders "orders" {
+  id bigint pk
+  status text required
+}
+trace t "결제 추적" unit=ms {
+  span s1 "POST /pay" lane=gw at=0 dur=180
+  span s2 "charge" lane=pay at=20 dur=140
+}
+
+user -> create.body "주문"
+create.body -> orders.id "저장"
+user -> gw
+gw -> pay
+
+view graph down "구조" {
+  user gw pay create orders
+}
+view sequence "호출 순서" {
+  user gw pay
+}
+view time "실제 시간" {
+  t
+}
+
+scene "구성" mode=static
+  light create.body orders.id
+
+scene "주문 한 건"
+  user -> create.body time=600ms
+  create.body -> orders.id time=600ms
+  user -> gw "POST /pay" time=600ms
+  gw -> pay "charge" time=700ms set="pending+1, p95=185"
+  pay -> gw "ok" dashed time=600ms set="pending-1"
+  light t.s2
+
+scene "결제가 몰릴 때" mode=loop keep="p95" for=6s
+  track user -> gw -> pay at=0s every=1500ms time=2s set="pending+1, p95=240" tone=orange

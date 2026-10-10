@@ -1,0 +1,58 @@
+daphnis 2
+title "쇼핑몰 서비스 구성"
+subtitle "요청이 CDN과 로드 밸런서를 지나 API와 데이터 계층까지 내려가는 구성이다"
+icons custom "icons"
+
+person user "고객" tone=purple appearance=outline
+external pg "결제사 PG" "외부 연결"
+group cloud "서울 리전" direction=down border=dashed badge="리전" icon=region {
+  box cdn "CDN" shape=tile icon=cdn tone=cyan appearance=filled
+  group front "프런트" direction=right tone=blue appearance=outline {
+    box lb "로드 밸런서" icon=lb badge="L7"
+    box web "웹 서버" icon=nginx count=2
+  }
+  group core "서비스" direction=down tone=green appearance=outline {
+    box api "주문 API" icon=server badge="API" count=3
+    queue jobs "작업 큐" slots=6 from=2
+    box worker "작업자" shape=tile icon=custom:chip tone=gray
+  }
+  group data "데이터" direction=right tone=orange appearance=outline {
+    box cache "캐시" shape=tile icon=redis
+    store db "주문 DB" icon=postgresql
+    store replica "복제본" icon=postgresql
+  }
+}
+
+user -> cdn no=1
+cdn -> lb no=2
+lb -> web no=3
+web -> api "주문" no=4
+api -> jobs no=5
+jobs -> worker no=6
+api -> cache no=7 head=both
+api -> db no=8
+db -> replica no=9 dashed
+api -> pg "결제" no=10 dashed
+api -> replica no=11 quiet
+
+view graph down
+
+scene "구성"
+
+scene "주문 한 건"
+  user -> cdn time=600ms
+  cdn -> lb time=600ms
+  lb -> web time=600ms
+  web -> api "POST /orders" time=700ms
+  api -> cache "재고 조회" time=600ms
+  api -> db "주문 저장" time=700ms
+  api -> jobs "알림" time=600ms
+
+scene "트래픽 유입" mode=loop for=6s
+  track user -> cdn -> lb -> web -> api at=0s every=1500ms time=3s tone=blue
+  track api -> jobs -> worker at=500ms every=2s time=2s legs="500ms, -" tone=green set="jobs+1"
+
+scene "주 DB 장애" status="db=fail, replica=ok"
+  web -> api "GET /orders" time=700ms
+  api -> db "읽기 실패" time=600ms
+  api -> replica "복제본 읽기" time=700ms

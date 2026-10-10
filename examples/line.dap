@@ -1,15 +1,35 @@
-chart line
-title "주차별 재시도 비율"
-subtitle "예시 데이터. 띠는 신뢰구간, 점선은 목표 5%"
-x "주차"
-y "재시도 비율(%)"
+daphnis 2
+title "리전별 API 지연 추이"
+subtitle "같은 API를 세 리전에서 한 시간마다 재고, 목표 지연과 함께 본다"
 
-series ours "새 판단기" role=main
-series base "기존 판단기" role=compare
-rule 5 "목표"
+chart region "리전별 p95 지연" line "예시 데이터. 서울의 띠는 95% 신뢰구간. 도쿄 14시는 측정기 장애로 값이 없다" {
+  x "시각(시)"
+  y "p95 지연(ms)"
+  zero off
+  series seoul "서울" role=main
+  series tokyo "도쿄" role=compare
+  series sg "싱가포르"
+  series goal "목표" role=reference
+  rule 220 "SLO"
+  point x=10 seoul=118 seoul.low=108 seoul.high=129 tokyo=142 sg=171 goal=150
+  point x=11 seoul=126 seoul.low=114 seoul.high=139 tokyo=149 sg=180 goal=150
+  point x=12 seoul=171 seoul.low=155 seoul.high=189 tokyo=161 sg=204 goal=150
+  point x=13 seoul=214 seoul.low=193 seoul.high=236 tokyo=188 sg=231 goal=150
+  point x=14 seoul=196 seoul.low=178 seoul.high=216 tokyo=- sg=226 goal=150
+  point x=15 seoul=148 seoul.low=134 seoul.high=163 tokyo=170 sg=198 goal=150
+  point x=16 seoul=131 seoul.low=119 seoul.high=144 tokyo=152 sg=183 goal=150
+}
 
-point x=1 ours=12.4 ours.low=10.9 ours.high=14.1 base=12.1 base.low=10.6 base.high=13.7
-point x=2 ours=9.8 ours.low=8.5 ours.high=11.2 base=11.7 base.low=10.2 base.high=13.3
-point x=3 ours=7.1 ours.low=5.9 ours.high=8.4 base=11.9 base.low=10.3 base.high=13.6
-point x=4 ours=5.2 ours.low=4.1 ours.high=6.4 base=12.3 base.low=10.8 base.high=13.9
-point x=5 ours=4.6 ours.low=3.6 ours.high=5.7 base=11.8 base.low=10.4 base.high=13.3
+scene "세 리전"
+
+scene "리전 순서대로"
+  reveal region.seoul
+  wait 1s
+  reveal region.tokyo
+  wait 1s
+  reveal region.sg region.goal
+
+scene "점심 피크"
+  light region x=13
+  wait 1s
+  light region x=14

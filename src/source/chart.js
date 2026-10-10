@@ -1,8 +1,10 @@
 // 차트 선언 문장을 읽는다. 값의 규칙(계열 수, 음수, log)은 validate.js가 모든 행을 읽은 뒤 확인한다.
 import { VALUES, optionsOf, valueNames } from './grammar.js';
-import { RANGE_MESSAGE, TINY_MESSAGE } from './chart-rules.js';
+import { RANGE_MESSAGE, TINY_MESSAGE } from './chart-limits.js';
 import { isOverflowNumber, isTinyNumber, parseNumber } from './values.js';
-import { ID_PATTERN } from './words.js';
+import { readTotal } from './waterfall.js';
+import { readBins, readSample } from './histogram.js';
+import { ID_PATTERN, NUMBER_PATTERN } from './words.js';
 
 // cost: time O(t), heap O(t), stack O(1)
 // vars: t = 문장 낱말 수
@@ -10,7 +12,7 @@ import { ID_PATTERN } from './words.js';
 /** 차트 선언 하나를 읽는다. */
 export function readChartDeclaration(statement, ctx) {
   const word = statement.tokens[0].value;
-  const handlers = { series: readSeries, rule: readRule, missing: readMissing, data: readData, row: readRow, point: readPoint, cell: readCell, link: readLink };
+  const handlers = { total: readTotal, bins: readBins, sample: readSample, series: readSeries, rule: readRule, missing: readMissing, data: readData, row: readRow, point: readPoint, cell: readCell, link: readLink };
   if (!Object.hasOwn(handlers, word)) {
     ctx.problems.error(statement.line, `unknown chart statement "${word}"`);
     return;
@@ -50,8 +52,14 @@ function readSeries({ tokens, line }, { figure, problems }) {
     return;
   }
   // 선 차트 행의 `x=`는 가로 값이라 같은 이름의 계열 값과 가를 수 없다.
-  if (figure.chartType === 'line' && id.value === 'x') {
-    problems.error(line, 'a line chart row uses "x=" for the horizontal value, so a series cannot be named "x"');
+  if (VALUES.chartType.items[figure.chartType].numericRows && id.value === 'x') {
+    problems.error(line, `a ${figure.chartType} chart row uses "x=" for the horizontal value, so a series cannot be named "x"`);
+    return;
+  }
+  // 계열 이름은 차트 카드 안에서 겹치지 않는다. 같은 이름의 값 자리는 어느 계열인지 정할 수 없기 때문이다.
+  const same = figure.chart.series.find((s) => s.id === id.value);
+  if (same) {
+    problems.error(line, `the series "${id.value}" is already declared in this chart (line ${same.line})`);
     return;
   }
   figure.chart.series.push({ id: id.value, label: label.value, key: given.key ?? id.value, role: given.role, line });
@@ -124,8 +132,9 @@ function readRow({ tokens, line }, { figure, problems }) {
     figure.chart.hasRejectedRow = true;
     return;
   }
-  const values = readValues(rest, { line, problems });
-  if (values) figure.chart.rows.push({ label: label.value, values, line });
+  const bind = {};
+  const values = readValues(rest, { line, problems, figure, bind });
+  if (values) figure.chart.rows.push({ label: label.value, values, line, ...(Object.keys(bind).length ? { bind } : {}) });
   else figure.chart.hasRejectedRow = true;
 }
 
@@ -141,8 +150,9 @@ function readPoint({ tokens, line }, { figure, problems }) {
     figure.chart.hasRejectedRow = true;
     return;
   }
-  const values = readValues(isScatter ? rest : tokens.slice(1), { line, problems }, isScatter ? ['series'] : []);
-  if (values) figure.chart.rows.push({ label: isScatter ? name.value : undefined, values, line });
+  const bind = {};
+  const values = readValues(isScatter ? rest : tokens.slice(1), { line, problems, figure, bind }, isScatter ? ['series'] : []);
+  if (values) figure.chart.rows.push({ label: isScatter ? name.value : undefined, values, line, ...(Object.keys(bind).length ? { bind } : {}) });
   else figure.chart.hasRejectedRow = true;
 }
 
@@ -178,7 +188,11 @@ function readLink({ tokens, line }, { figure, problems }) {
 // vars: t = 낱말 수
 // basis: estimate
 // `키=값` 낱말들을 { 키: 숫자 | null }로. `-`는 빠진 값 null이다. textKeys는 이름 값을 받는 키다.
-function readValues(tokens, { line, problems }, textKeys = []) {
+// 숫자 자리에 값 이름(`ms=depth`)을 쓰면 묶음(bind)이다: 이름을 bind에 적고 자리는 0으로 둔다. 시작 값은 validate.js가 값 선언에서 채운다.
+// 상자 그림은 다섯 숫자가 한 묶음의 순서 규칙이고 워터폴은 누계가 행 순서에 기대, 값이 바뀌면 두 그림 모두 축과 모양이 함께 바뀌어 묶음을 받지 않는다.
+// 가로 위치(`x=`)는 값이 아니라 자리라서 선, 면, 산점도 모두 묶음을 받지 않는다.
+function readValues(tokens, { line, problems, figure, bind }, textKeys = []) {
+  const takesBind = bind && !['box', 'waterfall'].includes(figure.chartType);
   const values = {};
   for (const t of tokens) {
     if (t.type !== 'option' || t.valueType !== 'word') {
@@ -194,6 +208,15 @@ function readValues(tokens, { line, problems }, textKeys = []) {
       continue;
     }
     const number = t.value === '-' ? null : parseNumber(t.value);
+    if (number === undefined && ID_PATTERN.test(t.value) && !NUMBER_PATTERN.test(t.value)) {
+      if (!takesBind || t.key === 'x') {
+        problems.error(line, `${t.key === 'x' ? 'a horizontal position' : `a ${figure.chartType} chart`} takes numbers, not values. Found ${t.key}=${t.value}`, { code: 'binding-unsupported' });
+        return undefined;
+      }
+      bind[t.key] = t.value;
+      values[t.key] = 0;
+      continue;
+    }
     if (number === undefined || isTinyNumber(t.value)) {
       problems.error(line, rangeProblem(t.value) ?? `"${t.key}" needs a number or "-". Found "${t.value}"`);
       return undefined;

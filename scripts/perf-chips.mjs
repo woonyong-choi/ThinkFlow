@@ -1,4 +1,5 @@
-// 예제, 문서 그림, CS:APP 그림의 빌드 시간(이동 글 상자 계획 포함)을 재서 기준 시간(scripts/perf-baseline.json)을 넘으면 실패한다.
+// 예제와 문서 그림(첫 화면 그림 포함)의 빌드 시간(이동 글 상자 계획 포함)을 재서 기준 시간(기본 scripts/perf-baseline.json)을 넘으면 실패한다.
+// 기준 파일이 없으면 재지 않고 `cannot compare`로 실패한다. 깨끗한 커밋에서 한가한 기계로 --write 해서 만든다.
 // 사용: node scripts/perf-chips.mjs [--baseline 파일] [--write 새 파일]   (npm run perf)
 // 출력: 그림 수, 합계와 기준, 가장 느린 그림 다섯 개, 마지막에 `ok` 또는 넘은 항목. 넘으면 종료 코드 1.
 // 비교 조건: 기준 파일은 잰 그림 목록과 그림 파일마다 내용 해시(inputs), 기준 코드의 커밋 해시(codeHash), 재는 방법(이 파일)의 내용 해시(scriptHash)를 함께 적는다.
@@ -16,8 +17,8 @@ import { toSvg } from '../src/svg.js';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const DEFAULT_BASELINE = join(ROOT, 'scripts', 'perf-baseline.json');
-// 재는 그림 폴더. 예제, 문서 그림, 시험용 그림, CS:APP 그림
-const SOURCE_DIRS = ['examples', 'docs/assets', 'test/fixtures', 'test/fixtures/csapp'];
+// 재는 그림 폴더. 지원하는 표현마다 하나인 예제와, 문서에 실리는 그림(how-it-works, 첫 화면 그림). 시험 입력 폴더는 재지 않는다.
+const SOURCE_DIRS = ['examples', 'docs/assets', 'docs/assets/showcase'];
 const PASSES = 3;
 // 기준보다 이 배수를 넘으면 실패. 기계가 바빠 생기는 흔들림(같은 코드가 1.3배 넘게 흔들렸다)은 넘기고, 첫 구현처럼 합계가 2배 넘게 늘어난 회귀는 잡는 값이다.
 const TOLERANCE = 1.6;
@@ -133,6 +134,10 @@ function mismatchOf(baseline) {
 // basis: measured npm run perf
 // 기준에 적힌 그림과 같은 목록으로 재서 비교한다. 입력이 다르면 재지 않고 실패한다. 종료 코드를 돌려준다.
 async function runCompare(path) {
+  if (!existsSync(path)) {
+    console.log(`cannot compare: there is no baseline at ${path}\nCommit first, then on an idle machine write one with: node scripts/perf-chips.mjs --write ${path}`);
+    return 1;
+  }
   const baseline = JSON.parse(readFileSync(path, 'utf8'));
   const problem = mismatchOf(baseline);
   if (problem) {

@@ -4,7 +4,7 @@ import { createRequire } from 'node:module';
 import * as fontkit from 'fontkit';
 import subsetFont from 'subset-font';
 import { codeParts } from '../text.js';
-import { values } from '../tokens.js';
+import { values } from '../vendor/theme/tokens.js';
 
 const require = createRequire(import.meta.url);
 // 글자 사이 간격(px). 글자마다 더해지므로 글 폭에 글자 수만큼 곱해 더한다. 고정폭 글은 간격을 주지 않는다.
@@ -23,15 +23,15 @@ const NOTO_MATH = '@expo-google-fonts/noto-sans-math';
 const ALL_WEIGHTS = '400 900';
 const FACES = {
   regular: { family: 'FigSans', weight: 400, file: `${PRETENDARD}/Pretendard-Regular.otf`, fallback: 'symRegular' },
-  medium: { family: 'FigSans', weight: 500, file: `${PRETENDARD}/Pretendard-Medium.otf`, fallback: 'symMedium' },
   semibold: { family: 'FigSans', weight: 600, file: `${PRETENDARD}/Pretendard-SemiBold.otf`, fallback: 'symSemibold' },
   symRegular: { family: 'FigSansSym', weight: 400, file: `${NOTO_LATIN}/400Regular/NotoSans_400Regular.ttf`, fallback: 'math' },
-  symMedium: { family: 'FigSansSym', weight: 500, file: `${NOTO_LATIN}/500Medium/NotoSans_500Medium.ttf`, fallback: 'math' },
   symSemibold: { family: 'FigSansSym', weight: 600, file: `${NOTO_LATIN}/600SemiBold/NotoSans_600SemiBold.ttf`, fallback: 'math' },
   math: { family: 'FigSansMath', weight: ALL_WEIGHTS, file: `${NOTO_MATH}/400Regular/NotoSansMath_400Regular.ttf` },
   // 차트 숫자는 Pretendard의 tnum(자리 폭이 같은 숫자)으로 그린다. 파일과 @font-face는 base 글꼴의 것을 쓴다.
   num: { base: 'regular', features: ['tnum'], fallback: 'symRegular' },
   numSemibold: { base: 'semibold', features: ['tnum'], fallback: 'symSemibold' },
+  // 값 글은 굵은 글꼴로 글자 그대로 읽는다(text.js isLiteralFace). 파일과 @font-face는 semibold의 것을 쓴다.
+  semiboldLiteral: { base: 'semibold', fallback: 'symSemibold' },
   mono: { family: 'FigMono', weight: 400, file: 'jetbrains-mono/fonts/webfonts/JetBrainsMono-Regular.woff2', fallback: 'regular' },
 };
 
@@ -73,7 +73,7 @@ function faceFor(char, face) {
 /** 글을 같은 글꼴로 그려지는 구간으로 나눈다. 백틱 코드 구간은 고정폭 글꼴, 나머지는 face다. 띄어쓰기는 구간 첫 글꼴의 것으로 그려진다. */
 function runsOf(text, face) {
   const runs = [];
-  for (const part of codeParts(text)) {
+  for (const part of codeParts(text, face)) {
     for (const c of part.text) {
       const name = faceFor(c, part.code ? 'mono' : face);
       if (name === undefined) throw new Error(`the font has no glyph for "${c}". Remove the character`);
@@ -90,8 +90,8 @@ function runsOf(text, face) {
 // basis: estimate
 /**
  * 글 한 줄의 폭(px). 같은 글꼴과 글은 한 번만 잰다. 글꼴에 없는 글자는 대체 글꼴 폭으로 재서 글꼴이 바뀌는 구간마다 더한다.
- * 백틱으로 감싼 구간은 face와 상관없이 고정폭으로 잰다(표시 글자인 백틱은 폭이 없다).
- * @param face 'regular' | 'medium' | 'semibold' | 'num' | 'numSemibold' | 'mono'
+ * 백틱으로 감싼 구간은 face와 상관없이 고정폭으로 잰다(표시 글자인 백틱은 폭이 없다). 글 그대로 읽는 글꼴(text.js isLiteralFace)이면 글 전체가 하나의 구간이라서 백틱은 표시 글자가 아니라 글자로 잰다.
+ * @param face 'regular' | 'semibold' | 'semiboldLiteral' | 'num' | 'numSemibold' | 'mono'
  * @throws Error 글꼴과 대체 글꼴 어디에도 없는 글자가 있을 때. 대신 그릴 글꼴의 폭을 알 수 없기 때문이다
  */
 export function measure(text, size, face = 'regular') {
@@ -115,7 +115,7 @@ export function measure(text, size, face = 'regular') {
 // basis: estimate
 /** 글꼴과 대체 글꼴 어디에도 없는 글자. 원본 검사에서 줄 번호와 함께 알리려고 쓴다. 없으면 undefined. */
 export function findMissingGlyph(text, face = 'regular') {
-  for (const part of codeParts(text)) {
+  for (const part of codeParts(text, face)) {
     const missing = [...part.text].find((c) => faceFor(c, part.code ? 'mono' : face) === undefined);
     if (missing !== undefined) return missing;
   }
@@ -145,7 +145,7 @@ function toMarkup(chars) {
  * 글자 모양은 { size, face }다(STYLE 항목을 그대로 넘긴다). 백틱 코드 구간이 줄 사이에 걸치면 줄마다 백틱을 닫고 다시 연다. 돌려주는 줄은 짝이 맞는 백틱 표시 글이다.
  */
 export function wrap(text, width, { size, face = 'regular' }) {
-  const chars = codeParts(text).flatMap((part) => [...part.text].map((c) => ({ c, code: part.code })));
+  const chars = codeParts(text, face).flatMap((part) => [...part.text].map((c) => ({ c, code: part.code })));
   const words = [{ sep: undefined, chars: [] }];
   for (const ch of chars) {
     if (ch.c === ' ') words.push({ sep: ch, chars: [] });
@@ -162,16 +162,40 @@ export function wrap(text, width, { size, face = 'regular' }) {
     }
     if (line.length) lines.push(toMarkup(line));
     line = [];
-    for (const ch of word.chars) {
-      if (line.length && !fits([...line, ch])) {
-        lines.push(toMarkup(line));
-        line = [];
+    for (const segment of segmentsOf(word.chars)) {
+      if (fits([...line, ...segment])) {
+        line = [...line, ...segment];
+        continue;
       }
-      line.push(ch);
+      if (line.length) lines.push(toMarkup(line));
+      line = [];
+      for (const ch of segment) {
+        if (line.length && !fits([...line, ch])) {
+          lines.push(toMarkup(line));
+          line = [];
+        }
+        line.push(ch);
+      }
     }
   });
   lines.push(toMarkup(line));
   return lines;
+}
+
+// 이 글자 뒤에서 낱말을 나눌 수 있다. 경로와 식별자(`https://pay.example.com/v1/charges`, `snake_case`)가 낱말 하나로 길 때 구분 글자 뒤에서 먼저 나눈다.
+const BREAK_AFTER = new Set(['/', '-', '_', '.']);
+
+// cost: time O(n), heap O(n), stack O(1)
+// vars: n = 낱말 글자 수
+// basis: estimate
+// 띄어쓰기 없는 낱말을 줄 바꿀 수 있는 조각으로 나눈다. 구분 글자가 이어지면(`//`, `...`) 한 조각이다. 조각 하나가 줄보다 길면 글자 단위로 나눈다.
+function segmentsOf(chars) {
+  const segments = [[]];
+  chars.forEach((ch, i) => {
+    segments.at(-1).push(ch);
+    if (BREAK_AFTER.has(ch.c) && chars[i + 1] && !BREAK_AFTER.has(chars[i + 1].c)) segments.push([]);
+  });
+  return segments;
 }
 
 // cost: time O(g), heap O(g), stack O(1)
@@ -218,7 +242,7 @@ export function createGlyphSet() {
     // vars: n = 글자 수
     // basis: estimate
     add(text, face = 'regular') {
-      for (const part of codeParts(text)) {
+      for (const part of codeParts(text, face)) {
         const name = part.code ? 'mono' : face;
         if (!sets.has(name)) sets.set(name, new Set());
         for (const c of part.text) sets.get(name).add(c);

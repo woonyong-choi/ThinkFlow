@@ -18,7 +18,10 @@ function createContext(figure, scene, timeline) {
     timeline,
     edges,
     boxes: scene.items.map((it) => ({ ...drawnBox(it), id: it.id, line: it.line, it })),
-    pills: edges.filter((e) => hasPill(e) && e.labelAt).map((e) => ({ ...pillBox(e), edge: e })),
+    pills: edges.flatMap((e) => [
+      ...(hasPill(e) && e.labelAt ? [{ ...pillBox(e), edge: e }] : []),
+      ...(e.endpointLabels ?? []).map((label) => ({ x: label.x - label.w / 2, y: label.y - label.h / 2, w: label.w, h: label.h, edge: { ...e, label: label.text } })),
+    ]),
     statuses: statusBoxes(scene, timeline),
     titles: scene.groups.filter((g) => g.label).map((g) => ({ ...titleBox(g), group: g })),
     family: createFamily(scene),
@@ -31,9 +34,7 @@ function createContext(figure, scene, timeline) {
 /** 장면({ figure, scene, timeline })을 검사해 오류와 경고를 problems에 넣는다. 항목 목록 순서대로 판정하고 오류 메시지 앞에 검사 번호를 붙인다. 끝나지 않는 대기(`stalls`)는 경고 `wait-stalled`로 알린다. */
 export function checkFigure({ figure, scene, timeline }, problems) {
   const context = createContext(figure, scene, timeline);
-  for (const { judge, kinds } of CHECKS) {
-    if (judge && (!kinds || kinds.includes(figure.kind))) judge(context, problems);
-  }
+  for (const { judge } of CHECKS) judge?.(context, problems);
   warnStalls(figure, timeline, problems);
 }
 

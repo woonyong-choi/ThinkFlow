@@ -14,7 +14,8 @@ export function checkNotes({ scene }, problems) {
     const name = note.text.length > NAME_MAX ? `${note.text.slice(0, NAME_MAX)}...` : note.text;
     if (note.x < -FIT_SLACK || note.x + note.w > scene.width + FIT_SLACK) problems.error(note.line, `[check 12] note "${name}" leaves the figure. Shorten the note`);
     for (const e of scene.edges.filter((edge) => edge.index === note.m)) checkNoteOnMessage({ note, name }, e, problems);
-    for (const life of scene.lifelines.filter((l) => l.id !== note.node)) {
+    // 장면마다 따로 갖는 생명선(`si`)은 그 장면의 메모와만 견준다.
+    for (const life of scene.lifelines.filter((l) => l.id !== note.node && (l.si === undefined || l.si === note.si))) {
       if (life.x > note.x && life.x < note.x + note.w && life.y1 < note.y + note.h && note.y < life.y2) problems.warn(note.line, `[check 12] note "${name}" crosses the lifeline of "${life.id}". Shorten the note`);
     }
   }

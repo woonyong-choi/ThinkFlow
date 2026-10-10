@@ -1,0 +1,99 @@
+/* 문서 안 모습 미리보기. GitHub README처럼 문서 바탕 위에 제목, 문단, img로 넣은 SVG를 둔다. */
+:root {
+  color-scheme: light dark;
+}
+
+body {
+  margin: 0;
+  padding: var(--spacing-12) var(--spacing-6);
+  font-family: var(--font-sans);
+  letter-spacing: var(--tracking-text);
+  color: var(--color-fg);
+  background: var(--color-page);
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--spacing-6);
+  max-width: var(--spacing-figure-document-column);
+  margin: 0 auto var(--spacing-6);
+}
+
+.bar a {
+  font-size: var(--text-figure-13);
+  color: var(--color-ui-link);
+}
+
+article {
+  max-width: var(--spacing-figure-document-column);
+  margin: 0 auto;
+  font-size: var(--text-body-text);
+  line-height: var(--leading-diagram-body);
+}
+
+h1 {
+  padding-bottom: var(--spacing-1-5);
+  font-size: var(--text-heading);
+  font-weight: var(--font-weight-weight-title);
+  line-height: var(--leading-heading);
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+
+h2 {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-0-5) var(--spacing-1-5);
+  align-items: baseline;
+  min-width: 0;
+  margin-top: var(--spacing-8);
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+  font: var(--font-weight-semibold) var(--text-subtitle) var(--font-sans);
+}
+
+/* 백틱으로 감싼 글은 코드 글꼴로 그린다. */
+code {
+  font-family: var(--font-mono);
+  letter-spacing: normal;
+}
+
+/* 제목, 파일 이름, 종류 꼬리표는 기준선을 맞춰 한 줄에 놓고 사이를 간격 토큰으로 띄운다. 머리가 좁으면 칸 단위로 다음 줄로 넘긴다(말줄임 없음). */
+.name {
+  font-size: var(--text-figure-13);
+  overflow-wrap: anywhere;
+}
+
+.kind {
+  font-size: var(--text-figure-11);
+  color: var(--color-muted);
+}
+
+/* GitHub README에서는 <p align="center"> 안 img와 같다. */
+.figure {
+  text-align: center;
+}
+
+/* 모든 그림은 같은 캔버스 폭이고 본문 폭보다 넓으면 줄어든다. */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* 축소된 문서 그림에서 읽기 크기를 보장하는 재생 화면으로 이동한다. */
+.figure-open a {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--spacing-figure-control-inner);
+  font-size: var(--text-figure-13);
+  color: var(--color-ui-link);
+}
+
+.figure-open a:focus-visible,
+.figure a:focus-visible {
+  outline: var(--outline-width-focus) solid var(--color-ui-focus);
+  outline-offset: var(--spacing-0-5);
+}

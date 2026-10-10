@@ -1,5 +1,5 @@
-// 원본을 읽다 찾은 진단(오류, 경고, 폐기)을 모은다. 오류는 한 번에 모두 알리기 위해 던지지 않고 쌓는다.
-// 진단 하나의 모양은 { severity, code, line, column, message, fix? }다(docs/design/figure-syntax.md의 진단 절).
+// 원본을 읽다 찾은 진단(오류, 경고)을 모은다. 오류는 한 번에 모두 알리기 위해 던지지 않고 쌓는다.
+// 진단 하나의 모양은 { severity, code, line, column, message }다(docs/design/figure-syntax.md의 진단 절).
 
 const CHECK_PREFIX = /^\[check (\d+)\] /;
 
@@ -20,7 +20,7 @@ export class FigureError extends Error {
  * 진단 하나를 만든다. 첫 인자는 { severity, line, message }다. `[check N] ` 머리말이 있으면 code `check-N`으로 옮기고 메시지에서 뗀다.
  * column을 모르면 그 줄의 첫 글자 자리다(1부터. 줄 0은 0).
  * @param lines 원본 줄 목록. 기본 column을 구하는 데 쓴다
- * @param extra { code?, column?, fix? }. fix는 { line, column, length, text }로, 그 줄의 column부터 length글자를 text로 바꾼다
+ * @param extra { code?, column? }
  */
 export function makeDiagnostic({ severity, line, message }, extra = {}, lines = []) {
   const check = CHECK_PREFIX.exec(message);
@@ -32,7 +32,6 @@ export function makeDiagnostic({ severity, line, message }, extra = {}, lines = 
     column: extra.column ?? firstColumn,
     message: check ? message.slice(check[0].length) : message,
   };
-  if (extra.fix) diagnostic.fix = extra.fix;
   return diagnostic;
 }
 
@@ -41,13 +40,12 @@ export function makeDiagnostic({ severity, line, message }, extra = {}, lines = 
 /**
  * 진단을 모으는 그릇을 만든다.
  * @param source 원본 글. 진단의 기본 column을 구하는 데 쓰고, 없어도 된다
- * @returns { error, warn, deprecate, errors, warnings, deprecations, throwIfAny() }. 메서드는 (line, message, extra?)를 받는다
+ * @returns { error, warn, errors, warnings, throwIfAny() }. 메서드는 (line, message, extra?)를 받는다
  */
 export function createProblems(source = '') {
   const lines = source.split('\n');
   const errors = [];
   const warnings = [];
-  const deprecations = [];
   // 같은 줄의 같은 메시지는 한 번만 남긴다. 한 줄의 낱말마다 같은 진단이 되풀이되는 일을 막기 위해서다.
   const collect = (list, severity) => (line, message, extra) => {
     const diagnostic = makeDiagnostic({ severity, line, message }, extra, lines);
@@ -56,10 +54,8 @@ export function createProblems(source = '') {
   return {
     errors,
     warnings,
-    deprecations,
     error: collect(errors, 'error'),
     warn: collect(warnings, 'warning'),
-    deprecate: collect(deprecations, 'deprecated'),
     // cost: time O(e log e), heap O(e), stack O(1)
     // vars: e = 오류 수
     // basis: estimate
