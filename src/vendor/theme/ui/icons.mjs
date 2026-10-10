@@ -7,6 +7,11 @@ const SOCIAL_PATHS = {
 };
 export const SOCIAL_ICONS = /* @__PURE__ */ Object.keys(SOCIAL_PATHS);
 
+export function ArticleIcon(name = 'question') {
+  if (typeof name !== 'string' || !/^[a-z][a-z0-9-]*$/.test(name)) throw new Error('invalid article icon');
+  return out(`<span class="app-article-icon app-icon-${name}" aria-hidden="true"></span>`);
+}
+
 export function SocialIcon(name, className = 'app-social-icon') {
   if (!/^[a-z][a-z -]*$/.test(className)) throw new Error('invalid icon class');
   const path = SOCIAL_PATHS[name];

@@ -39,3 +39,25 @@ export function renderContentIcon(catalog, name, kind, size) {
   if (kind && !badge) throw new Error(`unknown article kind: ${kind}`);
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${catalog.viewBox}" fill="none" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${size === 'small' ? entry.smallBody ?? entry.body : entry.body}${size === 'small' ? '' : badge?.body ?? ''}</svg>`;
 }
+
+/** 등록된 브랜드와 배포 파일을 양방향으로 대조한다. */
+export function validateBrandCatalog(files) {
+  const prefix = 'assets/icons/brands/';
+  const catalog = JSON.parse(files[`${prefix}catalog.json`]);
+  const libraries = new Map(catalog.libraries.map(library => [library.name, library]));
+  const names = new Set();
+  const registered = new Set();
+  for (const icon of catalog.icons) {
+    const library = libraries.get(icon.library);
+    if (!/^[a-z][a-z0-9-]*$/.test(icon.name) || icon.file !== `${icon.name}.svg` || names.has(icon.name)) throw new Error(`invalid brand identity: ${icon.name}`);
+    if (!library || !icon.label || !icon.treatment || !icon.version || !icon.license || !/^https:\/\//.test(icon.source)) throw new Error(`incomplete brand source: ${icon.name}`);
+    const notice = icon.license === library.license ? library.notice : icon.notice;
+    if (!notice || !Object.hasOwn(files, `${prefix}${notice}`)) throw new Error(`missing brand notice: ${icon.name}`);
+    if (!Object.hasOwn(files, `${prefix}${icon.file}`)) throw new Error(`missing brand file: ${icon.name}`);
+    names.add(icon.name);
+    registered.add(`${prefix}${icon.file}`);
+  }
+  for (const file of Object.keys(files).filter(file => file.startsWith(prefix) && file.endsWith('.svg'))) {
+    if (!registered.has(file)) throw new Error(`unregistered brand file: ${file}`);
+  }
+}

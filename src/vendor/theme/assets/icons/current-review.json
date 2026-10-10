@@ -1,13 +1,13 @@
 {
   "version": 1,
-  "reviewedAt": "2026-10-08",
+  "reviewedAt": "2026-10-10",
   "sizes": [
     24,
     32,
     48
   ],
   "reference": "https://culturedcode.com/things/support/",
-  "scope": "Chrome의 실제 발행 렌더러 12페이지에서 142개 항목을 세 크기로 관측했다. 모티프·곡률·면·내부 여백·축소 표현을 검토하며 사용자 승인이나 픽셀 동일성 판정은 아니다.",
+  "scope": "2026-10-08 Chrome의 실제 발행 렌더러에서 확인한 기존 항목의 기록을 보존하고, 2026-10-10 등록부에 추가한 브랜드를 공통 검토 화면에서 세 크기로 확인했다. 모티프·곡률·면·내부 여백·축소 표현에 대한 구현 검토이며 사용자 승인이나 픽셀 동일성 판정은 아니다.",
   "userApproval": "not-established",
   "entries": {
     "detail-data-structures": {
@@ -719,6 +719,111 @@
       "fingerprint": "1c5b8852498a3e27c237b23db5a51a69526cb35889d114921c06e48532f60a83",
       "observation": "초록 원 안의 되돌림 화살표가 문서 우하단에 놓인다.",
       "smallSize": "48·32px에서 표식을 표시하고 24px에서는 표식 없이 같은 문서 도형을 사용한다."
+    },
+    "brand-ansible": {
+      "fingerprint": "62f4a3b5d00b8abdc4cdfc135eb9838d62022b8b5ef2567848ba67688b6ad933",
+      "observation": "공통 검토 화면에서 48·32·24px 원본 실루엣을 확인했다. 도형과 레이블이 잘리지 않고 크기별 칸 안에 들어간다.",
+      "smallSize": "24px에서는 내부 세부보다 실루엣과 별도 기술명 레이블로 구분한다."
+    },
+    "brand-argo": {
+      "fingerprint": "69421c4b0d55d8004f49be183765527136e852e43eae54cfb294fc276d1b6863",
+      "observation": "공통 검토 화면에서 48·32·24px 원본 실루엣을 확인했다. 도형과 레이블이 잘리지 않고 크기별 칸 안에 들어간다.",
+      "smallSize": "24px에서는 내부 세부보다 실루엣과 별도 기술명 레이블로 구분한다."
+    },
+    "brand-bitbucket": {
+      "fingerprint": "b49cab9604cd209c2f5c64b3814d74ff6decb5a583d604c34b8142c6e924ac50",
+      "observation": "공통 검토 화면에서 48·32·24px 원본 실루엣을 확인했다. 도형과 레이블이 잘리지 않고 크기별 칸 안에 들어간다.",
+      "smallSize": "24px에서는 내부 세부보다 실루엣과 별도 기술명 레이블로 구분한다."
+    },
+    "brand-cloudflare": {
+      "fingerprint": "e19ee50851cd77113b214c959ff3d47c697fcd0cc55977833df7bcdf98584f00",
+      "observation": "공통 검토 화면에서 48·32·24px 원본 실루엣을 확인했다. 도형과 레이블이 잘리지 않고 크기별 칸 안에 들어간다.",
+      "smallSize": "24px에서는 내부 세부보다 실루엣과 별도 기술명 레이블로 구분한다."
+    },
+    "brand-elasticsearch": {
+      "fingerprint": "2e5dd5aac4b47e0910db44fea5d313fe524c4041534aea5bbff2b25b95041f30",
+      "observation": "공통 검토 화면에서 48·32·24px 원본 실루엣을 확인했다. 도형과 레이블이 잘리지 않고 크기별 칸 안에 들어간다.",
+      "smallSize": "24px에서는 내부 세부보다 실루엣과 별도 기술명 레이블로 구분한다."
+    },
+    "brand-github": {
+      "fingerprint": "c33cd01e3ff9bc8e964bc508080fb65c9a553123e05a4d30cdb72dc0ba74eeb9",
+      "observation": "공통 검토 화면에서 48·32·24px 원본 실루엣을 확인했다. 도형과 레이블이 잘리지 않고 크기별 칸 안에 들어간다.",
+      "smallSize": "24px에서는 내부 세부보다 실루엣과 별도 기술명 레이블로 구분한다."
+    },
+    "brand-githubactions": {
+      "fingerprint": "6ee9c37d233b5ae717fde33c074977769ad2daae9427b030af37b52a06546429",
+      "observation": "공통 검토 화면에서 48·32·24px 원본 실루엣을 확인했다. 도형과 레이블이 잘리지 않고 크기별 칸 안에 들어간다.",
+      "smallSize": "24px에서는 내부 세부보다 실루엣과 별도 기술명 레이블로 구분한다."
+    },
+    "brand-gitlab": {
+      "fingerprint": "d2a816aeb7c0530d7d82afc41223bb6831ec6f1a7111b234cc6d197e99260d8d",
+      "observation": "공통 검토 화면에서 48·32·24px 원본 실루엣을 확인했다. 도형과 레이블이 잘리지 않고 크기별 칸 안에 들어간다.",
+      "smallSize": "24px에서는 내부 세부보다 실루엣과 별도 기술명 레이블로 구분한다."
+    },
+    "brand-go": {
+      "fingerprint": "05b681912ecb7c3434a2004864f7e34939782c74ab37e9a29c8127c70596c231",
+      "observation": "공통 검토 화면에서 48·32·24px 원본 실루엣을 확인했다. 도형과 레이블이 잘리지 않고 크기별 칸 안에 들어간다.",
+      "smallSize": "24px에서는 브랜드 내부 작은 글자의 가독성을 보장하지 않는다. 별도 기술명 레이블을 함께 표시한다."
+    },
+    "brand-grafana": {
+      "fingerprint": "8cb7e0f3af52b9a754bdcb2e26dfc2fb68c971c6b3a6bd77a4bb44ecac647261",
+      "observation": "공통 검토 화면에서 48·32·24px 원본 실루엣을 확인했다. 도형과 레이블이 잘리지 않고 크기별 칸 안에 들어간다.",
+      "smallSize": "24px에서는 내부 세부보다 실루엣과 별도 기술명 레이블로 구분한다."
+    },
+    "brand-helm": {
+      "fingerprint": "d72c0444494f8805925b79e21e40eeff6c4f51027501bb64b2ac079777820039",
+      "observation": "공통 검토 화면에서 48·32·24px 원본 실루엣을 확인했다. 도형과 레이블이 잘리지 않고 크기별 칸 안에 들어간다.",
+      "smallSize": "24px에서는 브랜드 내부 작은 글자의 가독성을 보장하지 않는다. 별도 기술명 레이블을 함께 표시한다."
+    },
+    "brand-kafka": {
+      "fingerprint": "ece167b69cc4e564e6ea4d4182b9c06c030dd964000cce2cdb5a588943fe54d7",
+      "observation": "공통 검토 화면에서 48·32·24px 원본 실루엣을 확인했다. 도형과 레이블이 잘리지 않고 크기별 칸 안에 들어간다.",
+      "smallSize": "24px에서는 내부 세부보다 실루엣과 별도 기술명 레이블로 구분한다."
+    },
+    "brand-mariadb": {
+      "fingerprint": "0f239c1e7a381219c859e4bc8070ec14fd30eeb8a08890b66b22d43cbe4caafa",
+      "observation": "공통 검토 화면에서 48·32·24px 원본 실루엣을 확인했다. 도형과 레이블이 잘리지 않고 크기별 칸 안에 들어간다.",
+      "smallSize": "24px에서는 내부 세부보다 실루엣과 별도 기술명 레이블로 구분한다."
+    },
+    "brand-mongodb": {
+      "fingerprint": "40d91c1124ac38819373eab50843c6e19e5c662eef511b08cd552bfd47da62ff",
+      "observation": "공통 검토 화면에서 48·32·24px 원본 실루엣을 확인했다. 도형과 레이블이 잘리지 않고 크기별 칸 안에 들어간다.",
+      "smallSize": "24px에서는 내부 세부보다 실루엣과 별도 기술명 레이블로 구분한다."
+    },
+    "brand-mysql": {
+      "fingerprint": "a93682e392e9c0a7a830b781894bd7b68be4551bcde3f19a2af21f0af21fb0ae",
+      "observation": "공통 검토 화면에서 48·32·24px 원본 실루엣을 확인했다. 도형과 레이블이 잘리지 않고 크기별 칸 안에 들어간다.",
+      "smallSize": "24px에서는 브랜드 내부 작은 글자의 가독성을 보장하지 않는다. 별도 기술명 레이블을 함께 표시한다."
+    },
+    "brand-nginx": {
+      "fingerprint": "cf260d78e735738ada5111d2e540fd542301ca5fc4a7a8b51863625ec387dec5",
+      "observation": "공통 검토 화면에서 48·32·24px 원본 실루엣을 확인했다. 도형과 레이블이 잘리지 않고 크기별 칸 안에 들어간다.",
+      "smallSize": "24px에서는 내부 세부보다 실루엣과 별도 기술명 레이블로 구분한다."
+    },
+    "brand-prometheus": {
+      "fingerprint": "9ed29b1e2c02c85607f57da6d4b39bbd8510bbdd15ee0e65283574b1cb166b22",
+      "observation": "공통 검토 화면에서 48·32·24px 원본 실루엣을 확인했다. 도형과 레이블이 잘리지 않고 크기별 칸 안에 들어간다.",
+      "smallSize": "24px에서는 내부 세부보다 실루엣과 별도 기술명 레이블로 구분한다."
+    },
+    "brand-rabbitmq": {
+      "fingerprint": "18fe0471c46dffe4279c93eb3f1676c08097a0a8234c31ddbe9e2544f16cc6d0",
+      "observation": "공통 검토 화면에서 48·32·24px 원본 실루엣을 확인했다. 도형과 레이블이 잘리지 않고 크기별 칸 안에 들어간다.",
+      "smallSize": "24px에서는 내부 세부보다 실루엣과 별도 기술명 레이블로 구분한다."
+    },
+    "brand-terraform": {
+      "fingerprint": "e7663943c3d89eff2a775a088de620ea98382ad348d1d16107b081fd4912ff46",
+      "observation": "공통 검토 화면에서 48·32·24px 원본 실루엣을 확인했다. 도형과 레이블이 잘리지 않고 크기별 칸 안에 들어간다.",
+      "smallSize": "24px에서는 내부 세부보다 실루엣과 별도 기술명 레이블로 구분한다."
+    },
+    "brand-ubuntu": {
+      "fingerprint": "47ab3355ddbb59caa142334327dcb74d19c65c91368a8956eb6571d799d180ef",
+      "observation": "공통 검토 화면에서 48·32·24px 원본 실루엣을 확인했다. 도형과 레이블이 잘리지 않고 크기별 칸 안에 들어간다.",
+      "smallSize": "24px에서는 내부 세부보다 실루엣과 별도 기술명 레이블로 구분한다."
+    },
+    "brand-vercel": {
+      "fingerprint": "95ded19b07b11a4c114093ecdd0432d48832eb46e491e0a0f2f6adb87f180665",
+      "observation": "공통 검토 화면에서 48·32·24px 원본 실루엣을 확인했다. 도형과 레이블이 잘리지 않고 크기별 칸 안에 들어간다.",
+      "smallSize": "24px에서는 내부 세부보다 실루엣과 별도 기술명 레이블로 구분한다."
     }
   }
 }
