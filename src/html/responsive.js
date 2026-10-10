@@ -22,7 +22,7 @@ export async function responsiveContent(result, glyphs) {
   const narrow = await reflowNarrow(result, hasGraph);
   if (!narrow?.scene.panels.some((panel, i) => panel.box.w < wide[i].box.w)) return;
   const content = figureContent(narrow, glyphs);
-  return { content, timeline: narrow.timeline, breakpoint: values.breakpoint.tablet };
+  return { content, timeline: narrow.timeline, breakpoint: values.breakpoint.mobile };
 }
 
 // 이동 글이 도형·글에 가려지거나 다른 이동 글과 겹친다는 검사 7번 경고 수. 배치 선택이 이미 쓰는 기준과 같다.
