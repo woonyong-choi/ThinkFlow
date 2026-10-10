@@ -3,7 +3,7 @@
 // 행에 결측이 있거나(퍼센트는 합이 0이어도) 막대는 그리지 않고 칸의 표식은 길이 0으로 남긴다. 0%로 그리지 않는다.
 // 조각은 계열 번호 키(`1`, `2`, ...)를 조각 안에 적고(글자 요소는 labels.js의 segmentKey), 안에 들어가지 않으면 아래 값 목록의 `1: 30`이 키를 잇는다.
 import { measure } from '../measure/fonts.js';
-import { centerBaseline, roundCoord as r } from '../text.js';
+import { centerBaseline, escapeXml, roundCoord as r } from '../text.js';
 import { values } from '../vendor/theme/tokens.js';
 import { drawRules, finishRowChart, rowValueScale } from './axis.js';
 import { COPY, MISSING } from './copy.js';
@@ -130,7 +130,7 @@ function statusMark(ctx, stack, at) {
   if (!hasMissing && !isPercent) return '';
   const message = hasMissing ? chart.missing ?? MISSING : COPY.zeroSum;
   const hidden = stack.state === 'ok' ? ' visibility="hidden"' : '';
-  return inkGroup(at.k, `<text x="${r(ctx.scale.at(0))}" y="${r(centerBaseline(at.y + BAR / 2, TEXT['11']))}" class="chart-missing"${hidden}${markAttrs(chart, markId(chart, 0, at.k, '.s'), { isText: true })}>${message}</text>`);
+  return inkGroup(at.k, `<text x="${r(ctx.scale.at(0))}" y="${r(centerBaseline(at.y + BAR / 2, TEXT['11']))}" class="chart-missing"${hidden}${markAttrs(chart, markId(chart, 0, at.k, '.s'), { isText: true })}>${escapeXml(message)}</text>`);
 }
 
 // cost: time O(s), heap O(out), stack O(1)
