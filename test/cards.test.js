@@ -121,6 +121,39 @@ test('S4 a table foreign key becomes an edge between the two columns, to a key c
   assert.ok((await reject(contradictory)).some((p) => p.line === lineOf(contradictory, 'id bigint')));
 });
 
+test('S4 table relations and foreign keys share endpoint multiplicity labels without inferring constraints', async () => {
+  const tables = (column = 'owner bigint') => dap(`
+    table users "users" {
+      id bigint pk
+      name text
+    }
+    table orders "orders" {
+      id bigint pk
+      ${column}
+    }
+  `);
+  for (const source of [
+    `${tables()}orders.owner -> users.name from="0..*" to="1"\n`,
+    `${tables()}orders -> users relation=association from="0..*" to="1"\n`,
+    tables('owner bigint fk=users.id from="0..*" to="1"'),
+  ]) {
+    const dom = await stillDom(source);
+    const labels = findAll(dom, (node) => node.tag === 'text' && node.attrs.class?.includes('fl-multiplicity'));
+    assert.deepEqual(labels.map((node) => [node.attrs['data-end'], textContent(node)]), [['from', '0..*'], ['to', '1']]);
+    assert.ok(findAll(dom, (node) => node.attrs['aria-label']?.includes('orders [0..*]')).length);
+  }
+  assert.equal(findAll(await stillDom(tables('owner bigint fk=users.id')), (node) => node.attrs.class?.includes('fl-multiplicity')).length, 0);
+  for (const [source, needle, message] of [
+    [`${tables()}orders -> users from="2..1"\n`, 'orders -> users', /invalid multiplicity/],
+    [`${tables()}orders -> users relation=inheritance\n`, 'orders -> users', /table.*association/],
+    [tables('owner bigint from="1"'), 'owner bigint', /requires fk/],
+    [tables('owner bigint fk=users.id to="-1"'), 'owner bigint', /invalid multiplicity/],
+    [`${tables('owner bigint fk=users.id')}orders.owner -> users.id\n`, 'owner bigint', /already an edge/],
+  ]) {
+    assert.ok((await reject(source)).some((p) => p.line === lineOf(source, needle) && message.test(p.message)), source);
+  }
+});
+
 test('S5 the same card in a graph view and a sequence view is drawn once per view and moves once per view', async () => {
   const source = dap(`
     person user "User"

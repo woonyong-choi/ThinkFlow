@@ -14,7 +14,7 @@ table users "users" {
 }
 table orders "orders" {
   id bigint pk
-  user_id bigint fk=users.id required ondelete=restrict
+  user_id bigint fk=users.id required ondelete=restrict from="0..*" to="1"
   total "numeric(10, 2)"
 }
 
@@ -26,7 +26,9 @@ scene "주문"
 
 ![회원과 주문](data-minimal.svg)<!-- dap -->
 
-테이블 사이 선은 `fk=테이블.열`에서만 생깁니다. 선을 따로 적는 줄은 없습니다. 열 줄은 `이름 타입`에 `pk`, `unique`, `nullable`, `required`, `fk=`, `ondelete=`를 이어 적습니다.
+외래 키 선은 `fk=테이블.열`에서 생긴다. 열 줄은 `이름 타입`에 `pk`, `unique`, `nullable`, `required`, `fk=`, `ondelete=`를 이어 적는다. 외래 키 열의 `from="0..*" to="1"`은 각각 출발 테이블과 참조 대상 쪽 다중성이다. 값은 음이 아닌 정수, `*`, `0..1`이나 `1..*`처럼 순서가 맞는 범위이며 생략하면 표시하지 않는다.
+
+`orders -> users "주문자" relation=association from="0..*" to="1"`처럼 직접 적는 선은 설명을 위한 관계다. `테이블.열`도 끝으로 쓸 수 있지만 외래 키 제약은 만들지 않는다. `relation=association`은 화살촉 없는 연관이고, 생략하면 일반 연결선의 화살촉 규칙을 따른다. 이미 `fk=`로 연결한 같은 열 쌍을 직접 연결하면 중복 오류다. 상속·합성 같은 클래스 전용 관계는 테이블에 쓰지 않는다.
 
 ## 문법
 

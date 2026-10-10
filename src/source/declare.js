@@ -141,13 +141,17 @@ function readColumnOptions(rest, column, ctx) {
     else if (t.type === 'option' && t.key === 'fk' && FK_PATTERN.test(t.value)) {
       const [table, col] = t.value.split('.');
       column.fk = { table, column: col };
-    } else if (t.type === 'option' && t.key === 'ondelete') {
-      column.ondelete = readOptions([t], { scopes: ['column'], what: 'a column', line, ctx }).ondelete;
-    } else ctx.problems.error(line, `unknown column option "${t.key ?? t.value}". Use pk, unique, nullable, required, fk=table.column, or ondelete=policy`);
+    } else if (t.type === 'option' && ['ondelete', 'from', 'to'].includes(t.key)) {
+      const found = readOptions([t], { scopes: ['column', 'multiplicity'], what: 'a column', line, ctx });
+      const property = t.key === 'ondelete' ? t.key : `${t.key}Multiplicity`;
+      column[property] = found[t.key];
+    } else ctx.problems.error(line, `unknown column option "${t.key ?? t.value}". Use pk, unique, nullable, required, fk=table.column, ondelete=policy, from=, or to=`);
   }
   if (column.pk && column.nullable) ctx.problems.error(line, 'a primary key cannot be nullable');
   if (column.nullable && column.required) ctx.problems.error(line, 'nullable and required cannot be combined');
-  if (column.ondelete && !column.fk) ctx.problems.error(line, 'ondelete requires fk=table.column');
+  for (const key of ['ondelete', 'fromMultiplicity', 'toMultiplicity']) {
+    if (column[key] !== undefined && !column.fk) ctx.problems.error(line, `${key.replace('Multiplicity', '')} requires fk=table.column`);
+  }
   if (column.ondelete === 'set-null' && !column.nullable) ctx.problems.error(line, 'ondelete=set-null requires nullable');
 }
 
@@ -177,7 +181,7 @@ export function readEdge({ tokens, line }, ctx) {
     else if (t.type === 'option') options.push(t);
     else ctx.problems.error(line, `an edge takes a quoted label, quiet, dashed, head=, no=, relation=, from=, and to=. Found "${t.value}"`);
   }
-  const found = readOptions(options, { scopes: ['edge', 'relation'], what: 'an edge', line, ctx });
+  const found = readOptions(options, { scopes: ['edge', 'relation', 'multiplicity'], what: 'an edge', line, ctx });
   edge.no = found.no;
   if (found.relation !== undefined) edge.relation = found.relation;
   if (found.from !== undefined) edge.fromMultiplicity = found.from;

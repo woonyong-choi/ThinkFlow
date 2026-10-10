@@ -52,7 +52,7 @@ Daphnis는 `daphnis 2` 원본 하나로 구조, 순서, 상태, 스키마, API, 
 | 장면별 상태 알약 | `status=` | `architecture`, `flow`, `queue` | `test/examples.test.js`. 알약 자체를 직접 확인하는 시험은 확인되지 않았다(검증 요구사항, 미완료) |
 | 순서 보기: 메시지, 응답, 자기 호출, 메모, 활성 구간, 생성과 소멸, 네 구획(`alt`, `loop`, `par`, `opt`) | `view sequence`, `fragment`, `branch`, `note`, `activate`, `create`, `destroy` | `sequence` | `test/kinds.test.js`(K-sequence), `test/cards.test.js` |
 | 상태: 시작, 끝, 자기 전이, 그룹, 점선 전이 | `state`, `start`, `final`, `group` | `state` | `test/kinds.test.js`(K-state) |
-| 스키마: 키, 유일, NULL 허용, 외래 키(같은 테이블의 두 열을 잇는 자기 참조 포함), 삭제 정책, 예시 행 | `table`, `pk`, `unique`, `nullable`, `required`, `fk=`, `ondelete=`, `show` | `schema` | `test/cards.test.js`(S4): 외래 키 대상과 같은 열 참조, pk와 nullable의 충돌을 확인한다. `test/examples.test.js`가 예제를 빌드한다 |
+| 스키마: 키, 유일, NULL 허용, 외래 키(같은 테이블의 두 열을 잇는 자기 참조 포함), 삭제 정책, 다중성, 예시 행 | `table`, `pk`, `unique`, `nullable`, `required`, `fk=`, `ondelete=`, `from=`, `to=`, `show` | `schema` | `test/cards.test.js`(S4): 외래 키 대상과 같은 열 참조, pk와 nullable의 충돌, 직접 연결과 외래 키의 다중성 표시 및 잘못된 범위를 확인한다. `test/examples.test.js`가 예제를 빌드한다 |
 | API 카드: 메서드와 경로, `https://` 주소, 칸 사이 연결 | `api` | `api`, `integration` | `test/cards.test.js`(S1), `test/examples.test.js` |
 | 클래스: 세 구획, 가시성, 정적, 추상, 여섯 관계, 다중성, 그룹 | `class`, `interface`, `field`, `method`, `relation=`, `from=`, `to=` | `class` | `test/kinds.test.js`(K-class) |
 | 칸 격자: 비트 필드, 합친 칸, 생략한 칸, 칸에서 칸으로 가는 선 | `grid`, `item`, `gap` | `memory`, `stack`, `pointer` | `test/kinds.test.js`(K-grid), `test/cards.test.js`(S2, S3) |

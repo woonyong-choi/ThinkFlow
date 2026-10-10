@@ -14,7 +14,7 @@ table coupons "coupons" {
 }
 table orders "orders" {
   id bigint pk
-  user_id bigint fk=users.id required ondelete=restrict
+  user_id bigint fk=users.id required ondelete=restrict from="0..*" to="1"
   coupon_id bigint fk=coupons.id nullable ondelete=set-null
   status text required
 }

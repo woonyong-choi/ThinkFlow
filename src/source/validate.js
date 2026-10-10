@@ -2,6 +2,7 @@
 import { walkUp } from './ancestry.js';
 import { checkChartCards } from './chart-check.js';
 import { checkClassRelations } from './class-check.js';
+import { checkMultiplicities } from './multiplicity.js';
 import { checkFlowStep } from './flow-check.js';
 import { CARD_SHAPES, PART_SHAPES, STATUS_SHAPES } from './grammar.js';
 import { checkIcons } from './icons.js';
@@ -136,18 +137,23 @@ function checkSelfEdge(edge, card, problems) {
   else if (edge.label !== undefined) problems.error(edge.line, 'an edge between two cells of one grid takes no label');
 }
 
-// cost: time O(1), heap O(1), stack O(1)
+// cost: time O(n), heap O(n), stack O(1)
+// vars: n = 다중성 표시 글자 수
 // basis: estimate
 // 선 끝 종류로 정해지는 규칙. 두 끝이 클래스나 인터페이스면 관계 종류(기본 association)와 점선, 머리가 정해지고,
-// relation=, from=, to=는 두 끝이 모두 클래스나 인터페이스일 때만 쓴다. 두 상태를 잇는 전이는 사건 라벨이 필요하다.
+// 두 테이블도 from=, to=와 association을 받는다. 외래 키 여부와 다중성은 별개이며 생략한 값은 추정하지 않는다.
 function resolveRelation(edge, { from, to }, problems) {
   const isClassPair = from?.shape === 'classifier' && to?.shape === 'classifier';
+  const isTablePair = from?.shape === 'table' && to?.shape === 'table';
   const hasRelationOptions = edge.relation !== undefined || edge.fromMultiplicity !== undefined || edge.toMultiplicity !== undefined;
   if (isClassPair) {
     edge.relation ??= 'association';
     if (['dependency', 'realization'].includes(edge.relation)) edge.dashed = true;
     edge.head ??= edge.relation === 'association' ? 'none' : 'end';
-  } else if (hasRelationOptions && from && to) problems.error(edge.line, 'relation=, from=, and to= join two classes or interfaces');
+  } else if (isTablePair) {
+    if (edge.relation !== undefined && edge.relation !== 'association') problems.error(edge.line, 'a table relation can only use association');
+  } else if (hasRelationOptions && from && to) problems.error(edge.line, 'relation=, from=, and to= join two classes, interfaces, or tables');
+  if (isClassPair || isTablePair) checkMultiplicities(edge, problems);
   if (from?.shape === 'state' && to?.shape === 'state' && edge.label === undefined) problems.error(edge.line, 'a transition needs an event label: a -> b "event"');
 }
 
@@ -165,7 +171,7 @@ function buildForeignKeys(figure, problems) {
       if (!target) problems.error(column.line, unknownName('table', column.fk.table, tables.keys()));
       else if (!targetColumn) problems.error(column.line, unknownName(`column in "${target.id}"`, column.fk.column, target.columns.map((c) => c.name)));
       else if (!targetColumn.pk && !targetColumn.unique) problems.error(column.line, `fk must point to a pk or unique column. "${target.id}.${targetColumn.name}" is neither`);
-      else figure.edges.push({ from: table.id, to: target.id, fromColumn: column.name, toColumn: targetColumn.name, label: undefined, quiet: false, dashed: false, line: column.line, isForeignKey: true });
+      else figure.edges.push({ from: table.id, to: target.id, fromColumn: column.name, toColumn: targetColumn.name, label: undefined, quiet: false, dashed: false, line: column.line, isForeignKey: true, fromMultiplicity: column.fromMultiplicity, toMultiplicity: column.toMultiplicity });
     }
   }
 }

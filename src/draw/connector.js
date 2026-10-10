@@ -25,7 +25,8 @@ export function drawEdge(e, j, { decorate, glyphs, scene }) {
   const path = `<path id="p-${j}" d="${d}" class="fl-path"${dash}${marker.attributes}/>`;
   const from = e.fromMultiplicity === undefined ? e.from : `${e.from} [${e.fromMultiplicity}]`;
   const to = e.toMultiplicity === undefined ? e.to : `${e.to} [${e.toMultiplicity}]`;
-  const description = e.relation ? ` role="img" aria-label="${escapeXml(`${from} ${e.relation} ${to}${e.label ? `: ${e.label}` : ''}`)}"` : '';
+  const relation = e.relation ?? (e.isForeignKey ? 'references' : e.fromMultiplicity !== undefined || e.toMultiplicity !== undefined ? 'connects to' : undefined);
+  const description = relation ? ` role="img" aria-label="${escapeXml(`${from} ${relation} ${to}${e.label ? `: ${e.label}` : ''}`)}"` : '';
   const ends = (e.endpointLabels ?? []).map((label) => {
     glyphs.add(label.text, STYLE.pill.face);
     return `<text class="edgelabel fl-multiplicity ${decorate('pilltext', j)}" data-end="${label.end}" x="${r(label.x)}" y="${r(centerBaseline(label.y, STYLE.pill.size))}">${escapeXml(label.text)}</text>`;

@@ -278,8 +278,8 @@ export const OPTIONS = table({
   'member.static': FLAG,
   'member.abstract': FLAG,
   'relation.relation': { type: 'word', values: 'relation' },
-  'relation.from': { ...TEXT, format: '출발 쪽 다중성' },
-  'relation.to': { ...TEXT, format: '도착 쪽 다중성' },
+  'multiplicity.from': { ...TEXT, format: '출발 쪽 다중성' },
+  'multiplicity.to': { ...TEXT, format: '도착 쪽 다중성' },
 });
 
 // cost: time O(o), heap O(o), stack O(1)

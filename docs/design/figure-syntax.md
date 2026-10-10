@@ -339,7 +339,7 @@ scene "소비자 하나가 느려진다" for=6s status="slow=warn"
 | `decision id "질문"` | 갈림길. 마름모 |
 | `queue id "이름" slots=N [from=K]` | 큐 |
 | `state id "이름"`, `start id`, `final id` | 상태, 처음 점, 끝 겹원 |
-| `table id "이름" {` 열 줄 `}` | 테이블. 열 줄은 `이름 타입 [pk] [unique] [nullable] [required] [fk=테이블.열] [ondelete=정책]` |
+| `table id "이름" {` 열 줄 `}` | 테이블. 열 줄은 `이름 타입 [pk] [unique] [nullable] [required] [fk=테이블.열] [ondelete=정책] [from="다중성"] [to="다중성"]` |
 | `api id "METHOD /경로" {` 칸 줄 `}` | API. 제목은 메서드(`GET`, `POST`, `PUT`, `PATCH`, `DELETE`, `HEAD`, `OPTIONS`)와 경로(`/`로 시작하거나 `http(s)://` 주소)다. 칸 줄은 `이름 "타입"`이고 칸에는 선택 사항이 없다. 문서화용 카드이고 실행하지 않는다 |
 | `class id "이름" [abstract] {` 멤버 줄 `}`, `interface id "이름" {` ... `}` | 클래스와 인터페이스. 멤버는 `field 이름 "타입"`, `method 이름 "(매개변수): 반환"` |
 | `grid id "제목" [rows=N] [cols=N] {` `item`, `gap` 줄 `}` | 칸 격자([칸 격자](grid.md)) |
@@ -353,8 +353,8 @@ scene "소비자 하나가 느려진다" for=6s status="slow=warn"
 
 - 카드 크기와 굵기는 적지 않는다. 크기는 글과 카드 내용으로, 모양은 토큰으로 정한다. 색은 기본이 칠하지 않음(중립 면)이고, 고르려면 아래 도형 색의 `tone`과 `appearance`만 쓴다. 아이콘은 `icon=`으로 고르되 모양과 색은 정하지 않는다([배치](layout.md#아이콘)).
 - 선의 양 끝은 선언된 카드나 그룹이고 `카드.칸`도 된다. 선은 카드 선언보다 앞에 와도 된다. 파일을 다 읽은 뒤 이름을 확인한다.
-- 선 하나의 끝 종류가 선택 사항을 정한다. 두 끝이 모두 클래스나 인터페이스면 관계 종류(`relation=`, 기본 `association`)와 다중성(`from=`, `to=`)을 쓸 수 있고, 관계 종류가 점선과 화살촉을 정한다. 그 밖의 선에 `relation=`, `from=`, `to=`를 쓰면 오류다. 두 상태를 잇는 선(전이)은 사건 라벨이 필요하다.
-- 테이블 열의 `fk=`는 선이 된다. 가리키는 열은 `pk`나 `unique`다. 같은 두 카드 사이에 직접 쓴 선과 외래 키 선이 함께 있어도 된다.
+- 선 하나의 끝 종류가 선택 사항을 정한다. 두 끝이 모두 클래스나 인터페이스면 관계 종류(`relation=`, 기본 `association`)와 다중성(`from=`, `to=`)을 쓸 수 있고, 관계 종류가 점선과 화살촉을 정한다. 두 테이블도 같은 다중성을 쓰며 관계 종류는 `association`만 받는다. 그 밖의 선에 이 선택 사항을 쓰면 오류다. 두 상태를 잇는 선(전이)은 사건 라벨이 필요하다.
+- 테이블 열의 `fk=`는 선이 된다. 가리키는 열은 `pk`나 `unique`다. 직접 쓴 선은 설명을 위한 연결이고 외래 키 제약을 만들지 않는다. 같은 두 카드 사이에 직접 쓴 선과 외래 키 선이 함께 있어도 되지만 같은 열 쌍을 중복 선언하면 오류다. 외래 키 열의 `from=`, `to=`는 각각 이 테이블과 참조 대상 쪽 다중성을 표시한다. 생략한 다중성은 추정하지 않는다.
 - 같은 방향의 두 끝 사이 선은 하나다. `a -> b`가 둘이면 오류다. `a -> b`와 `b -> a`는 함께 둘 수 있다. 거꾸로 적는 `<-`는 없다.
 - 자기 자신으로 가는 선과, 그룹과 그 안 모든 하위 카드와 그룹 사이의 선은 오류다. 예외는 상태와 클래스의 자기 연결, 한 격자의 서로 다른 두 칸을 잇는 선(`g.a -> g.b`, 라벨 없음), 테이블이나 API 카드의 서로 다른 두 열을 잇는 선(`products.parent_id -> products.id`, 자기 참조 외래 키 `fk=`도 같다, 라벨 가능)이다. 같은 열끼리, 카드 전체를 잇는 선, 한쪽만 열인 선은 오류다.
 - 모든 선은 두 끝을 함께 담은 그래프 보기가 하나 이상 있어야 한다. 없으면 `edge a -> b is not drawn: no graph view holds both "a" and "b"` 오류다(외래 키 선은 열 줄에서 알린다).
@@ -805,8 +805,8 @@ scene "같은 시각에 요청한다" for=8s
 | `member.static` | 값 없음(낱말만) |
 | `member.abstract` | 값 없음(낱말만) |
 | `relation.relation` | `association`, `dependency`, `inheritance`, `realization`, `aggregation`, `composition` |
-| `relation.from` | 출발 쪽 다중성 |
-| `relation.to` | 도착 쪽 다중성 |
+| `multiplicity.from` | 출발 쪽 다중성 |
+| `multiplicity.to` | 도착 쪽 다중성 |
 
 | 값 목록 | 쓰는 곳 | 값 | 기본값 |
 |---|---|---|---|
