@@ -1,5 +1,5 @@
 // 토큰 대신 직접 적은 화면 값(하드코딩)을 찾는다.
-// 사용: node scripts/check-tokens.mjs <폴더나 파일 ...> [--tokens tokens.json]
+// 사용: node ui/build/check-tokens.mjs <폴더나 파일 ...> [--tokens tokens.json]
 // 출력: `{경로}:{줄}: {규칙}: {찾은 글자}` 줄들과 마지막 `total {개수}`. 개수가 0이 아니면 종료 코드 1.
 // - CSS 계열: 주석을 뺀 전체
 // - JavaScript 계열: 모든 문자열의 색, CSS·마크업으로 보이는 문자열과 값 하나뿐인 문자열(`'12px'`)의 나머지 규칙,
@@ -20,13 +20,13 @@ const USAGE = 'usage: check-tokens.mjs [--tokens TOKENS] targets [targets ...]';
 /** 찾은 하드코딩을 출력한다. 하나라도 있으면 1로 끝낸다. */
 function main(argv) {
   const args = parseArgs(argv);
+  const files = [...iterFiles(args.targets, TOKEN_SOURCES)];
+  if (!files.length) throw new Error('no source files found in targets');
   const tokensPath = args.tokens ?? findTokensFile(args.targets);
-  if (!tokensPath) {
-    console.error('tokens.json not found: every @media and @container number is reported, primitive references are not checked');
-  }
+  if (!tokensPath) throw new Error('tokens.json not found: use --tokens to select the canonical source');
   const info = loadTokenInfo(tokensPath);
   const results = [];
-  for (const path of iterFiles(args.targets, TOKEN_SOURCES)) results.push(...checkFile(path, info));
+  for (const path of files) results.push(...checkFile(path, info));
   results.sort((a, b) => compareText(a.path, b.path) || a.line - b.line);
   for (const { path, line, rule, snippet } of results) console.log(`${path}:${line}: ${rule}: ${snippet}`);
   console.log(`total ${results.length}`);
@@ -65,12 +65,6 @@ function exitWithUsage(message) {
 }
 
 
-// cost: time O(p), heap O(p), stack O(1)
-// vars: p = 합칠 기본 토큰 수
-// basis: estimate
-/** 공통 토큰(design-tokens)의 기본 토큰 이름도 코드에서 쓰면 안 되는 목록에 더한다. */
-
-
 // cost: time O(t), heap O(t), stack O(1), io 1
 // vars: t = 토큰 수
 // basis: estimate
@@ -80,7 +74,6 @@ function exitWithUsage(message) {
  */
 function loadTokenInfo(path) {
   const info = { breakpoints: new Set(), primitiveNames: new Set(), primitivePaths: new Set() };
-  if (!path) return info;
   const root = JSON.parse(readFileSync(path, 'utf8'));
   const stack = [{ prefix: [], node: root, groupType: root.$type ?? null }];
   while (stack.length) {
@@ -115,26 +108,48 @@ function isObject(value) {
 // cost: time O(n + f log l), heap O(n), stack O(1), io 1
 // vars: n = 파일 글자 수, f = 찾은 수, l = 줄 수
 // basis: estimate
-/** 파일 하나의 하드코딩. 생성물과 `tokens-allow:` 줄은 건너뛴다. */
+/** 생성물과 같은 줄의 사유 있는 예외 주석만 검사에서 제외한다. */
 function checkFile(path, info) {
   const ext = extname(path).toLowerCase();
   let text = readFileSync(path, 'utf8');
-  if (text.split('\n', 1)[0].includes(GENERATED_MARK)) return [];
   const lines = text.split('\n');
   const lineStarts = [0];
   for (const line of lines.slice(0, -1)) lineStarts.push(lineStarts.at(-1) + line.length + 1);
-  if (SCRIPT_EXTS.has(ext)) text = maskJs(text);
+  const comments = [];
+  const onComment = comment => comments.push(comment);
+  if (SCRIPT_EXTS.has(ext)) text = maskJs(text, onComment);
+  const segments = findSegments(text, ext, onComment);
+  if (comments.some(comment => comment.offset < lines[0].length && !lines[0].slice(0, comment.offset).trim() && comment.text.split('\n')[0].includes(GENERATED_MARK))) return [];
   const found = [];
-  for (const { offset, segment, isStyled } of findSegments(text, ext)) {
+  for (const { offset, segment, isStyled } of segments) {
     for (const hit of findHardcoded(segment, info, isStyled)) found.push({ ...hit, position: offset + hit.position });
   }
   if (SCRIPT_EXTS.has(ext)) found.push(...findScriptValues(text, info));
+  const allowed = allowedLines(comments, lineStarts);
   const results = [];
   for (const { position, rule, snippet } of found) {
     const line = findLineNumber(lineStarts, position);
-    if (!lines[line - 1].includes(ALLOW_MARK)) results.push({ path, line, rule, snippet: Array.from(snippet).slice(0, 80).join('') });
+    if (!allowed.has(line)) results.push({ path, line, rule, snippet: Array.from(snippet).slice(0, 80).join('') });
   }
   return results;
 }
 
-process.exitCode = main(process.argv.slice(2));
+function allowedLines(comments, lineStarts) {
+  const allowed = new Set();
+  for (const comment of comments) {
+    for (const [index, text] of comment.text.split('\n').entries()) {
+      const marker = text.indexOf(ALLOW_MARK);
+      if (marker < 0) continue;
+      const reason = text.slice(marker + ALLOW_MARK.length).replace(/(?:\*\/|-->)\s*$/, '').trim();
+      if (reason) allowed.add(findLineNumber(lineStarts, comment.offset) + index);
+    }
+  }
+  return allowed;
+}
+
+try {
+  process.exitCode = main(process.argv.slice(2));
+} catch (error) {
+  console.error(error.message);
+  process.exitCode = 2;
+}

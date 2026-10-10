@@ -1,11 +1,11 @@
 // 파일을 찾고 정렬하는 함수들. 어느 파일을 보고 어느 폴더를 건너뛸지는 부르는 쪽의 규칙({ wants, skipDirs })이 정한다. check-tokens.mjs, check-size.mjs, check-cost-comments.mjs, run-md.mjs가 쓴다.
 import { existsSync, readdirSync, statSync } from 'node:fs';
 import { basename, dirname, extname, join, resolve } from 'node:path';
-import { CSS_EXTS, SCRIPT_EXTS, SKIP_DIRS, TOKEN_FILES } from './tokens-patterns.mjs';
+import { CSS_EXTS, MARKUP_EXTS, SCRIPT_EXTS, SKIP_DIRS, TOKEN_FILES } from './tokens-patterns.mjs';
 
-// 토큰 검사가 보는 파일은 CSS와 스크립트(가져온 토큰 파일 제외)다. 대상으로 직접 준 파일은 확장자와 상관없이 본다.
+// 토큰 정본과 생성물 폴더를 제외하고 CSS·스크립트·마크업을 검사한다.
 export const TOKEN_SOURCES = {
-  wants: (name) => !TOKEN_FILES.has(name) && (CSS_EXTS.has(extname(name).toLowerCase()) || SCRIPT_EXTS.has(extname(name).toLowerCase())),
+  wants: (name) => !TOKEN_FILES.has(name) && [CSS_EXTS, SCRIPT_EXTS, MARKUP_EXTS].some(extensions => extensions.has(extname(name).toLowerCase())),
   skipDirs: SKIP_DIRS,
   filterTargets: false,
 };
@@ -24,7 +24,8 @@ export function* iterFiles(targets, rules) {
       if (rules.filterTargets === false || rules.wants(basename(target))) yield target;
       continue;
     }
-    if (isDirectory(target)) yield* walkFiles(target, rules);
+    if (!isDirectory(target)) throw new Error(`target not found or not a regular file or directory: ${target}`);
+    yield* walkFiles(target, rules);
   }
 }
 
@@ -54,38 +55,22 @@ function listFolder(folder) {
   return { files: files.sort(compareText), dirs: dirs.sort(compareText) };
 }
 
-// cost: time O(f + h), heap O(d), stack O(d), io f + h
-// vars: f = 대상 아래 파일 수, h = 저장소 루트까지 상위 폴더 수, d = 폴더 깊이
+// cost: time O(h), heap O(1), stack O(1), io h
+// vars: h = 저장소 루트까지 상위 폴더 수
 // basis: estimate
-/** 대상 폴더 아래, 없으면 저장소 루트(.git이 있는 폴더)까지 위로 올라가며 tokens.json을 찾는다. */
+/** 현재 폴더와 상위의 정본 위치만 찾으며 .git 파일도 저장소 경계로 본다. */
 export function findTokensFile(targets) {
   for (const target of targets) {
     let folder = resolve(isDirectory(target) ? target : dirname(target));
-    const below = findBelow(folder);
-    if (below) return below;
     for (;;) {
-      const candidate = join(folder, 'tokens.json');
-      if (existsSync(candidate)) return candidate;
+      for (const name of ['tokens.json', 'tokens/tokens.json']) {
+        const candidate = join(folder, name);
+        if (isFile(candidate)) return candidate;
+      }
       const parent = dirname(folder);
-      if (isDirectory(join(folder, '.git')) || parent === folder) break;
+      if (existsSync(join(folder, '.git')) || parent === folder) break;
       folder = parent;
     }
-  }
-  return null;
-}
-
-// cost: time O(f), heap O(d), stack O(d), io f
-// vars: f = 폴더 아래 항목 수, d = 폴더 깊이
-// basis: estimate
-/** 폴더와 그 아래(건너뛰는 폴더 제외)에서 처음 만나는 tokens.json. */
-function findBelow(folder) {
-  if (!isDirectory(folder)) return null;
-  const { files, dirs } = listFolder(folder);
-  if (files.includes('tokens.json')) return join(folder, 'tokens.json');
-  for (const name of dirs) {
-    if (SKIP_DIRS.has(name)) continue;
-    const found = findBelow(join(folder, name));
-    if (found) return found;
   }
   return null;
 }

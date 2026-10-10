@@ -2,6 +2,7 @@
 
 export const CSS_EXTS = new Set(['.css', '.scss']);
 export const SCRIPT_EXTS = new Set(['.js', '.mjs', '.cjs', '.ts', '.jsx', '.tsx']);
+export const MARKUP_EXTS = new Set(['.html', '.svg', '.vue', '.svelte']);
 // docs/는 문서 그림 산출물 자리라 이 검사 대상이 아니다.
 export const SKIP_DIRS = new Set(['node_modules', 'vendor', 'dist', 'build', 'coverage', '.git', 'docs']);
 export const TOKEN_FILES = new Set(['tokens.json', 'tokens.dark.json']);
@@ -21,17 +22,16 @@ const FONT_KEYWORDS = String.raw`(?:inherit|initial|unset|var\()`;
 export const HEX_COLOR = unicodePattern(String.raw`(?<![\w&/])#(?:[0-9a-fA-F]{8}|[0-9a-fA-F]{6}|[0-9a-fA-F]{3,4})\b`);
 export const COLOR_FUNCTION = unicodePattern(String.raw`\b(?:rgba?|hsla?|oklch|oklab|lab|lch|hwb|color)\(`);
 export const FONT_FAMILY = unicodePattern(
-  String.raw`font-family\s*:(?!\s*${FONT_KEYWORDS})[^;}\n]+|\bfont\s*:(?!\s*${FONT_KEYWORDS})[^;}\n]*(?:serif|monospace|system-ui)`,
+  String.raw`font-family\s*[:=](?!\s*["']?${FONT_KEYWORDS})[^;}\n]+|\bfont\s*:(?!\s*${FONT_KEYWORDS})[^;}\n]*(?:serif|monospace|system-ui)`,
 );
 export const LENGTH = unicodePattern(String.raw`(?<![\w.#-])-?\d*\.?\d+(?:px|rem|em|ms|s|vh|vw|pt)\b`);
 export const UNITLESS_PROPERTY = unicodePattern(String.raw`\b(font-weight|line-height|opacity|z-index|letter-spacing)\s*:\s*(-?[\d.]+)\b`);
 export const UNITLESS_ATTRIBUTE = unicodePattern(
-  String.raw`\b(rx|ry|stroke-width|font-size|font-weight|opacity|fill-opacity|stroke-opacity|letter-spacing)="\s*(-?[\d.]+)\s*"`,
+  String.raw`\b(rx|ry|stroke-width|font-size|font-weight|opacity|fill-opacity|stroke-opacity|letter-spacing)\s*=\s*(?:["']\s*)?(-?[\d.]+)(?:\s*["'])?(?=\s|/?>|$)`,
 );
 export const CUSTOM_PROPERTY = unicodePattern(String.raw`(--[\w-]+)\s*:\s*(?!var\()([^;}\n]+)`);
 export const AT_CONDITION = /@(?:media|container)[^{]*/g;
 export const CONDITION_VALUE = unicodePattern(String.raw`(\d+(?:\.\d+)?)(px|em|rem)\b`);
-export const CSS_COMMENT = /\/\*[\s\S]*?\*\//g;
 export const STRING = /'(?:[^'\\\n]|\\[\s\S])*'|"(?:[^"\\\n]|\\[\s\S])*"|`(?:[^`\\]|\\[\s\S])*`/g;
 // CSS 선언(`속성: 값;`)이나 마크업 속성(`이름="값"`)이 든 문자열
 export const LOOKS_STYLED = unicodePattern(String.raw`[\w-]+\s*:\s*[^;]+;|<[\w][^>]*=|[\w-]+="`, '');

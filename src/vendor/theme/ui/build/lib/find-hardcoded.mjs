@@ -1,5 +1,10 @@
 // 파일 글에서 하드코딩을 찾는 함수들. check-tokens.mjs가 쓴다.
-import { AT_CONDITION, BARE_VALUE, COLOR_FUNCTION, CONDITION_VALUE, CSS_COMMENT, CSS_EXTS, CUSTOM_PROPERTY, FONT_FAMILY, FREE_LENGTHS, FREE_NUMBERS, HEX_COLOR, JS_PATH_PART, JS_TOKEN_PATH, LENGTH, LOOKS_STYLED, PLAIN_STRING, STRING, STYLE_OBJECT_NUMBER, STYLE_OBJECT_START, THEME_BRANCH, UNITLESS_ATTRIBUTE, UNITLESS_PROPERTY, VAR_REFERENCE } from './tokens-patterns.mjs';
+import { AT_CONDITION, BARE_VALUE, COLOR_FUNCTION, CONDITION_VALUE, CSS_EXTS, CUSTOM_PROPERTY, FONT_FAMILY, FREE_LENGTHS, FREE_NUMBERS, HEX_COLOR, JS_PATH_PART, JS_TOKEN_PATH, LENGTH, LOOKS_STYLED, MARKUP_EXTS, PLAIN_STRING, STRING, STYLE_OBJECT_NUMBER, STYLE_OBJECT_START, THEME_BRANCH, UNITLESS_ATTRIBUTE, UNITLESS_PROPERTY, VAR_REFERENCE } from './tokens-patterns.mjs';
+
+const CSS_PARTS = /"(?:[^"\\]|\\[\s\S])*"|'(?:[^'\\]|\\[\s\S])*'|\/\*[\s\S]*?\*\//g;
+const MARKUP_PARTS = /<!--[\s\S]*?-->|<(style|script)\b[^>]*>([\s\S]*?)<\/\1\s*>|<[a-z][\w:-]*(?:"[^"]*"|'[^']*'|[^'">])*>/gi;
+const MARKUP_ATTRIBUTES = /\b([\w:-]+)\s*=\s*(?:"[^"]*"|'[^']*'|[^\s>]+)/g;
+const PRESENTATION_ATTRIBUTE = /^(?:style|fill|stroke|color|font-family|rx|ry|stroke-width|font-size|font-weight|opacity|fill-opacity|stroke-opacity|letter-spacing)$/i;
 
 // cost: time O(n), heap O(n), stack O(1)
 // vars: n = 글자 수
@@ -13,9 +18,40 @@ function blank(text) {
 // vars: n = 글자 수
 // basis: estimate
 /** 검사할 조각 목록. isStyled가 false면 색 규칙만 적용한다. CSS는 `/* *\/` 주석을 지우고, JavaScript는 maskJs로 주석과 정규식을 이미 지운 글자를 받는다. */
-export function findSegments(text, ext) {
-  if (CSS_EXTS.has(ext)) return [{ offset: 0, segment: text.replace(CSS_COMMENT, blank), isStyled: true }];
+export function findSegments(text, ext, onComment = () => {}) {
+  if (CSS_EXTS.has(ext)) return [{ offset: 0, segment: maskCss(text, onComment), isStyled: true }];
+  if (MARKUP_EXTS.has(ext)) return markupSegments(text, onComment);
   return Array.from(text.matchAll(STRING), (m) => ({ offset: m.index, segment: m[0], isStyled: isStyledString(m[0]) }));
+}
+
+function maskCss(text, onComment) {
+  return text.replace(CSS_PARTS, (part, offset) => {
+    if (!part.startsWith('/*')) return part;
+    onComment({ offset, text: part });
+    return blank(part);
+  });
+}
+
+function markupSegments(text, onComment) {
+  const segments = [];
+  for (const part of text.matchAll(MARKUP_PARTS)) {
+    if (part[0].startsWith('<!--')) {
+      onComment({ offset: part.index, text: part[0] });
+      continue;
+    }
+    if (part[1]?.toLowerCase() === 'script') continue;
+    if (part[1]?.toLowerCase() === 'style') {
+      const offset = part.index + part[0].indexOf('>') + 1;
+      const segment = maskCss(part[2], comment => onComment({ ...comment, offset: offset + comment.offset }));
+      segments.push({ offset, segment, isStyled: true });
+      continue;
+    }
+    for (const attribute of part[0].matchAll(MARKUP_ATTRIBUTES)) {
+      if (!PRESENTATION_ATTRIBUTE.test(attribute[1])) continue;
+      segments.push({ offset: part.index + attribute.index, segment: attribute[0], isStyled: true });
+    }
+  }
+  return segments;
 }
 
 /** CSS나 마크업으로 보이거나 값 하나뿐인 문자열인지 본다. */
@@ -145,7 +181,8 @@ function copy(s, to) {
 // vars: n = 글자 수
 // basis: estimate
 // 상태 s에서 to 앞까지를 공백(줄바꿈은 둔다)으로 바꿔 옮긴다.
-function hide(s, to) {
+function hide(s, to, isComment = false) {
+  if (isComment) s.onComment({ offset: s.at, text: s.text.slice(s.at, to) });
   s.out += blank(s.text.slice(s.at, to));
   s.at = to;
 }
@@ -174,8 +211,8 @@ function step(s) {
   const { text, at } = s;
   const c = text[at];
   const regex = c === '/' && text[at + 1] !== '/' && text[at + 1] !== '*' && startsRegex(s.out) ? regexEnd(text, at) : -1;
-  if (c === '/' && text[at + 1] === '/') hide(s, text.indexOf('\n', at) < 0 ? text.length : text.indexOf('\n', at));
-  else if (c === '/' && text[at + 1] === '*') hide(s, text.indexOf('*/', at + 2) < 0 ? text.length : text.indexOf('*/', at + 2) + 2);
+  if (c === '/' && text[at + 1] === '/') hide(s, text.indexOf('\n', at) < 0 ? text.length : text.indexOf('\n', at), true);
+  else if (c === '/' && text[at + 1] === '*') hide(s, text.indexOf('*/', at + 2) < 0 ? text.length : text.indexOf('*/', at + 2) + 2, true);
   else if (regex > 0) hide(s, regex);
   else if (c === '"' || c === "'") copy(s, stringEnd(text, at));
   else if (c === '`') {
@@ -200,8 +237,8 @@ function step(s) {
  * 문자열과 템플릿 글자는 그대로 둔다. 문자열, 템플릿, 정규식, 주석은 서로의 안을 다른 것으로 읽지 않는다(`/<!--/`, `'//'`, `/['"`]/`, 주석 안 따옴표).
  * 정규식과 나눗셈은 앞 글자로 가린다(`)`나 `]` 뒤는 나눗셈). `++ /re/`처럼 드문 모양은 읽지 못한다.
  */
-export function maskJs(text) {
-  const s = { text, at: 0, out: '', open: [] };
+export function maskJs(text, onComment = () => {}) {
+  const s = { text, at: 0, out: '', open: [], onComment };
   while (s.at < text.length) step(s);
   return s.out;
 }
