@@ -1,6 +1,7 @@
 // 테마 값으로 표현하는 기본 구성 요소다.
 import { escape, safeUrl, trusted, isTrusted, slot, id, out } from './html.mjs';
 import { ToolButton, Toolbar, ToolHeader } from './toolbar.mjs';
+import { ControlIcon } from './icons.mjs';
 const CARD_VARIANTS = ['centered', 'grouped', 'inline', 'related', 'summary'];
 
 /** 본문 블록 폭: content(본문 폭), narrow(좁은 미디어 폭), wide(넓은 미디어 폭). */
@@ -102,7 +103,10 @@ Tabs.open = (props) => {
   const variant = tabVariant(props);
   return `<section class="app-tabs${platform ? ' is-platform' : ''}${variant.classes}${widthClass(props)}" data-tabs${platform ? ' data-platform' : ''}>${variant.position === 'bottom' ? '' : TabList({ id: group, label, labels, selector: variant.selector, selected: props.selected })}`;
 };
-Tabs.panelOpen = ({ id: group, index, selected = 0 }) => `<div class="app-tabpanel" id="${id(group)}-panel-${index}" role="tabpanel" aria-labelledby="${group}-tab-${index}" tabindex="0"${index === selected ? '' : ' hidden'}>`;
+Tabs.panelOpen = ({ id: group, index, selected = 0 }) => {
+  if (!Number.isSafeInteger(index) || index < 0) throw new TypeError('invalid tab panel index');
+  return `<div class="app-tabpanel" id="${id(group)}-panel-${index}" role="tabpanel" aria-labelledby="${group}-tab-${index}" tabindex="0"${index === selected ? '' : ' hidden'}>`;
+};
 Tabs.panelClose = () => '</div>';
 // 위치가 bottom이면 탭 목록은 닫을 때 낸다. 열 때와 같은 속성을 넘긴다.
 Tabs.close = (props) => {
@@ -114,10 +118,10 @@ Tabs.close = (props) => {
 };
 
 /** 도움말 카드. `icon`은 슬롯이고 없으면 아이콘 자리가 없다. `related`는 이어서 읽을 글의 한 줄 카드(작은 아이콘, 제목, 갈매기표)이며 설명은 그리지 않는다. `headingLevel`을 주면 제목이 해당 단계의 제목 역할이 된다. */
-export function Card({ href, title, description = '', icon, variant, compact = false, horizontal = false, headingLevel, rel, label }) {
+export function Card({ href, title, showTitle = true, description = '', icon, variant, compact = false, horizontal = false, headingLevel, rel, label }) {
   if (variant !== undefined && !CARD_VARIANTS.includes(variant)) throw new Error(`Unknown card variant: ${variant}`);
   const link = safeUrl(href);
-  const heading = headingLevel === undefined ? '<strong>' : `<strong role="heading" aria-level="${Number(headingLevel)}">`;
+  const heading = `<strong${showTitle ? '' : ' class="app-sr"'}${headingLevel === undefined ? '' : ` role="heading" aria-level="${Number(headingLevel)}"`}>`;
   const mark = icon === undefined || icon === false ? '' : slot(icon, 'icon');
   if (variant === 'related') return out(`<a class="app-help-card app-related-link${mark ? '' : ' has-no-icon'}" href="${link}"${rel ? ` rel="${escape(rel)}"` : ''}${label ? ` aria-label="${escape(label)}"` : ''}>${mark}${heading}${escape(title)}</strong></a>`);
   const classes = variant ? ` is-${variant}` : compact ? ' is-compact' : horizontal ? ' is-horizontal' : '';
@@ -131,7 +135,10 @@ export function CardGroup({ variant, columns, split = false, cards }) {
   if (split && variant !== 'inline' && variant !== 'related') return out(`<div class="app-support-split">${items[0]}<div class="app-support-links">${items.slice(1).join('')}</div></div>`);
   return out(`${CardGroup.open({ variant, columns })}${items.join(CardGroup.gap(variant))}${CardGroup.close()}`);
 }
-CardGroup.open = ({ variant, columns }) => variant === 'related' ? '<div class="app-related-grid">' : variant === 'inline' ? '<div class="app-inline-links">' : `<div class="app-support-grid${({ 2: ' is-pair', 4: ' is-four', 5: ' is-five' })[Number(columns)] ?? ''}">`;
+CardGroup.open = ({ variant, columns }) => {
+  if (columns !== undefined && (!['number', 'string'].includes(typeof columns) || !/^[1-5]$/.test(String(columns)))) throw new Error('CardGroup columns must be an integer from 1 to 5');
+  return variant === 'related' ? '<div class="app-related-grid">' : variant === 'inline' ? '<div class="app-inline-links">' : `<div class="app-support-grid${({ 1: ' is-single', 2: ' is-pair', 4: ' is-four', 5: ' is-five' })[columns] ?? ''}">`;
+};
 CardGroup.close = () => '</div>';
 CardGroup.gap = (variant) => variant === 'inline' ? ' ' : '';
 
@@ -169,7 +176,7 @@ export function FigureGrid({ columns, size, figures }) {
 
 /** 영상 자리. `src`, `poster`는 소비자가 확인한 주소다. */
 export function Player({ id: target, src, poster, title = '기능 소개 영상', width, height, controls = false, overlay = false, wide = false }) {
-  return out(`<div class="app-player${wide ? ' is-wide' : ''}${controls ? ' has-controls' : ''}" data-player id="${id(target)}"><video${width ? ` width="${Number(width)}"` : ''}${height ? ` height="${Number(height)}"` : ''} playsinline${controls ? '' : ' muted'} preload="none" poster="${safeUrl(poster)}" aria-label="${escape(title)}"${controls ? ' data-native-controls' : ''}><source src="${safeUrl(src)}" type="video/mp4"></video>${overlay || controls ? '<button class="app-player-button" type="button" data-player-play aria-label="Play video"></button>' : ''}<span class="app-sr" role="status"></span></div>`);
+  return out(`<div class="app-player${wide ? ' is-wide' : ''}${controls ? ' has-controls' : ''}" data-player id="${id(target)}"><video${width ? ` width="${Number(width)}"` : ''}${height ? ` height="${Number(height)}"` : ''} playsinline${controls ? '' : ' muted'} preload="none" poster="${safeUrl(poster)}" aria-label="${escape(title)}"${controls ? ' data-native-controls' : ''}><source src="${safeUrl(src)}" type="video/mp4"></video>${overlay || controls ? `<button class="app-player-button" type="button" data-player-play aria-label="Play video">${ControlIcon('play')}</button>` : ''}<span class="app-sr" role="status"></span></div>`);
 }
 export function RemoteButton({ id: target, src, icon }) {
   return out(`<button class="app-remote" type="button" data-remote="${id(target)}"${src ? ` data-video-src="${safeUrl(src)}"` : ''} aria-label="Play video">${slot(icon, 'icon')}<span>Play</span></button>`);
