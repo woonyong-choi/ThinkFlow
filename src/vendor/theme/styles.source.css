@@ -368,9 +368,9 @@ button.app-tooltip { padding: 0; background: none; color: var(--color-control-li
 
 /* 주제와 블로그 목록은 설명의 전체 텍스트를 보존하고 두 줄까지만 표시한다. */
 .app-card-summary { display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: var(--component-card-summary-lines); overflow: hidden; word-break: keep-all; overflow-wrap: anywhere; }
-.app-help-card.is-summary { padding: calc(var(--spacing-card-inset) + var(--spacing-8) + var(--spacing-gap-xs)) var(--spacing-card-right) var(--spacing-card-inset) var(--spacing-card-inset); }
+.app-help-card.is-summary, .app-support-grid.is-pair > .app-help-card.is-summary { padding: calc(var(--spacing-card-inset) + var(--spacing-8) + var(--spacing-gap-xs)) var(--spacing-card-right) var(--spacing-card-inset) var(--spacing-card-inset); }
 .app-help-card.is-summary :is(.app-article-icon, .app-content-icon) { top: var(--spacing-card-inset); left: var(--spacing-card-inset); width: var(--spacing-8); height: var(--spacing-8); }
-.app-help-card.is-summary.has-no-icon { padding-top: var(--spacing-card-inset); }
+.app-help-card.is-summary.has-no-icon, .app-support-grid.is-pair > .app-help-card.is-summary.has-no-icon { padding-top: var(--spacing-card-inset); padding-left: var(--spacing-card-inset); }
 /* 본문 문법: app-prose 아래 제목·문단·목록·인용·표·코드·콜아웃·각주·수식·도표. 새 Markdown 요소는 여기에 둔다. */
 .app-prose { overflow-wrap: anywhere; line-height: var(--leading-feature-body-line); }
 .app-prose h1 { font-size: var(--text-section-title); line-height: var(--leading-prose-heading-line); margin: var(--component-prose-h1-margin); }
