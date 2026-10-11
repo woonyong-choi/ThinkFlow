@@ -1,5 +1,5 @@
 // 테마 값으로 표현하는 기본 구성 요소다.
-import { escape, safeUrl, trusted, isTrusted, slot, id, out } from './html.mjs';
+import { escape, safeUrl, slot, id, out } from './html.mjs';
 import { ToolButton, Toolbar, ToolHeader } from './toolbar.mjs';
 import { ControlIcon } from './icons.mjs';
 const CARD_VARIANTS = ['centered', 'grouped', 'inline', 'related', 'summary'];
