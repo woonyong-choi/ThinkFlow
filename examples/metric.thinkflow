@@ -12,7 +12,7 @@ value board "대시보드 p95" on=lb ref=p95
 value cpu1 "CPU(%)" on=a1 from=34
 value cpu2 "CPU(%)" on=a2 from=41
 value cpu3 "CPU(%)" on=a3 from=38
-value peak "최고 CPU(%)" on=lb
+value snapshot "API 1 CPU 기록(%)" on=lb from=미기록
 
 lb -> a1
 lb -> a2
@@ -55,9 +55,9 @@ scene "평상시" mode=static
 scene "트래픽 급증"
   lb -> a1 "요청 폭주" time=700ms set="cpu1+49, p95=236"
   lb -> a2 "요청" time=700ms set="cpu2+32"
-  lb -> a3 "요청" time=700ms set="cpu3+12, peak:=cpu1"
+  lb -> a3 "요청" time=700ms set="cpu3+12, snapshot:=cpu1"
 
-scene "서버 추가 뒤" mode=loop keep="cpu1, cpu2, cpu3, p95"
+scene "서버 추가 뒤" mode=loop keep="cpu1, cpu2, cpu3, p95, snapshot"
   lb -> a1 "분산" time=700ms set="cpu1-31, p95=148"
   lb -> a2 "분산" time=700ms set="cpu2-21"
   lb -> a3 "분산" time=700ms set="cpu3=44"
