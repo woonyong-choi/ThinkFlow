@@ -22,8 +22,8 @@ SOFTWARE.
 
 ---
 
-Third-party material: the icons in src/icons/simple-icons/ come from Simple Icons (CC0 1.0 for the library,
-plus the per-icon licenses, including Apache License 2.0 for the Apache Kafka logo in src/icons/LICENSE, and the
-trademark notices in NOTICE). They are modified: color only. The player control icons in src/icons/controls.js keep the
-names and arrangement of Lucide (ISC) icons, some derived from Feather (MIT); the texts are in src/icons/LICENSE. The fonts the figures embed as subsets (Pretendard,
-Noto Sans, Noto Sans Math, JetBrains Mono) are under the SIL Open Font License 1.1; see NOTICE.
+Third-party material: the shared icons are in src/vendor/theme/assets/icons/.
+Their catalog.json records library notices and brand provenance; full notices are in
+src/vendor/theme/assets/icons/licenses/. See NOTICE for trademarks and font sources.
+The fonts the figures embed as subsets (Pretendard, Noto Sans, Noto Sans Math,
+JetBrains Mono) are under the SIL Open Font License 1.1.

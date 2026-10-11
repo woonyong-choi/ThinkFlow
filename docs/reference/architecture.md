@@ -33,7 +33,7 @@ scene "요청"
 
 ![웹 서비스 구성](architecture-minimal.svg)<!-- thinkflow -->
 
-`group`이 중첩 구역을 만들고 깊이마다 면이 한 단계 진해집니다. `shape=tile`은 아이콘 카드이고 `icon=`은 내장 아이콘 이름입니다.
+`group`이 중첩 구역을 만듭니다. 기본 그룹 면은 투명하고, `tone`과 `appearance=filled`를 함께 쓰면 해당 계열의 옅은 면을 칠합니다. `shape=tile`은 아이콘 카드이고 `icon=`은 내장 아이콘 이름입니다.
 
 ## 문법
 
@@ -51,7 +51,7 @@ scene "요청"
 | `quiet` | 선 | 그 선을 처음 지나는 박자부터 그 장면 끝까지만 보입니다 |
 | `width wide` | 머리 | 넓은 캔버스. 열이 많은 구성도에 씁니다 |
 
-그룹은 자기 `direction`으로 안쪽 카드를 쌓습니다. 안쪽 카드 사이에 선이 있어야 `down`이 세로로 쌓이고, 선이 없는 카드는 한 줄에 나란히 놓입니다. 가로로 너무 넓어져 글자가 12px보다 작아질 만하면 `at canvas width the smallest text is 6.1px. Make the figure narrower with group directions, or write the flow as down` 오류가 나므로 그룹 방향을 바꾸거나 `view graph down`으로 씁니다. 글자를 줄여 맞추지 않습니다.
+그룹은 자기 `direction`으로 안쪽 카드를 쌓습니다. 안쪽 카드 사이에 선이 있어야 `down`이 세로로 쌓이고, 선이 없는 카드는 한 줄에 나란히 놓입니다. 가로로 너무 넓어져 캔버스 폭에서 글자가 최소 기준보다 작아지면 [그림 검사](../design/figure-check.md)의 10번 경고가 납니다. `--strict`에서는 경고도 실패하므로 그룹 방향을 바꾸거나 `view graph down`으로 씁니다. 최소 기준은 공통 토큰이 정합니다.
 
 ## 장면과 움직임
 
