@@ -144,6 +144,10 @@ test('V6 every independent error is reported at once, in line order, with the sa
 test('V6 a malformed block header or a rejected name is one error: its inner lines and its group add none', async () => {
   const cases = [
     'table users {\n  id int pk\n}\n',
+    'table Bad "T" {\n  id int\n  pk (id)\n}\n',
+    'table Bad "T" {\n  id int\n  unique (id)\n}\n',
+    'table Bad "T" {\n  id int\n  fk (id) -> parent (id)\n}\n',
+    'table users {\n  id int\n  pk (id)\n}\n',
     'api a {\n  id int\n}\n',
     'class k {\n  field n "int"\n}\n',
     'group g "G" {\n  grid Bad "x" {\n  }\n}\nbox a "A"\n',

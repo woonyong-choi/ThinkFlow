@@ -10,7 +10,10 @@ import { plainText } from './text.js';
 // 그려지는 글(draw/content.js)과 같이 읽는다: 본문과 덧붙임은 줄의 글꼴(`mono`면 백틱도 글자)로, 태그와 표시는 산문으로 읽는다.
 function visibleText(row) {
   if (row.isValue || row.chartId) return undefined;
-  if (row.graph) return `graph:${JSON.stringify(row.graph.nodes?.map((n) => [n.name, n.isLit]) ?? [])}`;
+  if (row.graph) {
+    const { nodes, edges, lit } = row.graph;
+    return `graph:${JSON.stringify({ nodes: nodes.map((name) => [plainText(name), lit.includes(name)]), edges })}`;
+  }
   const face = row.isMono ? STYLE.mono.face : STYLE.row.face;
   const shown = [[row.tag], [row.text, face], [row.meta, face], [row.mark]];
   return shown.filter(([part]) => part !== undefined).map(([part, partFace]) => plainText(String(part), partFace).trim()).join(' ').trim();

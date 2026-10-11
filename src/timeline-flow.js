@@ -101,9 +101,11 @@ export function departureCount(track, lengthMs) {
 // vars: t = 단계의 흐름 수
 // basis: estimate
 // 이 단계의 점 수를 그림 전체 합계에 더하고, 한도를 넘으면 출발 시각 배열을 만들기 전에 오류로 끝낸다.
-function reserveDots(step, lengthMs, { run, limit }) {
+function reserveDots(step, lengthMs, { run, limit, hasConditions }) {
+  const lengthTicks = hasConditions ? inputTicks(lengthMs, { line: step.line, key: 'for' }) : undefined;
   for (const track of step.tracks) {
-    run.dots = (run.dots ?? 0) + departureCount(track, lengthMs) * trackInstances(track).length;
+    const count = hasConditions ? gridDepartures(track, lengthTicks).count : departureCount(track, lengthMs);
+    run.dots = (run.dots ?? 0) + count * trackInstances(track).length;
     if (run.dots > limit) throw new FigureError([makeDiagnostic({ severity: 'error', line: track.line, message: `[check 14] the flows would draw ${run.dots} dots, over the limit of ${limit}. Raise every=, shorten for=, or remove a track` }, { code: 'check-14' })]);
   }
 }
@@ -126,13 +128,22 @@ function departures(track, lengthMs) {
 // cost: time O(n), heap O(n), stack O(1)
 // vars: n = 출발 수
 // basis: estimate
-// 조건을 쓴 흐름 하나의 출발 눈금 번호(단계 안). `at`과 `every`가 눈금의 정수배가 아니면 `time-precision` 오류이고, 정수배면 `at + i·every`가 정수라 늘 엄격히 늘고 단계 길이보다 작다.
+// 조건을 쓴 흐름 하나의 출발 눈금 번호(단계 안). 수를 세는 예산 검사와 같은 눈금 계획을 쓴다.
 function departureTicks(track, lengthTicks) {
-  const at = inputTicks(track.atMs, { line: track.line, key: 'at' });
+  const { at, every, count } = gridDepartures(track, lengthTicks);
+  return Array.from({ length: count }, (_, i) => at + i * (every ?? 0));
+}
+
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+// 적은 시간은 눈금 정밀도를 검증하고, 출발지별로 계산한 기본 시각은 가장 가까운 눈금으로 올린다. 서로 다른 기본 출발을 같은 눈금에 합칠 수는 없다.
+function gridDepartures(track, lengthTicks) {
   const every = track.everyMs === undefined ? undefined : inputTicks(track.everyMs, { line: track.line, key: 'every' });
-  if (at >= lengthTicks) return [];
-  if (every === undefined) return [at];
-  return Array.from({ length: Math.floor((lengthTicks - at - 1) / every) + 1 }, (_, i) => at + i * every);
+  const phase = track.atPhase;
+  if (phase && every < phase.count) throw new FigureError([makeDiagnostic({ severity: 'error', line: track.line, message: `time precision is not supported: every=${track.everyMs}ms cannot stagger ${phase.count} sources on the ${msOfTicks(1)}ms time grid. Raise every= or set at= explicitly` }, { code: 'time-precision' })]);
+  const at = phase ? Math.round((every * phase.index) / phase.count) : inputTicks(track.atMs, { line: track.line, key: 'at' });
+  const count = at >= lengthTicks ? 0 : every === undefined ? 1 : Math.floor((lengthTicks - at - 1) / every) + 1;
+  return { at, every, count };
 }
 
 // cost: time O(d·(l + p)), heap O(d·p), stack O(1)
@@ -228,7 +239,7 @@ export function flowSeg({ step, si, engine }, run, { scene, cards, chips, dotsLi
     for (const geometry of [{ ...owner, view }, ...mirrors]) run.tracks.push({ parts: geometry.parts, route: geometry.route, names: geometry.names, gaps: geometry.gaps, line: track.line, source: source + i, view: geometry.view });
   });
   const length = step.forMs ?? FLOW_STEP_MS;
-  reserveDots(step, length, { run, limit: dotsLimit });
+  reserveDots(step, length, { run, limit: dotsLimit, hasConditions: Boolean(engine) });
   const hops = [];
   const pulses = [];
   if (engine) conditionalTracks(plans, { step, indexes, length, chips, run, scene, engine }, { hops, pulses });

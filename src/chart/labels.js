@@ -2,7 +2,7 @@
 import { textMarkup } from '../draw/texts.js';
 import { measure, wrap } from '../measure/fonts.js';
 import { STYLE, stackTexts } from '../measure/texts.js';
-import { centerBaseline, plainText, renderRich, roundCoord as r } from '../text.js';
+import { centerBaseline, escapeXml, plainText, renderRich, roundCoord as r } from '../text.js';
 import { values } from '../vendor/theme/tokens.js';
 import { COPY } from './copy.js';
 import { ecdfGroups } from './data.js';
@@ -67,7 +67,7 @@ export function valueText({ x, cy }, text, className, mark) {
   const left = x - (className.includes('end') ? width : 0);
   const attrs = (suffix, isText) => (mark ? markAttrs(mark.chart, `${mark.id}${suffix}`, isText ? { isText } : { raw: mark.raw, paint: mark.paint }) : '');
   const back = `<rect x="${r(left - pad)}" y="${r(cy - size / 2 - pad)}" width="${r(width + pad * 2)}" height="${size + pad * 2}" class="chart-text-bg${className.includes('late') ? ' late' : ''}"${attrs('.b', false)}/>`;
-  return back + `<text x="${r(x)}" y="${r(centerBaseline(cy, size))}" class="${className}"${attrs('.t', true)}>${text}</text>`;
+  return back + `<text x="${r(x)}" y="${r(centerBaseline(cy, size))}" class="${className}"${attrs('.t', true)}>${escapeXml(text)}</text>`;
 }
 
 // cost: time O(n), heap O(1), stack O(1)
