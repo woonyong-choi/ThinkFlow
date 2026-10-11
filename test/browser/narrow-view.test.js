@@ -12,9 +12,11 @@ import { bindDiagramHost } from '../../src/vendor/theme/ui/runtime/diagram-host.
 // #272: 실제 CSS·SVG·키보드 스크롤과 홈페이지가 쓰는 iframe 호스트 계약을 함께 확인한다.
 test('narrow HTML preserves readable labels and keyboard access in standalone and embedded views', async () => {
   const documents = new Map();
+  const graphHeights = new Map();
   for (const id of ['architecture', 'sequence']) {
     const source = new URL(`../../examples/${id}.thinkflow`, import.meta.url);
     const built = await buildFigure(await readFile(source, 'utf8'), { baseDir: fileURLToPath(new URL('.', source)) });
+    graphHeights.set(id, built.scene.height);
     documents.set(`/${id}`, await toHtml(built, id));
     documents.set(`/embed-${id}`, `<!doctype html><html><head><meta name="viewport" content="width=device-width"><style>body{margin:0}iframe{display:block;width:100%;border:0}</style></head><body><iframe data-diagram src="/${id}" title="그림" allow="fullscreen" allowfullscreen></iframe><script>(${bindDiagramHost.toString()})();</script></body></html>`);
   }
@@ -38,6 +40,15 @@ test('narrow HTML preserves readable labels and keyboard access in standalone an
           await page.goto(`${origin}/${embedded ? 'embed-' : ''}${id}`);
           const frame = embedded ? page.frames().find(frame => frame !== page.mainFrame()) : page.mainFrame();
           await frame.evaluate(() => document.fonts.ready);
+          if (id === 'architecture') {
+            const initial = await frame.evaluate(() => {
+              const canvas = document.querySelector('.fl-canvas').getBoundingClientRect();
+              const first = document.querySelector('.fl-canvas .fl-node[data-id="user"]').getBoundingClientRect();
+              return { height: document.querySelector('.fl-canvas .dp-panels').getBoundingClientRect().height, startVisible: first.left >= canvas.left && first.right <= canvas.right };
+            });
+            assert(initial.startVisible, 'the first architecture card is complete before any horizontal scroll');
+            assert(initial.height <= graphHeights.get(id), 'an overflowing graph must not become taller than its original layout');
+          }
           const tabs = frame.getByRole('tab');
           for (let scene = 0; scene < await tabs.count(); scene++) {
             await tabs.nth(scene).click();
