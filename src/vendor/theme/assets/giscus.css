@@ -1,4 +1,5 @@
 /* iframe 내부에서도 개인 사이트와 같은 역할 토큰을 사용한다. */
+:root { color-scheme: light; color: #303336; background: #ffffff; }
 main {
   --color-fg-default: #303336;
   --color-fg-muted: #55606e;
