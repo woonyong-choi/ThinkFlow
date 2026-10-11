@@ -1,5 +1,5 @@
 // 데이터와 슬롯으로 조립하는 콘텐츠 구성 요소다.
-import { escape, safeUrl, trusted, isTrusted, slot, id, out } from './html.mjs';
+import { escape, safeUrl, isTrusted, slot, id, out } from './html.mjs';
 import { Card } from './components.mjs';
 import { ControlIcon } from './icons.mjs';
 
@@ -155,5 +155,3 @@ export function SearchResultLink({ href, icon, title, example = false, descripti
 export function SearchResult({ href, icon, title, example = false, description, tags }) {
   return out(`<article class="app-search-entry">${SearchResultLink({ href, icon, title, example, description })}<div class="app-search-result-tags">${tags.map(tag => String(Tag(tag))).join('')}</div></article>`);
 }
-
-/** 소비자가 같은 모양을 직접 만들지 못하도록 검사하는 이 파일 소유 최상위 클래스 */
