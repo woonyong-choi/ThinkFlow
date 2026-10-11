@@ -52,7 +52,7 @@ export function ProjectShowcase({ id: section, title, src, poster }) {
 export const Panorama = ({ id: section, label, image }) => out(`<section id="${id(section)}-video" class="app-hero-panorama" aria-label="${escape(label)}"><div class="app-hero-panorama-content">${slot(image, 'image')}</div></section>`);
 
 /** 글 링크의 클릭 영역은 카드 전체이며 태그는 그 위의 독립 링크다. */
-export function BlogCard({ href, title, level = 3, cover, tags, tagItems = [], description = '', publishedAt, dateLabel, commentsHref, commentCount, author }) {
+export function BlogCard({ href, title, showTitle = true, level = 3, cover, tags, tagItems = [], description = '', publishedAt, dateLabel, commentsHref, commentCount, author }) {
   const heading = level === 2 ? 'h2' : 'h3';
   const link = safeUrl(href);
   const date = publishedAt ? `<time class="app-blog-card-date" datetime="${escape(publishedAt)}">${escape(dateLabel || publishedAt)}</time>` : '';
@@ -63,7 +63,7 @@ export function BlogCard({ href, title, level = 3, cover, tags, tagItems = [], d
   const fields = [writer, date, comments].filter(Boolean).join('<span aria-hidden="true">·</span>');
   const metadata = fields ? `<div class="app-blog-card-meta">${fields}</div>` : '';
   const summary = tagItems.length ? `<div class="app-blog-card-tags" role="group" aria-label="태그">${tagItems.map(item => String(Tag(item))).join(' ')}</div>` : '';
-  return out(`<article class="app-blog-card"><a class="app-blog-card-link" href="${link}" aria-label="${escape(title)}"><div class="app-blog-cover">${slot(cover, 'cover')}</div><div class="app-blog-card-body"><${heading} class="app-blog-card-title">${escape(title)}</${heading}>${description ? `<p class="app-card-summary">${escape(description)}</p>` : ''}</div></a>${summary}${tags === undefined ? '' : slot(tags, 'tags')}${metadata}</article>`);
+  return out(`<article class="app-blog-card"><a class="app-blog-card-link" href="${link}" aria-label="${escape(title)}">${cover === undefined ? '' : `<div class="app-blog-cover">${slot(cover, 'cover')}</div>`}<div class="app-blog-card-body"><${heading} class="app-blog-card-title${showTitle ? '' : ' app-sr'}">${escape(title)}</${heading}>${description ? `<p class="app-card-summary">${escape(description)}</p>` : ''}</div></a>${summary}${tags === undefined ? '' : slot(tags, 'tags')}${metadata}</article>`);
 }
 /** 쪽 이동. `before`·`after`는 `{ href, text }`, `numbers`는 `{ page, href, current }`, `summary`는 번호 대신 쓰는 글자다. */
 export function PageLinks({ label, before, after, numbers = [], summary, resultPages = false }) {

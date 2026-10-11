@@ -118,10 +118,10 @@ Tabs.close = (props) => {
 };
 
 /** 도움말 카드. `icon`은 슬롯이고 없으면 아이콘 자리가 없다. `related`는 이어서 읽을 글의 한 줄 카드(작은 아이콘, 제목, 갈매기표)이며 설명은 그리지 않는다. `headingLevel`을 주면 제목이 해당 단계의 제목 역할이 된다. */
-export function Card({ href, title, description = '', icon, variant, compact = false, horizontal = false, headingLevel, rel, label }) {
+export function Card({ href, title, showTitle = true, description = '', icon, variant, compact = false, horizontal = false, headingLevel, rel, label }) {
   if (variant !== undefined && !CARD_VARIANTS.includes(variant)) throw new Error(`Unknown card variant: ${variant}`);
   const link = safeUrl(href);
-  const heading = headingLevel === undefined ? '<strong>' : `<strong role="heading" aria-level="${Number(headingLevel)}">`;
+  const heading = `<strong${showTitle ? '' : ' class="app-sr"'}${headingLevel === undefined ? '' : ` role="heading" aria-level="${Number(headingLevel)}"`}>`;
   const mark = icon === undefined || icon === false ? '' : slot(icon, 'icon');
   if (variant === 'related') return out(`<a class="app-help-card app-related-link${mark ? '' : ' has-no-icon'}" href="${link}"${rel ? ` rel="${escape(rel)}"` : ''}${label ? ` aria-label="${escape(label)}"` : ''}>${mark}${heading}${escape(title)}</strong></a>`);
   const classes = variant ? ` is-${variant}` : compact ? ' is-compact' : horizontal ? ' is-horizontal' : '';
@@ -135,7 +135,10 @@ export function CardGroup({ variant, columns, split = false, cards }) {
   if (split && variant !== 'inline' && variant !== 'related') return out(`<div class="app-support-split">${items[0]}<div class="app-support-links">${items.slice(1).join('')}</div></div>`);
   return out(`${CardGroup.open({ variant, columns })}${items.join(CardGroup.gap(variant))}${CardGroup.close()}`);
 }
-CardGroup.open = ({ variant, columns }) => variant === 'related' ? '<div class="app-related-grid">' : variant === 'inline' ? '<div class="app-inline-links">' : `<div class="app-support-grid${({ 2: ' is-pair', 4: ' is-four', 5: ' is-five' })[Number(columns)] ?? ''}">`;
+CardGroup.open = ({ variant, columns }) => {
+  if (columns !== undefined && (!['number', 'string'].includes(typeof columns) || !/^[1-5]$/.test(String(columns)))) throw new Error('CardGroup columns must be an integer from 1 to 5');
+  return variant === 'related' ? '<div class="app-related-grid">' : variant === 'inline' ? '<div class="app-inline-links">' : `<div class="app-support-grid${({ 1: ' is-single', 2: ' is-pair', 4: ' is-four', 5: ' is-five' })[columns] ?? ''}">`;
+};
 CardGroup.close = () => '</div>';
 CardGroup.gap = (variant) => variant === 'inline' ? ' ' : '';
 

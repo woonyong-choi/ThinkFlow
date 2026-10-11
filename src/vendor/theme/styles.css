@@ -586,6 +586,7 @@ button.app-tooltip { padding: 0; background: none; color: var(--color-control-li
 .app-support-group > h2 { font-size: var(--text-subtitle); color: var(--color-ink); margin: 0 0 var(--spacing-support-title-gap); line-height: var(--leading-line-intro); }
 .app-support-group > h3 { font-size: var(--text-subtitle); color: var(--color-ink); margin: 0 0 var(--spacing-support-title-gap); line-height: var(--leading-line-intro); }
 .app-support-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: var(--spacing-gap-xs); }
+.app-support-grid.is-single { grid-template-columns: minmax(0,1fr); }
 .app-support-grid.is-pair { grid-template-columns: repeat(2,minmax(0,1fr)); }
 .app-support-grid.is-four { grid-template-columns: repeat(4,minmax(0,1fr)); }
 .app-support-grid.is-five { grid-template-columns: repeat(5,minmax(0,1fr)); }
@@ -683,7 +684,7 @@ button.app-tooltip { padding: 0; background: none; color: var(--color-control-li
 .app-post-footer .app-document-dates { justify-content: center; }
 .app-post-footer .app-example-notice { text-align: left; }
 @media (max-width: 900px) {
-  .app-support-grid:has(> .app-blog-card) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .app-support-grid:not(.is-single):has(> .app-blog-card) { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (max-width: 600px) {
   .app-support-grid:has(> .app-blog-card) { grid-template-columns: minmax(0, 1fr); }
