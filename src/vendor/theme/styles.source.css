@@ -156,6 +156,7 @@ body > main { overflow-x: clip; }
 
 .app-table {
   width: 100%;
+  min-width: max-content;
   border-collapse: separate;
   border-spacing: 0;
   border: var(--border-width-hair) solid var(--color-ui-line);
@@ -167,6 +168,7 @@ body > main { overflow-x: clip; }
 }
 
 .app-table :is(th, td) {
+  max-width: var(--container-body-width);
   padding: var(--component-table-padding);
   vertical-align: baseline;
   border: 0;
@@ -178,7 +180,7 @@ body > main { overflow-x: clip; }
 
 .app-table > :last-child > tr:last-child > :is(th, td) { border-bottom: 0; }
 .app-table th { font-weight: var(--font-weight-semibold); }
-.app-table :is(th, td) code { white-space: nowrap; }
+.app-table :is(th, td) code { white-space: pre-wrap; overflow-wrap: anywhere; }
 .app-table .is-center { text-align: center; }
 .app-table .is-right { text-align: right; }
 .app-table caption {
