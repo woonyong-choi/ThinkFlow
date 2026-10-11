@@ -56,11 +56,12 @@ function initContent(container) {
       const changed = next && new URL(next, location.href).href !== video.currentSrc;
       if (changed) { video.src = next; video.load(); }
       root.classList.add('has-played');
+      if (video.hasAttribute('data-native-controls')) video.controls = true;
       if (button?.dataset.scroll) revealVideo(root, button.dataset.scroll === 'down');
       if (!changed && !video.paused) { video.pause(); return; }
       if (video.ended) video.currentTime = 0;
       try {
-        await video.play(); status.textContent = ''; status.classList.remove('app-video-error'); status.classList.add('app-sr'); if (!button?.dataset.scroll) revealVideo(root);
+        await video.play(); if (!button?.dataset.scroll) revealVideo(root);
       }
       catch {
         status.textContent = '영상을 재생하지 못했습니다. 재생 버튼을 다시 눌러 주세요.';
@@ -74,7 +75,11 @@ function initContent(container) {
     controls.forEach(button => button.addEventListener('click', event => { event.preventDefault(); toggle(button); }));
     for (const event of ['play', 'pause', 'ended']) video.addEventListener(event, () => {
       root.classList.toggle('is-playing', !video.paused);
-      if (!video.paused) { root.classList.add('has-played'); if (video.hasAttribute('data-native-controls')) video.controls = true; }
+      if (!video.paused) {
+        root.classList.add('has-played');
+        if (video.hasAttribute('data-native-controls')) video.controls = true;
+        status.textContent = ''; status.classList.remove('app-video-error'); status.classList.add('app-sr');
+      }
       controls.forEach(button => updateRemote(button, video, !button.dataset.videoSrc || new URL(button.dataset.videoSrc, location.href).href === video.currentSrc));
     });
   }
