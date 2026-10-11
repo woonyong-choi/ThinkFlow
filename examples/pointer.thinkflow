@@ -1,11 +1,12 @@
 thinkflow
 title "연결 리스트와 포인터"
-subtitle "head가 첫 노드를 가리키고, 각 노드의 next가 다음 노드의 주소를 담는다"
+subtitle "A의 두 next 칸은 같은 필드의 삽입 전후 비교이며, 선은 각 시점의 연결을 나타낸다"
 
 box head "head" "첫 노드 포인터"
-grid a "노드 A · 0x10" cols=2 {
-  item av "7" col=0
-  item an "next 0x28" col=1
+grid a "노드 A · 0x10 · 같은 next의 전후 비교" rows=2 cols=2 {
+  item av "7" col=0 rows=2
+  item an "전: next 0x28" col=1
+  item after "후: next 0x58" row=1 col=1
 }
 grid b "노드 B · 0x28" cols=2 {
   item bv "12" col=0
@@ -24,10 +25,10 @@ value cur "cur" on=head from=0x10
 value visited "방문 수" on=head
 
 head -> a.av
-a.an -> b.bv
+a.an -> b.bv "삽입 전"
 b.bn -> c.cv
-a.an -> fresh.fv quiet
-fresh.fn -> b.bv quiet
+a.after -> fresh.fv "삽입 후" no=2 quiet
+fresh.fn -> b.bv "삽입 후" no=1 quiet
 
 view graph down
 
@@ -42,11 +43,11 @@ scene "순회"
   b.bn -> c.cv time=700ms set="cur=0x40, visited=3"
   light c.cv c.cn
 
-scene "A 뒤에 삽입" keep="visited"
+scene "삽입 연결 순서" keep="visited"
   light fresh
   fresh.fn -> b.bv time=700ms set="cur=0x28"
-  a.an -> fresh.fv time=700ms set="cur=0x58"
-  light a.an fresh.fv
+  a.after -> fresh.fv time=700ms set="cur=0x58"
+  light a.after fresh.fv
 
 scene "반복 순회" mode=loop for=6s
   track head -> a at=0s every=2s time=2400ms set="visited+1"

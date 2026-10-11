@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { test } from 'node:test';
-import { build, descendants, EXAMPLES, findAll, parseMarkup, textsOf, toHtml, toSvg } from './support.js';
+import { build, descendants, EXAMPLES, findAll, parseMarkup, textsOf, toHtml, toSvg, valueOf } from './support.js';
 
 const CHARTS = ['area', 'bar', 'box', 'difference', 'donut', 'dumbbell', 'ecdf', 'heatmap', 'histogram', 'line', 'percent', 'pie', 'scatter', 'stacked', 'step', 'waterfall'];
 const FIGURES = ['api', 'architecture', 'class', 'flow', 'integration', 'memory', 'metric', 'pointer', 'queue', 'schema', 'sequence', 'stack', 'state', 'trace'];
@@ -59,4 +59,19 @@ test('K30 every chart example is the chart kind its file is named after, and say
     const source = readFileSync(join(EXAMPLES, `${kind}.thinkflow`), 'utf8');
     assert.match(source, new RegExp(`^chart\\s+[a-z][a-z0-9-]*\\s+"[^"]*"\\s+${kind}\\b`, 'm'), kind);
   }
+});
+
+test('#277 pointer insertion shows the same next field before and after, while preserving addresses and traversal', async () => {
+  const source = readFileSync(join(EXAMPLES, 'pointer.thinkflow'), 'utf8');
+  const result = await build(source, { baseDir: EXAMPLES });
+  const inserted = parseMarkup(await toSvg(result, { scene: 2, isStatic: true }));
+  const texts = textsOf(inserted).join(' ');
+
+  for (const label of ['같은 next의 전후 비교', '전: next 0x28', '후: next 0x58', '삽입 전', '삽입 후']) assert.ok(texts.includes(label), `insertion must distinguish ${label}`);
+  for (const label of ['0x10', '0x28', '0x40', '0x58']) assert.ok(texts.includes(label), `node address ${label} is preserved`);
+  assert.equal(valueOf(inserted, 'cur'), '0x58');
+  assert.equal(valueOf(inserted, '방문 수'), '3');
+  const traversed = parseMarkup(await toSvg(result, { scene: 1, isStatic: true }));
+  assert.equal(valueOf(traversed, 'cur'), '0x40');
+  assert.equal(valueOf(traversed, '방문 수'), '3');
 });
