@@ -75,3 +75,21 @@ test('#277 pointer insertion shows the same next field before and after, while p
   assert.equal(valueOf(traversed, 'cur'), '0x40');
   assert.equal(valueOf(traversed, '방문 수'), '3');
 });
+
+test('#279 metric records API 1 CPU at the last surge arrival and keeps that record while live values change', async () => {
+  const source = readFileSync(join(EXAMPLES, 'metric.thinkflow'), 'utf8');
+  const result = await build(source, { baseDir: EXAMPLES });
+  const cases = [
+    { scene: 0, recorded: '미기록', cpus: ['34', '41', '38'], p95: '110' },
+    { scene: 1, recorded: '83', cpus: ['83', '73', '50'], p95: '236' },
+    { scene: 2, recorded: '83', cpus: ['52', '52', '44'], p95: '148' },
+  ];
+
+  for (const { scene, recorded, cpus, p95 } of cases) {
+    const dom = parseMarkup(await toSvg(result, { scene, isStatic: true }));
+    assert.equal(valueOf(dom, 'API 1 CPU 기록(%)'), recorded, `scene ${scene} record`);
+    assert.equal(valueOf(dom, '대시보드 p95'), p95);
+    const texts = textsOf(dom);
+    for (const cpu of cpus) assert.ok(texts.includes(cpu), `scene ${scene} live CPU ${cpu}`);
+  }
+});
