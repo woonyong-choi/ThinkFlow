@@ -21,7 +21,7 @@ function figurePlay(root, data) {
   if (data.segs.length) enterScene(player, 0);
 }
 
-// 본문에 삽입된 재생기(iframe)는 본문 폭에 맞춰 줄이되 원래 크기보다 키우지 않는다. 판이 하나뿐인 그림은 둘레 여백을 걷은 보기 영역(tight)으로 맞춘다.
+// 본문에 삽입된 재생기(iframe)도 자연 크기를 유지한다. 판이 하나뿐인 그림은 둘레 여백을 걷은 보기 영역(tight)으로 맞춘다.
 // 판이 여럿이면 판 상자가 서로 이어 붙어 있어 여백을 걷지 않고 장면 폭을 그대로 쓴다.
 function fitEmbedded(root, data) {
   const panels = root.querySelector('.dp-panels');
@@ -35,7 +35,6 @@ function fitEmbedded(root, data) {
   }
   const width = isTight ? tight.w : data.width;
   panels.style.setProperty('--view-w', width);
-  panels.style.maxWidth = `${width}px`;
 }
 
 // 재생기 상태 한 덩어리. 시계, 그림, 장면 모델, 탭이 이 객체 하나로 이어진다. 장면 모델은 데이터에서 만들고, 좁은 배치로 바뀌면 그 배치의 데이터로 다시 만든다.

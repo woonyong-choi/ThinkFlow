@@ -1,6 +1,5 @@
 /* 재생기 틀, 도구 막대, 장면 탭. iframe 안(html.embedded)에서는 테두리와 바깥 여백을 뺀다. */
-/* 그림 표시 폭 규칙: 문서 미리보기, 목록 카드, 재생기가 같다. 컨테이너 폭은 화면 폭에서 좌우 바깥 여백(공통 디자인.page-gutter)을 뺀 값이고,
-   그림 폭은 min(표준 캔버스 폭, 컨테이너 폭)이다. 컨테이너 안쪽에는 좌우 여백과 레이아웃을 차지하는 테두리를 두지 않아 세 곳의 그림 폭이 같다. */
+/* 컨테이너는 가용 폭을 따르고 도표는 자연 크기를 유지하며, 넘치는 부분은 그림 영역 안에서 가로로 스크롤한다. */
 :root {
   color-scheme: light dark;
 }
@@ -56,12 +55,12 @@ html.embedded .fl-figure.full {
   min-height: 0;
 }
 
-/* 판을 담는 회색 판은 그림에서 유일한 회색 층이다. 카드는 이 위의 흰 면이고 그룹은 면이 없다. 문서 안에서는 자연 높이라 넘치지 않고, 전체 화면에서 그림이 영역보다 커지면 이 안에서 스크롤한다. */
+/* 문서 안에서는 자연 높이와 가로 스크롤을 쓰고, 전체 화면에서는 양쪽 축으로 이동한다. */
 .fl-canvas {
   min-height: 0;
   padding: var(--spacing-3) 0;
   background: transparent;
-  overflow: clip;
+  overflow-x: auto;
 }
 
 .fl-canvas:focus-visible {
@@ -69,11 +68,9 @@ html.embedded .fl-figure.full {
   outline-offset: calc(-1 * var(--border-width-tag));
 }
 
-/* 판 묶음: 판마다 구역 하나(SVG 한 장)이고 위에서 아래로 쌓인다. 묶음 폭은 min(구역 폭, 표준 캔버스 폭, 보기 폭)이다.
-   판의 표시 폭은 보기 폭(--view-w)에 대한 판 상자 폭(--panel-w)의 비율이고 모든 판이 같은 보기 폭으로 나눈다.
-   보기 폭은 가장 넓은 판의 폭이라 비율은 1을 넘지 않는다. 공통 비율은 min(1, 구역 폭/보기 폭, 캔버스 폭/보기 폭)이고, 판은 자연 크기보다 커지지 않으며 묶음이 좁아지면 모든 판이 같은 비율로 줄어 구역 안에 다 들어온다. */
+/* 판 묶음의 자연 폭을 유지해야 좁은 화면에서도 노드와 연결 라벨이 함께 축소되지 않는다. */
 .dp-panels {
-  width: min(100%, var(--figure-canvas, var(--spacing-figure-figure-canvas)), calc(var(--view-w) * 1px)); /* tokens-allow: 화면 상수가 아니라 데이터에서 나온 SVG 좌표 폭(단위 없는 수)을 CSS 길이로 바꾸는 좌표 단위 변환의 1px */
+  width: calc(var(--view-w) * 1px); /* tokens-allow: 화면 상수가 아니라 데이터에서 나온 SVG 좌표 폭(단위 없는 수)을 CSS 길이로 바꾸는 좌표 단위 변환의 1px */
   margin: 0 auto;
 }
 

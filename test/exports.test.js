@@ -263,7 +263,7 @@ test('X9 siblings keep their declared order when the narrow-screen layout stacks
   }
 });
 
-test('X9b every panel of the wide and the narrow-screen layout shares one width ratio that never exceeds its natural size', async () => {
+test('X9b every panel of the wide and the narrow-screen layout shares its natural viewBox dimensions', async () => {
   const names = ['a', 'b', 'c', 'd', 'e', 'f'];
   const source = thinkflow(`
     ${names.map((n) => `box ${n} "Service ${n.toUpperCase()}"`).join('\n    ')}
@@ -301,13 +301,15 @@ test('X9b every panel of the wide and the narrow-screen layout shares one width 
       assert.doesNotMatch(panel.attrs.style, /--min-w/);
     }
   }
-  // 모든 판이 같은 분모를 쓰는 곳은 이 CSS 한 줄이다. 바닥(max)이나 판 구역의 스크롤이 없다.
-  const css = /<style>([\s\S]*?)<\/style>/.exec(html)[1];
-  assert.match(css, /\.dp-panel > svg \{[^}]*\bwidth: calc\(100% \* var\(--panel-w\) \/ var\(--view-w\)\);/);
-  assert.doesNotMatch(css, /--min-w|max\(calc\(100% \* var\(--panel-w\)/);
-  assert.doesNotMatch(css, /\.dp-panel \{[^}]*overflow/);
-  // 묶음 폭은 자연 폭(보기 폭)도 넘지 않아, 작은 그림은 캔버스 폭 기준으로 줄지 않는다.
-  assert.match(css, /\.dp-panels \{[^}]*\bwidth: min\(100%, var\(--figure-canvas, var\(--spacing-figure-figure-canvas\)\), calc\(var\(--view-w\) \* 1px\)\);/);
+});
+
+test('X9e an unmet narrow target keeps the narrower valid group candidate (#272)', async () => {
+  const source = read(EXAMPLES, 'architecture.thinkflow');
+  const roomy = await build(source, { baseDir: EXAMPLES, layoutWidth: 650, strict: false });
+  const narrow = await build(source, { baseDir: EXAMPLES, layoutWidth: 272, strict: false });
+  assert.ok(narrow.scene.width <= roomy.scene.width, 'a narrower target must not discard an already valid narrower layout');
+  assert.deepEqual(narrow.scene.items.map(item => item.id), roomy.scene.items.map(item => item.id));
+  assert.deepEqual(narrow.scene.edges.map(({ from, to }) => [from, to]), roomy.scene.edges.map(({ from, to }) => [from, to]));
 });
 
 test('X9d the narrow-screen layout is shipped only when it hides no more moving text than the wide one', async () => {
@@ -315,7 +317,7 @@ test('X9d the narrow-screen layout is shipped only when it hides no more moving 
     const dom = parseMarkup(await toHtml(await build(read(EXAMPLES, name)), name), { html: true });
     return descendants(dom).find((n) => n.tag === 'template' && /\bfl-narrow\b/.test(n.attrs.class ?? ''));
   };
-  // 좁은 폭의 구조 배치는 이동 글 4개를 가리므로 쓰지 않고, 넓은 배치를 폭에 맞춰 줄인다.
+  // 좁은 폭의 구조 배치는 이동 글 4개를 가리므로 쓰지 않고, 넓은 배치의 자연 크기를 유지한다.
   assert.equal(await narrowOf('flow.thinkflow'), undefined);
   // 이동 글을 가리지 않는 좁은 배치는 그대로 쓴다.
   assert.ok(await narrowOf('metric.thinkflow'));
