@@ -60,7 +60,8 @@ html.embedded .fl-figure.full {
 .fl-canvas {
   min-height: 0;
   padding: var(--spacing-3) 0;
-  background: transparent;
+  background: var(--color-prose-pre-background);
+  border-radius: var(--radius-card-radius);
   overflow: clip;
 }
 

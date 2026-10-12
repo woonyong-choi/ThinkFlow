@@ -207,7 +207,7 @@ test('S5 light가 켠 그룹은 경계 색만 강조 색이 되고 굵기와 면
   assert.ok(frames.includes('stroke: var(--fx-edge)') && frames.includes('stroke: var(--fx-edge-rest)'), 'the border goes from its rest colour to the lit colour');
   assert.doesNotMatch(frames, /stroke-width|fill/, 'only the border colour changes');
   assert.match(await toHtml(result, 'group'), /\.fl \.fl-group\.on > \.frame-box \{\s*stroke: var\(--fx-edge\);\s*\}/, 'the HTML player lights the same border');
-  assert.match(svg, /\.fl \.frame-box \{\s*--fx-edge-rest: var\(--color-line\);\s*fill: none;\s*stroke: var\(--fx-edge-rest\);/, 'a group reads its rest border through the variable, set on the rect itself so a badge inside the group does not inherit it');
+  assert.match(svg, /\.fl \.frame-box \{\s*--fx-edge-rest: var\(--color-figure-outline\);\s*fill: none;\s*stroke: var\(--fx-edge-rest\);/, 'a group reads its rest border through the variable, set on the rect itself so a badge inside the group does not inherit it');
 });
 
 for (const [first, order] of [['덤벨', [DUMBBELL, SCATTER]], ['산점도', [SCATTER, DUMBBELL]]]) {

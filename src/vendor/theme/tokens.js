@@ -158,7 +158,8 @@ export const tokens = freeze({
       "icon": "var(--color-figure-icon)",
       "queue-empty": "var(--color-figure-queue-empty)",
       "number-fill": "var(--color-figure-number-fill)",
-      "number-ink": "var(--color-figure-number-ink)"
+      "number-ink": "var(--color-figure-number-ink)",
+      "outline": "var(--color-figure-outline)"
     },
     "paint": {
       "red": {
@@ -406,7 +407,10 @@ export const tokens = freeze({
     },
     "newsletter-button-color": "var(--color-newsletter-button-color)",
     "primary-hover": "var(--color-primary-hover)",
-    "landing-newsletter-note-ink": "var(--color-landing-newsletter-note-ink)"
+    "landing-newsletter-note-ink": "var(--color-landing-newsletter-note-ink)",
+    "feature-tab-ink": "var(--color-feature-tab-ink)",
+    "gallery-selected-ink": "var(--color-gallery-selected-ink)",
+    "tag-background": "var(--color-tag-background)"
   },
   "font": {
     "sans": "var(--font-sans)",
@@ -1526,7 +1530,8 @@ export const values = freeze({
       "icon": "#1e6bd6",
       "queue-empty": "#f0f0f0",
       "number-fill": "#303336",
-      "number-ink": "#ffffff"
+      "number-ink": "#ffffff",
+      "outline": "#888888"
     },
     "paint": {
       "red": {
@@ -1586,7 +1591,7 @@ export const values = freeze({
     "ui-muted": "#55606e",
     "ui-line": "#dfe3e8",
     "soft": "#e9edf2",
-    "tag-hover": "#5b9aff",
+    "tag-hover": "#1e6bd6",
     "code": "#17212d",
     "search-bg": "#edeef1",
     "help-bg": "#f6f7fa",
@@ -1614,7 +1619,7 @@ export const values = freeze({
     "feature-box-background": "rgba(2,17,37,.04)",
     "feature-hero-background": "#d5d9de",
     "feature-tab-background": "rgba(0,25,61,.1)",
-    "feature-tab-selected": "#3c84f3",
+    "feature-tab-selected": "#1e6bd6",
     "help-title-color": "#3d4856",
     "help-copy-color": "rgba(0,1,2,.77)",
     "post-divider-color": "rgba(0,22,53,.07)",
@@ -1637,7 +1642,7 @@ export const values = freeze({
     "key-color": "rgba(0,1,2,.85)",
     "key-background": "#fcfcfd",
     "callout-warning": "#fcf9cf",
-    "platform-color": "rgba(0,6,14,.54)",
+    "platform-color": "#303336",
     "platform-hover": "rgba(0,20,49,.18)",
     "platform-active": "rgba(0,15,37,.23)",
     "office-nav-background": "rgba(255,255,255,.6)",
@@ -1774,7 +1779,10 @@ export const values = freeze({
     },
     "newsletter-button-color": "#4f91fb",
     "primary-hover": "#649fff",
-    "landing-newsletter-note-ink": "#9299a4"
+    "landing-newsletter-note-ink": "#9299a4",
+    "feature-tab-ink": "#ffffff",
+    "gallery-selected-ink": "#ffffff",
+    "tag-background": "#e9edf2"
   },
   "font": {
     "sans": "Pretendard, \"Pretendard Variable\", -apple-system, BlinkMacSystemFont, \"Apple SD Gothic Neo\", sans-serif",
