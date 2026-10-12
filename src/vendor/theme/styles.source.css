@@ -325,7 +325,7 @@ button.app-tooltip { padding: 0; background: none; color: var(--color-control-li
 .app-help-card::after { width: var(--spacing-help-mobile-block); height: 100%; top: 0; border: 0; transform: none; background: url('./assets/icons/navigation/chevron-right.svg') left center / var(--component-help-chevron-size) no-repeat; opacity: var(--opacity-help-chevron-opacity); }
 .app-support-grid > .app-help-card.is-centered:not(.is-compact) { min-height: 0; padding: var(--component-help-centered-padding); text-align: center; }
 .app-help-card.is-centered :is(.app-article-icon, .app-content-icon) { width: var(--spacing-icon-lg); height: var(--spacing-icon-lg); top: var(--spacing-help-mobile-block); left: calc(50% - var(--spacing-icon-lg) / 2); }
-.app-support-grid > .app-help-card.is-grouped:not(.is-compact) { min-height: 0; padding: var(--component-help-grouped-padding); font-size: var(--text-help-grouped-text); line-height: var(--leading-line-compact); font-weight: var(--font-weight-semibold); border-radius: var(--spacing-compact-inset); background: transparent; border-color: transparent; }
+.app-support-grid > .app-help-card.is-grouped:not(.is-compact) { min-height: 0; padding: var(--component-help-grouped-padding); font-size: var(--text-help-grouped-text); line-height: var(--leading-line-compact); font-weight: var(--font-weight-semibold); border-radius: var(--spacing-compact-inset); background: var(--color-help-grouped-bg); border-color: transparent; }
 .app-help-card.is-grouped :is(.app-article-icon, .app-content-icon) { width: var(--spacing-icon); height: var(--spacing-icon); top: var(--spacing-gap-xs); left: var(--spacing-gap-xs); }
 .app-help-card.is-grouped::after { width: var(--spacing-gap-sm); background-size: var(--component-help-grouped-chevron); }
 .app-support-grid > .app-help-card.is-grouped:hover { background: var(--color-help-hover); border-color: var(--color-help-hover-border); }
@@ -560,8 +560,8 @@ button.app-tooltip { padding: 0; background: none; color: var(--color-control-li
 .app-document-nav a { display: block; }
 .app-document-nav summary > a, .app-document-nav summary > span { flex: 1; min-width: 0; }
 .app-document-nav > nav > ul > li > details > summary { font-weight: var(--font-weight-bold); color: var(--color-ink); }
-.app-document-nav :is(a, li > details > summary):hover { background: var(--color-help-bg); color: var(--color-action-link); text-decoration: none; }
-.app-document-nav a[aria-current="location"], .app-document-nav .is-selected { background: var(--color-help-hover); color: var(--color-action-link); font-weight: var(--font-weight-semibold); }
+.app-document-nav :is(a, li > details > summary):hover { background: var(--color-help-bg); color: var(--color-document-nav-active-ink); text-decoration: none; }
+.app-document-nav a[aria-current="location"], .app-document-nav .is-selected { background: var(--color-help-hover); color: var(--color-document-nav-active-ink); font-weight: var(--font-weight-semibold); }
 .app-document-nav a.is-parent { color: var(--color-action-link); }
 .app-document-nav .is-subsection { padding-left: var(--spacing-gap-sm); }
 .app-document-nav summary:focus-visible { outline: var(--spacing-outline) solid var(--color-action-link); outline-offset: var(--spacing-outline); }

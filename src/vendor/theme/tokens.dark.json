@@ -377,8 +377,8 @@
       "$type": "color"
     },
     "help-title-color": {
-      "$value": "{primitive.figure-dark-muted}",
-      "$type": "color"
+      "$type": "color",
+      "$value": "{color.ink}"
     },
     "ui-card": {
       "$value": "{primitive.figure-dark-node}",
@@ -483,6 +483,52 @@
     "tag-background": {
       "$type": "color",
       "$value": "{color.prose-pre-background}"
+    },
+    "workspace": {
+      "sidebar": {
+        "$type": "color",
+        "$value": "{color.gray.878}"
+      },
+      "document": {
+        "$type": "color",
+        "$value": "{color.gray.910}"
+      },
+      "toolbar": {
+        "$type": "color",
+        "$value": "{color.gray.878}"
+      },
+      "hover": {
+        "$type": "color",
+        "$value": "{color.gray.788}"
+      },
+      "selected": {
+        "$type": "color",
+        "$value": "{color.gray.635}"
+      }
+    },
+    "help-bg": {
+      "$type": "color",
+      "$value": "{color.ui-card}"
+    },
+    "help-copy-color": {
+      "$type": "color",
+      "$value": "{color.body}"
+    },
+    "help-active": {
+      "$type": "color",
+      "$value": "{primitive.figure-dark-hover}"
+    },
+    "help-grouped-bg": {
+      "$type": "color",
+      "$value": "{color.ui-card}"
+    },
+    "related-background": {
+      "$type": "color",
+      "$value": "{color.ui-card}"
+    },
+    "document-nav-active-ink": {
+      "$type": "color",
+      "$value": "{color.category.blue.light-tint-3}"
     }
   },
   "icon": {
