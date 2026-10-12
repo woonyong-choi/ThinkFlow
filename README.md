@@ -199,6 +199,8 @@ Find all guides and detailed designs in the [documentation index](docs/README.md
 
 ## Development
 
+The homepage sync delivers the renderer, shared design, and public document snapshot at the same Git revision. See [Architecture](docs/architecture.md).
+
 ```sh
 git clone https://github.com/woonyong-choi/thinkflow.git
 cd thinkflow

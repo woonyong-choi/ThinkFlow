@@ -8,3 +8,4 @@ if (!destination || !/^[a-f0-9]{40}$/.test(revision ?? '') || process.argv.lengt
 const target = resolve(destination);
 exportDesign(fileURLToPath(new URL('../src/vendor/theme', import.meta.url)), resolve(target, 'src/vendor/theme'));
 execFileSync('npm', ['install', '--save-dev', '--save-exact', `github:woonyong-choi/thinkflow#${revision}`], { cwd: target, stdio: 'inherit' });
+execFileSync(process.execPath, ['scripts/sync-project-documents.mjs', fileURLToPath(new URL('../', import.meta.url))], { cwd: target, stdio: 'inherit' });

@@ -199,6 +199,8 @@ const html = await toHtml(result, 'Server');
 
 ## 개발
 
+홈페이지 동기화는 렌더러·공통 디자인·공개 문서를 같은 Git 버전으로 전달합니다([아키텍처](docs/architecture.md)).
+
 ```sh
 git clone https://github.com/woonyong-choi/thinkflow.git
 cd thinkflow
