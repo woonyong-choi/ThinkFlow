@@ -26,6 +26,14 @@ scene "조회"
 ```
 
 ![주소를 둘로 나누기](grid-minimal.svg)<!-- thinkflow -->
+<!-- thinkflow scenes v1 name=minimal -->
+<details>
+<summary>조회</summary>
+
+![주소를 둘로 나누기 (조회)](grid-minimal.scene-2.svg)<!-- thinkflow -->
+
+</details>
+<!-- /thinkflow scenes v1 name=minimal -->
 
 칸은 `item`으로 적고, 위치는 0부터 세는 `row`, `col`, 크기는 `rows`, `cols`입니다. 칸 이름은 격자 밖에서 `격자.칸`으로 부릅니다.
 

@@ -129,7 +129,7 @@ npx thinkflow md guide.md
 
 명령은 문서 옆에 `guide-request.svg`를 쓰고 블록 바로 아래에 `![request](guide-request.svg)<!-- thinkflow -->`를 넣습니다. 대체 글은 블록의 `title`이고, `title`이 없으면 이름입니다. 다시 돌려도 아무것도 바뀌지 않습니다.
 
-`thinkflow` 블록 이름을 바꾸면 옛 SVG가 지워지고, `--out-dir images`는 SVG를 그 폴더에 쓰고 이미지 줄이 그곳을 가리키게 하며(이미 문서 옆에 있던 SVG는 그대로 남으므로 직접 지웁니다), `--check`는 쓰지 않고 문서나 SVG가 낡았으면 종료 코드 1로 끝납니다. `--fold`는 그림을 먼저 보이고 `thinkflow` 블록을 `<details>` 안에 접으며(`--fold-title "글"`로 요약 글을 정합니다), `--unfold`는 ThinkFlow가 만든 접기만 되돌리고, 옵션이 없으면 문서의 접힘 상태를 그대로 둡니다. GitHub Action은 `fold`, `fold-title` 입력으로 같은 선택을 받습니다. 문서는 자기가 만든 SVG만 쓰고 지웁니다. 블록이 다른 문서가 만든 SVG나 `thinkflow md` 표시가 없는 파일을 덮어쓰려 하면 충돌로 알리고, 같은 출력 폴더에는 두 실행이 동시에 쓰지 못합니다. 어느 블록이든 오류가 있으면 아무 파일도 쓰기 전에 멈춥니다. 규칙은 [마크다운](docs/design/markdown.md)에 있습니다.
+`thinkflow` 블록 이름을 바꾸면 옛 SVG가 지워지고, `--out-dir images`는 SVG를 그 폴더에 쓰고 이미지 줄이 그곳을 가리키게 하며(이미 문서 옆에 있던 SVG는 그대로 남으므로 직접 지웁니다), `--check`는 쓰지 않고 문서나 SVG가 낡았으면 종료 코드 1로 끝납니다. 장면이 여럿인 블록은 `--scene`을 주지 않으면 모든 장면을 각각 움직이는 SVG로 쓰고(첫 장면은 블록의 파일 이름을 그대로 쓰고 나머지는 `doc-flow.scene-2.svg`처럼 구분합니다), 둘째 장면부터의 이미지 줄은 첫 이미지 바로 다음에 장면 이름을 요약으로 하는 `<details>`로 두며 원본 접기와 따로 관리합니다. `--scene`은 그 장면 하나만 쓰고 `--static`은 각 파일을 멈춘 그림으로 만듭니다. `--fold`는 그림을 먼저 보이고 `thinkflow` 블록을 `<details>` 안에 접으며(`--fold-title "글"`로 요약 글을 정합니다), `--unfold`는 ThinkFlow가 만든 접기만 되돌리고, 옵션이 없으면 문서의 접힘 상태를 그대로 둡니다. GitHub Action은 `fold`, `fold-title` 입력으로 같은 선택을 받습니다. 문서는 자기가 만든 SVG만 쓰고 지웁니다. 블록이 다른 문서가 만든 SVG나 `thinkflow md` 표시가 없는 파일을 덮어쓰려 하면 충돌로 알리고, 같은 출력 폴더에는 두 실행이 동시에 쓰지 못합니다. 어느 블록이든 오류가 있으면 아무 파일도 쓰기 전에 멈춥니다. 규칙은 [마크다운](docs/design/markdown.md)에 있습니다.
 
 ### CI에서 최신으로 지키기
 

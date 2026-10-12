@@ -5,7 +5,10 @@
 // 지원하지 않는 것: 링크 참조 정의, 표 셀 경계, `<script>` 같은 원문 요소 안 태그의 브라우저 해석 차이. 목록 표시와 같은 줄에서 여는 울타리(`- ```thinkflow`)는 울타리로 읽지 않는다.
 import { ATTRIBUTE, ATX, CODE_INDENT, FENCE_START, QUOTE, SETEXT, THEMATIC, closesFence, contextOf, containerStart, dedent, htmlStart, isBlank, openingFence, width } from './md-blocks.js';
 
-const RAW_TAG = /<!--|<\/?details(?=[\s/>]|$)/gi;
+// 원문 요소(`pre`, `script`, `style`, `textarea`)는 안에 빈 줄이 있어도 닫는 태그까지 사용자 글이다.
+const OPAQUE_ELEMENT = 'pre|script|style|textarea';
+const RAW_TAG = new RegExp(`<!--|<\\/?(?:details|${OPAQUE_ELEMENT})(?=[\\s/>]|$)`, 'gi');
+const ELEMENT_CLOSE = (name) => new RegExp(`<\\/${name}(?=[\\s/>]|$)[^>]*>?`, 'i');
 const INLINE_TAG = new RegExp(String.raw`<(\/?)details(?:${ATTRIBUTE})*\s*\/?>`, 'iy');
 const ESCAPABLE = /[!-/:-@[-`{-~]/;
 
@@ -40,6 +43,27 @@ function count(s, line, kind) {
   s.events.push({ kind, line, container: s.containers.at(-1)?.id ?? 0 });
 }
 
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+// HTML 블록 안에서 만난 태그 하나(`<details`, `</pre` 같은 소문자 앞머리)를 읽는다. `<details>`는 세고 원문 요소의 여는 태그는 s.element로 남긴다. 원문 요소 안의 글은 scanRaw와 feed가 먼저 소비하므로 여기에 오지 않는다.
+function trackTag(s, tag, line) {
+  const closing = tag[1] === '/';
+  const name = tag.slice(closing ? 2 : 1);
+  if (name === 'details') count(s, line, closing ? 'close' : 'open');
+  else if (!closing) [s.element, s.elementDepth] = [name, s.containers.length];
+}
+
+// cost: time O(n), heap O(1), stack O(1)
+// vars: n = 줄 글자 수
+// basis: estimate
+// 열린 원문 요소의 글을 닫는 태그까지 한 번에 건너뛴다. 닫는 태그가 있으면 요소를 닫고 그 뒤 위치를, 없으면 -1을 준다. 건너뛴 글은 다시 읽지 않는다.
+function skipElement(s, text, from) {
+  const found = ELEMENT_CLOSE(s.element).exec(text.slice(from));
+  if (!found) return -1;
+  s.element = undefined;
+  return from + found.index + found[0].length;
+}
+
 // cost: time O(n), heap O(1), stack O(1)
 // vars: n = 줄 글자 수
 // basis: estimate
@@ -47,6 +71,11 @@ function count(s, line, kind) {
 function scanRaw(s, text, line) {
   let from = 0;
   while (from < text.length) {
+    if (s.element) {
+      from = skipElement(s, text, from);
+      if (from < 0) return;
+      continue;
+    }
     if (s.comment) {
       const end = text.indexOf('-->', from);
       if (end < 0) return;
@@ -58,7 +87,7 @@ function scanRaw(s, text, line) {
     if (!found) return;
     const close = found[0] === '<!--' ? commentEnd(text, found.index) : found.index + found[0].length;
     if (found[0] === '<!--') s.comment = close < 0;
-    else count(s, line, found[0][1] === '/' ? 'close' : 'open');
+    else trackTag(s, found[0].toLowerCase(), line);
     if (close < 0) return;
     from = close;
   }
@@ -225,10 +254,24 @@ function continuesFence(s, line) {
 // 줄 하나를 읽는다. 열린 울타리 안 줄은 울타리가 가져가고, 그 밖의 줄은 칸을 정리한 뒤 울타리를 여는 줄이거나 블록 한 줄이다.
 // 울타리를 여는 줄은 칸만 갱신하고 블록 앞 상태를 사건 block으로 남긴다.
 function feed(s, line) {
+  const held = s.element ? matchContainers(s, s.lines[line]) : undefined;
+  // 원문 요소는 연 인용·목록 칸 안에서만 이어진다. 그 칸이 이 줄에서 끝나면(HTML 블록은 lazy continuation이 없다) 요소도 끝나고 줄은 보통 줄로 읽는다.
+  if (held && held.matched < s.elementDepth) s.element = undefined;
+  if (s.element) {
+    // 열린 원문 요소 안의 줄은 블록 구조가 끊겨도(빈 줄) 사용자 글이다. 울타리, 칸, 태그를 읽지 않고 닫는 태그까지 소비하며, 닫는 태그 뒤 글만 태그로 읽는다.
+    s.opaque.add(line);
+    const after = skipElement(s, held.rest, 0);
+    if (after >= 0) scanRaw(s, held.rest.slice(after), line);
+    if (s.html?.end?.test(held.rest)) s.html = undefined;
+    return undefined;
+  }
   if (s.fence && continuesFence(s, line)) return undefined;
   const { rest, matched } = matchContainers(s, s.lines[line]);
   const all = matched === s.containers.length;
-  if (s.html && all) return rawLine(s, rest, line);
+  if (s.html && all) {
+    if (s.html.end) s.opaque.add(line);
+    return rawLine(s, rest, line);
+  }
   if (!all && isLazy(s, rest)) return addText(s, rest, line);
   closeFrom(s, matched);
   let remainder = rest;
@@ -253,14 +296,16 @@ function feed(s, line) {
 /**
  * 문서 줄을 한 번 따라가며 울타리와 `<details>` 태그를 읽는다. quotes가 false면 인용(`>`) 안 울타리는 울타리가 아니다.
  * 인용 안 울타리는 인용이 끝나기 전에 닫혀야 한다. 인용 표시 없는 줄을 만나면 울타리가 거기서 끝난다.
- * @returns { fences, code, raw, events }. fences는 울타리마다 { at, close?, end, leader, quote, indent, char, length, info, ctx, base }(base는 목록 칸이 차지한 칸 수, at, close는 0부터 센 줄 번호, end는 'closed', 'quote'(인용이 먼저 끝남), 'eof'(문서 끝까지 안 닫힘)),
+ * @returns { fences, code, raw, opaque, events }. opaque는 끝 조건이 있는 HTML 블록(`<pre>`, `<script>`, 주석, CDATA 등)이 앞 줄에서 열어 이어 가는 줄 번호 집합이다(여는 줄은 아니다). 사용자 원문이라 이 도구의 표식으로 읽지 않는다.
+ * fences는 울타리마다 { at, close?, end, leader, quote, indent, char, length, info, ctx, base }(base는 목록 칸이 차지한 칸 수, at, close는 0부터 센 줄 번호, end는 'closed', 'quote'(인용이 먼저 끝남), 'eof'(문서 끝까지 안 닫힘)),
  *   code는 코드로 읽는 줄 번호 집합(울타리 줄과 들여쓴 코드), raw는 거기에 HTML 블록 줄을 더한 집합(이 도구가 읽거나 바꾸지 않는 줄), events는 detailsBefore가 읽는 태그와 칸 사건이다
  */
 export function scanDocument(lines, quotes) {
-  const s = { lines, quotes, containers: [], ids: 0, fence: undefined, fences: [], events: [], code: new Set(), raw: new Set(), comment: false };
+  const s = { lines, quotes, containers: [], ids: 0, fence: undefined, fences: [], events: [], code: new Set(), raw: new Set(), opaque: new Set(), comment: false };
   for (let line = 0; line < lines.length; line++) feed(s, line);
   if (s.fence) s.fences.push({ ...s.fence, end: 'eof' });
-  return { fences: s.fences, code: s.code, raw: s.raw, events: s.events };
+  for (const line of s.opaque) s.raw.add(line);
+  return { fences: s.fences, code: s.code, raw: s.raw, opaque: s.opaque, events: s.events };
 }
 
 // cost: time O(e), heap O(e), stack O(1)

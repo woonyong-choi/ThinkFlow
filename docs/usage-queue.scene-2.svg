@@ -1,0 +1,578 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="fl" width="960" height="379" viewBox="0 0 960 379" role="img" data-scene="1" data-mode="loop">
+<!-- thinkflow md v2 usage.md -->
+<title>접수와 처리가 독립적으로 진행되는 큐</title>
+<style>@font-face{font-family:FigSans;font-weight:400;src:url(data:font/woff2;base64,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) format("woff2")}
+@font-face{font-family:FigSans;font-weight:600;src:url(data:font/woff2;base64,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) format("woff2")}
+/* tokens/tokens.json: 생성물, 손으로 고치지 않음 */
+:root {
+  --color-gray-0: #ffffff;
+  --color-gray-59: #f0f0f0;
+  --color-gray-282: #b7b7b7;
+  --color-gray-467: #888888;
+  --color-gray-529: #787878;
+  --color-gray-910: #171717;
+  --color-gray-933: #111111;
+  --color-gray-1000: #000000;
+  --color-group-title: var(--color-help-title-color);
+  --color-outline: var(--color-gray-529);
+  --color-line: var(--color-gray-282);
+  --color-state-active: var(--color-category-blue-light-border);
+  --color-state-active-text: var(--color-category-blue-light-ink);
+  --color-ui-focus: var(--color-action-link);
+  --color-data-category-1: var(--color-category-blue-fill);
+  --color-data-category-4: var(--color-category-green-fill);
+  --color-data-category-outline-1: var(--color-category-blue-light-border);
+  --color-data-category-outline-4: var(--color-category-green-light-border);
+  --color-data-category-on-1: var(--color-category-blue-on);
+  --color-data-category-on-4: var(--color-category-green-on);
+  --color-figure-icon: var(--color-category-blue-light-border);
+  --color-figure-queue-empty: var(--color-gray-59);
+  --color-figure-number-fill: var(--primitive-figure-number-fill);
+  --color-figure-number-ink: var(--primitive-figure-number-ink);
+  --color-figure-outline: var(--color-gray-467);
+  --color-ui-card: var(--color-gray-0);
+  --color-ink: var(--primitive-ink);
+  --color-ui-muted: var(--primitive-muted);
+  --color-ui-line: var(--primitive-line);
+  --color-search-hover: var(--primitive-search-hover);
+  --color-help-hover: var(--primitive-help-hover);
+  --color-help-title-color: var(--primitive-help-title-color);
+  --color-prose-pre-background: var(--primitive-help-bg);
+  --color-action-link: var(--primitive-link);
+  --color-category-blue-anchor: #1e6bd6;
+  --color-category-blue-fill: var(--color-category-blue-anchor);
+  --color-category-blue-on: var(--color-gray-0);
+  --color-category-blue-light-border: #1e6bd6;
+  --color-category-blue-light-ink: #1161cb;
+  --color-category-blue-dark-border: #3a85f2;
+  --color-category-blue-dark-ink: #6da8ff;
+  --color-category-green-anchor: #269c6e;
+  --color-category-green-fill: var(--color-category-green-anchor);
+  --color-category-green-on: var(--color-gray-1000);
+  --color-category-green-light-border: #149265;
+  --color-category-green-dark-border: #269c6e;
+  --font-figure-sans: FigSans, FigSansSym, FigSansMath, ui-sans-serif, -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+  --font-figure-mono: FigMono, FigSans, FigSansSym, FigSansMath, ui-monospace, SFMono-Regular, Menlo, monospace;
+  --text-small-text: var(--primitive-small-text);
+  --text-tiny-text: var(--primitive-tiny-text);
+  --text-figure-meta: 11px;
+  --tracking-text: -0.3px;
+  --font-weight-semibold: 600;
+  --primitive-ink: #303336;
+  --primitive-muted: #55606e;
+  --primitive-line: #dfe3e8;
+  --primitive-link: #2576eb;
+  --primitive-small-text: 15px;
+  --primitive-tiny-text: 13px;
+  --primitive-help-bg: #f6f7fa;
+  --primitive-search-hover: #d9e6ff;
+  --primitive-help-hover: #ebf1ff;
+  --primitive-help-title-color: #3d4856;
+  --primitive-figure-ui-accent: #3c84f3;
+  --primitive-figure-dark-bg: #26272b;
+  --primitive-figure-dark-node: #303136;
+  --primitive-figure-dark-separator: #454850;
+  --primitive-figure-dark-hover: #343e50;
+  --primitive-figure-dark-selection: #274174;
+  --primitive-figure-dark-muted: #a9adb6;
+  --primitive-figure-dark-line: #7f8793;
+  --primitive-figure-dark-outline: #868686;
+  --primitive-figure-number-fill: #303336;
+  --primitive-figure-number-ink: #ffffff;
+  --border-width-thin: 1px;
+  --border-width-hair: 0.75px;
+  --border-width-lifeline: 1.25px;
+  --border-width-edge: 1.75px;
+  --opacity-range: 0.4;
+  --dash-gap: 4;
+  --dash-card: 3;
+  --outline-width-focus: 3px;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']):not([data-theme='dark']) {
+  --color-outline: var(--primitive-figure-dark-outline);
+  --color-line: var(--primitive-figure-dark-line);
+  --color-state-active: var(--primitive-figure-ui-accent);
+  --color-state-active-text: var(--color-category-blue-dark-ink);
+  --color-data-category-outline-1: var(--color-category-blue-dark-border);
+  --color-data-category-outline-4: var(--color-category-green-dark-border);
+  --color-figure-icon: var(--color-category-blue-dark-border);
+  --color-figure-queue-empty: var(--color-gray-910);
+  --color-figure-number-fill: var(--color-gray-59);
+  --color-figure-number-ink: var(--color-gray-933);
+  --color-figure-outline: var(--color-line);
+  --color-ui-card: var(--primitive-figure-dark-node);
+  --color-ink: var(--color-gray-59);
+  --color-ui-muted: var(--primitive-figure-dark-muted);
+  --color-ui-line: var(--primitive-figure-dark-separator);
+  --color-search-hover: var(--primitive-figure-dark-selection);
+  --color-help-hover: var(--primitive-figure-dark-hover);
+  --color-help-title-color: var(--primitive-figure-dark-muted);
+  --color-prose-pre-background: var(--primitive-figure-dark-bg);
+  color-scheme: dark;
+  }
+}
+[data-theme='dark'] {
+  --color-outline: var(--primitive-figure-dark-outline);
+  --color-line: var(--primitive-figure-dark-line);
+  --color-state-active: var(--primitive-figure-ui-accent);
+  --color-state-active-text: var(--color-category-blue-dark-ink);
+  --color-data-category-outline-1: var(--color-category-blue-dark-border);
+  --color-data-category-outline-4: var(--color-category-green-dark-border);
+  --color-figure-icon: var(--color-category-blue-dark-border);
+  --color-figure-queue-empty: var(--color-gray-910);
+  --color-figure-number-fill: var(--color-gray-59);
+  --color-figure-number-ink: var(--color-gray-933);
+  --color-figure-outline: var(--color-line);
+  --color-ui-card: var(--primitive-figure-dark-node);
+  --color-ink: var(--color-gray-59);
+  --color-ui-muted: var(--primitive-figure-dark-muted);
+  --color-ui-line: var(--primitive-figure-dark-separator);
+  --color-search-hover: var(--primitive-figure-dark-selection);
+  --color-help-hover: var(--primitive-figure-dark-hover);
+  --color-help-title-color: var(--primitive-figure-dark-muted);
+  --color-prose-pre-background: var(--primitive-figure-dark-bg);
+  color-scheme: dark;
+}
+[data-theme='light'] {
+  --color-outline: var(--color-gray-529);
+  --color-line: var(--color-gray-282);
+  --color-state-active: var(--color-category-blue-light-border);
+  --color-state-active-text: var(--color-category-blue-light-ink);
+  --color-data-category-outline-1: var(--color-category-blue-light-border);
+  --color-data-category-outline-4: var(--color-category-green-light-border);
+  --color-figure-icon: var(--color-category-blue-light-border);
+  --color-figure-queue-empty: var(--color-gray-59);
+  --color-figure-number-fill: var(--primitive-figure-number-fill);
+  --color-figure-number-ink: var(--primitive-figure-number-ink);
+  --color-figure-outline: var(--color-gray-467);
+  --color-ui-card: var(--color-gray-0);
+  --color-ink: var(--primitive-ink);
+  --color-ui-muted: var(--primitive-muted);
+  --color-ui-line: var(--primitive-line);
+  --color-search-hover: var(--primitive-search-hover);
+  --color-help-hover: var(--primitive-help-hover);
+  --color-help-title-color: var(--primitive-help-title-color);
+  --color-prose-pre-background: var(--primitive-help-bg);
+  color-scheme: light;
+}
+/* 그림 안 글자와 모양. HTML 재생기와 움직이는 SVG가 같이 쓴다. */
+/* 카드 안 글(label, sub, meta, cell, item, row)의 기준 점(text-anchor)은 글이 정한다(measure/texts.js의 anchor). 여기서는 글꼴과 색만 정한다. */
+/* 글 위계는 셋이다: 제목(공통 디자인.label-size 15: 카드 제목은 regular, 그룹 제목은 semibold), 문장과 이름표(detail-size 13: 부제, 선 라벨, 메모, 이동 글, 카드 줄, 제약, 형식), 작은 표시(micro-size 11: 번호, 태그, 표식, 키, 눈금, 단위). 크기와 굵기는 measure/texts.js의 STYLE이 같은 토큰으로 잰다. */
+.fl text {
+  font-family: var(--font-figure-sans);
+  letter-spacing: var(--tracking-text);
+}
+
+.fl .label {
+  font-size: var(--text-small-text);
+  fill: var(--color-ink);
+}
+
+.fl .sub {
+  font-size: var(--text-tiny-text);
+  fill: var(--color-ui-muted);
+}
+
+.fl .frame {
+  font-size: var(--text-small-text);
+  font-weight: var(--font-weight-semibold);
+  fill: var(--color-group-title);
+}
+
+.fl .edgelabel {
+  font-size: var(--text-tiny-text);
+  text-anchor: middle;
+  fill: var(--fx-ink-rest);
+}
+
+/* 카드 줄, 메모와 구획 제목 같은 덧붙임 글, 관계 그래프 이름, 표 칸, 격자 칸은 문장이라 같은 크기와 글자색이다. */
+.fl .row,
+.fl .meta,
+.fl .mini,
+.fl .cell,
+.fl .item {
+  font-size: var(--text-tiny-text);
+  fill: var(--color-ink);
+}
+
+.fl .row.mono {
+  font-family: var(--font-figure-mono);
+  letter-spacing: normal;
+}
+
+/* 백틱으로 감싼 글. 코드 글꼴로 그린다. */
+.fl .code {
+  font-family: var(--font-figure-mono);
+  letter-spacing: normal;
+}
+
+.fl .muted {
+  fill: var(--color-ui-muted);
+}
+
+.fl .tag {
+  font-size: var(--text-figure-meta);
+  font-weight: var(--font-weight-semibold);
+  fill: var(--color-ink);
+}
+
+.fl .mark {
+  font-size: var(--text-figure-meta);
+  font-weight: var(--font-weight-semibold);
+  fill: var(--color-state-active-text);
+}
+
+/* 값 카드 줄의 값 글자. 줄의 이름(row)은 카드 층이 그리고 값은 오른쪽 끝에 얹힌다. 이름과 같은 크기이고 굵기만 다르다. */
+.fl .value {
+  font-size: var(--text-tiny-text);
+  font-weight: var(--font-weight-semibold);
+  fill: var(--color-ink);
+}
+
+.fl .chip {
+  font-size: var(--text-tiny-text);
+  text-anchor: middle;
+}
+
+.fl .item.gap {
+  fill: var(--color-ui-muted);
+}
+
+/* 열 형식(타입)은 코드 글이라 코드 글꼴의 오른쪽 열이다. 제약 줄(NOT NULL, ON DELETE 등)은 문장이라 일반 글꼴이다. 둘 다 이름보다 옅다. */
+.fl .cell.type {
+  font-family: var(--font-figure-mono);
+  letter-spacing: normal;
+  fill: var(--color-ui-muted);
+}
+
+.fl .cell.rule {
+  fill: var(--color-ui-muted);
+}
+
+/* 순서 보기의 메시지, 메모, 구획, 활성 막대는 자기 장면이 보일 때만 보인다. 자리는 늘 같아 판 크기가 변하지 않는다. */
+.fl .fl-off {
+  display: none;
+}
+
+.fl .fl-edge {
+  color: var(--fx-line-rest);
+}
+
+.fl .fl-path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: var(--border-width-edge);
+}
+
+/* 열 키(PK, FK, UNQ)는 작은 표시이고 글자색이다. 파랑은 켜진 상태에만 쓴다. */
+.fl .cell .key {
+  font-size: var(--text-figure-meta);
+  font-weight: var(--font-weight-semibold);
+  fill: var(--color-ink);
+}
+
+/* 그룹은 면이 없다(투명). 경계와 제목만 있고, 깊이에 따라 회색 면을 겹치지 않는다. 고른 색의 면과 경계는 draw/paint.js가 쓴 색에만 더한다. */
+.fl .frame-box {
+  --fx-edge-rest: var(--color-figure-outline);
+  fill: none;
+  stroke: var(--fx-edge-rest);
+  stroke-width: var(--border-width-thin);
+}
+
+.fl .lifeline {
+  stroke: var(--color-line);
+  stroke-width: var(--border-width-lifeline);
+  stroke-dasharray: var(--dash-gap) var(--dash-gap);
+}
+
+.fl .note-box {
+  fill: var(--color-ui-card);
+  stroke: var(--color-line);
+  stroke-dasharray: var(--dash-card) var(--dash-card);
+}
+
+/* 알약은 모두 같은 중립 흰 면과 평소 경계다: 선 라벨, 배지와 개수. */
+.fl .pill,
+.fl .badge-pill {
+  fill: var(--color-ui-card);
+  stroke: var(--fx-edge-rest);
+}
+
+.fl .part-bg {
+  --fx-face: transparent;
+  --fx-face-on: var(--fx-row);
+  fill: var(--fx-face);
+}
+
+.fl .col-line {
+  stroke: var(--color-ui-line);
+  stroke-width: var(--border-width-hair);
+}
+
+.fl .grid-cell {
+  --fx-face: var(--color-ui-card);
+  --fx-face-on: var(--fx-row);
+  fill: var(--fx-face);
+  stroke: var(--color-ui-line);
+  stroke-width: var(--border-width-thin);
+}
+
+.fl .grid-tray {
+  fill: var(--color-ui-card);
+}
+
+.fl .grid-cell.gap {
+  --fx-face: var(--color-ui-card);
+  stroke: var(--color-ui-line);
+}
+
+.fl .grid-cell.empty {
+  --fx-face: none;
+  stroke: var(--color-line);
+  stroke-dasharray: var(--dash-card) var(--dash-card);
+}
+
+.fl .fl-edge.mark {
+  --fx-line-rest: var(--color-ink);
+}
+
+/* 카드 내용 면(color.ui-card, 테두리 없음) 위에 고른 카드 모습(face)이 옅은 면이나 경계를 더한다. */
+.fl .face {
+  fill: none;
+  stroke: none;
+}
+
+/* 도형 윗줄과 그룹 제목 줄의 장식: 글자 배지, 아이콘 */
+.fl .badge {
+  font-size: var(--text-figure-meta);
+  font-weight: var(--font-weight-semibold);
+  text-anchor: middle;
+  fill: var(--color-ink);
+}
+
+.fl .fl-icon {
+  color: var(--color-figure-icon);
+}
+
+.fl .fl-symbol .fl-icon {
+  color: inherit;
+}
+
+/* 선 번호 원. 흑백 번호이고 라벨 알약과 달리 켜져도 색이 바뀌지 않아 정지 그림과 같은 순서로 읽힌다. */
+.fl .number-pill {
+  fill: var(--color-figure-number-fill);
+}
+
+.fl .number {
+  font-size: var(--text-figure-meta);
+  font-weight: var(--font-weight-semibold);
+  text-anchor: middle;
+  fill: var(--color-figure-number-ink);
+}
+
+/* 도형은 그림자 없는 평면이다. 그림자는 떠 있는 메뉴 같은 조작에만 둔다. */
+.fl :where(.fl-node) > .fl-stroke {
+  stroke: var(--fx-edge-rest);
+  stroke-width: var(--border-width-thin);
+}
+
+/* 구획은 border.hair, 보조 경계는 border.thin, 관계는 border.edge, 생명선은 border.lifeline, 도형 경계는 공통 디자인.node-stroke다. 모든 선은 그림과 함께 확대·축소된다. */
+.fl .fl-path,
+.fl .fl-node > .fl-stroke,
+.fl .grid-cell,
+.fl .col-line,
+.fl .pill,
+.fl .badge-pill {
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* 화살촉과 몸통은 같은 소유자의 색을 상속한다(draw/arrow.js). 화살촉은 채운 삼각형이다. 연결선은 선 묶음이, 차트 방향선은 역할 class(.arrow-main 등, chart.css)가 소유자다.
+   HTML 문서의 차트 마커 정의는 판 SVG 밖의 정의 전용 SVG에 있어 `.fl` 아래가 아니므로 이 규칙은 `.fl` 범위를 걸지 않는다. */
+.fl-arrowhead {
+  fill: currentColor;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* 효과 한 벌: 켜짐과 평소의 모습을 정하는 유일한 정의다. 움직이는 SVG(animate/animator.js)의 keyframes와 HTML 재생기의 `.on` 규칙이 같은 `--fx-*`를 읽으므로 두 출력과 정지 그림이 늘 같다.
+   - 켜짐(on): --fx-edge 윤곽·그룹 경계·선·알약 테두리, --fx-ink 알약 글자, --fx-row 표 줄과 격자 칸의 면, --fx-face-on 요소의 켜진 면(도형은 아래), --fx-flash 값이 바뀐 순간의 면.
+   - 평소(rest): --fx-edge-rest 도형, 그룹, 알약의 경계, --fx-ink-rest 알약 글자, --fx-line-rest 선, --fx-face 요소의 평소 면.
+   효과는 도형이 고른 색(tone)이나 표현(appearance)과 상관없다. 고른 색은 평소 값(--fx-face, --fx-edge-rest)만 바꾸고(draw/paint.js), 켜진 동안은 강조 윤곽에 자리를 내준다. */
+.fl {
+  --fx-edge: var(--color-state-active);
+  --fx-ink: var(--color-state-active-text);
+  --fx-row: var(--color-search-hover);
+  --fx-flash: var(--color-search-hover);
+  --fx-edge-rest: var(--color-figure-outline);
+  --fx-ink-rest: var(--color-ui-muted);
+  --fx-line-rest: var(--color-line);
+}
+
+/* 도형의 평소 면과 켜진 면. 옅은 면으로 고른 도형(filled)은 켜져도 면이 같다. 면이 없는 윤곽(fill='none')과 점은 자기 면이 없거나 자기 색이다. */
+.fl .fl-node {
+  --fx-face: var(--color-ui-card);
+  --fx-face-on: var(--color-help-hover);
+}
+
+.fl .fl-node.ap-filled {
+  --fx-face-on: var(--fx-face);
+}
+
+.fl .fl-shape-start {
+  --fx-face: var(--color-ink);
+}
+
+.fl .fl-node > .fl-stroke[fill='none'] {
+  --fx-face: none;
+  --fx-face-on: none;
+}
+
+.fl .fl-node.ap-filled > .fl-stroke:not([fill='none']) {
+  fill: var(--fx-face);
+}
+
+/* `light`가 명시한 도형: 윤곽이 강조 색이 되고 면은 옅은 강조 면이다(옅은 면으로 고른 도형은 면을 그대로 둔다). 점이 닿은 도형은 도착 후광(.fl-pulse)만 쓴다. */
+.fl .fl-node.on > .fl-stroke {
+  stroke: var(--fx-edge);
+}
+
+.fl .fl-node.on > .fl-stroke:not([fill='none']) {
+  fill: var(--fx-face-on);
+}
+
+/* `light`가 명시한 그룹: 경계선만 강조 색이다. 굵기, 면, 모서리, 점선은 그대로다. */
+.fl .fl-group.on > .frame-box {
+  stroke: var(--fx-edge);
+}
+
+/* 켜진 표 줄(칸)과 격자 칸의 면. 모든 카드가 같은 규칙이다. */
+.fl .fl-part.on :is(.part-bg, .grid-cell) {
+  fill: var(--fx-face-on);
+}
+
+/* 도형에 마우스를 올려도 면이나 선이 켜지지 않는다(장식용 호버 활성 없음). 키보드 초점은 같은 외부 형상 위의 초점 표시이고 윤곽을 두 겹으로 만들지 않는다. */
+/* 브라우저 기본 초점 링은 g 요소의 사각 상자를 두르므로 둥근 도형과 어긋난다. 어떤 방식으로 초점이 가도 기본 링을 끄고, 키보드 초점(:focus-visible)은 도형 윤곽 자체로 표시한다. */
+.fl .fl-node:focus,
+.fl .fl-node:focus-visible {
+  outline: none;
+}
+
+.fl .fl-node:focus-visible > .fl-stroke {
+  stroke: var(--color-ui-focus);
+  stroke-width: var(--outline-width-focus);
+}
+
+/* 값이 바뀔 때 켜지는 배경 면. 도형과 같은 윤곽을 쓰고 테두리를 더하지 않는다. */
+.fl .fl-flash-face {
+  fill-opacity: var(--opacity-range);
+}
+
+.fl .fl-flash {
+  fill: var(--fx-flash);
+  stroke: none;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fl .fl-flash {
+    display: none;
+  }
+}
+
+/* 점이 도형에 닿을 때의 테두리 후광: 도형 윤곽과 같은 모양의 겹침 선이다. 면을 칠하지 않고 선 굵기가 윤곽과 같아 도형이 커지지 않는다. 불투명도(80/80/240ms)는 SMIL이나 재생기가 정한다. */
+.fl .fl-pulse {
+  fill: none;
+  stroke: var(--fx-edge);
+  stroke-width: var(--border-width-thin);
+  pointer-events: none;
+}
+
+/* 제어 구획의 경계는 관계선보다 약하며 제목 밑면은 생명선을 가린다. */
+.fl .fl-fragment-border {
+  fill: none;
+  stroke: var(--color-ui-line);
+  stroke-width: var(--border-width-thin);
+}
+
+.fl .fl-fragment-divider {
+  fill: none;
+  stroke: var(--color-ui-line);
+  stroke-width: var(--border-width-hair);
+  stroke-dasharray: var(--dash-card) var(--dash-card);
+}
+
+.fl .fl-fragment-heading {
+  fill: var(--color-ui-card);
+}
+
+.fl .fl-fragment-label {
+  font-weight: var(--font-weight-semibold);
+}
+
+@keyframes a0 { 0%,100% { fill: var(--fx-face); stroke: var(--fx-edge-rest) } }
+.fl .a0 { animation: a0 8s infinite linear; }
+@keyframes a1 { 0%,100% { opacity: 1; visibility: visible } }
+.fl .a1 { animation: a1 8s infinite linear; }
+@keyframes a2 { 0%,100% { opacity: 1 } }
+.fl .a2 { animation: a2 8s infinite linear; }
+@keyframes a3 { 0%,8.749% { color: var(--fx-edge) } 8.75%,12.499% { color: var(--fx-line-rest) } 12.5%,21.249% { color: var(--fx-edge) } 21.25%,24.999% { color: var(--fx-line-rest) } 25%,33.749% { color: var(--fx-edge) } 33.75%,37.499% { color: var(--fx-line-rest) } 37.5%,46.249% { color: var(--fx-edge) } 46.25%,49.999% { color: var(--fx-line-rest) } 50%,58.749% { color: var(--fx-edge) } 58.75%,62.499% { color: var(--fx-line-rest) } 62.5%,71.249% { color: var(--fx-edge) } 71.25%,81.249% { color: var(--fx-line-rest) } 81.25%,89.999% { color: var(--fx-edge) } 90%,100% { color: var(--fx-line-rest) } }
+.fl .a3 { animation: a3 8s infinite linear; }
+@keyframes a4 { 0%,6.249% { color: var(--fx-line-rest) } 6.25%,14.999% { color: var(--fx-edge) } 15%,31.249% { color: var(--fx-line-rest) } 31.25%,39.999% { color: var(--fx-edge) } 40%,56.249% { color: var(--fx-line-rest) } 56.25%,64.999% { color: var(--fx-edge) } 65%,81.249% { color: var(--fx-line-rest) } 81.25%,89.999% { color: var(--fx-edge) } 90%,100% { color: var(--fx-line-rest) } }
+.fl .a4 { animation: a4 8s infinite linear; }
+@keyframes a5 { 0%,100% { opacity: 0 } }
+.fl .a5 { animation: a5 8s infinite linear; }
+.fl .sa0 { fill: var(--fx-face); stroke: var(--fx-edge-rest); }
+.fl .sa1 { opacity: 1; visibility: visible; }
+.fl .sa2 { opacity: 1; }
+.fl .sa3 { opacity: 0; }
+.fl .fl-still { display: none; }
+@media (prefers-reduced-motion: reduce) {
+  .fl .fl-motion { display: none; }
+  .fl .fl-still { display: inline; }
+}
+</style>
+<defs></defs>
+<rect x="0.5" y="0.5" width="959" height="378" rx="18" fill="var(--color-prose-pre-background)"/>
+<g class="fl-motion" transform="translate(298.6 0)">
+
+<g id="n-0" class="fl-node fl-shape-box" tabindex="0" role="img" aria-label="접수" data-id="producer"><rect x="82.7" y="28" width="100" height="47" rx="8" fill="var(--color-ui-card)" class="fl-stroke a0"/><g class="fl-symbol fl-symbol-concept"><g class="fl-icon" transform="translate(106 41.5) scale(0.83333)"><g transform="translate(0 0) scale(0.5)"><g color="#3d4856"><g><g stroke-linecap="round" stroke-linejoin="round"><rect x="13" y="3" width="20" height="42" rx="5" fill="#a5a7a9" stroke="none" stroke-width="3"/><rect x="18" y="17" width="10" height="14" rx="3" fill="#ffffff" stroke="none" stroke-width="3"/><path d="M3 24H44M36 17L44 24L36 31" fill="none" stroke="#1c60c2" stroke-width="3.5"/></g></g></g></g></g></g><text x="146.7" y="56.9" class="label" text-anchor="middle">접수</text></g>
+<g id="n-1" class="fl-node fl-shape-queue" tabindex="0" role="img" aria-label="대기 작업" data-id="jobs"><rect x="60" y="135" width="112" height="67" rx="8" fill="var(--color-ui-card)" class="fl-stroke a0"/><rect x="78" y="176" width="16" height="14" rx="4" fill="var(--color-figure-queue-empty)" stroke="var(--color-outline)" stroke-width="1"/><rect x="98" y="176" width="16" height="14" rx="4" fill="var(--color-figure-queue-empty)" stroke="var(--color-outline)" stroke-width="1"/><rect x="118" y="176" width="16" height="14" rx="4" fill="var(--color-figure-queue-empty)" stroke="var(--color-outline)" stroke-width="1"/><rect x="138" y="176" width="16" height="14" rx="4" fill="var(--color-figure-queue-empty)" stroke="var(--color-outline)" stroke-width="1"/><rect x="60" y="135" width="112" height="67" rx="8" class="fl-flash fl-flash-face" opacity="0" data-vf="0"><animate attributeName="opacity" dur="8s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.01;0.02;0.05;0.0625;0.0725;0.0825;0.1125;0.125;0.135;0.145;0.175;0.25;0.26;0.27;0.3;0.3125;0.3225;0.3325;0.3625;0.375;0.385;0.395;0.425;0.5;0.51;0.52;0.55;0.5625;0.5725;0.5825;0.6125;0.625;0.635;0.645;0.675;1" values="0;1;1;0;0;1;1;0;0;1;1;0;0;1;1;0;0;1;1;0;0;1;1;0;0;1;1;0;0;1;1;0;0;1;1;0;0"/></rect><rect x="60" y="135" width="112" height="67" rx="8" fill="var(--color-ui-card)" class="fl-pulse" opacity="0" aria-hidden="true"><animate attributeName="opacity" dur="8s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.0875;0.0975;0.1075;0.1375;0.2125;0.2225;0.2325;0.2625;0.3375;0.3475;0.3575;0.3875;0.4625;0.4725;0.4825;0.5125;0.5875;0.5975;0.6075;0.6375;0.7125;0.7225;0.7325;0.7625;0.9;0.91;0.92;0.95;1" values="0;0;1;1;0;0;1;1;0;0;1;1;0;0;1;1;0;0;1;1;0;0;1;1;0;0;1;1;0;0"/></rect><text x="116" y="163.9" class="label" text-anchor="middle">대기 작업</text></g>
+<g id="n-2" class="fl-node fl-shape-box" tabindex="0" role="img" aria-label="처리" data-id="worker"><rect x="28" y="262" width="176" height="89" rx="8" fill="var(--color-ui-card)" class="fl-stroke a0"/><rect x="28" y="262" width="176" height="89" rx="8" fill="var(--color-ui-card)" class="fl-pulse" opacity="0" aria-hidden="true"><animate attributeName="opacity" dur="8s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.15;0.16;0.17;0.2;0.4;0.41;0.42;0.45;0.65;0.66;0.67;0.7;0.9;0.91;0.92;0.95;1" values="0;0;1;1;0;0;1;1;0;0;1;1;0;0;1;1;0;0"/></rect><g class="fl-symbol fl-symbol-concept"><g class="fl-icon" transform="translate(89.3 275.5) scale(0.83333)"><g transform="translate(0 0) scale(0.5)"><g color="#3d4856"><g stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="3" width="36" height="42" rx="6" fill="#35404c" stroke="none" stroke-width="2.4"/><rect x="8.5" y="5.5" width="31" height="37" rx="3.5" fill="#a5a7a9" stroke="none" stroke-width="2.4"/><rect x="11" y="9" width="26" height="13" rx="3" fill="#f9fafb" stroke="none" stroke-width="2.4"/><path d="M15 13V18M19 13V18M23 13V18" fill="none" stroke="#cfd0d3" stroke-width="2"/><circle cx="31.5" cy="15.5" r="2.1" fill="#639bfa" stroke="none" stroke-width="2.4"/><rect x="11" y="26" width="26" height="13" rx="3" fill="#f9fafb" stroke="none" stroke-width="2.4"/><path d="M15 30V35M19 30V35M23 30V35" fill="none" stroke="#cfd0d3" stroke-width="2"/><circle cx="31.5" cy="32.5" r="2.1" fill="#28a779" stroke="none" stroke-width="2.4"/></g></g></g></g></g><text x="130" y="290.9" class="label" text-anchor="middle">처리</text><rect x="38" y="309" width="156" height="32" rx="6" fill="var(--color-ui-card)" opacity="0" class="fl-card a2"/><g id="n-2-c0" opacity="0" visibility="hidden" class="fl-layer a1"><path d="M44 309H188a6 6 0 0 1 6 6V335a6 6 0 0 1 -6 6H44a6 6 0 0 1 -6 -6V315a6 6 0 0 1 6 -6Z" class="fl-flash" opacity="0" data-vf="1"><animate attributeName="opacity" dur="8s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.15;0.16;0.17;0.2;0.4;0.41;0.42;0.45;0.65;0.66;0.67;0.7;0.9;0.91;0.92;0.95;1" values="0;0;1;1;0;0;1;1;0;0;1;1;0;0;1;1;0;0"/></path><text x="46" y="329.7" class="row">완료</text></g></g>
+<g id="n-3" class="fl-node fl-shape-box" tabindex="0" role="img" aria-label="재시도 보관" data-id="retry"><rect x="204" y="135" width="130.8" height="47" rx="8" fill="var(--color-ui-card)" class="fl-stroke a0"/><g class="fl-symbol fl-symbol-concept"><g class="fl-icon" transform="translate(222 148.5) scale(0.83333)"><g transform="translate(0 0) scale(0.5)"><g color="#3d4856"><g stroke-linecap="round" stroke-linejoin="round"><path d="M6 11C6 3 42 3 42 11V37C42 47 6 47 6 37Z" fill="#528aee" stroke="none" stroke-width="2.4"/><path d="M9 14C16 19 32 19 39 14V36C39 42 9 42 9 36Z" fill="#c9ddff" stroke="none" stroke-width="2.4"/><ellipse cx="24" cy="11" rx="16" ry="5" fill="#639bfa" stroke="none" stroke-width="2.4"/><path d="M7.5 23C15 29 33 29 40.5 23M7.5 33C15 39 33 39 40.5 33" fill="none" stroke="#528aee" stroke-width="3"/></g></g></g></g></g><text x="283.4" y="163.9" class="label" text-anchor="middle">재시도 보관</text></g>
+<g id="e-0" class="fl-edge a3"><defs><marker id="fl-arrow-0" viewBox="0 0 5 5" refX="4" refY="2.5" markerWidth="5" markerHeight="5" orient="auto-start-reverse" overflow="visible"><path class="fl-arrowhead" d="M 1.1 0.25 L 4 2.5 L 1.1 4.75 Z" stroke-width="1"/></marker></defs><path id="p-0" d="M 116 75 L 116 135" class="fl-path" marker-end="url(#fl-arrow-0)"/></g>
+<g id="e-1" class="fl-edge a4"><defs><marker id="fl-arrow-1" viewBox="0 0 5 5" refX="4" refY="2.5" markerWidth="5" markerHeight="5" orient="auto-start-reverse" overflow="visible"><path class="fl-arrowhead" d="M 1.1 0.25 L 4 2.5 L 1.1 4.75 Z" stroke-width="1"/></marker></defs><path id="p-1" d="M 116 202 L 116 262" class="fl-path" marker-end="url(#fl-arrow-1)"/></g>
+<g id="e-2" class="fl-edge quiet a5 a5"><defs><marker id="fl-arrow-2" viewBox="0 0 5 5" refX="4" refY="2.5" markerWidth="5" markerHeight="5" orient="auto-start-reverse" overflow="visible"><path class="fl-arrowhead" d="M 1.1 0.25 L 4 2.5 L 1.1 4.75 Z" stroke-width="1"/></marker></defs><path id="p-2" d="M 149.3 75 L 149.3 83 Q 149.3 91, 157.3 91 L 247.4 91 Q 269.4 91, 269.4 113 L 269.4 135" class="fl-path" marker-end="url(#fl-arrow-2)"/></g>
+<defs><path id="tp-0" class="fl-track-path" d="M 116 75 L 116 135" fill="none"/><path id="tp-1" class="fl-track-path" d="M 116 202 L 116 262" fill="none"/></defs><g class="fl-value"><g class="queue-fill" opacity="0" visibility="hidden" data-v="0" data-t="1"><rect x="78" y="176" width="16" height="14" rx="4" fill="var(--color-data-category-1)" stroke="var(--color-data-category-1)" stroke-width="1"/><animate attributeName="visibility" dur="8s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.0625;0.125" values="hidden;visible;hidden"/><animate attributeName="opacity" dur="8s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.0625;0.125" values="0;1;0"/></g><g class="queue-fill" opacity="0" visibility="hidden" data-v="0" data-t="2"><rect x="78" y="176" width="16" height="14" rx="4" fill="var(--color-data-category-1)" stroke="var(--color-data-category-1)" stroke-width="1"/><rect x="98" y="176" width="16" height="14" rx="4" fill="var(--color-data-category-1)" stroke="var(--color-data-category-1)" stroke-width="1"/><animate attributeName="visibility" dur="8s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.0625;0.125;0.25;0.3125;0.375" values="visible;hidden;visible;hidden;visible;hidden"/><animate attributeName="opacity" dur="8s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.0625;0.125;0.25;0.3125;0.375" values="1;0;1;0;1;0"/></g><g class="queue-fill" opacity="0" visibility="hidden" data-v="0" data-t="3"><rect x="78" y="176" width="16" height="14" rx="4" fill="var(--color-data-category-1)" stroke="var(--color-data-category-1)" stroke-width="1"/><rect x="98" y="176" width="16" height="14" rx="4" fill="var(--color-data-category-1)" stroke="var(--color-data-category-1)" stroke-width="1"/><rect x="118" y="176" width="16" height="14" rx="4" fill="var(--color-data-category-1)" stroke="var(--color-data-category-1)" stroke-width="1"/><animate attributeName="visibility" dur="8s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.25;0.3125;0.375;0.5;0.5625;0.625" values="hidden;visible;hidden;visible;hidden;visible;hidden"/><animate attributeName="opacity" dur="8s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.25;0.3125;0.375;0.5;0.5625;0.625" values="0;1;0;1;0;1;0"/></g><g class="queue-fill" opacity="0" visibility="hidden" data-v="0" data-t="4"><rect x="78" y="176" width="16" height="14" rx="4" fill="var(--color-data-category-1)" stroke="var(--color-data-category-1)" stroke-width="1"/><rect x="98" y="176" width="16" height="14" rx="4" fill="var(--color-data-category-1)" stroke="var(--color-data-category-1)" stroke-width="1"/><rect x="118" y="176" width="16" height="14" rx="4" fill="var(--color-data-category-1)" stroke="var(--color-data-category-1)" stroke-width="1"/><rect x="138" y="176" width="16" height="14" rx="4" fill="var(--color-data-category-1)" stroke="var(--color-data-category-1)" stroke-width="1"/><animate attributeName="visibility" dur="8s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.5;0.5625;0.625" values="hidden;visible;hidden;visible"/><animate attributeName="opacity" dur="8s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.5;0.5625;0.625" values="0;1;0;1"/></g></g>
+<g class="fl-value"><text x="186" y="329.7" class="value" text-anchor="end" opacity="0" visibility="hidden" data-v="1" data-t="0">0<animate attributeName="visibility" dur="8s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.15" values="visible;hidden"/><animate attributeName="opacity" dur="8s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.15" values="1;0"/></text><text x="186" y="329.7" class="value" text-anchor="end" opacity="0" visibility="hidden" data-v="1" data-t="1">1<animate attributeName="visibility" dur="8s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.15;0.4" values="hidden;visible;hidden"/><animate attributeName="opacity" dur="8s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.15;0.4" values="0;1;0"/></text><text x="186" y="329.7" class="value" text-anchor="end" opacity="0" visibility="hidden" data-v="1" data-t="2">2<animate attributeName="visibility" dur="8s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.4;0.65" values="hidden;visible;hidden"/><animate attributeName="opacity" dur="8s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.4;0.65" values="0;1;0"/></text><text x="186" y="329.7" class="value" text-anchor="end" opacity="0" visibility="hidden" data-v="1" data-t="3">3<animate attributeName="visibility" dur="8s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.65;0.9" values="hidden;visible;hidden"/><animate attributeName="opacity" dur="8s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.65;0.9" values="0;1;0"/></text><text x="186" y="329.7" class="value" text-anchor="end" opacity="0" visibility="hidden" data-v="1" data-t="4">4<animate attributeName="visibility" dur="8s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.9" values="hidden;visible"/><animate attributeName="opacity" dur="8s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.9" values="0;1"/></text></g>
+<g class="p0-0" opacity="0" fill="var(--color-data-category-on-1)"><circle r="10" fill="var(--color-data-category-1)" opacity="0.2"/><circle r="4.5" fill="var(--color-data-category-1)" stroke="var(--color-data-category-outline-1)" stroke-width="1.75"/><animate attributeName="opacity" dur="8s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.0875" values="1;0"/><animateMotion dur="8s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.0875;1" keySplines="0.455 0.03 0.515 0.955;0 0 1 1" keyPoints="0;1;1"><mpath href="#tp-0" xlink:href="#tp-0"/></animateMotion></g>
+<g class="p0-1" opacity="0" fill="var(--color-data-category-on-1)"><circle r="10" fill="var(--color-data-category-1)" opacity="0.2"/><circle r="4.5" fill="var(--color-data-category-1)" stroke="var(--color-data-category-outline-1)" stroke-width="1.75"/><animate attributeName="opacity" dur="8s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.125;0.2125" values="0;1;0"/><animateMotion dur="8s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.125;0.2125;1" keySplines="0 0 1 1;0.455 0.03 0.515 0.955;0 0 1 1" keyPoints="0;0;1;1"><mpath href="#tp-0" xlink:href="#tp-0"/></animateMotion></g>
+<g class="p0-2" opacity="0" fill="var(--color-data-category-on-1)"><circle r="10" fill="var(--color-data-category-1)" opacity="0.2"/><circle r="4.5" fill="var(--color-data-category-1)" stroke="var(--color-data-category-outline-1)" stroke-width="1.75"/><animate attributeName="opacity" dur="8s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.25;0.3375" values="0;1;0"/><animateMotion dur="8s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.25;0.3375;1" keySplines="0 0 1 1;0.455 0.03 0.515 0.955;0 0 1 1" keyPoints="0;0;1;1"><mpath href="#tp-0" xlink:href="#tp-0"/></animateMotion></g>
+<g class="p0-3" opacity="0" fill="var(--color-data-category-on-1)"><circle r="10" fill="var(--color-data-category-1)" opacity="0.2"/><circle r="4.5" fill="var(--color-data-category-1)" stroke="var(--color-data-category-outline-1)" stroke-width="1.75"/><animate attributeName="opacity" dur="8s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.375;0.4625" values="0;1;0"/><animateMotion dur="8s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.375;0.4625;1" keySplines="0 0 1 1;0.455 0.03 0.515 0.955;0 0 1 1" keyPoints="0;0;1;1"><mpath href="#tp-0" xlink:href="#tp-0"/></animateMotion></g>
+<g class="p0-4" opacity="0" fill="var(--color-data-category-on-1)"><circle r="10" fill="var(--color-data-category-1)" opacity="0.2"/><circle r="4.5" fill="var(--color-data-category-1)" stroke="var(--color-data-category-outline-1)" stroke-width="1.75"/><animate attributeName="opacity" dur="8s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.5;0.5875" values="0;1;0"/><animateMotion dur="8s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5;0.5875;1" keySplines="0 0 1 1;0.455 0.03 0.515 0.955;0 0 1 1" keyPoints="0;0;1;1"><mpath href="#tp-0" xlink:href="#tp-0"/></animateMotion></g>
+<g class="p0-5" opacity="0" fill="var(--color-data-category-on-1)"><circle r="10" fill="var(--color-data-category-1)" opacity="0.2"/><circle r="4.5" fill="var(--color-data-category-1)" stroke="var(--color-data-category-outline-1)" stroke-width="1.75"/><animate attributeName="opacity" dur="8s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.625;0.7125" values="0;1;0"/><animateMotion dur="8s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.625;0.7125;1" keySplines="0 0 1 1;0.455 0.03 0.515 0.955;0 0 1 1" keyPoints="0;0;1;1"><mpath href="#tp-0" xlink:href="#tp-0"/></animateMotion></g>
+<g class="p0-6" opacity="0" fill="var(--color-data-category-on-1)"><circle r="10" fill="var(--color-data-category-1)" opacity="0.2"/><circle r="4.5" fill="var(--color-data-category-1)" stroke="var(--color-data-category-outline-1)" stroke-width="1.75"/><animate attributeName="opacity" dur="8s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.8125;0.9" values="0;1;0"/><animateMotion dur="8s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.8125;0.9;1" keySplines="0 0 1 1;0.455 0.03 0.515 0.955;0 0 1 1" keyPoints="0;0;1;1"><mpath href="#tp-0" xlink:href="#tp-0"/></animateMotion></g>
+<g class="p0-7" opacity="0" fill="var(--color-data-category-on-4)"><circle r="10" fill="var(--color-data-category-4)" opacity="0.2"/><circle r="4.5" fill="var(--color-data-category-4)" stroke="var(--color-data-category-outline-4)" stroke-width="1.75"/><animate attributeName="opacity" dur="8s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.0625;0.15" values="0;1;0"/><animateMotion dur="8s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.0625;0.15;1" keySplines="0 0 1 1;0.455 0.03 0.515 0.955;0 0 1 1" keyPoints="0;0;1;1"><mpath href="#tp-1" xlink:href="#tp-1"/></animateMotion></g>
+<g class="p0-8" opacity="0" fill="var(--color-data-category-on-4)"><circle r="10" fill="var(--color-data-category-4)" opacity="0.2"/><circle r="4.5" fill="var(--color-data-category-4)" stroke="var(--color-data-category-outline-4)" stroke-width="1.75"/><animate attributeName="opacity" dur="8s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.3125;0.4" values="0;1;0"/><animateMotion dur="8s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.3125;0.4;1" keySplines="0 0 1 1;0.455 0.03 0.515 0.955;0 0 1 1" keyPoints="0;0;1;1"><mpath href="#tp-1" xlink:href="#tp-1"/></animateMotion></g>
+<g class="p0-9" opacity="0" fill="var(--color-data-category-on-4)"><circle r="10" fill="var(--color-data-category-4)" opacity="0.2"/><circle r="4.5" fill="var(--color-data-category-4)" stroke="var(--color-data-category-outline-4)" stroke-width="1.75"/><animate attributeName="opacity" dur="8s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.5625;0.65" values="0;1;0"/><animateMotion dur="8s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5625;0.65;1" keySplines="0 0 1 1;0.455 0.03 0.515 0.955;0 0 1 1" keyPoints="0;0;1;1"><mpath href="#tp-1" xlink:href="#tp-1"/></animateMotion></g>
+<g class="p0-10" opacity="0" fill="var(--color-data-category-on-4)"><circle r="10" fill="var(--color-data-category-4)" opacity="0.2"/><circle r="4.5" fill="var(--color-data-category-4)" stroke="var(--color-data-category-outline-4)" stroke-width="1.75"/><animate attributeName="opacity" dur="8s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.8125;0.9" values="0;1;0"/><animateMotion dur="8s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.8125;0.9;1" keySplines="0 0 1 1;0.455 0.03 0.515 0.955;0 0 1 1" keyPoints="0;0;1;1"><mpath href="#tp-1" xlink:href="#tp-1"/></animateMotion></g>
+
+</g>
+<g class="fl-still" transform="translate(298.6 0)">
+
+<g id="still-n-0" class="fl-node fl-shape-box" tabindex="0" role="img" aria-label="접수" data-id="producer"><rect x="82.7" y="28" width="100" height="47" rx="8" fill="var(--color-ui-card)" class="fl-stroke sa0"/><g class="fl-symbol fl-symbol-concept"><g class="fl-icon" transform="translate(106 41.5) scale(0.83333)"><g transform="translate(0 0) scale(0.5)"><g color="#3d4856"><g><g stroke-linecap="round" stroke-linejoin="round"><rect x="13" y="3" width="20" height="42" rx="5" fill="#a5a7a9" stroke="none" stroke-width="3"/><rect x="18" y="17" width="10" height="14" rx="3" fill="#ffffff" stroke="none" stroke-width="3"/><path d="M3 24H44M36 17L44 24L36 31" fill="none" stroke="#1c60c2" stroke-width="3.5"/></g></g></g></g></g></g><text x="146.7" y="56.9" class="label" text-anchor="middle">접수</text></g>
+<g id="still-n-1" class="fl-node fl-shape-queue" tabindex="0" role="img" aria-label="대기 작업" data-id="jobs"><rect x="60" y="135" width="112" height="67" rx="8" fill="var(--color-ui-card)" class="fl-stroke sa0"/><rect x="78" y="176" width="16" height="14" rx="4" fill="var(--color-figure-queue-empty)" stroke="var(--color-outline)" stroke-width="1"/><rect x="98" y="176" width="16" height="14" rx="4" fill="var(--color-figure-queue-empty)" stroke="var(--color-outline)" stroke-width="1"/><rect x="118" y="176" width="16" height="14" rx="4" fill="var(--color-figure-queue-empty)" stroke="var(--color-outline)" stroke-width="1"/><rect x="138" y="176" width="16" height="14" rx="4" fill="var(--color-figure-queue-empty)" stroke="var(--color-outline)" stroke-width="1"/><text x="116" y="163.9" class="label" text-anchor="middle">대기 작업</text></g>
+<g id="still-n-2" class="fl-node fl-shape-box" tabindex="0" role="img" aria-label="처리" data-id="worker"><rect x="28" y="262" width="176" height="89" rx="8" fill="var(--color-ui-card)" class="fl-stroke sa0"/><g class="fl-symbol fl-symbol-concept"><g class="fl-icon" transform="translate(89.3 275.5) scale(0.83333)"><g transform="translate(0 0) scale(0.5)"><g color="#3d4856"><g stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="3" width="36" height="42" rx="6" fill="#35404c" stroke="none" stroke-width="2.4"/><rect x="8.5" y="5.5" width="31" height="37" rx="3.5" fill="#a5a7a9" stroke="none" stroke-width="2.4"/><rect x="11" y="9" width="26" height="13" rx="3" fill="#f9fafb" stroke="none" stroke-width="2.4"/><path d="M15 13V18M19 13V18M23 13V18" fill="none" stroke="#cfd0d3" stroke-width="2"/><circle cx="31.5" cy="15.5" r="2.1" fill="#639bfa" stroke="none" stroke-width="2.4"/><rect x="11" y="26" width="26" height="13" rx="3" fill="#f9fafb" stroke="none" stroke-width="2.4"/><path d="M15 30V35M19 30V35M23 30V35" fill="none" stroke="#cfd0d3" stroke-width="2"/><circle cx="31.5" cy="32.5" r="2.1" fill="#28a779" stroke="none" stroke-width="2.4"/></g></g></g></g></g><text x="130" y="290.9" class="label" text-anchor="middle">처리</text><rect x="38" y="309" width="156" height="32" rx="6" fill="var(--color-ui-card)" opacity="0" class="fl-card sa2"/><g id="still-n-2-c0" opacity="0" visibility="hidden" class="fl-layer sa1"><text x="46" y="329.7" class="row">완료</text></g></g>
+<g id="still-n-3" class="fl-node fl-shape-box" tabindex="0" role="img" aria-label="재시도 보관" data-id="retry"><rect x="204" y="135" width="130.8" height="47" rx="8" fill="var(--color-ui-card)" class="fl-stroke sa0"/><g class="fl-symbol fl-symbol-concept"><g class="fl-icon" transform="translate(222 148.5) scale(0.83333)"><g transform="translate(0 0) scale(0.5)"><g color="#3d4856"><g stroke-linecap="round" stroke-linejoin="round"><path d="M6 11C6 3 42 3 42 11V37C42 47 6 47 6 37Z" fill="#528aee" stroke="none" stroke-width="2.4"/><path d="M9 14C16 19 32 19 39 14V36C39 42 9 42 9 36Z" fill="#c9ddff" stroke="none" stroke-width="2.4"/><ellipse cx="24" cy="11" rx="16" ry="5" fill="#639bfa" stroke="none" stroke-width="2.4"/><path d="M7.5 23C15 29 33 29 40.5 23M7.5 33C15 39 33 39 40.5 33" fill="none" stroke="#528aee" stroke-width="3"/></g></g></g></g></g><text x="283.4" y="163.9" class="label" text-anchor="middle">재시도 보관</text></g>
+<g id="still-e-0" class="fl-edge "><defs><marker id="still-fl-arrow-0" viewBox="0 0 5 5" refX="4" refY="2.5" markerWidth="5" markerHeight="5" orient="auto-start-reverse" overflow="visible"><path class="fl-arrowhead" d="M 1.1 0.25 L 4 2.5 L 1.1 4.75 Z" stroke-width="1"/></marker></defs><path id="still-p-0" d="M 116 75 L 116 135" class="fl-path" marker-end="url(#still-fl-arrow-0)"/></g>
+<g id="still-e-1" class="fl-edge "><defs><marker id="still-fl-arrow-1" viewBox="0 0 5 5" refX="4" refY="2.5" markerWidth="5" markerHeight="5" orient="auto-start-reverse" overflow="visible"><path class="fl-arrowhead" d="M 1.1 0.25 L 4 2.5 L 1.1 4.75 Z" stroke-width="1"/></marker></defs><path id="still-p-1" d="M 116 202 L 116 262" class="fl-path" marker-end="url(#still-fl-arrow-1)"/></g>
+<g id="still-e-2" class="fl-edge quiet sa3 sa3"><defs><marker id="still-fl-arrow-2" viewBox="0 0 5 5" refX="4" refY="2.5" markerWidth="5" markerHeight="5" orient="auto-start-reverse" overflow="visible"><path class="fl-arrowhead" d="M 1.1 0.25 L 4 2.5 L 1.1 4.75 Z" stroke-width="1"/></marker></defs><path id="still-p-2" d="M 149.3 75 L 149.3 83 Q 149.3 91, 157.3 91 L 247.4 91 Q 269.4 91, 269.4 113 L 269.4 135" class="fl-path" marker-end="url(#still-fl-arrow-2)"/></g>
+<g class="fl-value"><g class="queue-fill" opacity="1" data-v="0" data-t="4"><rect x="78" y="176" width="16" height="14" rx="4" fill="var(--color-data-category-1)" stroke="var(--color-data-category-1)" stroke-width="1"/><rect x="98" y="176" width="16" height="14" rx="4" fill="var(--color-data-category-1)" stroke="var(--color-data-category-1)" stroke-width="1"/><rect x="118" y="176" width="16" height="14" rx="4" fill="var(--color-data-category-1)" stroke="var(--color-data-category-1)" stroke-width="1"/><rect x="138" y="176" width="16" height="14" rx="4" fill="var(--color-data-category-1)" stroke="var(--color-data-category-1)" stroke-width="1"/></g></g>
+<g class="fl-value"><text x="186" y="329.7" class="value" text-anchor="end" opacity="1" data-v="1" data-t="4">4</text></g>
+
+
+</g>
+</svg>

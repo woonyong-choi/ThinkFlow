@@ -64,6 +64,14 @@ scene "주문자 찾기"
 ```
 
 ![조직 안에서 사용자를 찾는 주문](data-composite.svg)<!-- thinkflow -->
+<!-- thinkflow scenes v1 name=composite -->
+<details>
+<summary>주문자 찾기</summary>
+
+![조직 안에서 사용자를 찾는 주문 (주문자 찾기)](data-composite.scene-2.svg)<!-- thinkflow -->
+
+</details>
+<!-- /thinkflow scenes v1 name=composite -->
 
 기본 키는 테이블에 하나다. 여러 열에 `pk`를 붙이면 그 열들을 묶은 기본 키 하나가 되고, 각각이 독립적인 고유 키가 되지는 않는다. `unique (tenant_id, email)`도 두 값의 조합이 고유하다는 뜻이다. 복합 키 일부를 참조하려면 그 일부에 별도의 고유 키가 있어야 한다.
 
