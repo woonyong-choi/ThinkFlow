@@ -116,7 +116,7 @@
 
 /* 그룹은 면이 없다(투명). 경계와 제목만 있고, 깊이에 따라 회색 면을 겹치지 않는다. 고른 색의 면과 경계는 draw/paint.js가 쓴 색에만 더한다. */
 .fl .frame-box {
-  --fx-edge-rest: var(--color-line);
+  --fx-edge-rest: var(--color-figure-outline);
   fill: none;
   stroke: var(--fx-edge-rest);
   stroke-width: var(--border-width-thin);
@@ -248,7 +248,7 @@
   --fx-ink: var(--color-state-active-text);
   --fx-row: var(--color-search-hover);
   --fx-flash: var(--color-search-hover);
-  --fx-edge-rest: var(--color-help-border);
+  --fx-edge-rest: var(--color-figure-outline);
   --fx-ink-rest: var(--color-ui-muted);
   --fx-line-rest: var(--color-line);
 }

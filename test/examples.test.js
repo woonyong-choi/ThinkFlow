@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { test } from 'node:test';
-import { build, descendants, EXAMPLES, findAll, parseMarkup, textsOf, toHtml, toSvg } from './support.js';
+import { build, descendants, EXAMPLES, findAll, parseMarkup, textsOf, toHtml, toSvg, valueOf } from './support.js';
 
 const CHARTS = ['area', 'bar', 'box', 'difference', 'donut', 'dumbbell', 'ecdf', 'heatmap', 'histogram', 'line', 'percent', 'pie', 'scatter', 'stacked', 'step', 'waterfall'];
 const FIGURES = ['api', 'architecture', 'class', 'flow', 'integration', 'memory', 'metric', 'pointer', 'queue', 'schema', 'sequence', 'stack', 'state', 'trace'];
@@ -58,5 +58,38 @@ test('K30 every chart example is the chart kind its file is named after, and say
   for (const kind of CHARTS) {
     const source = readFileSync(join(EXAMPLES, `${kind}.thinkflow`), 'utf8');
     assert.match(source, new RegExp(`^chart\\s+[a-z][a-z0-9-]*\\s+"[^"]*"\\s+${kind}\\b`, 'm'), kind);
+  }
+});
+
+test('#277 pointer insertion shows the same next field before and after, while preserving addresses and traversal', async () => {
+  const source = readFileSync(join(EXAMPLES, 'pointer.thinkflow'), 'utf8');
+  const result = await build(source, { baseDir: EXAMPLES });
+  const inserted = parseMarkup(await toSvg(result, { scene: 2, isStatic: true }));
+  const texts = textsOf(inserted).join(' ');
+
+  for (const label of ['같은 next의 전후 비교', '전: next 0x28', '후: next 0x58', '삽입 전', '삽입 후']) assert.ok(texts.includes(label), `insertion must distinguish ${label}`);
+  for (const label of ['0x10', '0x28', '0x40', '0x58']) assert.ok(texts.includes(label), `node address ${label} is preserved`);
+  assert.equal(valueOf(inserted, 'cur'), '0x58');
+  assert.equal(valueOf(inserted, '방문 수'), '3');
+  const traversed = parseMarkup(await toSvg(result, { scene: 1, isStatic: true }));
+  assert.equal(valueOf(traversed, 'cur'), '0x40');
+  assert.equal(valueOf(traversed, '방문 수'), '3');
+});
+
+test('#279 metric records API 1 CPU at the last surge arrival and keeps that record while live values change', async () => {
+  const source = readFileSync(join(EXAMPLES, 'metric.thinkflow'), 'utf8');
+  const result = await build(source, { baseDir: EXAMPLES });
+  const cases = [
+    { scene: 0, recorded: '미기록', cpus: ['34', '41', '38'], p95: '110' },
+    { scene: 1, recorded: '83', cpus: ['83', '73', '50'], p95: '236' },
+    { scene: 2, recorded: '83', cpus: ['52', '52', '44'], p95: '148' },
+  ];
+
+  for (const { scene, recorded, cpus, p95 } of cases) {
+    const dom = parseMarkup(await toSvg(result, { scene, isStatic: true }));
+    assert.equal(valueOf(dom, 'API 1 CPU 기록(%)'), recorded, `scene ${scene} record`);
+    assert.equal(valueOf(dom, '대시보드 p95'), p95);
+    const texts = textsOf(dom);
+    for (const cpu of cpus) assert.ok(texts.includes(cpu), `scene ${scene} live CPU ${cpu}`);
   }
 });
