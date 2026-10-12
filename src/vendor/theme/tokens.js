@@ -158,7 +158,8 @@ export const tokens = freeze({
       "icon": "var(--color-figure-icon)",
       "queue-empty": "var(--color-figure-queue-empty)",
       "number-fill": "var(--color-figure-number-fill)",
-      "number-ink": "var(--color-figure-number-ink)"
+      "number-ink": "var(--color-figure-number-ink)",
+      "outline": "var(--color-figure-outline)"
     },
     "paint": {
       "red": {
@@ -1529,7 +1530,8 @@ export const values = freeze({
       "icon": "#1e6bd6",
       "queue-empty": "#f0f0f0",
       "number-fill": "#303336",
-      "number-ink": "#ffffff"
+      "number-ink": "#ffffff",
+      "outline": "#888888"
     },
     "paint": {
       "red": {

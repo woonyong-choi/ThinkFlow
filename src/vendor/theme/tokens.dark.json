@@ -204,6 +204,10 @@
       "queue-empty": {
         "$value": "{color.gray.910}",
         "$type": "color"
+      },
+      "outline": {
+        "$type": "color",
+        "$value": "{color.line}"
       }
     },
     "flow": {
