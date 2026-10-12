@@ -1,0 +1,46 @@
+thinkflow
+title "페이징 기반 주소 변환"
+width wide
+subtitle "교육용 단일 단계 · 페이지 8바이트 · 가상·물리 주소 각각 8비트 · VPN은 행 인덱스 · TLB와 다단계 표 생략"
+
+grid va "가상 주소 75" cols=8 {
+  item vpn "VPN 9 (5비트)" col=0 cols=5
+  item off "오프셋 3 (3비트)" col=5 cols=3
+}
+grid pt "페이지 표" rows=5 cols=3 {
+  item hv "VPN" row=0 col=0
+  item hp "권한" row=0 col=1
+  item hf "PFN" row=0 col=2
+  item v8 "8" row=1 col=0
+  item p8 "R" row=1 col=1
+  item f8 "2" row=1 col=2
+  item v9 "9" row=2 col=0
+  item p9 "RW" row=2 col=1
+  item f9 "4" row=2 col=2
+  item v10 "10" row=3 col=0
+  item p10 "R" row=3 col=1
+  item f10 "7" row=3 col=2
+  gap rest "나머지 항목" row=4 col=0 cols=3 count=29
+}
+grid pa "물리 주소 35" cols=8 {
+  item pfn "PFN 4 (5비트)" col=0 cols=5
+  item off "오프셋 3 (3비트)" col=5 cols=3
+}
+
+va.vpn -> pt.v9 "VPN으로 조회" no=1
+pt.f9 -> pa.pfn "PFN 전달" no=2
+va.off -> pa.off "오프셋 유지"
+
+view graph right
+
+scene "주소 구조" mode=static
+  light va.vpn pt.v9 pt.p9 pt.f9 pa.pfn
+
+scene "주소 변환" mode=once
+  light va.vpn
+  va.vpn -> pt.v9
+  light pt.v9 pt.p9 pt.f9
+  pt.f9 -> pa.pfn
+  light pa.pfn
+  va.off -> pa.off tone=gray
+  light va.off pa.off

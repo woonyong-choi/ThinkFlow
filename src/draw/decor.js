@@ -2,7 +2,6 @@
 import { ratio } from '../format.js';
 import { BADGE_STYLE } from '../measure/decor.js';
 import { centerBaseline, escapeXml, roundCoord as r } from '../text.js';
-import { headBox } from '../layout/titles.js';
 import { values } from '../vendor/theme/tokens.js';
 import { iconBody } from '../vendor/theme/ui/svg.mjs';
 
@@ -38,19 +37,6 @@ function drawSymbol(iconData, { x, y, size, prefix }) {
 function iconAt(iconData, { x, y, size, prefix }) {
   const body = iconData.svg ? iconBody(iconData.svg, { size: ICON_GRID, prefix }) : iconData.body;
   return `<g class="fl-icon" transform="translate(${r(x)} ${r(y)}) scale(${ratio(size / ICON_GRID)})">${body}</g>`;
-}
-
-// cost: time O(1), heap O(out), stack O(1)
-// vars: out = 만든 SVG 글자 수
-// basis: estimate
-/**
- * 그룹 제목 줄 왼쪽의 아이콘 타일. 그룹 틀 안쪽 왼쪽 위에 둥근 타일로 놓는다.
- * @param g 그룹(x, y, iconData)
- */
-export function drawGroupTab(g, index) {
-  const size = values.spacing.figure.group.title - values.spacing["2"];
-  // 탭은 제목 덩어리 사각형(layout/titles.js headBox: 선이 탭을 지나면 탭과 제목이 한 덩어리로 비킨다) 왼쪽 위에서 안쪽으로 들인다.
-  return drawSymbol(g.iconData, { x: headBox(g, g.titleDx).x + values.spacing["2"], y: g.y + values.spacing["1"], size, prefix: `icon-g-${index}` });
 }
 
 // 글자 배지. 배지와 복제 개수가 같은 모양이다(선 라벨 알약과는 다른 역할이다: draw/connector.js).

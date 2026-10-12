@@ -2,7 +2,7 @@
 import { escape, safeUrl, slot, id, out } from './html.mjs';
 import { ToolButton, Toolbar, ToolHeader } from './toolbar.mjs';
 import { ControlIcon } from './icons.mjs';
-const CARD_VARIANTS = ['centered', 'grouped', 'inline', 'related', 'summary'];
+export const CARD_VARIANTS = ['centered', 'grouped', 'inline', 'related', 'summary'];
 
 /** 본문 블록 폭: content(본문 폭), narrow(좁은 미디어 폭), wide(넓은 미디어 폭). */
 export const WIDTHS = ['content', 'narrow', 'wide'];

@@ -227,7 +227,7 @@ function createPacket(hop, stage) {
   g.setAttribute('fill', metrics.toneInks?.[hop.tone] ?? metrics.chipInk);
   g.innerHTML = `<circle r="${metrics.halo}" fill="${color}" opacity="${metrics.haloOpacity}"/><circle r="${metrics.packet}" fill="${color}"${outline ? ` stroke="${outline}" stroke-width="${metrics.chipStroke}"` : ''}/>`;
   layer.appendChild(g);
-  const chip = hop.data ? createChip(hop.data, { layer, metrics, color: hop.tone ? color : undefined, outline }) : undefined;
+  const chip = hop.data ? createChip(hop.data, { size: hop.chipSize, metrics, color: hop.tone ? color : undefined, outline }) : undefined;
   if (chip) g.appendChild(chip.g);
   const length = path.getTotalLength();
   const slide = chipSlide(hop, metrics);
@@ -260,7 +260,7 @@ function cutFade(hop, t, metrics) {
   return hop.cut === undefined ? 1 : Math.min(1, (hop.cut - t) / metrics.cutFadeMs);
 }
 
-function createChip(lines, { layer, metrics, color, outline }) {
+function createChip(lines, { size, metrics, color, outline }) {
   const chip = document.createElementNS(SVG_NS, 'g');
   const rect = document.createElementNS(SVG_NS, 'rect');
   rect.setAttribute('rx', metrics.chipRadius);
@@ -271,10 +271,7 @@ function createChip(lines, { layer, metrics, color, outline }) {
   }
   chip.appendChild(rect);
   const texts = lines.map((line) => createChipLine(line, chip));
-  // 글 폭은 그림 안에 있어야 잴 수 있어 점 층에 잠깐 붙인다. 점 묶음(g)이 곧 이 요소를 데려간다.
-  layer.appendChild(chip);
-  const w = Math.max(...texts.map((t) => t.getComputedTextLength())) + metrics.chipPadX;
-  const h = texts.length * metrics.chipLine + metrics.chipPadY;
+  const { w, h } = size;
   const top = -h - metrics.chipGap;
   rect.setAttribute('x', -w / 2);
   rect.setAttribute('y', top);

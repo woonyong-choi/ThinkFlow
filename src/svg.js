@@ -6,7 +6,6 @@ import { mapSceneCharts, sceneCharts } from './chart-scene.js';
 import { animateFrameBody } from './animate/frames.js';
 import { createAnimator } from './animate/animator.js';
 import { createClock } from './animate/clock.js';
-import { chartMotionCss } from './chart/motion.js';
 import { drawScene } from './draw/figure.js';
 import { hasStatus } from './draw/status.js';
 import { paintCss } from './draw/paint.js';
@@ -15,7 +14,7 @@ import { createGlyphSet, embedFonts } from './measure/fonts.js';
 import { STYLES, tokensFor, figureDefs, patternDefs } from './styles.js';
 import { WHOLE_CHART } from './timeline-charts.js';
 import { escapeXml, plainText, roundCoord as r } from './text.js';
-import { tokens, values } from './vendor/theme/tokens.js';
+import { values } from './vendor/theme/tokens.js';
 
 // cost: time O(g·b + b·h + out), heap O(out), stack O(1), io 1
 // vars: g = 켜고 끄는 요소 수, b = 박자 수, h = 박자의 이동 수, out = 만든 SVG 글자 수
@@ -49,26 +48,22 @@ export async function toSvg(result, { scene: selector = 0, isStatic = false, nam
   const fonts = await embedFonts(glyphs.used);
   const title = figure.title ?? name;
   const chartStyle = charts.length || result.scene.times.length ? STYLES.chart : '';
-  const motion = charts.length ? chartMotionCss(timeline.growMs, charts.flatMap((c) => c.drawn.dotAts)) : '';
   const place = (layer, className) => `<g${className ? ` class="${className}"` : ''} transform="translate(${r((width - layer.content.width) / 2)} 0)">\n${layer.content.svg}\n</g>`;
   const layers = stillLayer ? `${place(motionLayer, 'fl-motion')}\n${place({ content: { ...stillLayer.content, svg: scopeIds(stillLayer.content.svg, 'still-') } }, 'fl-still')}` : place(motionLayer);
   const head = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="fl" width="${r(shownWidth)}" height="${r(shownHeight)}" viewBox="0 0 ${r(width)} ${r(height)}" role="img" data-scene="${si}" data-mode="${mode}">
 <title>${escapeXml(plainText(title))}</title>
 `;
-  const styles = `${STYLES.figure}${paintCss(result.scene)}${chartStyle}${motion}${hasStatus(timeline) ? STYLES.status : ''}
-${motionLayer.css.join('\n')}${stillLayer ? `\n${stillLayer.css.join('\n')}\n${STILL_CSS}` : ''}
+  const styles = `${STYLES.figure}${paintCss(result.scene)}${chartStyle}${hasStatus(timeline) ? STYLES.status : ''}
+${motionLayer.css.join('\n')}${stillLayer ? `\n${stillLayer.css.join('\n')}` : ''}
 `;
   const body = `<defs>${figureDefs(figure)}${patternDefs(charts.map(({ drawn }) => drawn))}</defs>
-<rect x="${values["border-width"].thin / 2}" y="${values["border-width"].thin / 2}" width="${r(width - values["border-width"].thin)}" height="${r(height - values["border-width"].thin)}" rx="${values.radius["card-radius"]}" fill="${tokens.color["prose-pre-background"]}"/>
+<rect x="${values["border-width"].thin / 2}" y="${values["border-width"].thin / 2}" width="${r(width - values["border-width"].thin)}" height="${r(height - values["border-width"].thin)}" class="fl-canvas-surface"/>
 ${layers}
 </svg>
 `;
   // 배경, defs와 정지 층까지 완성한 뒤 문서 전체가 쓰는 토큰을 남긴다.
   return `${head}<style>${fonts}\n${tokensFor(head + fonts + styles + body)}${styles}</style>\n${body}`;
 }
-
-// 움직임 줄이기에서 보이는 층. 움직임 층(SMIL, keyframes)은 스크립트 없이 CSS 미디어 질의 하나로 숨기고 마지막 모습 층을 보인다. 문서에 직접 넣은(인라인) SVG에서 동작한다(실제 Chrome으로 확인). `<img>`로 넣은 SVG는 Chrome이 이 질의를 평가하지 않아 움직임 줄이기에서도 처음 모습이므로, 그 자리에서는 `<picture>`의 `media` 소스로 정지 SVG를 골라야 한다.
-const STILL_CSS = '.fl .fl-still { display: none; }\n@media (prefers-reduced-motion: reduce) {\n  .fl .fl-motion { display: none; }\n  .fl .fl-still { display: inline; }\n}';
 
 // cost: time O(g·b + b·h + out), heap O(out), stack O(1)
 // vars: g = 켜고 끄는 요소 수, b = 박자 수, h = 박자의 이동 수, out = 만든 SVG 글자 수

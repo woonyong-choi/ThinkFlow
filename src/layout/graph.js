@@ -117,7 +117,7 @@ function hasColumnEdges(figure) {
  * 2. 자동 비율로 접는다. 폭에 들 때까지 비율을 낮춰 가며 FOLD_TRIES번까지 본다.
  * 3. 별도의 좁은 목표 폭에서도 넘치면 한 층당 도형 하나인 세로 후보를 비교한다. 관계나 사건 순서는 바꾸지 않는다.
  * 캔버스에 들고 비율이 알맞은 범위(FIT_MIN~FIT_MAX) 안인 첫 후보를 쓴다. 범위 안인 후보가 없으면 캔버스에 드는 후보 가운데 범위에 가장 가까운 것을 쓴다.
- * 캔버스에 드는 후보가 없으면 가장 좁은 배치를 쓰고, 표시 폭만 줄인다(docs/design/layout.md 그림 크기).
+ * 캔버스에 드는 후보가 없으면 가장 좁은 배치를 쓴다. HTML은 자연 크기와 내부 가로 스크롤을 유지한다.
  */
 async function fitCanvas(figure, sizes, { flat, canvas }) {
   let narrowest = flat;
@@ -147,8 +147,7 @@ async function fitCanvas(figure, sizes, { flat, canvas }) {
     consider(await arrange({ ...figure, direction: 'down', aspect: undefined, oneNodePerLayer: true }, sizes));
     if (narrowest.laid.width > canvas && figure.groups.length) {
       const grouped = await arrange({ ...figure, direction: 'down', aspect: undefined, oneNodePerLayer: true, compactGroups: true }, sizes);
-      // 그룹까지 길게 풀어도 목표 폭에 들지 않으면 기존 후보를 유지한다.
-      if (grouped.laid.width <= canvas) consider(grouped);
+      consider(grouped);
     }
   }
   return fitting.sort((a, b) => ratioMiss(a.laid, canvas) - ratioMiss(b.laid, canvas))[0] ?? narrowest;

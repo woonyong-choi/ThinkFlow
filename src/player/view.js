@@ -1,6 +1,6 @@
 // 브라우저에서 돈다(play.js와 한 스크립트로 이어 붙는다).
 // 도구 막대(문법 복사, HTML 다운로드, 전체 화면 순서. 앞 둘은 player/export.js)와, 전체 화면에서만 켜지는 확대·축소·끌어 옮기기를 맡는다. 문서 안에서는 그림을 그대로 보인다. 전체 화면은 보는 방식만 바꾸고 장면과 시계에 손대지 않는다.
-// 판은 SVG 한 장씩이고, 문서 안에서는 모든 판이 같은 비율로 줄어 구역에 다 들어온다(CSS .dp-panel > svg). 전체 화면의 확대는 판 묶음 폭의 배수이고 옮기기는 그림 영역의 스크롤이다.
+// 판은 SVG 한 장씩이고, 문서 안에서는 자연 크기를 유지하며 넘치는 가로 부분은 그림 영역에서 스크롤한다. 전체 화면의 확대는 판 묶음 폭의 배수다.
 
 /**
  * 그림 틀에 문법 복사, HTML 다운로드, 전체화면 단추와 확대·축소를 붙인다.
@@ -30,8 +30,14 @@ function bindResponsiveView(viewer, swapLayout) {
     if (root.classList.contains('full')) return;
     const isNarrow = Boolean(swapLayout && responsive && root.clientWidth < responsive.breakpoint && root.clientWidth < widest);
     if (swapLayout) viewer.data = { ...viewer.data, ...swapLayout(isNarrow) };
+    updateCanvasFocus(viewer);
   };
-  addEventListener('resize', viewer.fit);
+  new ResizeObserver(viewer.fit).observe(root);
+}
+
+function updateCanvasFocus({ root, canvas }) {
+  if (root.classList.contains('full') || canvas.scrollWidth > canvas.clientWidth) canvas.tabIndex = 0;
+  else canvas.removeAttribute('tabindex');
 }
 
 function bindFull(viewer) {
@@ -79,9 +85,7 @@ function showFull(viewer, isFull) {
   const wasFull = root.classList.contains('full');
   if (isFull && !wasFull && !viewer.returnFocus) viewer.returnFocus = document.activeElement;
   root.classList.toggle('full', isFull);
-  // 스크롤하는 전체 화면 캔버스만 키보드 초점을 받아 방향키로 옮겨 볼 수 있다. 문서 안 캔버스는 넘치지 않는다.
-  if (isFull) viewer.canvas.tabIndex = 0;
-  else viewer.canvas.removeAttribute('tabindex');
+  updateCanvasFocus(viewer);
   if (window.self !== window.top) parent.postMessage({ figureFullscreen: isFull && document.fullscreenElement !== root }, '*');
   fullButton.innerHTML = ToolIcon(isFull ? 'minimize-2' : 'maximize-2');
   const label = isFull ? '전체화면 종료' : '전체화면';

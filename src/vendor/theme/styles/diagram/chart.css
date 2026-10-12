@@ -18,7 +18,7 @@
 
 /* 글자 뒤 바탕 면과 받침 선은 차트가 놓인 면의 색이다. 차트 보기는 그림 바탕(설명 판), 차트 카드는 카드 면이다(켜진 카드는 켜진 면). 받는 쪽은 차트 묶음(.fl-chart)의 color를 currentColor로 읽는다. */
 .fl {
-  --chart-ground: var(--color-prose-pre-background);
+  --chart-ground: var(--color-figure-canvas);
 }
 
 .fl .fl-node {
@@ -168,15 +168,19 @@
 }
 
 .fl .chart-rule {
-  stroke: var(--color-ui-muted);
+  stroke: var(--color-data-grid);
   stroke-width: var(--border-width-thin);
   stroke-dasharray: var(--dash-line) var(--dash-gap);
+}
+
+.fl .chart-histogram-bin {
+  clip-path: inset(0 round var(--radius-sm) var(--radius-sm) 0 0) fill-box;
 }
 
 .fl .chart-whisker,
 .fl .chart-median,
 .fl .chart-ci {
-  stroke: var(--color-figure-data-line);
+  stroke: var(--color-data-grid);
   stroke-width: var(--border-width-tag);
 }
 
@@ -187,7 +191,7 @@
 
 .fl .chart-interval {
   fill: none;
-  stroke: var(--color-ui-muted);
+  stroke: var(--color-data-grid);
   stroke-width: var(--border-width-edge);
 }
 
@@ -201,7 +205,7 @@
 }
 
 .fl .chart-after {
-  stroke: currentColor;
+  stroke: var(--chart-boundary, currentColor);
   stroke-width: var(--border-width-tag);
 }
 
@@ -236,6 +240,10 @@
 .fl .grow {
   transform-box: fill-box;
   transform-origin: left center;
+}
+
+.fl .grow.from-end {
+  transform-origin: right center;
 }
 
 .fl .hidden {
@@ -275,4 +283,30 @@
 
 .fl .chart-waterfall-total {
   font-weight: var(--font-weight-semibold);
+}
+
+/* 표식의 기하와 계열 효과색은 소비자가 전달하고, 겹침의 면·고리·글자 후광은 여기서 정한다. */
+.fl .fl-mark-pulse {
+  fill: var(--pulse-effect);
+  fill-opacity: var(--opacity-halo);
+  stroke: none;
+  stroke-width: var(--pulse-width, var(--border-width-tag));
+}
+
+.fl .fl-mark-pulse.has-ring {
+  stroke: var(--pulse-effect);
+}
+
+.fl .fl-mark-pulse.is-line {
+  fill: none;
+  stroke: var(--pulse-effect);
+  stroke-width: var(--pulse-width, var(--border-width-edge));
+}
+
+.fl .fl-mark-pulse.is-text {
+  fill: none;
+  stroke: var(--pulse-effect);
+  stroke-opacity: var(--opacity-halo);
+  stroke-width: var(--border-width-casing);
+  stroke-linejoin: round;
 }

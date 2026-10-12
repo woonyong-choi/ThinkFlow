@@ -1,17 +1,17 @@
 // 표본 추출기(src/player/sample.js)의 계약. 장면과 시각을 주면 그 순간의 모습을 돌려주는 순수 함수 하나를 한 번만 본다. 종류마다 되풀이하지 않는다.
-// 시험은 공개 진입점(buildFigure -> toHtml)이 HTML에 싣는 재생 데이터를 읽고, 바뀌지 않은 curve.js와 sample.js를 격리 컨텍스트(node:vm)에 불러 실제 buildScenes와 sampleScene에 먹인다.
+// 시험은 공개 진입점(buildFigure -> toHtml)이 HTML에 싣는 재생 데이터를 읽고, HTML이 쓰는 PLAYER_SCRIPT를 격리 컨텍스트(node:vm)에 불러 실제 buildScenes와 sampleScene에 먹인다.
 // 기대값은 최소 원본의 사건(이동 시각, 값 변화, 장면 길이)에서 따로 셈한다. 비공개 기록의 모양을 굳히지 않고 보이는 의미(선이 켜졌는가, 후광이 있는가, 보일 글)만 비교한다.
 import assert from 'node:assert/strict';
-import { readFileSync } from 'node:fs';
+import { PLAYER_SCRIPT } from '../src/html/player-script.js';
+import { MOVE, progressAt, timeAt, paceLength, paceProgress } from '../src/easing.js';
 import { test } from 'node:test';
 import vm from 'node:vm';
 import { build, thinkflow, findAll, parseMarkup, textContent, toHtml } from './support.js';
 
-const playerFile = (name) => readFileSync(new URL(`../src/player/${name}.js`, import.meta.url), 'utf8');
 const CARRIED = /figurePlay\(document\.querySelector\('\.fl-figure'\), (\{.*\})\);\s*$/s;
 
 /**
- * 원본을 HTML 재생기 문서로 만들고 재생기에 넘기는 재생 데이터를 꺼낸다. 표본 추출기는 curve.js와 sample.js만 격리 컨텍스트에 올려 쓴다(DOM, 시계, 난수가 없다).
+ * 원본을 HTML 재생기 문서로 만들고 재생기에 넘기는 재생 데이터를 꺼낸다. HTML과 같은 재생기 스크립트를 격리 컨텍스트에 올리고 순수 표본 추출기만 부른다(DOM과 시계는 실행하지 않는다).
  * sample은 한 번 만든 사건 모델을 계속 쓰고, fresh는 부를 때마다 모델을 새로 만든다. 돌려주는 모습은 컨텍스트 밖의 평범한 값이다.
  */
 async function player(source) {
@@ -20,8 +20,8 @@ async function player(source) {
   const carried = CARRIED.exec(script);
   assert.ok(carried, 'the page script ends with the playback data');
   const data = JSON.parse(carried[1]);
-  const context = vm.createContext({});
-  vm.runInContext(`${playerFile('curve')}\n${playerFile('sample')}`, context, { filename: 'player/curve.js+sample.js' });
+  const context = vm.createContext({ matchMedia: () => ({ matches: false }) });
+  vm.runInContext(PLAYER_SCRIPT, context, { filename: 'player-script.js' });
   const plain = (frame) => JSON.parse(JSON.stringify(frame));
   const scenes = context.buildScenes(data);
   return {
@@ -280,4 +280,40 @@ test('Q8 the last frame is at rest: no halo and no line pill is left over, at an
     }
   }
   assert.deepEqual(left, []);
+});
+
+
+test('grid cell values change at arrival and restore when seeking backwards', async () => {
+  const source = thinkflow(`
+    box a "A"
+    grid g "Grid" {
+      item cell "unused"
+    }
+    value cell "Current" on=g.cell from=empty
+    a -> g.cell
+    scene "change" mode=once
+      a -> g.cell time=1s set="cell=loaded"
+  `);
+  const view = await player(source);
+  assert.ok(view.sample(0, 0).values.includes('empty'));
+  assert.ok(view.sample(0, 999).values.includes('empty'));
+  assert.ok(view.sample(0, 1000).values.includes('loaded'));
+  assert.deepEqual(view.sample(0, 0), view.fresh(0, 0));
+});
+
+test('shared motion math preserves forward and inverse browser results', () => {
+  const context = vm.createContext({ matchMedia: () => ({ matches: false }) });
+  vm.runInContext(PLAYER_SCRIPT, context);
+  const browser = vm.runInContext('({ progressAt, timeAtProgress })', context);
+  const paces = [undefined, [[0, 0], [0.3, 0.1], [0.7, 0.8], [1, 1]]];
+  for (const curve of [MOVE, [0, 0, 1, 1], [0.25, 0.1, 0.25, 1]]) {
+    for (const pace of paces) {
+      for (const at of [0, 0.001, 0.1, 0.3, 0.5, 0.9, 0.999, 1]) {
+        const position = paceLength(pace, progressAt(curve, at));
+        assert.equal(browser.progressAt(curve, at, pace), position);
+        assert.equal(browser.timeAtProgress(curve, at, pace), timeAt(curve, paceProgress(pace, at)));
+        assert.ok(Math.abs(browser.timeAtProgress(curve, position, pace) - at) < 1e-7);
+      }
+    }
+  }
 });

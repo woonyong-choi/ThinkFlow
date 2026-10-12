@@ -7,13 +7,13 @@ import { escapeXml, plainText, roundCoord as r } from '../text.js';
 import { drawHead } from './card.js';
 import { drawEdge, drawEdgeLabel } from './connector.js';
 import { contentBox, createTones, drawContent } from './content.js';
-import { drawDecor, drawGroupTab } from './decor.js';
+import { drawDecor } from './decor.js';
 import { lookClass, lookOf } from './look.js';
 import { sceneTag } from './scene-tag.js';
 import { drawSequenceFragments } from './sequence-fragments.js';
 import { drawSequenceLife } from './sequence-life.js';
 import { drawShape } from './shape.js';
-import { CORNER, LINE_DASH, rectOpen } from './surface.js';
+import { CORNER, rectOpen } from './surface.js';
 import { drawText, drawTexts } from './texts.js';
 import { drawPlot, drawTime } from './time.js';
 
@@ -46,12 +46,12 @@ export function drawScene(scene, decorate, glyphs) {
 // 그리는 데 함께 쓰는 것: toneOf(카드 태그 색), decorate(움직이는 SVG의 class), glyphs(쓴 글자 모음), scene(후광이 바깥 바탕을 찾는 데 쓴다)
 function drawGroup(g, j, { decorate, glyphs }) {
   const head = placeGroupHead(g);
-  const decor = head.decor ? drawDecor(head.decor, { x: g.x + head.decor.x, y: g.y + head.decor.y, iconData: g.iconData }, glyphs) : '';
+  const decor = head.decor ? drawDecor(head.decor, { x: g.x + head.decor.x, y: g.y + head.decor.y, iconData: g.iconData, prefix: `icon-g-${j}` }, glyphs) : '';
   // 그룹은 면이 없다(투명). 경계와 제목만 있고, 중첩 깊이로 면을 바꾸지 않는다. 고른 색은 제목과 아이콘, 표현에 따라 옅은 면이나 경계에만 쓴다(look.js).
   const dashed = g.border === 'dashed';
   return (
-    `<g id="g-${j}" class="fl-group${g.iconData ? ' tabbed' : ''}${lookClass(lookOf(g))}" data-id="${escapeXml(g.id)}"><rect x="${r(g.x)}" y="${r(g.y)}" width="${r(g.w)}" height="${r(g.h)}" rx="${CORNER.outer}" class="frame-box fl-stroke${dashed ? ' dashed' : ''} ${decorate('group', j)}"${dashed ? ` stroke-dasharray="${LINE_DASH}"` : ''}/>` +
-    `${g.iconData ? drawGroupTab(g, j) : ''}${drawText(head.text, g, glyphs)}${decor}</g>`
+    `<g id="g-${j}" class="fl-group${g.iconData ? ' tabbed' : ''}${lookClass(lookOf(g))}" data-id="${escapeXml(g.id)}"><rect x="${r(g.x)}" y="${r(g.y)}" width="${r(g.w)}" height="${r(g.h)}" rx="${CORNER.outer}" class="frame-box fl-stroke${dashed ? ' dashed' : ''} ${decorate('group', j)}"/>` +
+    `${drawText(head.text, g, glyphs)}${decor}</g>`
   );
 }
 

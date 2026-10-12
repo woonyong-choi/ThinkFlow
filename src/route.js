@@ -63,7 +63,7 @@ export function pointAlong(pts, fraction) {
     if (left <= length) return pointToward(pts[i - 1], pts[i], left);
     left -= length;
   }
-  return pts.at(-1);
+  return { ...pts.at(-1) };
 }
 
 // cost: time O(p), heap O(1), stack O(1)
@@ -84,7 +84,7 @@ function dropRepeats(points) {
     if (out.length && distance(out.at(-1), p) < 0.5) continue;
     if (out.length >= 2) {
       const [a, b] = [out.at(-2), out.at(-1)];
-      if (Math.abs((b.x - a.x) * (p.y - b.y) - (b.y - a.y) * (p.x - b.x)) < 0.5) out.pop();
+      if (Math.abs((b.x - a.x) * (p.y - b.y) - (b.y - a.y) * (p.x - b.x)) < 0.5 && (b.x - a.x) * (p.x - b.x) + (b.y - a.y) * (p.y - b.y) > 0) out.pop();
     }
     out.push(p);
   }

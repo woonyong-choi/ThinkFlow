@@ -1,6 +1,7 @@
 // 계열 범례. 막대, 누적, 퍼센트, 선, 계단, 누적분포, 산점도 모두 한 가지 범례 칸(legendSwatch)과 한 가지 줄 배치를 쓴다.
 // 막대 종류는 속이 차거나 빈 칸(무늬 포함), 선 종류는 짧은 선분(점선 포함)과 모양 표식, 점 종류는 모양 표식이다.
 // 막대 종류와 산점도의 둘 이상의 계열은 `1 이름`처럼 번호 키를 달아 색 없이도 조각과 점 이름에 이어 읽게 한다(번호는 계열 목록 순서다. 원본 해석이 main을 앞에 세우고 나머지는 선언 순서를 지킨다).
+import { STYLE } from '../measure/texts.js';
 import { measure, wrap } from '../measure/fonts.js';
 import { renderRich, roundCoord as r } from '../text.js';
 import { values } from '../vendor/theme/tokens.js';
@@ -66,7 +67,7 @@ function legendSwatch(chart, i, kind, { x, y }) {
   if (kind === 'dot') return marker;
   const span = `x1="${r(x)}" x2="${r(x + swatchWidth(kind))}" y1="${r(cy)}" y2="${r(cy)}"`;
   const dash = isReference(chart, i) ? ' class="chart-dashed"' : '';
-  return `<line ${span} stroke="${seriesStroke(chart, i)}" stroke-width="${values["border-width"].strong}"${dash}/>${marker}`;
+  return `<line ${span} stroke="${seriesStroke(chart, i)}" stroke-width="${values["border-width"].strong}"${dash}/>${isReference(chart, i) ? '' : marker}`;
 }
 
 // cost: time O(s)
@@ -89,7 +90,7 @@ export function drawLegend(figure, y) {
   const { chart, chartType } = figure;
   const kind = KINDS[chartType] ?? 'fill';
   const limit = (chart.layout?.width ?? WIDTH) - PAD;
-  const lineHeight = TEXT['11'] * values.leading.normal;
+  const lineHeight = STYLE.meta.line;
   const room = limit - PAD - swatchWidth(kind) - SPACE["1-5"];
   const entries = legendOrder(figure).map(({ i }) => {
     const lines = wrap(legendText(figure, i), room, { size: TEXT['11'] });

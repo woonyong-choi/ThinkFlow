@@ -76,7 +76,7 @@ function checkStatusPills({ statuses, pills, boxes, figure, scene }, problems) {
   if (!statuses.length) return;
   const texts = textBoxes(scene);
   for (const s of statuses) {
-    const line = figure.steps.find((step) => step.status?.some((entry) => entry.node === s.node)).line;
+    const line = figure.steps.find((step) => step.status?.some((entry) => entry.node === s.node && entry.kind === s.kind)).line;
     const who = `status pill "${s.name}" on node "${s.node}"`;
     for (const text of texts) if (overlaps(s, text)) problems.error(line, `[check 2] ${who} covers the text "${text.name}". Shorten the name, or move the status to a shape whose corner is free`);
     for (const box of boxes) if (box.id !== s.node && overlaps(s, box)) problems.error(line, `[check 2] ${who} overlaps node "${box.id}" (line ${box.line}). Remove the status or change the declaration order so the shapes sit farther apart`);

@@ -7,7 +7,7 @@ chart errors "엔드포인트별 5xx 오류율" bar "예시 데이터. 요청 10
   decimals 2
   series before "배포 전" role=compare
   series after "배포 후" role=main
-  series goal "목표" role=reference
+  series goal "목표 · 기준값" role=reference
   missing "측정 없음"
   rule 1 "SLO 1%"
   row "GET /products" before=0.42 before.low=0.31 before.high=0.55 after=0 after.low=0 after.high=0.06 goal=0.5

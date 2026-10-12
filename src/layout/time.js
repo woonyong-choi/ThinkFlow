@@ -87,7 +87,7 @@ function packRows(spans, scale) {
     const w = Math.max(SPACE['1'], scale.at(span.at + span.dur) - x);
     const nameW = measure(span.label, TEXT['11']);
     // 이름은 막대 오른쪽에 두고, 그림 오른쪽 끝을 넘으면 막대 왼쪽에 둔다.
-    const isLeft = x + w + NAME_GAP + nameW > WIDTH - PAD;
+    const isLeft = x + w + NAME_GAP + nameW > scale.start + scale.length;
     const [from, to] = isLeft ? [x - NAME_GAP - nameW, x + w] : [x, x + w + NAME_GAP + nameW];
     let k = edges.findIndex((end) => end <= from);
     if (k < 0) k = edges.length;

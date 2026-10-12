@@ -1,6 +1,7 @@
 // 흐름 글 상자가 도형 이름을 가려 많이 숨거나 박자 이동의 글 상자가 보이는 시간의 6할을 못 채우는 그림에서, 글 상자가 지나는 선의 간격이 얼마나 필요한지 정한다(docs/design/layout.md 이동 글 간격).
 // 배치가 그 선에 간격을 요구하도록 다시 배치할 때 쓰는 값이고, 숨음이 없는 그림은 건드리지 않는다. 이동 시간이나 원본의 시각은 바꾸지 않는다.
 // 박자 이동은 층 간격에 더해 선 옆을 쓸고 지나는 폭(옆 폭, sweep)도 요구한다. 배치 뒤 선 옆에 자리를 고르는 그룹 제목과 끝 라벨(다중성)이 그 폭 밖에 선다.
+import { ROOM_BASE } from './layout/elk.js';
 import { CHIP_CLEAR, CHIP_GAP, sizeChip } from './chip.js';
 import { issuesOfHop } from './chip-plan.js';
 import { chipLines, chipObstacles } from './draw/boxes.js';
@@ -36,7 +37,7 @@ function edgesOfLeg(k, { hop, names, scene }) {
 // basis: estimate
 /**
  * 글 상자가 도형 이름을 가려 보이는 시간의 25% 넘게 숨는(그림 검사 7번이 경고하는) 흐름과, 보이는 시간이 6할을 못 채우는 박자 이동이 지나는 선마다 필요한 간격(px)을 돌려준다.
- * 간격은 글 상자 폭(세로 그림은 높이)에 글 상자 간격 두 쪽을 더한 값이고, 이미 요구한 간격(asked)이 있으면 거기에 토큰 `scale.chip-room-step`을 더한다.
+ * 첫 요구는 ELK 기본 층·라벨 간격에 글 상자 폭(세로 그림은 높이)과 글 상자 간격 두 쪽을 추가한 값이고, 이미 요구한 간격(asked)이 있으면 거기에 토큰 `scale.chip-room-step`을 더한다.
  * 박자 이동은 옆 폭 `{ x, y }`도 요구한다: 세로 구간은 글 상자 반 폭과 CHIP_CLEAR(x), 가로 구간은 글 상자 높이와 CHIP_GAP(y)이다. 옆 폭은 글 상자 크기에서 한 번 정해지고 되풀이해 키우지 않는다.
  * @param context { scene, timeline, avoid, directions }. directions는 그래프 보기 이름 → 그 보기의 바깥 방향이다
  * @param asked 지난 배치가 요구한 Map<`보기\u0000선 번호`(보기 안 순서), px>
@@ -84,7 +85,7 @@ function addHopNeeds(needs, hop, { scene, timeline, avoid, directions, asked }) 
     const { view, index } = scene.edges[e];
     if (!directions.has(view)) return;
     const key = `${view}\u0000${index}`;
-    const base = (directions.get(view) === 'down' ? chip.h : chip.w) + CHIP_GAP * 2;
+    const base = ROOM_BASE + (directions.get(view) === 'down' ? chip.h : chip.w) + CHIP_GAP * 2;
     needs.set(key, Math.max(needs.get(key) ?? 0, asked.has(key) ? asked.get(key) + STEP : base));
   };
   // 박자 이동은 선 하나에 있으므로 그 선의 간격과 옆 폭을 요구한다. 보이는 시간이 모자란 만큼 글 상자 폭만큼 간격을 늘려 깨끗한 자리를 만든다.
@@ -108,26 +109,25 @@ function askSweep(needs, hop, { scene, directions, chip }) {
   needs.set(key, { x: Math.max(had.x, chip.w / 2 + CHIP_CLEAR), y: Math.max(had.y, chip.h + CHIP_GAP) });
 }
 
-// 글 상자가 이름을 가려 숨는다(흐름은 시간의 25% 넘게, 박자 이동은 6할을 못 채우게)고 7번이 알린 경고인지
-const isHiddenChipWarning = (d) => d.code === 'check-7' && d.message.includes('is hidden for');
-
 // cost: time O(chip-room-tries·(elk + check)), heap O(s + e), stack O(1)
 // vars: elk = 배치 시간, check = 그림 검사 시간, s = 도형 수, e = 선 수
 // basis: estimate
 /**
  * 흐름 글 상자가 숨는다는 7번 경고가 난 그림만, 숨는 흐름이 지나는 선의 간격을 글 상자 폭에 맞춰 늘려 다시 배치한다(토큰 `scale.chip-room-tries`번까지, 매번 `scale.chip-room-step`px 더).
  * 경고 수가 줄고 배치 검사 오류가 늘지 않는 배치 가운데 경고가 가장 적은 것을 쓴다. 풀리지 않으면 처음 배치와 경고를 그대로 두고 글은 지우지 않는다. 경고가 없는 그림은 그대로 돌려준다.
- * @param first 처음 배치 { scene, timeline, local }
+ * @param first 처음 배치 { scene, timeline, local, hiddenChipWarnings }
  * @param helpers { attempt, failures, directions }. attempt(asked)는 요구한 간격(Map<`보기\u0000선 번호`, px>)으로 배치와 검사를 한 번 하는 함수, failures(결과)는 배치 검사 오류 수, directions는 그래프 보기 이름 → 바깥 방향이다
  */
 export async function widenForHiddenChips(first, { attempt, failures, directions }) {
-  const hidden = (result) => result.local.warnings.filter(isHiddenChipWarning).length;
+  const hidden = (result) => result.hiddenChipWarnings;
   if (!directions.size || !hidden(first)) return first;
   let best = first;
   let [current, asked] = [first, new Map()];
   for (let i = 0; i < TRIES && hidden(current); i++) {
-    asked = chipRoomNeeds({ ...current, avoid: [...chipObstacles(current.scene, current.timeline), ...chipLines(current.scene)], directions }, asked);
-    if (!asked.size) break;
+    const needs = chipRoomNeeds({ ...current, avoid: [...chipObstacles(current.scene, current.timeline), ...chipLines(current.scene)], directions }, asked);
+    if (!needs.size) break;
+    // 다른 구간을 넓힐 때 이미 확보한 간격을 잃으면 가림이 구간 사이를 오간다.
+    asked = new Map([...asked, ...needs]);
     current = await attempt(asked);
     if (failures(current) <= failures(first) && hidden(current) < hidden(best)) best = current;
   }
