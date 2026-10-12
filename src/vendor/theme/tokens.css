@@ -1336,6 +1336,7 @@
   --color-ink: var(--color-gray-59);
   --color-ui-muted: var(--primitive-figure-dark-muted);
   --color-ui-line: var(--primitive-figure-dark-separator);
+  --color-search-bg: var(--color-ui-card);
   --color-help-bg: var(--color-ui-card);
   --color-help-border: var(--primitive-figure-dark-edge);
   --color-control-hover: rgba(255, 255, 255, 0.1);
@@ -1346,7 +1347,9 @@
   --color-feature-tab-selected: var(--color-category-blue-dark-ink);
   --color-help-title-color: var(--color-ink);
   --color-help-copy-color: var(--color-body);
+  --color-search-results-background: var(--color-ui-card);
   --color-search-result-color: rgba(255, 255, 255, 0.78);
+  --color-search-result-muted: var(--color-ui-muted);
   --color-gallery-background: var(--color-feature-tab-background);
   --color-gallery-hover: var(--color-control-hover);
   --color-gallery-active: var(--color-feature-tab-background);
@@ -1463,6 +1466,7 @@
   --color-ink: var(--color-gray-59);
   --color-ui-muted: var(--primitive-figure-dark-muted);
   --color-ui-line: var(--primitive-figure-dark-separator);
+  --color-search-bg: var(--color-ui-card);
   --color-help-bg: var(--color-ui-card);
   --color-help-border: var(--primitive-figure-dark-edge);
   --color-control-hover: rgba(255, 255, 255, 0.1);
@@ -1473,7 +1477,9 @@
   --color-feature-tab-selected: var(--color-category-blue-dark-ink);
   --color-help-title-color: var(--color-ink);
   --color-help-copy-color: var(--color-body);
+  --color-search-results-background: var(--color-ui-card);
   --color-search-result-color: rgba(255, 255, 255, 0.78);
+  --color-search-result-muted: var(--color-ui-muted);
   --color-gallery-background: var(--color-feature-tab-background);
   --color-gallery-hover: var(--color-control-hover);
   --color-gallery-active: var(--color-feature-tab-background);
@@ -1589,6 +1595,7 @@
   --color-ink: var(--primitive-ink);
   --color-ui-muted: var(--primitive-muted);
   --color-ui-line: var(--primitive-line);
+  --color-search-bg: var(--primitive-search-bg);
   --color-help-bg: var(--primitive-help-bg);
   --color-help-border: var(--primitive-help-border);
   --color-control-hover: var(--primitive-control-hover);
@@ -1599,7 +1606,9 @@
   --color-feature-tab-selected: var(--color-category-blue-anchor);
   --color-help-title-color: var(--primitive-help-title-color);
   --color-help-copy-color: var(--primitive-help-copy-color);
+  --color-search-results-background: var(--primitive-search-results-background);
   --color-search-result-color: var(--primitive-search-result-color);
+  --color-search-result-muted: var(--primitive-search-result-muted);
   --color-gallery-background: var(--primitive-gallery-background);
   --color-gallery-hover: var(--primitive-gallery-hover);
   --color-gallery-active: var(--primitive-gallery-active);
