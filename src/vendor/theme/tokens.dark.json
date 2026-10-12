@@ -523,6 +523,18 @@
     "document-nav-active-ink": {
       "$type": "color",
       "$value": "{color.category.blue.light-tint-3}"
+    },
+    "search-bg": {
+      "$type": "color",
+      "$value": "{color.ui-card}"
+    },
+    "search-results-background": {
+      "$type": "color",
+      "$value": "{color.ui-card}"
+    },
+    "search-result-muted": {
+      "$type": "color",
+      "$value": "{color.ui-muted}"
     }
   },
   "icon": {
