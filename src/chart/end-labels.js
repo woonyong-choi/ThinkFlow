@@ -1,15 +1,16 @@
-// 끝 이름: 선, 계단, 면적, 누적분포가 두 계열 이상이면 계열마다 이름을 그림 영역 오른쪽 한 줄 열에 직접 적고, 끝 점에서 이름까지 가는 선(안내선)을 긋는다.
+// 끝 이름: 선, 계단, 면적가 두 계열 이상이면 계열마다 이름을 그림 영역 오른쪽 한 줄 열에 직접 적고, 끝 점에서 이름까지 가는 선(안내선)을 긋는다.
 // 파랑과 보라, 빨강과 초록처럼 색각 이상에서 가까운 쌍이 첫 판 안에도 있으므로 색 수와 상관없이 쓴다.
 // 이름 상자의 크기(줄 수와 높이)는 계열 이름과 폭만으로 정해 모든 프레임이 같다. 그림 영역이 모든 이름 높이의 합만큼 자라므로 이름이 몇이든 겹치지 않고 글자를 줄이거나 숨기지 않는다.
+import { values } from '../vendor/theme/tokens.js';
+import { STYLE } from '../measure/texts.js';
 import { measure, wrap } from '../measure/fonts.js';
 import { centerBaseline, renderRich, roundCoord as r } from '../text.js';
-import { values } from '../vendor/theme/tokens.js';
 import { COPY } from './copy.js';
 import { markAttrs, markId } from './marks.js';
 import { DOT, SIZE, SPACE, TEXT, seriesPaint, seriesStroke } from './metrics.js';
 
 // 끝 이름을 다는 차트 종류
-const TYPES = new Set(['line', 'step', 'area', 'ecdf']);
+const TYPES = new Set(['line', 'step', 'area']);
 // 이름 상자 사이의 틈
 const GAP = SPACE["0-5"];
 // 끝 점에서 이름 열까지 안내선이 비스듬히 꺾여 가는 가로 폭
@@ -17,12 +18,12 @@ const LEADER_RUN = SPACE["3"];
 
 // cost: time O(1), heap O(1), stack O(1)
 // basis: estimate
-/** 끝 이름을 다는 차트인가: 선, 계단, 면적, 누적분포이고 계열이 둘 이상이다. */
+/** 끝 이름을 다는 차트인가: 선, 계단, 면적이고 계열이 둘 이상이다. */
 export const hasEndLabels = (figure) => TYPES.has(figure.chartType) && figure.chart.series.length >= 2;
 
 // cost: time O(1), heap O(1), stack O(1)
 // basis: estimate
-const lineHeightOf = () => TEXT['11'] * values.leading.normal;
+const lineHeightOf = () => STYLE.meta.line;
 
 // cost: time O(s·n), heap O(s), stack O(1)
 // vars: s = 계열 수, n = 이름 글자 수

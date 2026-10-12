@@ -1,6 +1,7 @@
 // 재생기에 넘길 그림 내용: 판마다의 SVG와 재생 데이터. 모든 그림은 장면(scene)과 시간표(timeline) 하나로 만들어지고, 그래프, 순서, 차트, 시간 보기는 판(scene.panels)이 된다.
 // 도형 id는 논리 id로 넘긴다. 같은 카드가 여러 판에 그려지면 도형 번호(#n-번호)는 다르지만 논리 id는 같고, 재생기가 모든 그림 요소를 찾아 같은 모습으로 맞춘다.
 import { tokenize } from '../chart-tokens.js';
+import { sizeChip } from '../chip.js';
 import { chartCards } from '../chart-frames.js';
 import { mapSceneCharts, sceneCharts } from '../chart-scene.js';
 import { withPulseOverlays } from '../chart/pulse-overlay.js';
@@ -76,7 +77,7 @@ function playerSegs(timeline) {
     si: seg.si,
     t0: seg.t0,
     t1: seg.t1,
-    hops: seg.hops,
+    hops: seg.hops.map(hop => hop.data ? { ...hop, chipSize: sizeChip(hop.data) } : hop),
     cards: seg.cards,
     cardsBefore: seg.cardsBefore,
     cardsAt: seg.cardsAt,

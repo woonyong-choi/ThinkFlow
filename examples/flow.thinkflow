@@ -41,7 +41,7 @@ scene "두 채널의 주문"
   show api "검증 완료" tag="접수" tone=blue appearance=filled meta="2건" mark="OK" mono
   api -> stocked time=500ms
   stocked -> lock time=500ms
-  lock -> db "차감" time=700ms
+  lock -> db "차감"
   show db graph "재고 -> 차감" lit="차감"
   api -> pay "결제" tone=orange time=800ms
   clear api
@@ -51,15 +51,15 @@ scene "동시 주문" mode=loop speed=1.5 for=8s
   track partner -> api -> pay at=1s every=3s time=2s tone=red lost=60%
 
 scene "재고 확인 뒤 차감" keep="stock" set="holder=none"
-  web -> api "주문" time=700ms
+  web -> api "주문"
   api -> stocked time=500ms
   stocked -> lock time=500ms when="stock>0" set="holder=web"
-  lock -> db "차감" time=700ms set="stock-1, holder=none"
+  lock -> db "차감" set="stock-1, holder=none"
 
 scene "품절" set="stock=0"
-  web -> api "주문" time=700ms
+  web -> api "주문"
   api -> stocked time=500ms
-  stocked -> notice "품절 안내" time=600ms
+  stocked -> notice "품절 안내"
 
 scene "같은 순간의 잠금" for=8s status="lock=wait, notice=warn"
   track web -> api -> stocked -> lock at=0s time=2400ms wait="holder='none'" reserve="holder=web" timeout=3s else=notice

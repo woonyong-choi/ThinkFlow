@@ -3,7 +3,7 @@ import { values } from '../vendor/theme/tokens.js';
 
 const SPACE = values.spacing;
 /** 통로 한 줄(선 하나가 지나는 줄) 사이 간격. 배치가 선 사이에 두는 간격(`elk.spacing.edgeEdge`)과 같은 값이다. */
-const LANE_STEP =SPACE["2-5"];
+export const LANE_STEP =SPACE["2-5"];
 // 제목 글 양옆으로 선이 비켜야 하는 여유
 const TITLE_CLEAR = SPACE["3"];
 const SIDES = { out: ['EAST', 'SOUTH'], in: ['WEST', 'NORTH'] };
@@ -30,14 +30,14 @@ function groupBy(list, keyOf) {
  * 선 끝은 칸이 걸친 면에서 바로 나가고, 걸치지 않은 안쪽 칸은 칸 아래 통로(행 사이 간격)로 돌아 격자 옆면으로 나간다. 통로는 칸 사이가 아니라 행 사이 빈 줄이라 이웃 칸 글을 가리지 않는다.
  * 통로는 가로 흐름(나가는 선 동쪽, 들어오는 선 서쪽)에서 직접 연결이 없는 선 끝마다 잡는다. 세로 흐름은 남쪽·북쪽이 걸쳐 있으면 거기로, 아니면 같은 동쪽·서쪽 직접 연결이나 통로를 쓰므로 이 통로가 모든 방향의 상한이다.
  * @param grid { rows, cols, cells, links }. links는 { index, way, cell, isInner }[]이고 index는 선 번호, isInner는 같은 격자의 두 칸을 잇는 선이다
- * @param geo { pad, unitW, unitH, titleH, titleHalf }. titleHalf는 가장 긴 제목 줄 폭의 절반
+ * @param geo { pad, keyWidth, keyPad, unitW, unitH, titleH, titleHalf }. keyWidth는 칸 왼쪽 바깥 식별자의 예약 폭이다. titleHalf는 가장 긴 제목 줄 폭의 절반
  * @returns { w, h, rowTop, gutter, ends, inner }. rowTop은 행 번호 → 그 행 윗변의 y를 주는 함수다. ends는 `번호:way` → { LANE, EAST?, WEST?, SOUTH?, NORTH? }, 각 후보는 { side, port, lead }이고 lead는 칸 면에서 격자 테두리 위 port까지의 점이다. inner는 선 번호 → 점 목록이다
  */
 export function planGridLinks(grid, geo) {
   const { rows, cols, links } = grid;
   const channels = links.filter((l) => l.isInner).length / 2;
   const padRight = channels ? Math.max(geo.pad, (channels + 1) * LANE_STEP) : geo.pad;
-  const w = geo.pad + cols * geo.unitW + padRight;
+  const w = geo.pad + (geo.keyWidth ?? 0) + cols * geo.unitW + padRight;
   const cells = new Map(grid.cells.map((c) => [c.id, c]));
   const items = links.map((link) => describe(link, { cell: cells.get(link.cell), grid, geo, w }));
   assignSouthX(items);
@@ -54,13 +54,13 @@ export function planGridLinks(grid, geo) {
 // basis: estimate
 // 선 끝 하나의 칸 위치와 직접 연결할 수 있는 면
 function describe(link, { cell, grid, geo, w }) {
-  const x = geo.pad + cell.col * geo.unitW;
+  const x = geo.pad + (geo.keyWidth ?? 0) + cell.col * geo.unitW;
   const box = { x, w: cell.cols * geo.unitW };
   const touches = { EAST: cell.col + cell.cols === grid.cols, WEST: cell.col === 0, SOUTH: cell.row + cell.rows === grid.rows, NORTH: cell.row === 0 };
   const item = { link, cell, box, touches, w, gutterRow: cell.row + cell.rows - 1 };
   const way = link.isInner ? undefined : link.way;
   const [lateral, vertical] = way ? SIDES[way] : [];
-  item.direct = way ? [lateral, vertical].filter((side) => touches[side]) : [];
+  item.direct = way ? [...new Set([lateral, vertical, ...(grid.rows === 1 ? ['SOUTH'] : [])])].filter((side) => touches[side]) : [];
   item.northX = touches.NORTH && way === 'in' ? northSpots(item, geo, grid.links) : undefined;
   if (way === 'in' && !item.northX) item.direct = item.direct.filter((side) => side !== 'NORTH');
   item.needsLane = !way || !touches[lateral];
@@ -73,7 +73,7 @@ function describe(link, { cell, grid, geo, w }) {
 // 위 면으로 들어오는 선이 제목 글을 비켜 칸 위 면에 닿는 x 목록. 제목 양옆 빈 구간 가운데 가장 넓은 곳을 선 수로 나눈다. 둘 곳이 없으면 undefined다.
 function northSpots(item, geo, links) {
   const count = links.filter((l) => l.cell === item.cell.id && l.way === 'in' && !l.isInner).length;
-  const center = item.w / 2;
+  const center = (item.w + (geo.keyWidth ?? 0)) / 2;
   const [from, to] = [item.box.x, item.box.x + item.box.w];
   const free = [[from, Math.min(to, center - geo.titleHalf - TITLE_CLEAR)], [Math.max(from, center + geo.titleHalf + TITLE_CLEAR), to]];
   const [a, b] = free.reduce((best, range) => (range[1] - range[0] > best[1] - best[0] ? range : best));
@@ -145,6 +145,13 @@ function directCandidate(item, side, { box, frame }) {
     const y = box.y + t * box.h;
     const edge = side === 'EAST' ? box.x + box.w : box.x;
     const exit = side === 'EAST' ? frame.w : 0;
+    // 바깥 행 식별자는 칸 가운데에 있으므로 왼쪽 연결은 행 아래로 들어온다.
+    if (side === 'WEST' && frame.geo.keyWidth) {
+      const offset = (mates.length - 1 - mates.indexOf(item.link)) * LANE_STEP;
+      const turn = edge - frame.geo.keyPad / 2 - offset;
+      const bottom = box.y + box.h - offset;
+      return { side, port: { x: exit, y: bottom }, lead: [{ x: edge, y }, { x: turn, y }, { x: turn, y: bottom }, { x: exit, y: bottom }] };
+    }
     return { side, port: { x: exit, y }, lead: [{ x: edge, y }, { x: exit, y }] };
   }
   const x = side === 'SOUTH' ? item.southX : item.northX;

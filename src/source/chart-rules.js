@@ -116,7 +116,7 @@ function orderSeriesByRole(figure) {
 }
 
 // 값 축 종류. 히트맵은 값 축이 없다.
-const VALUE_AXES = { bar: ['x'], stacked: ['x'], dumbbell: ['x'], box: ['x'], difference: ['x'], line: ['y'], area: ['y'], scatter: ['x', 'y'], histogram: ['x', 'y'], waterfall: ['x'] };
+const VALUE_AXES = { bar: ['x'], stacked: ['x'], dumbbell: ['x'], box: ['x'], difference: ['x'], line: ['y'], step: ['y'], ecdf: ['x'], area: ['y'], scatter: ['x', 'y'], histogram: ['x', 'y'], waterfall: ['x'] };
 
 // cost: time O(s), heap O(1), stack O(1)
 // vars: s = 계열 수
@@ -150,6 +150,7 @@ export function checkChartRows(figure, problems) {
     return;
   }
   if (chartType === 'area' && chart.rows.length < 2) problems.error(chart.rows[0].line, 'an area chart needs at least two different x values');
+  const beforeRows = problems.errors.length;
   const labels = new Map();
   for (const row of chart.rows) {
     checkRowKeys(row, figure, problems);
@@ -159,8 +160,8 @@ export function checkChartRows(figure, problems) {
     if (labels.has(key)) problems.error(row.line, `"${key.replace('\u0000', '" "')}" appears twice (line ${labels.get(key)}). Names in a chart are unique`);
     labels.set(key, row.line);
   }
-  PREPARE_ROWS[chartType]?.(figure, problems);
   checkRowValues(figure, problems);
+  if (problems.errors.length === beforeRows) PREPARE_ROWS[chartType]?.(figure, problems);
   // 값이 모두 0이거나 하나도 없어도 오류가 아니다. 0은 값이라 길이 0의 표식과 값 글자 0으로 그리고, 빠진 값은 표식 없이 축과 틀만 그린다(0으로 그리지 않는다).
   // 로그 축은 위에서 0 이하를 막았고, 비율(퍼센트, 원, 도넛)은 합이 0이면 비율을 정하지 않고 그 뜻을 글로 알린다.
   for (const link of chart.links) {
@@ -312,9 +313,9 @@ function checkReveal({ id, line }, { ids, revealed, chartType, inScene }, proble
     if (ids.length) problems.error(line, 'name the series to reveal: reveal chart.series');
     return;
   }
-  if (!ids.length) problems.error(line, `a ${chartType} chart without series has nothing to reveal`);
-  else if (!ids.includes(id)) problems.error(line, unknownName('series', id, ids));
-  else if (revealed.includes(id)) problems.error(line, `series "${id}" is already revealed`);
+  if (!ids.length) return problems.error(line, `a ${chartType} chart without series has nothing to reveal`);
+  else if (!ids.includes(id)) return problems.error(line, unknownName('series', id, ids));
+  else if (revealed.includes(id)) return problems.error(line, `series "${id}" is already revealed`);
   else revealed.push(id);
   const pending = (previous) => inScene.includes(previous) && !revealed.includes(previous);
   if (chartType === 'stacked' && ids.slice(0, ids.indexOf(id)).some(pending)) problems.error(line, 'reveal stacked series in their displayed order so each segment follows its base');

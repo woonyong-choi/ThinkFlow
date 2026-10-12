@@ -1,7 +1,7 @@
 // 차트 그리기가 함께 쓰는 크기 상수와 색. 값은 모두 토큰에서 온다.
 import { FIGURE_PAD } from '../canvas.js';
 import { SNAPSHOTS, categoryPaint } from '../chart-palette.js';
-import { values } from '../vendor/theme/tokens.js';
+import { tokens, values } from '../vendor/theme/tokens.js';
 
 export const SPACE = values.spacing;
 export const SIZE = values.spacing.figure;
@@ -36,12 +36,13 @@ function categoryIndex(chart, i) {
 // basis: estimate
 /** 계열 번호 i의 범주 색과 구분 방법. 색 수를 넘으면 층이 오르고 무늬와 모양이 달라진다(chart-palette.js). 판은 기본 1판이다. */
 export function seriesPaint(chart, i) {
-  return categoryPaint(categoryIndex(chart, i));
+  const paint = categoryPaint(categoryIndex(chart, i));
+  return isReference(chart, i) ? { ...paint, fill: tokens.color.data.reference, border: tokens.color.data.reference, ink: tokens.color['ui-muted'] } : paint;
 }
 
 // cost: time O(1), heap O(1), stack O(1)
 // basis: estimate
-/** 계획, 목표처럼 x마다 기대값을 갖는 계열인가. 색이 아니라 속이 빈 면, 점선, 속이 빈 꼭짓점으로 실제값과 구분한다. */
+/** 계획, 목표처럼 x마다 기대값을 갖는 계열인가. 공통 중립색과 점선으로 실제값과 구분한다. */
 export const isReference = (chart, i) => chart.series[i]?.role === 'reference';
 
 // cost: time O(1), heap O(1), stack O(1)
@@ -92,5 +93,5 @@ export function seriesOutline(chart, i) {
 // basis: estimate
 /** 밝은 계열의 점은 밝은 바탕에서도 읽히도록 같은 계열의 경계를 가진다. */
 export function seriesBoundary(chart, i) {
-  return hasBoundary(chart, i) ? ` stroke="${seriesOutline(chart, i)}" stroke-width="${values["border-width"].tag}" style="stroke: ${seriesOutline(chart, i)}"` : '';
+  return hasBoundary(chart, i) ? ` stroke="${seriesOutline(chart, i)}" stroke-width="${values["border-width"].tag}" style="--chart-boundary: ${seriesOutline(chart, i)}"` : '';
 }

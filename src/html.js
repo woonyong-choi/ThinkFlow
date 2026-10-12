@@ -1,5 +1,5 @@
 // 재생 화면 HTML 한 장과 목록 쪽. 스크립트, 스타일, 글꼴, 그림을 모두 안에 넣어 파일 하나로 열린다.
-import { chartMotionCss } from './chart/motion.js';
+import { chartMotionCss } from './vendor/theme/ui/diagram.mjs';
 import { canvasOf } from './canvas.js';
 import { createGlyphSet, embedFonts } from './measure/fonts.js';
 import { paintCss } from './draw/paint.js';
@@ -42,11 +42,14 @@ const EMBED_SCRIPT = `<script>
     return;
   }
   root.classList.add('embedded');
+  const reportHeight = () => parent.postMessage({ figureHeight: Math.ceil(document.body.getBoundingClientRect().height) }, '*');
   addEventListener('message', (e) => {
-    if (e.source === parent && e.data && 'theme' in e.data) apply(e.data.theme);
+    if (e.source !== parent || !e.data || !('theme' in e.data)) return;
+    apply(e.data.theme);
+    requestAnimationFrame(reportHeight);
   });
   parent.postMessage({ themeRequest: true }, '*');
-  addEventListener('load', () => new ResizeObserver(() => parent.postMessage({ figureHeight: Math.ceil(document.body.getBoundingClientRect().height) }, '*')).observe(document.body));
+  addEventListener('load', () => new ResizeObserver(reportHeight).observe(document.body));
 })();
 </script>`;
 /**

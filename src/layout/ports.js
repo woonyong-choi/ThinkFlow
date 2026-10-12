@@ -30,8 +30,17 @@ export function addPort(container, way, edge) {
 export function endpoint(id, end, nodes) {
   const node = nodes.get(id);
   if (!node) return id;
-  const spec = portSpec(node, end);
+  const spec = portSpec(node, { ...end, isTrailingField: trailingFieldEdge(end.edge, nodes) });
   return spec ? addNodePort(node, end, spec) : id;
+}
+
+// 한 줄 필드 띠의 같은 오른쪽 구간을 연결할 때 아래로 돌아 중간 조회 영역을 비운다.
+function trailingFieldEdge(edge, nodes) {
+  const from = nodes.get(edge.from), to = nodes.get(edge.to);
+  if (from?.shape !== 'grid' || to?.shape !== 'grid' || from.rows !== 1 || to.rows !== 1 || from.direction !== 'right' || to.direction !== 'right' || from.id === to.id) return false;
+  const a = from.cells.find(cell => cell.id === edge.fromCell);
+  const b = to.cells.find(cell => cell.id === edge.toCell);
+  return Boolean(a && b && a.col > 0 && b.col > 0 && a.col + a.cols === from.cols && b.col + b.cols === to.cols && a.col * to.cols === b.col * from.cols);
 }
 
 // cost: time O(c), heap O(1), stack O(1)

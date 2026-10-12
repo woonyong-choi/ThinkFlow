@@ -2,12 +2,32 @@
 // 브라우저가 있어야 보이는 것(탭, 시계, 전체 화면)은 docs/design/expression-coverage.md의 브라우저에서만 보이는 계약 표에 있다. 시험 이름 첫 낱말(X1~X11)이 요구사항 번호이고 시험 번호 표에 대응이 있다.
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
+import { runInNewContext } from 'node:vm';
+import { figureViewBounds } from '../src/html/view-bounds.js';
+import { statusBoxes } from '../src/draw/status.js';
+import { toElk } from '../src/layout/elk.js';
+import { buildModel } from '../src/layout/model.js';
 
 import postcss from 'postcss';
 
 import { EXAMPLES, build, thinkflow, descendants, findAll, findOne, parseMarkup, read, reject, textContent, textsOf, toHtml, toSvg } from './support.js';
 
 const MOVE = (mode, speed = 1, time = '10s') => thinkflow(`box a "A"\nbox b "B"\na -> b\nscene "s" mode=${mode} speed=${speed}\n  a -> b "m" time=${time}\n`);
+test('embedded bounds include status pills beyond the node corner', async () => {
+  const result = await build(thinkflow('box a "A"\nscene "warning" status="a=warn"\n  light a\n'));
+  const svg = await toSvg(result);
+  assert.match(svg, /class="status-pill"/);
+  assert.match(svg, /class="status-icon"/);
+  assert.match(svg, /<mask\b/, 'warning uses the canonical masked icon');
+  const bounds = figureViewBounds(result);
+  const pills = statusBoxes(result.scene, result.timeline);
+  assert.equal(pills.length, 1);
+  for (const box of pills) {
+    assert.ok(box.x > bounds.x && box.y > bounds.y);
+    assert.ok(box.x + box.w < bounds.x + bounds.w);
+    assert.ok(box.y + box.h < bounds.y + bounds.h);
+  }
+});
 const ANIMATION = new Set(['animate', 'set', 'animateMotion', 'animateTransform']);
 const animations = (dom) => descendants(dom).filter((n) => ANIMATION.has(n.tag));
 const seconds = (text) => (text.endsWith('ms') ? Number.parseFloat(text) / 1000 : Number.parseFloat(text));
@@ -140,6 +160,9 @@ test('renderers_embed_required_style_variables', async () => {
       // 공통 차트 CSS의 강도 변수는 히트맵 칸이 있을 때만 읽고, 각 칸이 공급한다.
       if (!heatCells.length) required.delete('--s');
       for (const cell of heatCells) assert.match(cell.attrs.style, /(?:^|;)\s*--s\s*:/);
+      const pulses = findAll(dom, (node) => (node.attrs.class ?? '').split(/\s+/).includes('fl-mark-pulse'));
+      if (!pulses.length) required.delete('--pulse-effect');
+      for (const pulse of pulses) assert.match(pulse.attrs.style, /(?:^|;)\s*--pulse-effect\s*:/);
 
       assert.deepEqual([...required].filter((name) => !defined.has(name)).sort(), [], `${format}\n${source}`);
 
@@ -347,4 +370,58 @@ test('X11 the page keeps the original source exactly (line endings and all) so t
   const html = parseMarkup(await toHtml(await build(source), 'doc'), { html: true });
   const carried = findAll(html, (n) => n.tag === 'script' && n.attrs.type === 'application/json').map((n) => JSON.parse(textContent(n)));
   assert.deepEqual(carried.filter((value) => value === source), [source]);
+});
+
+// 부모가 나중에 초기화되어 첫 높이 메시지를 놓쳐도 테마 연결 때 다시 전달한다.
+test('X9d an embedded player reports its height again when a late host connects', async () => {
+  const html = await toHtml(await build(thinkflow('box a "A"\n')), 'x');
+  const script = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(match => match[1]).find(text => text.includes('themeRequest'));
+  const events = {}, messages = [];
+  const parent = { postMessage: message => messages.push(message) };
+  const root = { classList: { add() {} }, style: {}, setAttribute() {}, removeAttribute() {} };
+  runInNewContext(script, { window: { self: {}, top: {} }, parent, document: { documentElement: root, body: { getBoundingClientRect: () => ({ height: 1634.5 }) } }, addEventListener: (name, listener) => events[name] = listener, requestAnimationFrame: callback => callback() });
+  messages.length = 0;
+  events.message({ source: {}, data: { theme: 'light' } });
+  assert.equal(messages.length, 0);
+  events.message({ source: parent, data: { theme: 'light' } });
+  assert.equal(messages.at(-1).figureHeight, 1635);
+});
+
+test('grid-only layout aligns equal memory columns and preserves narrow graph reading', async () => {
+  for (const name of ['memory', 'memory-address', 'sql-join']) {
+    const source = read(EXAMPLES, `${name}.thinkflow`);
+    const wide = await build(source, { baseDir: EXAMPLES, layoutWidth: 1400 });
+    const [first, , last] = wide.scene.items;
+    assert.equal(first.y, last.y, `${name}: equal-height end columns share a baseline`);
+    for (const layoutWidth of [720, 360]) {
+      const narrow = await build(source, { baseDir: EXAMPLES, layoutWidth });
+      assert.ok(narrow.scene.width <= layoutWidth, `${name}: ${narrow.scene.width} exceeds ${layoutWidth}`);
+      assert.equal(narrow.scene.items.length, wide.scene.items.length);
+    }
+  }
+});
+
+test('mixed grid graphs retain collision-free pointer labels and stack flow', async () => {
+  for (const name of ['pointer', 'stack']) {
+    const source = read(EXAMPLES, `${name}.thinkflow`);
+    const wide = await build(source, { baseDir: EXAMPLES, layoutWidth: 1400 });
+    assert.ok(wide.scene.items.some((item) => item.shape !== 'grid'));
+    const narrow = await build(source, { baseDir: EXAMPLES, layoutWidth: 360, strict: false });
+    assert.equal(narrow.scene.items.length, wide.scene.items.length);
+    assert.ok(narrow.warnings.every((warning) => warning.message.includes('exceeding the requested')));
+  }
+});
+
+test('grid-only placement preserves safe and single-layer layout priorities', async () => {
+  const result = await build(read(EXAMPLES, 'sql-join.thinkflow'), { baseDir: EXAMPLES });
+  const sizes = new Map(result.scene.items.map((item) => [item.id, item.size]));
+  const options = (overrides) => {
+    const figure = { ...result.figure, direction: result.scene.items[0].direction, ...overrides };
+    return toElk(buildModel(figure, sizes), figure).layoutOptions;
+  };
+  assert.equal(options({ safeLayout: true })['elk.layered.nodePlacement.strategy'], undefined);
+  const single = options({ safeLayout: true, oneNodePerLayer: true });
+  assert.equal(single['elk.layered.nodePlacement.strategy'], 'SIMPLE');
+  assert.equal(single['elk.layered.layering.coffmanGraham.layerBound'], '1');
+  assert.equal(single['elk.separateConnectedComponents'], 'false');
 });

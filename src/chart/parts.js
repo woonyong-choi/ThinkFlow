@@ -1,6 +1,7 @@
 // 원·도넛은 비율을 각도로 표현하고, 항목별 이름·값·비율을 같은 순서로 읽게 한다.
 // 조각 칸은 값이 0이어도 항목마다 하나씩 늘 있다(길이 0인 빈 경로). 그래서 값이 0에서 양수로 바뀌어도 그림 구조가 같고 조각 하나만 자란다.
 // 조각은 목록 번호(`1.`)를 조각 안 고리에 적는다(누적 막대와 같은 번호 키). 키 상자가 조각 고리에 들어갈 때만 보이고, 들어가지 않는 얇은 조각은 목록 순서(12시에서 시계 방향)와 비율이 잇는다.
+import { STYLE } from '../measure/texts.js';
 import { categoryPaint } from '../chart-palette.js';
 import { wrap } from '../measure/fonts.js';
 import { centerBaseline, escapeXml, renderRich, roundCoord as r } from '../text.js';
@@ -113,7 +114,7 @@ function emptyRing(chart, { cx, cy, outer, inner }, isUndefined) {
 function zeroNote(chart, { cx, cy, outer, inner }, isUndefined) {
   const room = (inner || outer) * 2 - SPACE["3"];
   const lines = wrap(COPY.zeroSum, room, { size: TEXT['11'] });
-  const lineHeight = TEXT['11'] * values.leading.normal;
+  const lineHeight = STYLE.meta.line;
   return lines.map((line, k) => {
     const y = cy + (k - (lines.length - 1) / 2) * lineHeight;
     return `<text x="${r(cx)}" y="${r(centerBaseline(y, TEXT['11']))}" text-anchor="middle" class="chart-missing"${isUndefined ? '' : ' visibility="hidden"'}${markAttrs(chart, markId(chart, 0, 'empty', `.t${k}`), { isText: true })}>${renderRich(line)}</text>`;
@@ -130,7 +131,7 @@ function partLabel({ label, detail, index, raw }, { y, width, paint, chart }) {
   const name = lines.map((line, i) => `<text x="${r(x)}" y="${r(y + TEXT['13'] + i * lineHeight)}" class="chart-label cr-${index} ink">${renderRich(line)}</text>`).join('');
   const detailY = y + lines.length * lineHeight;
   const details = wrap(detail, width - PAD - x, { size: TEXT['11'] });
-  const numbers = details.map((line, i) => `<text x="${r(x)}" y="${r(detailY + TEXT['11'] + i * lineHeight)}" class="chart-value cr-${index} ink"${i ? '' : markAttrs(chart, markId(chart, 0, index, '.d'), { raw, isText: true, paint })}>${renderRich(line)}</text>`).join('');
+  const numbers = details.map((line, i) => `<text x="${r(x)}" y="${r(detailY + TEXT['11'] + i * STYLE.meta.line)}" class="chart-value cr-${index} ink"${i ? '' : markAttrs(chart, markId(chart, 0, index, '.d'), { raw, isText: true, paint })}>${renderRich(line)}</text>`).join('');
   const swatch = `<g class="cr-${index}">${fillSwatch(paint, { x: PAD, y: y + SPACE["1"] })}</g>`;
-  return { svg: swatch + name + numbers, bottom: detailY + details.length * lineHeight + SPACE["3"] };
+  return { svg: swatch + name + numbers, bottom: detailY + details.length * STYLE.meta.line + SPACE["3"] };
 }

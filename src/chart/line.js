@@ -1,17 +1,17 @@
 // 선, 계단, 면 차트: 계열마다 선과 점. x 순서대로 잇고 계열 수에 상한이 없다. 신뢰구간은 계열 색의 옅은 띠(low~high)이고 선과 점은 띠 위에 그린다.
 // 신뢰구간이 이어진 점이 하나뿐이면 띠가 면이 못 되므로 세로 오차 막대로 그린다.
 // 값이 없는 점(`-`)에서 선이 끊긴다. 끊긴 곳에는 점도 `data-at`도 없고 선이 자라는 시간도 쓰지 않는다. 계단은 값이 다음 점까지 이어지는 post 방식이다.
-// 기대값(reference) 계열은 점선과 속이 빈 꼭짓점이고 점선은 길이로 드러낼 수 없어 x 위치로 닦아 낸다(wipe).
+// 기대값(reference) 계열은 회색 점선이고 꼭짓점 표식은 생략한다. 점선은 길이로 드러낼 수 없어 x 위치로 닦아 낸다(wipe).
 import { roundCoord as r } from '../text.js';
-import { tokens, values } from '../vendor/theme/tokens.js';
+import { tokens } from '../vendor/theme/tokens.js';
 import { curveOf, timeAt } from '../easing.js';
 import { roundToScale } from '../format.js';
 import { drawRules } from './axis.js';
 import { definedRuns, isValue, lengthFractions, linePath, spanFractions, stepVertices, hvPath } from './data.js';
 import { endLabelBoxes, endLabelHeight, endLabelMarks, endLabelRoom, endLabelX, hasEndLabels, placeEndLabels } from './end-labels.js';
 import { dotAttrs } from './legend.js';
-import { markAttrs, markId } from './marks.js';
-import { CAP, DOT, SPACE, isReference, seriesColor, seriesFill, seriesPaint, seriesStroke } from './metrics.js';
+import { markAttrs, markId, seriesPath } from './marks.js';
+import { CAP, DOT, SPACE, isReference, seriesColor, seriesFill, seriesPaint } from './metrics.js';
 import { noDataNote, plotFrame } from './plot-frame.js';
 import { markShape } from './shape.js';
 
@@ -135,27 +135,16 @@ function seriesLayer(ctx, i) {
   return { i, id, runs, d: isStep ? lists.map(hvPath).filter(Boolean).join(' ') : linePath(runs), isWipe, ats };
 }
 
-// cost: time O(1), heap O(1), stack O(1)
-// basis: estimate
-// 계열 하나의 선 요소. 모든 계열이 같은 굵기의 같은 계열 테두리 색이고, 기대값은 점선이다. 실제값 선에는 점선 속성이 없다.
-function lineMark(ctx, layer) {
-  const { chart } = ctx;
-  const { i, d, isWipe } = layer;
-  if (!d) return '';
-  const motion = `${isWipe ? 'wipe' : 'draw'}${isReference(chart, i) ? ' chart-dashed' : ''}`;
-  const common = `d="${d}" fill="none"${isWipe ? '' : ' pathLength="1"'}`;
-  return `<g class="cs-${i}"><path ${common} stroke="${seriesStroke(chart, i)}" stroke-width="${values["border-width"].strong}" class="${motion}"${markAttrs(chart, markId(chart, i, 'path'))}/></g>`;
-}
 
 // cost: time O(p·s), heap O(out), stack O(1)
 // vars: p = 점 수, s = 계열 수, out = 만든 SVG 글자 수
 // basis: estimate
-// 행 k의 점들. 값이 없는 칸에는 점이 없다. 꼭짓점 모양은 계열의 범주 번호가 정하고 기대값은 속이 빈 모양이다.
+// 행 k의 점들. 값이 없는 칸과 기대값 계열에는 점이 없다. 실제값은 공통 원형 표식을 쓴다.
 function dotMarks(ctx) {
   const { chart, layers } = ctx;
   return chart.rows.flatMap((p, k) =>
     chart.series.flatMap((s, i) => {
-      if (!layers[i].ats.has(p)) return [];
+      if (isReference(chart, i) || !layers[i].ats.has(p)) return [];
       const at = layers[i].ats.get(p);
       const id = markId(chart, i, k);
       const shape = markShape({ shape: seriesPaint(chart, i).shape, cx: ctx.sx.at(p.values.x), cy: ctx.sy.at(p.values[s.id]), radius: DOT, attrs: dotAttrs(chart, i, ` class="dot" data-at="${at}"${markAttrs(chart, id, { raw: p.values[s.id], paint: seriesPaint(chart, i) })}`) });
@@ -175,7 +164,7 @@ function seriesMarks(ctx) {
     const bands = intervalMarks(ctx, s, i);
     if (bands.length) parts.push(`<g class="cs-${i}">${bands.join('')}</g>`);
   });
-  parts.push(...ctx.layers.map((layer) => lineMark(ctx, layer)), ...dotMarks(ctx));
+  parts.push(...ctx.layers.map((layer) => seriesPath(chart, layer)), ...dotMarks(ctx));
   return parts;
 }
 

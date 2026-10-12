@@ -5,6 +5,7 @@ import { chipStateAt } from '../chip-motion.js';
 import { timeAtPosition } from '../easing.js';
 import { flattenRoute } from '../route.js';
 import { values } from '../vendor/theme/tokens.js';
+import { statusBoxes } from '../draw/status.js';
 
 // cost: time O(h·(p + k)·(p + k)), heap O(p + k), stack O(1)
 // vars: h = 이동 수, p = 경로 지점 수, k = 글상자 계획 지점 수
@@ -19,6 +20,10 @@ export function figureViewBounds({ scene, timeline }) {
     bounds.w = right - bounds.x;
     bounds.h = bottom - bounds.y;
   };
+  for (const box of statusBoxes(scene, timeline)) {
+    const inset = values.spacing['1'];
+    extend({ x: box.x - inset, y: box.y - inset, w: box.w + inset * 2, h: box.h + inset * 2 });
+  }
   for (const seg of timeline.segs) for (const hop of seg.hops) {
     const route = hop.track === undefined ? flattenRoute(scene.edges[hop.edge].points) : timeline.tracks[hop.track].route;
     const halo = values.spacing.figure.packet.halo;

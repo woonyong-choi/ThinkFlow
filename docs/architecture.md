@@ -16,6 +16,8 @@
 | repo-docs-figures 스킬 | 외부 프로그램 | `render_figures`가 부르는 `render` 명령과 그 종료 코드 |
 | 브라우저 | 외부 프로그램 | 만든 HTML과 SVG |
 
+예제 목록과 명령줄 갤러리는 `src/html/listing.js`의 문서 틀을 함께 사용한다. 예제의 원본·장면 목록은 같은 갤러리의 변형이며, 스타일은 디자인 정본 `styles/diagram/gallery.css`에서 관리한다.
+
 ## 코드 지도
 
 | 구성 요소 | 하는 일 | 기술 | 위치 |
@@ -30,7 +32,7 @@
 
 | 부품 | 측정(잰 값을 배치에 넘긴다) | 그리기(잰 값을 그대로 그린다) | 시험 |
 |---|---|---|---|
-| 카드 면과 구분선 | `measure/sizes.js`의 `sizeNode`(상자, 사람, 외부, 원통, 갈림길, 원), `table.js`(표, API), `class.js`(클래스, 인터페이스), `sizeParticipant`(순서 보기 참여자), 큐와 격자. `build-scene.js`가 도형마다 한 번 부른다 | `draw/figure.js`의 `drawScene` → `draw/shape.js` → `draw/card.js`의 `drawCard` → `draw/surface.js`의 `drawSurface`. 원통, 갈림길, 원, 상태 점만 `shape.js`가 모양 자체를 그린다 | `test/components.test.js`(U1) |
+| 카드 면과 구분선 | `measure/sizes.js`의 `sizeNode`(상자, 사람, 외부, 원통, 갈림길, 원), `table.js`(표, API), `class.js`(클래스, 인터페이스), `sizeParticipant`(순서 보기 참여자), 큐와 격자. `build-scene.js`가 도형마다 한 번 부른다 | `draw/figure.js`의 `drawScene` → `draw/shape.js` → `draw/card.js`의 `drawCard` → `draw/surface.js`의 `drawSurface`. 원통, 갈림길, 원, 상태 점만 `shape.js`가 모양 자체를 그린다. 기본 면색과 외부 도형·그룹·관계선의 점선은 정본 `figure.css`가 맡고 렌더러는 형상과 역할 클래스만 전달한다 | `test/components.test.js`(U1) |
 | 카드 머리 | `measure/card.js`의 `headerOf`와 `placeHeader`(표, API, 클래스, 순서 보기 참여자가 같은 머리), 상자와 사람은 같은 `headerDecor`. 폭과 안쪽 여백(`PAD`)을 한 곳에서 정한다. 제목은 아이콘과 배지를 뺀 폭(`room`)에서 줄을 나눈다 | `draw/card.js`의 `drawHead` → `draw/decor.js`의 `drawDecor`(아이콘, 배지, 개수)와 `draw/texts.js` | `test/components.test.js`(U2, U3), `test/text.test.js`(T6~T8) |
 | 글 한 줄(text) | `measure/texts.js`의 `STYLE`(글 역할의 크기, 굵기, 줄 높이. 카드 라벨은 regular, 그룹 제목은 15 semibold이고 글자 사이 간격은 CSS와 같은 `tracking.text` 하나다), `textAt`(제목, 열 이름, 형식, 제약, 클래스 멤버, 격자 칸이 모두 같은 모양), `stackTexts`, `titleTexts`, `textBlock`(메모와 구획 제목), `textWidth`, `textSpan`, `allTexts`. 글을 읽는 방식은 `text.js`의 `isLiteralFace`가 글꼴로 정한다 | `draw/texts.js`의 `drawTexts`. 이동 글 상자가 피할 사각형(`draw/boxes.js`)과 그림 검사 1번(`check/fit.js`)도 같은 `textSpan`을 읽는다 | `test/components.test.js`(U1, U4, U5, U6), `test/text.test.js`(T1~T3, T5, T13) |
 | 카드 본문(`text`, `value`, `graph`, `chart`)과 장면 내용(`show`) | `measure/content.js`의 `sizeContent`가 줄마다 태그, 표시, 본문, 관계 그래프 이름, 값을 text로 재고 `fitValueSlot`, `valueText`가 값 글을 재어 돌려준다 | `draw/content.js`의 `drawContent`와 `draw/values.js`는 잰 text를 `drawTexts`로 그리고 태그 알약, 그래프 도형만 따로 그린다 | `test/cards.test.js`(S8), `test/text.test.js`(T4) |
@@ -98,7 +100,7 @@
 - `player`와 `svg`는 시간표를 읽기만 하고 상태를 다시 계산하지 않는다. HTML과 SVG가 다르게 움직이는 일을 막기 위해서다. 보기가 여럿이어도 이동과 값 변화는 시간표에서 한 번만 계산된다.
 - 논리 시각(`t0`, `t1`, `at`, `ms`, 값 구간, 프레임 구간)은 재생 속도, 펄스, 화면 길이가 바꾸지 않는다. 펄스의 꼬리는 화면 길이만 늘린다.
 - 값 글자와 차트 카드 크기는 실제 글꼴로 잰 글 폭이다. 렌더러가 같은 글꼴로 같은 줄 나눔을 쓴다.
-- 점 이동 곡선, 글 상자 밀어 넣기, 차트 자라기는 HTML과 SVG가 같은 토큰과 같은 규칙을 쓴다. 규칙은 `src/easing.js`, `src/chip.js`, `src/chart/motion.js`에 있고, 브라우저 코드(`player/`)는 불러올 수 없어 같은 계산을 따로 둔다. 글 상자 자리는 예외로, 빌드 때 시간표에 담은 계획을 재생기가 보간만 한다.
+- 점 이동 곡선, 글 상자 밀어 넣기, 차트 자라기는 HTML과 SVG가 같은 토큰과 같은 규칙을 쓴다. 규칙은 `src/easing.js`, `src/chip.js`, 공통 `chartMotionCss`·`CHART_GROWTH`에 있고, 브라우저 코드(`player/`)는 불러올 수 없어 같은 계산을 따로 둔다. 글 상자 자리는 예외로, 빌드 때 시간표에 담은 계획을 재생기가 보간만 한다.
 - 크기·간격·색·시간은 공통 정본의 토큰만 쓴다. 가져온 사본은 직접 수정하지 않는다.
 - 그림은 정의된 부품을 가져다 조립한다(React처럼 합성하되 React에 기대지 않는다). 흐름은 원본 문법 → 공통 모형 → 필요한 배치 → 공통 부품 → 조작부 하나다. 카드(머리와 필드 줄), 연결선과 라벨, 화살촉, 아이콘, 장면 탭, 도구 막대는 모양과 상태를 부품 하나가 소유하고, 종류별 렌더러는 데이터와 필요한 배치 결과만 넘긴다. 같은 토큰을 읽는 것만으로 같은 부품이라 하지 않고, 측정과 그리기는 같은 부품의 역할 규약을 쓴다. 같은 모양이 종류마다 복제되는 일과 같은 시험이 종류마다 되풀이되는 일을 막기 위해서다. 부품이 코드의 어느 파일에 있는지는 [부품 호출 지도](#부품-호출-지도)에 있다.
 - 변환 중 네트워크에 접근하지 않는다. 글꼴과 배치 엔진을 모두 함께 배포한다.

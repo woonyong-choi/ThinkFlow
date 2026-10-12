@@ -1,5 +1,5 @@
 // 파일 글에서 하드코딩을 찾는 함수들. check-tokens.mjs가 쓴다.
-import { AT_CONDITION, BARE_VALUE, COLOR_FUNCTION, CONDITION_VALUE, CSS_EXTS, CUSTOM_PROPERTY, FONT_FAMILY, FREE_LENGTHS, FREE_NUMBERS, HEX_COLOR, JS_PATH_PART, JS_TOKEN_PATH, LENGTH, LOOKS_STYLED, MARKUP_EXTS, PLAIN_STRING, STRING, STYLE_OBJECT_NUMBER, STYLE_OBJECT_START, THEME_BRANCH, UNITLESS_ATTRIBUTE, UNITLESS_PROPERTY, VAR_REFERENCE } from './tokens-patterns.mjs';
+import { AT_CONDITION, BARE_VALUE, COLOR_FUNCTION, CONDITION_VALUE, CSS_DECLARATION, CSS_EXTS, CUSTOM_PROPERTY, EASING_LITERAL, FONT_FAMILY, FREE_LENGTHS, FREE_NUMBERS, HEX_COLOR, JS_PATH_PART, JS_TOKEN_PATH, LENGTH, LOOKS_STYLED, MARKUP_EXTS, NAMED_COLOR, PLAIN_STRING, STRING, STYLE_OBJECT_NUMBER, STYLE_OBJECT_START, STYLE_VALUE, THEME_BRANCH, UNITLESS_ATTRIBUTE, UNITLESS_PROPERTY, VAR_REFERENCE, WEIGHT_KEYWORD } from './tokens-patterns.mjs';
 
 const CSS_PARTS = /"(?:[^"\\]|\\[\s\S])*"|'(?:[^'\\]|\\[\s\S])*'|\/\*[\s\S]*?\*\//g;
 const MARKUP_PARTS = /<!--[\s\S]*?-->|<(style|script)\b[^>]*>([\s\S]*?)<\/\1\s*>|<[a-z][\w:-]*(?:"[^"]*"|'[^']*'|[^'">])*>/gi;
@@ -21,7 +21,7 @@ function blank(text) {
 export function findSegments(text, ext, onComment = () => {}) {
   if (CSS_EXTS.has(ext)) return [{ offset: 0, segment: maskCss(text, onComment), isStyled: true }];
   if (MARKUP_EXTS.has(ext)) return markupSegments(text, onComment);
-  return Array.from(text.matchAll(STRING), (m) => ({ offset: m.index, segment: m[0], isStyled: isStyledString(m[0]) }));
+  return [...Array.from(text.matchAll(STRING), (m) => ({ offset: m.index, segment: m[0], isStyled: isStyledString(m[0]) })), ...scriptStyleSegments(text)];
 }
 
 function maskCss(text, onComment) {
@@ -32,6 +32,14 @@ function maskCss(text, onComment) {
   });
 }
 
+// cost: time O(n), heap O(n), stack O(1)
+// vars: n = CSS 글자 수
+// basis: estimate
+/** 주석과 content 문자열에 적힌 가짜 선언은 등록하지 않는다. */
+export function findCustomProperties(text) {
+  return Array.from(text.replace(CSS_PARTS, blank).matchAll(CSS_DECLARATION), match => match[1]);
+}
+
 function markupSegments(text, onComment) {
   const segments = [];
   for (const part of text.matchAll(MARKUP_PARTS)) {
@@ -39,7 +47,11 @@ function markupSegments(text, onComment) {
       onComment({ offset: part.index, text: part[0] });
       continue;
     }
-    if (part[1]?.toLowerCase() === 'script') continue;
+    if (part[1]?.toLowerCase() === 'script') {
+      const offset = part.index + part[0].indexOf('>') + 1;
+      segments.push(...scriptStyleSegments(maskJs(part[2])).map(piece => ({ ...piece, offset: offset + piece.offset })));
+      continue;
+    }
     if (part[1]?.toLowerCase() === 'style') {
       const offset = part.index + part[0].indexOf('>') + 1;
       const segment = maskCss(part[2], comment => onComment({ ...comment, offset: offset + comment.offset }));
@@ -52,6 +64,22 @@ function markupSegments(text, onComment) {
     }
   }
   return segments;
+}
+
+// 문자열에 적힌 예제는 제외하고 실제 DOM 스타일 대입의 값만 CSS 선언으로 검사한다.
+function scriptStyleSegments(text) {
+  const code = text.replace(STRING, blank);
+  const assignments = /\.style\.([a-zA-Z]+)\s*=\s*("(?:[^"\\]|\\[\s\S])*"|'(?:[^'\\]|\\[\s\S])*'|`(?:[^`\\]|\\[\s\S])*`)/g;
+  const setters = new RegExp(String.raw`\.style\.setProperty\(\s*(['"])([\w-]+)\1\s*,\s*(${STRING.source})`, 'g');
+  const values = [
+    ...Array.from(text.matchAll(assignments), match => ({ index: match.index, property: match[1], value: match[2] })),
+    ...Array.from(text.matchAll(setters), match => ({ index: match.index, property: match[2], value: match[3] })),
+  ];
+  return values.filter(({ index }) => code.slice(index, index + 7) === '.style.').map(({ index, property, value }) => ({
+    offset: index,
+    segment: `${property.replace(/[A-Z]/g, letter => `-${letter.toLowerCase()}`)}:${value.slice(1, -1)};`,
+    isStyled: true,
+  }));
 }
 
 /** CSS나 마크업으로 보이거나 값 하나뿐인 문자열인지 본다. */
@@ -72,6 +100,7 @@ export function findHardcoded(segment, info, isStyled) {
     ...hits(HEX_COLOR, 'hex color'),
     ...hits(COLOR_FUNCTION, 'color function'),
     ...hits(VAR_REFERENCE, 'primitive token reference', (m) => m[1], (m) => info.primitiveNames.has(m[1])),
+    ...hits(VAR_REFERENCE, 'undefined CSS variable', (m) => m[1], (m) => !info.knownNames.has(m[1])),
     ...hits(THEME_BRANCH, 'theme branch outside tokens'),
   ];
   if (!isStyled) return found;
@@ -86,9 +115,31 @@ export function findHardcoded(segment, info, isStyled) {
   found = found.filter((hit) => !isInside(hit.position, reported));
   found.push(...reported.map(([start, end]) => ({ position: start, rule: 'custom property outside tokens', snippet: trimSpace(segment.slice(start, end)) })));
   found.push(...hits(FONT_FAMILY, 'font family', (m) => trimSpace(m[0]), (m) => !isInside(m.index, skip)));
-  found.push(...hits(LENGTH, 'length or time', undefined, (m) => !FREE_LENGTHS.has(m[0]) && !isInside(m.index, skip)));
+  found.push(...hits(LENGTH, 'length or time', undefined, (m) => !FREE_LENGTHS.has(m[0].toLowerCase()) && !isInside(m.index, skip)));
   for (const pattern of [UNITLESS_PROPERTY, UNITLESS_ATTRIBUTE]) {
     found.push(...hits(pattern, (m) => `${m[1]} number`, undefined, (m) => !FREE_NUMBERS.has(m[2]) && !isInside(m.index, reported)));
+  }
+  found.push(...findStyleLiterals(segment).filter(hit => !isInside(hit.position, reported)));
+  return found;
+}
+
+// cost: time O(n), heap O(n), stack O(1)
+// vars: n = 스타일 조각 글자 수
+// basis: estimate
+/** 색·이징·굵기의 키워드는 해당 속성에서만 검사하고 URL·변수 이름은 값으로 읽지 않는다. */
+function findStyleLiterals(segment) {
+  const found = [];
+  segment = segment.replace(/\bcontent\s*:\s*("(?:[^"\\]|\\[\s\S])*"|'(?:[^'\\]|\\[\s\S])*')/gi, blank);
+  for (const declaration of segment.matchAll(STYLE_VALUE)) {
+    const property = declaration[1].toLowerCase();
+    const quoted = declaration[2];
+    const start = declaration.index + declaration[0].length - quoted.length;
+    const value = quoted.replace(/url\([^)]*\)|--[\w-]+/gi, blank);
+    if (property === 'color-scheme' || /\blight-dark\(/.test(value)) found.push({ position: start, rule: 'theme branch outside tokens', snippet: quoted });
+    const [pattern, rule] = property.startsWith('transition') || property.startsWith('animation')
+      ? [EASING_LITERAL, 'easing literal']
+      : property === 'font-weight' ? [WEIGHT_KEYWORD, 'font-weight keyword'] : [NAMED_COLOR, 'named color'];
+    for (const match of value.matchAll(pattern)) found.push({ position: start + match.index, rule, snippet: match[0] });
   }
   return found;
 }
@@ -99,7 +150,7 @@ export function findHardcoded(segment, info, isStyled) {
 /** `@media`, `@container` 조건의 숫자. px가 아닌 단위와 breakpoint 토큰에 없는 px를 찾는다. */
 function findConditionValues(condition, offset, breakpoints) {
   return Array.from(condition.matchAll(CONDITION_VALUE))
-    .filter((m) => m[2] !== 'px' || !breakpoints.has(m[1]))
+    .filter((m) => m[2].toLowerCase() !== 'px' || !breakpoints.has(m[1]))
     .map((m) => ({ position: offset + m.index, rule: 'condition not breakpoint token', snippet: m[0] }));
 }
 
@@ -108,8 +159,8 @@ function findConditionValues(condition, offset, breakpoints) {
 // basis: estimate
 /** 토큰 참조만으로 만든 값이 아닌지 본다. `calc(var(--a) * 2)`의 계수 2는 허용한다. */
 function isRawCustomValue(value) {
-  const rest = value.replace(/var\([^()]*\)/g, '');
-  return /#|['"]|\d+(?:px|rem|em|ms|s|%)/.test(rest);
+  const rest = value.replace(/(?:var|url)\([^()]*\)/g, '');
+  return /#|['"]|\d+(?:px|rem|em|ms|s|%)/.test(rest) || Boolean(rest.match(NAMED_COLOR));
 }
 
 // cost: time O(k), heap O(1), stack O(1)

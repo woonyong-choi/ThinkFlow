@@ -1,6 +1,7 @@
 // 배치 모형을 elkjs 그래프로 바꾼다. 선택 사항 값은 모두 토큰이다(docs/design/layout.md 간격과 결정성).
 import { FIGURE_PAD } from '../canvas.js';
 import { groupTitleWidth, hasPill, isOnLinePill, sizePill } from '../measure/sizes.js';
+import { STYLE, textBlock } from '../measure/texts.js';
 import { values } from '../vendor/theme/tokens.js';
 import { isInnerEdge } from './cell-ports.js';
 import { ROOT } from './model.js';
@@ -8,6 +9,10 @@ import { isBodyShape, outerBox, spreadBodyPorts } from './ports.js';
 
 const SPACE = values.spacing;
 const SIZE = values.spacing.figure;
+const LAYER_GAP = SPACE["15"];
+const EDGE_LABEL_GAP = SPACE["1"];
+/** 숨은 라벨이 추가 공간을 요구하기 전에 ELK가 이미 확보하는 층과 라벨 간격. */
+export const ROOM_BASE = LAYER_GAP + EDGE_LABEL_GAP;
 const ELK_DIRECTION = { right: 'RIGHT', down: 'DOWN' };
 // 한 층에 하나씩 놓는 층 나누기는 같은 조건의 형제 순서를 정하지 못하므로, 자식 순서(order.js)를 분할 번호로 줘 위에서 아래로 그 순서를 지키게 한다.
 const SINGLE_LAYER_OPTIONS = Object.freeze({ 'elk.layered.layering.strategy': 'COFFMAN_GRAHAM', 'elk.layered.layering.coffmanGraham.layerBound': '1', 'elk.layered.nodePlacement.strategy': 'SIMPLE', 'elk.partitioning.activate': 'true' });
@@ -53,7 +58,12 @@ function edgesByContainer({ containers, pieces, edges, isSafe }, figure) {
 function multiplicityLabels(edge, index, count) {
   return [['from', index === 0, 'TAIL'], ['to', index === count - 1, 'HEAD']].flatMap(([end, isEnd, placement]) => {
     const text = edge[`${end}Multiplicity`];
-    return isEnd && text !== undefined ? [{ id: `multiplicity::${edge.index}::${end}`, text, ...sizeOf(sizePill(text)), layoutOptions: { 'elk.edgeLabels.inline': 'false', 'elk.edgeLabels.placement': placement } }] : [];
+    if (!isEnd || text === undefined) return [];
+    return [{
+      id: `multiplicity::${edge.index}::${end}`, text,
+      ...sizeOf(textBlock(text, { textW: Infinity, pad: 0, style: STYLE.meta })),
+      layoutOptions: { 'elk.edgeLabels.inline': 'false', 'elk.edgeLabels.placement': placement },
+    }];
   });
 }
 
@@ -61,7 +71,7 @@ function multiplicityLabels(edge, index, count) {
 // basis: estimate
 // 층 사이 간격이 room(px)이 되게 하는 보이지 않는 라벨. 층이 놓이는 방향의 크기만 갖고(right는 너비, down은 높이) 다른 쪽은 1이다.
 function roomLabel(id, room, direction) {
-  const extent = Math.max(1, room - SPACE["15"] - SPACE["1"]);
+  const extent = Math.max(1, room - ROOM_BASE);
   return { id, text: ' ', width: direction === 'down' ? 1 : extent, height: direction === 'down' ? extent : 1, layoutOptions: ROOM_OPTIONS };
 }
 
@@ -144,10 +154,10 @@ function containerOptions(c, ctx) {
     // 안전 배치(처음 배치가 실패한 뒤의 두 번째 시도)는 모델 순서를 쓰지 않는 기본 순환 처리로 한다.
     'elk.layered.cycleBreaking.strategy': cycleStrategy(c, ctx),
     'elk.spacing.nodeNode': String(SPACE["8"]),
-    'elk.layered.spacing.nodeNodeBetweenLayers': String(SPACE["15"]),
+    'elk.layered.spacing.nodeNodeBetweenLayers': String(LAYER_GAP),
     'elk.spacing.edgeEdge': String(SPACE["2-5"]),
     'elk.spacing.edgeNode': String(SPACE["4"]),
-    'elk.spacing.edgeLabel': String(SPACE["1"]),
+    'elk.spacing.edgeLabel': String(EDGE_LABEL_GAP),
     'elk.layered.spacing.edgeNodeBetweenLayers': String(SPACE["4"]),
     'elk.edgeLabels.placement': 'CENTER',
     'elk.edgeLabels.inline': 'true',
@@ -158,7 +168,7 @@ function containerOptions(c, ctx) {
     'elk.portAlignment.south': 'CENTER',
     'elk.portAlignment.east': 'CENTER',
     'elk.portAlignment.west': 'CENTER',
-    ...(c.id === ROOT ? rootOptions(ctx.figure) : groupOptions(c, ctx)),
+    ...(c.id === ROOT ? rootOptions(c, ctx) : groupOptions(c, ctx)),
   };
 }
 
@@ -167,10 +177,13 @@ function cycleStrategy(c, ctx) {
   return c.hasBack ? 'MODEL_ORDER' : 'GREEDY_MODEL_ORDER';
 }
 
-function rootOptions(figure) {
+function rootOptions(c, { figure, model, isSafe }) {
   const pad = FIGURE_PAD;
+  const gridsOnly = c.children.length > 0 && c.children.every((id) => model.nodes.get(id)?.shape === 'grid');
   return {
     'elk.padding': `[top=${pad},left=${pad},bottom=${pad},right=${pad}]`,
+    // 격자끼리의 대응 관계는 선 높이보다 열의 중심을 맞춘다. 혼합 도형과 안전 배치는 기존 전략을 유지한다.
+    ...(!isSafe && gridsOnly ? { 'elk.layered.nodePlacement.strategy': 'SIMPLE' } : {}),
     ...(figure.aspect !== undefined ? wrapOptions(figure.aspect) : {}),
     // 한 층에 하나씩 놓는 후보는 이어지지 않은 도형도 같은 줄에 쌓는다. 덩어리를 따로 나란히 놓으면 좁은 목표 폭에 드는 후보가 될 수 없다.
     ...(figure.oneNodePerLayer ? { ...SINGLE_LAYER_OPTIONS, 'elk.separateConnectedComponents': 'false' } : {}),

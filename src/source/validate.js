@@ -75,7 +75,7 @@ function checkEdges(figure, names, problems) {
   const seen = new Map();
   figure.edges.forEach((edge) => {
     splitPartEnds(edge, names, problems);
-    for (const end of [edge.from, edge.to]) if (!names.has(end) && !figure.rejectedNames.has(end)) problems.error(edge.line, unknownName('card', end, names.keys()));
+    for (const end of [edge.from, edge.to]) if (!names.has(end) && !figure.rejectedNames.has(end)) problems.error(edge.line, unknownName('card', end, [...figure.nodes, ...figure.groups].map(node => node.id)));
     const [from, to] = [names.get(edge.from), names.get(edge.to)];
     for (const end of [from, to]) if (end?.owner) problems.error(edge.line, `chart "${end.id}" belongs inside "${end.owner}". Connect its owner`);
     // 상태의 자기 전이와 클래스의 자기 관계를 허용한다. 나머지는 한 격자의 서로 다른 두 칸을 잇는 선만 허용한다.
@@ -282,7 +282,7 @@ function resolveHop(hop, { figure, names, problems }, usedEdges, scope) {
   const [fromId] = hop.from.split('.');
   const [toId] = hop.to.split('.');
   if (!checkPartRefs([hop.from, hop.to], { names, line: hop.line }, problems)) return;
-  for (const id of [fromId, toId]) if (!names.has(id) && !figure.rejectedNames.has(id)) problems.error(hop.line, unknownName('card', id, names.keys()));
+  for (const id of [fromId, toId]) if (!names.has(id) && !figure.rejectedNames.has(id)) problems.error(hop.line, unknownName('card', id, [...figure.nodes, ...figure.groups].map(node => node.id)));
   if (!names.has(fromId) || !names.has(toId)) return;
   const result = projectMove(figure, hop, scope);
   if (result.ambiguous) {
@@ -310,7 +310,7 @@ function resolveHop(hop, { figure, names, problems }, usedEdges, scope) {
 // show, clear 대상: 카드를 쓰는 도형(상자, 외부, 저장소, 사람, 테이블, API)이고 카드를 그리는 그래프 보기에 놓인 것
 function checkCardTarget(op, { figure, names }, problems) {
   const target = names.get(op.node);
-  if (!target && !figure.rejectedNames.has(op.node)) problems.error(op.line, unknownName('card', op.node, names.keys()));
+  if (!target && !figure.rejectedNames.has(op.node)) problems.error(op.line, unknownName('card', op.node, figure.nodes.filter(node => CARD_SHAPES.includes(node.shape)).map(node => node.id)));
   else if (target && !CARD_SHAPES.includes(target.shape)) problems.error(op.line, `a ${target.shape} has no card. Use show on ${CARD_SHAPES.join(', ')}`);
   else if (target && !isCardDrawn(figure, op.node)) problems.error(op.line, `${op.type} "${op.node}" needs a card, and no graph view shows "${op.node}". A sequence view draws only the head. Put "${op.node}" in a graph view`);
 }
@@ -321,7 +321,7 @@ function checkCardTarget(op, { figure, names }, problems) {
 // 장면 상태(`status`) 대상: 상자, 외부, 저장소, 사람, 큐, 갈림길. 그룹, 격자, 값 이름은 상태 알약을 달 도형이 아니다.
 function checkStatusTarget(id, { line, figure, names }, problems) {
   const target = names.get(id);
-  if (!target && !figure.rejectedNames.has(id)) problems.error(line, unknownName('card', id, names.keys()));
+  if (!target && !figure.rejectedNames.has(id)) problems.error(line, unknownName('card', id, figure.nodes.filter(node => STATUS_SHAPES.includes(node.shape)).map(node => node.id)));
   else if (target && !STATUS_SHAPES.includes(target.shape)) problems.error(line, `a ${target.shape} takes no status. Use status on ${STATUS_SHAPES.join(', ')}`);
 }
 
@@ -333,7 +333,7 @@ function checkLightTarget(target, { line, figure, names }, problems) {
   const [id, part] = target.split('.');
   const item = names.get(id);
   if (!checkPartRefs([target], { names, line }, problems)) return;
-  if (!item && !figure.rejectedNames.has(id)) problems.error(line, unknownName('card', id, names.keys()));
+  if (!item && !figure.rejectedNames.has(id)) problems.error(line, unknownName('card', id, [...figure.nodes, ...figure.groups].map(node => node.id)));
   else if (item && part !== undefined) checkPart({ item, part, target, line }, problems);
 }
 
