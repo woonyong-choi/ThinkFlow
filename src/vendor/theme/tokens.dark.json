@@ -204,6 +204,10 @@
       "queue-empty": {
         "$value": "{color.gray.910}",
         "$type": "color"
+      },
+      "outline": {
+        "$type": "color",
+        "$value": "{color.line}"
       }
     },
     "flow": {
@@ -406,7 +410,7 @@
     },
     "gallery-selected": {
       "$type": "color",
-      "$value": "{color.feature-tab-selected}"
+      "$value": "{color.ink}"
     },
     "prose-code-color": {
       "$value": "{color.ink}",
@@ -463,6 +467,22 @@
     "syntax-constant": {
       "$value": "{color.category.orange.dark-ink}",
       "$type": "color"
+    },
+    "feature-tab-selected": {
+      "$type": "color",
+      "$value": "{color.category.blue.dark-ink}"
+    },
+    "feature-tab-ink": {
+      "$type": "color",
+      "$value": "{primitive.ink}"
+    },
+    "gallery-selected-ink": {
+      "$type": "color",
+      "$value": "{primitive.ink}"
+    },
+    "tag-background": {
+      "$type": "color",
+      "$value": "{color.prose-pre-background}"
     }
   },
   "icon": {

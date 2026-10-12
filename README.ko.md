@@ -199,6 +199,8 @@ const html = await toHtml(result, 'Server');
 
 ## 개발
 
+공통 디자인은 도표 캔버스와 본문을 구분하고 라이트·다크 모두에서 기본 도형 윤곽을 읽을 수 있게 유지합니다.
+
 홈페이지 동기화는 렌더러·공통 디자인·공개 문서를 같은 Git 버전으로 전달합니다([아키텍처](docs/architecture.md)).
 
 ```sh
