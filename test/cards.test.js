@@ -2,7 +2,9 @@
 // 시험 이름 첫 낱말(S1~S11)이 요구사항 번호이고, 번호와 계약의 대응은 docs/design/expression-coverage.md의 시험 번호 표에 있다.
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { build, thinkflow, descendants, findAll, lineOf, num, parseMarkup, reject, stillDom, textContent, textsOf, toHtml, toSvg, visibleTexts } from './support.js';
+import { measure } from '../src/measure/fonts.js';
+import { STYLE } from '../src/measure/texts.js';
+import { EXAMPLES, read, build, thinkflow, descendants, findAll, lineOf, num, parseMarkup, reject, stillDom, textContent, textsOf, toHtml, toSvg, visibleTexts } from './support.js';
 
 /** 멈춘 SVG의 선 경로 `p-번호`가 끝나는 점(마지막 좌표 쌍). */
 function edgeEnds(dom) {
@@ -137,7 +139,12 @@ test('S4 table relations and foreign keys share endpoint multiplicity labels wit
     `${tables()}orders -> users relation=association from="0..*" to="1"\n`,
     tables('owner bigint fk=users.id from="0..*" to="1"'),
   ]) {
-    const dom = await stillDom(source);
+    const result = await build(source);
+    const dom = parseMarkup(await toSvg(result, { isStatic: true }));
+    for (const edge of result.scene.edges) for (const label of edge.endpointLabels ?? []) {
+      assert.equal(label.w, measure(label.text, STYLE.pill.size, STYLE.pill.face), 'multiplicity reserves only its rendered text width');
+      assert.equal(label.h, STYLE.meta.line);
+    }
     const labels = findAll(dom, (node) => node.tag === 'text' && node.attrs.class?.includes('fl-multiplicity'));
     assert.deepEqual(labels.map((node) => [node.attrs['data-end'], textContent(node)]), [['from', '0..*'], ['to', '1']]);
     assert.ok(findAll(dom, (node) => node.attrs['aria-label']?.includes('orders [0..*]')).length);
@@ -277,4 +284,13 @@ test('S11 participants are listed in the order they first send: a different orde
   const lenient = await build(source, { strict: false });
   assert.deepEqual(lenient.warnings.map((w) => w.line), [firstParticipant]);
   await build(thinkflow(`person u "U"\nbox s "S"\nview sequence {\n  u\n  s\n}\nscene "m" mode=static\n  u -> s "hi"\n`));
+});
+
+
+test('class multiplicities leave room for moving relationship text without hiding it', async () => {
+  const result = await build(read(EXAMPLES, 'class.thinkflow'));
+  assert.equal(result.warnings.filter(warning => warning.code === 'check-7').length, 0);
+  const hop = result.timeline.segs.flatMap(segment => segment.hops).find(hop => hop.data?.includes('연관'));
+  assert.ok(hop, 'the relationship message remains in the animation');
+  assert.equal(hop.ms, 700, 'layout repairs do not change authored timing');
 });

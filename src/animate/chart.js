@@ -1,17 +1,11 @@
 // 차트의 움직이는 SVG keyframes. 계열마다 보임과, 드러내는 박자에서 자라는 움직임을 만들고, 밝히지 않은 행은 흐린다.
-// 자라는 규칙은 HTML 재생기(chart/motion.js)와 같다. 차트는 카드 id로 가려(`[data-chart="id"]`) 같은 문서의 차트마다, 같은 차트가 여러 곳에 그려져도 따로 움직인다.
+// 자라는 규칙은 HTML 재생기(공통 chartMotionCss)와 같다. 차트는 카드 id로 가려(`[data-chart="id"]`) 같은 문서의 차트마다, 같은 차트가 여러 곳에 그려져도 따로 움직인다.
+import { CHART_GROWTH } from '../vendor/theme/ui/diagram.mjs';
 import { tokens, values } from '../vendor/theme/tokens.js';
 
 // 점이 나타나는 시각 비율(0~1)을 keyframes 이름에 쓸 정수로 바꾸는 배율
 const AT_KEY_SCALE = 1000;
 
-// 자라는 움직임. [keyframes 접두사, 시작 값, 끝 값, 걸 class]
-const GROWS = [
-  ['h', 'transform: scaleY(0)', 'transform: none', '.rise'],
-  ['g', 'transform: scaleX(0)', 'transform: none', '.grow'],
-  ['d', 'stroke-dashoffset: 1', 'stroke-dashoffset: 0', '.draw'],
-  ['w', 'clip-path: inset(0 100% 0 0)', 'clip-path: inset(0 0 0 0)', '.wipe'],
-];
 
 // cost: time O(s·b + r·b), heap O(b), stack O(1)
 // vars: s = 계열 수, r = 행 수, b = 박자 수
@@ -39,13 +33,13 @@ function animateSeries({ clock, segs, growMs, css, windows }, { scope, sid, s, s
   const reveal = segs.find((g) => state(g).growing.includes(sid));
   css.push(clock.mode === 'static' ? `${scope} .cs-${s} { opacity: ${segs.at(-1) && state(segs.at(-1)).series.includes(sid) ? 1 : 0}; }` : `${scope} .cs-${s} { animation: ${show} ${clock.duration} ${clock.css} linear; }`);
   if (!reveal || clock.mode === 'static') return;
-  // 막대와 선과 띠는 자라는 시간 내내, 점과 값 글자는 그 뒤 절반에 나타난다. HTML 재생기(chart/motion.js)와 같다.
+  // 막대와 선과 띠는 자라는 시간 내내, 점과 값 글자는 그 뒤 절반에 나타난다. HTML 재생기(공통 chartMotionCss)와 같다.
   const [a, half, b] = [clock.percent(reveal.t0), clock.percent(reveal.t0 + growMs / 2), clock.percent(reveal.t0 + growMs)];
   const ease = `animation-timing-function: ${tokens.ease.reveal}`;
-  const key = (prefix) => `${prefix}-${scope.replace(/\W+/g, '')}-${s}`;
-  const rule = ([prefix, from, to, cls]) =>
-    `@keyframes ${key(prefix)} { 0%,${a} { ${from}; ${ease} } ${b},100% { ${to} } }\n${scope} .cs-${s} ${cls}, ${scope} .cs-${s}${cls} { animation: ${key(prefix)} ${clock.duration} ${clock.css}; }`;
-  css.push([...GROWS.map(rule), lateFade({ clock, scope, s, ease, key }, [half, b])].join('\n'));
+  const key = (prefix) => `${prefix}-${Array.from(scope, char => char.codePointAt(0).toString(16)).join('-')}-${s}`;
+  const rule = ([name, from, to]) =>
+    `@keyframes ${key(name)} { 0%,${a} { ${from}; ${ease} } ${b},100% { ${to} } }\n${scope} .cs-${s} .${name}, ${scope} .cs-${s}.${name} { animation: ${key(name)} ${clock.duration} ${clock.css}; }`;
+  css.push([...CHART_GROWTH.map(rule), lateFade({ clock, scope, s, ease, key }, [half, b])].join('\n'));
   // 선 차트 점은 선이 닿는 시각(data-at × 자라는 시간)에 나타난다. 시각 계산은 chart/line.js arrivals가 끝냈다.
   for (const at of dotAts) css.push(dotFade({ clock, scope, s, ease, key }, reveal.t0 + at * growMs, at));
 }

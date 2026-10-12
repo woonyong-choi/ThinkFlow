@@ -59,12 +59,13 @@ function readCell(word, { tokens, line }, ctx) {
   }
   const numbers = readOptions(rest, { scopes: optionsScopes(word), what: `an ${word}`, line, ctx });
   if (word === 'gap' && numbers.count === undefined) problems.error(line, `a gap needs count=, the number of omitted entries: ${form}`);
+  if (numbers.key !== undefined && (word !== 'item' || grid.cols !== 1)) problems.error(line, 'key= is supported only on item lines in a grid with cols=1');
   const known = ctx.block.names.get(id.value);
   if (known) {
     problems.error(line, `the name "${id.value}" is already used in grid "${grid.id}" (line ${known.line})`);
     return;
   }
-  const cell = { id: id.value, kind: word, label: label.value, row: numbers.row ?? 0, col: numbers.col ?? 0, rows: numbers.rows ?? 1, cols: numbers.cols ?? 1, count: numbers.count, line };
+  const cell = { id: id.value, kind: word, label: label.value, row: numbers.row ?? 0, col: numbers.col ?? 0, rows: numbers.rows ?? 1, cols: numbers.cols ?? 1, count: numbers.count, key: numbers.key, line };
   ctx.block.names.set(cell.id, cell);
   grid.cells.push(cell);
 }

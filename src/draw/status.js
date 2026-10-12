@@ -2,7 +2,9 @@
 import { BADGE_STYLE, bodyOf } from '../measure/decor.js';
 import { measure } from '../measure/fonts.js';
 import { centerBaseline, escapeXml, roundCoord as r } from '../text.js';
-import { tokens, values } from '../vendor/theme/tokens.js';
+import { values } from '../vendor/theme/tokens.js';
+import { readIcon } from '../vendor/theme/ui/build/icons.mjs';
+import { iconBody } from '../vendor/theme/ui/svg.mjs';
 import { hiddenAttr } from './visible.js';
 
 const SPACE = values.spacing;
@@ -12,28 +14,14 @@ const ICON = HEIGHT - SPACE["1"] * 2;
 // 알약이 모서리 바깥으로 나가는 거리(오른쪽, 위쪽 반대로 모서리 아래로 들어오는 거리)
 const OVERHANG = SPACE["1-5"];
 const INSET = SPACE["1"];
-// 기호 선 굵기
-const MARK_WIDTH = values["border-width"].edge;
 const SQRT_HALF = Math.SQRT1_2;
 
-// cost: time O(1), heap O(1), stack O(1)
-// basis: estimate
-// 기호 도형 조각. 정사각 칸(한 변 ICON)의 가운데 (cx, cy)에 그린다. 선은 알약 색(color)이다.
-const MARKS = {
-  ok: (cx, cy, color) => `<path d="M ${r(cx - ICON * 0.35)} ${r(cy)} L ${r(cx - ICON * 0.08)} ${r(cy + ICON * 0.28)} L ${r(cx + ICON * 0.4)} ${r(cy - ICON * 0.3)}" fill="none" stroke="${color}" stroke-width="${MARK_WIDTH}" stroke-linecap="round" stroke-linejoin="round"/>`,
-  warn: (cx, cy, color) =>
-    `<path d="M ${r(cx)} ${r(cy - ICON * 0.46)} L ${r(cx + ICON * 0.5)} ${r(cy + ICON * 0.4)} L ${r(cx - ICON * 0.5)} ${r(cy + ICON * 0.4)} Z" fill="none" stroke="${color}" stroke-width="${MARK_WIDTH}" stroke-linejoin="round"/>` +
-    `<path d="M ${r(cx)} ${r(cy - ICON * 0.12)} L ${r(cx)} ${r(cy + ICON * 0.1)}" fill="none" stroke="${color}" stroke-width="${MARK_WIDTH}" stroke-linecap="round"/>`,
-  fail: (cx, cy, color) => `<path d="M ${r(cx - ICON * 0.32)} ${r(cy - ICON * 0.32)} L ${r(cx + ICON * 0.32)} ${r(cy + ICON * 0.32)} M ${r(cx + ICON * 0.32)} ${r(cy - ICON * 0.32)} L ${r(cx - ICON * 0.32)} ${r(cy + ICON * 0.32)}" fill="none" stroke="${color}" stroke-width="${MARK_WIDTH}" stroke-linecap="round"/>`,
-  wait: (cx, cy, color) => [-1, 0, 1].map((k) => `<circle cx="${r(cx + k * ICON * 0.32)}" cy="${r(cy)}" r="${r(MARK_WIDTH * 0.75)}" fill="${color}"/>`).join(''),
-};
-
-/** 상태 종류마다 알약 글자와 색. 기호와 테두리는 이 색이고 글자는 fg다. 색 하나로만 구분하지 않으려고 글자와 기호를 늘 함께 그린다. wait는 도형 면 위 대비 3을 넘는 중립 윤곽 색이다(border는 1.3 아래라 쓰지 못한다). */
+// 상태는 글자와 정본 기호를 함께 사용하며 색은 status.css가 정한다.
 const KINDS = {
-  ok: { text: 'OK', color: tokens.color.state.success },
-  warn: { text: 'WARN', color: tokens.color.state.warning },
-  fail: { text: 'FAIL', color: tokens.color.state.error },
-  wait: { text: 'WAIT', color: tokens.color.outline },
+  ok: { text: 'OK', icon: 'check' },
+  warn: { text: 'WARN', icon: 'warning' },
+  fail: { text: 'FAIL', icon: 'close' },
+  wait: { text: 'WAIT', icon: 'ellipsis' },
 };
 
 // cost: time O(1), heap O(1), stack O(1)
@@ -114,15 +102,15 @@ export function statusBoxes(scene, timeline) {
 export function drawStatusPills(scene, timeline, { glyphs, windows, name, isStatic = false }) {
   const drawn = statusPills(timeline).flatMap(({ node, kind, spans }) =>
     instancesOf(scene, node).map((item) => {
-      const { color, text } = KINDS[kind];
+      const { icon, text } = KINDS[kind];
       const { x, y, w, h } = statusBox(scene.items[item], kind);
       glyphs.add(text, BADGE_STYLE.face);
       const markX = x + SPACE["1-5"] + ICON / 2;
       const textX = x + SPACE["1-5"] + ICON + SPACE["1"];
       return (
-        `<g class="fl-status" data-st="${escapeXml(`${name(node, item)}-${kind}`)}" opacity="${isStatic ? 1 : 0}"${hiddenAttr(isStatic)}>` +
-        `<rect x="${r(x)}" y="${r(y)}" width="${r(w)}" height="${r(h)}" rx="${r(h / 2)}" fill="${tokens.color["ui-card"]}" stroke="${color}" stroke-width="${values["border-width"].edge}"/>` +
-        MARKS[kind](markX, y + h / 2, color) +
+        `<g class="fl-status fl-status-${kind}" data-st="${escapeXml(`${name(node, item)}-${kind}`)}" opacity="${isStatic ? 1 : 0}"${hiddenAttr(isStatic)}>` +
+        `<rect x="${r(x)}" y="${r(y)}" width="${r(w)}" height="${r(h)}" rx="${r(h / 2)}" class="status-pill"/>` +
+        `<g class="status-icon" transform="translate(${r(markX - ICON / 2)} ${r(y + (h - ICON) / 2)})">${iconBody(readIcon(icon), { size: ICON, monochrome: true, prefix: `status-${item}-${kind}` })}</g>` +
         `<text x="${r(textX)}" y="${r(centerBaseline(y + h / 2, BADGE_STYLE.size))}" class="status-text">${text}</text>` +
         `${windows(spans)}</g>`
       );

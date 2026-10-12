@@ -1,4 +1,5 @@
 // 증감 막대는 직전 누계에서 시작하고, 합계 막대는 0에서 현재 누계까지 그린다.
+import { STYLE } from '../measure/texts.js';
 import { categoryPaint } from '../chart-palette.js';
 import { measure, wrap } from '../measure/fonts.js';
 import { escapeXml, roundCoord as r } from '../text.js';
@@ -48,7 +49,7 @@ export function drawWaterfall(figure, top) {
   const { scale } = waterfallScale(chart, texts);
   const names = rowLabelLayout(chart);
   const lines = chart.layout ? texts.map((text, i) => wrap(text, chart.layout.width - PAD * 2, { size: TEXT['11'], face: chart.ledger[i].total ? 'numSemibold' : 'num' })) : undefined;
-  const lineHeight = TEXT['11'] * values.leading.normal;
+  const lineHeight = STYLE.meta.line;
   const pitch = chart.layout ? names.space + BAR + SPACE["1-5"] + Math.max(...lines.map((row) => row.length)) * lineHeight + SPACE["5-5"] : ROW;
   const bottom = top + chart.rows.length * pitch;
   // 0선: 넓은 배치는 전체 높이 한 줄이다. 좁은 배치는 이름과 계산식 줄의 글 가림 면이 행 사이를 덮어 눈금처럼 끊겨 보이므로 행마다 막대 높이 안에만 긋는다(기준선과 같다).
@@ -80,7 +81,7 @@ function waterfallRow(source, row, { chart, names, top, pitch, scale, index, cy,
   const rect = `<rect x="${r(face.x)}" y="${r(face.y)}" width="${r(face.w)}" height="${BAR}" rx="${face.radius}" fill="${fill}" stroke="${color}" stroke-width="${values["border-width"].tag}" class="chart-waterfall-bar"${markAttrs(chart, markId(chart, 0, index), { raw, paint })}/>`;
   const zero = `<line x1="${r(from)}" x2="${r(from)}" y1="${r(face.y)}" y2="${r(face.y + BAR)}" stroke="${color}" stroke-width="${face.w ? 0 : values["border-width"].tag}" class="chart-waterfall-zero"${markAttrs(chart, markId(chart, 0, index, '.z'), { raw, paint })}/>`;
   const ends = [['from', row.from], ['to', row.to]].filter(([, value]) => value !== null).map(([name, value]) => ` data-${name}="${value}"`).join('');
-  const mark = `<g class="grow chart-waterfall-growth" style="transform-origin: ${to < from ? 'right' : 'left'} center"><g class="cr-${index}" role="img" aria-label="${escapeXml(`${source.label}: ${text}`)}"${ends}>${isKnown ? rect + zero : ''}</g></g>`;
+  const mark = `<g class="grow chart-waterfall-growth${to < from ? ' from-end' : ''}"><g class="cr-${index}" role="img" aria-label="${escapeXml(`${source.label}: ${text}`)}"${ends}>${isKnown ? rect + zero : ''}</g></g>`;
   const connector = !next || !isKnown || next.to === null ? '' : `<line x1="${r(to)}" x2="${r(to)}" y1="${r(cy + BAR / 2)}" y2="${r(cy + pitch - BAR / 2)}" class="chart-rule chart-waterfall-connector"/>`;
   const className = `chart-value${row.total ? ' ours' : ''} late`;
   const textMark = (n) => ({ chart, id: markId(chart, 0, index, n ? `.${n}` : ''), raw, paint });

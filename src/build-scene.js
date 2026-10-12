@@ -34,14 +34,19 @@ import { viewFigure } from './views.js';
  * @returns { scene, timeline, valueTexts }
  */
 export async function buildScene(figure, { source, limits, layoutWidth, chartWidth, reference }, problems) {
-  checkGridBudget(figure, limits);
   checkEventBudget(figure, limits);
   let texts = reference?.valueTexts ?? initialValueTexts(figure);
   for (let round = 1; ; round++) {
+    checkGridBudget(figure, limits, texts);
     const placed = await placeScene(figure, { texts, source, limits, layoutWidth, chartWidth, reference }, problems);
     const observed = collectValueTexts(figure, placed.timeline);
     const next = unionTexts(texts, observed);
+    if (figure.values.some(value => value.cell)) checkGridBudget(figure, limits, next, placed.timeline);
     const grown = grownSlots(texts, next);
+    // 셀은 폭이 같아도 줄 수가 늘 수 있으므로 새 글을 얻으면 높이까지 다시 잰다.
+    for (const value of figure.values.filter((v) => v.cell)) {
+      if (next.get(value.id).size > texts.get(value.id).size && !grown.includes(value.id)) grown.push(value.id);
+    }
     const isExtentGrown = chartCards(figure).some((card) => JSON.stringify(extentOf(card, figure, texts)) !== JSON.stringify(extentOf(card, figure, next)));
     if (reference || (!grown.length && !isExtentGrown)) return finish(placed, texts, { figure, layoutWidth }, problems);
     texts = next;
@@ -100,7 +105,7 @@ async function placeScene(figure, { texts, source, limits, layoutWidth, chartWid
   const cards = collectCards(figure, texts);
   const charts = new Map();
   for (const card of chartCards(figure)) charts.set(card.id, drawChartBase(card, { figure, texts, chartWidth, problems: createProblems(source) }));
-  const inputs = { cards, charts, source, limits, layoutWidth, chartWidth, reference };
+  const inputs = { cards, charts, texts, source, limits, layoutWidth, chartWidth, reference };
   const graphs = figure.views.filter((v) => v.strategy === 'graph');
   const directions = new Map(graphs.map((v) => [v.id, v.direction]));
   const failures = (a) => a.local.errors.filter((d) => LAYOUT_CHECKS.has(d.code)).length;
@@ -131,16 +136,16 @@ async function attemptScene(figure, inputs, variant) {
   // 태그 색은 원본에 처음 나온 순서로 정한다(docs/design/figure-syntax.md 카드 줄).
   const rows = [...figure.nodes.flatMap((node) => node.content ?? []), ...figure.steps.flatMap((s) => s.beats.flatMap((b) => b.ops.map((o) => o.row)))];
   scene.tagOrder = rows.filter((row) => row?.tag && !row.tone).map((row) => row.tag);
-  checkFigure({ figure, scene, timeline }, local);
+  const { hiddenChipWarnings } = checkFigure({ figure, scene, timeline }, local);
   for (const chart of sceneCharts(scene).values()) checkChartFigure(chart, local);
-  return { scene, timeline, local };
+  return { scene, timeline, local, hiddenChipWarnings };
 }
 
 // cost: time O(elk), heap O(s + e), stack O(d)
 // vars: elk = 배치 시간, s = 도형 수, e = 선 수, d = 그룹 깊이
 // basis: estimate
 // 보기 하나를 배치한다. 그래프는 elkjs, 순서는 격자 배치, 차트와 시간은 그림 크기대로다.
-async function layoutPanel(figure, view, { cards, charts, names, layoutWidth, chartWidth }, variant, local) {
+async function layoutPanel(figure, view, { cards, charts, texts, names, layoutWidth, chartWidth }, variant, local) {
   const base = { view: view.id, strategy: view.strategy, label: view.label };
   if (view.strategy === 'plot') return { ...base, chart: { ...charts.get(view.cardIds[0]).drawn, id: view.cardIds[0] } };
   if (view.strategy === 'time') return { ...base, time: layoutTime(figure.nodes.find((n) => n.id === view.cardIds[0]), names, chartWidth) };
@@ -153,7 +158,7 @@ async function layoutPanel(figure, view, { cards, charts, names, layoutWidth, ch
   const isSafe = variant.safe.has(view.id);
   const graph = { ...viewFigure(figure, view), ...(isSafe ? { aspect: undefined, safeLayout: true } : {}), chipRoom: variant.room.get(view.id), chipSweep: variant.sweep?.get(view.id) };
   const contentOf = (id) => (cards.contents.get(id) ?? []).map((rows) => rows.map((row) => row.chartId ? { ...row, chart: charts.get(row.chartId).drawn } : row));
-  const sizes = new Map(graph.nodes.map((n) => [n.id, sizeNode(n, contentOf(n.id), countLines(graph, n.id), charts.get(n.id)?.drawn)]));
+  const sizes = new Map(graph.nodes.map((n) => [n.id, sizeNode(n, contentOf(n.id), countLines(graph, n.id), charts.get(n.id)?.drawn, texts)]));
   checkGridExtent(graph, sizes, local);
   local.throwIfAny();
   return { ...base, scene: await layoutOrFail(graph, sizes, { problems: local, width: layoutWidth }) };

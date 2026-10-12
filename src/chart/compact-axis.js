@@ -1,4 +1,5 @@
 // 좁은 그림의 가로축: 양 끝 눈금을 유지하고 중간 눈금은 글자 폭에 맞춰 표시한다.
+import { STYLE } from '../measure/texts.js';
 import { measure, wrap } from '../measure/fonts.js';
 import { renderRich, roundCoord as r } from '../text.js';
 import { SPACE, TEXT } from './metrics.js';
@@ -16,7 +17,7 @@ function fits(list) {
 // basis: estimate
 export function compactAxis(scale, y, title) {
   const size = TEXT['11'];
-  const lineHeight = size + SPACE["3"];
+  const tickGap = size + SPACE["3"];
   const ticks = scale.ticks.map((value, i) => ({ x: scale.at(value), label: scale.labels[i], width: measure(scale.labels[i], size, 'num') }));
   const first = ticks[0], last = ticks.at(-1);
   const start = first.x, end = last.x;
@@ -27,10 +28,10 @@ export function compactAxis(scale, y, title) {
   const stagger = stride === undefined;
   const baseline = y + size + SPACE["1-5"];
   const visible = stagger ? [first, last] : ticks.filter((_, i) => i % stride === 0);
-  const parts = visible.map((tick) => `<text x="${r(tick.x)}" y="${r(baseline + (stagger && tick === last ? lineHeight : 0))}" class="chart-tick">${tick.label}</text>`);
-  let bottom = baseline + (stagger ? lineHeight : 0);
-  if (title) for (const line of wrap(title, end - start, { size })) {
-    bottom += lineHeight;
+  const parts = visible.map((tick) => `<text x="${r(tick.x)}" y="${r(baseline + (stagger && tick === last ? tickGap : 0))}" class="chart-tick">${tick.label}</text>`);
+  let bottom = baseline + (stagger ? tickGap : 0);
+  if (title) for (const [index, line] of wrap(title, end - start, STYLE.meta).entries()) {
+    bottom += index === 0 ? tickGap : STYLE.meta.line;
     parts.push(`<text x="${r(end)}" y="${r(bottom)}" class="chart-unit">${renderRich(line)}</text>`);
   }
   return { svg: parts.join(''), bottom: bottom + SPACE["0-75"] };

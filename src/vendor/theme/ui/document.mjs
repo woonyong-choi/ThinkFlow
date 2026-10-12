@@ -2,8 +2,8 @@
 import { escape, slot, out } from './html.mjs';
 import { Kbd } from './components.mjs';
 
-export function ContentGroup({ title, body, after }) {
-  return out(`<section class="app-support-group">${title ? `<h2>${escape(title)}</h2>` : ''}${slot(body, 'body')}${after ? `<p>${slot(after, 'after')}</p>` : ''}</section>`);
+export function ContentGroup({ title, body, after, collection = false }) {
+  return out(`<section class="app-support-group${collection ? ' app-knowledge-section' : ''}">${title ? `<h2>${escape(title)}</h2>` : ''}${slot(body, 'body')}${after ? `<p>${slot(after, 'after')}</p>` : ''}</section>`);
 }
 
 export function FeatureSection({ tone = 'canvas', split = false, heading, body, descriptions = [] }) {

@@ -8,7 +8,6 @@ import { centerBaseline, escapeXml, renderRich, roundCoord as r } from '../text.
 import { values } from '../vendor/theme/tokens.js';
 import { edgeMarker } from './arrow.js';
 import { sceneTag } from './scene-tag.js';
-import { LINE_DASH } from './surface.js';
 
 const SPACE = values.spacing;
 const RADIUS = values.radius;
@@ -20,9 +19,8 @@ const RADIUS = values.radius;
 export function drawEdge(e, j, { decorate, glyphs, scene }) {
   const tag = sceneTag(e, scene.shownSi);
   const { d } = routePolyline(e.points, RADIUS.route);
-  const dash = e.dashed ? ` stroke-dasharray="${LINE_DASH}"` : '';
   const marker = edgeMarker(e, j);
-  const path = `<path id="p-${j}" d="${d}" class="fl-path"${dash}${marker.attributes}/>`;
+  const path = `<path id="p-${j}" d="${d}" class="fl-path${e.dashed ? ' dashed' : ''}"${marker.attributes}/>`;
   const from = e.fromMultiplicity === undefined ? e.from : `${e.from} [${e.fromMultiplicity}]`;
   const to = e.toMultiplicity === undefined ? e.to : `${e.to} [${e.toMultiplicity}]`;
   const relation = e.relation ?? (e.isForeignKey ? 'references' : e.fromMultiplicity !== undefined || e.toMultiplicity !== undefined ? 'connects to' : undefined);
@@ -46,10 +44,10 @@ function edgeClass(e, j, decorate) {
 export function drawEdgeLabel(e, j, { decorate, glyphs, scene }) {
   if (!hasPill(e) || !e.labelAt) return undefined;
   const tag = sceneTag(e, scene.shownSi);
-  const { w, h, numW, textW } = sizePill(e.label, e.no);
+  const { w, h, numW, numH, textW } = sizePill(e.label, e.no);
   const { x, y } = e.labelAt;
   const frame = e.label === undefined ? '' : `<rect x="${r(x - w / 2)}" y="${r(y - h / 2)}" width="${r(w)}" height="${r(h)}" rx="${r(h / 2)}" class="pill ${decorate('pill', j)}"/>`;
-  const number = e.no === undefined ? '' : drawNumber(e.no, { x: x - w / 2 + SPACE["0-5"], y, numW }, glyphs);
+  const number = e.no === undefined ? '' : drawNumber(e.no, { x: x - w / 2 + SPACE["0-5"], y, numW, numH }, glyphs);
   const text = e.label === undefined ? '' : drawLabelText(e.label, { x: e.no === undefined ? x : x - w / 2 + SPACE["0-5"] + numW + SPACE["1"] + textW / 2, y, cls: decorate('pilltext', j) }, glyphs);
   return `<g id="l-${j}" class="${edgeClass(e, j, decorate)}${tag.off}"${tag.attr}><g class="fl-pill">${frame}${number}${text}</g></g>`;
 }
@@ -64,9 +62,9 @@ function drawLabelText(label, { x, y, cls }, glyphs) {
 // vars: out = 만든 SVG 글자 수
 // basis: estimate
 // 선 번호 원. 정지 그림과 문서에서도 순서가 읽히도록 선언한 번호를 그대로 쓴다(재생 단계 번호와 독립이다). left는 원 왼쪽 끝, y는 세로 가운데다.
-function drawNumber(no, { x: left, y, numW }, glyphs) {
+function drawNumber(no, { x: left, y, numW, numH }, glyphs) {
   glyphs.add(String(no), BADGE_STYLE.face);
-  const h = numW;
+  const h = numH;
   return (
     `<rect x="${r(left)}" y="${r(y - h / 2)}" width="${r(numW)}" height="${r(h)}" rx="${r(h / 2)}" class="number-pill"/>` +
     `<text x="${r(left + numW / 2)}" y="${r(centerBaseline(y, BADGE_STYLE.size))}" class="number">${no}</text>`
