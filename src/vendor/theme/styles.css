@@ -242,7 +242,7 @@ button.app-tooltip { padding: 0; background: none; color: var(--color-control-li
 /* 검색: 입력, 추천어, 결과 패널과 공개 검색. 지원 문서와 개인 사이트가 같은 역할 값을 쓴다. */
 .app-search { max-width: var(--container-body-width); margin: var(--spacing-search-top) auto var(--spacing-search-bottom); position: relative; }
 .app-search-field { position: relative; }
-.app-search-input { width: 100%; background: var(--color-search-bg); border: 0; line-height: var(--leading-line-intro); }
+.app-search-input { width: 100%; color: var(--color-body); background: var(--color-search-bg); border: 0; line-height: var(--leading-line-intro); }
 .app-search-icon { position: absolute; top: 50%; transform: translateY(-50%); }
 .app-search-clear { position: absolute; top: var(--spacing-tab-inset); right: var(--spacing-tab-inset); bottom: var(--spacing-tab-inset); display: grid; place-items: center; width: var(--spacing-search-clear-width); padding: 0; border: 0; border-radius: var(--radius-article-search-radius); background: transparent; cursor: pointer; }
 .app-search-clear:hover { background: var(--color-search-clear-hover); }
