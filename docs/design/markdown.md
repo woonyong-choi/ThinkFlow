@@ -259,13 +259,13 @@ GitHub 마크다운은 ` ```thinkflow ` 블록을 코드로 보이고 아래 이
 
 ### 패키지
 
-`package.json`의 `files`는 `src`, 로고 SVG(`docs/assets/thinkflow-*.svg`), `LICENSE`, `NOTICE`다. README와 `package.json`은 npm이 늘 넣는다. 글꼴은 의존 패키지(`pretendard`, `@expo-google-fonts/*`, `jetbrains-mono`)로 설치된다. 내장 아이콘·공통 스타일·그 라이선스는 `src/vendor/theme`에 들어 있고 `src/icons`는 공통 카탈로그 읽기와 사용자 SVG 검증을 맡는다. 시험, 문서, 예제, 스크립트는 올라가지 않는다. 실행 파일은 `bin`의 `thinkflow` 하나다. 라이브러리는 `buildFigure`, `toSvg`, `toHtml`, `FigureError`와 디자인 매니페스트를 내보낸다. Node.js ESM API의 입력 옵션과 진단 형식은 [공개 선언](../../src/index.d.ts)이 정본이고 [사용법](../usage.md#javascript에서-조립하기)에 호출 예시가 있다. 빌드 결과는 경고 목록만 공개하며 내부 모형을 변경하거나 직렬화하는 API는 제공하지 않는다.
+`package.json`의 `files`는 `src`, 로고 PNG(`docs/assets/thinkflow-logo*.png`), `LICENSE`, `NOTICE`다. README와 `package.json`은 npm이 늘 넣는다. 글꼴은 의존 패키지(`pretendard`, `@expo-google-fonts/*`, `jetbrains-mono`)로 설치된다. 내장 아이콘·공통 스타일·그 라이선스는 `src/vendor/theme`에 들어 있고 `src/icons`는 공통 카탈로그 읽기와 사용자 SVG 검증을 맡는다. 시험, 문서, 예제, 스크립트는 올라가지 않는다. 실행 파일은 `bin`의 `thinkflow` 하나다. 라이브러리는 `buildFigure`, `toSvg`, `toHtml`, `FigureError`와 디자인 매니페스트를 내보낸다. Node.js ESM API의 입력 옵션과 진단 형식은 [공개 선언](../../src/index.d.ts)이 정본이고 [사용법](../usage.md#javascript에서-조립하기)에 호출 예시가 있다. 빌드 결과는 경고 목록만 공개하며 내부 모형을 변경하거나 직렬화하는 API는 제공하지 않는다.
 
 `npm run check:package -- /absolute/new-consumer-path`는 저장소 밖의 새 소비 환경을 만들고 실제 `npm pack` 산출물을 설치한다. 경로가 이미 있으면 거절하며 자신이 만든 경로는 성공·실패 뒤 모두 지운다. npm 공개 레지스트리에 접근해야 한다. 사용자 npm 설정과 인증 환경을 제외하고 공개 런타임 의존성만 설치한다. 검사 입력은 기존 flow 예제이고 CLI와 공개 API가 같은 SVG·HTML을 만드는지, Markdown 반영과 내장 디자인·글꼴을 확인한다. TypeScript 소비자는 설치된 선언을 `NodeNext`로 컴파일한 뒤 실행하고, 잘못된 옵션과 임의 객체를 빌드 결과로 전달하는 호출은 컴파일에서 거부하는지 확인한다. 컴파일러는 개발 의존성으로만 두고 소비 환경에는 설치하지 않는다. 실제 npm 발행과 사용자 인증 권한은 이 검사에 포함하지 않는다.
 
 ### README 로고의 출처
 
-[밝은 PNG](../assets/thinkflow-logo.png)와 [어두운 PNG](../assets/thinkflow-logo-dark.png)는 README의 `<picture>`에서 테마에 따라 선택하는 로고다. 패키지에 넣는 로고 SVG와 별개이며 npm 패키지에는 포함하지 않는다.
+[밝은 PNG](../assets/thinkflow-logo.png)와 [어두운 PNG](../assets/thinkflow-logo-dark.png)는 README와 생성 HTML 탭 아이콘이 공유하는 원본이다. 두 파일을 패키지에 포함하고 재생기·목록 HTML에 data URL로 내장한다. 로고를 갱신하면 기존 HTML을 다시 생성하고 실행 중인 렌더링 프로세스를 재시작한다.
 
 밝은 PNG의 최초 저장소 반영은 [29254b5](https://github.com/woonyong-choi/thinkflow/commit/29254b5ee53c3cab0bab4cc6d021f713d0b59cbd)다. 현재 밝은 PNG와 어두운 PNG는 [1906d00](https://github.com/woonyong-choi/thinkflow/commit/1906d003b3f4102579ecdc22870d6833a8f2efd3)에 함께 반영된 파일이다. 이 Git 이력은 저장소에 들어온 파일을 식별하는 근거이며 원본 제작자나 참고 자산의 권리를 증명하지 않는다.
 
@@ -304,7 +304,7 @@ GitHub 마크다운은 ` ```thinkflow ` 블록을 코드로 보이고 아래 이
 | 다른 울타리 안의 thinkflow 줄은 그리지 않는다. 3칸까지 들여쓴 블록과 목록 칸 안의 블록은 그리고, 들여쓴 코드와 HTML 주석 안은 읽지도 고치지도 않으며, 4칸 들여쓴 줄은 울타리를 닫지 못한다. | `test/markdown.test.js`(M4, M9) |
 | CRLF 문서는 CRLF로 다시 쓰고 두 번째 실행은 바꾸지 않는다. | `test/markdown.test.js`(M8) |
 | 옵션은 명령마다 받는 것만 받는다. | `test/cli.test.js`(L2, L3, L7) |
-| 패키지에는 실행에 필요한 파일, 로고 SVG, 라이선스, NOTICE만 든다. | `test/package.test.js`(P1), `npm run check:package`: 실제 tarball의 허용 파일 목록 검사 |
+| 패키지에는 실행에 필요한 파일, 공유 로고 PNG, 라이선스, NOTICE만 든다. | `test/package.test.js`(P1), `npm run check:package`: 실제 tarball의 허용 파일 목록 검사 |
 | 패키지를 설치해 실행할 수 있다. | `npm run check:package`: 실제 tarball 설치, CLI의 check·render·md와 공개 API 출력 대조. Node 20·22 CI와 릴리스가 실행 |
 | 공개 API의 타입과 구조화 진단을 설치 소비자가 사용하고 잘못된 호출은 컴파일에서 거부한다. | `test/package.test.js`, `npm run check:package`의 TypeScript 소비자 |
 | Action이 저장소 CI에서 돈다. | `ci.yml`의 `action` 작업 |
