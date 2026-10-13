@@ -560,7 +560,7 @@
     },
     "canvas": {
       "$type": "color",
-      "$value": "{color.ui-card}"
+      "$value": "{color.prose-pre-background}"
     },
     "landing-footer-ink": {
       "$type": "color",
@@ -569,6 +569,74 @@
     "search-message-color": {
       "$type": "color",
       "$value": "{color.ui-muted}"
+    },
+    "landing-title-color": {
+      "$type": "color",
+      "$value": "{color.ink}"
+    },
+    "description-color": {
+      "$type": "color",
+      "$value": "{color.body}"
+    },
+    "landing-review-meta-ink": {
+      "$type": "color",
+      "$value": "{color.ui-muted}"
+    },
+    "landing-review-link-ink": {
+      "$type": "color",
+      "$value": "{color.action-link}"
+    },
+    "landing-newsletter-note-ink": {
+      "$type": "color",
+      "$value": "{color.ui-muted}"
+    },
+    "control-muted": {
+      "$type": "color",
+      "$value": "{color.ui-muted}"
+    },
+    "feature-canvas": {
+      "$type": "color",
+      "$value": "{color.ui-card}"
+    },
+    "feature-light": {
+      "$type": "color",
+      "$value": "{color.prose-pre-background}"
+    },
+    "feature-medium": {
+      "$type": "color",
+      "$value": "{color.ui-card}"
+    },
+    "feature-box-background": {
+      "$type": "color",
+      "$value": "{color.ui-card}"
+    },
+    "feature-hero-background": {
+      "$type": "color",
+      "$value": "{color.ui-card}"
+    },
+    "nav-color": {
+      "$type": "color",
+      "$value": "{color.body}"
+    },
+    "nav-hover-color": {
+      "$type": "color",
+      "$value": "{color.ink}"
+    },
+    "nav-active-color": {
+      "$type": "color",
+      "$value": "{color.ink}"
+    },
+    "nav-active-background": {
+      "$type": "color",
+      "$value": "{color.control-hover}"
+    },
+    "landing-nav-hover": {
+      "$type": "color",
+      "$value": "{color.control-hover}"
+    },
+    "landing-action-pressed": {
+      "$type": "color",
+      "$value": "{color.control-hover}"
     }
   },
   "icon": {
