@@ -13,7 +13,7 @@ function harness({ native = false } = {}) {
   const classes = new Set();
   const root = { classList: { contains: (name) => classes.has(name), toggle: (name, on) => on ? classes.add(name) : classes.delete(name), remove: (name) => classes.delete(name) } };
   if (native) root.requestFullscreen = () => Promise.resolve();
-  const canvas = { ...focusable(), clientWidth: 800, clientHeight: 600, removeAttribute() {}, scrollTo() {} };
+  const canvas = { ...focusable(), clientWidth: 800, clientHeight: 600, scrollWidth: 800, removeAttribute(name) { if (name === 'tabindex') delete this.tabIndex; }, scrollTo() {} };
   const panels = { querySelectorAll: () => [{ viewBox: { baseVal: { width: 800, height: 600 } } }], style: { setProperty() {}, removeProperty() {} } };
   const window = {}; window.self = window.top = window;
   const context = { document, window, ToolIcon: () => '' };
@@ -64,4 +64,17 @@ test('fullscreen exit returns to the toolbar when entry focus was the document b
   h.document.activeElement = h.viewer.canvas;
   h.showFull(h.viewer, false);
   assert.equal(h.document.activeElement, h.viewer.fullButton);
+});
+
+test('inline overflow keeps the canvas keyboard reachable before and after fullscreen (#272)', () => {
+  const h = harness();
+  h.viewer.canvas.scrollWidth = 1200;
+  h.showFull(h.viewer, false);
+  assert.equal(h.viewer.canvas.tabIndex, 0);
+  h.setFull(h.viewer, true);
+  h.showFull(h.viewer, false);
+  assert.equal(h.viewer.canvas.tabIndex, 0);
+  h.viewer.canvas.scrollWidth = h.viewer.canvas.clientWidth;
+  h.showFull(h.viewer, false);
+  assert.equal(h.viewer.canvas.tabIndex, undefined);
 });

@@ -50,7 +50,7 @@ function boxScale(chart) {
 // basis: estimate
 // 행 k의 SVG: 수염, 상자, 가운데 값 선, 그리고 이름과 가운데 값 글자
 function boxRow(ctx, row, k) {
-  const { chart, scale, cy, text, labels, top } = ctx;
+  const { chart, scale, cy, text, labels, top, format } = ctx;
   const v = row.values;
   const name = rowName(row.label, { layout: labels, k, top, cy });
   const tip = tipOf(row);
@@ -59,7 +59,7 @@ function boxRow(ctx, row, k) {
   const guides = chart.layout ? drawRules(chart.rules, scale, { axis: 'x', from: cy - BAR, to: cy + BAR, labels: false }) : '';
   if (!isComplete(row)) {
     // 모양이 없는 행도 읽을 수 있게 적힌 값과 빠진 값을 이름 붙여 알린다.
-    const label = BOX_KEYS.map((key) => `${BOX_NAMES[key]} ${typeof v[key] === 'number' ? v[key] : COPY.dash}`).join(', ');
+    const label = BOX_KEYS.map((key) => `${BOX_NAMES[key]} ${typeof v[key] === 'number' ? format(v[key]) : COPY.dash}`).join(', ');
     return `<g class="cr-${k}" role="img" aria-label="${escapeXml(`${row.label}: ${label}`)}"></g>${guides}${texts}`;
   }
   const [a, q1, m, q3, b] = [v.min, v.q1, v.median, v.q3, v.max].map(scale.at);
@@ -76,10 +76,11 @@ function boxRow(ctx, row, k) {
 // basis: estimate
 export function drawBoxes(figure, top) {
   const { chart } = figure;
+  const format = valueFormat(chart.rows.flatMap(presentOf), chart.decimals);
   const { scale } = boxScale(chart);
   const texts = medianTexts(chart);
   const labels = rowLabelLayout(chart);
   const pitch = chart.layout ? labels.space + BOX_H + SPACE["3"] + TEXT['11'] + SPACE["5-5"] : ROW;
-  const parts = chart.rows.map((row, k) => boxRow({ chart, scale, labels, top: top + k * pitch, cy: top + k * pitch + (chart.layout ? labels.space + BAR : ROW / 2), text: texts[k] }, row, k));
+  const parts = chart.rows.map((row, k) => boxRow({ chart, scale, labels, format, top: top + k * pitch, cy: top + k * pitch + (chart.layout ? labels.space + BAR : ROW / 2), text: texts[k] }, row, k));
   return finishRowChart(chart, { parts, scale, top, bottom: top + chart.rows.length * pitch });
 }

@@ -22,11 +22,28 @@ const EXTENT_MAX =2 ** 40;
  * @param grid 그림 모형의 격자 { rows, cols, cells, label }
  * @returns { elements, pathCommands }
  */
-function gridCost(grid) {
+function gridCost(grid, valueTexts, rowsByValue) {
   const regions = emptyRegions(grid).length;
-  const { titleLines, lined } = gridLines(grid);
-  const cells = lined.reduce((sum, cell) => sum + CELL_ELEMENTS[cell.kind] + cell.lines.length, 0);
+  const { titleLines, lined } = gridLines(grid, valueTexts);
+  const cells = lined.reduce((sum, cell) => {
+    const textElements = cell.valueId ? cellValueElements(cell, rowsByValue?.get(cell.valueId)) : cell.lines.length;
+    return sum + CELL_ELEMENTS[cell.kind] + textElements + (cell.keyLines?.length ?? 0);
+  }, 0);
   return { elements: FRAME_ELEMENTS + titleLines.length + cells + (regions ? EMPTY_ELEMENTS : 0), pathCommands: regions * REGION_COMMANDS };
+}
+
+// cost: time O(v + p), heap O(v + p), stack O(1)
+// vars: v = 칸의 값 상태 수, p = 장면별 값 기간 수의 합
+// basis: estimate
+// 장면별 값 묶음·갱신 면, 그 장면에서 쓰는 상태별 묶음·글 줄을 센다. 같은 글도 장면이 다르면 별도 요소다.
+function cellValueElements(cell, rows) {
+  if (!rows) return 2 + cell.variants.reduce((count, variant) => count + 1 + variant.lines.length, 0);
+  const lineCounts = new Map(cell.variants.map(variant => [variant.text, variant.lines.length]));
+  let count = rows.length * 2;
+  for (const row of rows) {
+    for (const text of new Set(row.periods.map(([, , text]) => text))) count += 1 + lineCounts.get(text);
+  }
+  return count;
 }
 
 // cost: time O(g), heap O(1), stack O(1)
@@ -48,10 +65,15 @@ export function checkGridExtent(figure, sizes, problems) {
 // vars: c = 모든 격자의 칸 수 합
 // basis: estimate
 // 격자가 그릴 양(요소 수, 경로 명령 수)을 크기를 정하기 전에 세어, 그림 전체 합계가 예산을 넘으면 FigureError를 던진다. limits는 resolveBudget이 돌려준 한도 표다. 칸 모형은 이미 읽은 선언이라 이 검사가 새로 큰 할당을 하지 않는다.
-export function checkGridBudget(figure, limits) {
+export function checkGridBudget(figure, limits, valueTexts, timeline) {
   const meter = createMeter(limits);
+  const rowsByValue = timeline ? new Map() : undefined;
+  for (const row of timeline?.values ?? []) {
+    if (!rowsByValue.has(row.id)) rowsByValue.set(row.id, []);
+    rowsByValue.get(row.id).push(row);
+  }
   for (const node of figure.nodes.filter((n) => n.shape === 'grid')) {
-    const cost = gridCost(node);
+    const cost = gridCost(node, valueTexts, rowsByValue);
     const where = { line: node.line, what: `grid "${node.id}"` };
     meter.add('grid-elements', cost.elements, where);
     meter.add('grid-path-commands', cost.pathCommands, where);

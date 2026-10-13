@@ -3,7 +3,7 @@
 import { roundCoord as r } from '../text.js';
 import { tokens } from '../vendor/theme/tokens.js';
 import { drawCard } from './card.js';
-import { SURFACE_FILL, surfaceOutline } from './surface.js';
+import { surfaceOutline } from './surface.js';
 
 // 윤곽 모양. 채우기와 선은 부르는 쪽이 정한다. 카드 종류는 모두 카드 면(surfaceOutline)이다.
 const geometry = {
@@ -24,14 +24,13 @@ export function outlineOf(it) {
 export function drawShape(it, stroke, paint) {
   const { x, y, w, h } = it;
   const cx = x + w / 2;
-  const fill = SURFACE_FILL;
   switch (it.shape) {
     case 'store':
-      return `${geometry.store(it)} ${fill} ${stroke}/><path d="M${r(x)} ${r(y)} a ${r(w / 2)} ${it.marginTop} 0 0 0 ${r(w)} 0" fill="none" ${stroke}/>`;
+      return `${geometry.store(it)} ${stroke}/><path d="M${r(x)} ${r(y)} a ${r(w / 2)} ${it.marginTop} 0 0 0 ${r(w)} 0" fill="none" ${stroke}/>`;
     case 'decision':
-      return `<polygon points="${r(cx)},${r(y)} ${r(x + w)},${r(y + h / 2)} ${r(cx)},${r(y + h)} ${r(x)},${r(y + h / 2)}" ${fill} ${stroke}/>`;
+      return `<polygon points="${r(cx)},${r(y)} ${r(x + w)},${r(y + h / 2)} ${r(cx)},${r(y + h)} ${r(x)},${r(y + h / 2)}" ${stroke}/>`;
     case 'circle':
-      return `${geometry.circle(it)} ${fill} ${stroke}/>`;
+      return `${geometry.circle(it)} ${stroke}/>`;
     case 'start':
       return `<circle cx="${r(cx)}" cy="${r(y + h / 2)}" r="${r(w / 2)}" fill="${tokens.color.ink}" ${stroke}/>`;
     case 'final':

@@ -6,33 +6,47 @@
 :root {
   --color-gray-0: #ffffff;
   --color-gray-59: #f0f0f0;
+  --color-gray-212: #c9c9c9;
   --color-gray-282: #b7b7b7;
   --color-gray-467: #888888;
+  --color-gray-529: #787878;
+  --color-gray-910: #171717;
   --color-gray-933: #111111;
   --color-group-title: var(--color-help-title-color);
+  --color-outline: var(--color-gray-529);
   --color-line: var(--color-gray-282);
   --color-state-active: var(--color-category-blue-light-border);
   --color-state-active-text: var(--color-category-blue-light-ink);
   --color-ui-focus: var(--color-action-link);
+  --color-data-grid: var(--color-gray-212);
+  --color-data-category-1: var(--color-category-blue-solid);
   --color-figure-icon: var(--color-category-blue-light-border);
+  --color-figure-queue-empty: var(--color-gray-59);
   --color-figure-number-fill: var(--primitive-figure-number-fill);
   --color-figure-number-ink: var(--primitive-figure-number-ink);
   --color-figure-outline: var(--color-gray-467);
+  --color-figure-selection-fill: var(--color-category-blue-light-tint-3);
+  --color-figure-canvas: var(--primitive-help-bg);
+  --color-figure-flash: var(--primitive-search-hover);
+  --color-figure-active-surface: var(--primitive-help-hover);
   --color-ui-card: var(--color-gray-0);
   --color-ink: var(--primitive-ink);
   --color-ui-muted: var(--primitive-muted);
   --color-ui-line: var(--primitive-line);
-  --color-search-hover: var(--primitive-search-hover);
-  --color-help-hover: var(--primitive-help-hover);
   --color-help-title-color: var(--primitive-help-title-color);
-  --color-prose-pre-background: var(--primitive-help-bg);
   --color-action-link: var(--primitive-link);
+  --color-category-blue-anchor: #1e6bd6;
+  --color-category-blue-fill: var(--color-category-blue-anchor);
   --color-category-blue-light-border: #1e6bd6;
   --color-category-blue-light-ink: #1161cb;
+  --color-category-blue-light-tint-3: #d5e4fa;
   --color-category-blue-dark-border: #3a85f2;
   --color-category-blue-dark-ink: #6da8ff;
+  --color-category-blue-dark-tint-3: #303d54;
+  --color-category-blue-solid: var(--color-category-blue-fill);
   --font-figure-sans: FigSans, FigSansSym, FigSansMath, ui-sans-serif, -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
   --font-figure-mono: FigMono, FigSans, FigSansSym, FigSansMath, ui-monospace, SFMono-Regular, Menlo, monospace;
+  --radius-card-radius: var(--primitive-card-radius);
   --text-small-text: var(--primitive-small-text);
   --text-tiny-text: var(--primitive-tiny-text);
   --text-figure-meta: 11px;
@@ -48,21 +62,24 @@
   --primitive-search-hover: #d9e6ff;
   --primitive-help-hover: #ebf1ff;
   --primitive-help-title-color: #3d4856;
-  --primitive-figure-ui-accent: #3c84f3;
   --primitive-figure-dark-bg: #26272b;
   --primitive-figure-dark-node: #303136;
+  --primitive-figure-dark-edge: #50535b;
   --primitive-figure-dark-separator: #454850;
   --primitive-figure-dark-hover: #343e50;
   --primitive-figure-dark-selection: #274174;
   --primitive-figure-dark-muted: #a9adb6;
   --primitive-figure-dark-line: #7f8793;
+  --primitive-figure-dark-outline: #868686;
   --primitive-figure-number-fill: #303336;
   --primitive-figure-number-ink: #ffffff;
+  --primitive-card-radius: 18px;
   --border-width-thin: 1px;
   --border-width-hair: 0.75px;
   --border-width-lifeline: 1.25px;
   --border-width-edge: 1.75px;
   --opacity-range: 0.4;
+  --dash-line: 5;
   --dash-gap: 4;
   --dash-card: 3;
   --outline-width-focus: 3px;
@@ -70,58 +87,70 @@
 }
 
   :root:not([data-theme='dark']) {
+  --color-outline: var(--primitive-figure-dark-outline);
   --color-line: var(--primitive-figure-dark-line);
-  --color-state-active: var(--primitive-figure-ui-accent);
+  --color-state-active: var(--color-category-blue-dark-border);
   --color-state-active-text: var(--color-category-blue-dark-ink);
+  --color-data-grid: var(--primitive-figure-dark-edge);
   --color-figure-icon: var(--color-category-blue-dark-border);
+  --color-figure-queue-empty: var(--color-gray-910);
   --color-figure-number-fill: var(--color-gray-59);
   --color-figure-number-ink: var(--color-gray-933);
   --color-figure-outline: var(--color-line);
+  --color-figure-selection-fill: var(--color-category-blue-dark-tint-3);
+  --color-figure-canvas: var(--primitive-figure-dark-bg);
+  --color-figure-flash: var(--primitive-figure-dark-selection);
+  --color-figure-active-surface: var(--primitive-figure-dark-hover);
   --color-ui-card: var(--primitive-figure-dark-node);
   --color-ink: var(--color-gray-59);
   --color-ui-muted: var(--primitive-figure-dark-muted);
   --color-ui-line: var(--primitive-figure-dark-separator);
-  --color-search-hover: var(--primitive-figure-dark-selection);
-  --color-help-hover: var(--primitive-figure-dark-hover);
   --color-help-title-color: var(--color-ink);
-  --color-prose-pre-background: var(--primitive-figure-dark-bg);
   color-scheme: dark;
   }
 
 [data-theme='dark'] {
+  --color-outline: var(--primitive-figure-dark-outline);
   --color-line: var(--primitive-figure-dark-line);
-  --color-state-active: var(--primitive-figure-ui-accent);
+  --color-state-active: var(--color-category-blue-dark-border);
   --color-state-active-text: var(--color-category-blue-dark-ink);
+  --color-data-grid: var(--primitive-figure-dark-edge);
   --color-figure-icon: var(--color-category-blue-dark-border);
+  --color-figure-queue-empty: var(--color-gray-910);
   --color-figure-number-fill: var(--color-gray-59);
   --color-figure-number-ink: var(--color-gray-933);
   --color-figure-outline: var(--color-line);
+  --color-figure-selection-fill: var(--color-category-blue-dark-tint-3);
+  --color-figure-canvas: var(--primitive-figure-dark-bg);
+  --color-figure-flash: var(--primitive-figure-dark-selection);
+  --color-figure-active-surface: var(--primitive-figure-dark-hover);
   --color-ui-card: var(--primitive-figure-dark-node);
   --color-ink: var(--color-gray-59);
   --color-ui-muted: var(--primitive-figure-dark-muted);
   --color-ui-line: var(--primitive-figure-dark-separator);
-  --color-search-hover: var(--primitive-figure-dark-selection);
-  --color-help-hover: var(--primitive-figure-dark-hover);
   --color-help-title-color: var(--color-ink);
-  --color-prose-pre-background: var(--primitive-figure-dark-bg);
   color-scheme: dark;
 }
 [data-theme='light'] {
+  --color-outline: var(--color-gray-529);
   --color-line: var(--color-gray-282);
   --color-state-active: var(--color-category-blue-light-border);
   --color-state-active-text: var(--color-category-blue-light-ink);
+  --color-data-grid: var(--color-gray-212);
   --color-figure-icon: var(--color-category-blue-light-border);
+  --color-figure-queue-empty: var(--color-gray-59);
   --color-figure-number-fill: var(--primitive-figure-number-fill);
   --color-figure-number-ink: var(--primitive-figure-number-ink);
   --color-figure-outline: var(--color-gray-467);
+  --color-figure-selection-fill: var(--color-category-blue-light-tint-3);
+  --color-figure-canvas: var(--primitive-help-bg);
+  --color-figure-flash: var(--primitive-search-hover);
+  --color-figure-active-surface: var(--primitive-help-hover);
   --color-ui-card: var(--color-gray-0);
   --color-ink: var(--primitive-ink);
   --color-ui-muted: var(--primitive-muted);
   --color-ui-line: var(--primitive-line);
-  --color-search-hover: var(--primitive-search-hover);
-  --color-help-hover: var(--primitive-help-hover);
   --color-help-title-color: var(--primitive-help-title-color);
-  --color-prose-pre-background: var(--primitive-help-bg);
   color-scheme: light;
 }
 /* 그림 안 글자와 모양. HTML 재생기와 움직이는 SVG가 같이 쓴다. */
@@ -240,7 +269,7 @@
   fill: var(--color-ink);
 }
 
-/* 그룹은 면이 없다(투명). 경계와 제목만 있고, 깊이에 따라 회색 면을 겹치지 않는다. 고른 색의 면과 경계는 draw/paint.js가 쓴 색에만 더한다. */
+/* 그룹은 기본 면이 없다(투명). 경계와 제목만 있고, 깊이에 따라 회색 면을 겹치지 않는다. 고른 색은 아래 appearance 역할로 적용한다. */
 .fl .frame-box {
   --fx-edge-rest: var(--color-figure-outline);
   fill: none;
@@ -248,10 +277,48 @@
   stroke-width: var(--border-width-thin);
 }
 
+.fl .fl-card {
+  fill: var(--color-ui-card);
+}
+
+.fl .fl-queue-slot {
+  fill: var(--color-figure-queue-empty);
+  stroke: var(--color-outline);
+  stroke-width: var(--border-width-thin);
+}
+
+.fl .queue-fill .fl-queue-slot {
+  fill: var(--color-data-category-1);
+  stroke: var(--color-data-category-1);
+}
+
+.fl .fl-shape-external > :is(.fl-stroke, .fl-pulse),
+.fl .frame-box.dashed,
+.fl .fl-path.dashed {
+  stroke-dasharray: var(--dash-line) var(--dash-gap);
+}
+
 .fl .lifeline {
   stroke: var(--color-line);
   stroke-width: var(--border-width-lifeline);
   stroke-dasharray: var(--dash-gap) var(--dash-gap);
+}
+
+.fl .fl-activation {
+  fill: var(--color-ui-card);
+  stroke: var(--color-line);
+  stroke-width: var(--border-width-thin);
+}
+
+.fl .fl-destroy > circle {
+  fill: var(--color-figure-canvas);
+}
+
+.fl .fl-destruction {
+  fill: none;
+  stroke: var(--color-line);
+  stroke-width: var(--border-width-edge);
+  stroke-linecap: round;
 }
 
 .fl .note-box {
@@ -267,6 +334,18 @@
   stroke: var(--fx-edge-rest);
 }
 
+.fl .fl-mini-pill {
+  stroke-width: var(--border-width-thin);
+}
+
+.fl .fl-mini-pill.fl-mini-lit {
+  fill: var(--fx-row);
+}
+
+.fl .fl-edge.fl-mini-lit {
+  color: var(--fx-edge);
+}
+
 .fl .part-bg {
   --fx-face: transparent;
   --fx-face-on: var(--fx-row);
@@ -274,15 +353,19 @@
 }
 
 .fl .col-line {
-  stroke: var(--color-ui-line);
+  stroke: var(--color-data-grid);
   stroke-width: var(--border-width-hair);
+}
+
+.fl .part-head {
+  fill: var(--color-figure-canvas);
 }
 
 .fl .grid-cell {
   --fx-face: var(--color-ui-card);
   --fx-face-on: var(--fx-row);
   fill: var(--fx-face);
-  stroke: var(--color-ui-line);
+  stroke: var(--color-data-grid);
   stroke-width: var(--border-width-thin);
 }
 
@@ -292,7 +375,7 @@
 
 .fl .grid-cell.gap {
   --fx-face: var(--color-ui-card);
-  stroke: var(--color-ui-line);
+  stroke: var(--color-data-grid);
 }
 
 .fl .grid-cell.empty {
@@ -305,7 +388,7 @@
   --fx-line-rest: var(--color-ink);
 }
 
-/* 카드 내용 면(color.ui-card, 테두리 없음) 위에 고른 카드 모습(face)이 옅은 면이나 경계를 더한다. */
+/* 이름과 값은 평소 여백으로 구분한다. 명시한 면(face)과 값 갱신 강조만 배경을 더한다. */
 .fl .face {
   fill: none;
   stroke: none;
@@ -368,12 +451,15 @@
 /* 효과 한 벌: 켜짐과 평소의 모습을 정하는 유일한 정의다. 움직이는 SVG(animate/animator.js)의 keyframes와 HTML 재생기의 `.on` 규칙이 같은 `--fx-*`를 읽으므로 두 출력과 정지 그림이 늘 같다.
    - 켜짐(on): --fx-edge 윤곽·그룹 경계·선·알약 테두리, --fx-ink 알약 글자, --fx-row 표 줄과 격자 칸의 면, --fx-face-on 요소의 켜진 면(도형은 아래), --fx-flash 값이 바뀐 순간의 면.
    - 평소(rest): --fx-edge-rest 도형, 그룹, 알약의 경계, --fx-ink-rest 알약 글자, --fx-line-rest 선, --fx-face 요소의 평소 면.
-   효과는 도형이 고른 색(tone)이나 표현(appearance)과 상관없다. 고른 색은 평소 값(--fx-face, --fx-edge-rest)만 바꾸고(draw/paint.js), 켜진 동안은 강조 윤곽에 자리를 내준다. */
+   효과는 도형이 고른 색(tone)이나 표현(appearance)과 상관없다. appearance는 고른 색을 평소 값(--fx-face, --fx-edge-rest)에만 적용하고, 켜진 동안은 강조 윤곽에 자리를 내준다. */
 .fl {
+  --paint-fill: var(--color-ui-card);
+  --paint-outline: var(--color-figure-outline);
+  --paint-ink: var(--color-group-title);
   --fx-edge: var(--color-state-active);
   --fx-ink: var(--color-state-active-text);
-  --fx-row: var(--color-search-hover);
-  --fx-flash: var(--color-search-hover);
+  --fx-row: var(--color-figure-selection-fill);
+  --fx-flash: var(--color-figure-flash);
   --fx-edge-rest: var(--color-figure-outline);
   --fx-ink-rest: var(--color-ui-muted);
   --fx-line-rest: var(--color-line);
@@ -382,11 +468,41 @@
 /* 도형의 평소 면과 켜진 면. 옅은 면으로 고른 도형(filled)은 켜져도 면이 같다. 면이 없는 윤곽(fill='none')과 점은 자기 면이 없거나 자기 색이다. */
 .fl .fl-node {
   --fx-face: var(--color-ui-card);
-  --fx-face-on: var(--color-help-hover);
+  --fx-face-on: var(--color-figure-active-surface);
 }
 
 .fl .fl-node.ap-filled {
+  --fx-face: var(--paint-fill);
   --fx-face-on: var(--fx-face);
+}
+
+/* 소비자는 쓴 톤의 --paint-* 변수만 연결한다. 면·경계·제목·차트 바탕의 역할은 여기서 한 번 정한다. */
+.fl .fl-node.ap-outline {
+  --fx-edge-rest: var(--paint-outline);
+}
+
+.fl .fl-group.ap-filled > .frame-box {
+  fill: var(--paint-fill);
+}
+
+.fl .fl-group.ap-outline > .frame-box {
+  --fx-edge-rest: var(--paint-outline);
+}
+
+.fl .fl-group:is(.ap-plain, .ap-filled, .ap-outline) > .frame {
+  fill: var(--paint-ink);
+}
+
+.fl .face.ap-filled {
+  fill: var(--paint-fill);
+}
+
+.fl .fl-layer.ap-filled {
+  --chart-ground: var(--paint-fill);
+}
+
+.fl .face.ap-outline {
+  stroke: var(--paint-outline);
 }
 
 .fl .fl-shape-start {
@@ -398,7 +514,7 @@
   --fx-face-on: none;
 }
 
-.fl .fl-node.ap-filled > .fl-stroke:not([fill='none']) {
+.fl :where(.fl-node) > .fl-stroke:where(:not([fill='none'])) {
   fill: var(--fx-face);
 }
 
@@ -480,25 +596,37 @@
   font-weight: var(--font-weight-semibold);
 }
 
+.fl .fl-packet > circle:first-child {
+  opacity: 0;
+}
+
+/* 독립 SVG도 재생 판과 같은 바탕과 움직임 줄이기 규칙을 쓴다. */
+.fl .fl-canvas-surface { fill: var(--color-figure-canvas); rx: var(--radius-card-radius); }
+.fl .fl-still { display: none; }
+@media (prefers-reduced-motion: reduce) {
+  .fl .fl-motion { display: none; }
+  .fl .fl-still { display: inline; }
+}
+
 .fl .a0 { fill: var(--fx-face); stroke: var(--fx-edge-rest); }
 </style>
 <defs></defs>
-<rect x="0.5" y="0.5" width="959" height="438" rx="18" fill="var(--color-prose-pre-background)"/>
+<rect x="0.5" y="0.5" width="959" height="438" class="fl-canvas-surface"/>
 <g transform="translate(164.6 0)">
 <line x1="78" x2="78" y1="75" y2="411" class="lifeline"/>
 <line x1="210" x2="210" y1="75" y2="411" class="lifeline"/>
 <line x1="373.5" x2="373.5" y1="75" y2="411" class="lifeline"/>
 <line x1="542" x2="542" y1="75" y2="411" class="lifeline"/>
 
-<g id="n-0" class="fl-node fl-shape-person" tabindex="0" role="img" aria-label="User" data-id="user"><rect x="28" y="28" width="100" height="47" rx="8" fill="var(--color-ui-card)" class="fl-stroke a0"/><g class="fl-symbol fl-symbol-concept"><g class="fl-icon" transform="translate(48.8 41.5) scale(0.83333)"><g transform="translate(0 0) scale(0.75)"><g color="#3d4856"><g transform="scale(0.6666666666666666)" stroke-linecap="round" stroke-linejoin="round"><circle cx="24" cy="12.5" r="9" fill="#528aee" stroke="none" stroke-width="2.4"/><circle cx="24" cy="12" r="6.7" fill="#639bfa" stroke="none" stroke-width="2.4"/><path d="M7 40C7 31 13 25 24 25C35 25 41 31 41 40Q41 44 37 44H11Q7 44 7 40Z" fill="#c9ddff" stroke="#9ebef0" stroke-width="3"/></g></g></g></g></g><text x="92" y="56.9" class="label" text-anchor="middle">User</text></g>
-<g id="n-1" class="fl-node fl-shape-box" tabindex="0" role="img" aria-label="App" data-id="app"><rect x="160" y="28" width="100" height="47" rx="8" fill="var(--color-ui-card)" class="fl-stroke a0"/><text x="210" y="56.9" class="label" text-anchor="middle">App</text></g>
-<g id="n-2" class="fl-node fl-shape-box" tabindex="0" role="img" aria-label="Auth server" data-id="auth"><rect x="318.2" y="28" width="110.5" height="47" rx="8" fill="var(--color-ui-card)" class="fl-stroke a0"/><text x="373.5" y="56.9" class="label" text-anchor="middle">Auth server</text></g>
-<g id="n-3" class="fl-node fl-shape-external" tabindex="0" role="img" aria-label="Resource API" data-id="api"><rect x="481.4" y="28" width="121.4" height="47" rx="8" fill="var(--color-ui-card)" class="fl-stroke ext a0" stroke-dasharray="5 4"/><text x="542" y="56.9" class="label" text-anchor="middle">Resource API</text></g>
+<g id="n-0" class="fl-node fl-shape-person" tabindex="0" role="img" aria-label="User" data-id="user"><rect x="28" y="28" width="100" height="47" rx="8" class="fl-stroke a0"/><g class="fl-symbol fl-symbol-concept"><g class="fl-icon" transform="translate(48.8 41.5) scale(0.83333)"><g transform="translate(0 0) scale(0.75)"><g color="#3d4856"><g transform="scale(0.6666666666666666)" stroke-linecap="round" stroke-linejoin="round"><circle cx="24" cy="12.5" r="9" fill="#528aee" stroke="none" stroke-width="2.4"/><circle cx="24" cy="12" r="6.7" fill="#639bfa" stroke="none" stroke-width="2.4"/><path d="M7 40C7 31 13 25 24 25C35 25 41 31 41 40Q41 44 37 44H11Q7 44 7 40Z" fill="#c9ddff" stroke="#9ebef0" stroke-width="3"/></g></g></g></g></g><text x="92" y="56.9" class="label" text-anchor="middle">User</text></g>
+<g id="n-1" class="fl-node fl-shape-box" tabindex="0" role="img" aria-label="App" data-id="app"><rect x="160" y="28" width="100" height="47" rx="8" class="fl-stroke a0"/><text x="210" y="56.9" class="label" text-anchor="middle">App</text></g>
+<g id="n-2" class="fl-node fl-shape-box" tabindex="0" role="img" aria-label="Auth server" data-id="auth"><rect x="318.2" y="28" width="110.5" height="47" rx="8" class="fl-stroke a0"/><text x="373.5" y="56.9" class="label" text-anchor="middle">Auth server</text></g>
+<g id="n-3" class="fl-node fl-shape-external" tabindex="0" role="img" aria-label="Resource API" data-id="api"><rect x="481.4" y="28" width="121.4" height="47" rx="8" class="fl-stroke ext a0"/><text x="542" y="56.9" class="label" text-anchor="middle">Resource API</text></g>
 <g id="e-0" class="fl-edge " data-si="0"><defs><marker id="fl-arrow-0" viewBox="0 0 5 5" refX="4" refY="2.5" markerWidth="5" markerHeight="5" orient="auto-start-reverse" overflow="visible"><path class="fl-arrowhead" d="M 1.1 0.25 L 4 2.5 L 1.1 4.75 Z" stroke-width="1"/></marker></defs><path id="p-0" d="M 78 127 L 210 127" class="fl-path" marker-end="url(#fl-arrow-0)"/></g>
 <g id="e-1" class="fl-edge " data-si="0"><defs><marker id="fl-arrow-1" viewBox="0 0 5 5" refX="4" refY="2.5" markerWidth="5" markerHeight="5" orient="auto-start-reverse" overflow="visible"><path class="fl-arrowhead" d="M 1.1 0.25 L 4 2.5 L 1.1 4.75 Z" stroke-width="1"/></marker></defs><path id="p-1" d="M 210 203 L 373.5 203" class="fl-path" marker-end="url(#fl-arrow-1)"/></g>
-<g id="e-2" class="fl-edge " data-si="0"><defs><marker id="fl-arrow-2" viewBox="0 0 5 5" refX="4" refY="2.5" markerWidth="5" markerHeight="5" orient="auto-start-reverse" overflow="visible"><path class="fl-arrowhead" d="M 1.1 0.25 L 4 2.5 L 1.1 4.75 Z" stroke-width="1"/></marker></defs><path id="p-2" d="M 373.5 247 L 210 247" class="fl-path" stroke-dasharray="5 4" marker-end="url(#fl-arrow-2)"/></g>
+<g id="e-2" class="fl-edge " data-si="0"><defs><marker id="fl-arrow-2" viewBox="0 0 5 5" refX="4" refY="2.5" markerWidth="5" markerHeight="5" orient="auto-start-reverse" overflow="visible"><path class="fl-arrowhead" d="M 1.1 0.25 L 4 2.5 L 1.1 4.75 Z" stroke-width="1"/></marker></defs><path id="p-2" d="M 373.5 247 L 210 247" class="fl-path dashed" marker-end="url(#fl-arrow-2)"/></g>
 <g id="e-3" class="fl-edge " data-si="0"><defs><marker id="fl-arrow-3" viewBox="0 0 5 5" refX="4" refY="2.5" markerWidth="5" markerHeight="5" orient="auto-start-reverse" overflow="visible"><path class="fl-arrowhead" d="M 1.1 0.25 L 4 2.5 L 1.1 4.75 Z" stroke-width="1"/></marker></defs><path id="p-3" d="M 210 291 L 373.5 291" class="fl-path" marker-end="url(#fl-arrow-3)"/></g>
-<g id="e-4" class="fl-edge " data-si="0"><defs><marker id="fl-arrow-4" viewBox="0 0 5 5" refX="4" refY="2.5" markerWidth="5" markerHeight="5" orient="auto-start-reverse" overflow="visible"><path class="fl-arrowhead" d="M 1.1 0.25 L 4 2.5 L 1.1 4.75 Z" stroke-width="1"/></marker></defs><path id="p-4" d="M 373.5 335 L 210 335" class="fl-path" stroke-dasharray="5 4" marker-end="url(#fl-arrow-4)"/></g>
+<g id="e-4" class="fl-edge " data-si="0"><defs><marker id="fl-arrow-4" viewBox="0 0 5 5" refX="4" refY="2.5" markerWidth="5" markerHeight="5" orient="auto-start-reverse" overflow="visible"><path class="fl-arrowhead" d="M 1.1 0.25 L 4 2.5 L 1.1 4.75 Z" stroke-width="1"/></marker></defs><path id="p-4" d="M 373.5 335 L 210 335" class="fl-path dashed" marker-end="url(#fl-arrow-4)"/></g>
 <g id="e-5" class="fl-edge " data-si="0"><defs><marker id="fl-arrow-5" viewBox="0 0 5 5" refX="4" refY="2.5" markerWidth="5" markerHeight="5" orient="auto-start-reverse" overflow="visible"><path class="fl-arrowhead" d="M 1.1 0.25 L 4 2.5 L 1.1 4.75 Z" stroke-width="1"/></marker></defs><path id="p-5" d="M 210 379 L 542 379" class="fl-path" marker-end="url(#fl-arrow-5)"/></g>
 <g class="fl-note" data-si="0"><rect x="385.5" y="147" width="144.5" height="60" rx="6" class="note-box"/><text x="395.5" y="171.7" class="meta">Stores <tspan class="code">challenge =</tspan></text><text x="395.5" y="191.7" class="meta"><tspan class="code">S256(verifier)</tspan></text></g>
 

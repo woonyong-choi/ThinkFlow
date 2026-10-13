@@ -10,7 +10,7 @@
     },
     "state": {
       "active": {
-        "$value": "{primitive.figure-ui-accent}",
+        "$value": "{color.category.blue.dark-border}",
         "$type": "color"
       },
       "active-fill": {
@@ -208,6 +208,22 @@
       "outline": {
         "$type": "color",
         "$value": "{color.line}"
+      },
+      "selection-fill": {
+        "$type": "color",
+        "$value": "{color.category.blue.dark-tint-3}"
+      },
+      "canvas": {
+        "$value": "{primitive.figure-dark-bg}",
+        "$type": "color"
+      },
+      "flash": {
+        "$type": "color",
+        "$value": "{primitive.figure-dark-selection}"
+      },
+      "active-surface": {
+        "$type": "color",
+        "$value": "{primitive.figure-dark-hover}"
       }
     },
     "flow": {
@@ -484,6 +500,42 @@
       "$type": "color",
       "$value": "{color.prose-pre-background}"
     },
+    "help-bg": {
+      "$type": "color",
+      "$value": "{color.ui-card}"
+    },
+    "help-copy-color": {
+      "$type": "color",
+      "$value": "{color.body}"
+    },
+    "help-active": {
+      "$type": "color",
+      "$value": "{color.figure.active-surface}"
+    },
+    "help-grouped-bg": {
+      "$type": "color",
+      "$value": "{color.ui-card}"
+    },
+    "related-background": {
+      "$type": "color",
+      "$value": "{color.ui-card}"
+    },
+    "document-nav-active-ink": {
+      "$type": "color",
+      "$value": "{color.category.blue.light-tint-3}"
+    },
+    "search-bg": {
+      "$type": "color",
+      "$value": "{color.ui-card}"
+    },
+    "search-results-background": {
+      "$type": "color",
+      "$value": "{color.ui-card}"
+    },
+    "search-result-muted": {
+      "$type": "color",
+      "$value": "{color.ui-muted}"
+    },
     "workspace": {
       "sidebar": {
         "$type": "color",
@@ -505,30 +557,6 @@
         "$type": "color",
         "$value": "{color.gray.635}"
       }
-    },
-    "help-bg": {
-      "$type": "color",
-      "$value": "{color.ui-card}"
-    },
-    "help-copy-color": {
-      "$type": "color",
-      "$value": "{color.body}"
-    },
-    "help-active": {
-      "$type": "color",
-      "$value": "{primitive.figure-dark-hover}"
-    },
-    "help-grouped-bg": {
-      "$type": "color",
-      "$value": "{color.ui-card}"
-    },
-    "related-background": {
-      "$type": "color",
-      "$value": "{color.ui-card}"
-    },
-    "document-nav-active-ink": {
-      "$type": "color",
-      "$value": "{color.category.blue.light-tint-3}"
     }
   },
   "icon": {

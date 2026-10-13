@@ -1,4 +1,6 @@
 // 덤벨 차트: 첫 계열 값(compare 노란 점)에서 둘째 계열 값(main 채운 점)으로 이은 한 줄과 오른쪽 바뀐 비율.
+import { values } from '../vendor/theme/tokens.js';
+import { STYLE } from '../measure/texts.js';
 import { CHART_ARROW, headReach, roleArrow } from '../draw/arrow.js';
 import { measure, wrap } from '../measure/fonts.js';
 import { centerBaseline, roundCoord as r } from '../text.js';
@@ -9,7 +11,6 @@ import { markAttrs, markId } from './marks.js';
 import { DOT, ROW, SIZE, SPACE, TEXT, WIDTH, PAD, seriesPaint, seriesStroke } from './metrics.js';
 import { markShape } from './shape.js';
 import { formatChange, seriesFormats } from './scale.js';
-import { values } from '../vendor/theme/tokens.js';
 
 const ARROW_MIN = SIZE.chart['arrow-min'];
 const ARROW = roleArrow(CHART_ARROW.dumbbell);
@@ -136,7 +137,7 @@ function compactSummaries(chart, formats) {
       const reserve = i && change ? measure(change, TEXT['13'], 'numSemibold') + SPACE["3"] : 0;
       return wrap(`${s.label} ${formats[i](row.values[s.id])}`, room - reserve, { size: TEXT['11'], face: i ? 'numSemibold' : 'num' }).map((text) => {
         const line = { i, text, dy };
-        dy += TEXT['11'] * values.leading.normal;
+        dy += STYLE.meta.line;
         return line;
       });
     });

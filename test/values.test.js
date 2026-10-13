@@ -2,7 +2,8 @@
 // 시험 이름 첫 낱말(E1~E18)이 요구사항 번호이고, 번호와 계약의 대응은 docs/design/expression-coverage.md의 시험 번호 표에 있다.
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { build, thinkflow, finalValue, lineOf, reject } from './support.js';
+import { toHtml, toSvg } from 'thinkflow';
+import { build, thinkflow, finalValue, lineOf, reject, stillDom, textsOf, parseMarkup, findAll, textContent } from './support.js';
 
 const BASE = `
   box a "A"
@@ -12,6 +13,14 @@ const BASE = `
   a -> b
   c -> b
 `;
+
+test('unknown card diagnostics suggest eligible targets rather than values or groups', async () => {
+  const source = thinkflow('group group-name "Group" {\nbox a "A"\n}\nvalue value-name "N" on=a\nscene "S"\nshow missing "message"');
+  const errors = await reject(source);
+  const message = errors.find(error => error.message.includes('unknown card')).message;
+  assert.ok(message.includes('Declared: a'));
+  assert.ok(!message.includes('group-name') && !message.includes('value-name'), message);
+});
 /** 장면 하나(`mode`는 기본 static)에 박자 줄들을 단 원본. */
 const one = (moves, head = BASE, mode = 'static') => thinkflow(`${head}\nscene "s" mode=${mode}\n${moves.map((m) => `  ${m}`).join('\n')}\n`);
 /** 줄 번호가 `needle`을 가진 줄의 것인 진단이 있어야 한다. */
@@ -67,6 +76,32 @@ test('E4 a read expression takes the value from the start of its update, so := s
   `);
   assert.equal(await finalValue(swap, 'x'), '2');
   assert.equal(await finalValue(swap, 'y'), '1');
+});
+
+test('E4 a queue read requires an integer after references and chained copies resolve', async () => {
+  const source = (from, moves) => one(moves, `
+    box a "A"
+    box b "B"
+    queue q "Q" slots=4
+    value original "Original" on=a from=${from}
+    value ref "Ref" on=a ref=original
+    value copy "Copy" on=b
+    value len "len" on=b ref=q
+    a -> b
+  `);
+  for (const from of ['hello', '1.5']) {
+    for (const moves of [
+      ['a -> b set="q:=original"'],
+      ['a -> b set="q:=ref"'],
+      ['a -> b set="copy:=ref"', 'a -> b set="q:=copy"'],
+    ]) {
+      const doc = source(from, moves);
+      const problems = await reject(doc);
+      assert.ok(problems.some(p => p.code === 'value-type' && p.line === lineOf(doc, 'set="q:=')), JSON.stringify(problems));
+    }
+  }
+  const valid = source('2', ['a -> b set="copy:=ref"', 'a -> b set="q:=copy"']);
+  assert.equal(await finalValue(valid, 'len'), '2');
 });
 
 test('E5 values restart from "from" in each scene; keep carries them; a scene set= wins over keep and over from', async () => {
@@ -335,4 +370,73 @@ test('E18 a document without scenes shows the declared start values', async () =
   const doc = thinkflow(`box a "A"\nvalue n "n" on=a from=37\nvalue w "w" on=a from=idle\n`);
   assert.equal(await finalValue(doc, 'n'), '37');
   assert.equal(await finalValue(doc, 'w'), 'idle');
+});
+
+
+test('buildFigure_grid_cell_value_changes_the_cell_content', async () => {
+  const source = thinkflow(`
+    box a "A"
+    grid g "Grid" {
+      item cell "placeholder"
+    }
+    value n "Cell value" on=g.cell from=empty
+    a -> g.cell
+    scene "update" mode=static
+      a -> g.cell set="n=loaded"
+  `);
+  const texts = textsOf(await stillDom(source));
+  assert.ok(texts.includes('loaded'));
+  assert.ok(!texts.includes('placeholder'));
+  assert.ok(!texts.includes('empty'));
+});
+
+
+test('buildFigure_grid_cell_values_validate_targets_and_keep_reference_states', async () => {
+  const grid = `grid g "Grid" rows=2 {
+    item cell "unused"
+    gap omitted "Rest" row=1 count=3
+  }`;
+  for (const target of ['g', 'g.missing', 'g.omitted', 'g.cell.extra']) {
+    const source = thinkflow(`${grid}\nvalue n "Cell" on=${target} from=0`);
+    assert.ok(atLine(await reject(source), source, 'value n'), target);
+  }
+  const duplicate = thinkflow(`${grid}\nvalue first "First" on=g.cell\nvalue second "Second" on=g.cell`);
+  assert.ok(atLine(await reject(duplicate), duplicate, 'value second'));
+  const source = thinkflow(`${grid}
+    box a "A"
+    value n "State" from=0
+    value mirror "Current state" on=g.cell ref=n
+    a -> g.cell
+    scene "first" mode=once
+      a -> g.cell set="n+1"
+    scene "carry" mode=static keep="n"
+      a -> g.cell set="n+1"
+  `);
+  assert.ok(textsOf(await stillDom(source, 1)).includes('2'));
+  const result = await build(source);
+  for (const [markup, html] of [[await toSvg(result), false], [await toHtml(result, 'grid-value'), true]]) {
+    const dom = parseMarkup(markup, { html });
+    const variants = findAll(dom, (node) => node.attrs?.['data-t'] !== undefined);
+    for (const text of ['0', '1']) assert.ok(variants.some((node) => node.attrs['data-t'] === text && textContent(node).includes(text)));
+  }
+});
+
+test('buildFigure_grid_cell_values_measure_all_wrapped_states_and_initial_only_documents', async () => {
+  const long = 'a'.repeat(180);
+  const declaration = (from) => thinkflow(`grid g "Grid" {\n item cell "unused"\n}\nvalue n "Cell" on=g.cell from=${from}`);
+  assert.ok(textsOf(await stillDom(declaration('ready'))).includes('ready'));
+  const source = `${declaration('ready')}value incoming "Incoming" from=${long}\nbox a "A"\na -> g.cell\nscene "changed" mode=static\n  a -> g.cell set="n:=incoming"\n`;
+  const dom = await stillDom(source);
+  const shown = textsOf(dom);
+  assert.equal(shown.filter((text) => /^a+$/.test(text)).join(''), long);
+  assert.ok(shown.filter((text) => /^a+$/.test(text)).length > 1);
+  const errors = await reject(source, { budget: { 'grid-elements': 3 } });
+  assert.ok(errors.some((problem) => problem.code === 'budget-exceeded'));
+});
+
+test('buildFigure_grid_cell_budget_counts_each_scene_value_group', async () => {
+  const source = thinkflow(`grid g "Grid" {\n item cell "unused"\n}\nvalue n "Cell" on=g.cell from=0\n${Array.from({ length: 20 }, (_, i) => `scene "Scene ${i}" mode=static`).join('\n')}`);
+  const problems = await reject(source, { budget: { 'grid-elements': 10 } });
+  assert.ok(problems.some(problem => problem.code === 'budget-exceeded' && /84 SVG elements/.test(problem.message)), JSON.stringify(problems));
+  await build(source, { budget: { 'grid-elements': 84 } });
 });

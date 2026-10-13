@@ -1,9 +1,10 @@
 // 산점도 점 이름 자리. 점 오른쪽이 기본이고, 다른 이름이나 점과 겹치면 왼쪽, 위아래로 옮겨 둘 다 읽히게 한다(docs/design/charts.md 산점도).
+import { STYLE } from '../measure/texts.js';
 import { measure, wrap } from '../measure/fonts.js';
 import { DOT, NAME_OFFSET, SPACE, TEXT } from './metrics.js';
 
-// 이름을 위아래로 옮기는 한 걸음(px). 글자 높이에 간격 `space.1`을 더해 옮긴 이름이 닿지 않게 한다. 브라우저가 이름 한 줄을 이 높이의 줄 상자로 그려서 이름 상자의 높이도 줄 수 × 한 걸음이다.
-export const NAME_STEP = TEXT['11'] + SPACE["0-5"];
+// 이름의 줄바꿈과 자리 이동은 공통 작은 글의 줄 높이를 사용한다.
+export const NAME_STEP = STYLE.meta.line;
 // 위아래로 옮겨 볼 최대 걸음 수
 const STEPS_MAX = 4;
 // 옮김 순서: 제자리, 위, 아래, 두 걸음 위, 두 걸음 아래, ...

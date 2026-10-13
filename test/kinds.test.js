@@ -248,6 +248,24 @@ test('K-trace spans sit on a linear time axis: position follows "at", length fol
   }
 });
 
+test('K-trace span labels use the current time panel boundary when its width grows', async () => {
+  const base = await build(thinkflow(`
+    box a "A"
+    trace t "T" unit=ms {
+      span one "ONE" lane=a at=8 dur=1
+      span two "TWO" lane=a at=11 dur=1
+    }
+  `));
+  const width = base.scene.times[0].width * 2;
+  const wide = await reflowFigure(base, { chartWidth: width });
+  const panel = wide.scene.times[0];
+  assert.equal(panel.width, width);
+  for (const span of panel.lanes[0].spans) {
+    assert.ok(span.nameX + measure(span.label, values.text.figure['11']) < panel.plotRight, 'the label fits to the right of its span');
+    assert.equal(span.isLeft, false, 'unused space past the original width remains available');
+  }
+});
+
 test('K-trace #170 a narrow time panel preserves duration ratios and puts long labels above their spans', async () => {
   const source = thinkflow(`
     box a "긴 한국어 서비스 이름이 있는 레인"
@@ -314,4 +332,94 @@ test('K-grid cells connect to cells, never to themselves, never to a gap, and a 
   await rejectedAt(grid('box z "Z"\nz -> g.x\n'), 'z -> g.x');
   await rejectedAt(grid('g.a -> g.b "label"\n'), 'g.a -> g.b "label"');
   await rejectedAt(grid('scene "s" mode=static\n  show g "x"\n'), 'show g');
+});
+
+test('K-grid field strips preserve bit ratios and route matching trailing fields below a continuous lookup table', async () => {
+  const { readFile } = await import('node:fs/promises');
+  const source = await readFile(new URL('../examples/memory-address.thinkflow', import.meta.url), 'utf8');
+  const renamed = source.replace(/\bva\b/g, 'input').replace(/\bpt\b/g, 'lookup').replace(/\bpa\b/g, 'output');
+  const result = await build(renamed);
+  const [input, lookup, output] = ['input', 'lookup', 'output'].map(id => result.scene.items.find(item => item.id === id));
+  assert.ok(input.x + input.w < lookup.x && lookup.x + lookup.w < output.x);
+  assert.equal(lookup.unit.gutter, 0);
+  assert.equal(input.cells[0].w / input.cells[1].w, 5 / 3);
+  const edge = result.scene.edges.find(edge => edge.from === 'input' && edge.to === 'output');
+  const offsetIn = input.cells.find(cell => cell.id === 'off');
+  const offsetOut = output.cells.find(cell => cell.id === 'off');
+  assert.equal(edge.points[0].y, input.y + offsetIn.y + offsetIn.h);
+  assert.equal(edge.points.at(-1).y, output.y + offsetOut.y + offsetOut.h);
+  assert.ok(Math.max(...edge.points.map(point => point.y)) > lookup.y + lookup.h);
+  const narrow = await reflowFigure(result, { layoutWidth: 320 });
+  const times = figure => figure.timeline.segs.map(seg => [seg.t0, seg.t1, seg.hops.map(hop => [hop.at ?? 0, hop.ms])]);
+  assert.deepEqual(times(narrow), times(result));
+});
+
+
+test('K-grid outside row keys share measured bounds and avoid incoming cell leads', async () => {
+  const source = thinkflow(`
+    box cpu "CPU"
+    grid ram "Physical memory" rows=2 {
+      item zero "Page 1" key="Frame 0"
+      item one "Free" key="Frame 1" row=1
+    }
+    cpu -> ram.zero
+    view graph right
+    scene "Map" mode=static
+  `);
+  const result = await build(source);
+  const ram = result.scene.items.find(item => item.id === 'ram');
+  const key = ram.texts.find(text => text.text === 'Frame 0');
+  const cell = ram.cells.find(cell => cell.id === 'zero');
+  assert.ok(key && key.x < cell.x);
+  const { textSpan } = await import('../src/measure/texts.js');
+  const span = textSpan({ x: 0, y: 0 }, key);
+  assert.ok(span.x >= 0 && span.x + span.width < cell.x);
+  assert.ok(cell.x + cell.w <= ram.w);
+  const { textBoxes } = await import('../src/draw/boxes.js');
+  assert.ok(textBoxes(result.scene).some(box => box.name === 'Frame 0'));
+  const west = Object.values(ram.cellEnds).find(ends => ends.WEST)?.WEST;
+  assert.ok(west);
+  assert.ok(west.port.y > key.center + key.style.size / 2);
+  const svg = await toSvg(result);
+  assert.match(svg, /Frame 0/);
+  assert.equal((svg.match(/Frame 0<\/text>/g) ?? []).length, 1);
+  await rejectedAt(source.replace('rows=2 {', 'rows=2 cols=2 {'), 'item zero', /key=.*cols=1/);
+  await rejectedAt(source.replace('item zero "Page 1"', 'gap zero "Page 1" count=2'), 'gap zero', /key=.*item/);
+});
+
+
+test('K-grid outside row keys survive value changes and wrap within the measured item', async () => {
+  const key = 'Frame '.repeat(35).trim();
+  const source = thinkflow(`grid ram "RAM" {
+ item one "placeholder" key="${key}"
+}
+value n "Data" on=ram.one from=empty
+scene "Loaded" mode=static set="n=loaded"`);
+  const result = await build(source);
+  const ram = result.scene.items.find(item => item.id === 'ram');
+  assert.ok(ram.cells[0].keyLines.length > 1);
+  assert.equal(ram.cells[0].keyLines.join(' ').replace(/\s+/g, ' '), key);
+  const shown = textsOf(await stillDom(source));
+  assert.ok(shown.includes('loaded'));
+  assert.ok(!shown.includes('placeholder'));
+  assert.ok(ram.texts.filter(text => text.role === 'item gap').every(text => text.center >= ram.cells[0].y && text.center <= ram.cells[0].y + ram.cells[0].h));
+  await rejectedAt(source.replace(key, ' '), 'item one', /cannot be empty/);
+  const problems = await reject(source, { budget: { 'grid-elements': 3 } });
+  assert.ok(problems.some(problem => problem.code === 'budget-exceeded'));
+});
+
+
+test('K-grid keyed rows keep distinct incoming ports for multiple callers', async () => {
+  const result = await build(thinkflow(`box a "A"
+box b "B"
+grid ram "RAM" rows=2 {
+ item first "Page 0" key="Frame 0"
+ item next "Page 1" key="Frame 1" row=1
+}
+a -> ram.next
+b -> ram.next
+view graph right`));
+  const ram = result.scene.items.find(item => item.id === 'ram');
+  const ports = Object.values(ram.cellEnds).map(ends => ends.WEST.port.y);
+  assert.equal(new Set(ports).size, 2);
 });

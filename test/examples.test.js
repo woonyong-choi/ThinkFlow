@@ -1,5 +1,5 @@
-// 표현 서른 가지: examples/ 폴더의 원본을 유효한 씨앗으로 삼아, 모든 예제가 경고 없이 읽히고 모든 장면이 올바른 SVG와 HTML이 되는지 본다.
-// 독립 최소 경계 입력은 charts.test.js(차트 열여섯)와 kinds.test.js(개발 그림 열넷)에 있다. 시험 이름 첫 낱말(K30)이 요구사항 번호이고, 대응은 docs/design/expression-coverage.md의 시험 번호 표에 있다.
+// 표현 예제: examples/ 폴더의 원본을 유효한 씨앗으로 삼아, 모든 예제가 경고 없이 읽히고 모든 장면이 올바른 SVG와 HTML이 되는지 본다.
+// 독립 최소 경계 입력은 charts.test.js(차트 열여섯)와 kinds.test.js(개발 그림)에 있다. 시험 이름 첫 낱말(K30)이 요구사항 번호이고, 대응은 docs/design/expression-coverage.md의 시험 번호 표에 있다.
 import assert from 'node:assert/strict';
 import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
@@ -7,10 +7,10 @@ import { test } from 'node:test';
 import { build, descendants, EXAMPLES, findAll, parseMarkup, textsOf, toHtml, toSvg, valueOf } from './support.js';
 
 const CHARTS = ['area', 'bar', 'box', 'difference', 'donut', 'dumbbell', 'ecdf', 'heatmap', 'histogram', 'line', 'percent', 'pie', 'scatter', 'stacked', 'step', 'waterfall'];
-const FIGURES = ['api', 'architecture', 'class', 'flow', 'integration', 'memory', 'metric', 'pointer', 'queue', 'schema', 'sequence', 'stack', 'state', 'trace'];
+const FIGURES = ['api', 'architecture', 'class', 'flow', 'integration', 'memory', 'memory-address', 'memory-fault', 'sql-join', 'metric', 'pointer', 'queue', 'schema', 'sequence', 'stack', 'state', 'trace'];
 const ANIMATION = new Set(['animate', 'set', 'animateMotion', 'animateTransform']);
 
-test('K30 the examples are one per expression: sixteen chart kinds and fourteen figure families, nothing else', () => {
+test('K30 the examples are one per expression: chart kinds and the declared development examples', () => {
   const names = readdirSync(EXAMPLES).filter((f) => f.endsWith('.thinkflow')).map((f) => f.replace(/\.thinkflow$/, '')).sort();
   assert.deepEqual(names, [...CHARTS, ...FIGURES].sort());
 });

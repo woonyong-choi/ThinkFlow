@@ -4,7 +4,6 @@
 // 움직이는 SVG(animate/frames.js)는 이 겹침에 SMIL을 걸고, HTML 재생기는 문서를 만들 때 같은 겹침을 넣어 두고 불투명도만 쓴다. 두 쪽이 같은 함수로 만들므로 모양 규칙(원, 사각형, 마름모, 삼각형 경로, 선, 글자)이 같다.
 import { tokenize } from '../chart-tokens.js';
 import { escapeXml } from '../text.js';
-import { values } from '../vendor/theme/tokens.js';
 
 /** 겹침이 표식에서 따라가는 속성. 위치와 모양만이고 칠, 움직임 class, 이름은 따라가지 않는다. 재생기가 프레임이 바뀐 표식을 따라 같은 이름들을 옮긴다. */
 export const GEOMETRY_ATTRS = Object.freeze(['x', 'y', 'width', 'height', 'rx', 'cx', 'cy', 'r', 'd', 'x1', 'x2', 'y1', 'y2', 'points', 'transform', 'visibility', 'fill-rule', 'text-anchor', 'dy', 'stroke-linecap', 'stroke-linejoin']);
@@ -24,22 +23,6 @@ const SHAPES = new Set(['rect', 'circle', 'ellipse', 'path', 'line', 'polygon', 
 /** 표식 요소가 갱신 효과를 받을 수 있는가: 원자료와 계열 효과 색(data-effect)이 있는 모양 또는 글. */
 export const hasPulse = (tag, attrs) => attrs['data-effect'] !== undefined && (tag === 'text' || SHAPES.has(tag));
 
-// cost: time O(1), heap O(1), stack O(1)
-// basis: estimate
-/**
- * 겹침의 칠. 모양 표식은 계열 effect 면(`opacity.halo`)과 같은 색의 고리이고, 고리는 표식 자신의 테두리 굵기를 쓴다. 면이 없는 선과 속이 빈 모양은 선만 effect로 덮는다(굵기는 표식 자신의 굵기다).
- * 글은 글자 모양을 따라 effect 윤곽이 번지는 후광이다(글자 뒤에 놓이고 윤곽은 `opacity.halo`로 옅다).
- * @param attrs 표식 요소의 속성 { 이름: 값 }
- */
-function lookOf(tag, attrs) {
-  const effect = attrs['data-effect'];
-  const own = attrs['stroke-width'] ?? values["border-width"].tag;
-  if (tag === 'text') return `fill:none;stroke:${effect};stroke-opacity:${values.opacity.halo};stroke-width:${values["border-width"].casing};stroke-linejoin:round`;
-  if (tag === 'line' || attrs.fill === 'none') return `fill:none;stroke:${effect};stroke-width:${attrs['stroke-width'] ?? values["border-width"].edge}`;
-  const hasRing = attrs.stroke !== undefined && attrs.stroke !== 'none';
-  return `fill:${effect};fill-opacity:${values.opacity.halo};stroke:${hasRing ? effect : 'none'};stroke-width:${own}`;
-}
-
 // cost: time O(a), heap O(a), stack O(1)
 // vars: a = 속성 수
 // basis: estimate
@@ -51,8 +34,11 @@ export function pulseOverlay({ tag, attrs, inner = '', id, children = '' }) {
   const copied = GEOMETRY_ATTRS.filter((name) => attrs[name] !== undefined).map((name) => ` ${name}="${attrs[name]}"`).join('');
   const classes = (attrs.class ?? '').split(/\s+/).filter(Boolean);
   const kept = tag === 'text' ? classes.filter((name) => !MOTION_CLASSES.has(name)) : classes.filter((name) => GROWING_CLASSES.has(name));
-  const className = ['fl-mark-pulse', ...kept].join(' ');
-  const overlay = `<${tag}${copied} class="${className}" style="${lookOf(tag, attrs)}" opacity="0" pointer-events="none" aria-hidden="true" data-pulse-of="${escapeXml(id)}">${inner}${children}</${tag}>`;
+  const isLine = tag === 'line' || attrs.fill === 'none';
+  const variant = tag === 'text' ? 'is-text' : isLine ? 'is-line' : attrs.stroke !== undefined && attrs.stroke !== 'none' ? 'has-ring' : '';
+  const className = ['fl-mark-pulse', variant, ...kept].filter(Boolean).join(' ');
+  const paint = `--pulse-effect:${attrs['data-effect']}${attrs['stroke-width'] === undefined ? '' : `;--pulse-width:${attrs['stroke-width']}`}`;
+  const overlay = `<${tag}${copied} class="${className}" style="${paint}" opacity="0" pointer-events="none" aria-hidden="true" data-pulse-of="${escapeXml(id)}">${inner}${children}</${tag}>`;
   const appearing = classes.filter((name) => APPEARING_CLASSES.has(name));
   if (!appearing.length) return overlay;
   return `<g class="${appearing.join(' ')} fl-mark-pulse-wrap"${attrs['data-at'] === undefined ? '' : ` data-at="${attrs['data-at']}"`}>${overlay}</g>`;

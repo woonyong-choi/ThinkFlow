@@ -29,7 +29,7 @@ export function rootOf(byId, id) {
 export function initialCardRows(figure, texts = new Map()) {
   const rows = new Map();
   const byId = valueTable(figure);
-  for (const v of figure.values.filter((value) => !value.queue && value.on !== undefined)) {
+  for (const v of figure.values.filter((value) => !value.queue && !value.cell && value.on !== undefined)) {
     const own = texts.get(v.id) ?? [byId.get(rootOf(byId, v.id)).from];
     rows.set(v.on, [...(rows.get(v.on) ?? []), { text: v.label, isValue: true, valueId: v.id, valueTexts: [...own] }]);
   }

@@ -28,7 +28,7 @@ function planTrack(track, { scene, speed }) {
   const legs = track.legTimes ? legPlan(track, { lengths: lengths.map((length, i) => length + (joins[i] ?? 0)), speed }) : undefined;
   return {
     ...geometry,
-    ms: legs?.ms ?? track.timeMs ?? geometry.parts.reduce((sum, part) => sum + hopMs(part, speed), 0),
+    ms: legs?.ms ?? track.timeMs ?? lengths.reduce((sum, length, i) => sum + lengthMs(length + (joins[i] ?? 0), speed), 0),
     ...(legs ? { pace: legs.pace } : {}),
     mirrors: others.map((instance) => ({ view: instance.view, ...omitLengths(trackGeometry({ path: track.path, legs: instance.legs }, scene)) })),
     view: owner.view,

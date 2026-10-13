@@ -9,7 +9,7 @@ import { BADGE_STYLE, DECOR, STACK_STEP, groupDecor, nodeDecor } from './decor.j
 import { sizeClassifier } from './class.js';
 import { CONTENT, contentMinWidth, sizeContent } from './content.js';
 import { measure, wrap } from './fonts.js';
-import { planGridLinks } from './grid-links.js';
+import { LANE_STEP, planGridLinks } from './grid-links.js';
 import { sizeQueue } from './queue.js';
 import { STYLE, stackTexts, textAt, titleTexts } from './texts.js';
 
@@ -28,14 +28,15 @@ export const GRID = Object.freeze({ pad: SPACE["3"], cellPadX: SPACE["2"], cellP
  * @param node 그림 모형의 도형. shape: person, box, external, store, queue, decision, state, table, api, classifier, chart, grid, start, final
  * @param contents 시간 흐름에서 이 도형에 보일 내용 목록. 내용은 줄 목록이다
  * @param lineCounts 격자 칸에 이은 선 끝 cells(grid-links.js의 links)
+ * @param valueTexts 값 이름 → 모든 장면에서 나타날 글 집합. 격자 칸 값 크기를 정한다
  * @param drawn 차트 카드가 그린 차트({ body, width, height, ... }). 크기는 모든 프레임 가운데 가장 큰 차트의 크기다
  * @returns { w, h, marginTop, marginBottom, texts?, decor?, description?, content?: { w, h, layouts }, cells?, empties?, unit?, titleH?, chart? }. description은 머리 말고 본문이 있는 표·API·클래스의 화면 읽기용 글이다. 격자의 cells는 { id, kind, x, y, w, h, lines, texts, ... } 칸 목록이고 좌표는 격자 왼쪽 위가 원점이다. empties는 빈 자리를 묶은 구간 { row0, row1, col0, col1, x, y, w, h } 목록이고(행×열이 아니라 칸 수에 비례), unit은 단위 칸 하나의 { w, h, gutter, x, y }다
  */
-export function sizeNode(node, contents = [], lineCounts = { out: 0, in: 0 }, drawn = undefined) {
+export function sizeNode(node, contents = [], lineCounts = { out: 0, in: 0 }, drawn = undefined, valueTexts = new Map()) {
   if (node.shape === 'classifier') return sizeClassifier(node);
   if (node.shape === 'chart') return { w: drawn.width, h: drawn.height, marginTop: 0, marginBottom: 0, chart: drawn };
   if (node.shape === 'table' || node.shape === 'api') return sizeTable(node, contents);
-  if (node.shape === 'grid') return sizeGrid(node, lineCounts.cells);
+  if (node.shape === 'grid') return sizeGrid(node, lineCounts.cells, valueTexts);
   if (node.shape === 'circle') return sizeCircle(node);
   if (node.shape === 'queue') return sizeQueue(node);
   if (node.shape === 'start' || node.shape === 'final') return { w: SIZE.node['state-dot'], h: SIZE.node['state-dot'], marginTop: 0, marginBottom: 0 };
@@ -141,20 +142,46 @@ const SEQUENCE_HEADERS = ['table', 'api', 'classifier'];
 // basis: estimate
 // 칸 격자: 제목 줄과 칸 묶음이 모두 배치 사각형 안이다. 칸 단위(가로, 세로)는 모든 칸이 글을 넣을 수 있는 가장 작은 크기이고, 칸은 차지한 단위 수만큼 커진다.
 // 칸에 이은 선이 안쪽 칸으로 돌아 나갈 통로가 있으면 행 사이가 벌어진다(grid-links.js).
-function sizeGrid(node, links = []) {
-  const { titleLines, titleW, unitW, lined } = gridLines(node);
+function sizeGrid(node, links = [], valueTexts) {
+  const { titleLines, titleW, unitW, keyWidth: keyBase, lined } = gridLines(node, valueTexts);
+  const incoming = new Map();
+  let keyExtra = 0;
+  if (keyBase) for (const link of links) if (link.way === 'in' && !link.isInner) {
+    const count = (incoming.get(link.cell) ?? 0) + 1;
+    incoming.set(link.cell, count);
+    keyExtra = Math.max(keyExtra, (count - 1) * LANE_STEP);
+  }
+  const keyWidth = keyBase + keyExtra;
   const titleH = titleLines.length * STYLE.label.line + GRID.titlePad * 2;
-  const unitH = lined.reduce((tallest, c) => Math.max(tallest, Math.ceil((c.lines.length * STYLE.item.line + GRID.cellPadY * 2) / c.rows)), SIZE.grid.cell);
-  const plan = planGridLinks({ rows: node.rows, cols: node.cols, cells: node.cells, links }, { pad: GRID.pad, unitW, unitH, titleH, titleHalf: titleW / 2 });
-  const box = ({ row, col, rows, cols }) => ({ x: GRID.pad + col * unitW, y: plan.rowTop(row), w: cols * unitW, h: rows * unitH + (rows - 1) * plan.gutter });
+  const unitH = lined.reduce((tallest, cell) => {
+    const textHeight = cell.valueId
+      ? Math.max(...cell.variants.map((variant) => variant.lines.length)) * STYLE.value.line
+      : cell.lines.length * STYLE.item.line;
+    return Math.max(tallest, Math.ceil((Math.max(textHeight, cell.keyLines.length * STYLE.item.line) + GRID.cellPadY * 2) / cell.rows));
+  }, SIZE.grid.cell) + keyExtra * 2;
+  const plan = planGridLinks({ rows: node.rows, cols: node.cols, cells: node.cells, links }, { pad: GRID.pad, keyWidth, keyPad: GRID.cellPadX, unitW, unitH, titleH, titleHalf: titleW / 2 });
+  const box = ({ row, col, rows, cols }) => ({ x: GRID.pad + keyWidth + col * unitW, y: plan.rowTop(row), w: cols * unitW, h: rows * unitH + (rows - 1) * plan.gutter });
   const cells = lined.map(({ text, label, ...c }) => {
     const placed = { ...c, ...box(c) };
     const role = c.kind === 'gap' ? 'item gap' : 'item';
+    if (c.valueId) {
+      const variants = c.variants.map(({ text, lines }) => ({
+        text,
+        texts: stackTexts(lines.map((line) => ({ role: 'value', text: line, style: STYLE.value })), {
+          x: placed.x + placed.w / 2, top: placed.y, height: placed.h,
+        }),
+      }));
+      return { ...placed, texts: variants.flatMap((variant) => variant.texts), variants };
+    }
     return { ...placed, texts: stackTexts(c.lines.map((line) => ({ role, text: line, style: STYLE.item })), { x: placed.x + placed.w / 2, top: placed.y, height: placed.h }) };
   });
   const empties = emptyRegions(node).map((r) => ({ ...r, ...box({ row: r.row0, col: r.col0, rows: r.row1 - r.row0, cols: r.col1 - r.col0 }) }));
-  const unit = { w: unitW, h: unitH, gutter: plan.gutter, x: GRID.pad, y: plan.rowTop(0) };
-  return { w: plan.w, h: plan.h, marginTop: 0, marginBottom: 0, texts: titleTexts({ labelLines: titleLines }, { x: plan.w / 2, top: 0, height: titleH }), cells, empties, unit, titleH, cellEnds: plan.ends, cellRoutes: plan.inner };
+  const unit = { w: unitW, h: unitH, gutter: plan.gutter, x: GRID.pad + keyWidth, y: plan.rowTop(0) };
+  const texts = titleTexts({ labelLines: titleLines }, { x: (plan.w + keyWidth) / 2, top: 0, height: titleH });
+  for (const cell of cells) texts.push(...stackTexts(cell.keyLines.map(text => ({ role: 'item gap', text, style: STYLE.item })), {
+    x: cell.x - GRID.cellPadX - keyExtra, top: cell.y, height: cell.h, anchor: 'end',
+  }));
+  return { w: plan.w, h: plan.h, marginTop: 0, marginBottom: 0, texts, cells, empties, unit, titleH, cellEnds: plan.ends, cellRoutes: plan.inner };
 }
 
 // 같은 격자의 줄 나눔을 크기 계산과 예산 세기가 다시 하지 않도록 담아 둔다. 칸 목록이 키다.
@@ -165,18 +192,33 @@ const gridLinesMemo = new WeakMap();
 // basis: estimate
 /**
  * 칸 격자의 제목과 칸 글 줄 나눔. 칸 단위 너비는 모든 칸이 글을 넣을 수 있는 가장 작은 너비다. 크기를 정하는 쪽과 예산이 쓰는 요소 수가 같은 줄 수를 본다.
- * @returns { titleLines, titleW, unitW, lined }. lined는 칸마다 `lines`를 더한 목록이다
+ * @returns { titleLines, titleW, unitW, keyWidth, lined }. lined는 칸마다 본문 lines와 바깥 식별자 keyLines를 더한 목록이다
  */
-export function gridLines(node) {
-  if (gridLinesMemo.has(node.cells)) return gridLinesMemo.get(node.cells);
+export function gridLines(node, valueTexts = new Map()) {
+  const dynamic = node.cells.some((c) => c.valueId);
+  if (!dynamic && gridLinesMemo.has(node.cells)) return gridLinesMemo.get(node.cells);
   const titleLines = wrap(node.label, GRID.textMax, STYLE.label);
   const titleW = Math.max(...titleLines.map((l) => measure(l, STYLE.label.size, STYLE.label.face)));
-  const shown = node.cells.map((c) => ({ ...c, text: c.kind === 'gap' ? `${c.label} ×${c.count}` : c.label }));
+  const shown = node.cells.map((cell) => ({
+    ...cell,
+    keyLines: cell.key ? wrap(cell.key, GRID.textMax, STYLE.item) : [],
+    text: cell.kind === 'gap' ? `${cell.label} ×${cell.count}` : cell.label,
+    ...(cell.valueId ? { valueTexts: [...(valueTexts.get(cell.valueId) ?? [''])] } : {}),
+  }));
   const fieldStrip = node.rows === 1 && shown.every((cell) => cell.cols > 1) && shown.reduce((sum, cell) => sum + cell.cols, 0) === node.cols;
   const unitW = gridUnitWidth(shown, { cols: node.cols, titleRoom: titleW + PAD.x * 2 - GRID.pad * 2, fieldStrip });
-  const lined = shown.map((c) => ({ ...c, lines: wrap(c.text, c.cols * unitW - GRID.cellPadX * 2, STYLE.item) }));
-  const result = { titleLines, titleW, unitW, lined };
-  gridLinesMemo.set(node.cells, result);
+  const lined = shown.map((cell) => {
+    const width = cell.cols * unitW - GRID.cellPadX * 2;
+    return {
+      ...cell,
+      lines: cell.valueId ? [] : wrap(cell.text, width, STYLE.item),
+      ...(cell.valueId ? { variants: cell.valueTexts.map((text) => ({ text, lines: wrap(text, width, STYLE.value) })) } : {}),
+    };
+  });
+  const keyTextWidth = shown.reduce((width, cell) => cell.keyLines.reduce((widest, line) => Math.max(widest, measure(line, STYLE.item.size, STYLE.item.face)), width), 0);
+  const keyWidth = keyTextWidth ? keyTextWidth + GRID.cellPadX + PAD.x - GRID.pad : 0;
+  const result = { titleLines, titleW, unitW, keyWidth, lined };
+  if (!dynamic) gridLinesMemo.set(node.cells, result);
   return result;
 }
 
@@ -185,7 +227,12 @@ export function gridLines(node) {
 // basis: estimate
 // 최소 칸 폭과 제목을 지키며 선호 폭에서 글을 줄 나눈다. 병합 필드만 있는 한 줄은 보이는 필드 기준으로 최소 폭을 정한다.
 function gridUnitWidth(cells, { cols, titleRoom, fieldStrip }) {
-  const need = cells.map((c) => (Math.min(measure(c.text, STYLE.item.size, STYLE.item.face), GRID.textMax) + GRID.cellPadX * 2) / c.cols);
+  const need = cells.map((cell) => {
+    const width = cell.valueId
+      ? Math.max(...cell.valueTexts.map((text) => measure(text, STYLE.value.size, STYLE.value.face)))
+      : measure(cell.text, STYLE.item.size, STYLE.item.face);
+    return (Math.min(width, GRID.textMax) + GRID.cellPadX * 2) / cell.cols;
+  });
   const minimum = fieldStrip ? SIZE.grid.cell / cells.reduce((smallest, cell) => Math.min(smallest, cell.cols), Infinity) : SIZE.grid.cell;
   const natural = need.reduce((widest, width) => Math.max(widest, width), Math.max(minimum, titleRoom / cols));
   const preferred = Math.max(minimum, titleRoom / cols, (SIZE.node['max-width'] - GRID.pad * 2) / cols);
@@ -205,7 +252,7 @@ export function sizePill(label, no) {
   const textW = label === undefined ? 0 : measure(label, STYLE.pill.size, STYLE.pill.face);
   if (no === undefined) return { w: textW + SPACE["3-5"], h };
   const numW = numberBadgeWidth(no);
-  return { w: label === undefined ? numW + SPACE["0-5"] * 2 : SPACE["0-5"] + numW + SPACE["1"] + textW + SPACE["3-5"] / 2, h, numW, textW };
+  return { w: label === undefined ? numW + SPACE["0-5"] * 2 : SPACE["0-5"] + numW + SPACE["1"] + textW + SPACE["3-5"] / 2, h, numW, numH: h - SPACE["0-5"] * 2, textW };
 }
 
 /** 선 번호 원 너비. 한 자리는 지름과 같은 원이고 두 자리 이상은 숫자 폭에 좌우 간격을 더한다. */
@@ -235,14 +282,14 @@ export function groupTitleWidth(group) {
 // vars: n = 그룹 제목 글자 수
 // basis: estimate
 /**
- * 그룹 제목 줄의 한 덩어리: 제목 글, 배지, 개수 알약. 덩어리 왼쪽 끝이 제목 글 기본 자리(titleDx)이고 선이 가리면 덩어리째 비킨다.
- * 아이콘이 있으면 왼쪽 모서리에 정사각 탭(너비 lead)이 붙고 덩어리는 그 오른쪽에서 시작한다. 탭은 비키지 않는다.
- * @returns { w, textDx, decor, lead }. textDx는 덩어리 왼쪽에서 제목 글까지 거리, decor는 장식 자리(없으면 undefined), lead는 탭 너비(없으면 0)다
+ * 그룹 제목 줄의 한 덩어리: 아이콘, 제목 글, 배지, 개수 알약. 덩어리 왼쪽 끝이 제목 글 기본 자리(titleDx)이고 선이 가리면 덩어리째 비킨다.
+ * 아이콘도 공통 장식 간격으로 같은 줄에 놓으며 별도 탭 너비를 예약하지 않는다.
+ * @returns { w, textDx, decor, lead }. textDx는 덩어리 왼쪽에서 제목 글까지 거리, decor는 장식 자리(없으면 undefined), lead는 별도 탭 여백이며 현재 0이다
  */
 export function groupHead(group) {
   const titleW = measure(group.label, STYLE.group.size, STYLE.group.face);
   const decor = groupDecor(group, titleW);
-  return { w: decor?.w ?? titleW, textDx: decor?.items.find((i) => i.kind === 'title').x ?? 0, decor, lead: group.iconData ? SIZE.group.title : 0 };
+  return { w: decor?.w ?? titleW, textDx: decor?.items.find((i) => i.kind === 'title').x ?? 0, decor, lead: 0 };
 }
 
 // cost: time O(n), heap O(1), stack O(1)

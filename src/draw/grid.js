@@ -1,22 +1,12 @@
 // 칸 격자의 몸통을 그린다: 칸 묶음 바탕, 빈 자리, 칸. 면과 제목은 카드(draw/card.js)가 그리고, 칸 자리와 칸 글은 measure/sizes.js의 sizeGrid가 정한 그대로다.
 import { roundCoord as r, escapeXml } from '../text.js';
 import { values } from '../vendor/theme/tokens.js';
-import { CORNER, rectOpen } from './surface.js';
+import { CORNER, rectOpen, gridBounds as blockOf } from './surface.js';
 import { drawTexts } from './texts.js';
 
 // 칸 사각형 속성. 격자 왼쪽 위가 원점인 칸 자리에 도형 자리를 더한다.
 function boxOf(it, { x, y, w, h }) {
   return `x="${r(it.x + x)}" y="${r(it.y + y)}" width="${r(w)}" height="${r(h)}"`;
-}
-
-// cost: time O(c + e), heap O(1), stack O(1)
-// vars: c = 칸 수, e = 빈 자리 구간 수
-// basis: estimate
-// 칸 묶음 전체의 바깥 사각형(격자 왼쪽 위가 원점). 칸 묶음의 바깥 모서리만 둥글고, 칸 사이 교차는 모두 직선이다.
-function blockOf(it) {
-  const boxes = [...it.cells, ...it.empties];
-  const [left, top] = [Math.min(...boxes.map((b) => b.x)), Math.min(...boxes.map((b) => b.y))];
-  return { left, top, right: Math.max(...boxes.map((b) => b.x + b.w)), bottom: Math.max(...boxes.map((b) => b.y + b.h)) };
 }
 
 // cost: time O(1), heap O(1), stack O(1)
@@ -53,7 +43,7 @@ export function drawGridBody(it, { decorate, glyphs, index }) {
   const block = blockOf(it);
   const tray = it.unit.gutter > 0 ? drawTray(it, block) : '';
   const cells = it.cells.map((cell) => {
-    const texts = drawTexts(cell.texts, it, glyphs);
+    const texts = cell.valueId ? '' : drawTexts(cell.texts, it, glyphs);
     if (cell.kind === 'gap') return `<g>${cellShape(it, cell, block)} class="grid-cell gap"/>${texts}</g>`;
     const key = `${it.id}.${cell.id}`;
     return `<g class="fl-part" data-part="${escapeXml(key)}">${cellShape(it, cell, block)} class="grid-cell ${decorate('cell', 0, key)}"/>${texts}</g>`;
@@ -79,4 +69,14 @@ function drawEmpties(it, index) {
   const pattern = `<pattern id="${id}" patternUnits="userSpaceOnUse" x="${r(it.x + unit.x - half)}" y="${r(it.y + unit.y - half)}" width="${r(unit.w)}" height="${r(unit.h + unit.gutter)}"><path d="${lines}" class="grid-cell empty"/></pattern>`;
   const path = it.empties.map((e) => `M${r(it.x + e.x - half)} ${r(it.y + e.y - half)}h${r(e.w + stroke)}v${r(e.h + stroke)}h${r(-e.w - stroke)}z`).join('');
   return `${pattern}<path d="${path}" fill="url(#${id})" class="grid-empty"/>`;
+}
+
+
+// cost: time O(c), heap O(1), stack O(1)
+// vars: c = 격자 칸 수
+// basis: estimate
+// 값 갱신 면은 칸 본체와 같은 윤곽을 쓰고 경계선을 겹치지 않는다.
+export function drawCellFlash(it, cell, attrs, animation) {
+  const shape = cellShape(it, cell, blockOf(it));
+  return `${shape} class="fl-flash fl-flash-face" opacity="0" ${attrs}>${animation}</${shape.startsWith('<rect') ? 'rect' : 'path'}>`;
 }

@@ -67,7 +67,7 @@ function relationMarker(id, shape) {
   const c = VIEW / 2;
   const triangle = `M ${TIP_X} ${c} L ${ARM_X} ${c - ARM_HALF} L ${ARM_X} ${c + ARM_HALF} Z`;
   const diamond = `M ${TIP_X} ${c} L ${VIEW / 2} ${c - ARM_HALF} L 0 ${c} L ${VIEW / 2} ${c + ARM_HALF} Z`;
-  const fill = shape === 'diamond-filled' ? 'currentColor' : tokens.color["prose-pre-background"];
+  const fill = shape === 'diamond-filled' ? 'currentColor' : tokens.color.figure.canvas;
   return `<marker id="${id}" viewBox="0 0 ${VIEW} ${VIEW}" refX="${TIP_X}" refY="${c}" markerWidth="${size}" markerHeight="${size}" orient="auto-start-reverse" overflow="visible"><path d="${shape === 'triangle' ? triangle : diamond}" fill="${fill}" stroke="currentColor" stroke-width="${markStroke(size)}" stroke-linejoin="round"/></marker>`;
 }
 

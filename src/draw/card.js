@@ -6,10 +6,10 @@ import { drawChartBody } from './chart.js';
 import { STACK_STEP } from '../measure/decor.js';
 import { queueSlots } from '../measure/queue.js';
 import { roundCoord as r, escapeXml } from '../text.js';
-import { tokens, values } from '../vendor/theme/tokens.js';
+import { values } from '../vendor/theme/tokens.js';
 import { drawDecor } from './decor.js';
 import { drawGridBody } from './grid.js';
-import { LINE_DASH, drawSurface, surfaceClip } from './surface.js';
+import { drawSurface, surfaceClip } from './surface.js';
 import { drawTexts } from './texts.js';
 
 // cost: time O(c + t), heap O(out), stack O(1)
@@ -42,9 +42,8 @@ export function drawHead(it, { glyphs, index }) {
 // basis: estimate
 // 복제 개수(count)가 있으면 뒤 윤곽 두 겹이 오른쪽 아래로 비쳐 보인다. 앞 상자(몸통)는 surfaceOutline이 bodyOf로 정한다. 외부 도형은 점선 경계다.
 function drawStack(it, stroke) {
-  const dash = it.shape === 'external' ? ` stroke-dasharray="${LINE_DASH}"` : '';
   const steps = Array.from({ length: (it.stack ?? 0) / STACK_STEP }, (_, k) => it.stack / STACK_STEP - k);
-  return [...steps, 0].map((k) => drawSurface({ ...it, x: it.x + k * STACK_STEP, y: it.y + k * STACK_STEP }, stroke, dash)).join('');
+  return [...steps, 0].map((k) => drawSurface({ ...it, x: it.x + k * STACK_STEP, y: it.y + k * STACK_STEP }, stroke)).join('');
 }
 
 // cost: time O(d), heap O(out), stack O(1)
@@ -62,13 +61,15 @@ function drawDividers(it) {
 function drawParts(it, { decorate, glyphs, index }) {
   if (!it.tableRows) return '';
   const clip = `tc-${index}`;
+  const edge = values["border-width"].thin;
+  const head = it.tableRows.length ? `<rect x="${r(it.x + edge)}" y="${r(it.y + edge)}" width="${r(it.w - edge * 2)}" height="${r(it.tableRows[0].y - edge)}" class="part-head"/>` : '';
   const rows = it.tableRows.map((row) => {
     const key = `${it.id}.${row.id}`;
     const edge = values["border-width"].thin;
     const face = `<rect x="${r(it.x + edge)}" y="${r(it.y + row.y)}" width="${r(it.w - edge * 2)}" height="${r(row.h)}" class="part-bg ${decorate('part', 0, key)}"/>`;
     return `<g class="fl-part" data-part="${escapeXml(key)}">${face}${drawTexts(row.texts, it, glyphs)}</g>`;
   });
-  return `${surfaceClip(it, clip)}<g clip-path="url(#${clip})">${rows.join('')}</g>`;
+  return `${surfaceClip(it, clip)}<g clip-path="url(#${clip})">${head}${rows.join('')}</g>`;
 }
 
 // cost: time O(1), heap O(out), stack O(1)
@@ -84,8 +85,8 @@ function drawChart(it, stroke, { decorate, glyphs, index }) {
 // cost: time O(1), heap O(1), stack O(1)
 // basis: estimate
 /** 큐 칸 하나(측정이 놓은 칸 사각형). 빈 칸과 찬 칸(draw/values.js)이 같은 칸 윤곽을 쓰고 면과 선 색만 다르다. */
-export function drawSlot(s, { fill, stroke }) {
-  return `<rect x="${r(s.x)}" y="${r(s.y)}" width="${r(s.w)}" height="${r(s.h)}" rx="${values.radius.sm}" fill="${fill}" stroke="${stroke}" stroke-width="${values["border-width"].thin}"/>`;
+export function drawSlot(s) {
+  return `<rect x="${r(s.x)}" y="${r(s.y)}" width="${r(s.w)}" height="${r(s.h)}" rx="${values.radius.sm}" class="fl-queue-slot"/>`;
 }
 
 // cost: time O(s), heap O(s), stack O(1)
@@ -93,5 +94,5 @@ export function drawSlot(s, { fill, stroke }) {
 // basis: estimate
 // 큐의 빈 칸: 무채색 면에 외곽선(도형 면 위 대비 3). 찬 칸은 그 위에 값 층(draw/values.js)이 같은 자리에 얹는다.
 function drawQueueSlots(it) {
-  return queueSlots(it).map((s) => drawSlot(s, { fill: tokens.color.figure['queue-empty'], stroke: tokens.color.outline })).join('');
+  return queueSlots(it).map(drawSlot).join('');
 }

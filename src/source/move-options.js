@@ -46,10 +46,10 @@ function readCondition(found, { isStuck, line, ctx }) {
     else condition[key] = parsed;
   }
   condition.timeoutMs = readTime(found.timeout, { key: 'timeout', line, ctx });
-  condition.elseNode = found.else;
+  if (found.wait !== undefined && condition.timeoutMs !== undefined) condition.elseNode = found.else;
   if (found.wait === undefined && (found.timeout !== undefined || isStuck)) problems.error(line, `${found.timeout !== undefined ? 'timeout' : 'stuck'} goes with wait. Add wait="condition" or remove it`);
   if (found.timeout === undefined && found.else !== undefined) problems.error(line, 'else is where a wait goes when timeout passes. Add timeout=time or remove else');
-  if (found.else !== undefined && found.wait === undefined) problems.error(line, 'else goes with wait and timeout. Add wait="condition" timeout=time or remove else');
+  else if (found.else !== undefined && found.wait === undefined) problems.error(line, 'else goes with wait and timeout. Add wait="condition" timeout=time or remove else');
   if (found.reserve !== undefined) {
     condition.reserve = readReserve(found.reserve, { line, ctx });
     ctx.figure.hasReserve = true;

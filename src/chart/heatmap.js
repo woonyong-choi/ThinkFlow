@@ -2,6 +2,7 @@
 import { pickInk } from '../contrast.js';
 import { roundToScale } from '../format.js';
 import { measure, wrap } from '../measure/fonts.js';
+import { STYLE } from '../measure/texts.js';
 import { centerBaseline, renderRich, roundCoord as r } from '../text.js';
 import { tokens, values } from '../vendor/theme/tokens.js';
 import { labelColumn, labelFit, labelText } from './labels.js';
@@ -62,8 +63,12 @@ function heatCell(grid, c, k) {
 // 열 이름은 칸 너비 안에 들어가야 한다. 넘으면 옆 열 이름과 겹친다.
 function headerFits(chart, grid) {
   if (grid.names) {
-    const fits = (names, { room, size, face, what }) => names.flatMap((lines) => lines.map((text) => ({ text, width: measure(text, size, face), room, line: chart.rows[0].line, what })));
-    return [...fits(grid.names.cols, { room: columnRoom(grid.cellW), size: TEXT['11'], face: 'num', what: 'column name' }), ...fits(grid.names.rows, { room: grid.plotX - PAD - SPACE["3"], size: TEXT['13'], face: 'regular', what: 'item name' }), ...chart.rows.map((c) => ({ text: grid.format(c.values.value), width: measure(grid.format(c.values.value), TEXT['11'], 'num'), room: grid.cellW - SPACE["0-5"] - SPACE["2"], line: c.line, what: 'cell value' }))];
+    const fits = (names, { room, size, face, what, lineAt }) => names.flatMap((lines, index) => lines.map((text) => ({ text, width: measure(text, size, face), room, line: lineAt(index), what })));
+    return [
+      ...fits(grid.names.cols, { room: columnRoom(grid.cellW), size: TEXT['11'], face: 'num', what: 'column name', lineAt: index => chart.rows.find(cell => cell.col === grid.cols[index]).line }),
+      ...fits(grid.names.rows, { room: grid.plotX - PAD - SPACE["3"], size: TEXT['13'], face: 'regular', what: 'item name', lineAt: index => chart.rows.find(cell => cell.row === grid.rows[index]).line }),
+      ...chart.rows.map((c) => ({ text: grid.format(c.values.value), width: measure(grid.format(c.values.value), TEXT['11'], 'num'), room: grid.cellW - SPACE["0-5"] - SPACE["2"], line: c.line, what: 'cell value' })),
+    ];
   }
   const colFits = grid.cols.map((c) => ({ text: c, width: measure(c, TEXT['11'], 'num'), room: columnRoom(grid.cellW), line: chart.rows.find((row) => row.col === c).line, what: 'column name' }));
   return [...colFits, ...grid.rows.map((row) => labelFit(row, chart.rows.find((c) => c.row === row).line))];
@@ -86,7 +91,7 @@ export function drawHeatmap(figure, top) {
   const cellW = (available - labelW + SPACE["0-5"]) / cols.length;
   const names = chart.layout ? { rows: rows.map((row) => wrap(row, labelW - SPACE["3"], { size: TEXT['13'], face: 'regular' })), cols: cols.map((col) => wrap(col, columnRoom(cellW), { size: TEXT['11'], face: 'num' })) } : undefined;
   const leading = values.leading.normal;
-  const headerH = names ? Math.max(...names.cols.map((lines) => lines.length)) * TEXT['11'] * leading : TEXT['11'];
+  const headerH = names ? Math.max(...names.cols.map((lines) => lines.length)) * STYLE.meta.line : TEXT['11'];
   const cellH = names ? Math.max(SIZE.chart.cell, Math.max(...names.rows.map((lines) => lines.length)) * TEXT['13'] * leading + SPACE["2"]) : SIZE.chart.cell;
   const grid = { chart, rows, cols, plotX, cellW, cellH, names, top: top + headerH + SPACE["2"], max: Math.max(...chart.rows.map((c) => c.values.value)), format };
   const parts = cols.map((c, j) => names ? matrixLabel(names.cols[j], { x: plotX + j * cellW + cellW / 2, cy: top + headerH / 2, size: TEXT['11'], className: 'chart-tick' }) : `<text x="${r(plotX + j * cellW + cellW / 2)}" y="${r(top + TEXT['11'])}" class="chart-tick">${renderRich(c)}</text>`);
@@ -100,7 +105,7 @@ export function drawHeatmap(figure, top) {
 // basis: estimate
 // 행과 열 이름은 셀 격자를 유지한 채 같은 글자 크기로 줄바꿈한다.
 function matrixLabel(lines, { x, cy, size, className }) {
-  const lineHeight = size * values.leading.normal;
+  const lineHeight = size === STYLE.meta.size ? STYLE.meta.line : size * values.leading.normal;
   const y = centerBaseline(cy - (lines.length - 1) * lineHeight / 2, size);
   return `<text x="${r(x)}" y="${r(y)}" class="${className}">${lines.map((line, i) => `<tspan x="${r(x)}" y="${r(y + i * lineHeight)}">${renderRich(line)}</tspan>`).join('')}</text>`;
 }

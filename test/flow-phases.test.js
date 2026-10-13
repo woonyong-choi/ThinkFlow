@@ -1,5 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
+import { routeLength } from '../src/route.js';
+import { values } from '../src/vendor/theme/tokens.js';
 import { buildFigure, FigureError } from 'thinkflow';
 
 const source = (names, options, length = '3ms') => `thinkflow
@@ -38,4 +40,23 @@ test('a computed departure at the scene boundary is omitted and explicit simulta
   const simultaneous = await buildFigure(source(['a', 'b'], 'every=1ms time=0.1ms when="n=0" at=0ms'));
   assert.deepEqual(starts(simultaneous, 0), [0, 1, 2]);
   assert.deepEqual(starts(simultaneous, 1), [0, 1, 2]);
+});
+
+test('default track duration includes the distance crossing an intermediate card', async () => {
+  const figure = `thinkflow
+box a "A"
+box b "B"
+box c "C"
+a -> b
+b -> c
+scene "S" mode=once for=30s
+  track a -> b -> c`;
+  const result = await buildFigure(figure);
+  const hop = result.timeline.segs[0].hops[0];
+  const track = result.timeline.tracks[hop.track];
+  assert.ok(track.gaps.some(([from, to]) => to > from));
+  const expected = routeLength(track.route) / values.spacing.figure.packet['hop-ref'] * values.duration.hop;
+  assert.ok(Math.abs(hop.ms - expected) <= 1, `track duration ${hop.ms} must include its full route (${expected})`);
+  const explicit = await buildFigure(`${figure} time=1s`);
+  assert.equal(explicit.timeline.segs[0].hops[0].ms, 1000);
 });

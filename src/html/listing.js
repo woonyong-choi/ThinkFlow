@@ -37,29 +37,7 @@ export function toGallery(figures, heading) {
         `<iframe data-diagram src="${hrefAttr(`${pageOf(f)}.html`)}" loading="lazy" allowfullscreen title="${escapeXml(f.name)}"></iframe></section>`,
     )
     .join('\n');
-  return `<!doctype html>
-<html lang="ko">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>${escapeXml(heading)}</title>
-${faviconLinks()}
-<style>${STYLES.tokens}${STYLES.control}${STYLES.gallery}</style>
-<script>${THEME_SCRIPT}</script>
-</head>
-<body>
-<div class="top">
-<h1>${escapeXml(heading)}</h1>
-<p>그림 ${figures.length}개 · <a href="document.html">문서 안 모습 보기</a></p>
-<div class="theme app-tablist is-segmented" role="group" aria-label="테마">${THEME_BUTTONS}</div>
-</div>
-<main>
-${cards}
-</main>
-${GALLERY_SCRIPT}
-</body>
-</html>
-`;
+  return galleryDocument(heading, cards, { count: figures.length });
 }
 
 // cost: time O(f), heap O(out), stack O(1)
@@ -96,4 +74,51 @@ ${sections}
 </body>
 </html>
 `;
+}
+
+// 재생 방식 이름. 장면 표시에 쓴다.
+const MODE_LABELS = { static: '정지', once: '한 번', loop: '반복' };
+
+// cost: time O(s), heap O(s), stack O(1)
+// vars: s = 장면 수
+// basis: estimate
+const sceneList = (scenes) => `<ol class="catalog-scenes">${scenes.map(({ label, mode, speed }) => `<li>${escapeXml(label)} <span>${MODE_LABELS[mode]}${speed === 1 ? '' : ` · ${speed}배속`}</span></li>`).join('')}</ol>`;
+
+// cost: time O(f), heap O(f), stack O(1)
+// vars: f = 자료 파일 수
+// basis: estimate
+// 원본이 읽는 자료 파일 링크. 원본을 내려받아 쓰려면 같은 상대 경로에 놓아야 한다.
+const supportList = (files) => (files.length ? `<p class="catalog-support">원본이 읽는 자료(원본과 같은 폴더 구조로 받습니다): ${files.map((file) => `<a href="${hrefAttr(file)}" download><code>${escapeXml(file)}</code></a>`).join(', ')}</p>` : '');
+
+// cost: time O(e), heap O(e), stack O(1)
+// vars: e = 예제 수와 원본 글자 수
+// basis: estimate
+/**
+ * 예제 목록. 구성원은 { id, group, title, subtitle, scenes: [{ label, mode, speed }], source, support?, warnings }다.
+ * 그룹마다 제목 아래에 예제 카드를 놓고, 카드마다 원본 전체를 펼쳐 볼 수 있다.
+ */
+export function toExamples(entries, heading) {
+  const groups = [...new Set(entries.map((entry) => entry.group))];
+  const sections = groups.map((group) => {
+    const cards = entries.filter((entry) => entry.group === group).map((entry) => `<article class="catalog-card" id="${escapeXml(entry.id)}">
+<h3>${escapeXml(entry.title)} <code>${escapeXml(entry.id)}.thinkflow</code></h3>
+<p>${escapeXml(entry.subtitle ?? '')}</p>
+<a class="catalog-preview" href="${hrefAttr(`${entry.id}.html`)}"><img src="${hrefAttr(`${entry.id}.svg`)}" alt="${escapeXml(entry.title)} 첫 장면" loading="lazy"></a>
+${sceneList(entry.scenes)}
+<nav class="catalog-downloads"><a href="${hrefAttr(`${entry.id}.html`)}">재생 화면 열기</a><a href="${hrefAttr(`${entry.id}.svg`)}">SVG</a><a href="${hrefAttr(`${entry.id}.thinkflow`)}" download>원본 내려받기</a></nav>
+${supportList(entry.support ?? [])}
+<details><summary>원본 보기</summary><pre><code>${escapeXml(entry.source)}</code></pre></details>
+</article>`).join('\n');
+    return `<section><h2>${escapeXml(group)}</h2><div class="catalog-grid">${cards}</div></section>`;
+  }).join('\n');
+  const index = entries.map((entry) => `<li><a href="#${escapeXml(encodeURIComponent(entry.id))}">${escapeXml(entry.id)}</a></li>`).join('');
+  return galleryDocument(heading, `<h1>${escapeXml(heading)}</h1><p class="catalog-lead">예제 ${entries.length}개. 첫 장면은 정지 상태이고, 움직이는 장면은 재생 화면의 탭에서 고릅니다.</p><p>수치는 모두 기능을 설명하려고 만든 예시 데이터이며 실제 측정값이 아닙니다.</p><nav aria-label="예제 목록"><ul class="catalog-index">${index}</ul></nav>${sections}`);
+}
+
+function galleryDocument(heading, content, { count } = {}) {
+  const examples = count === undefined;
+  const top = examples
+    ? `<a href="index.html">ThinkFlow · 예제 갤러리</a>`
+    : `<h1>${escapeXml(heading)}</h1><p>그림 ${count}개 · <a href="document.html">문서 안 모습 보기</a></p>`;
+  return `<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escapeXml(heading)}</title>${faviconLinks()}<style>${STYLES.tokens}${STYLES.control}${STYLES.gallery}</style><script>${THEME_SCRIPT}</script></head><body${examples ? ' class="is-examples"' : ''}><div class="top${examples ? ' catalog-header' : ''}">${top}<div class="theme app-tablist is-segmented" role="group" aria-label="테마">${THEME_BUTTONS}</div></div><main${examples ? ' class="catalog-main"' : ''}>${content}</main>${GALLERY_SCRIPT}</body></html>`;
 }

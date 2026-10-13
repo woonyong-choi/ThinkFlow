@@ -6,39 +6,50 @@
 :root {
   --color-gray-0: #ffffff;
   --color-gray-59: #f0f0f0;
+  --color-gray-212: #c9c9c9;
   --color-gray-282: #b7b7b7;
   --color-gray-467: #888888;
+  --color-gray-529: #787878;
+  --color-gray-910: #171717;
   --color-gray-933: #111111;
   --color-group-title: var(--color-help-title-color);
+  --color-outline: var(--color-gray-529);
   --color-line: var(--color-gray-282);
   --color-state-active: var(--color-category-blue-light-border);
   --color-state-active-fill: var(--color-category-blue-fill);
   --color-state-active-text: var(--color-category-blue-light-ink);
   --color-state-on-active: var(--color-gray-0);
   --color-ui-focus: var(--color-action-link);
-  --color-data-category-1: var(--color-category-blue-fill);
+  --color-data-grid: var(--color-gray-212);
+  --color-data-category-1: var(--color-category-blue-solid);
   --color-figure-icon: var(--color-category-blue-light-border);
+  --color-figure-queue-empty: var(--color-gray-59);
   --color-figure-number-fill: var(--primitive-figure-number-fill);
   --color-figure-number-ink: var(--primitive-figure-number-ink);
   --color-figure-outline: var(--color-gray-467);
+  --color-figure-selection-fill: var(--color-category-blue-light-tint-3);
+  --color-figure-canvas: var(--primitive-help-bg);
+  --color-figure-flash: var(--primitive-search-hover);
+  --color-figure-active-surface: var(--primitive-help-hover);
   --color-ui-card: var(--color-gray-0);
   --color-ink: var(--primitive-ink);
   --color-ui-muted: var(--primitive-muted);
   --color-ui-line: var(--primitive-line);
-  --color-search-hover: var(--primitive-search-hover);
-  --color-help-hover: var(--primitive-help-hover);
   --color-help-title-color: var(--primitive-help-title-color);
-  --color-prose-pre-background: var(--primitive-help-bg);
   --color-action-link: var(--primitive-link);
   --color-category-blue-anchor: #1e6bd6;
   --color-category-blue-fill: var(--color-category-blue-anchor);
   --color-category-blue-on: var(--color-gray-0);
   --color-category-blue-light-border: #1e6bd6;
   --color-category-blue-light-ink: #1161cb;
+  --color-category-blue-light-tint-3: #d5e4fa;
   --color-category-blue-dark-border: #3a85f2;
   --color-category-blue-dark-ink: #6da8ff;
+  --color-category-blue-dark-tint-3: #303d54;
+  --color-category-blue-solid: var(--color-category-blue-fill);
   --font-figure-sans: FigSans, FigSansSym, FigSansMath, ui-sans-serif, -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
   --font-figure-mono: FigMono, FigSans, FigSansSym, FigSansMath, ui-monospace, SFMono-Regular, Menlo, monospace;
+  --radius-card-radius: var(--primitive-card-radius);
   --text-small-text: var(--primitive-small-text);
   --text-tiny-text: var(--primitive-tiny-text);
   --text-figure-meta: 11px;
@@ -54,21 +65,24 @@
   --primitive-search-hover: #d9e6ff;
   --primitive-help-hover: #ebf1ff;
   --primitive-help-title-color: #3d4856;
-  --primitive-figure-ui-accent: #3c84f3;
   --primitive-figure-dark-bg: #26272b;
   --primitive-figure-dark-node: #303136;
+  --primitive-figure-dark-edge: #50535b;
   --primitive-figure-dark-separator: #454850;
   --primitive-figure-dark-hover: #343e50;
   --primitive-figure-dark-selection: #274174;
   --primitive-figure-dark-muted: #a9adb6;
   --primitive-figure-dark-line: #7f8793;
+  --primitive-figure-dark-outline: #868686;
   --primitive-figure-number-fill: #303336;
   --primitive-figure-number-ink: #ffffff;
+  --primitive-card-radius: 18px;
   --border-width-thin: 1px;
   --border-width-hair: 0.75px;
   --border-width-lifeline: 1.25px;
   --border-width-edge: 1.75px;
   --opacity-range: 0.4;
+  --dash-line: 5;
   --dash-gap: 4;
   --dash-card: 3;
   --outline-width-focus: 3px;
@@ -76,41 +90,49 @@
 }
 
 [data-theme='dark'] {
+  --color-outline: var(--primitive-figure-dark-outline);
   --color-line: var(--primitive-figure-dark-line);
-  --color-state-active: var(--primitive-figure-ui-accent);
+  --color-state-active: var(--color-category-blue-dark-border);
   --color-state-active-text: var(--color-category-blue-dark-ink);
   --color-state-on-active: var(--color-category-blue-on);
+  --color-data-grid: var(--primitive-figure-dark-edge);
   --color-figure-icon: var(--color-category-blue-dark-border);
+  --color-figure-queue-empty: var(--color-gray-910);
   --color-figure-number-fill: var(--color-gray-59);
   --color-figure-number-ink: var(--color-gray-933);
   --color-figure-outline: var(--color-line);
+  --color-figure-selection-fill: var(--color-category-blue-dark-tint-3);
+  --color-figure-canvas: var(--primitive-figure-dark-bg);
+  --color-figure-flash: var(--primitive-figure-dark-selection);
+  --color-figure-active-surface: var(--primitive-figure-dark-hover);
   --color-ui-card: var(--primitive-figure-dark-node);
   --color-ink: var(--color-gray-59);
   --color-ui-muted: var(--primitive-figure-dark-muted);
   --color-ui-line: var(--primitive-figure-dark-separator);
-  --color-search-hover: var(--primitive-figure-dark-selection);
-  --color-help-hover: var(--primitive-figure-dark-hover);
   --color-help-title-color: var(--color-ink);
-  --color-prose-pre-background: var(--primitive-figure-dark-bg);
   color-scheme: dark;
 }
 [data-theme='light'] {
+  --color-outline: var(--color-gray-529);
   --color-line: var(--color-gray-282);
   --color-state-active: var(--color-category-blue-light-border);
   --color-state-active-text: var(--color-category-blue-light-ink);
   --color-state-on-active: var(--color-gray-0);
+  --color-data-grid: var(--color-gray-212);
   --color-figure-icon: var(--color-category-blue-light-border);
+  --color-figure-queue-empty: var(--color-gray-59);
   --color-figure-number-fill: var(--primitive-figure-number-fill);
   --color-figure-number-ink: var(--primitive-figure-number-ink);
   --color-figure-outline: var(--color-gray-467);
+  --color-figure-selection-fill: var(--color-category-blue-light-tint-3);
+  --color-figure-canvas: var(--primitive-help-bg);
+  --color-figure-flash: var(--primitive-search-hover);
+  --color-figure-active-surface: var(--primitive-help-hover);
   --color-ui-card: var(--color-gray-0);
   --color-ink: var(--primitive-ink);
   --color-ui-muted: var(--primitive-muted);
   --color-ui-line: var(--primitive-line);
-  --color-search-hover: var(--primitive-search-hover);
-  --color-help-hover: var(--primitive-help-hover);
   --color-help-title-color: var(--primitive-help-title-color);
-  --color-prose-pre-background: var(--primitive-help-bg);
   color-scheme: light;
 }
 /* 그림 안 글자와 모양. HTML 재생기와 움직이는 SVG가 같이 쓴다. */
@@ -229,7 +251,7 @@
   fill: var(--color-ink);
 }
 
-/* 그룹은 면이 없다(투명). 경계와 제목만 있고, 깊이에 따라 회색 면을 겹치지 않는다. 고른 색의 면과 경계는 draw/paint.js가 쓴 색에만 더한다. */
+/* 그룹은 기본 면이 없다(투명). 경계와 제목만 있고, 깊이에 따라 회색 면을 겹치지 않는다. 고른 색은 아래 appearance 역할로 적용한다. */
 .fl .frame-box {
   --fx-edge-rest: var(--color-figure-outline);
   fill: none;
@@ -237,10 +259,48 @@
   stroke-width: var(--border-width-thin);
 }
 
+.fl .fl-card {
+  fill: var(--color-ui-card);
+}
+
+.fl .fl-queue-slot {
+  fill: var(--color-figure-queue-empty);
+  stroke: var(--color-outline);
+  stroke-width: var(--border-width-thin);
+}
+
+.fl .queue-fill .fl-queue-slot {
+  fill: var(--color-data-category-1);
+  stroke: var(--color-data-category-1);
+}
+
+.fl .fl-shape-external > :is(.fl-stroke, .fl-pulse),
+.fl .frame-box.dashed,
+.fl .fl-path.dashed {
+  stroke-dasharray: var(--dash-line) var(--dash-gap);
+}
+
 .fl .lifeline {
   stroke: var(--color-line);
   stroke-width: var(--border-width-lifeline);
   stroke-dasharray: var(--dash-gap) var(--dash-gap);
+}
+
+.fl .fl-activation {
+  fill: var(--color-ui-card);
+  stroke: var(--color-line);
+  stroke-width: var(--border-width-thin);
+}
+
+.fl .fl-destroy > circle {
+  fill: var(--color-figure-canvas);
+}
+
+.fl .fl-destruction {
+  fill: none;
+  stroke: var(--color-line);
+  stroke-width: var(--border-width-edge);
+  stroke-linecap: round;
 }
 
 .fl .note-box {
@@ -256,6 +316,18 @@
   stroke: var(--fx-edge-rest);
 }
 
+.fl .fl-mini-pill {
+  stroke-width: var(--border-width-thin);
+}
+
+.fl .fl-mini-pill.fl-mini-lit {
+  fill: var(--fx-row);
+}
+
+.fl .fl-edge.fl-mini-lit {
+  color: var(--fx-edge);
+}
+
 .fl .part-bg {
   --fx-face: transparent;
   --fx-face-on: var(--fx-row);
@@ -263,15 +335,19 @@
 }
 
 .fl .col-line {
-  stroke: var(--color-ui-line);
+  stroke: var(--color-data-grid);
   stroke-width: var(--border-width-hair);
+}
+
+.fl .part-head {
+  fill: var(--color-figure-canvas);
 }
 
 .fl .grid-cell {
   --fx-face: var(--color-ui-card);
   --fx-face-on: var(--fx-row);
   fill: var(--fx-face);
-  stroke: var(--color-ui-line);
+  stroke: var(--color-data-grid);
   stroke-width: var(--border-width-thin);
 }
 
@@ -281,7 +357,7 @@
 
 .fl .grid-cell.gap {
   --fx-face: var(--color-ui-card);
-  stroke: var(--color-ui-line);
+  stroke: var(--color-data-grid);
 }
 
 .fl .grid-cell.empty {
@@ -294,7 +370,7 @@
   --fx-line-rest: var(--color-ink);
 }
 
-/* 카드 내용 면(color.ui-card, 테두리 없음) 위에 고른 카드 모습(face)이 옅은 면이나 경계를 더한다. */
+/* 이름과 값은 평소 여백으로 구분한다. 명시한 면(face)과 값 갱신 강조만 배경을 더한다. */
 .fl .face {
   fill: none;
   stroke: none;
@@ -357,12 +433,15 @@
 /* 효과 한 벌: 켜짐과 평소의 모습을 정하는 유일한 정의다. 움직이는 SVG(animate/animator.js)의 keyframes와 HTML 재생기의 `.on` 규칙이 같은 `--fx-*`를 읽으므로 두 출력과 정지 그림이 늘 같다.
    - 켜짐(on): --fx-edge 윤곽·그룹 경계·선·알약 테두리, --fx-ink 알약 글자, --fx-row 표 줄과 격자 칸의 면, --fx-face-on 요소의 켜진 면(도형은 아래), --fx-flash 값이 바뀐 순간의 면.
    - 평소(rest): --fx-edge-rest 도형, 그룹, 알약의 경계, --fx-ink-rest 알약 글자, --fx-line-rest 선, --fx-face 요소의 평소 면.
-   효과는 도형이 고른 색(tone)이나 표현(appearance)과 상관없다. 고른 색은 평소 값(--fx-face, --fx-edge-rest)만 바꾸고(draw/paint.js), 켜진 동안은 강조 윤곽에 자리를 내준다. */
+   효과는 도형이 고른 색(tone)이나 표현(appearance)과 상관없다. appearance는 고른 색을 평소 값(--fx-face, --fx-edge-rest)에만 적용하고, 켜진 동안은 강조 윤곽에 자리를 내준다. */
 .fl {
+  --paint-fill: var(--color-ui-card);
+  --paint-outline: var(--color-figure-outline);
+  --paint-ink: var(--color-group-title);
   --fx-edge: var(--color-state-active);
   --fx-ink: var(--color-state-active-text);
-  --fx-row: var(--color-search-hover);
-  --fx-flash: var(--color-search-hover);
+  --fx-row: var(--color-figure-selection-fill);
+  --fx-flash: var(--color-figure-flash);
   --fx-edge-rest: var(--color-figure-outline);
   --fx-ink-rest: var(--color-ui-muted);
   --fx-line-rest: var(--color-line);
@@ -371,11 +450,41 @@
 /* 도형의 평소 면과 켜진 면. 옅은 면으로 고른 도형(filled)은 켜져도 면이 같다. 면이 없는 윤곽(fill='none')과 점은 자기 면이 없거나 자기 색이다. */
 .fl .fl-node {
   --fx-face: var(--color-ui-card);
-  --fx-face-on: var(--color-help-hover);
+  --fx-face-on: var(--color-figure-active-surface);
 }
 
 .fl .fl-node.ap-filled {
+  --fx-face: var(--paint-fill);
   --fx-face-on: var(--fx-face);
+}
+
+/* 소비자는 쓴 톤의 --paint-* 변수만 연결한다. 면·경계·제목·차트 바탕의 역할은 여기서 한 번 정한다. */
+.fl .fl-node.ap-outline {
+  --fx-edge-rest: var(--paint-outline);
+}
+
+.fl .fl-group.ap-filled > .frame-box {
+  fill: var(--paint-fill);
+}
+
+.fl .fl-group.ap-outline > .frame-box {
+  --fx-edge-rest: var(--paint-outline);
+}
+
+.fl .fl-group:is(.ap-plain, .ap-filled, .ap-outline) > .frame {
+  fill: var(--paint-ink);
+}
+
+.fl .face.ap-filled {
+  fill: var(--paint-fill);
+}
+
+.fl .fl-layer.ap-filled {
+  --chart-ground: var(--paint-fill);
+}
+
+.fl .face.ap-outline {
+  stroke: var(--paint-outline);
 }
 
 .fl .fl-shape-start {
@@ -387,7 +496,7 @@
   --fx-face-on: none;
 }
 
-.fl .fl-node.ap-filled > .fl-stroke:not([fill='none']) {
+.fl :where(.fl-node) > .fl-stroke:where(:not([fill='none'])) {
   fill: var(--fx-face);
 }
 
@@ -469,6 +578,18 @@
   font-weight: var(--font-weight-semibold);
 }
 
+.fl .fl-packet > circle:first-child {
+  opacity: 0;
+}
+
+/* 독립 SVG도 재생 판과 같은 바탕과 움직임 줄이기 규칙을 쓴다. */
+.fl .fl-canvas-surface { fill: var(--color-figure-canvas); rx: var(--radius-card-radius); }
+.fl .fl-still { display: none; }
+@media (prefers-reduced-motion: reduce) {
+  .fl .fl-motion { display: none; }
+  .fl .fl-still { display: inline; }
+}
+
 @keyframes a0 { 0%,42.647% { fill: var(--fx-face); stroke: var(--fx-edge-rest) } 42.648%,61.951% { fill: var(--fx-face); stroke: var(--fx-edge-rest) } 61.952%,100% { fill: var(--fx-face); stroke: var(--fx-edge-rest) } }
 .fl .a0 { animation: a0 8.936s 1 forwards linear; }
 @keyframes a1 { 0%,42.647% { opacity: 0; visibility: hidden } 42.648%,42.648% { opacity: 1; visibility: visible } 42.648%,61.951% { opacity: 1; visibility: visible } 61.952%,100% { opacity: 1; visibility: visible } }
@@ -496,37 +617,32 @@
 .fl .sa0 { fill: var(--fx-face); stroke: var(--fx-edge-rest); }
 .fl .sa1 { opacity: 1; visibility: visible; }
 .fl .sa2 { opacity: 1; }
-.fl .fl-still { display: none; }
-@media (prefers-reduced-motion: reduce) {
-  .fl .fl-motion { display: none; }
-  .fl .fl-still { display: inline; }
-}
 </style>
 <defs></defs>
-<rect x="0.5" y="0.5" width="959" height="533" rx="18" fill="var(--color-prose-pre-background)"/>
+<rect x="0.5" y="0.5" width="959" height="533" class="fl-canvas-surface"/>
 <g class="fl-motion" transform="translate(14.8 0)">
 <g id="g-0" class="fl-group" data-id="system"><rect x="319.3" y="28" width="240" height="478" rx="8" class="frame-box fl-stroke "/><text x="337.3" y="47.4" class="frame">Saturn</text></g>
 
-<g id="n-0" class="fl-node fl-shape-person" tabindex="0" role="img" aria-label="Developer" data-id="user"><rect x="28" y="44.5" width="129.6" height="47" rx="8" fill="var(--color-ui-card)" class="fl-stroke a0"/><g class="fl-symbol fl-symbol-concept"><g class="fl-icon" transform="translate(46 58) scale(0.83333)"><g transform="translate(0 0) scale(0.75)"><g color="#3d4856"><g transform="scale(0.6666666666666666)" stroke-linecap="round" stroke-linejoin="round"><circle cx="24" cy="12.5" r="9" fill="#528aee" stroke="none" stroke-width="2.4"/><circle cx="24" cy="12" r="6.7" fill="#639bfa" stroke="none" stroke-width="2.4"/><path d="M7 40C7 31 13 25 24 25C35 25 41 31 41 40Q41 44 37 44H11Q7 44 7 40Z" fill="#c9ddff" stroke="#9ebef0" stroke-width="3"/></g></g></g></g></g><text x="106.8" y="73.4" class="label" text-anchor="middle">Developer</text></g>
-<g id="n-1" class="fl-node fl-shape-box" tabindex="0" role="img" aria-label="Screen" data-id="tui"><rect x="359.3" y="128" width="176" height="109" rx="8" fill="var(--color-ui-card)" class="fl-stroke a0"/><rect x="359.3" y="128" width="176" height="109" rx="8" fill="var(--color-ui-card)" class="fl-pulse" opacity="0" aria-hidden="true"><animate attributeName="opacity" dur="8.936s" repeatCount="1" fill="freeze" calcMode="linear" keyTimes="0;0.42648;0.43543;0.44438;0.47124;1" values="0;0;1;1;0;0"/></rect><text x="447.3" y="156.9" class="label" text-anchor="middle">Screen</text><rect x="369.3" y="175" width="156" height="52" rx="6" fill="var(--color-ui-card)" opacity="0" class="fl-card a2"/><g id="n-1-c0" opacity="0" visibility="hidden" class="fl-layer a1"><path d="M375.3 175H519.3a6 6 0 0 1 6 6V221a6 6 0 0 1 -6 6H375.3a6 6 0 0 1 -6 -6V181a6 6 0 0 1 6 -6Z" class="fl-flash" opacity="0" data-rf="tui:0"><animate attributeName="opacity" dur="8.936s" repeatCount="1" fill="freeze" calcMode="linear" keyTimes="0;0.42648;0.43543;0.44438;0.47124;1" values="0;0;1;1;0;0"/></path><rect x="377.3" y="184" width="30" height="14" rx="4" fill="var(--color-data-category-1)" fill-opacity="0.15"/><text x="392.3" y="195" class="tag" text-anchor="middle">YOU</text><text x="412.3" y="195.7" class="row">why does this test</text><text x="377.3" y="215.7" class="row">fail?</text></g></g>
-<g id="n-2" class="fl-node fl-shape-box" tabindex="0" role="img" aria-label="Engine" data-id="engine"><rect x="397.3" y="375" width="100" height="47" rx="8" fill="var(--color-ui-card)" class="fl-stroke a0"/><rect x="397.3" y="375" width="100" height="47" rx="8" fill="var(--color-ui-card)" class="fl-pulse" opacity="0" aria-hidden="true"><animate attributeName="opacity" dur="8.936s" repeatCount="1" fill="freeze" calcMode="linear" keyTimes="0;0.61952;0.62847;0.63742;0.66428;1" values="0;0;1;1;0;0"/></rect><text x="447.3" y="403.9" class="label" text-anchor="middle">Engine</text></g>
-<g id="n-3" class="fl-node fl-shape-external" tabindex="0" role="img" aria-label="Codex CLI" data-id="codex"><rect x="799.8" y="458.5" width="102.7" height="47" rx="8" fill="var(--color-ui-card)" class="fl-stroke ext a0" stroke-dasharray="5 4"/><rect x="799.8" y="458.5" width="102.7" height="47" rx="8" fill="var(--color-ui-card)" class="fl-pulse" opacity="0" aria-hidden="true" stroke-dasharray="5 4"><animate attributeName="opacity" dur="8.936s" repeatCount="1" fill="freeze" calcMode="linear" keyTimes="0;0.95524;0.96419;0.97314;1" values="0;0;1;1;0"/></rect><text x="851.1" y="487.4" class="label" text-anchor="middle">Codex CLI</text></g>
+<g id="n-0" class="fl-node fl-shape-person" tabindex="0" role="img" aria-label="Developer" data-id="user"><rect x="28" y="44.5" width="129.6" height="47" rx="8" class="fl-stroke a0"/><g class="fl-symbol fl-symbol-concept"><g class="fl-icon" transform="translate(46 58) scale(0.83333)"><g transform="translate(0 0) scale(0.75)"><g color="#3d4856"><g transform="scale(0.6666666666666666)" stroke-linecap="round" stroke-linejoin="round"><circle cx="24" cy="12.5" r="9" fill="#528aee" stroke="none" stroke-width="2.4"/><circle cx="24" cy="12" r="6.7" fill="#639bfa" stroke="none" stroke-width="2.4"/><path d="M7 40C7 31 13 25 24 25C35 25 41 31 41 40Q41 44 37 44H11Q7 44 7 40Z" fill="#c9ddff" stroke="#9ebef0" stroke-width="3"/></g></g></g></g></g><text x="106.8" y="73.4" class="label" text-anchor="middle">Developer</text></g>
+<g id="n-1" class="fl-node fl-shape-box" tabindex="0" role="img" aria-label="Screen" data-id="tui"><rect x="359.3" y="128" width="176" height="109" rx="8" class="fl-stroke a0"/><rect x="359.3" y="128" width="176" height="109" rx="8" class="fl-pulse" opacity="0" aria-hidden="true"><animate attributeName="opacity" dur="8.936s" repeatCount="1" fill="freeze" calcMode="linear" keyTimes="0;0.42648;0.43543;0.44438;0.47124;1" values="0;0;1;1;0;0"/></rect><text x="447.3" y="156.9" class="label" text-anchor="middle">Screen</text><rect x="369.3" y="175" width="156" height="52" rx="6" opacity="0" class="fl-card a2"/><g id="n-1-c0" opacity="0" visibility="hidden" class="fl-layer a1"><path d="M375.3 175H519.3a6 6 0 0 1 6 6V221a6 6 0 0 1 -6 6H375.3a6 6 0 0 1 -6 -6V181a6 6 0 0 1 6 -6Z" class="fl-flash" opacity="0" data-rf="tui:0"><animate attributeName="opacity" dur="8.936s" repeatCount="1" fill="freeze" calcMode="linear" keyTimes="0;0.42648;0.43543;0.44438;0.47124;1" values="0;0;1;1;0;0"/></path><rect x="377.3" y="184" width="30" height="14" rx="4" fill="var(--color-data-category-1)" fill-opacity="0.15"/><text x="392.3" y="195" class="tag" text-anchor="middle">YOU</text><text x="412.3" y="195.7" class="row">why does this test</text><text x="377.3" y="215.7" class="row">fail?</text></g></g>
+<g id="n-2" class="fl-node fl-shape-box" tabindex="0" role="img" aria-label="Engine" data-id="engine"><rect x="397.3" y="375" width="100" height="47" rx="8" class="fl-stroke a0"/><rect x="397.3" y="375" width="100" height="47" rx="8" class="fl-pulse" opacity="0" aria-hidden="true"><animate attributeName="opacity" dur="8.936s" repeatCount="1" fill="freeze" calcMode="linear" keyTimes="0;0.61952;0.62847;0.63742;0.66428;1" values="0;0;1;1;0;0"/></rect><text x="447.3" y="403.9" class="label" text-anchor="middle">Engine</text></g>
+<g id="n-3" class="fl-node fl-shape-external" tabindex="0" role="img" aria-label="Codex CLI" data-id="codex"><rect x="799.8" y="458.5" width="102.7" height="47" rx="8" class="fl-stroke ext a0"/><rect x="799.8" y="458.5" width="102.7" height="47" rx="8" class="fl-pulse" opacity="0" aria-hidden="true"><animate attributeName="opacity" dur="8.936s" repeatCount="1" fill="freeze" calcMode="linear" keyTimes="0;0.95524;0.96419;0.97314;1" values="0;0;1;1;0"/></rect><text x="851.1" y="487.4" class="label" text-anchor="middle">Codex CLI</text></g>
 <g id="e-0" class="fl-edge a3"><defs><marker id="fl-arrow-0" viewBox="0 0 5 5" refX="4" refY="2.5" markerWidth="5" markerHeight="5" orient="auto-start-reverse" overflow="visible"><path class="fl-arrowhead" d="M 1.1 0.25 L 4 2.5 L 1.1 4.75 Z" stroke-width="1"/></marker></defs><path id="p-0" d="M 157.6 68 L 321.3 68 Q 343.3 68, 343.3 90 L 343.3 174.5 Q 343.3 182.5, 351.3 182.5 L 359.3 182.5" class="fl-path" marker-end="url(#fl-arrow-0)"/></g>
 <g id="e-1" class="fl-edge a4"><defs><marker id="fl-arrow-1" viewBox="0 0 5 5" refX="4" refY="2.5" markerWidth="5" markerHeight="5" orient="auto-start-reverse" overflow="visible"><path class="fl-arrowhead" d="M 1.1 0.25 L 4 2.5 L 1.1 4.75 Z" stroke-width="1"/></marker></defs><path id="p-1" d="M 447.3 237 L 447.3 375" class="fl-path" marker-end="url(#fl-arrow-1)"/></g>
 <g id="e-2" class="fl-edge a5"><defs><marker id="fl-arrow-2" viewBox="0 0 5 5" refX="4" refY="2.5" markerWidth="5" markerHeight="5" orient="auto-start-reverse" overflow="visible"><path class="fl-arrowhead" d="M 1.1 0.25 L 4 2.5 L 1.1 4.75 Z" stroke-width="1"/></marker></defs><path id="p-2" d="M 497.3 398.5 L 505.3 398.5 Q 513.3 398.5, 513.3 406.5 L 513.3 460 Q 513.3 482, 535.3 482 L 799.8 482" class="fl-path" marker-end="url(#fl-arrow-2)"/></g>
 
-<g class="p0-0" opacity="0" fill="var(--color-state-on-active)"><circle r="10" fill="var(--color-state-active)" opacity="0.2"/><circle r="4.5" fill="var(--color-state-active)"/><g><rect x="-32.9" y="-38" width="65.8" height="26" rx="8" fill="var(--color-state-active-fill)"/><text x="0" y="-20" class="chip">question</text><animateTransform attributeName="transform" type="translate" dur="8.936s" repeatCount="1" fill="freeze" calcMode="linear" keyTimes="0;0.00746;0.01492;0.02238;0.02984;0.0373;0.04476;0.05222;0.05968;0.06714;0.0746;0.07833;0.08207;0.0858;0.22008;0.35437;0.3581;0.36183;0.36556;0.37675;0.38421;0.39167;0.39913;0.4066;0.41406;0.42152;0.42648;1" values="36.9 50;36.4 50;35.6 50;34.6 50;33.2 50;31.4 50;29.4 50;27 50;24.2 50;21 50;17.5 50;15.6 50;13.5 50;11.4 50;-43 50;-21.3 0;-22 0;-22.9 0;-24 0;-27.7 0;-29.9 0;-31.8 0;-33.4 0;-34.7 0;-35.7 0;-36.5 0;-36.9 0;-36.9 0"/></g><animate attributeName="opacity" dur="8.936s" repeatCount="1" fill="freeze" calcMode="discrete" keyTimes="0;0.42648" values="1;0"/><animateMotion dur="8.936s" repeatCount="1" fill="freeze" calcMode="spline" keyTimes="0;0.42648;1" keySplines="0.455 0.03 0.515 0.955;0 0 1 1" keyPoints="0;1;1"><mpath href="#p-0" xlink:href="#p-0"/></animateMotion></g>
-<g class="p1-0" opacity="0" fill="var(--color-state-on-active)"><circle r="10" fill="var(--color-state-active)" opacity="0.2"/><circle r="4.5" fill="var(--color-state-active)"/><animate attributeName="opacity" dur="8.936s" repeatCount="1" fill="freeze" calcMode="discrete" keyTimes="0;0.42648;0.61952" values="0;1;0"/><animateMotion dur="8.936s" repeatCount="1" fill="freeze" calcMode="spline" keyTimes="0;0.42648;0.61952;1" keySplines="0 0 1 1;0.455 0.03 0.515 0.955;0 0 1 1" keyPoints="0;0;1;1"><mpath href="#p-1" xlink:href="#p-1"/></animateMotion></g>
-<g class="p2-0" opacity="0" fill="var(--color-state-on-active)"><circle r="10" fill="var(--color-state-active)" opacity="0.2"/><circle r="4.5" fill="var(--color-state-active)"/><g><rect x="-20.1" y="-38" width="40.2" height="26" rx="8" fill="var(--color-state-active-fill)"/><text x="0" y="-20" class="chip">turn</text><animateTransform attributeName="transform" type="translate" dur="8.936s" repeatCount="1" fill="freeze" calcMode="linear" keyTimes="0;0.61952;0.62325;0.62698;0.63071;0.63444;0.63817;0.6419;0.64563;0.64936;0.78365;0.88809;0.95524;1" values="24.1 50;24.1 50;23.7 50;23.3 50;22.6 50;21.9 50;20.9 50;19.8 50;18.6 50;17.2 50;0 0;0 0;-24.1 0;-24.1 0"/></g><animate attributeName="opacity" dur="8.936s" repeatCount="1" fill="freeze" calcMode="discrete" keyTimes="0;0.61952;0.95524" values="0;1;0"/><animateMotion dur="8.936s" repeatCount="1" fill="freeze" calcMode="spline" keyTimes="0;0.61952;0.95524;1" keySplines="0 0 1 1;0.455 0.03 0.515 0.955;0 0 1 1" keyPoints="0;0;1;1"><mpath href="#p-2" xlink:href="#p-2"/></animateMotion></g>
+<g class="fl-packet p0-0" opacity="0" fill="var(--color-state-on-active)"><circle r="10" fill="var(--color-state-active)" opacity="0.2"/><circle r="4.5" fill="var(--color-state-active)"/><g><rect x="-32.9" y="-38" width="65.8" height="26" rx="8" fill="var(--color-state-active-fill)"/><text x="0" y="-20" class="chip">question</text><animateTransform attributeName="transform" type="translate" dur="8.936s" repeatCount="1" fill="freeze" calcMode="linear" keyTimes="0;0.09699;0.23127;0.36556;0.3954;0.39913;0.40286;0.4066;0.41033;0.42648;1" values="36.9 50;-32.4 50;-42.5 50;-20.9 0;-20.9 0;-21 0;-21.6 0;-23.1 0;-25.4 0;-36.9 0;-36.9 0"/></g><animate attributeName="opacity" dur="8.936s" repeatCount="1" fill="freeze" calcMode="discrete" keyTimes="0;0.42648" values="1;0"/><animateMotion dur="8.936s" repeatCount="1" fill="freeze" calcMode="spline" keyTimes="0;0.42648;1" keySplines="0 0 1 1;0 0 1 1" keyPoints="0;1;1"><mpath href="#p-0" xlink:href="#p-0"/></animateMotion></g>
+<g class="fl-packet p1-0" opacity="0" fill="var(--color-state-on-active)"><circle r="10" fill="var(--color-state-active)" opacity="0.2"/><circle r="4.5" fill="var(--color-state-active)"/><animate attributeName="opacity" dur="8.936s" repeatCount="1" fill="freeze" calcMode="discrete" keyTimes="0;0.42648;0.61952" values="0;1;0"/><animateMotion dur="8.936s" repeatCount="1" fill="freeze" calcMode="spline" keyTimes="0;0.42648;0.61952;1" keySplines="0 0 1 1;0 0 1 1;0 0 1 1" keyPoints="0;0;1;1"><mpath href="#p-1" xlink:href="#p-1"/></animateMotion></g>
+<g class="fl-packet p2-0" opacity="0" fill="var(--color-state-on-active)"><circle r="10" fill="var(--color-state-active)" opacity="0.2"/><circle r="4.5" fill="var(--color-state-active)"/><g><rect x="-20.1" y="-38" width="40.2" height="26" rx="8" fill="var(--color-state-active-fill)"/><text x="0" y="-20" class="chip">turn</text><animateTransform attributeName="transform" type="translate" dur="8.936s" repeatCount="1" fill="freeze" calcMode="linear" keyTimes="0;0.61952;0.62698;0.63071;0.63444;0.63817;0.64936;0.78365;0.92167;0.95524;1" values="24.1 50;24.1 50;15.8 50;11.7 50;8.9 50;8.1 50;8.1 50;0 0;0 0;-24.1 0;-24.1 0"/></g><animate attributeName="opacity" dur="8.936s" repeatCount="1" fill="freeze" calcMode="discrete" keyTimes="0;0.61952;0.95524" values="0;1;0"/><animateMotion dur="8.936s" repeatCount="1" fill="freeze" calcMode="spline" keyTimes="0;0.61952;0.95524;1" keySplines="0 0 1 1;0 0 1 1;0 0 1 1" keyPoints="0;0;1;1"><mpath href="#p-2" xlink:href="#p-2"/></animateMotion></g>
 <g class="fl-pills"><g id="l-0" class="fl-edge"><g class="fl-pill"><rect x="217.6" y="58.5" width="41.7" height="18" rx="9" class="pill a6"/><text x="238.4" y="72.2" class="edgelabel a7">input</text></g></g><g id="l-1" class="fl-edge"><g class="fl-pill"><rect x="409.3" y="297" width="75.4" height="18" rx="9" class="pill a8"/><text x="447" y="310.7" class="edgelabel a9">JSON-RPC</text></g></g><g id="l-2" class="fl-edge"><g class="fl-pill"><rect x="619.3" y="472.5" width="120.5" height="18" rx="9" class="pill a10"/><text x="679.5" y="486.2" class="edgelabel a11">app-server request</text></g></g></g>
 </g>
 <g class="fl-still" transform="translate(14.8 0)">
 <g id="still-g-0" class="fl-group" data-id="system"><rect x="319.3" y="28" width="240" height="478" rx="8" class="frame-box fl-stroke "/><text x="337.3" y="47.4" class="frame">Saturn</text></g>
 
-<g id="still-n-0" class="fl-node fl-shape-person" tabindex="0" role="img" aria-label="Developer" data-id="user"><rect x="28" y="44.5" width="129.6" height="47" rx="8" fill="var(--color-ui-card)" class="fl-stroke sa0"/><g class="fl-symbol fl-symbol-concept"><g class="fl-icon" transform="translate(46 58) scale(0.83333)"><g transform="translate(0 0) scale(0.75)"><g color="#3d4856"><g transform="scale(0.6666666666666666)" stroke-linecap="round" stroke-linejoin="round"><circle cx="24" cy="12.5" r="9" fill="#528aee" stroke="none" stroke-width="2.4"/><circle cx="24" cy="12" r="6.7" fill="#639bfa" stroke="none" stroke-width="2.4"/><path d="M7 40C7 31 13 25 24 25C35 25 41 31 41 40Q41 44 37 44H11Q7 44 7 40Z" fill="#c9ddff" stroke="#9ebef0" stroke-width="3"/></g></g></g></g></g><text x="106.8" y="73.4" class="label" text-anchor="middle">Developer</text></g>
-<g id="still-n-1" class="fl-node fl-shape-box" tabindex="0" role="img" aria-label="Screen" data-id="tui"><rect x="359.3" y="128" width="176" height="109" rx="8" fill="var(--color-ui-card)" class="fl-stroke sa0"/><text x="447.3" y="156.9" class="label" text-anchor="middle">Screen</text><rect x="369.3" y="175" width="156" height="52" rx="6" fill="var(--color-ui-card)" opacity="0" class="fl-card sa2"/><g id="still-n-1-c0" opacity="0" visibility="hidden" class="fl-layer sa1"><rect x="377.3" y="184" width="30" height="14" rx="4" fill="var(--color-data-category-1)" fill-opacity="0.15"/><text x="392.3" y="195" class="tag" text-anchor="middle">YOU</text><text x="412.3" y="195.7" class="row">why does this test</text><text x="377.3" y="215.7" class="row">fail?</text></g></g>
-<g id="still-n-2" class="fl-node fl-shape-box" tabindex="0" role="img" aria-label="Engine" data-id="engine"><rect x="397.3" y="375" width="100" height="47" rx="8" fill="var(--color-ui-card)" class="fl-stroke sa0"/><text x="447.3" y="403.9" class="label" text-anchor="middle">Engine</text></g>
-<g id="still-n-3" class="fl-node fl-shape-external" tabindex="0" role="img" aria-label="Codex CLI" data-id="codex"><rect x="799.8" y="458.5" width="102.7" height="47" rx="8" fill="var(--color-ui-card)" class="fl-stroke ext sa0" stroke-dasharray="5 4"/><text x="851.1" y="487.4" class="label" text-anchor="middle">Codex CLI</text></g>
+<g id="still-n-0" class="fl-node fl-shape-person" tabindex="0" role="img" aria-label="Developer" data-id="user"><rect x="28" y="44.5" width="129.6" height="47" rx="8" class="fl-stroke sa0"/><g class="fl-symbol fl-symbol-concept"><g class="fl-icon" transform="translate(46 58) scale(0.83333)"><g transform="translate(0 0) scale(0.75)"><g color="#3d4856"><g transform="scale(0.6666666666666666)" stroke-linecap="round" stroke-linejoin="round"><circle cx="24" cy="12.5" r="9" fill="#528aee" stroke="none" stroke-width="2.4"/><circle cx="24" cy="12" r="6.7" fill="#639bfa" stroke="none" stroke-width="2.4"/><path d="M7 40C7 31 13 25 24 25C35 25 41 31 41 40Q41 44 37 44H11Q7 44 7 40Z" fill="#c9ddff" stroke="#9ebef0" stroke-width="3"/></g></g></g></g></g><text x="106.8" y="73.4" class="label" text-anchor="middle">Developer</text></g>
+<g id="still-n-1" class="fl-node fl-shape-box" tabindex="0" role="img" aria-label="Screen" data-id="tui"><rect x="359.3" y="128" width="176" height="109" rx="8" class="fl-stroke sa0"/><text x="447.3" y="156.9" class="label" text-anchor="middle">Screen</text><rect x="369.3" y="175" width="156" height="52" rx="6" opacity="0" class="fl-card sa2"/><g id="still-n-1-c0" opacity="0" visibility="hidden" class="fl-layer sa1"><rect x="377.3" y="184" width="30" height="14" rx="4" fill="var(--color-data-category-1)" fill-opacity="0.15"/><text x="392.3" y="195" class="tag" text-anchor="middle">YOU</text><text x="412.3" y="195.7" class="row">why does this test</text><text x="377.3" y="215.7" class="row">fail?</text></g></g>
+<g id="still-n-2" class="fl-node fl-shape-box" tabindex="0" role="img" aria-label="Engine" data-id="engine"><rect x="397.3" y="375" width="100" height="47" rx="8" class="fl-stroke sa0"/><text x="447.3" y="403.9" class="label" text-anchor="middle">Engine</text></g>
+<g id="still-n-3" class="fl-node fl-shape-external" tabindex="0" role="img" aria-label="Codex CLI" data-id="codex"><rect x="799.8" y="458.5" width="102.7" height="47" rx="8" class="fl-stroke ext sa0"/><text x="851.1" y="487.4" class="label" text-anchor="middle">Codex CLI</text></g>
 <g id="still-e-0" class="fl-edge "><defs><marker id="still-fl-arrow-0" viewBox="0 0 5 5" refX="4" refY="2.5" markerWidth="5" markerHeight="5" orient="auto-start-reverse" overflow="visible"><path class="fl-arrowhead" d="M 1.1 0.25 L 4 2.5 L 1.1 4.75 Z" stroke-width="1"/></marker></defs><path id="still-p-0" d="M 157.6 68 L 321.3 68 Q 343.3 68, 343.3 90 L 343.3 174.5 Q 343.3 182.5, 351.3 182.5 L 359.3 182.5" class="fl-path" marker-end="url(#still-fl-arrow-0)"/></g>
 <g id="still-e-1" class="fl-edge "><defs><marker id="still-fl-arrow-1" viewBox="0 0 5 5" refX="4" refY="2.5" markerWidth="5" markerHeight="5" orient="auto-start-reverse" overflow="visible"><path class="fl-arrowhead" d="M 1.1 0.25 L 4 2.5 L 1.1 4.75 Z" stroke-width="1"/></marker></defs><path id="still-p-1" d="M 447.3 237 L 447.3 375" class="fl-path" marker-end="url(#still-fl-arrow-1)"/></g>
 <g id="still-e-2" class="fl-edge "><defs><marker id="still-fl-arrow-2" viewBox="0 0 5 5" refX="4" refY="2.5" markerWidth="5" markerHeight="5" orient="auto-start-reverse" overflow="visible"><path class="fl-arrowhead" d="M 1.1 0.25 L 4 2.5 L 1.1 4.75 Z" stroke-width="1"/></marker></defs><path id="still-p-2" d="M 497.3 398.5 L 505.3 398.5 Q 513.3 398.5, 513.3 406.5 L 513.3 460 Q 513.3 482, 535.3 482 L 799.8 482" class="fl-path" marker-end="url(#still-fl-arrow-2)"/></g>
