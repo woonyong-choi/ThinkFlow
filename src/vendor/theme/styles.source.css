@@ -290,6 +290,8 @@ button.app-tooltip { padding: 0; background: none; color: var(--color-control-li
 .app-search-panel mark { background: var(--color-search-match); color: inherit; }
 .app-search-choice { display: inline-block; margin: var(--spacing-search-results-padding); padding: var(--spacing-gap-xs); border-radius: var(--radius-search-result-radius); color: var(--color-search-result-color); font-size: var(--text-small-text); text-decoration: none; }
 .app-suggestion-label { margin: var(--spacing-gap-sm) var(--spacing-search-results-padding) 0; color: var(--color-ui-muted); font-size: var(--text-small-text); }
+
+.app-search-result-link:not(:has(> .app-content-icon)), .app-search-entry:not(:has(.app-content-icon)) > .app-search-result-tags { padding-left: var(--spacing-search-results-padding); }
 /* 카드와 칩: 도움말 카드(변형 is-*), 지식 카드, 태그. 화면 모듈은 맥락 선택자로 배치만 바꾼다. */
 .app-help-card { position: relative; display: block; padding: var(--spacing-card-top) var(--spacing-card-right) var(--spacing-card-inset) var(--spacing-card-inset); color: var(--color-body); background: var(--color-help-bg); border: var(--border-width-thin) solid var(--color-help-border); border-radius: var(--radius-help-radius); line-height: var(--leading-line-card); }
 .app-help-card:hover { text-decoration: none; }

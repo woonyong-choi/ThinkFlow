@@ -149,7 +149,7 @@ export function Highlight({ text: source, query = '' }) {
 }
 /** 검색 결과의 링크 부분. 제목과 설명은 글자 또는 슬롯(`Highlight`)이다. */
 export function SearchResultLink({ href, icon, title, example = false, description }) {
-  return out(`<a class="app-search-result-link" href="${safeUrl(href)}">${slot(icon, 'icon')}<strong>${text(title)}</strong>${example ? '<span class="app-search-result-note"> 예시</span>' : ''}<p>${text(description)}</p></a>`);
+  return out(`<a class="app-search-result-link" href="${safeUrl(href)}">${icon === undefined ? '' : slot(icon, 'icon')}<strong>${text(title)}</strong>${example ? '<span class="app-search-result-note"> 예시</span>' : ''}<p>${text(description)}</p></a>`);
 }
 /** 검색 결과 한 줄. 서버 렌더와 브라우저 렌더가 같은 함수를 쓴다. */
 export function SearchResult({ href, icon, title, example = false, description, tags }) {
@@ -164,4 +164,9 @@ export function ProjectList({ title, projects }) {
     return `<article class="app-project-entry">${card}<div class="app-project-links">${related}</div></article>`;
   }).join('');
   return out(`<section class="app-knowledge-section"><div class="app-section-heading"><h2>${escape(title)}</h2></div><div class="app-project-grid">${entries}</div></section>`);
+}
+
+/** 검색 상태 안내와 선택 동작을 같은 중앙 정렬 영역에 둔다. */
+export function SearchMessage({ lines }) {
+  return out(`<div class="app-search-message"><p>${lines.map(line => escape(line)).join('<br>')}</p></div>`);
 }
