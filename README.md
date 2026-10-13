@@ -7,6 +7,8 @@
 
 # ThinkFlow
 
+Generated HTML uses the same light and dark logos as this README for its browser tab icon, including offline files.
+
 English | [한국어](README.ko.md)
 
 Turn one `.thinkflow` text source into an animated SVG figure for documentation: structure, sequences, states, schemas, classes, traces, and charts, with values that change as dots arrive.
