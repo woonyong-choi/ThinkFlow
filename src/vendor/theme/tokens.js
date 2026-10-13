@@ -431,14 +431,22 @@ export const tokens = freeze({
     "gallery-selected-ink": "var(--color-gallery-selected-ink)",
     "tag-background": "var(--color-tag-background)",
     "help-grouped-bg": "var(--color-help-grouped-bg)",
-    "document-nav-active-ink": "var(--color-document-nav-active-ink)"
+    "document-nav-active-ink": "var(--color-document-nav-active-ink)",
+    "workspace": {
+      "sidebar": "var(--color-workspace-sidebar)",
+      "document": "var(--color-workspace-document)",
+      "toolbar": "var(--color-workspace-toolbar)",
+      "hover": "var(--color-workspace-hover)",
+      "selected": "var(--color-workspace-selected)"
+    }
   },
   "font": {
     "sans": "var(--font-sans)",
     "mono": "var(--font-mono)",
     "figure-sans": "var(--font-figure-sans)",
     "figure-mono": "var(--font-figure-mono)",
-    "key-font": "var(--font-key-font)"
+    "key-font": "var(--font-key-font)",
+    "ui": "var(--font-ui)"
   },
   "spacing": {
     "1": "var(--spacing-1)",
@@ -676,7 +684,10 @@ export const tokens = freeze({
     "focus-offset": "var(--spacing-focus-offset)",
     "icon": "var(--spacing-icon)",
     "control": "var(--spacing-control)",
-    "newsletter-button-margin": "var(--spacing-newsletter-button-margin)"
+    "newsletter-button-margin": "var(--spacing-newsletter-button-margin)",
+    "tool-icon": "var(--spacing-tool-icon)",
+    "tool-target": "var(--spacing-tool-target)",
+    "toolbar": "var(--spacing-toolbar)"
   },
   "radius": {
     "lg": "var(--radius-lg)",
@@ -764,7 +775,8 @@ export const tokens = freeze({
     "figure-meta": "var(--text-figure-meta)",
     "landing-newsletter-note": "var(--text-landing-newsletter-note)",
     "newsletter-button-font": "var(--text-newsletter-button-font)",
-    "5xl": "var(--text-5xl)"
+    "5xl": "var(--text-5xl)",
+    "tool": "var(--text-tool)"
   },
   "leading": {
     "body-sm": "var(--leading-body-sm)",
@@ -1199,7 +1211,8 @@ export const tokens = freeze({
     "icon-sheet": "var(--primitive-icon-sheet)",
     "transparent": "var(--primitive-transparent)",
     "help-grouped-radius": "var(--primitive-help-grouped-radius)",
-    "tooltip-radius": "var(--primitive-tooltip-radius)"
+    "tooltip-radius": "var(--primitive-tooltip-radius)",
+    "ui-font": "var(--primitive-ui-font)"
   },
   "breakpoint": {
     "mobile": "var(--breakpoint-mobile)",
@@ -1829,14 +1842,22 @@ export const values = freeze({
     "gallery-selected-ink": "#ffffff",
     "tag-background": "#e9edf2",
     "help-grouped-bg": "rgba(0,0,0,0)",
-    "document-nav-active-ink": "#2576eb"
+    "document-nav-active-ink": "#2576eb",
+    "workspace": {
+      "sidebar": "#f4f4f4",
+      "document": "#ffffff",
+      "toolbar": "#f0f0f0",
+      "hover": "#e7e7e7",
+      "selected": "#c9c9c9"
+    }
   },
   "font": {
     "sans": "Pretendard, \"Pretendard Variable\", -apple-system, BlinkMacSystemFont, \"Apple SD Gothic Neo\", sans-serif",
     "mono": "\"JetBrains Mono\", ui-monospace, SFMono-Regular, Menlo, monospace",
     "figure-sans": "FigSans, FigSansSym, FigSansMath, ui-sans-serif, -apple-system, BlinkMacSystemFont, Roboto, sans-serif",
     "figure-mono": "FigMono, FigSans, FigSansSym, FigSansMath, ui-monospace, SFMono-Regular, Menlo, monospace",
-    "key-font": "ui-sans-serif, -apple-system, BlinkMacSystemFont, \"Apple Symbols\", Roboto, sans-serif"
+    "key-font": "ui-sans-serif, -apple-system, BlinkMacSystemFont, \"Apple Symbols\", Roboto, sans-serif",
+    "ui": "system-ui, -apple-system, BlinkMacSystemFont, sans-serif"
   },
   "spacing": {
     "1": 4,
@@ -2074,7 +2095,10 @@ export const values = freeze({
     "focus-offset": "calc(4px * 0.375)",
     "icon": 24,
     "control": 36,
-    "newsletter-button-margin": 4.24
+    "newsletter-button-margin": 4.24,
+    "tool-icon": 16,
+    "tool-target": 28,
+    "toolbar": 40
   },
   "radius": {
     "lg": 8,
@@ -2162,7 +2186,8 @@ export const values = freeze({
     "figure-meta": 11,
     "landing-newsletter-note": 15.2,
     "newsletter-button-font": 16.96,
-    "5xl": 48
+    "5xl": 48,
+    "tool": 13
   },
   "leading": {
     "body-sm": 1.43,
@@ -2597,7 +2622,8 @@ export const values = freeze({
     "icon-sheet": "#f9fafb",
     "transparent": "rgba(0,0,0,0)",
     "help-grouped-radius": 10,
-    "tooltip-radius": 24
+    "tooltip-radius": 24,
+    "ui-font": "system-ui, -apple-system, BlinkMacSystemFont, sans-serif"
   },
   "breakpoint": {
     "mobile": 560,
