@@ -38,10 +38,8 @@
     "religion": "종교 상징·성전·의례·신앙"
   },
   "aliases": {
-    "accessibility": "user-arms-spread",
     "admin": "user-settings",
     "administrator": "user-settings",
-    "agent": "robot",
     "analytics": "chart-line-data",
     "apigw": "gateway",
     "architecture": "hierarchy",
@@ -55,7 +53,6 @@
     "calendar-repeat": "calendar-arrow-repeat-all",
     "calendar-right": "calendar-check-out",
     "calendars": "calendar-multiple",
-    "cluster": "server-multiple",
     "cost": "coins",
     "data-structures": "graph",
     "db": "database",
@@ -86,7 +83,6 @@
     "privacy": "private",
     "processor": "cpu",
     "project-check": "progress-check",
-    "rag": "hybrid-search",
     "refactoring": "code-block",
     "refresh-right": "refresh",
     "region": "cloud-pin",
@@ -209,36 +205,56 @@
       "name": "things",
       "source": "https://culturedcode.com/things/",
       "notice": "licenses/things.txt",
-      "description": "홈 구독·후기 절의 원본 PNG 출처와 고지."
+      "description": "교체 전 구독·후기 PNG의 역사적 출처. Things 원본은 배포하지 않고 비교 전용으로 보존한다."
+    },
+    {
+      "name": "project-logos",
+      "description": "프로젝트·재단·제작자 원배포 기술 로고. 세부 출처와 권리는 brands 및 고지에서 확인한다.",
+      "notice": "licenses/project-logos.txt"
     }
   ],
   "brands": {
     "python": {
       "label": "Python",
-      "source": "https://raw.githubusercontent.com/devicons/devicon/v2.17.0/icons/python/python-original.svg",
-      "variant": "original",
-      "treatment": "flat blue/yellow; gradients and ground shadow removed",
-      "library": "devicon",
-      "version": "v2.17.0",
-      "license": "MIT"
+      "source": "https://raw.githubusercontent.com/python/cpython/main/PC/icons/logo.svg",
+      "variant": "CPython PC/icons/logo.svg flat mark",
+      "authority": "official",
+      "sourceSha256": "29517011c8b56c98377379b5f06bcd4a0ebdba9b0c928d65f87b77b177a69b03",
+      "library": "project-logos",
+      "license": "project-specific; see notice",
+      "treatment": "source geometry and palette retained; proportional optical sizing only",
+      "guide": "https://www.python.org/community/logos/",
+      "version": "unversioned distribution; selected SVG pinned by sourceSha256",
+      "sourceHashScope": "selected SVG bytes; not containing ZIP",
+      "retrievedOn": "2026-10-11"
     },
     "kotlin": {
       "label": "Kotlin",
-      "source": "https://raw.githubusercontent.com/devicons/devicon/v2.17.0/icons/kotlin/kotlin-plain.svg",
-      "variant": "plain",
-      "treatment": "theme-aware neutral monochrome; shape unchanged",
-      "library": "devicon",
-      "version": "v2.17.0",
-      "license": "MIT"
+      "source": "https://resources.jetbrains.com/storage/products/kotlin/docs/kotlin_logos.zip",
+      "variant": "Kotlin Ecosystem Logos/Kotlin/Primary/Kotlin icon.svg",
+      "authority": "official",
+      "sourceSha256": "d8028c48b8e1d20a6ebe7c19354dd1b48945e8721316cbacfd763bdc8decd7c2",
+      "library": "project-logos",
+      "license": "project-specific; see notice",
+      "treatment": "source geometry and palette retained; proportional optical sizing only; source gradient converted to 512 static paint steps for existing renderer",
+      "guide": "https://kotlinfoundation.org/guidelines/",
+      "version": "unversioned distribution; selected SVG pinned by sourceSha256",
+      "sourceHashScope": "selected SVG bytes; not containing ZIP",
+      "retrievedOn": "2026-10-11"
     },
     "csharp": {
       "label": "C#",
-      "source": "https://raw.githubusercontent.com/devicons/devicon/v2.17.0/icons/csharp/csharp-plain.svg",
-      "variant": "plain",
-      "treatment": "theme-aware neutral monochrome; shape unchanged",
-      "library": "devicon",
-      "version": "v2.17.0",
-      "license": "MIT"
+      "source": "https://raw.githubusercontent.com/dotnet/brand/main/logo/language-icons/csharp-72.svg",
+      "variant": "Microsoft .NET language icons",
+      "authority": "official",
+      "sourceSha256": "9316224a173d1723fe0c4d1cedb6aaca685e067b1a9e9b5b233dbd5fdbb77208",
+      "library": "project-logos",
+      "license": "project-specific; see notice",
+      "treatment": "source geometry and palette retained; proportional optical sizing only; source gradient converted to 512 static paint steps for existing renderer",
+      "guide": "https://github.com/dotnet/brand",
+      "version": "unversioned distribution; selected SVG pinned by sourceSha256",
+      "sourceHashScope": "selected SVG bytes; not containing ZIP",
+      "retrievedOn": "2026-10-11"
     },
     "rust": {
       "label": "Rust",
@@ -253,118 +269,171 @@
       "label": "Java",
       "source": "https://raw.githubusercontent.com/devicons/devicon/v2.17.0/icons/java/java-original.svg",
       "variant": "original",
-      "treatment": "source colors",
+      "treatment": "fitted to the same 38x38 optical box in the 48 grid",
       "library": "devicon",
       "version": "v2.17.0",
-      "license": "MIT"
+      "license": "MIT",
+      "retrievedOn": "2026-10-12"
     },
     "c": {
       "label": "C",
-      "source": "https://raw.githubusercontent.com/devicons/devicon/v2.17.0/icons/c/c-original.svg",
-      "variant": "original",
-      "treatment": "source colors",
-      "library": "devicon",
-      "version": "v2.17.0",
-      "license": "MIT"
+      "source": "https://www.c-language.org/logo.svg",
+      "variant": "C language homepage",
+      "authority": "language-project",
+      "sourceSha256": "a3229d3defc4eab0c1a426cc7714396a674fa3ec58a9f473a8833b941fb87e18",
+      "library": "project-logos",
+      "license": "project-specific; see notice",
+      "treatment": "source geometry and palette retained; proportional optical sizing only",
+      "guide": "https://www.c-language.org/",
+      "version": "unversioned distribution; selected SVG pinned by sourceSha256",
+      "sourceHashScope": "selected SVG bytes; not containing ZIP",
+      "retrievedOn": "2026-10-11"
     },
     "javascript": {
       "label": "JavaScript",
-      "source": "https://raw.githubusercontent.com/devicons/devicon/v2.17.0/icons/javascript/javascript-original.svg",
-      "variant": "original",
-      "treatment": "background removed; original monogram retained; theme-aware neutral monochrome",
-      "library": "devicon",
-      "version": "v2.17.0",
-      "license": "MIT"
+      "source": "https://raw.githubusercontent.com/voodootikigod/logo.js/master/js.svg",
+      "variant": "JSConf community logo by its authors",
+      "authority": "community-original",
+      "sourceSha256": "a70a3d8d36ea6b0e614a04ec30d5a4fb2bf36d515492cb84050ded2b84d14393",
+      "library": "project-logos",
+      "license": "project-specific; see notice",
+      "treatment": "source geometry and palette retained; proportional optical sizing only",
+      "guide": "https://github.com/voodootikigod/logo.js",
+      "version": "unversioned distribution; selected SVG pinned by sourceSha256",
+      "sourceHashScope": "selected SVG bytes; not containing ZIP",
+      "retrievedOn": "2026-10-11"
     },
     "typescript": {
       "label": "TypeScript",
-      "source": "https://raw.githubusercontent.com/devicons/devicon/v2.17.0/icons/typescript/typescript-original.svg",
-      "variant": "original",
-      "treatment": "background removed; original monogram retained; source blue; mask preserves monochrome",
-      "library": "devicon",
-      "version": "v2.17.0",
-      "license": "MIT"
+      "source": "https://www.typescriptlang.org/branding/typescript-design-assets.zip",
+      "variant": "ts-logo-128.svg",
+      "authority": "official",
+      "sourceSha256": "25e995fa85ae9ff6b5749f4ffeb21b2fe71d74e9b8d8db8eac4b9732cd9ef287",
+      "library": "project-logos",
+      "license": "project-specific; see notice",
+      "treatment": "source geometry and palette retained; proportional optical sizing only",
+      "guide": "https://www.typescriptlang.org/branding/",
+      "version": "unversioned distribution; selected SVG pinned by sourceSha256",
+      "sourceHashScope": "selected SVG bytes; not containing ZIP",
+      "retrievedOn": "2026-10-11"
     },
     "spring": {
       "label": "Spring",
-      "source": "https://raw.githubusercontent.com/devicons/devicon/v2.17.0/icons/spring/spring-original.svg",
-      "variant": "original",
-      "treatment": "source colors",
-      "library": "devicon",
-      "version": "v2.17.0",
-      "license": "MIT"
+      "source": "https://spring.io/img/spring.svg",
+      "variant": "official spring.io mark",
+      "treatment": "fitted to the same 38x38 optical box in the 48 grid; enclosed transparent counters filled white",
+      "library": "project-logos",
+      "version": "unversioned official website distribution; pinned by sourceSha256",
+      "license": "project-specific; see notice",
+      "guide": "https://spring.io/trademarks/",
+      "sourceSha256": "a8978d28bc1ea903f65195f1bc95d5d1b8dd3c45291bb0732a617740b9226d79",
+      "authority": "official",
+      "retrievedOn": "2026-10-12",
+      "sourceHashScope": "original SVG response bytes"
     },
     "react": {
       "label": "React",
       "source": "https://raw.githubusercontent.com/devicons/devicon/v2.17.0/icons/react/react-original.svg",
       "variant": "original",
-      "treatment": "source colors",
+      "treatment": "fitted to the same 38x38 optical box in the 48 grid; enclosed transparent counters filled white",
       "library": "devicon",
       "version": "v2.17.0",
-      "license": "MIT"
+      "license": "MIT",
+      "retrievedOn": "2026-10-12"
     },
     "nextjs": {
       "label": "Next.js",
-      "source": "https://raw.githubusercontent.com/devicons/devicon/v2.17.0/icons/nextjs/nextjs-plain.svg",
-      "variant": "plain",
-      "treatment": "theme-aware neutral monochrome; shape unchanged",
-      "library": "devicon",
-      "version": "v2.17.0",
-      "license": "MIT"
+      "source": "https://raw.githubusercontent.com/simple-icons/simple-icons/16.33.0/icons/nextdotjs.svg",
+      "variant": "single colour mark following text colour",
+      "treatment": "fitted to the same 38x38 optical box in the 48 grid",
+      "library": "simple-icons",
+      "version": "16.33.0",
+      "license": "CC0-1.0",
+      "retrievedOn": "2026-10-12"
     },
     "nodejs": {
       "label": "Node.js",
-      "source": "https://raw.githubusercontent.com/devicons/devicon/v2.17.0/icons/nodejs/nodejs-plain.svg",
-      "variant": "plain",
-      "treatment": "flat monochrome",
-      "library": "devicon",
-      "version": "v2.17.0",
-      "license": "MIT"
+      "source": "https://nodejs.org/static/logos/nodejsHex.svg",
+      "variant": "official Node.js Hex",
+      "treatment": "original silhouette, clipped faces and sRGB gradient stops retained; each linear gradient sampled into 512 static paint bands and clip paths expressed as masks for the existing renderer; proportional fit within the existing viewBox",
+      "library": "project-logos",
+      "version": "unversioned official website distribution; pinned by sourceSha256",
+      "license": "project-specific; see notice",
+      "guide": "https://nodejs.org/en/about/branding",
+      "sourceSha256": "e4c8de546b2462ad9497679c55609701144ffacd8e18ac17a7f7f7b795de9fe7",
+      "authority": "official",
+      "retrievedOn": "2026-10-12",
+      "sourceHashScope": "original SVG response bytes"
     },
     "docker": {
       "label": "Docker",
-      "source": "https://raw.githubusercontent.com/devicons/devicon/v2.17.0/icons/docker/docker-plain.svg",
-      "variant": "plain",
-      "treatment": "flat blue silhouette",
-      "library": "devicon",
-      "version": "v2.17.0",
-      "license": "MIT"
+      "source": "https://www.docker.com/static/Docker-Logos-1.zip",
+      "variant": "docker-logos/SVG/docker-mark-ocean-blue.svg",
+      "authority": "official",
+      "sourceSha256": "0fd7f9164de13672bb1708ac7cc401ed439eb938ffa7358d5cb278e107904687",
+      "library": "project-logos",
+      "license": "project-specific; see notice",
+      "treatment": "source geometry and palette retained; proportional optical sizing only",
+      "guide": "https://www.docker.com/company/newsroom/media-resources/",
+      "version": "unversioned distribution; selected SVG pinned by sourceSha256",
+      "sourceHashScope": "selected SVG bytes; not containing ZIP",
+      "retrievedOn": "2026-10-11"
     },
     "kubernetes": {
       "label": "Kubernetes",
-      "source": "https://raw.githubusercontent.com/devicons/devicon/v2.17.0/icons/kubernetes/kubernetes-original.svg",
-      "variant": "original",
-      "treatment": "background removed; original wheel retained; source blue",
-      "library": "devicon",
-      "version": "v2.17.0",
-      "license": "MIT"
+      "source": "https://raw.githubusercontent.com/cncf/artwork/main/projects/kubernetes/icon/color/kubernetes-icon-color.svg",
+      "variant": "CNCF Kubernetes color icon",
+      "authority": "official",
+      "sourceSha256": "ff5427cfeeff39e82834ab1b4fe3ed61fc08596225a17eed56adc04f7cc1f712",
+      "library": "project-logos",
+      "license": "project-specific; see notice",
+      "treatment": "source geometry and palette retained; proportional optical sizing only",
+      "guide": "https://github.com/cncf/artwork",
+      "version": "unversioned distribution; selected SVG pinned by sourceSha256",
+      "sourceHashScope": "selected SVG bytes; not containing ZIP",
+      "retrievedOn": "2026-10-11"
     },
     "postgresql": {
       "label": "PostgreSQL",
-      "source": "https://raw.githubusercontent.com/devicons/devicon/v2.17.0/icons/postgresql/postgresql-original.svg",
-      "variant": "original",
-      "treatment": "source blue on light surfaces; lighter blue on dark surfaces; original opaque white internal marks in color and negative space only in monochrome; black underlay removed",
-      "library": "devicon",
-      "version": "v2.17.0",
-      "license": "MIT"
+      "source": "https://wiki.postgresql.org/images/a/a4/PostgreSQL_logo.3colors.svg",
+      "variant": "PostgreSQL three-color elephant",
+      "authority": "official",
+      "sourceSha256": "51f93e19516081fc7d6fe6ab9bbab07abe5f7819e28016eefacea6dea691bc54",
+      "library": "project-logos",
+      "license": "project-specific; see notice",
+      "treatment": "source geometry and palette retained; proportional optical sizing only",
+      "guide": "https://wiki.postgresql.org/wiki/Logo",
+      "version": "unversioned distribution; selected SVG pinned by sourceSha256",
+      "sourceHashScope": "selected SVG bytes; not containing ZIP",
+      "retrievedOn": "2026-10-11"
     },
     "redis": {
       "label": "Redis",
-      "source": "https://raw.githubusercontent.com/devicons/devicon/v2.17.0/icons/redis/redis-original.svg",
-      "variant": "original",
-      "treatment": "original source colors and opaque white symbols in color; negative internal symbols and layer seams in monochrome",
-      "library": "devicon",
-      "version": "v2.17.0",
-      "license": "MIT"
+      "source": "https://raw.githubusercontent.com/redis/docs/main/static/images/redis-cube.svg",
+      "guide": "https://redis.io/company/news/",
+      "authority": "Redis Ltd.",
+      "variant": "documentation three-layer color cube",
+      "sourceSha256": "46b9de6d80f089580210f14d2c25f712ab90d831f94d96f67f22920ebccc015f",
+      "sourceHashScope": "original extracted SVG symbol for LinkedIn; downloaded selected SVG bytes otherwise",
+      "version": "unversioned official distribution pinned by sourceSha256",
+      "retrievedOn": "2026-10-11",
+      "library": "project-logos",
+      "license": "project-specific; see notice",
+      "treatment": "original symbol geometry and palette retained; proportional optical size and center; standalone symbol selected from lockup for NGINX and LinkedIn; monochrome cutouts supplied for existing rendering API"
     },
     "git": {
       "label": "Git",
-      "source": "https://raw.githubusercontent.com/devicons/devicon/v2.17.0/icons/git/git-original.svg",
-      "variant": "original",
-      "treatment": "source colors",
-      "library": "devicon",
-      "version": "v2.17.0",
-      "license": "MIT"
+      "source": "https://raw.githubusercontent.com/git/git-scm.com/gh-pages/static/images/logos/downloads/Git-Icon-1788C.svg",
+      "variant": "Git official icon by Jason Long",
+      "authority": "official",
+      "sourceSha256": "1080a5430edb6278dc03e4b04efc16c8bed5b943408d648ad721a28836814220",
+      "library": "project-logos",
+      "license": "project-specific; see notice",
+      "treatment": "source geometry and palette retained; proportional optical sizing only",
+      "guide": "https://git-scm.com/community/logos",
+      "version": "unversioned distribution; selected SVG pinned by sourceSha256",
+      "sourceHashScope": "selected SVG bytes; not containing ZIP",
+      "retrievedOn": "2026-10-11"
     },
     "linux": {
       "label": "Linux",
@@ -422,12 +491,19 @@
     },
     "github": {
       "label": "GitHub",
-      "source": "https://raw.githubusercontent.com/simple-icons/simple-icons/16.33.0/icons/github.svg",
-      "originalSource": "https://github.com/logos",
-      "library": "simple-icons",
-      "version": "16.33.0",
-      "license": "CC0-1.0",
-      "treatment": "neutral monochrome; currentColor added; shape unchanged"
+      "source": "https://brand.github.com/GitHub_Logos.zip",
+      "guide": "https://brand.github.com/foundations/logo",
+      "authority": "GitHub, Inc.",
+      "variant": "GitHub Logos/SVG/GitHub_Invertocat_Black.svg",
+      "sourceSha256": "693d7abe6f899646cc2e96856723b45e95f71885a54910b2749f6decdf7e1ee1",
+      "darkVariant": "GitHub Logos/SVG/GitHub_Invertocat_White.svg",
+      "darkSourceSha256": "ccd84c89b1056345608fc3489357f8acc7397e49a3cdc2d418b6c8016911d47b",
+      "sourceHashScope": "selected SVG bytes; not containing ZIP",
+      "version": "unversioned official distribution pinned by sourceSha256",
+      "retrievedOn": "2026-10-11",
+      "library": "project-logos",
+      "license": "project-specific; see notice",
+      "treatment": "official Invertocat geometry and proportions preserved; icon.brand.github selects the official black variant in light mode and white variant in dark mode; proportional optical size and center; the existing monochrome rendering API remains caller-controlled currentColor"
     },
     "githubactions": {
       "label": "GitHub Actions",
@@ -449,12 +525,14 @@
     },
     "go": {
       "label": "Go",
-      "source": "https://raw.githubusercontent.com/simple-icons/simple-icons/16.33.0/icons/go.svg",
+      "source": "https://go.dev/images/go-logo-blue.svg",
       "originalSource": "https://blog.golang.org/go-brand",
-      "library": "simple-icons",
+      "library": "project-logos",
       "version": "16.33.0",
-      "license": "CC0-1.0",
-      "treatment": "neutral monochrome; currentColor added; shape unchanged"
+      "license": "project-specific; see notice",
+      "treatment": "fitted to the same 38x38 optical box in the 48 grid; enclosed transparent counters filled white",
+      "variant": "official blue logo",
+      "retrievedOn": "2026-10-12"
     },
     "grafana": {
       "label": "Grafana",
@@ -480,9 +558,11 @@
       "originalSource": "https://apache.org/logos",
       "library": "simple-icons",
       "version": "16.33.0",
-      "license": "Apache-2.0",
-      "treatment": "neutral monochrome; currentColor added; shape unchanged",
-      "notice": "licenses/apache-2.0.txt"
+      "license": "CC0-1.0",
+      "treatment": "fitted to the same 38x38 optical box in the 48 grid",
+      "notice": "licenses/apache-2.0.txt",
+      "variant": "single colour mark following text colour",
+      "retrievedOn": "2026-10-12"
     },
     "mariadb": {
       "label": "MariaDB",
@@ -504,21 +584,28 @@
     },
     "mysql": {
       "label": "MySQL",
-      "source": "https://raw.githubusercontent.com/simple-icons/simple-icons/16.33.0/icons/mysql.svg",
+      "source": "https://raw.githubusercontent.com/devicons/devicon/v2.17.0/icons/mysql/mysql-original.svg",
       "originalSource": "https://www.mysql.com/about/legal/logos.html",
-      "library": "simple-icons",
-      "version": "16.33.0",
-      "license": "CC0-1.0",
-      "treatment": "original dolphin symbol isolated and enlarged within unchanged viewBox; theme-aware neutral monochrome"
+      "library": "devicon",
+      "version": "v2.17.0",
+      "license": "MIT",
+      "treatment": "fitted to the same 38x38 optical box in the 48 grid",
+      "variant": "original dolphin mark without wordmark",
+      "retrievedOn": "2026-10-12"
     },
     "nginx": {
       "label": "NGINX",
-      "source": "https://raw.githubusercontent.com/simple-icons/simple-icons/16.33.0/icons/nginx.svg",
-      "originalSource": "https://www.nginx.com/press/",
-      "library": "simple-icons",
-      "version": "16.33.0",
-      "license": "CC0-1.0",
-      "treatment": "brand green through a shared color token; white N on the original hexagon in color; original cutout in monochrome; geometry unchanged"
+      "source": "https://nginx.org/img/nginx_logo.svg",
+      "guide": "https://nginx.org/",
+      "authority": "F5 / NGINX",
+      "variant": "standalone N hexagon group from official logo lockup",
+      "sourceSha256": "9bd543826050ee506dd234f03fbbe972444bb20d9d4854ba7b0e1cf71ef28f07",
+      "sourceHashScope": "original extracted SVG symbol for LinkedIn; downloaded selected SVG bytes otherwise",
+      "version": "unversioned official distribution pinned by sourceSha256",
+      "retrievedOn": "2026-10-11",
+      "library": "project-logos",
+      "license": "project-specific; see notice",
+      "treatment": "original symbol geometry and palette retained; proportional optical size and center; standalone symbol selected from lockup for NGINX and LinkedIn; monochrome cutouts supplied for existing rendering API"
     },
     "prometheus": {
       "label": "Prometheus",
@@ -567,11 +654,107 @@
     },
     "linkedin": {
       "label": "LinkedIn",
-      "library": "bootstrap",
-      "source": "https://raw.githubusercontent.com/twbs/icons/v1.11.3/icons/linkedin.svg",
+      "source": "https://brand.linkedin.com/in-logo",
+      "guide": "https://brand.linkedin.com/in-logo",
+      "authority": "official",
+      "variant": "official website inbug-blue-28 symbol",
+      "sourceSha256": "2bb34f57bea13999acac6626af3f386feb70a0c1d50e22a2ac3fe6ce076c663c",
+      "sourceHashScope": "complete official symbol wrapped in an SVG viewport; raw symbol hash 95a45bb7b545d7874eea7be96eb6a3b0ece2094766d62fbf9fc327054ab37b28",
+      "version": "unversioned official website distribution; pinned by sourceSha256",
+      "retrievedOn": "2026-10-12",
+      "library": "project-logos",
+      "license": "project-specific; see notice",
+      "treatment": "complete official inbug-blue-28 compound path and #0a66c2 retained; source class expanded to fill, native transparent counters and proportional fit preserved; existing caller-controlled monochrome API is a compatibility rendering, not an official color variant"
+    },
+    "cplusplus": {
+      "label": "C++",
+      "source": "https://raw.githubusercontent.com/isocpp/logos/master/cpp_logo.svg",
+      "variant": "Standard C++ Foundation",
+      "authority": "official",
+      "sourceSha256": "7a16311bf5df3b6ec7e4f307d8a2ea339fbf8f03b68590a5372e4de72fc587c6",
+      "library": "project-logos",
+      "license": "project-specific; see notice",
+      "treatment": "source geometry and palette retained; proportional optical sizing only",
+      "guide": "https://isocpp.org/home/terms-of-use",
+      "version": "unversioned distribution; selected SVG pinned by sourceSha256",
+      "sourceHashScope": "selected SVG bytes; not containing ZIP",
+      "retrievedOn": "2026-10-11"
+    },
+    "fastapi": {
+      "label": "FastAPI",
+      "source": "https://raw.githubusercontent.com/devicons/devicon/v2.17.0/icons/fastapi/fastapi-original.svg",
+      "variant": "original",
+      "library": "devicon",
+      "treatment": "fitted to the same 38x38 optical box in the 48 grid; enclosed transparent counters filled white",
+      "version": "v2.17.0",
       "license": "MIT",
-      "version": "v1.11.3",
-      "treatment": "unmodified geometry"
+      "retrievedOn": "2026-10-12"
+    },
+    "dotnet": {
+      "label": ".NET",
+      "source": "https://raw.githubusercontent.com/dotnet/brand/main/logo/dotnet-logo.svg",
+      "variant": "official .NET logo",
+      "library": "project-logos",
+      "treatment": "fitted to the same 38x38 optical box in the 48 grid",
+      "license": "project-specific; see notice",
+      "retrievedOn": "2026-10-12"
+    },
+    "sqlite": {
+      "label": "SQLite",
+      "source": "https://raw.githubusercontent.com/simple-icons/simple-icons/16.33.0/icons/sqlite.svg",
+      "variant": "single colour mark in official feather blue #0F80CC",
+      "library": "simple-icons",
+      "treatment": "fitted to the same 38x38 optical box in the 48 grid",
+      "version": "16.33.0",
+      "license": "CC0-1.0",
+      "retrievedOn": "2026-10-12"
+    },
+    "airflow": {
+      "label": "Apache Airflow",
+      "source": "https://raw.githubusercontent.com/devicons/devicon/v2.17.0/icons/apacheairflow/apacheairflow-original.svg",
+      "variant": "original",
+      "library": "devicon",
+      "treatment": "fitted to the same 38x38 optical box in the 48 grid",
+      "version": "v2.17.0",
+      "license": "MIT",
+      "retrievedOn": "2026-10-12"
+    },
+    "dbt": {
+      "label": "dbt",
+      "source": "https://docs.getdbt.com/img/dbt-logo.svg",
+      "variant": "official logo, orange mark only",
+      "library": "project-logos",
+      "treatment": "fitted to the same 38x38 optical box in the 48 grid; enclosed transparent counters filled white",
+      "license": "project-specific; see notice",
+      "retrievedOn": "2026-10-12"
+    },
+    "spark": {
+      "label": "Apache Spark",
+      "source": "https://raw.githubusercontent.com/devicons/devicon/v2.17.0/icons/apachespark/apachespark-original.svg",
+      "variant": "original",
+      "library": "devicon",
+      "treatment": "fitted to the same 38x38 optical box in the 48 grid; enclosed transparent counters filled white",
+      "version": "v2.17.0",
+      "license": "MIT",
+      "retrievedOn": "2026-10-12"
+    },
+    "css": {
+      "label": "CSS",
+      "source": "https://raw.githubusercontent.com/CSS-Next/logo.css/main/css.svg",
+      "variant": "CSS working group community logo",
+      "library": "project-logos",
+      "treatment": "fitted to the same 38x38 optical box in the 48 grid",
+      "license": "project-specific; see notice",
+      "retrievedOn": "2026-10-12"
+    },
+    "html5": {
+      "label": "HTML5",
+      "source": "https://www.w3.org/html/logo/downloads/HTML5_Logo.svg",
+      "variant": "W3C HTML5 logo",
+      "library": "project-logos",
+      "treatment": "fitted to the same 38x38 optical box in the 48 grid",
+      "license": "project-specific; see notice",
+      "retrievedOn": "2026-10-12"
     }
   },
   "icons": {
@@ -623,7 +806,7 @@
     "box-up": {
       "file": "actions/box-up.svg",
       "category": "actions",
-      "label": "box up"
+      "label": "배포"
     },
     "cancel-circle-half-dot": {
       "file": "actions/cancel-circle-half-dot.svg",
@@ -1585,6 +1768,11 @@
       "category": "actions",
       "label": "honour star"
     },
+    "infinite-loop": {
+      "file": "actions/infinite-loop.svg",
+      "category": "actions",
+      "label": "CI/CD"
+    },
     "info-shield": {
       "file": "actions/info-shield.svg",
       "category": "actions",
@@ -2258,7 +2446,7 @@
     "search-mono": {
       "file": "actions/search-mono.svg",
       "category": "actions",
-      "label": "search mono"
+      "label": "search-mono"
     },
     "search-off": {
       "file": "actions/search-off.svg",
@@ -3160,6 +3348,31 @@
       "category": "actions",
       "label": "target"
     },
+    "test-e2e": {
+      "file": "actions/test-e2e.svg",
+      "category": "actions",
+      "label": "E2E 테스트"
+    },
+    "test-integration": {
+      "file": "actions/test-integration.svg",
+      "category": "actions",
+      "label": "통합 테스트"
+    },
+    "test-repeat": {
+      "file": "actions/test-repeat.svg",
+      "category": "actions",
+      "label": "테스트 자동화"
+    },
+    "test-run": {
+      "file": "actions/test-run.svg",
+      "category": "actions",
+      "label": "테스트"
+    },
+    "test-unit": {
+      "file": "actions/test-unit.svg",
+      "category": "actions",
+      "label": "단위 테스트"
+    },
     "tips": {
       "file": "actions/tips.svg",
       "category": "actions",
@@ -3375,6 +3588,21 @@
       "category": "actions",
       "label": "zoom"
     },
+    "agent": {
+      "file": "algorithms/agent.svg",
+      "category": "algorithms",
+      "label": "에이전트"
+    },
+    "ai-app": {
+      "file": "algorithms/ai-app.svg",
+      "category": "algorithms",
+      "label": "AI 애플리케이션"
+    },
+    "ai": {
+      "file": "algorithms/ai.svg",
+      "category": "algorithms",
+      "label": "AI"
+    },
     "algorithm-detail": {
       "file": "algorithms/algorithm-detail.svg",
       "category": "algorithms",
@@ -3383,7 +3611,7 @@
     "algorithm": {
       "file": "algorithms/algorithm.svg",
       "category": "algorithms",
-      "label": "알고리즘"
+      "label": "수학·CS 기초"
     },
     "bfs-detail": {
       "file": "algorithms/bfs-detail.svg",
@@ -3408,7 +3636,7 @@
     "brain-circuit": {
       "file": "algorithms/brain-circuit.svg",
       "category": "algorithms",
-      "label": "brain-circuit"
+      "label": "인공지능"
     },
     "brain-cognitive": {
       "file": "algorithms/brain-cognitive.svg",
@@ -3540,6 +3768,11 @@
       "category": "algorithms",
       "label": "iterations"
     },
+    "llm": {
+      "file": "algorithms/llm.svg",
+      "category": "algorithms",
+      "label": "LLM"
+    },
     "loop": {
       "file": "algorithms/loop.svg",
       "category": "algorithms",
@@ -3570,6 +3803,11 @@
       "category": "algorithms",
       "label": "병합 정렬"
     },
+    "model-cycle": {
+      "file": "algorithms/model-cycle.svg",
+      "category": "algorithms",
+      "label": "MLOps"
+    },
     "neural-network": {
       "file": "algorithms/neural-network.svg",
       "category": "algorithms",
@@ -3594,6 +3832,11 @@
       "file": "algorithms/quick-sort.svg",
       "category": "algorithms",
       "label": "퀵 정렬"
+    },
+    "rag": {
+      "file": "algorithms/rag.svg",
+      "category": "algorithms",
+      "label": "RAG"
     },
     "scheme": {
       "file": "algorithms/scheme.svg",
@@ -3694,6 +3937,11 @@
       "file": "algorithms/workflow.svg",
       "category": "algorithms",
       "label": "workflow"
+    },
+    "bell-curve": {
+      "file": "analytics/bell-curve.svg",
+      "category": "analytics",
+      "label": "확률과 통계"
     },
     "calculate": {
       "file": "analytics/calculate.svg",
@@ -4298,7 +4546,7 @@
     "gauge": {
       "file": "analytics/gauge.svg",
       "category": "analytics",
-      "label": "gauge"
+      "label": "성능"
     },
     "graph-arrow-decrease": {
       "file": "analytics/graph-arrow-decrease.svg",
@@ -4355,10 +4603,20 @@
       "category": "analytics",
       "label": "graph up"
     },
+    "growth-curve": {
+      "file": "analytics/growth-curve.svg",
+      "category": "analytics",
+      "label": "복잡도"
+    },
     "growth": {
       "file": "analytics/growth.svg",
       "category": "analytics",
       "label": "growth"
+    },
+    "heartbeat": {
+      "file": "analytics/heartbeat.svg",
+      "category": "analytics",
+      "label": "SRE"
     },
     "home-analytics": {
       "file": "analytics/home-analytics.svg",
@@ -4374,6 +4632,11 @@
       "file": "analytics/likert.svg",
       "category": "analytics",
       "label": "likert"
+    },
+    "load-stopwatch": {
+      "file": "analytics/load-stopwatch.svg",
+      "category": "analytics",
+      "label": "성능 테스트"
     },
     "market-analysis": {
       "file": "analytics/market-analysis.svg",
@@ -4544,6 +4807,11 @@
       "file": "backend-api/backend.svg",
       "category": "backend-api",
       "label": "백엔드"
+    },
+    "background-job": {
+      "file": "backend-api/background-job.svg",
+      "category": "backend-api",
+      "label": "백그라운드 작업"
     },
     "cloud-api": {
       "file": "backend-api/cloud-api.svg",
@@ -4920,6 +5188,11 @@
       "category": "backend-api",
       "label": "webhook"
     },
+    "airflow": {
+      "file": "brands/airflow.svg",
+      "category": "brands",
+      "label": "Apache Airflow"
+    },
     "ansible": {
       "file": "brands/ansible.svg",
       "category": "brands",
@@ -4975,10 +5248,25 @@
       "category": "brands",
       "label": "C#"
     },
+    "css": {
+      "file": "brands/css.svg",
+      "category": "brands",
+      "label": "CSS"
+    },
+    "dbt": {
+      "file": "brands/dbt.svg",
+      "category": "brands",
+      "label": "dbt"
+    },
     "docker": {
       "file": "brands/docker.svg",
       "category": "brands",
       "label": "Docker"
+    },
+    "dotnet": {
+      "file": "brands/dotnet.svg",
+      "category": "brands",
+      "label": ".NET"
     },
     "edge": {
       "file": "brands/edge.svg",
@@ -4989,6 +5277,11 @@
       "file": "brands/elasticsearch.svg",
       "category": "brands",
       "label": "Elasticsearch"
+    },
+    "fastapi": {
+      "file": "brands/fastapi.svg",
+      "category": "brands",
+      "label": "FastAPI"
     },
     "fiverr": {
       "file": "brands/fiverr.svg",
@@ -5049,6 +5342,11 @@
       "file": "brands/helm.svg",
       "category": "brands",
       "label": "Helm"
+    },
+    "html5": {
+      "file": "brands/html5.svg",
+      "category": "brands",
+      "label": "HTML5"
     },
     "hubot": {
       "file": "brands/hubot.svg",
@@ -5210,10 +5508,20 @@
       "category": "brands",
       "label": "slideshare"
     },
+    "spark": {
+      "file": "brands/spark.svg",
+      "category": "brands",
+      "label": "Apache Spark"
+    },
     "spring": {
       "file": "brands/spring.svg",
       "category": "brands",
       "label": "Spring"
+    },
+    "sqlite": {
+      "file": "brands/sqlite.svg",
+      "category": "brands",
+      "label": "SQLite"
     },
     "substack": {
       "file": "brands/substack.svg",
@@ -5333,7 +5641,7 @@
     "briefcase": {
       "file": "commerce/briefcase.svg",
       "category": "commerce",
-      "label": "briefcase"
+      "label": "이력·경력"
     },
     "building-bank-link": {
       "file": "commerce/building-bank-link.svg",
@@ -8885,6 +9193,11 @@
       "category": "communication",
       "label": "languages"
     },
+    "live-signal": {
+      "file": "communication/live-signal.svg",
+      "category": "communication",
+      "label": "실시간"
+    },
     "local-language-zi": {
       "file": "communication/local-language-zi.svg",
       "category": "communication",
@@ -9355,6 +9668,11 @@
       "category": "communication",
       "label": "mention"
     },
+    "message-send": {
+      "file": "communication/message-send.svg",
+      "category": "communication",
+      "label": "메시징"
+    },
     "messages-off": {
       "file": "communication/messages-off.svg",
       "category": "communication",
@@ -9584,6 +9902,11 @@
       "file": "communication/postcard.svg",
       "category": "communication",
       "label": "postcard"
+    },
+    "question-callout": {
+      "file": "communication/question-callout.svg",
+      "category": "communication",
+      "label": "질문 상자"
     },
     "quote-bubble": {
       "file": "communication/quote-bubble.svg",
@@ -9970,6 +10293,11 @@
       "category": "computer-architecture",
       "label": "chip 32"
     },
+    "chip-ai": {
+      "file": "computer-architecture/chip-ai.svg",
+      "category": "computer-architecture",
+      "label": "추론"
+    },
     "chip-flash": {
       "file": "computer-architecture/chip-flash.svg",
       "category": "computer-architecture",
@@ -10108,7 +10436,7 @@
     "cpu-detail": {
       "file": "computer-architecture/cpu-detail.svg",
       "category": "computer-architecture",
-      "label": "CPU"
+      "label": "컴퓨터 시스템"
     },
     "cpu-lightning": {
       "file": "computer-architecture/cpu-lightning.svg",
@@ -10128,7 +10456,7 @@
     "cpu": {
       "file": "computer-architecture/cpu.svg",
       "category": "computer-architecture",
-      "label": "CPU"
+      "label": "컴퓨터 시스템"
     },
     "data-representation-detail": {
       "file": "computer-architecture/data-representation-detail.svg",
@@ -10420,6 +10748,11 @@
       "category": "concurrency",
       "label": "마이크로태스크"
     },
+    "parallel": {
+      "file": "concurrency/parallel.svg",
+      "category": "concurrency",
+      "label": "동시성"
+    },
     "parallelism-detail": {
       "file": "concurrency/parallelism-detail.svg",
       "category": "concurrency",
@@ -10605,6 +10938,11 @@
       "category": "data-structures",
       "label": "균형 트리"
     },
+    "batch": {
+      "file": "data-structures/batch.svg",
+      "category": "data-structures",
+      "label": "배치 처리"
+    },
     "binary-tree-detail": {
       "file": "data-structures/binary-tree-detail.svg",
       "category": "data-structures",
@@ -10660,6 +10998,11 @@
       "category": "data-structures",
       "label": "이중 연결 리스트"
     },
+    "event-stream": {
+      "file": "data-structures/event-stream.svg",
+      "category": "data-structures",
+      "label": "스트림 처리"
+    },
     "file-queue-add": {
       "file": "data-structures/file-queue-add.svg",
       "category": "data-structures",
@@ -10674,6 +11017,11 @@
       "file": "data-structures/file-queue.svg",
       "category": "data-structures",
       "label": "file queue"
+    },
+    "funnel": {
+      "file": "data-structures/funnel.svg",
+      "category": "data-structures",
+      "label": "데이터 변환(ETL·ELT)"
     },
     "graph-detail": {
       "file": "data-structures/graph-detail.svg",
@@ -10744,6 +11092,11 @@
       "file": "data-structures/hierarchy-off.svg",
       "category": "data-structures",
       "label": "hierarchy off"
+    },
+    "lineage": {
+      "file": "data-structures/lineage.svg",
+      "category": "data-structures",
+      "label": "데이터 계보"
     },
     "linked-list-detail": {
       "file": "data-structures/linked-list-detail.svg",
@@ -10833,7 +11186,7 @@
     "queue-detail": {
       "file": "data-structures/queue-detail.svg",
       "category": "data-structures",
-      "label": "큐"
+      "label": "큐의 꺼내기"
     },
     "queue-list": {
       "file": "data-structures/queue-list.svg",
@@ -11080,6 +11433,11 @@
       "category": "databases",
       "label": "centralized"
     },
+    "change-capture": {
+      "file": "databases/change-capture.svg",
+      "category": "databases",
+      "label": "CDC"
+    },
     "cloud-database": {
       "file": "databases/cloud-database.svg",
       "category": "databases",
@@ -11140,6 +11498,11 @@
       "category": "databases",
       "label": "database backup"
     },
+    "database-bookmark": {
+      "file": "databases/database-bookmark.svg",
+      "category": "databases",
+      "label": "인덱스"
+    },
     "database-check": {
       "file": "databases/database-check.svg",
       "category": "databases",
@@ -11149,6 +11512,11 @@
       "file": "databases/database-close.svg",
       "category": "databases",
       "label": "database close"
+    },
+    "database-cluster": {
+      "file": "databases/database-cluster.svg",
+      "category": "databases",
+      "label": "분산 데이터베이스"
     },
     "database-detail": {
       "file": "databases/database-detail.svg",
@@ -11189,6 +11557,11 @@
       "file": "databases/database-import.svg",
       "category": "databases",
       "label": "database import"
+    },
+    "database-in": {
+      "file": "databases/database-in.svg",
+      "category": "databases",
+      "label": "데이터 수집"
     },
     "database-leak": {
       "file": "databases/database-leak.svg",
@@ -11265,6 +11638,11 @@
       "category": "databases",
       "label": "database share"
     },
+    "database-shield": {
+      "file": "databases/database-shield.svg",
+      "category": "databases",
+      "label": "데이터 거버넌스"
+    },
     "database-smile": {
       "file": "databases/database-smile.svg",
       "category": "databases",
@@ -11278,7 +11656,7 @@
     "database-star": {
       "file": "databases/database-star.svg",
       "category": "databases",
-      "label": "database star"
+      "label": "데이터 품질"
     },
     "database-switch": {
       "file": "databases/database-switch.svg",
@@ -11329,6 +11707,21 @@
       "file": "databases/dataset.svg",
       "category": "databases",
       "label": "데이터셋"
+    },
+    "document-store": {
+      "file": "databases/document-store.svg",
+      "category": "databases",
+      "label": "NoSQL"
+    },
+    "erd": {
+      "file": "databases/erd.svg",
+      "category": "databases",
+      "label": "데이터 모델링"
+    },
+    "feature-store": {
+      "file": "databases/feature-store.svg",
+      "category": "databases",
+      "label": "피처 스토어"
     },
     "file-database": {
       "file": "databases/file-database.svg",
@@ -11419,6 +11812,11 @@
       "file": "databases/query-engine.svg",
       "category": "databases",
       "label": "쿼리 엔진"
+    },
+    "query-plan": {
+      "file": "databases/query-plan.svg",
+      "category": "databases",
+      "label": "쿼리 최적화"
     },
     "query": {
       "file": "databases/query.svg",
@@ -11515,6 +11913,11 @@
       "category": "databases",
       "label": "SQL"
     },
+    "storage-engine": {
+      "file": "databases/storage-engine.svg",
+      "category": "databases",
+      "label": "스토리지 엔진"
+    },
     "table-alias": {
       "file": "databases/table-alias.svg",
       "category": "databases",
@@ -11544,6 +11947,16 @@
       "file": "databases/unique-constraint.svg",
       "category": "databases",
       "label": "유일성 제약"
+    },
+    "browser-bolt": {
+      "file": "devices/browser-bolt.svg",
+      "category": "devices",
+      "label": "웹 성능"
+    },
+    "browser-globe": {
+      "file": "devices/browser-globe.svg",
+      "category": "devices",
+      "label": "브라우저"
     },
     "cable": {
       "file": "devices/cable.svg",
@@ -11843,7 +12256,7 @@
     "desktop": {
       "file": "devices/desktop.svg",
       "category": "devices",
-      "label": "desktop"
+      "label": "데스크톱"
     },
     "device-question": {
       "file": "devices/device-question.svg",
@@ -12838,7 +13251,7 @@
     "phone-mobile": {
       "file": "devices/phone-mobile.svg",
       "category": "devices",
-      "label": "phone-mobile"
+      "label": "모바일"
     },
     "photo-sensor": {
       "file": "devices/photo-sensor.svg",
@@ -13613,7 +14026,7 @@
     "blueprint": {
       "file": "documents/blueprint.svg",
       "category": "documents",
-      "label": "blueprint"
+      "label": "소프트웨어 설계"
     },
     "book-a": {
       "file": "documents/book-a.svg",
@@ -14260,10 +14673,20 @@
       "category": "documents",
       "label": "clipboard"
     },
+    "contract-check": {
+      "file": "documents/contract-check.svg",
+      "category": "documents",
+      "label": "계약 테스트"
+    },
     "contracts": {
       "file": "documents/contracts.svg",
       "category": "documents",
       "label": "contracts"
+    },
+    "data-contract": {
+      "file": "documents/data-contract.svg",
+      "category": "documents",
+      "label": "데이터 계약"
     },
     "dictionary": {
       "file": "documents/dictionary.svg",
@@ -14284,6 +14707,16 @@
       "file": "documents/document-detail.svg",
       "category": "documents",
       "label": "문서"
+    },
+    "document-star": {
+      "file": "documents/document-star.svg",
+      "category": "documents",
+      "label": "모델 평가"
+    },
+    "document-tag": {
+      "file": "documents/document-tag.svg",
+      "category": "documents",
+      "label": "메타데이터"
     },
     "document": {
       "file": "documents/document.svg",
@@ -15038,12 +15471,12 @@
     "hierarchy-detail": {
       "file": "documents/hierarchy-detail.svg",
       "category": "documents",
-      "label": "계층"
+      "label": "소프트웨어 공학"
     },
     "hierarchy": {
       "file": "documents/hierarchy.svg",
       "category": "documents",
-      "label": "계층"
+      "label": "소프트웨어 공학"
     },
     "image-detail": {
       "file": "documents/image-detail.svg",
@@ -15518,7 +15951,7 @@
     "project": {
       "file": "documents/project.svg",
       "category": "documents",
-      "label": "project"
+      "label": "프로젝트"
     },
     "public-detail": {
       "file": "documents/public-detail.svg",
@@ -22180,6 +22613,11 @@
       "category": "files-io",
       "label": "open folder"
     },
+    "package-stack": {
+      "file": "files-io/package-stack.svg",
+      "category": "files-io",
+      "label": "의존성 관리"
+    },
     "path-detail": {
       "file": "files-io/path-detail.svg",
       "category": "files-io",
@@ -24983,17 +25421,17 @@
     "checkbox-check": {
       "file": "layout/checkbox-check.svg",
       "category": "layout",
-      "label": "checkbox check"
+      "label": "checkbox-check"
     },
     "checkbox-empty": {
       "file": "layout/checkbox-empty.svg",
       "category": "layout",
-      "label": "checkbox empty"
+      "label": "checkbox-empty"
     },
     "checkbox-indeterminate": {
       "file": "layout/checkbox-indeterminate.svg",
       "category": "layout",
-      "label": "checkbox indeterminate"
+      "label": "checkbox-indeterminate"
     },
     "checkbox-list-detail": {
       "file": "layout/checkbox-list-detail.svg",
@@ -25293,7 +25731,7 @@
     "components": {
       "file": "layout/components.svg",
       "category": "layout",
-      "label": "components"
+      "label": "컴포넌트"
     },
     "contract-down-left": {
       "file": "layout/contract-down-left.svg",
@@ -25778,7 +26216,7 @@
     "layout": {
       "file": "layout/layout.svg",
       "category": "layout",
-      "label": "layout"
+      "label": "프론트엔드"
     },
     "list-add": {
       "file": "layout/list-add.svg",
@@ -26839,6 +27277,11 @@
       "file": "layout/square-toggle.svg",
       "category": "layout",
       "label": "square toggle"
+    },
+    "step-list": {
+      "file": "layout/step-list.svg",
+      "category": "layout",
+      "label": "단계"
     },
     "tab-add": {
       "file": "layout/tab-add.svg",
@@ -29219,6 +29662,11 @@
       "file": "media/mic.svg",
       "category": "media",
       "label": "mic"
+    },
+    "microphone": {
+      "file": "media/microphone.svg",
+      "category": "media",
+      "label": "면접"
     },
     "midi-off": {
       "file": "media/midi-off.svg",
@@ -32868,7 +33316,7 @@
     "chevron-right": {
       "file": "navigation/chevron-right.svg",
       "category": "navigation",
-      "label": "chevron right"
+      "label": "chevron-right"
     },
     "chevron-up-left": {
       "file": "navigation/chevron-up-left.svg",
@@ -34395,6 +34843,11 @@
       "category": "networking",
       "label": "cloud add"
     },
+    "cloud-app": {
+      "file": "networking/cloud-app.svg",
+      "category": "networking",
+      "label": "SaaS"
+    },
     "cloud-bidirectional": {
       "file": "networking/cloud-bidirectional.svg",
       "category": "networking",
@@ -34473,7 +34926,7 @@
     "cloud-pin": {
       "file": "networking/cloud-pin.svg",
       "category": "networking",
-      "label": "cloud-pin"
+      "label": "리전"
     },
     "cloud-prohibited": {
       "file": "networking/cloud-prohibited.svg",
@@ -34543,7 +34996,12 @@
     "cloud": {
       "file": "networking/cloud.svg",
       "category": "networking",
-      "label": "cloud"
+      "label": "인프라·운영"
+    },
+    "cluster": {
+      "file": "networking/cluster.svg",
+      "category": "networking",
+      "label": "분산 시스템"
     },
     "connected": {
       "file": "networking/connected.svg",
@@ -34714,6 +35172,11 @@
       "file": "networking/load-balancer.svg",
       "category": "networking",
       "label": "로드 밸런서"
+    },
+    "mcp-plug": {
+      "file": "networking/mcp-plug.svg",
+      "category": "networking",
+      "label": "MCP"
     },
     "mobile-signal-five": {
       "file": "networking/mobile-signal-five.svg",
@@ -34888,7 +35351,7 @@
     "secured-network": {
       "file": "networking/secured-network.svg",
       "category": "networking",
-      "label": "secured-network"
+      "label": "보호된 네트워크 연결"
     },
     "security-wifi": {
       "file": "networking/security-wifi.svg",
@@ -35079,6 +35542,11 @@
       "file": "networking/virtual-network-toolbox.svg",
       "category": "networking",
       "label": "virtual network toolbox"
+    },
+    "web-globe": {
+      "file": "networking/web-globe.svg",
+      "category": "networking",
+      "label": "웹 기초"
     },
     "web": {
       "file": "networking/web.svg",
@@ -35434,6 +35902,11 @@
       "file": "objects/bucket.svg",
       "category": "objects",
       "label": "bucket"
+    },
+    "build-box": {
+      "file": "objects/build-box.svg",
+      "category": "objects",
+      "label": "빌드 도구"
     },
     "bulb-ai": {
       "file": "objects/bulb-ai.svg",
@@ -37263,12 +37736,12 @@
     "lock-detail": {
       "file": "operating-systems/lock-detail.svg",
       "category": "operating-systems",
-      "label": "잠금"
+      "label": "보안"
     },
     "lock": {
       "file": "operating-systems/lock.svg",
       "category": "operating-systems",
-      "label": "잠금"
+      "label": "보안"
     },
     "log": {
       "file": "operating-systems/log.svg",
@@ -37509,6 +37982,16 @@
       "file": "operating-systems/zsh.svg",
       "category": "operating-systems",
       "label": "zsh"
+    },
+    "accessibility": {
+      "file": "people/accessibility.svg",
+      "category": "people",
+      "label": "접근성"
+    },
+    "auth-card": {
+      "file": "people/auth-card.svg",
+      "category": "people",
+      "label": "인증"
     },
     "blush-brush": {
       "file": "people/blush-brush.svg",
@@ -39338,7 +39821,7 @@
     "user-settings": {
       "file": "people/user-settings.svg",
       "category": "people",
-      "label": "user-settings"
+      "label": "사용자 설정"
     },
     "user-share": {
       "file": "people/user-share.svg",
@@ -39478,7 +39961,7 @@
     "user": {
       "file": "people/user.svg",
       "category": "people",
-      "label": "user"
+      "label": "사용자"
     },
     "users-add": {
       "file": "people/users-add.svg",
@@ -39928,7 +40411,7 @@
     "building": {
       "file": "places/building.svg",
       "category": "places",
-      "label": "building"
+      "label": "회사(건물)"
     },
     "buildings-add": {
       "file": "places/buildings-add.svg",
@@ -41398,7 +41881,7 @@
     "warehouse": {
       "file": "places/warehouse.svg",
       "category": "places",
-      "label": "warehouse"
+      "label": "웨어하우스"
     },
     "windmill-off": {
       "file": "places/windmill-off.svg",
@@ -41608,7 +42091,7 @@
     "bug": {
       "file": "programming/bug.svg",
       "category": "programming",
-      "label": "bug"
+      "label": "문제 해결"
     },
     "build": {
       "file": "programming/build.svg",
@@ -41658,12 +42141,17 @@
     "code-block": {
       "file": "programming/code-block.svg",
       "category": "programming",
-      "label": "code-block"
+      "label": "빌드·구현"
     },
     "code-bracket": {
       "file": "programming/code-bracket.svg",
       "category": "programming",
       "label": "code bracket"
+    },
+    "code-cloud": {
+      "file": "programming/code-cloud.svg",
+      "category": "programming",
+      "label": "IaC"
     },
     "code-cs": {
       "file": "programming/code-cs.svg",
@@ -41733,7 +42221,7 @@
     "code-review": {
       "file": "programming/code-review.svg",
       "category": "programming",
-      "label": "code-review"
+      "label": "코드 리뷰"
     },
     "code-text-edit": {
       "file": "programming/code-text-edit.svg",
@@ -41783,7 +42271,7 @@
     "code": {
       "file": "programming/code.svg",
       "category": "programming",
-      "label": "코드"
+      "label": "프로그래밍 언어"
     },
     "codespaces": {
       "file": "programming/codespaces.svg",
@@ -41823,7 +42311,7 @@
     "cplusplus": {
       "file": "programming/cplusplus.svg",
       "category": "programming",
-      "label": "cplusplus"
+      "label": "C++"
     },
     "dependabot": {
       "file": "programming/dependabot.svg",
@@ -41834,6 +42322,11 @@
       "file": "programming/desktop-code.svg",
       "category": "programming",
       "label": "desktop code"
+    },
+    "dev-tools": {
+      "file": "programming/dev-tools.svg",
+      "category": "programming",
+      "label": "개발 도구"
     },
     "developer": {
       "file": "programming/developer.svg",
@@ -42043,12 +42536,12 @@
     "function-detail": {
       "file": "programming/function-detail.svg",
       "category": "programming",
-      "label": "함수"
+      "label": "두 인자의 함수 호출"
     },
     "function": {
       "file": "programming/function.svg",
       "category": "programming",
-      "label": "함수"
+      "label": "함수 호출"
     },
     "garbage-collection-detail": {
       "file": "programming/garbage-collection-detail.svg",
@@ -42645,6 +43138,11 @@
       "category": "programming",
       "label": "toml"
     },
+    "tool-call": {
+      "file": "programming/tool-call.svg",
+      "category": "programming",
+      "label": "도구 호출"
+    },
     "type-detail": {
       "file": "programming/type-detail.svg",
       "category": "programming",
@@ -43073,7 +43571,7 @@
     "flask": {
       "file": "science/flask.svg",
       "category": "science",
-      "label": "flask"
+      "label": "실험"
     },
     "formula": {
       "file": "science/formula.svg",
@@ -43349,6 +43847,11 @@
       "file": "science/math.svg",
       "category": "science",
       "label": "math"
+    },
+    "matrix": {
+      "file": "science/matrix.svg",
+      "category": "science",
+      "label": "선형대수"
     },
     "microscope-off": {
       "file": "science/microscope-off.svg",
@@ -43680,6 +44183,11 @@
       "category": "science",
       "label": "test tubes"
     },
+    "venn-two": {
+      "file": "science/venn-two.svg",
+      "category": "science",
+      "label": "이산수학"
+    },
     "weight-tilde": {
       "file": "science/weight-tilde.svg",
       "category": "science",
@@ -43694,6 +44202,11 @@
       "file": "science/x-variable.svg",
       "category": "science",
       "label": "x variable"
+    },
+    "ai-shield": {
+      "file": "security/ai-shield.svg",
+      "category": "security",
+      "label": "AI 안전"
     },
     "biohazard-off": {
       "file": "security/biohazard-off.svg",
@@ -43990,6 +44503,11 @@
       "category": "security",
       "label": "key generator fob"
     },
+    "key-lock": {
+      "file": "security/key-lock.svg",
+      "category": "security",
+      "label": "암호화"
+    },
     "key-multiple": {
       "file": "security/key-multiple.svg",
       "category": "security",
@@ -44013,7 +44531,7 @@
     "key": {
       "file": "security/key.svg",
       "category": "security",
-      "label": "key"
+      "label": "비밀값"
     },
     "keyhole": {
       "file": "security/keyhole.svg",
@@ -44250,6 +44768,11 @@
       "category": "security",
       "label": "no derivatives"
     },
+    "package-shield": {
+      "file": "security/package-shield.svg",
+      "category": "security",
+      "label": "공급망 보안"
+    },
     "passport-expired": {
       "file": "security/passport-expired.svg",
       "category": "security",
@@ -44330,6 +44853,11 @@
       "category": "security",
       "label": "prisoner"
     },
+    "privacy-eye": {
+      "file": "security/privacy-eye.svg",
+      "category": "security",
+      "label": "개인정보 보호"
+    },
     "prohibited-smoking": {
       "file": "security/prohibited-smoking.svg",
       "category": "security",
@@ -44374,6 +44902,11 @@
       "file": "security/radar.svg",
       "category": "security",
       "label": "radar"
+    },
+    "reliability-buoy": {
+      "file": "security/reliability-buoy.svg",
+      "category": "security",
+      "label": "신뢰성"
     },
     "reserved-line": {
       "file": "security/reserved-line.svg",
@@ -44448,7 +44981,7 @@
     "security": {
       "file": "security/security.svg",
       "category": "security",
-      "label": "security"
+      "label": "보안"
     },
     "shield-add": {
       "file": "security/shield-add.svg",
@@ -45980,6 +46513,11 @@
       "category": "symbols",
       "label": "burst"
     },
+    "caution": {
+      "file": "symbols/caution.svg",
+      "category": "symbols",
+      "label": "주의 상자"
+    },
     "ce-mark": {
       "file": "symbols/ce-mark.svg",
       "category": "symbols",
@@ -46360,6 +46898,11 @@
       "category": "symbols",
       "label": "cylinder"
     },
+    "danger": {
+      "file": "symbols/danger.svg",
+      "category": "symbols",
+      "label": "위험 상자"
+    },
     "delta": {
       "file": "symbols/delta.svg",
       "category": "symbols",
@@ -46414,6 +46957,11 @@
       "file": "symbols/eight.svg",
       "category": "symbols",
       "label": "eight"
+    },
+    "example-bulb": {
+      "file": "symbols/example-bulb.svg",
+      "category": "symbols",
+      "label": "예시 상자"
     },
     "favicon": {
       "file": "symbols/favicon.svg",
@@ -46545,6 +47093,11 @@
       "category": "symbols",
       "label": "icons"
     },
+    "incident-siren": {
+      "file": "symbols/incident-siren.svg",
+      "category": "symbols",
+      "label": "장애 대응"
+    },
     "inequality": {
       "file": "symbols/inequality.svg",
       "category": "symbols",
@@ -46624,6 +47177,11 @@
       "file": "symbols/nine.svg",
       "category": "symbols",
       "label": "nine"
+    },
+    "note-info": {
+      "file": "symbols/note-info.svg",
+      "category": "symbols",
+      "label": "참고 상자"
     },
     "octagon-danger": {
       "file": "symbols/octagon-danger.svg",
@@ -46930,6 +47488,11 @@
       "category": "symbols",
       "label": "teardrop bottom right"
     },
+    "threat-target": {
+      "file": "symbols/threat-target.svg",
+      "category": "symbols",
+      "label": "위협 모델링"
+    },
     "three": {
       "file": "symbols/three.svg",
       "category": "symbols",
@@ -47049,6 +47612,11 @@
       "file": "symbols/two.svg",
       "category": "symbols",
       "label": "two"
+    },
+    "type-tag": {
+      "file": "symbols/type-tag.svg",
+      "category": "symbols",
+      "label": "타입 시스템"
     },
     "x-line-top": {
       "file": "symbols/x-line-top.svg",
