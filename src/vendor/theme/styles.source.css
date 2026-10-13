@@ -500,7 +500,8 @@ button.app-tooltip { padding: 0; background: none; color: var(--color-control-li
 .app-device-screen img, .app-device-screen video { display: block; width: 100%; height: auto; aspect-ratio: var(--aspect-device-ratio); }
 .app-device-overlay { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
 .app-player { position: relative; }
-.app-player.is-initialized.is-hidden-until-played:not(.has-played) { visibility: hidden; overflow: hidden; height: 0; }
+.app-player.is-hidden-until-played:not(.has-played) { visibility: hidden; overflow: hidden; height: 0; }
+.app-project-showcase:target .app-player.is-hidden-until-played:not(.is-initialized) { visibility: visible; overflow: visible; height: auto; }
 .app-player video { display: block; }
 .app-video-error { display: block; padding: var(--spacing-gap-sm); color: var(--color-ui-muted); background: var(--color-ui-card); font-size: var(--text-small-text); }
 .app-player-button { position: absolute; top: 50%; left: 50%; width: var(--spacing-player-overlay); height: var(--spacing-player-overlay); min-width: var(--spacing-player-min); min-height: var(--spacing-player-min); padding: 0; border: 0; color: var(--color-control-link); background: transparent; transform: translate(-50%, -50%); opacity: var(--opacity-player-opacity); cursor: pointer; }
