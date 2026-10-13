@@ -222,12 +222,15 @@ button.app-tooltip { padding: 0; background: none; color: var(--color-control-li
 .app-newsletter-note { margin: var(--spacing-landing-panel-gap) 0; font-size: var(--text-landing-newsletter-note); text-align: left; color: var(--color-control-muted); }
 .app-newsletter-note a { color: inherit; text-decoration: underline; }
 /* 구독 버튼은 한글 대체 글꼴의 normal 행간에도 높이를 유지한다. */
-.app-newsletter button { margin-bottom: var(--spacing-newsletter-button-margin); padding: var(--component-newsletter-button-padding); font-size: var(--text-newsletter-button-font); font-weight: var(--font-weight-bold); line-height: var(--leading-newsletter-button-line); color: var(--color-ui-card); background: var(--color-newsletter-button-color); border: var(--border-width-thin) solid transparent; border-radius: var(--radius-newsletter-button-radius); }
+.app-newsletter button { margin-bottom: var(--spacing-newsletter-button-margin); padding: var(--component-newsletter-button-padding); font-size: var(--text-newsletter-button-font); font-weight: var(--font-weight-bold); line-height: var(--leading-newsletter-button-line); color: var(--color-control-paper); background: var(--color-newsletter-button-color); border: var(--border-width-thin) solid transparent; border-radius: var(--radius-newsletter-button-radius); }
 .app-newsletter button:hover { background: var(--color-primary-hover); box-shadow: var(--shadow-action-shadow); text-decoration: none; }
 .app-newsletter button:active { color: var(--color-feature-tab-ink); background: var(--color-feature-tab-selected); }
 .app-newsletter button:focus { outline: 0; box-shadow: var(--component-action-focus); }
-.app-newsletter :disabled { opacity: var(--opacity-landing-logo-opacity); cursor: default; }
-.app-newsletter button:disabled:hover { background: var(--color-newsletter-button-color); box-shadow: none; }
+.app-newsletter :disabled { opacity: 1; cursor: default; }
+.app-newsletter button:disabled, .app-newsletter button:disabled:hover { color: var(--color-body); background: var(--color-ui-line); box-shadow: none; }
+
+.app-newsletter-email { color: var(--color-body); }
+.app-newsletter-email::placeholder { color: var(--color-ui-muted); opacity: 1; }
 /* 아이콘 도형은 assets/icons에서 읽고 배치는 이 공통 조각에서 정한다. */
 .app-article-icon { display: inline-block; flex: none; width: var(--spacing-article-icon); height: var(--spacing-article-icon); }
 .app-control-icon { width: var(--icon-size-small); height: var(--icon-size-small); }
