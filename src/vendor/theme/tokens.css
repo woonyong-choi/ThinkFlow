@@ -1367,6 +1367,7 @@
   --color-syntax-comment: var(--color-ui-muted);
   --color-syntax-operator: var(--color-ink);
   --color-syntax-punctuation: var(--color-ink);
+  --color-canvas: var(--color-ui-card);
   --color-ui-card: var(--primitive-figure-dark-node);
   --color-ink: var(--color-gray-59);
   --color-ui-muted: var(--primitive-figure-dark-muted);
@@ -1378,6 +1379,7 @@
   --color-search-hover: var(--primitive-figure-dark-selection);
   --color-help-hover: var(--primitive-figure-dark-hover);
   --color-help-active: var(--color-figure-active-surface);
+  --color-landing-footer-ink: var(--color-ui-muted);
   --color-feature-tab-background: rgba(255, 255, 255, 0.12);
   --color-feature-tab-selected: var(--color-category-blue-dark-ink);
   --color-help-title-color: var(--color-ink);
@@ -1393,6 +1395,7 @@
   --color-prose-pre-background: var(--primitive-figure-dark-bg);
   --color-platform-hover: var(--color-control-hover);
   --color-platform-active: var(--color-feature-tab-background);
+  --color-search-message-color: var(--color-ui-muted);
   --color-related-background: var(--color-ui-card);
   --color-flow-ink-gray: var(--color-gray-933);
   --color-feature-tab-ink: var(--primitive-ink);
@@ -1503,6 +1506,7 @@
   --color-syntax-comment: var(--color-ui-muted);
   --color-syntax-operator: var(--color-ink);
   --color-syntax-punctuation: var(--color-ink);
+  --color-canvas: var(--color-ui-card);
   --color-ui-card: var(--primitive-figure-dark-node);
   --color-ink: var(--color-gray-59);
   --color-ui-muted: var(--primitive-figure-dark-muted);
@@ -1514,6 +1518,7 @@
   --color-search-hover: var(--primitive-figure-dark-selection);
   --color-help-hover: var(--primitive-figure-dark-hover);
   --color-help-active: var(--color-figure-active-surface);
+  --color-landing-footer-ink: var(--color-ui-muted);
   --color-feature-tab-background: rgba(255, 255, 255, 0.12);
   --color-feature-tab-selected: var(--color-category-blue-dark-ink);
   --color-help-title-color: var(--color-ink);
@@ -1529,6 +1534,7 @@
   --color-prose-pre-background: var(--primitive-figure-dark-bg);
   --color-platform-hover: var(--color-control-hover);
   --color-platform-active: var(--color-feature-tab-background);
+  --color-search-message-color: var(--color-ui-muted);
   --color-related-background: var(--color-ui-card);
   --color-flow-ink-gray: var(--color-gray-933);
   --color-feature-tab-ink: var(--primitive-ink);
@@ -1638,6 +1644,7 @@
   --color-syntax-comment: var(--color-gray-635);
   --color-syntax-operator: var(--color-gray-878);
   --color-syntax-punctuation: var(--color-gray-878);
+  --color-canvas: var(--primitive-canvas);
   --color-ui-card: var(--color-gray-0);
   --color-ink: var(--primitive-ink);
   --color-ui-muted: var(--primitive-muted);
@@ -1649,6 +1656,7 @@
   --color-search-hover: var(--primitive-search-hover);
   --color-help-hover: var(--primitive-help-hover);
   --color-help-active: var(--primitive-help-active);
+  --color-landing-footer-ink: var(--primitive-landing-footer-ink);
   --color-feature-tab-background: var(--primitive-feature-tab-background);
   --color-feature-tab-selected: var(--color-category-blue-anchor);
   --color-help-title-color: var(--primitive-help-title-color);
@@ -1664,6 +1672,7 @@
   --color-prose-pre-background: var(--primitive-help-bg);
   --color-platform-hover: var(--primitive-platform-hover);
   --color-platform-active: var(--primitive-platform-active);
+  --color-search-message-color: var(--primitive-search-message-color);
   --color-related-background: var(--primitive-blue-alpha-4);
   --color-flow-ink-gray: var(--color-gray-0);
   --color-feature-tab-ink: var(--color-control-paper);
