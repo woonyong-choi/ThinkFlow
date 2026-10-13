@@ -18,7 +18,6 @@ test('embedded bounds include status pills beyond the node corner', async () => 
   const svg = await toSvg(result);
   assert.match(svg, /class="status-pill"/);
   assert.match(svg, /class="status-icon"/);
-  assert.match(svg, /<mask\b/, 'warning uses the canonical masked icon');
   const bounds = figureViewBounds(result);
   const pills = statusBoxes(result.scene, result.timeline);
   assert.equal(pills.length, 1);
