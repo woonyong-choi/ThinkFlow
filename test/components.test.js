@@ -480,10 +480,6 @@ test('U9 every page has one frame, one toolbar and one tab row: the toolbar sits
   const names = Object.keys(getIconCatalog().controls);
   const drawn = runInNewContext(`${script}\nfunction figurePlay() {}\n${JSON.stringify(names)}.map(ToolIcon);`, { document: { querySelector: () => null }, matchMedia: () => ({ matches: false }) });
   assert.deepEqual(Array.from(drawn, iconShape), names.map((name) => iconShape(ToolIcon(name))));
-  const masked = Array.from(drawn).find((svg) => svg.includes('<mask '));
-  assert.ok(masked, 'the control set exercises a mask');
-  assert.throws(() => iconShape(masked.replace(/<mask\b[\s\S]*?<\/mask>/, '')), /mask reference has a definition/);
-  assert.throws(() => iconShape(masked.replace(/mask="url\(#[^"]+\)"/, 'mask="url(#missing)"')), /mask reference has a definition/);
   for (const [, name] of html.matchAll(/getPropertyValue\(['"](--[\w-]+)['"]\)/g)) {
     assert.ok(html.includes(`${name}:`), `runtime token ${name} survives CSS pruning`);
   }

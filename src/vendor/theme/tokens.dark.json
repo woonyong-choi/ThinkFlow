@@ -565,6 +565,10 @@
       "$value": "{color.ink}"
     },
     "brand": {
+      "github": {
+        "$type": "color",
+        "$value": "{color.gray.0}"
+      },
       "postgresql": {
         "$type": "color",
         "$value": "#6495bb"
