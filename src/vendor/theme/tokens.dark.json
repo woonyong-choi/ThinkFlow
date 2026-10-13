@@ -535,6 +535,28 @@
     "search-result-muted": {
       "$type": "color",
       "$value": "{color.ui-muted}"
+    },
+    "workspace": {
+      "sidebar": {
+        "$type": "color",
+        "$value": "{color.gray.878}"
+      },
+      "document": {
+        "$type": "color",
+        "$value": "{color.gray.910}"
+      },
+      "toolbar": {
+        "$type": "color",
+        "$value": "{color.gray.878}"
+      },
+      "hover": {
+        "$type": "color",
+        "$value": "{color.gray.788}"
+      },
+      "selected": {
+        "$type": "color",
+        "$value": "{color.gray.635}"
+      }
     }
   },
   "icon": {
