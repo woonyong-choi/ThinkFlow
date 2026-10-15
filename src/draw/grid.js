@@ -3,6 +3,7 @@ import { roundCoord as r, escapeXml } from '../text.js';
 import { values } from '@woonyong-choi/design-tokens/tokens.js';
 import { CORNER, rectOpen, gridBounds as blockOf } from './surface.js';
 import { drawTexts } from './texts.js';
+import { BRACE_W } from '../measure/sizes.js';
 
 // 칸 사각형 속성. 격자 왼쪽 위가 원점인 칸 자리에 도형 자리를 더한다.
 function boxOf(it, { x, y, w, h }) {
@@ -46,9 +47,54 @@ export function drawGridBody(it, { decorate, glyphs, index }) {
     const texts = cell.valueId ? '' : drawTexts(cell.texts, it, glyphs);
     if (cell.kind === 'gap') return `<g>${cellShape(it, cell, block)} class="grid-cell gap"/>${texts}</g>`;
     const key = `${it.id}.${cell.id}`;
-    return `<g class="fl-part" data-part="${escapeXml(key)}">${cellShape(it, cell, block)} class="grid-cell ${decorate('cell', 0, key)}"/>${texts}</g>`;
+    const shape = cell.isOpen ? openShape(it, cell) : cellShape(it, cell, block);
+    return `<g class="fl-part" data-part="${escapeXml(key)}">${shape} class="grid-cell ${decorate('cell', 0, key)}"/>${texts}</g>`;
   });
-  return tray + empties + cells.join('');
+  return tray + empties + cells.join('') + (it.rulerUnit === undefined ? '' : drawFrame(it, block) + (it.braces ?? []).map((b) => drawBrace(it, b)).join(''));
+}
+
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+// 길이가 정해지지 않은 칸(`open`)의 윤곽: 아랫변이 없다. 면은 닫힌 칸과 같고 아랫변은 바이트 배치의 틀(drawFrame)이 점선으로 그린다.
+function openShape(it, cell) {
+  const [x, y] = [it.x + cell.x, it.y + cell.y];
+  return `<path d="M${r(x)} ${r(y + cell.h)}V${r(y)}H${r(x + cell.w)}V${r(y + cell.h)}"`;
+}
+
+// cost: time O(c), heap O(c), stack O(1)
+// vars: c = 칸 수
+// basis: estimate
+/**
+ * 바이트 배치(`unit=`)의 바깥 틀. 칸 사이 선보다 진한 선으로 배치 전체의 경계를 그려, 칸 구분과 배치의 끝을 다른 위계로 읽게 한다.
+ * 길이가 정해지지 않은 칸(`open`) 아래는 틀을 닫지 않고 점선으로 남겨 뒤로 이어진다는 표시로 쓴다.
+ */
+function drawFrame(it, block) {
+  const [left, top, right, bottom] = [it.x + block.left, it.y + block.top, it.x + block.right, it.y + block.bottom];
+  const radius = CORNER.inner;
+  const open = it.cells.filter((c) => c.isOpen && it.y + c.y + c.h >= bottom - 0.5).map((c) => [it.x + c.x, it.x + c.x + c.w]).sort((a, b) => a[0] - b[0]);
+  if (!open.length) return `${rectOpen({ x: left, y: top, w: right - left, h: bottom - top }, radius)} fill="none" class="chart-whisker"/>`;
+  // 위, 오른쪽, 왼쪽 변은 둥근 모서리로 잇고, 아랫변은 열린 칸을 뺀 구간만 실선이다.
+  const sides = `M${r(left)} ${r(bottom)}V${r(top + radius)}a${radius} ${radius} 0 0 1 ${radius} ${-radius}H${r(right - radius)}a${radius} ${radius} 0 0 1 ${radius} ${radius}V${r(bottom)}`;
+  const solid = [];
+  let from = left;
+  for (const [a, b] of open) {
+    if (a > from) solid.push(`M${r(from)} ${r(bottom)}H${r(a)}`);
+    from = Math.max(from, b);
+  }
+  if (from < right) solid.push(`M${r(from)} ${r(bottom)}H${r(right)}`);
+  const dashed = open.map(([a, b]) => `<line x1="${r(a)}" x2="${r(b)}" y1="${r(bottom)}" y2="${r(bottom)}" class="grid-cell empty"/>`).join('');
+  return `<path d="${sides}${solid.join('')}" fill="none" class="chart-whisker"/>${dashed}`;
+}
+
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+// 구간 괄호 하나(measure/sizes.js rulerParts가 정한 자리). 칸 묶음 오른쪽에서 구간의 위아래 끝을 잇고 가운데가 오른쪽으로 나온 중괄호다.
+function drawBrace(it, { x, y0, y1 }) {
+  const half = BRACE_W / 2;
+  const curl = Math.min(half, (y1 - y0) / 4);
+  const [left, mid] = [it.x + x, it.y + (y0 + y1) / 2];
+  const d = `M${r(left)} ${r(it.y + y0)}q${half} 0 ${half} ${curl}V${r(mid - curl)}q0 ${curl} ${half} ${curl}q${-half} 0 ${-half} ${curl}V${r(it.y + y1 - curl)}q0 ${curl} ${-half} ${curl}`;
+  return `<path d="${d}" fill="none" class="chart-whisker"/>`;
 }
 
 // cost: time O(e), heap O(e), stack O(1)
