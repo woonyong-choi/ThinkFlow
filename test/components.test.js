@@ -537,7 +537,7 @@ test('U10 색과 값이 없는 유실 장면도 유한한 사라짐 시간을 �
 
 
 test('hidden chip layout decisions do not depend on warning wording', async () => {
-  const result = await build(thinkflow('box a "A"\nbox b "B"\nbox c "C"\na -> b\nb -> c\nscene "s"\n  track a -> b -> c "message"'), { strict: false });
+  const result = await build(thinkflow('box a "A"\nbox b "B"\nbox c "C"\na -> b\nb -> c\nview graph down\nscene "s"\n  track a -> b -> c "message"'), { strict: false });
   const local = createProblems();
   const context = { scene: result.scene, timeline: result.timeline };
   checkChips(context, { ...local, warn: (line, message) => local.warn(line, message.replace(/moving text.*$/, '가려진 이동 글')) });

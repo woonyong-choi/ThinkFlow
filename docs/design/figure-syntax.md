@@ -707,8 +707,8 @@ scene "같은 시각에 요청한다" for=8s
 | 선언 | 테이블 블록 안 | `pk (열, ...)`, `unique (열, ...)`, `fk (열, ...) -> 테이블 (열, ...)` |
 | 시작 선언 | 문서 줄 | `thinkflow` |
 | 머리 | 문서 줄 | `title`, `subtitle`, `pace`, `aspect`, `width` |
-| 선언 | 문서 줄 | `person`, `box`, `external`, `store`, `decision`, `queue`, `state`, `group`, `grid`, `icons`, `value`, `on node id+N`, `start`, `final`, `table`, `api id "METHOD /url" {`, `class`, `interface`, `chart id "title" type ["subtitle"] {`, `trace id "title" [unit=ms] {`, `view graph|sequence|plot|time ["label"] [{]`, `a -> b` |
-| 선언 | 격자 블록 안 | `item`, `gap` |
+| 선언 | 문서 줄 | `person`, `box`, `external`, `store`, `decision`, `queue`, `state`, `group`, `grid`, `icons`, `value`, `on node id+N`, `start`, `final`, `table`, `api id "METHOD /url" {`, `class`, `interface`, `chart id "title" type ["subtitle"] {`, `trace id "title" [unit=ms] {`, `view graph|sequence|plot|time|timing ["label"] [{]`, `a -> b` |
+| 선언 | 격자 블록 안 | `item id "글" ["보조 글"]`, `gap`, `region "글" [row=N] [rows=N]` |
 | 선언 | 카드 본문 안 | `text`, `graph` |
 | 선언 | 클래스 블록 안 | `field`, `method` |
 | 선언 | 추적 블록 안 | `span` |
@@ -721,7 +721,7 @@ scene "같은 시각에 요청한다" for=8s
 | `fragment.times` | 양의 정수 |
 | `fragment.run` | `on`, `off` |
 | `group.direction` | `right`, `down` |
-| `group.border` | `solid`, `dashed` |
+| `group.dashed` | 값 없음(낱말만) |
 | `group.badge` | 글, 최대 8자 |
 | `group.icon` | 이름 또는 세트:이름 |
 | `group.tone` | `blue`, `yellow`, `red`, `green`, `orange`, `purple`, `cyan`, `gray` |
@@ -785,17 +785,21 @@ scene "같은 시각에 요청한다" for=8s
 | `series.key` | 글 |
 | `point.series` | 계열 이름 |
 | `trace.unit` | `ms`, `us`, `s` |
-| `span.lane` | 도형 이름 |
+| `span.lane` | 카드 이름 또는 "레인 이름" |
 | `span.at` | 0 이상 숫자 |
 | `span.dur` | 0보다 큰 숫자 |
 | `grid.rows` | 양의 정수 |
 | `grid.cols` | 양의 정수 |
+| `grid.unit` | 단위 이름(bit, byte 등) |
 | `item.key` | 글 |
+| `item.open` | 값 없음(낱말만) |
 | `item.row` | 0 이상 정수 |
 | `item.col` | 0 이상 정수 |
 | `item.rows` | 양의 정수 |
 | `item.cols` | 양의 정수 |
 | `gap.count` | 양의 정수 |
+| `region.row` | 0 이상 정수 |
+| `region.rows` | 양의 정수 |
 | `light.x` | 숫자 |
 | `column.pk` | 값 없음(낱말만) |
 | `column.unique` | 값 없음(낱말만) |
@@ -817,7 +821,7 @@ scene "같은 시각에 요청한다" for=8s
 | `histogramMeasure` | `bins.measure` | `count`, `probability`, `density` | `count` |
 | `fragmentRun` | `fragment.run` | `on`, `off` | 없음 |
 | `direction` | `group.direction` | `right`, `down` | `right` |
-| `viewStrategy` |  | `graph`, `sequence`, `plot`, `time` | 없음 |
+| `viewStrategy` |  | `graph`, `sequence`, `plot`, `time`, `timing` | 없음 |
 | `sceneMode` | `scene.mode` | `static`, `once`, `loop` | 줄이 있는 장면은 `once`, 줄이 없는 장면은 `static` |
 | `traceUnit` | `trace.unit` | `ms`, `us`, `s` | `ms` |
 | `scale` | `scale 값` | `linear`, `log` | `linear` |
@@ -829,7 +833,6 @@ scene "같은 시각에 요청한다" for=8s
 | `head` | `edge.head` | `end`, `both`, `none` | `end` |
 | `shape` | `box.shape` | `rect`, `circle`, `tile` | `rect` |
 | `width` | `width 값` | `standard`, `wide` | `standard` |
-| `border` | `group.border` | `solid`, `dashed` | `solid` |
 | `status` | `scene.status` | `ok`, `warn`, `fail`, `wait` | 없음 |
 | `deleteAction` | `foreignKey.ondelete` | `restrict`, `cascade`, `set-null`, `no-action` | 없음 |
 | `relation` | `relation.relation` | `association`, `dependency`, `inheritance`, `realization`, `aggregation`, `composition` | `association` |
