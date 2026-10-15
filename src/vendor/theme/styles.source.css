@@ -493,16 +493,16 @@ button.app-tooltip { padding: 0; background: none; color: var(--color-control-li
 .app-prose .katex-display { margin-block: 0; }
 .app-prose .katex-block, .app-prose .katex-display { overflow-x: auto; overflow-y: hidden; }
 .app-prose .katex-error { color: var(--color-ui-muted); text-decoration: underline dotted; }
-/* 미디어: 그림, 영상 플레이어, 기기 틀. 갤러리는 탭 구성 요소다. 본문 블록 폭(app-width-*)은 그림·도표·영상·탭(갤러리)·코드가 함께 쓰며 가로 여백(margin-inline)은 폭 규칙만 정한다. 블록 구성 요소는 세로 여백(margin-block)만 쓴다. */
+/* 미디어: 그림, 영상 플레이어, 기기 틀(토큰으로 그린 둥근 몸체와 화면). 갤러리는 탭 구성 요소다. 본문 블록 폭(app-width-*)은 그림·도표·영상·탭(갤러리)·코드가 함께 쓰며 가로 여백(margin-inline)은 폭 규칙만 정한다. 블록 구성 요소는 세로 여백(margin-block)만 쓴다. */
 .app-figure { margin-block: var(--spacing-gap-lg); text-align: center; }
 .app-figure img { width: 100%; border-radius: var(--radius-media-radius); }
 .app-figure figcaption { margin-top: var(--spacing-gap-sm); font-size: var(--text-small-text); color: var(--color-ui-muted); }
 .app-diagram { margin-inline: 0; }
 .app-width-narrow { max-width: var(--spacing-width-narrow); margin-inline: auto; }
 .app-width-wide { width: var(--component-width-wide); max-width: none; margin-inline: calc((100% - var(--component-width-wide)) / 2); }
-.app-device { position: relative; width: min(100%, var(--spacing-device-width)); margin: var(--spacing-gap) auto; background: url('./assets/bezel-iphone6-shadow-io80.png') center / 100% 100% no-repeat; }
-.app-device-screen { padding: var(--component-device-pad-top) var(--component-device-pad-inline) var(--component-device-pad-bottom); }
-.app-device-screen img, .app-device-screen video { display: block; width: 100%; height: auto; aspect-ratio: var(--aspect-device-ratio); }
+.app-device { position: relative; width: min(100%, var(--spacing-device-width)); margin: var(--spacing-gap) auto; border-radius: var(--radius-device-radius); background: var(--icon-device-case); }
+.app-device-screen { padding: var(--component-device-pad); }
+.app-device-screen img, .app-device-screen video { display: block; width: 100%; height: auto; aspect-ratio: var(--aspect-device-ratio); border-radius: var(--radius-device-screen-radius); }
 .app-device-overlay { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
 .app-player { position: relative; }
 .app-player.is-hidden-until-played:not(.has-played) { visibility: hidden; overflow: hidden; height: 0; }
