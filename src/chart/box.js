@@ -1,4 +1,4 @@
-// 상자 차트: 최소-최대 수염, q1-q3 상자, 가운데 값 선
+// 상자 차트: 최소-최대 수염(양끝 눈금), q1-q3 상자(주 계열의 옅은 면), 가운데 값 선(주 계열의 굵은 선)과 그 값 글자
 import { measure } from '../measure/fonts.js';
 import { VALUES } from '../source/grammar.js';
 import { escapeXml, roundCoord as r } from '../text.js';
@@ -8,6 +8,8 @@ import { COPY } from './copy.js';
 import { valueRange } from './extent.js';
 import { inkGroup, rowLabelLayout, rowName, valueText } from './labels.js';
 import { BAR, ROW, SPACE, TEXT } from './metrics.js';
+import { categoryPaint } from '../chart-palette.js';
+import { tokens } from '@woonyong-choi/design-tokens/tokens.js';
 import { valueFormat } from './scale.js';
 
 const BOX_KEYS = VALUES.chartType.items.box.valueKeys;
@@ -16,6 +18,9 @@ const BOX_NAMES = { min: '최솟값', q1: '제1사분위', median: '중앙값', 
 // 상자 높이(막대 두께의 두 배)와 q1과 q3가 같을 때도 보이는 최소 너비
 const BOX_H = BAR * 2;
 const BOX_MIN_W = SPACE["0-25"];
+// 중앙값 글자는 상자 위 한 줄에 중앙선 바로 오른쪽에서 시작한다. 글자 줄이 상자 위에 차지하는 높이와 중앙선에서 띄운 거리다.
+const LABEL_RISE = TEXT['11'] + SPACE["1"];
+const LABEL_SHIFT = SPACE["1"];
 // 값 글자 앞에 붙여 무엇의 값인지 알리는 글. 글자가 수염 끝 옆에 있어 최댓값으로 읽히기 때문이다.
 export const MEDIAN_LABEL = '중앙값';
 
@@ -42,7 +47,12 @@ function boxScale(chart) {
   const ruled = [...chart.rows.flatMap(presentOf), ...chart.rules.map((x) => x.value)];
   const texts = medianTexts(chart);
   const { min, max } = valueRange(ruled, chart.scale);
-  const reaches = () => chart.layout ? [] : chart.rows.map((row, k) => ({ value: tipOf(row) ?? min, extra: SPACE["1-5"] + measure(texts[k], TEXT['11'], 'num') }));
+  // 다섯 값이 있는 행의 값 글자는 중앙선 위에서 오른쪽으로, 빠진 값이 있는 행은 수염 끝 옆에 놓인다.
+  const reaches = () => chart.rows.flatMap((row, k) => {
+    const extra = measure(texts[k], TEXT['11'], 'num');
+    if (isComplete(row)) return [{ value: row.values.median, extra: LABEL_SHIFT + extra }];
+    return chart.layout ? [] : [{ value: tipOf(row) ?? min, extra: SPACE["1-5"] + extra }];
+  });
   return rowValueScale(chart, { kind: chart.scale, min, max, reaches });
 }
 
@@ -54,7 +64,8 @@ function boxRow(ctx, row, k) {
   const v = row.values;
   const name = rowName(row.label, { layout: labels, k, top, cy });
   const tip = tipOf(row);
-  const value = chart.layout ? { x: scale.start, cy: cy + BAR + SPACE["3"] } : { x: (tip === undefined ? scale.start : scale.at(tip)) + SPACE["1-5"], cy };
+  const besideTip = chart.layout ? { x: scale.start, cy: cy + BAR + SPACE["3"] } : { x: (tip === undefined ? scale.start : scale.at(tip)) + SPACE["1-5"], cy };
+  const value = isComplete(row) ? { x: scale.at(v.median) + LABEL_SHIFT, cy: cy - BAR - LABEL_RISE / 2 } : besideTip;
   const texts = inkGroup(k, name + valueText(value, text, 'chart-value late'));
   const guides = chart.layout ? drawRules(chart.rules, scale, { axis: 'x', from: cy - BAR, to: cy + BAR, labels: false }) : '';
   if (!isComplete(row)) {
@@ -63,10 +74,14 @@ function boxRow(ctx, row, k) {
     return `<g class="cr-${k}" role="img" aria-label="${escapeXml(`${row.label}: ${label}`)}"></g>${guides}${texts}`;
   }
   const [a, q1, m, q3, b] = [v.min, v.q1, v.median, v.q3, v.max].map(scale.at);
+  const paint = categoryPaint(0);
+  const whisker = `stroke="${tokens.color['ui-muted']}" stroke-width="${values["border-width"].thin}"`;
+  const cap = BAR / 2;
   return (
-    `<g class="cr-${k} pop"><line x1="${r(a)}" x2="${r(b)}" y1="${r(cy)}" y2="${r(cy)}" class="chart-whisker"/>` +
-    `<rect x="${r(q1)}" y="${r(cy - BAR)}" width="${r(Math.max(BOX_MIN_W, q3 - q1))}" height="${BOX_H}" rx="${values.radius.sm}" class="chart-box"/>` +
-    `<line x1="${r(m)}" x2="${r(m)}" y1="${r(cy - BAR)}" y2="${r(cy + BAR)}" class="chart-median"/></g>` +
+    `<g class="cr-${k} pop"><line x1="${r(a)}" x2="${r(b)}" y1="${r(cy)}" y2="${r(cy)}" ${whisker}/>` +
+    `<path d="M${r(a)} ${r(cy - cap)}v${cap * 2}M${r(b)} ${r(cy - cap)}v${cap * 2}" fill="none" ${whisker}/>` +
+    `<rect x="${r(q1)}" y="${r(cy - BAR)}" width="${r(Math.max(BOX_MIN_W, q3 - q1))}" height="${BOX_H}" rx="${values.radius.sm}" fill="${paint.tint}" stroke="${paint.fill}" stroke-width="${values["border-width"].thin}"/>` +
+    `<line x1="${r(m)}" x2="${r(m)}" y1="${r(cy - BAR)}" y2="${r(cy + BAR)}" stroke="${paint.border}" stroke-width="${values["border-width"].strong}"/></g>` +
     guides + texts
   );
 }
@@ -80,7 +95,7 @@ export function drawBoxes(figure, top) {
   const { scale } = boxScale(chart);
   const texts = medianTexts(chart);
   const labels = rowLabelLayout(chart);
-  const pitch = chart.layout ? labels.space + BOX_H + SPACE["3"] + TEXT['11'] + SPACE["5-5"] : ROW;
-  const parts = chart.rows.map((row, k) => boxRow({ chart, scale, labels, format, top: top + k * pitch, cy: top + k * pitch + (chart.layout ? labels.space + BAR : ROW / 2), text: texts[k] }, row, k));
+  const pitch = chart.layout ? labels.space + LABEL_RISE + BOX_H + SPACE["3"] + TEXT['11'] + SPACE["5-5"] : ROW + LABEL_RISE;
+  const parts = chart.rows.map((row, k) => boxRow({ chart, scale, labels, format, top: top + k * pitch, cy: top + k * pitch + (chart.layout ? labels.space + LABEL_RISE + BAR : LABEL_RISE + ROW / 2), text: texts[k] }, row, k));
   return finishRowChart(chart, { parts, scale, top, bottom: top + chart.rows.length * pitch });
 }
