@@ -1,6 +1,7 @@
 // 끝 이름: 선, 계단, 면적가 두 계열 이상이면 계열마다 이름을 그림 영역 오른쪽 한 줄 열에 직접 적고, 끝 점에서 이름까지 가는 선(안내선)을 긋는다.
 // 파랑과 보라, 빨강과 초록처럼 색각 이상에서 가까운 쌍이 첫 판 안에도 있으므로 색 수와 상관없이 쓴다.
 // 이름 상자의 크기(줄 수와 높이)는 계열 이름과 폭만으로 정해 모든 프레임이 같다. 그림 영역이 모든 이름 높이의 합만큼 자라므로 이름이 몇이든 겹치지 않고 글자를 줄이거나 숨기지 않는다.
+import { maxOf } from '../extremes.js';
 import { values } from '@woonyong-choi/design-tokens/tokens.js';
 import { STYLE } from '../measure/texts.js';
 import { measure, wrap } from '../measure/fonts.js';
@@ -31,7 +32,7 @@ const lineHeightOf = () => STYLE.meta.line;
 // 이름 한 줄의 최대 폭. 넓은 배치는 이름 칸 기준(size.chart.label), 좁은 배치는 그 절반이다. 가장 긴 이름이 이보다 짧으면 그 이름까지만 비운다.
 function labelWidth(chart, empty) {
   const cap = chart.layout ? SIZE.chart.label / 2 : SIZE.chart.label;
-  return Math.min(cap, Math.max(...chart.series.map((s, i) => measure(textOf(s, i, empty), TEXT['11']))));
+  return Math.min(cap, maxOf(chart.series.map((s, i) => measure(textOf(s, i, empty), TEXT['11']))));
 }
 
 // 이름 글: 값이 하나도 없는 계열은 뒤에 `COPY.noData`가 붙는다.

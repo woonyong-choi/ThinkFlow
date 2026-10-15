@@ -1,5 +1,6 @@
 // 차이 차트: 행마다 차이 값 점 하나와 신뢰구간 가로선. 0이 기준이라 음수와 모두 0인 값도 그린다.
 // 길이로 값을 보이는 막대와 달리 위치로 보이므로 0 시작 제약이 없고, 0 자리에 세로선을 긋는다.
+import { maxOf, minOf } from '../extremes.js';
 import { measure } from '../measure/fonts.js';
 import { roundCoord as r } from '../text.js';
 import { values } from '@woonyong-choi/design-tokens/tokens.js';
@@ -37,7 +38,7 @@ function differenceScale(chart, format) {
   const id = chart.series[0].id;
   const all = chart.rows.flatMap((row) => [row.values[id], row.values[`${id}.low`], row.values[`${id}.high`]]).filter((v) => v !== undefined);
   const ruled = [...all, ...chart.rules.map((x) => x.value)];
-  const [low, high] = [Math.min(0, ...ruled), Math.max(0, ...ruled)];
+  const [low, high] = [minOf(ruled, 0), maxOf(ruled, 0)];
   const margin = (high - low) * ZERO_MARGIN;
   const [min, max] = high === low ? [-FLAT_SPAN, FLAT_SPAN] : [low === 0 ? -margin : low, high === 0 ? margin : high];
   // 값 글자는 max(점 오른쪽 끝, 구간 끝) 뒤에 놓인다(differenceRow). 그 최댓값은 점과 구간 끝 가운데 하나라, 닿는 거리를 둘로 나누어 각각 잰다: 점은 반지름만큼 더 나가고 구간 끝은 나가지 않는다.

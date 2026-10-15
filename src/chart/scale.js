@@ -1,4 +1,5 @@
 // 차트 축 눈금, 숫자 표기, 바뀐 비율. 규칙은 docs/design/charts.md의 그리기 절이다.
+import { maxOf } from '../extremes.js';
 import { DECIMALS_MAX } from '../source/grammar.js';
 
 // cost: time O(1), heap O(1), stack O(1)
@@ -49,7 +50,7 @@ export const SHARE_PLACES = 1;
 /** 값 목록에 쓰인 가장 긴 소수 자릿수(상한 DECIMALS_MAX). 1000 이상 값은 k, M 표기라 세지 않는다. */
 function decimalPlaces(list) {
   const places = list.filter((v) => Math.abs(v) < 1000).map((v) => (String(Number(v.toPrecision(12))).split('e')[0].split('.')[1] ?? '').length);
-  return Math.min(DECIMALS_MAX, Math.max(0, ...places));
+  return Math.min(DECIMALS_MAX, maxOf(places, 0));
 }
 
 // cost: time O(n), heap O(1), stack O(1)

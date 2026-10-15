@@ -1,5 +1,6 @@
 // 값 글자 자리(slot)의 크기. 자리는 그 값이 모든 장면에서 가질 글의 실제 글꼴 폭으로 정하고, 글이 더해져 자리가 넓어지면 배치를 다시 한다.
 // 시간표의 값 글은 이동 시간에 기대고 이동 시간은 배치에 기대므로, 배치와 시간표를 되풀이하되 자리는 줄어들지 않고 횟수에 상한을 둔다(build-scene.js).
+import { maxOf } from './extremes.js';
 import { measure } from './measure/fonts.js';
 import { STYLE } from './measure/texts.js';
 
@@ -11,7 +12,7 @@ export const SLOT_ITERATIONS = 4;
 // basis: estimate
 /** 글 목록이 차지할 가장 넓은 폭(px). 값 글자 자리가 같은 글꼴과 같은 방식으로 잰다. */
 export function widestText(texts) {
-  return Math.max(0, ...[...texts].map((text) => measure(text, STYLE.value.size, STYLE.value.face)));
+  return maxOf(Array.from(texts, (text) => measure(text, STYLE.value.size, STYLE.value.face)), 0);
 }
 
 // cost: time O(v·n), heap O(v), stack O(1)

@@ -1,4 +1,5 @@
 // 표와 API의 열을 한 번 배치해 그리기, 연결점, 충돌 검사에 넘긴다. 열 줄의 글은 카드가 쓰는 text(measure/texts.js)다.
+import { maxOf } from '../extremes.js';
 import { columnKeyLabel, columnRules } from '../table.js';
 import { values } from '@woonyong-choi/design-tokens/tokens.js';
 import { INNER_MAX, PAD, headerOf, placeHeader } from './card.js';
@@ -51,7 +52,7 @@ function columnTexts(column, row, w, table) {
 export function tableLayout(node, { minWidth = 0 } = {}) {
   const draftRows = placeRows(node, 0);
   const drafts = node.columns.flatMap((column, k) => columnTexts(column, draftRows[k], 0, node));
-  const widest = (texts, role) => Math.max(0, ...texts.filter((t) => t.role === role).map(textWidth));
+  const widest = (texts, role) => maxOf(texts.filter((t) => t.role === role).map(textWidth), 0);
   const body = Math.max(widest(drafts, 'cell') + widest(drafts, 'cell type') + TYPE_GAP, widest(drafts, 'cell rule'));
   const header = headerOf(node, { room: Math.max(body, INNER_MAX) });
   const w = Math.max(values.spacing.figure.node["min-width"], Math.max(body, header.w) + PAD.x * 2, minWidth);

@@ -1,4 +1,5 @@
 // 히트맵: 행과 열 이름, 값에 비례한 칸 진하기, 칸 안 값
+import { maxOf } from '../extremes.js';
 import { pickInk } from '../contrast.js';
 import { roundToScale } from '../format.js';
 import { measure, wrap } from '../measure/fonts.js';
@@ -83,17 +84,17 @@ export function drawHeatmap(figure, top) {
   const cols = [...new Set(chart.rows.map((c) => c.col))];
   const format = valueFormat(chart.rows.map((c) => c.values.value), chart.decimals);
   const available = (chart.layout?.width ?? RIGHT + PAD) - PAD * 2;
-  const valueRoom = Math.max(...chart.rows.map((c) => measure(format(c.values.value), TEXT['11'], 'num'))) + SPACE["2"] + SPACE["0-5"];
+  const valueRoom = maxOf(chart.rows.map((c) => measure(format(c.values.value), TEXT['11'], 'num'))) + SPACE["2"] + SPACE["0-5"];
   // 좁은 폭에서 행 이름 칸은 가장 긴 행 이름이 한 줄로 들어갈 만큼만(기본 최소 너비 없이) 얻고 남는 폭은 열이 가져간다. 이름이 길어도 열과 같은 몫을 넘지 않는다.
-  const rowNeed = Math.max(...rows.map((row) => measure(row, TEXT['13'], 'regular'))) + SPACE["3"];
+  const rowNeed = maxOf(rows.map((row) => measure(row, TEXT['13'], 'regular'))) + SPACE["3"];
   const labelW = chart.layout ? Math.max(SPACE["3"] + TEXT['13'], Math.min(rowNeed, available / (cols.length + 1), available - cols.length * valueRoom)) : labelColumn(rows);
   const plotX = labelW + PAD;
   const cellW = (available - labelW + SPACE["0-5"]) / cols.length;
   const names = chart.layout ? { rows: rows.map((row) => wrap(row, labelW - SPACE["3"], { size: TEXT['13'], face: 'regular' })), cols: cols.map((col) => wrap(col, columnRoom(cellW), { size: TEXT['11'], face: 'num' })) } : undefined;
   const leading = values.leading.normal;
-  const headerH = names ? Math.max(...names.cols.map((lines) => lines.length)) * STYLE.meta.line : TEXT['11'];
-  const cellH = names ? Math.max(SIZE.chart.cell, Math.max(...names.rows.map((lines) => lines.length)) * TEXT['13'] * leading + SPACE["2"]) : SIZE.chart.cell;
-  const grid = { chart, rows, cols, plotX, cellW, cellH, names, top: top + headerH + SPACE["2"], max: Math.max(...chart.rows.map((c) => c.values.value)), format };
+  const headerH = names ? maxOf(names.cols.map((lines) => lines.length)) * STYLE.meta.line : TEXT['11'];
+  const cellH = names ? Math.max(SIZE.chart.cell, maxOf(names.rows.map((lines) => lines.length)) * TEXT['13'] * leading + SPACE["2"]) : SIZE.chart.cell;
+  const grid = { chart, rows, cols, plotX, cellW, cellH, names, top: top + headerH + SPACE["2"], max: maxOf(chart.rows.map((c) => c.values.value)), format };
   const parts = cols.map((c, j) => names ? matrixLabel(names.cols[j], { x: plotX + j * cellW + cellW / 2, cy: top + headerH / 2, size: TEXT['11'], className: 'chart-tick' }) : `<text x="${r(plotX + j * cellW + cellW / 2)}" y="${r(top + TEXT['11'])}" class="chart-tick">${renderRich(c)}</text>`);
   rows.forEach((row, i) => parts.push(names ? matrixLabel(names.rows[i], { x: PAD, cy: grid.top + i * cellH + cellH / 2, size: TEXT['13'], className: 'chart-label' }) : labelText(row, grid.top + i * cellH + cellH / 2, 'chart-label')));
   chart.rows.forEach((c, k) => parts.push(heatCell(grid, c, k)));

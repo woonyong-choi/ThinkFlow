@@ -1,4 +1,5 @@
 // 차트의 제목, 범례, 행 이름, 값 글자. 종류마다 같은 글자 규칙을 한 곳에 둔다.
+import { maxOf } from '../extremes.js';
 import { textMarkup } from '../draw/texts.js';
 import { measure, wrap } from '../measure/fonts.js';
 import { STYLE, stackTexts } from '../measure/texts.js';
@@ -22,7 +23,7 @@ const LABEL_ROOM = LABEL_MAX - LABEL_GAP;
 // basis: estimate
 /** 항목 이름 칸 너비. 가장 긴 이름에 맞추되 LABEL_W와 LABEL_MAX 사이다. 넘는 이름은 그림 검사 1번이 알린다. */
 export function labelColumn(names) {
-  return Math.min(LABEL_MAX, Math.max(LABEL_W, ...names.map((name) => measure(name, TEXT['13'], 'regular') + LABEL_GAP)));
+  return Math.min(LABEL_MAX, maxOf(names.map((name) => measure(name, TEXT['13'], 'regular') + LABEL_GAP), LABEL_W));
 }
 
 // cost: time O(n), heap O(1), stack O(1)
@@ -132,7 +133,7 @@ export function rowLabelLayout(chart) {
   if (!chart.layout) return { space: 0, right: PAD + labelColumn(chart.rows.map((row) => row.label)) - LABEL_GAP };
   const lines = chart.rows.map((row) => wrap(row.label, chart.layout.width - PAD * 2, { size: TEXT['13'], face: row.total ? 'semibold' : 'regular' }));
   const lineHeight = TEXT['13'] * values.leading.normal;
-  return { lines, lineHeight, space: Math.max(...lines.map((row) => row.length)) * lineHeight + SPACE["3"] };
+  return { lines, lineHeight, space: maxOf(lines.map((row) => row.length)) * lineHeight + SPACE["3"] };
 }
 
 // cost: time O(n), heap O(n), stack O(1)
