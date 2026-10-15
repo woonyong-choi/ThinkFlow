@@ -1,7 +1,7 @@
 // 갱신 펄스. 값이나 차트 표식이 바뀌거나 점이 도형에 닿은 시각(at)부터 400ms 동안 80ms 올라가고, 80ms 머물고, 240ms 내려온다. 재생 속도와 상관없이 화면 시간(ms)이다.
 // 같은 대상의 펄스가 겹치면 합하지 않고 가장 센 값을 쓴다(max). 앞 펄스를 뒤 펄스가 자르지 않는다. 시간표의 논리 시각은 펄스가 바꾸지 않는다.
 // 장면의 한 바퀴(표시 길이)는 마지막 펄스가 끝날 때까지 보여 준다: 컴파일러가 장면마다 한 번 정하고(timeline-marks.js presentationOf) 재생기와 SVG가 같은 값을 읽는다.
-import { values } from './vendor/theme/tokens.js';
+import { values } from '@woonyong-choi/design-tokens/tokens.js';
 
 /** 펄스 세 구간(화면 ms): 올라감, 머묾, 내려감. 토큰 duration.effect-rise, effect-hold, effect-decay다. */
 export const PULSE = Object.freeze({ rise: values.duration['effect-rise'], hold: values.duration['effect-hold'], fall: values.duration['effect-decay'] });

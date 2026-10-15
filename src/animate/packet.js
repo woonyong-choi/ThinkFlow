@@ -8,7 +8,7 @@ import { STYLE } from '../measure/texts.js';
 import { ratio } from '../format.js';
 import { renderRich, roundCoord as r } from '../text.js';
 import { toneColors } from '../tone.js';
-import { tokens, values } from '../vendor/theme/tokens.js';
+import { tokens, values } from '@woonyong-choi/design-tokens/tokens.js';
 
 const MOVE_SPLINE = keySpline(MOVE);
 const LINEAR = '0 0 1 1';

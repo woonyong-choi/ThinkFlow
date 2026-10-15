@@ -2,7 +2,7 @@
 // 시간표가 한 번 계산한 값(hop.gaps, hop.cut, hop.chipFade)을 SMIL로 옮기기만 한다.
 import { arrivalOffsetMs, MOVE, positionAt, timeAt } from '../easing.js';
 import { ratio } from '../format.js';
-import { values } from '../vendor/theme/tokens.js';
+import { values } from '@woonyong-choi/design-tokens/tokens.js';
 
 const CUT_FADE_MS = values.duration['cut-fade'];
 // 잘리는 점의 이동을 이동 곡선에서 재는 지점 수. 잘린 점은 곡선 일부만 지나 SMIL 곡선 하나로 그릴 수 없어 선형 구간으로 잇는다.

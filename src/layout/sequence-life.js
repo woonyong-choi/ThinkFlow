@@ -1,5 +1,5 @@
 // 생명선 구간과 활성 막대를 메시지의 실제 끝 위치에서 만든다.
-import { values } from '../vendor/theme/tokens.js';
+import { values } from '@woonyong-choi/design-tokens/tokens.js';
 
 const SPACE = values.spacing;
 const ACTIVATION_WIDTH =SPACE["3"];

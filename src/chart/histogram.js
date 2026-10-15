@@ -2,7 +2,7 @@
 // 구간마다 막대 칸이 하나씩 늘 있다(건수가 0이어도 길이 0인 막대). 이웃한 구간은 바탕이 드러나는 작은 틈으로 갈린다.
 import { histogramLabels, histogramMeasure, histogramValue } from '../histogram.js';
 import { escapeXml, roundCoord as r } from '../text.js';
-import { values } from '../vendor/theme/tokens.js';
+import { values } from '@woonyong-choi/design-tokens/tokens.js';
 import { drawRules } from './axis.js';
 import { markAttrs, markId } from './marks.js';
 import { SPACE, seriesFill, seriesOutline, seriesPaint } from './metrics.js';

@@ -38,8 +38,8 @@
 | 카드 본문(`text`, `value`, `graph`, `chart`)과 장면 내용(`show`) | `measure/content.js`의 `sizeContent`가 줄마다 태그, 표시, 본문, 관계 그래프 이름, 값을 text로 재고 `fitValueSlot`, `valueText`가 값 글을 재어 돌려준다 | `draw/content.js`의 `drawContent`와 `draw/values.js`는 잰 text를 `drawTexts`로 그리고 태그 알약, 그래프 도형만 따로 그린다 | `test/cards.test.js`(S8), `test/text.test.js`(T4) |
 | 차트와 시간 머리 | `chart/labels.js`의 `drawHeader`가 제목(`label`)과 부제(`sub`)를 `stackTexts`로 쌓고 높이를 정한다. 차트(`chart/draw.js`)와 시간 보기(`layout/time.js`)가 같은 함수다 | 같은 함수가 `textMarkup`으로 그린다. 긴 글은 `chart.layout.width`나 없으면 `WIDTH`에서 줄을 나눈다 | `test/text.test.js`(T10, T11) |
 | 연결선과 선 라벨 | 라벨 알약 크기 `measure/sizes.js`의 `sizePill`. 선 경로는 `layout/`이 정하고 건드리지 않는다 | `draw/connector.js`의 `drawEdge`, `drawEdgeLabel` | `test/components.test.js`(U6, U7) |
-| 화살촉 | `draw/arrow.js`의 `headReach`(선 끝이 차지하는 크기). 차트 산점도와 덤벨이 읽는다 | 모양은 `arrowMarker` 하나다. 연결선은 `draw/connector.js`가 `edgeMarker`(보통 화살표와 클래스 관계의 머리)로 선 묶음 안에 정의를 두고 묶음의 `color`를 상속한다. 차트 방향선은 종류가 `CHART_ARROW`로 색 역할을 고르고(덤벨 main, 산점도 muted), `chart/dumbbell.js`와 `chart/scatter.js`가 `roleArrow`의 class와 끝 표식을 달며, `styles.js`가 `roleArrowDefs`로 쓰인 역할마다 정의 하나를 문서에 한 번 둔다. 역할 색은 `src/vendor/theme/styles/diagram/chart.css`의 `.arrow-<역할>`이 한 번 정한다 | `test/components.test.js`(U7), `test/component-state.test.js` |
-| 켜짐과 평소의 모습 | 없음 | `src/vendor/theme/styles/diagram/figure.css`의 효과 한 벌(`--fx-*`)이 유일한 정의다. 정지 그림의 평소 규칙, HTML 재생기의 `.on` 규칙(`figure.css`, `src/vendor/theme/styles/diagram/player.css`), 움직이는 SVG의 keyframes(`animate/animator.js`, 속성 이름만 쓴다)가 같은 속성을 읽는다. 고른 색(`tone`, `appearance`)은 `draw/paint.js`가 평소 값(`--fx-face`, `--fx-edge-rest`)만 바꾼다. 차트의 글자 바탕과 받침 선은 차트 묶음(`.fl-chart`)의 `color`가 싣는 면의 색(`--chart-ground`, `src/vendor/theme/styles/diagram/chart.css`)을 `currentColor`로 읽고, 움직이는 SVG는 켜진 차트 카드에서 이 `color`만 켜짐 구간에 맞춰 바꾼다([차트](design/charts.md#그리기)) | `test/component-state.test.js`, `test/components.test.js`(U10). 둘은 선언을 읽는 시험이고 계산된 색은 Chrome에서 본 범위만 있다([표현 범위](design/expression-coverage.md#예제와-검증-범위)) |
+| 화살촉 | `draw/arrow.js`의 `headReach`(선 끝이 차지하는 크기). 차트 산점도와 덤벨이 읽는다 | 모양은 `arrowMarker` 하나다. 연결선은 `draw/connector.js`가 `edgeMarker`(보통 화살표와 클래스 관계의 머리)로 선 묶음 안에 정의를 두고 묶음의 `color`를 상속한다. 차트 방향선은 종류가 `CHART_ARROW`로 색 역할을 고르고(덤벨 main, 산점도 muted), `chart/dumbbell.js`와 `chart/scatter.js`가 `roleArrow`의 class와 끝 표식을 달며, `styles.js`가 `roleArrowDefs`로 쓰인 역할마다 정의 하나를 문서에 한 번 둔다. 역할 색은 `@woonyong-choi/design-tokens/styles/diagram/chart.css`의 `.arrow-<역할>`이 한 번 정한다 | `test/components.test.js`(U7), `test/component-state.test.js` |
+| 켜짐과 평소의 모습 | 없음 | `@woonyong-choi/design-tokens/styles/diagram/figure.css`의 효과 한 벌(`--fx-*`)이 유일한 정의다. 정지 그림의 평소 규칙, HTML 재생기의 `.on` 규칙(`figure.css`, `@woonyong-choi/design-tokens/styles/diagram/player.css`), 움직이는 SVG의 keyframes(`animate/animator.js`, 속성 이름만 쓴다)가 같은 속성을 읽는다. 고른 색(`tone`, `appearance`)은 `draw/paint.js`가 평소 값(`--fx-face`, `--fx-edge-rest`)만 바꾼다. 차트의 글자 바탕과 받침 선은 차트 묶음(`.fl-chart`)의 `color`가 싣는 면의 색(`--chart-ground`, `@woonyong-choi/design-tokens/styles/diagram/chart.css`)을 `currentColor`로 읽고, 움직이는 SVG는 켜진 차트 카드에서 이 `color`만 켜짐 구간에 맞춰 바꾼다([차트](design/charts.md#그리기)) | `test/component-state.test.js`, `test/components.test.js`(U10). 둘은 선언을 읽는 시험이고 계산된 색은 Chrome에서 본 범위만 있다([표현 범위](design/expression-coverage.md#예제와-검증-범위)) |
 | 아이콘 | `measure/decor.js`의 `layoutDecor`가 아이콘 칸 자리를 정한다 | 공통 SVG 원본과 `icons/index.js`의 `loadIcon`이 `iconData`를 만들고 `draw/decor.js`이 상자 머리, 그룹 탭, 타일에서 같은 도형을 그린다 | `test/components.test.js`(U8), `test/escaping.test.js`(I2, 사용자 SVG의 안전) |
 | 장면 탭과 도구 막대 | 없음 | 공통 `DiagramFrame`·`TabList`가 마크업을 만들고 `bindTabs`가 선택·키보드를 연결한다. ThinkFlow는 장면 재생만 연결한다 | `test/components.test.js`(U9), `test/exports.test.js`(X10, X11) |
 
@@ -77,12 +77,10 @@
 
 ### 공통 디자인 가져오기
 
-1. 공통 정본의 완성본을 `src/vendor/theme/`에 가져온다. 토큰 JSON·CSS·JS, 아이콘, 스타일, 탭·프레임과 해시 manifest가 하나의 배포본이다.
-2. `npm run design:sync -- <정본 경로>`는 원본과 기존 사본을 검증한 뒤 갱신한다. 소비자가 수정한 사본은 덮어쓰지 않는다.
-3. `npm run figures` 뒤 `npm test`, `npm run check`를 실행한다. ThinkFlow에서 토큰을 합치거나 다시 생성하지 않는다.
-4. `ci.yml`은 디자인 수신 브랜치의 push에도 일반 필수 검사와 같은 이름으로 전체 검사를 실행한다. `design-update.yml`은 그 실행이 성공했을 때만 같은 저장소·브랜치·커밋의 PR을 준비한다. 변경 범위와 현재 브랜치 HEAD를 다시 확인하고 사용자 자동화 자격이 설정된 경우에만 보호 규칙에 따라 병합한다. 오래된 실행은 최신 커밋을 병합하지 않는다. `sync-homepage.yml`은 같은 디자인과 고정된 렌더러 커밋을 홈페이지로 전달한다. 홈페이지 갱신 브랜치가 남아 있으면 main을 병합 기록으로 잇고 내용은 main에서 다시 만들어 병합되지 않은 이전 갱신과 충돌하지 않는다. 공개 문서·라이선스·고지가 바뀌어도 전달하며 렌더러 설치 뒤 홈페이지의 문서 수집기를 실행한다. 문서 사본과 버전·해시 목록을 같은 변경으로 커밋하므로 홈페이지 뷰어의 문서와 렌더러 버전이 일치한다.
-
-사용자 명의 자동 병합에는 이 저장소 범위의 `DESIGN_AUTOMATION_TOKEN`을 사용한다. fine-grained PAT의 Contents·Pull requests Read and write 권한이 필요하다. 등록되지 않으면 검증한 PR만 준비하며, 사용자 작성자가 아닌 PR은 인증 전환 뒤 사용자 작성 PR로 대체한다.
+1. 디자인은 `@woonyong-choi/design-tokens` 패키지다. `peerDependencies`(`^0.1.1` 같은 semver 범위)로 선언하므로 ThinkFlow를 설치한 앱이 고른 commit 하나를 그림도 읽는다. 홈페이지 같은 호스트의 그림은 호스트의 토큰·CSS·아이콘으로 그려진다.
+2. 이 저장소는 자체 시험·그림 생성을 위해 `devDependencies`에 `github:woonyong-choi/design-tokens#<commit>`을 고정한다. 코드는 패키지 이름으로 가져오고(`@woonyong-choi/design-tokens/ui/index.mjs`) 파일은 `createRequire(import.meta.url).resolve`로 찾는다. 저장소에 디자인 사본을 두지 않는다.
+3. 디자인을 올릴 때는 `npm install --save-dev github:woonyong-choi/design-tokens#<commit>` 뒤 `npm run figures`, `npm test`, `npm run check`를 실행해 PR로 반영한다. ThinkFlow에서 토큰을 합치거나 다시 생성하지 않는다.
+4. 다른 저장소로 파일을 밀어 넣는 자동 전달은 없다. 홈페이지는 자기 `package.json`에서 ThinkFlow와 디자인의 commit을 함께 고른다.
 
 ### 재생하기
 
@@ -112,12 +110,12 @@
 | 층 배치와 직교 경로 | elkjs(ELK layered) | 도형 크기, 연결점, 선 라벨 크기를 받아 겹치지 않게 배치한다. [결정 기록](decisions/2026-10-01-own-syntax-and-layout.md) |
 | 글꼴 | Pretendard, JetBrains Mono | 본문은 한글, 라틴, 기호, 숫자 모두 Pretendard 하나다. 참고 문서 페이지와 같은 글꼴이라 그림이 따로 놀지 않는다. 차트 숫자는 Pretendard의 자리 폭 같은 숫자(`tnum`)다. 고정폭 JetBrains Mono는 코드(백틱 구간, 테이블 열 타입)에만 쓰고 그 안 한글은 Pretendard로 이어 그린다. 굵기마다 정적 파일이 있는 `pretendard` 패키지로 받는다. 가변 글꼴이나 조각 나뉜 패키지보다 fontkit 측정과 subset-font 자르기가 한 파일에서 끝나서 고른다. 모두 SIL Open Font License라 그림에 넣을 수 있다. 글자 간격은 -0.3px다. |
 | 결과 형식 | SVG, HTML | SVG는 README와 설계 문서에 이미지로 들어가고, HTML은 미리보기와 목록 쪽에서 열린다. 둘 다 추가 프로그램이 필요 없다. |
-| 공통 디자인 | `src/vendor/theme/` | 웹과 도표가 같은 토큰·아이콘·탭을 조립한다. 사본은 해시로 검증하고 정본에서만 수정한다. |
+| 공통 디자인 | `@woonyong-choi/design-tokens`(peer 의존성) | 웹과 도표가 같은 토큰·아이콘·탭을 조립한다. 호스트 앱이 고른 한 벌을 읽고 정본에서만 수정한다. |
 | 실행 환경 | Node.js 20 이상 | elkjs와 글꼴 처리를 브라우저 없이 돌린다. |
 
 ## 소비자 API와 좁은 화면
 
-공개 API는 `buildFigure`, `toSvg`, `toHtml`이다. 홈페이지는 빌드 때 `buildFigure(source, { allowFileAccess: false })`로 문서에 포함된 도표를 만들고 `toHtml`의 결과를 저장한다. 이 옵션은 차트 data와 사용자 아이콘 폴더를 읽기 전에 거절한다. 브라우저는 완성된 HTML의 시간표만 재생한다. `thinkflow/design-manifest.json`은 소비자가 디자인 해시 일치를 검사하는 공개 계약이다.
+공개 API는 `buildFigure`, `toSvg`, `toHtml`이다. 홈페이지는 빌드 때 `buildFigure(source, { allowFileAccess: false })`로 문서에 포함된 도표를 만들고 `toHtml`의 결과를 저장한다. 이 옵션은 차트 data와 사용자 아이콘 폴더를 읽기 전에 거절한다. 브라우저는 완성된 HTML의 시간표만 재생한다. 그림은 호스트 앱이 설치한 `@woonyong-choi/design-tokens`를 읽으므로 디자인 해시를 따로 맞추지 않는다.
 
 `buildFigure`는 원본의 의미와 배치에서 시간표를 만들며, `reflowFigure`는 기존 시간표의 사건을 보존하고 그래프 보기의 새 배치에 경로만 대응하며, `chartWidth`가 있으면 차트를 그 폭 이하로 다시 그린다. `track-geometry.js`는 경로 기하만 계산하고 `reflow-timeline.js`는 중간 도착 시각을 유지하는 거리 비율을 만든다. 브라우저가 새 사건이나 값을 계산하지 않는 규칙은 같다. 자세한 계약은 [좁은 화면 배치](design/layout.md#좁은-화면을-위한-배치-목표-폭)에 있다.
 

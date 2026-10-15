@@ -1,5 +1,5 @@
 // 칸 격자의 칸 단위 연결점과 통로. 선이 칸의 어느 면에서 나가고 들어오는지, 안쪽 칸으로 가는 선이 어느 통로로 도는지를 격자 좌표(왼쪽 위가 원점)로 정한다(docs/design/grid.md 칸 단위 연결).
-import { values } from '../vendor/theme/tokens.js';
+import { values } from '@woonyong-choi/design-tokens/tokens.js';
 
 const SPACE = values.spacing;
 /** 통로 한 줄(선 하나가 지나는 줄) 사이 간격. 배치가 선 사이에 두는 간격(`elk.spacing.edgeEdge`)과 같은 값이다. */

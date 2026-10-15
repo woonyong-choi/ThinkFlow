@@ -4,7 +4,7 @@ import { createRequire } from 'node:module';
 import * as fontkit from 'fontkit';
 import subsetFont from 'subset-font';
 import { codeParts } from '../text.js';
-import { values } from '../vendor/theme/tokens.js';
+import { values } from '@woonyong-choi/design-tokens/tokens.js';
 
 const require = createRequire(import.meta.url);
 // 글자 사이 간격(px). 글자마다 더해지므로 글 폭에 글자 수만큼 곱해 더한다. 고정폭 글은 간격을 주지 않는다.

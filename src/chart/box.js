@@ -2,7 +2,7 @@
 import { measure } from '../measure/fonts.js';
 import { VALUES } from '../source/grammar.js';
 import { escapeXml, roundCoord as r } from '../text.js';
-import { values } from '../vendor/theme/tokens.js';
+import { values } from '@woonyong-choi/design-tokens/tokens.js';
 import { drawRules, finishRowChart, rowValueScale } from './axis.js';
 import { COPY } from './copy.js';
 import { valueRange } from './extent.js';

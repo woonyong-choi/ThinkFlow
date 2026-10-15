@@ -14,7 +14,7 @@ import { createGlyphSet, embedFonts } from './measure/fonts.js';
 import { STYLES, tokensFor, figureDefs, patternDefs } from './styles.js';
 import { WHOLE_CHART } from './timeline-charts.js';
 import { escapeXml, plainText, roundCoord as r } from './text.js';
-import { values } from './vendor/theme/tokens.js';
+import { values } from '@woonyong-choi/design-tokens/tokens.js';
 
 // cost: time O(g·b + b·h + out), heap O(out), stack O(1), io 1
 // vars: g = 켜고 끄는 요소 수, b = 박자 수, h = 박자의 이동 수, out = 만든 SVG 글자 수

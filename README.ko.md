@@ -218,7 +218,7 @@ npm run check:package -- /absolute/new-consumer-path
 
 패키지 검사는 저장소 밖의 새 폴더에 실제 tarball과 공개 런타임 의존성을 설치해 CLI·Markdown·API 출력을 확인합니다. 설치된 선언으로 TypeScript 소비자를 컴파일하고 실행하며 잘못된 호출의 거부도 확인합니다. 컴파일러는 개발 작업본에서만 사용합니다. 검사 폴더는 끝나면 지우며 npm 공개 레지스트리 접근이 필요합니다. 새 버전을 발행하는 명령은 아닙니다.
 
-공통 화면 값, CSS, 아이콘, 탭과 도구 막대는 `src/vendor/theme/`의 검증된 디자인 완성본을 사용합니다. 공개된 사본으로 빌드하므로 디자인 정본 저장소의 접근 권한은 필요하지 않습니다. 사본 변경은 전체 해시 검사와 그림 재생성을 통과한 PR로 반영합니다. 복제한 저장소에서는 `thinkflow` 대신 `node src/cli.js`를 실행하고, `npm run catalog`로 모든 예제와 원본, 목록을 `.local/examples/`에 만듭니다.
+공통 화면 값, CSS, 아이콘, 탭과 도구 막대는 `@woonyong-choi/design-tokens` 패키지를 사용합니다. peer 의존성이므로 ThinkFlow를 설치한 앱이 디자인 commit을 정하고 그림은 그 같은 디자인을 씁니다. 이 저장소는 자체 시험과 그림을 위해 `devDependencies`에 commit을 고정합니다. 디자인 갱신은 `npm install --save-dev github:woonyong-choi/design-tokens#<commit>`으로 고정 commit을 올리고 그림을 다시 만든 PR로 반영합니다. 디자인 없이 ThinkFlow만 쓰는 프로젝트는 둘을 함께 설치합니다: `npm install --save-dev github:woonyong-choi/design-tokens#<commit> github:woonyong-choi/thinkflow#<commit>`. 복제한 저장소에서는 `thinkflow` 대신 `node src/cli.js`를 실행하고, `npm run catalog`로 모든 예제와 원본, 목록을 `.local/examples/`에 만듭니다.
 
 브랜치, 커밋, PR 규칙은 [CONTRIBUTING](.github/CONTRIBUTING.md)에 있습니다.
 

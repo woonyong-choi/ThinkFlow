@@ -1,7 +1,7 @@
 // 도형 하나의 윤곽을 그린다. 원통, 갈림길, 원, 상태 점은 모양 자체가 뜻이라 여기서 따로 그리고, 나머지는 모두 카드(draw/card.js)다.
 // 이름과 내용은 draw/figure.js가 그린다.
 import { roundCoord as r } from '../text.js';
-import { tokens } from '../vendor/theme/tokens.js';
+import { tokens } from '@woonyong-choi/design-tokens/tokens.js';
 import { drawCard } from './card.js';
 import { surfaceOutline } from './surface.js';
 

@@ -2,7 +2,7 @@
 import { hasPill, placeGroupHead, sizePill } from '../measure/sizes.js';
 import { STYLE, allTexts, textSpan } from '../measure/texts.js';
 import { plainText } from '../text.js';
-import { values } from '../vendor/theme/tokens.js';
+import { values } from '@woonyong-choi/design-tokens/tokens.js';
 import { queueSlots } from '../measure/queue.js';
 import { contentBox } from './content.js';
 import { statusBoxes } from './status.js';

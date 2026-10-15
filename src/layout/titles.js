@@ -1,6 +1,6 @@
 // 그룹 제목 글의 가로 자리. 기본은 그룹 왼쪽 안쪽이고, 선이 그 자리를 지나면 선 오른쪽으로 비킨다(docs/design/layout.md 그룹).
 import { groupHead } from '../measure/sizes.js';
-import { values } from '../vendor/theme/tokens.js';
+import { values } from '@woonyong-choi/design-tokens/tokens.js';
 
 const SIZE = values.spacing.figure;
 /** 그룹 왼쪽 끝에서 제목 글까지 기본 거리 */

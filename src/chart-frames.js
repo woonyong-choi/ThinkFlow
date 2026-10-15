@@ -10,7 +10,7 @@ import { patternDefs } from './styles.js';
 import { checkRowValues, prepareChartRows } from './source/chart-rules.js';
 import { FigureError, createProblems, makeDiagnostic } from './source/problems.js';
 import { NUMBER_PATTERN } from './source/words.js';
-import { values } from './vendor/theme/tokens.js';
+import { values } from '@woonyong-choi/design-tokens/tokens.js';
 import { rootOf, valueTable } from './values.js';
 
 const COMPACT_WIDTH = values.spacing.figure.chart["compact-width"];

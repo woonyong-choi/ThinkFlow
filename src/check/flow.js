@@ -1,5 +1,5 @@
 // 14번: 흐름이 점을 그리고 점 수, 큐 값이 상한 안에 있다.
-import { values } from '../vendor/theme/tokens.js';
+import { values } from '@woonyong-choi/design-tokens/tokens.js';
 
 const DOTS_MAX = values.scale['flow-dots-max'];
 

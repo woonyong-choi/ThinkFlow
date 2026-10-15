@@ -7,7 +7,7 @@
 // 기본값 안의 괄호, 블록 주석 안의 중괄호, 여러 줄 템플릿 글자를 바르게 읽지 못한다. 항목을 없애려고 일관된 코드를 쪼개지 않는다.
 import { existsSync, readFileSync } from 'node:fs';
 import { extname } from 'node:path';
-import { iterFiles } from '../src/vendor/theme/ui/build/lib/walk-files.mjs';
+import { iterFiles } from '@woonyong-choi/design-tokens/ui/build/lib/walk-files.mjs';
 
 const USAGE = 'usage: check-size.mjs [--advisory] targets [targets ...]';
 const FILE_MAX = 300;

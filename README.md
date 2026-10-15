@@ -218,7 +218,7 @@ npm run check:package -- /absolute/new-consumer-path
 
 The package check creates a new directory outside the repository, installs the actual tarball with public runtime dependencies, and checks CLI, Markdown and API outputs. It also compiles and runs a TypeScript consumer against the installed declarations and rejects invalid calls. The compiler stays in the development checkout. The check removes its directory afterward and needs access to the public npm registry. It does not publish a release.
 
-Shared values, CSS, icons, tabs and toolbars come from the verified bundle in `src/vendor/theme/`. Builds use the committed public copy and do not require access to its source repository. Updates pass manifest checks and figure regeneration in a PR. In a clone, run `node src/cli.js` instead of `thinkflow`, and `npm run catalog` to render every example, its source and an index into `.local/examples/`.
+Shared values, CSS, icons, tabs and toolbars come from the `@woonyong-choi/design-tokens` package. It is a peer dependency: the app that installs ThinkFlow chooses the design commit, and figures use that same copy. This repository pins a commit in `devDependencies` for its own tests and figures; a design update bumps that pin with `npm install --save-dev github:woonyong-choi/design-tokens#<commit>`, regenerates figures, and goes through a PR. A project that uses ThinkFlow without a design installs both: `npm install --save-dev github:woonyong-choi/design-tokens#<commit> github:woonyong-choi/thinkflow#<commit>`. In a clone, run `node src/cli.js` instead of `thinkflow`, and `npm run catalog` to render every example, its source and an index into `.local/examples/`.
 
 See [CONTRIBUTING](.github/CONTRIBUTING.md) for branches, commits, and pull requests.
 

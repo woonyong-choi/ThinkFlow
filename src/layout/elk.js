@@ -2,7 +2,7 @@
 import { FIGURE_PAD } from '../canvas.js';
 import { groupTitleWidth, hasPill, isOnLinePill, sizePill } from '../measure/sizes.js';
 import { STYLE, textBlock } from '../measure/texts.js';
-import { values } from '../vendor/theme/tokens.js';
+import { values } from '@woonyong-choi/design-tokens/tokens.js';
 import { isInnerEdge } from './cell-ports.js';
 import { ROOT } from './model.js';
 import { isBodyShape, outerBox, spreadBodyPorts } from './ports.js';
