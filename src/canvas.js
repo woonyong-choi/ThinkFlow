@@ -28,8 +28,20 @@ export function tightView(width, height) {
 
 // cost: time O(1), heap O(1), stack O(1)
 // basis: estimate
-/** 그림의 캔버스 폭. `width wide`면 넓은 폭이고 생략하면 표준 폭이다. */
-export const canvasOf = (figure) => (figure?.width === 'wide' ? CANVAS_WIDE : CANVAS);
+/** 차트 보기 하나만 있는 그림의 캔버스 폭. 차트 그림 폭과 같아 문서 단 폭에서 줄지 않고 그대로 보인다. */
+export const CANVAS_CHART = values.spacing.figure.chart.width;
+
+// cost: time O(v), heap O(1), stack O(1)
+// vars: v = 보기 수
+// basis: estimate
+/** 보기가 모두 차트 보기(plot)나 시간 보기(time)인 그림인가. 이런 그림은 내용이 차트 폭이라 표준 캔버스로 넓히면 양옆이 비고 글자가 줄어든다. */
+export const isChartOnly = (figure) => Boolean(figure?.views?.length) && figure.views.every((v) => v.strategy === 'plot' || v.strategy === 'time');
+
+// cost: time O(v), heap O(1), stack O(1)
+// vars: v = 보기 수
+// basis: estimate
+/** 그림의 캔버스 폭. `width wide`면 넓은 폭, 차트 보기만 있으면 차트 폭, 그 밖에는 표준 폭이다. */
+export const canvasOf = (figure) => (figure?.width === 'wide' ? CANVAS_WIDE : isChartOnly(figure) ? CANVAS_CHART : CANVAS);
 
 // cost: time O(1), heap O(1), stack O(1)
 // basis: estimate
