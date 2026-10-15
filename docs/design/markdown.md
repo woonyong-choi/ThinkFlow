@@ -265,7 +265,7 @@ GitHub 마크다운은 ` ```thinkflow ` 블록을 코드로 보이고 아래 이
 
 ### README 로고의 출처
 
-[밝은 PNG](../assets/thinkflow-logo.png)와 [어두운 PNG](../assets/thinkflow-logo-dark.png)는 README와 생성 HTML 탭 아이콘이 공유하는 원본이다. 두 파일을 패키지에 포함하고 재생기·목록 HTML에 data URL로 내장한다. 로고를 갱신하면 기존 HTML을 다시 생성하고 실행 중인 렌더링 프로세스를 재시작한다.
+[밝은 PNG](../assets/thinkflow-logo.png)와 [어두운 PNG](../assets/thinkflow-logo-dark.png)는 README와 생성 HTML 탭 아이콘이 공유하는 원본이다. 두 파일을 패키지에 포함하고 재생기·목록 HTML에 data URL로 내장한다. 로고를 갱신하면 기존 HTML을 다시 생성하고 실행 중인 렌더링 프로세스를 재시작한다. 두 PNG의 출처·라이선스·해시는 [`docs/assets/sources.json`](../assets/sources.json)에 있다. 저장소의 자체 래스터 그림은 이 기록이 있어야 하고, 출처가 기록되지 않은 그림이나 Things 웹사이트(culturedcode.com)의 파일·파일 이름 형식은 두지 않는다. `test/asset-provenance.test.js`가 `npm test`에서 이를 검사하며 공통 디자인 사본(`src/vendor/theme`)의 출처는 design-tokens가 검사한다.
 
 밝은 PNG의 최초 저장소 반영은 [29254b5](https://github.com/woonyong-choi/thinkflow/commit/29254b5ee53c3cab0bab4cc6d021f713d0b59cbd)다. 현재 밝은 PNG와 어두운 PNG는 [1906d00](https://github.com/woonyong-choi/thinkflow/commit/1906d003b3f4102579ecdc22870d6833a8f2efd3)에 함께 반영된 파일이다. 이 Git 이력은 저장소에 들어온 파일을 식별하는 근거이며 원본 제작자나 참고 자산의 권리를 증명하지 않는다.
 
