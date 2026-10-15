@@ -57,8 +57,8 @@ test('paintCss supplies only used tone variables; the shared stylesheet owns app
   const rules = postcss.parse(css);
   assert.deepEqual(rules.nodes.map((rule) => rule.selector), ['.fl .tn-blue', '.fl .tn-green', '.fl .tn-red']);
   rules.walkDecls((declaration) => {
-    assert.match(declaration.prop, /^--paint-(fill|outline|ink)$/);
-    assert.match(declaration.value, /^var\(--color-paint-(blue|green|red)-(fill|outline|ink)\)$/);
+    assert.match(declaration.prop, /^--paint-(fill|outline)$/);
+    assert.match(declaration.value, /^var\(--color-paint-(blue|green|red)-(fill|outline)\)$/);
   });
   assert.equal(paintCss({ items: [{}], groups: [] }), '');
 });
@@ -77,7 +77,7 @@ test('S1 켜짐과 평소 모습은 효과 한 벌(--fx-*)을 움직이는 SVG�
   assert.ok(frames.every((k) => !/--color-state-active\)|--color-paint/.test(k)), 'keyframes do not repeat token colors');
   assert.match(html, /\.fl-part\.on :is\(\.part-bg, \.grid-cell\)\s*\{\s*fill: var\(--fx-face-on\)/, 'the HTML lit field and cell read the same lit face as the animated SVG');
   assert.ok(frames.some((k) => k.includes('fill: var(--fx-face-on)') && !k.includes('stroke')) && frames.some((k) => k.includes('fill: var(--fx-face);')), 'the animated SVG lights a field and a cell by that lit face only');
-  assert.match(svg, /\.fl-node\.ap-outline\s*\{\s*--fx-edge-rest: var\(--paint-outline\)/, 'the shared appearance changes only the rest values');
+  assert.match(svg, /\.fl-node\.ap-outline\s*\{\s*--fx-edge-rest: color-mix\(in oklab, var\(--paint-outline\), var\(--color-figure-outline\)\)/, 'the shared appearance changes only the rest values, mixing the chosen outline with the neutral one');
   assert.match(svg, /\.fl-node\.ap-filled\s*\{\s*--fx-face: var\(--paint-fill\)/);
   assert.match(svg, /\.tn-yellow\s*\{[^}]*--paint-outline: var\(--color-paint-yellow-outline\)/);
   assert.match(svg, /\.tn-blue\s*\{[^}]*--paint-fill: var\(--color-paint-blue-fill\)/);

@@ -17,9 +17,9 @@ export function escapeXml(text) {
 // basis: estimate
 /**
  * 글 그대로 읽는 글꼴인가. 고정폭(mono) 글꼴로 그리는 글은 이미 전부 코드라서 백틱은 서식 표시가 아니라 글자다(클래스 멤버, 테이블과 API 타입, `mono` 카드 줄).
- * 값 글(semiboldLiteral)은 사용자 자료라 서식을 읽지 않는다. 읽는 방식은 글꼴 이름 하나가 정하므로 재기, 줄 나누기, 글자 모으기, 그리기, 원본 검사가 같은 글을 같게 읽는다.
+ * 값 글(numLiteral)은 사용자 자료라 서식을 읽지 않는다. 읽는 방식은 글꼴 이름 하나가 정하므로 재기, 줄 나누기, 글자 모으기, 그리기, 원본 검사가 같은 글을 같게 읽는다.
  */
-export const isLiteralFace = (face) => face === 'mono' || face === 'semiboldLiteral';
+export const isLiteralFace = (face) => face === 'mono' || face === 'numLiteral';
 
 /**
  * 글을 일반 구간과 백틱 코드 구간으로 나눈다. 백틱은 표시 문자라 결과에 없다. 짝이 안 맞으면 마지막 구간이 코드가 된다.
