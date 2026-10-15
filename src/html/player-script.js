@@ -1,12 +1,13 @@
 // 재생기 문서의 고정 부분: 브라우저 스크립트(src/player/)를 한 글로 이어 붙인 것과 그림 틀 마크업. 컴파일러(build)에 기대지 않아 재생기 시험이 이 모듈로 같은 문서 틀을 만든다.
 import { motionMath } from '../motion-math.js';
 import { readFileSync } from 'node:fs';
-import { bindTabs } from '../vendor/theme/ui/runtime/tabs.js';
-import { ToolIcon } from '../vendor/theme/ui/toolbar.mjs';
-import { cssTimeMs } from '../vendor/theme/ui/runtime/time.js';
-import { bindToolbar } from '../vendor/theme/ui/runtime/toolbar.js';
-import { ICON_DATA, ICON_ROLES } from '../vendor/theme/ui/icon-data.mjs';
-export { DiagramFrame as figureFrame } from '../vendor/theme/ui/diagram.mjs';
+import { createRequire } from 'node:module';
+import { bindTabs } from '@woonyong-choi/design-tokens/ui/runtime/tabs.js';
+import { ToolIcon } from '@woonyong-choi/design-tokens/ui/toolbar.mjs';
+import { cssTimeMs } from '@woonyong-choi/design-tokens/ui/runtime/time.js';
+import { bindToolbar } from '@woonyong-choi/design-tokens/ui/runtime/toolbar.js';
+import { ICON_DATA, ICON_ROLES } from '@woonyong-choi/design-tokens/ui/icon-data.mjs';
+export { DiagramFrame as figureFrame } from '@woonyong-choi/design-tokens/ui/diagram.mjs';
 
 // 브라우저 스크립트 파일(src/player/). 한 스크립트로 이어 붙여 HTML에 넣는다. 순서는 상수와 함수 선언이 쓰이기 전에 있어야 하는 곳만 지키면 된다(진입은 맨 끝의 figurePlay 호출).
 const PLAYER_FILES = ['view', 'export', 'play', 'controls', 'stage', 'effects', 'responsive', 'curve', 'sample', 'values'];
@@ -23,7 +24,7 @@ export const PLAYER_SCRIPT = UI_ICON_SCRIPT + MOTION_SCRIPT + cssTimeMs.toString
 // vars: n = 공통 모듈 글자 수
 // basis: estimate
 function moduleScript(name, exports) {
-  const source = readFileSync(new URL(`../vendor/theme/ui/${name}.mjs`, import.meta.url), 'utf8');
+  const source = readFileSync(createRequire(import.meta.url).resolve(`@woonyong-choi/design-tokens/ui/${name}.mjs`), 'utf8');
   const body = source.replace(/^import [^\n]+ from ['"][^'"]+['"];\s*$/gm, '').replace(/^export (?=(?:const|function|class) )/gm, '');
   return `const { ${exports.join(', ')} } = (() => {\n${body}\nreturn { ${exports.join(', ')} };\n})();`;
 }

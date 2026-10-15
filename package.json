@@ -41,7 +41,7 @@
     "fuzz": "node scripts/fuzz-layout.mjs",
     "perf": "node scripts/perf-chips.mjs",
     "checkdoc": "node scripts/build-check-doc.mjs",
-    "check": "node scripts/check-design.mjs && node src/vendor/theme/ui/build/check-tokens.mjs src --tokens src/vendor/theme/tokens.json",
+    "check": "design-tokens-check src --tokens node_modules/@woonyong-choi/design-tokens/dist/tokens.json",
     "check:docs": "node scripts/build-grammar-doc.mjs --check && node scripts/build-check-doc.mjs --check",
     "check:sources": "node src/cli.js check examples/*.thinkflow docs/assets/*.thinkflow docs/assets/showcase/*.thinkflow --strict",
     "check:figures": "node scripts/run-md.mjs --check --strict && node scripts/build-showcase.mjs --check",
@@ -50,7 +50,6 @@
     "showcase": "node scripts/build-showcase.mjs",
     "figures": "npm run catalog && node src/cli.js render docs/assets/how-it-works.thinkflow && npm run showcase && node scripts/run-md.mjs",
     "catalog": "npm run examples",
-    "design:sync": "node src/vendor/theme/ui/build/sync.mjs",
     "check:package": "node scripts/check-package.mjs"
   },
   "engines": {
@@ -66,7 +65,11 @@
     "pretendard": "^1.3.9",
     "subset-font": "^2.9.0"
   },
+  "peerDependencies": {
+    "@woonyong-choi/design-tokens": "^0.1.1"
+  },
   "devDependencies": {
+    "@woonyong-choi/design-tokens": "github:woonyong-choi/design-tokens#12f1c53a4379f6a000c5a0536402affd514c3e23",
     "playwright-core": "^1.63.0",
     "typescript": "7.0.2"
   },
@@ -75,7 +78,6 @@
       "types": "./src/index.d.ts",
       "default": "./src/index.js"
     },
-    "./design-manifest.json": "./src/vendor/theme/manifest.json",
     "./package.json": "./package.json"
   }
 }

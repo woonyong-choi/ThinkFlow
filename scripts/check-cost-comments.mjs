@@ -9,8 +9,8 @@
 // 호출과 `...` 전개는 모두 반복으로, `await`는 I/O로 보는 거친 판정이라 틀린 항목과 놓친 함수가 있다. 항목을 없애려고 근거 없는 점근 표기를 적지 않는다.
 import { readFileSync, statSync } from 'node:fs';
 import { extname } from 'node:path';
-import { unicodePattern } from '../src/vendor/theme/ui/build/lib/tokens-patterns.mjs';
-import { iterFiles } from '../src/vendor/theme/ui/build/lib/walk-files.mjs';
+import { unicodePattern } from '@woonyong-choi/design-tokens/ui/build/lib/tokens-patterns.mjs';
+import { iterFiles } from '@woonyong-choi/design-tokens/ui/build/lib/walk-files.mjs';
 
 // 생성 파일 첫 줄 표시. 토큰 생성물과 일반적인 `@generated` 표시
 const GENERATED_MARKS = ['생성물, 손으로 고치지 않음', '@generated'];

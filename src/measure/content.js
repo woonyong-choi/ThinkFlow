@@ -2,7 +2,7 @@
 // 그리는 쪽(draw/content.js, draw/values.js)과 그림 검사(check/fit.js)는 이 글 자리를 그대로 읽고 줄 나누기, 들여쓰기, 흐림 자리, 값 자리를 다시 계산하지 않는다.
 // 좌표는 내용 면 왼쪽 위가 원점이다. 내용 면의 도형 안 자리는 draw/content.js의 contentBox가 정한다.
 import { plainText } from '../text.js';
-import { values } from '../vendor/theme/tokens.js';
+import { values } from '@woonyong-choi/design-tokens/tokens.js';
 import { widestText } from '../value-slots.js';
 import { measure, wrap } from './fonts.js';
 import { layoutMiniGraph, miniGraphWidth } from './minigraph.js';

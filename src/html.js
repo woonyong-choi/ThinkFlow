@@ -1,5 +1,5 @@
 // 재생 화면 HTML 한 장과 목록 쪽. 스크립트, 스타일, 글꼴, 그림을 모두 안에 넣어 파일 하나로 열린다.
-import { chartMotionCss } from './vendor/theme/ui/diagram.mjs';
+import { chartMotionCss } from '@woonyong-choi/design-tokens/ui/diagram.mjs';
 import { canvasOf } from './canvas.js';
 import { createGlyphSet, embedFonts } from './measure/fonts.js';
 import { paintCss } from './draw/paint.js';

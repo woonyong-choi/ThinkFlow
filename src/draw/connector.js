@@ -5,7 +5,7 @@ import { hasPill, sizePill } from '../measure/sizes.js';
 import { STYLE } from '../measure/texts.js';
 import { routePolyline } from '../route.js';
 import { centerBaseline, escapeXml, renderRich, roundCoord as r } from '../text.js';
-import { values } from '../vendor/theme/tokens.js';
+import { values } from '@woonyong-choi/design-tokens/tokens.js';
 import { edgeMarker } from './arrow.js';
 import { sceneTag } from './scene-tag.js';
 

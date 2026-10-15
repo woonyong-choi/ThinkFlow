@@ -5,7 +5,7 @@ import { issuesOfHop } from '../chip-plan.js';
 import { visibleShare } from '../chip-motion.js';
 import { chipLines, chipObstacles } from '../draw/boxes.js';
 import { flattenRoute } from '../route.js';
-import { values } from '../vendor/theme/tokens.js';
+import { values } from '@woonyong-choi/design-tokens/tokens.js';
 
 // 박자 이동의 글 상자가 보여야 하는 비율의 하한(chip-plan.js와 같은 토큰)
 const SHARE_MIN = values.scale['chip-visible-share'];

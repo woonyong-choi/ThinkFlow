@@ -1,5 +1,5 @@
 // 여러 그림을 한 쪽에서 보는 목록과 문서 안 모습 미리보기.
-import { bindDiagramHost } from '../vendor/theme/ui/runtime/diagram-host.js';
+import { bindDiagramHost } from '@woonyong-choi/design-tokens/ui/runtime/diagram-host.js';
 import { STYLES } from '../styles.js';
 import { escapeXml, plainText, renderRichHtml } from '../text.js';
 import { hrefAttr } from '../href.js';

@@ -5,7 +5,7 @@ import { spawnSync } from 'node:child_process';
 import { lstatSync } from 'node:fs';
 import { relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { iterFiles } from '../src/vendor/theme/ui/build/lib/walk-files.mjs';
+import { iterFiles } from '@woonyong-choi/design-tokens/ui/build/lib/walk-files.mjs';
 
 const ROOT = fileURLToPath(new URL('../', import.meta.url));
 const CLI = fileURLToPath(new URL('../src/cli.js', import.meta.url));

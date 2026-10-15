@@ -2,7 +2,7 @@
 // 이름은 `계열:행번호`에서 온다. 같은 칸의 다른 요소는 뒤에 `.p`(무늬), `.ci`(신뢰구간), `.t`(글자), `.k`(번호)를 붙여 문서 안에서 하나뿐이게 한다.
 // 계열이 없는 차트의 계열 자리는 `*`다. 표식은 값이 없거나 0이어도 모든 칸에 늘 있다. 값은 막대 길이, 보임 속성으로만 달라진다.
 import { escapeXml } from '../text.js';
-import { values } from '../vendor/theme/tokens.js';
+import { values } from '@woonyong-choi/design-tokens/tokens.js';
 import { isReference, seriesStroke } from './metrics.js';
 
 // cost: time O(1), heap O(1), stack O(1)

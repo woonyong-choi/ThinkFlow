@@ -7,7 +7,7 @@ import { CONTENT } from '../measure/content.js';
 import { GRID, groupTitleWidth } from '../measure/sizes.js';
 import { TYPE_GAP } from '../measure/table.js';
 import { STYLE, textSpan } from '../measure/texts.js';
-import { values } from '../vendor/theme/tokens.js';
+import { values } from '@woonyong-choi/design-tokens/tokens.js';
 import { fits } from './geometry.js';
 
 const ORIGIN = { x: 0, y: 0 };

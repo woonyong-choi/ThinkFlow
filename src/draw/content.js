@@ -4,7 +4,7 @@ import { bodyOf } from '../measure/decor.js';
 import { CONTENT } from '../measure/content.js';
 import { autoTone, toneColors } from '../tone.js';
 import { roundCoord as r } from '../text.js';
-import { values } from '../vendor/theme/tokens.js';
+import { values } from '@woonyong-choi/design-tokens/tokens.js';
 import { faceOf, lookClass } from './look.js';
 import { CORNER, rectOpen } from './surface.js';
 import { drawTexts } from './texts.js';

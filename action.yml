@@ -34,7 +34,8 @@ runs:
         node-version: 20
     - name: Install thinkflow
       shell: bash
-      run: npm ci --omit=dev --ignore-scripts --no-audit --no-fund --prefix "$GITHUB_ACTION_PATH"
+      # 디자인(@woonyong-choi/design-tokens)은 peer 의존성이고 이 저장소가 시험한 고정 commit은 개발 의존성에 있다. Action은 그 commit으로 그리므로 개발 의존성까지 설치한다.
+      run: npm ci --ignore-scripts --no-audit --no-fund --prefix "$GITHUB_ACTION_PATH"
     - name: Run thinkflow
       shell: bash
       env:

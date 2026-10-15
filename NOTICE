@@ -3,10 +3,10 @@ Copyright (c) 2026 choi woo-nyong
 
 This product includes third-party material.
 
-The shared concept, control and brand icons are distributed in src/vendor/theme/assets/icons.
-The catalog at src/vendor/theme/assets/icons/catalog.json records icon names,
+The shared concept, control and brand icons come from the @woonyong-choi/design-tokens
+package (peer dependency), in dist/assets/icons. Its catalog.json records icon names,
 categories, aliases, library notices and brand provenance.
-Full notices are included in src/vendor/theme/assets/icons/licenses/.
+Full notices are included in that package's dist/assets/icons/licenses/.
 Marks identify their technologies and retain their owners' trademarks.
 
 Pretendard (body and number font)

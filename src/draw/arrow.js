@@ -1,7 +1,7 @@
 // 화살촉 부품. 모양은 `arrowMarker` 하나이고, 색은 마커 정의를 품은 요소(소유자)의 `color`를 상속한다. 마커는 자기를 쓰는 선이 아니라 정의된 자리에서 색을 받는다(context-stroke에 기대지 않는다).
 // 소유자는 둘이다. 연결선은 선 묶음 자신이 소유자라 묶음 안에 정의를 두고(`edgeMarker`, 상태색이 묶음의 color를 따른다), 차트 방향선은 역할(`CHART_ARROW`)이 소유자라 역할마다 정의 하나를 문서에 한 번 둔다(`roleArrowDefs`).
 // 어느 쪽이든 먼저 나온 차트가 색을 정하지 않는다. 마커 크기는 `markerUnits=strokeWidth`라 몸통 굵기에 비례해 커진다. 그러면 마커 안 선도 같은 비율로 굵어져 이중으로 굵어지므로, 마커 안 선 굵기를 `VIEW / size`로 정규화해 어떤 몸통 굵기에서도 실제 굵기가 몸통과 같게 한다.
-import { tokens, values } from '../vendor/theme/tokens.js';
+import { tokens, values } from '@woonyong-choi/design-tokens/tokens.js';
 
 // 마커 좌표계 한 변
 const VIEW = 5;

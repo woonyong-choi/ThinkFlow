@@ -1,7 +1,7 @@
 // 클래스의 머리, 속성, 메서드 구획을 카드가 쓰는 text(measure/texts.js)와 구분선으로 한 번 배치해 측정, 렌더링, 충돌 검사에 넘긴다.
 // 머리는 표, API, 순서 보기 참여자와 같은 머리(measure/card.js)이고, 이 파일은 UML 구획(속성, 메서드)과 멤버 표기만 맡는다.
 import { plainText } from '../text.js';
-import { values } from '../vendor/theme/tokens.js';
+import { values } from '@woonyong-choi/design-tokens/tokens.js';
 import { INNER_MAX, MARKS, PAD, headerOf, placeHeader } from './card.js';
 import { measure, wrap } from './fonts.js';
 import { STYLE, stackTexts } from './texts.js';

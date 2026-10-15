@@ -10,7 +10,7 @@ import { TIME_LIMIT_MS } from './source/values.js';
 import { checkMoveInputs, gridPlan, inputTicks, msOfTicks, TICKS_PER_MS } from './time-grid.js';
 import { chartSegState } from './timeline-charts.js';
 import { createSeg } from './timeline-seg.js';
-import { values } from './vendor/theme/tokens.js';
+import { values } from '@woonyong-choi/design-tokens/tokens.js';
 
 const FLOW_STEP_MS = values.duration['flow-step'];
 // 한 그림이 그릴 수 있는 점 수의 하드 상한. 경고 기준(`scale.flow-dots-max`)의 열 배다. 경고선 위에서 그림은 느려질 뿐이지만 이 선을 넘으면 입력이 처리 예산을 넘으므로 그리지 않는다.

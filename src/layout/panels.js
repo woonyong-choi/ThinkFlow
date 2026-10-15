@@ -5,7 +5,7 @@ import { FIGURE_PAD } from '../canvas.js';
 import { measure } from '../measure/fonts.js';
 import { STYLE } from '../measure/texts.js';
 import { shiftScene } from './shift.js';
-import { values } from '../vendor/theme/tokens.js';
+import { values } from '@woonyong-choi/design-tokens/tokens.js';
 
 const SIZE = values.spacing.figure;
 

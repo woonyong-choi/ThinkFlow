@@ -1,6 +1,6 @@
 // 카드(도형의 바깥 면 하나)의 공통 치수와 머리 배치. 상자, 사람, 표, API, 클래스, 순서 보기 참여자, 격자, 큐가 같은 안쪽 여백과 같은 머리 규칙을 쓴다.
 // 카드는 면(draw/surface.js) 위에 머리(아이콘, 제목, 부제, 배지), 구분선, 필드 줄이 놓인 것이고, 종류별 측정은 이 규칙에 줄의 글만 넘긴다.
-import { values } from '../vendor/theme/tokens.js';
+import { values } from '@woonyong-choi/design-tokens/tokens.js';
 import { layoutDecor } from './decor.js';
 import { measure, wrap } from './fonts.js';
 import { STYLE, stackTexts, textAt } from './texts.js';

@@ -4,7 +4,7 @@
 import { STYLE } from '../measure/texts.js';
 import { measure, wrap } from '../measure/fonts.js';
 import { renderRich, roundCoord as r } from '../text.js';
-import { values } from '../vendor/theme/tokens.js';
+import { values } from '@woonyong-choi/design-tokens/tokens.js';
 import { COPY } from './copy.js';
 import { ecdfGroups } from './data.js';
 import { BAR, DOT, PAD, SPACE, TEXT, WIDTH, isReference, seriesBoundary, seriesColor, seriesPaint, seriesStroke } from './metrics.js';

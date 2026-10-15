@@ -3,7 +3,7 @@
 // 기대값(reference) 계열은 속이 빈 테두리 막대다. 색 수를 넘는 계열은 막대 위에 무늬가 덮인다.
 import { measure } from '../measure/fonts.js';
 import { renderRich, centerBaseline, roundCoord as r } from '../text.js';
-import { values } from '../vendor/theme/tokens.js';
+import { values } from '@woonyong-choi/design-tokens/tokens.js';
 import { drawRules, finishRowChart, rowValueScale } from './axis.js';
 import { MISSING } from './copy.js';
 import { valueRange } from './extent.js';

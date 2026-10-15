@@ -1,7 +1,7 @@
 // 시퀀스 구획은 메시지 행의 앞뒤에 제목과 경계 여백을 예약한다.
 import { FIGURE_PAD } from '../canvas.js';
 import { STYLE, textBlock } from '../measure/texts.js';
-import { values } from '../vendor/theme/tokens.js';
+import { values } from '@woonyong-choi/design-tokens/tokens.js';
 
 const SPACE = values.spacing;
 const PAD = SPACE["3"];

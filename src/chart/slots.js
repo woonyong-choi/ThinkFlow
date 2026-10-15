@@ -1,5 +1,5 @@
 // 막대 차트 한 행 안 계열 자리(슬롯). 행 이름의 세로 자리를 그리는 쪽과 시간표가 같은 규칙으로 정한다.
-import { values } from '../vendor/theme/tokens.js';
+import { values } from '@woonyong-choi/design-tokens/tokens.js';
 
 const BAR = values.spacing.figure.chart.bar;
 const SPACE = values.spacing;

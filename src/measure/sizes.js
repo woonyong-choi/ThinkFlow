@@ -3,7 +3,7 @@ import { plainText } from '../text.js';
 import { emptyRegions } from '../source/grid-space.js';
 import { tableDescription } from '../table.js';
 import { tableLayout } from './table.js';
-import { values } from '../vendor/theme/tokens.js';
+import { values } from '@woonyong-choi/design-tokens/tokens.js';
 import { INNER_MAX, PAD, headerDecor, headerOf, placeHeader } from './card.js';
 import { BADGE_STYLE, DECOR, STACK_STEP, groupDecor, nodeDecor } from './decor.js';
 import { sizeClassifier } from './class.js';

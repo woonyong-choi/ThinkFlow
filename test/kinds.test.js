@@ -7,7 +7,7 @@ import { reflowFigure } from '../src/build.js';
 import { headReach } from '../src/draw/arrow.js';
 import { measure } from '../src/measure/fonts.js';
 import { STYLE } from '../src/measure/texts.js';
-import { values } from '../src/vendor/theme/tokens.js';
+import { values } from '@woonyong-choi/design-tokens/tokens.js';
 import { build, thinkflow, finalValue, findAll, lineOf, num, parseMarkup, reject, stillDom, textContent, textsOf, toHtml, toSvg, visibleTexts } from './support.js';
 
 const rejectedAt = async (source, needle, pattern) => {
