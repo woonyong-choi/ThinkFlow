@@ -5,7 +5,7 @@ icons custom "icons"
 
 person user "고객" tone=blue appearance=outline
 external pg "결제사 PG" "외부 연결"
-group cloud "서울 리전" direction=down border=dashed badge="리전" icon=region {
+group cloud "서울 리전" direction=down dashed badge="리전" icon=region {
   box cdn "CDN" shape=tile icon=cdn tone=blue appearance=filled
   group front "프런트" direction=right tone=blue appearance=outline {
     box lb "로드 밸런서" icon=lb badge="L7"

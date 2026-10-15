@@ -5,7 +5,7 @@ import { readOptions } from './options.js';
 import { valueNames } from './grammar.js';
 import { readSets } from './value.js';
 import { ID_PATTERN } from './words.js';
-import { isOverTimeLimit, overLimitMessage, parseTime, TIME_LIMIT_MS } from './values.js';
+import { isOverTimeLimit, overLimitMessage, parseTime, timeHint, TIME_LIMIT_MS } from './values.js';
 
 const TRACK_FORM = 'write a track as: track a, b -> c -> d ["text"] [at=time] [every=time] [time=time] [legs="time, -"] [tone=name] [set="id+1@node"] [lost=60%] [when="condition"] [wait="condition"] [timeout=time] [else=node] [stuck] [reserve="id+1, id=word"]';
 const STATUS_FORM = 'write status as: status="node=ok, node=warn"';
@@ -16,12 +16,12 @@ const LEG_EPSILON_MS = 1e-6;
 // vars: t = 선택 사항 수, k = keep 항목 수, e = 식 수
 // basis: estimate
 /**
- * 단계의 선택 사항(`for=`, `keep=`, `set=`, `status=`)을 읽는다.
- * @returns { forMs, keep, sets, status }. forMs는 단계 길이(ms)이고 없거나 틀리면 undefined, keep은 { id, line } 목록, sets는 단계 시작 재설정 식 목록, status는 `{ node, kind }` 목록이다(없으면 빈 목록)
+ * 장면의 선택 사항(`mode=`, `speed=`, `for=`, `keep=`, `set=`, `status=`)을 읽는다.
+ * @returns { found, forMs, keep, sets, status }. found는 읽은 선택 사항 그대로(mode, speed 포함), forMs는 단계 길이(ms)이고 없거나 틀리면 undefined, keep은 { id, line } 목록, sets는 단계 시작 재설정 식 목록, status는 `{ node, kind }` 목록이다(없으면 빈 목록)
  */
 export function readStepOptions(options, { line, ctx }) {
   const found = readOptions(options, { scopes: ['scene'], what: 'a scene', line, ctx });
-  return { forMs: readStepLength(found.for, { line, ctx }), keep: readKeep(found.keep, { line, ctx }), sets: readStepSets(found.set, { line, ctx }), status: readStatus(found.status, { line, ctx }) };
+  return { found, forMs: readStepLength(found.for, { line, ctx }), keep: readKeep(found.keep, { line, ctx }), sets: readStepSets(found.set, { line, ctx }), status: readStatus(found.status, { line, ctx }) };
 }
 
 // cost: time O(1), heap O(1), stack O(1)
@@ -31,7 +31,7 @@ function readStepLength(text, { line, ctx }) {
   if (text === undefined) return undefined;
   const ms = parseTime(text);
   if (ms === undefined && isOverTimeLimit(text)) ctx.problems.error(line, overLimitMessage('for', text), { code: 'time-limit' });
-  else if (ms === undefined) ctx.problems.error(line, `for is a positive time such as 12s. Found "${text}"`);
+  else if (ms === undefined) ctx.problems.error(line, `for is a positive time such as 12s. Found "${text}".${timeHint(text)}`);
   return ms;
 }
 
@@ -97,13 +97,12 @@ export function readTrack({ tokens, line }, ctx) {
   const { sources, path, rest } = splitPath(tokens);
   const texts = rest.filter((t) => t.type === 'text');
   const options = rest.filter((t) => t.type === 'option');
-  const stuck = rest.filter((t) => t.type === 'word' && t.value === 'stuck');
-  if (!sources.length || !path.length || texts.length > 1 || rest.length > texts.length + options.length + stuck.length) {
+  const words = rest.filter((t) => t.type === 'word');
+  if (!sources.length || !path.length || texts.length > 1 || rest.length > texts.length + options.length + words.length) {
     ctx.problems.error(line, TRACK_FORM);
     return;
   }
-  if (stuck.length > 1) ctx.problems.error(line, 'stuck is written twice in one track');
-  const { found, timeMs, tone, sets, lost, condition } = readMoveOptions(options, { scope: 'track', line, ctx, isStuck: stuck.length > 0 });
+  const { found, timeMs, tone, sets, lost, condition } = readMoveOptions([...options, ...words], { scope: 'track', line, ctx });
   const atMs = readTime(found.at, { key: 'at', isZeroOk: true, line, ctx });
   const everyMs = readTime(found.every, { key: 'every', line, ctx });
   const legTimes = readLegs(found.legs, { lineCount: path.length, timeMs, line, ctx });
@@ -141,7 +140,7 @@ function readLegTime(item, { line, ctx }) {
   const ms = parseTime(item);
   if (ms !== undefined) return ms;
   if (isOverTimeLimit(item)) ctx.problems.error(line, overLimitMessage('legs', item), { code: 'time-limit' });
-  else ctx.problems.error(line, `legs takes a positive time such as 900ms or 2s, or - for a line whose time is left to the rest. Found "${item}"`);
+  else ctx.problems.error(line, `legs takes a positive time such as 900ms or 2s, or - for a line whose time is left to the rest. Found "${item}".${timeHint(item)}`);
   return undefined;
 }
 

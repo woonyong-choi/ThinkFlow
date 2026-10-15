@@ -11,7 +11,7 @@ import { checkSequenceViews, checkTraces } from './view-rules.js';
 import { assignViewEdges, projectMove, numberProjections, viewHas } from './project.js';
 import { emptyBeat } from './steps.js';
 import { resolveViews } from './views-check.js';
-import { unknownName } from './problems.js';
+import { didYouMean, unknownName } from './problems.js';
 import { checkValues, checkValuesShown, isCardDrawn } from './value-check.js';
 
 // cost: time O(s·k + e² + h·e), heap O(k + e), stack O(1)
@@ -116,7 +116,7 @@ function readPart(edge, way, { card, part, written }, problems) {
     if (!found) problems.error(edge.line, unknownName('cell', part, card.cells.map((c) => c.id)));
     else if (found.kind === 'gap') problems.error(edge.line, `"${written}" is a gap, which stands for omitted entries. Connect an item instead`);
     else edge[`${way}Cell`] = part;
-  } else if (!card.columns.some((c) => c.name === part)) problems.error(edge.line, `${card.shape} "${card.id}" has no ${card.shape === 'api' ? 'field' : 'column'} "${part}"`);
+  } else if (!card.columns.some((c) => c.name === part)) problems.error(edge.line, `${card.shape} "${card.id}" has no ${card.shape === 'api' ? 'field' : 'column'} "${part}".${didYouMean(part, card.columns.map((c) => c.name))}`);
   else edge[`${way}Columns`] = [part];
 }
 
@@ -349,7 +349,7 @@ function checkPart({ item, part, target, line }, problems) {
   } else if (item.shape === 'trace') {
     if (!item.spans.some((s) => s.id === part)) problems.error(line, unknownName('span', part, item.spans.map((s) => s.id)));
   } else if (['table', 'api'].includes(item.shape)) {
-    if (!item.columns.some((c) => c.name === part)) problems.error(line, `${item.shape} "${item.id}" has no ${item.shape === 'api' ? 'field' : 'column'} "${part}"`);
+    if (!item.columns.some((c) => c.name === part)) problems.error(line, `${item.shape} "${item.id}" has no ${item.shape === 'api' ? 'field' : 'column'} "${part}".${didYouMean(part, item.columns.map((c) => c.name))}`);
   } else problems.error(line, `a ${item.shape} has no parts. Light "${item.id}"`);
 }
 

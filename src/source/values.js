@@ -1,6 +1,7 @@
 // 원본의 시간과 숫자 값을 읽는다.
 import { MIN_VALUE } from './chart-limits.js';
 import { NUMBER_PATTERN, TIME_PATTERN } from './words.js';
+import { closest } from './problems.js';
 
 /** 시간 값 하나, 단계 하나의 길이, 그림 전체 시간의 상한(ms). 1시간이다. 1시간보다 긴 문서 그림 재생은 쓸모가 없어 정한 정책 상한이고, 부동소수점 정밀도를 보장하지 않는다(출발 시각의 정밀도는 따로 검사한다). */
 export const TIME_LIMIT_MS = 3_600_000;
@@ -30,6 +31,23 @@ const FOUND_LENGTH_MAX = 40;
 
 /** 상한을 넘은 시간 값의 오류 메시지. key는 `for`, `time` 같은 이름이다. */
 export const overLimitMessage = (key, text) => `${key} is over the limit of 1h (${TIME_LIMIT_MS}ms). Found "${text.length > FOUND_LENGTH_MAX ? `${text.slice(0, FOUND_LENGTH_MAX)}...` : text}"`;
+
+// 시간 단위로 잘못 쓰기 쉬운 낱말 → 받는 단위
+const UNIT_WORDS = { msec: 'ms', millis: 'ms', millisecond: 'ms', milliseconds: 'ms', sec: 's', secs: 's', second: 's', seconds: 's' };
+
+// cost: time O(n), heap O(1), stack O(1)
+// vars: n = 글자 수
+// basis: estimate
+/** 시간 모양이 아닌 글에 붙이는 고칠 꼴. 숫자에 단위가 없거나 단위를 잘못 쓴 글이면 ` The unit is ms or s. Did you mean "2s"?`이고, 아니면 빈 글이다. */
+export function timeHint(text) {
+  const form = /^(\d+(?:\.\d+)?)\s*([A-Za-z]*)$/.exec(String(text ?? ''));
+  if (!form) return '';
+  const [, number, unit] = form;
+  const lower = unit.toLowerCase();
+  const fixed = lower === '' ? 's' : UNIT_WORDS[lower] ?? closest(lower, ['ms', 's']) ?? (lower.startsWith('m') ? 'ms' : lower.startsWith('s') ? 's' : undefined);
+  if (fixed === undefined) return ' The unit is ms or s';
+  return ` The unit is ms or s. Did you mean "${number}${fixed}"?`;
+}
 
 /** 십진수 글을 숫자로. `-`와 소수점만 받는다. 모양이 틀리거나 Number로 바꾸면 무한대가 되는 글(309자리가 넘는 정수)이면 undefined. */
 export function parseNumber(text) {

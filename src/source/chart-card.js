@@ -3,6 +3,7 @@ import { readChartDeclaration } from './chart.js';
 import { DECIMALS_MAX, VALUES, valueNames } from './grammar.js';
 import { checkId, parentFor, rejectName, skipBlock } from './names.js';
 import { ID_PATTERN, INTEGER_PATTERN } from './words.js';
+import { didYouMean } from './problems.js';
 
 // cost: time O(1), heap O(1), stack O(1)
 // basis: estimate
@@ -31,7 +32,7 @@ export function readChartCard({ tokens, line }, ctx) {
     return;
   }
   const isType = valueNames('chartType').includes(type.value);
-  if (!isType) ctx.problems.error(line, `a chart type is one of ${valueNames('chartType').join(', ')}. Found "${type.value}"`);
+  if (!isType) ctx.problems.error(line, `a chart type is one of ${valueNames('chartType').join(', ')}. Found "${type.value}".${didYouMean(type.value, valueNames('chartType'))}`, { column: type.column });
   const plot = { chartType: isType ? type.value : undefined, title: title.value, subtitle: subtitle?.value, chart: emptyChart(), line };
   const card = { id: id.value, shape: 'chart', label: title.value, plot, parent: parentFor(id, ctx), line, isRejected: !isType || undefined };
   ctx.figure.nodes.push(card);
@@ -77,6 +78,6 @@ function readChartHeader({ tokens, line }, { figure, problems }) {
     const places = Number(value?.value);
     if (value?.type !== 'word' || !INTEGER_PATTERN.test(value.value) || places > DECIMALS_MAX) problems.error(line, `write decimals as a whole number from 0 to ${DECIMALS_MAX}, such as decimals 2`);
     else chart.decimals = places;
-  } else if (!valueNames(key).includes(value?.value)) problems.error(line, `${key} is ${valueNames(key).map((v) => `"${v}"`).join(' or ')}`);
+  } else if (!valueNames(key).includes(value?.value)) problems.error(line, `${key} is ${valueNames(key).map((v) => `"${v}"`).join(' or ')}.${value?.type === 'word' ? didYouMean(value.value, valueNames(key)) : ''}`, { column: value?.column });
   else Object.assign(chart, { [key]: value.value, [`${key}Line`]: line });
 }

@@ -4,11 +4,11 @@ subtitle "웹 요청은 DNS, CDN, 로드 밸런서, 웹 서버를 지나 앱 서
 
 person user "웹 사용자"
 person admin "운영자" icon=admin
-group net "인터넷" icon=cdn border=dashed direction=right {
+group net "인터넷" icon=cdn dashed direction=right {
   box dns "DNS" shape=tile icon=dns
   box cdn "CDN" shape=tile icon=cdn
 }
-group cloud "클라우드" icon=region direction=down border=dashed {
+group cloud "클라우드" icon=region direction=down dashed {
   box lb "로드 밸런서" shape=tile icon=lb
   box web "웹 서버" shape=tile icon=server count=3
   box app "앱 서버" shape=tile icon=server

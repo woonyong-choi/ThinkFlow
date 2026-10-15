@@ -8,7 +8,7 @@
 thinkflow
 title "웹 서비스 구성"
 
-group edge "엣지" border=dashed {
+group edge "엣지" dashed {
   box cdn "CDN" shape=tile icon=cdn
 }
 group app "애플리케이션" icon=region direction=down {
@@ -45,7 +45,7 @@ scene "요청"
 | `badge="글"` | 카드, 그룹 | 8자 이하 글자 알약. 흑백에서도 남습니다 |
 | `icon=이름` | 카드, 그룹 | 내장 아이콘. 등록한 세트는 `icons 이름 "폴더"` 뒤 `icon=세트:이름` |
 | `count=N` | `box` | 같은 역할 복제 N개를 겹쳐 그립니다 |
-| `border=dashed` | 그룹 | 논리 경계의 점선 테두리 |
+| `dashed` | 그룹 | 논리 경계의 점선 테두리 |
 | `tone=색` | 카드, 그룹 | 색 이름. `blue`, `yellow`, `red`, `green`, `orange`, `purple`, `cyan`, `gray` 가운데 하나입니다 |
 | `appearance=plain\|filled\|outline` | 카드, 그룹 | 색을 쓰는 방식. `plain`(기본)은 중립 면에 색 아이콘과 작은 표식, `filled`는 같은 계열의 옅은 면, `outline`은 같은 계열의 경계와 중립 면입니다. `filled`와 `outline`은 `tone`이 있어야 합니다 |
 | `quiet` | 선 | 그 선을 처음 지나는 박자부터 그 장면 끝까지만 보입니다 |

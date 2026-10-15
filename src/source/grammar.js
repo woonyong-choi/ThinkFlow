@@ -90,13 +90,12 @@ export const VALUES = {
     hint: 'Colors are names, not hex, so the contrast rules hold',
     items: table(Object.fromEntries(TONES.map((name) => [name, {}]))),
   },
-  // plain은 중립 면에 색 아이콘과 작은 표식, filled는 같은 계열의 옅은 면, outline은 같은 계열 경계와 중립 면이다. filled와 outline은 tone이 있어야 한다.
+  // plain은 중립 면에 색 아이콘과 작은 표식, filled는 같은 계열의 옅은 면, outline은 같은 계열 경계와 중립 면이다. filled와 outline에 tone을 적지 않으면 무채색 gray 계열이다.
   appearance: { default: 'plain', items: table({ plain: {}, filled: {}, outline: {} }) },
   role: { items: table({ main: {}, compare: {}, reference: {} }) },
   head: { default: 'end', items: table({ end: {}, both: {}, none: {} }) },
   shape: { default: 'rect', items: table({ rect: {}, circle: {}, tile: {} }) },
   width: { default: 'standard', items: table({ standard: {}, wide: {} }) },
-  border: { default: 'solid', items: table({ solid: {}, dashed: {} }) },
   status: { items: table({ ok: {}, warn: {}, fail: {}, wait: {} }) },
   deleteAction: { items: table({ restrict: {}, cascade: {}, 'set-null': {}, 'no-action': {} }) },
   relation: { default: 'association', items: table({ association: {}, dependency: {}, inheritance: {}, realization: {}, aggregation: {}, composition: {} }) },
@@ -193,7 +192,7 @@ export const OPTIONS = table({
   'fragment.times': COUNT,
   'fragment.run': { type: 'word', values: 'fragmentRun' },
   'group.direction': { type: 'word', values: 'direction' },
-  'group.border': { type: 'word', values: 'border' },
+  'group.dashed': FLAG,
   'group.badge': { ...TEXT, maxLength: BADGE_MAX },
   'group.icon': ICON,
   'group.tone': TONE,
@@ -257,7 +256,8 @@ export const OPTIONS = table({
   'series.key': TEXT,
   'point.series': { type: 'word', format: '계열 이름' },
   'trace.unit': { type: 'word', values: 'traceUnit' },
-  'span.lane': { type: 'word', format: '도형 이름' },
+  // 레인은 선언한 카드 이름(카드의 이름 글이 레인 이름)이거나, 카드 없이 시간 보기만 그리는 추적의 따옴표 레인 이름이다.
+  'span.lane': { type: 'word', format: '카드 이름 또는 "레인 이름"', allowsText: true },
   'span.at': { type: 'word', format: '0 이상 숫자' },
   'span.dur': { type: 'word', format: '0보다 큰 숫자' },
   'grid.rows': COUNT,
@@ -303,6 +303,14 @@ export function optionsOf(scope) {
 /** 한 범위의 값 없는 선택 사항(flag) 이름. */
 export function flagNames(scope) {
   return Object.entries(optionsOf(scope)).filter(([, spec]) => spec.type === 'flag').map(([name]) => name);
+}
+
+// cost: time O(w), heap O(w), stack O(1)
+// vars: w = 문장 낱말 수
+// basis: estimate
+/** 블록 종류(chart, class, grid, trace, card, table) 안에서만 쓰는 문장 낱말. */
+export function statementsIn(block) {
+  return Object.keys(STATEMENTS).filter((word) => STATEMENTS[word].in === block);
 }
 
 // cost: time O(v), heap O(v), stack O(1)

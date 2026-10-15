@@ -202,10 +202,15 @@ test('G5 the options tone replaced are errors at their line, not silently ignore
   assert.ok((await reject(card)).some((p) => p.line === lineOf(card, 'show b')));
 });
 
-test('G5 appearance is plain, filled or outline; the colored two need a tone; plain is the default', async () => {
+test('G5 appearance is plain, filled or outline; without a tone the colored two use the neutral gray family; plain is the default', async () => {
   for (const appearance of ['plain', 'filled', 'outline']) await build(thinkflow(`box a "A" tone=red appearance=${appearance}\n`));
-  await build(thinkflow('box a "A" appearance=plain\n'));
-  for (const line of ['box a "A" appearance=filled', 'box a "A" appearance=outline', 'box a "A" tone=red appearance=hollow', 'box a "A" tone=red appearance=']) {
+  for (const appearance of ['plain', 'filled', 'outline']) await build(thinkflow(`box a "A" appearance=${appearance}\ngroup g "G" appearance=${appearance} {\n  box b "B" {\n    text "t" appearance=${appearance}\n  }\n}\n`));
+  for (const appearance of ['filled', 'outline']) {
+    const gray = await build(thinkflow(`box a "A" tone=gray appearance=${appearance}\n`));
+    const neutral = await build(thinkflow(`box a "A" appearance=${appearance}\n`));
+    assert.equal(await toSvg(neutral, { isStatic: true }), await toSvg(gray, { isStatic: true }), `appearance=${appearance} without a tone is tone=gray`);
+  }
+  for (const line of ['box a "A" tone=red appearance=hollow', 'box a "A" tone=red appearance=']) {
     const source = thinkflow(`${line}\n`);
     assert.ok((await reject(source)).some((p) => p.line === lineOf(source, line)), line);
   }

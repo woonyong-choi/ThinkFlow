@@ -3,6 +3,7 @@ import { CARD_SHAPES, STATEMENTS } from './grammar.js';
 import { checkId, parentFor, rejectName, skipBlock } from './names.js';
 import { readLook, readOptions } from './options.js';
 import { ID_PATTERN } from './words.js';
+import { optionMistake, withHint } from './mistakes.js';
 
 // 사람 카드가 따로 고르지 않을 때 쓰는 의미 아이콘. 모든 카드가 같은 틀과 머리를 쓰고, 사람은 이 아이콘으로 가른다.
 const PERSON_ICON = 'user';
@@ -24,24 +25,28 @@ export function readNode(statement, ctx) {
     return;
   }
   if (label?.type !== 'text') {
-    ctx.problems.error(line, `write ${shape} as: ${shape} ${id.value} "${shape === 'decision' ? 'question' : 'name'}"`);
+    const written = label?.type === 'word' ? tokens.slice(2).filter((t) => t.type === 'word').map((t) => t.value).join(' ') : undefined;
+    const name = written ?? (shape === 'decision' ? 'question' : 'name');
+    const isNameOption = label?.type === 'option' && label.valueType === 'text';
+    const named = isNameOption ? label.value : name;
+    const hint = written ? 'Quote the name' : isNameOption ? optionMistake(label, []) : undefined;
+    ctx.problems.error(line, withHint(`write ${shape} as: ${shape} ${id.value} "${named}"`, hint), { column: label?.column });
     skipBlock('card', {}, statement, ctx);
     return;
   }
   const scopes = STATEMENTS[shape].scopes ?? [];
-  const options = tail.filter((t) => t.type === 'option');
-  const [sub, ...rest] = tail.filter((t) => !options.includes(t));
-  if (sub && (sub.type !== 'text' || !takesSub)) ctx.problems.error(line, takesSub ? 'the subtitle must be quoted text' : `${shape} takes no subtitle`);
-  if (rest.length) ctx.problems.error(line, `${shape} takes no more words or options`);
-  const found = readOptions(options, { scopes, what: `a ${shape}`, line, ctx });
+  const first = tail.find((t) => t.type !== 'option');
+  const sub = first?.type === 'text' ? first : undefined;
+  if (sub && !takesSub) ctx.problems.error(line, `${shape} takes no subtitle`, { column: sub.column });
+  const found = readOptions(tail.filter((t) => t !== sub), { scopes, what: `a ${shape}`, line, ctx });
   const isTile = found.shape === 'tile';
   const form = found.shape === 'rect' || isTile ? undefined : found.shape;
   checkNodeOptions({ found, form, sub, line }, ctx);
   const { badge, count } = found;
-  const look = readLook(found, { line, ctx });
+  const look = readLook(found);
   const icon = found.icon ?? (shape === 'person' ? PERSON_ICON : undefined);
   const queue = shape === 'queue' ? readQueue({ found, id: id.value, label: label.value, line }, ctx) : undefined;
-  const card = { id: id.value, shape: form ?? shape, label: label.value, sub: sub?.type === 'text' ? sub.value : undefined, badge, icon, count, ...look, tile: isTile || undefined, ...queue, parent: parentFor(id, ctx), line };
+  const card = { id: id.value, shape: form ?? shape, label: label.value, sub: takesSub ? sub?.value : undefined, badge, icon, count, ...look, tile: isTile || undefined, ...queue, parent: parentFor(id, ctx), line };
   ctx.figure.nodes.push(card);
   if (!hasBody) return;
   if (!CARD_SHAPES.includes(card.shape)) {
