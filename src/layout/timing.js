@@ -5,7 +5,8 @@ import { measure } from '../measure/fonts.js';
 import { sizeStatus } from '../draw/status.js';
 import { axisEnd } from '../chart/axis.js';
 import { labelColumn } from '../chart/labels.js';
-import { PAD, ROW, SPACE, TEXT, WIDTH } from '../chart/metrics.js';
+import { CANVAS, FIGURE_PAD } from '../canvas.js';
+import { PAD, ROW, SPACE, TEXT } from '../chart/metrics.js';
 import { makeScale } from '../chart/scale.js';
 
 /** 구간 표시(`note`) 한 줄의 높이. 양쪽 화살표와 그 위 글 한 줄이 든다. */
@@ -24,13 +25,13 @@ const LABEL_PAD = SPACE['2'];
 // vars: r = 줄 수, n = 구간 표시 수
 // basis: estimate
 /**
- * 타이밍 보기 판의 줄 자리. 줄 이름 칸은 차트 행 이름과 같은 규칙이고 시간 축은 맨 아래다.
+ * 타이밍 보기 판의 줄 자리. 판은 캔버스 내용 폭(좁은 배치는 그 차트 폭)이고, 줄 이름 칸은 차트 행 이름과 같은 규칙이며 시간 축은 맨 아래다.
  * 카드 줄의 장면 상태(`status=`)는 시간에 따라 바뀌지 않으므로 띠가 아니라 줄 이름 옆 알약이고, 상태가 있는 카드 줄은 이름 칸에 알약 자리를 더한다.
  * @param view 보기({ id, rows, notes })
  * @param statuses 카드 id → 장면들이 쓰는 상태 종류 집합(figure.steps의 status)
  * @returns { kind: 'timing', id, width, height, rows, plotX, plotRight, axisY, notes, pillX }. rows는 { id, kind, label, y, h, cy, noteY? }이고 cy는 띠의 세로 가운데, noteY는 그 값의 구간 표시 줄 세로 가운데다. pillX는 상태 알약의 왼쪽 끝이다
  */
-export function layoutTiming(view, { width = WIDTH, statuses = new Map() } = {}) {
+export function layoutTiming(view, { width = CANVAS - FIGURE_PAD * 2, statuses = new Map() } = {}) {
   const pillW = Math.max(0, ...view.rows.flatMap((row) => [...(statuses.get(row.id) ?? [])].map((kind) => sizeStatus(kind).w)));
   const nameW = Math.max(0, ...view.rows.map((row) => measure(row.label, TEXT['13'], 'regular')));
   const labelW = Math.max(labelColumn(view.rows.map((row) => row.label)), pillW ? nameW + pillW + SPACE['3'] * 2 : 0);

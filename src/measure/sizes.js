@@ -1,5 +1,6 @@
 // 도형, 카드, 선 라벨 크기를 정한다. 여기서 정한 크기를 배치에 넘기고 그대로 그린다(docs/design/layout.md 도형 크기와 연결점).
 import { plainText } from '../text.js';
+import { CANVAS, FIGURE_PAD } from '../canvas.js';
 import { emptyRegions } from '../source/grid-space.js';
 import { tableDescription } from '../table.js';
 import { tableLayout } from './table.js';
@@ -243,7 +244,13 @@ export function gridLines(node, valueTexts = new Map()) {
   }));
   const fieldStrip = node.rows === 1 && shown.every((cell) => cell.cols > 1) && shown.reduce((sum, cell) => sum + cell.cols, 0) === node.cols;
   const titleRoom = titleW + PAD.x * 2 - GRID.pad * 2;
-  const unitW = isRuler ? Math.max(titleRoom, RULER_WIDTH - GRID.pad * 2) / node.cols : gridUnitWidth(shown, { cols: node.cols, titleRoom, fieldStrip });
+  const widest = (lines) => lines.reduce((width, line) => Math.max(width, measure(line, STYLE.item.size, STYLE.item.face)), 0);
+  const keyTextWidth = Math.max(shown.reduce((width, cell) => Math.max(width, widest(cell.keyLines)), 0), isRuler ? widest([node.rulerUnit]) : 0);
+  const keyWidth = keyTextWidth ? keyTextWidth + GRID.cellPadX + PAD.x - GRID.pad : 0;
+  const regionLines = isRuler ? node.regions.map((region) => wrap(region.label, GRID.textMax, STYLE.item)) : [];
+  const regionW = regionLines.length ? BRACE_W + GRID.cellPadX * 2 + widest(regionLines.flat()) + PAD.x - GRID.pad : 0;
+  // 바이트 배치는 오프셋 칸과 구간 괄호를 뺀 캔버스 내용 폭을 칸 묶음이 다 쓴다.
+  const unitW = isRuler ? Math.max(titleRoom, RULER_WIDTH - GRID.pad * 2 - keyWidth - regionW) / node.cols : gridUnitWidth(shown, { cols: node.cols, titleRoom, fieldStrip });
   const lined = shown.map((cell) => {
     const width = cell.cols * unitW - GRID.cellPadX * 2;
     return {
@@ -253,12 +260,7 @@ export function gridLines(node, valueTexts = new Map()) {
       ...(cell.valueId ? { variants: cell.valueTexts.map((text) => ({ text, lines: wrap(text, width, STYLE.value) })) } : {}),
     };
   });
-  const widest = (lines) => lines.reduce((width, line) => Math.max(width, measure(line, STYLE.item.size, STYLE.item.face)), 0);
-  const keyTextWidth = Math.max(shown.reduce((width, cell) => Math.max(width, widest(cell.keyLines)), 0), isRuler ? widest([node.rulerUnit]) : 0);
-  const keyWidth = keyTextWidth ? keyTextWidth + GRID.cellPadX + PAD.x - GRID.pad : 0;
   const ruler = isRuler ? { step: rulerStep(node.cols, unitW) } : undefined;
-  const regionLines = isRuler ? node.regions.map((region) => wrap(region.label, GRID.textMax, STYLE.item)) : [];
-  const regionW = regionLines.length ? BRACE_W + GRID.cellPadX * 2 + widest(regionLines.flat()) + PAD.x - GRID.pad : 0;
   const result = { titleLines, titleW, unitW, keyWidth, lined, ruler: isRuler ? { ...ruler, regionLines } : undefined, regionW };
   if (!dynamic) gridLinesMemo.set(node.cells, result);
   return result;
@@ -270,8 +272,8 @@ function rulerDetail(cell, node) {
   return cell.isOpen ? undefined : `${cell.rows * cell.cols} ${node.rulerUnit}`;
 }
 
-/** 눈금자 격자의 칸 묶음 폭. 문서 폭 차트와 같은 폭이라 바이트 배치가 문서 폭을 쓰고, 칸 폭은 단위 수에 비례한다. */
-const RULER_WIDTH = SIZE.chart.width;
+/** 바이트 배치(오프셋 칸, 칸 묶음, 구간 괄호를 합친 격자)의 폭. 표준 캔버스에서 그림 둘레 여백을 뺀 내용 폭이라 배치가 문서 폭을 다 쓰고, 칸 폭은 단위 수에 비례한다. */
+const RULER_WIDTH = CANVAS - FIGURE_PAD * 2;
 
 // cost: time O(log c), heap O(1), stack O(1)
 // vars: c = 열 수
