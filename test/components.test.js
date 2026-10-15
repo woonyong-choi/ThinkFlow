@@ -6,9 +6,9 @@ import { test } from 'node:test';
 import { runInNewContext } from 'node:vm';
 
 import { figureFrame } from '../src/html/player-script.js';
-import { getIconCatalog, readIcon } from '../src/vendor/theme/ui/build/icons.mjs';
-import { ToolIcon } from '../src/vendor/theme/ui/toolbar.mjs';
-import { iconBody } from '../src/vendor/theme/ui/svg.mjs';
+import { getIconCatalog, readIcon } from '@woonyong-choi/design-tokens/ui/build/icons.mjs';
+import { ToolIcon } from '@woonyong-choi/design-tokens/ui/toolbar.mjs';
+import { iconBody } from '@woonyong-choi/design-tokens/ui/svg.mjs';
 import { drawTexts } from '../src/draw/texts.js';
 import { edgeMarker } from '../src/draw/arrow.js';
 import { TEXT } from '../src/chart/metrics.js';
@@ -27,7 +27,7 @@ import { PAD } from '../src/measure/card.js';
 import { STYLE, allTexts, textAt, textSpan } from '../src/measure/texts.js';
 import { STYLES } from '../src/styles.js';
 import { centerBaseline } from '../src/text.js';
-import { values } from '../src/vendor/theme/tokens.js';
+import { values } from '@woonyong-choi/design-tokens/tokens.js';
 import { build, thinkflow, descendants, findAll, findOne, num, parseMarkup, textContent, toHtml, toSvg } from './support.js';
 
 const TICK = '`';

@@ -18,7 +18,6 @@ test('P2 the command and static build API are explicit package entry points', ()
   assert.deepEqual(pkg.bin, { thinkflow: 'src/cli.js' });
   assert.deepEqual(pkg.exports, {
     '.': { types: './src/index.d.ts', default: './src/index.js' },
-    './design-manifest.json': './src/vendor/theme/manifest.json',
     './package.json': './package.json',
   });
   assert.equal(pkg.types, './src/index.d.ts');

@@ -7,7 +7,7 @@ import { fileURLToPath } from 'node:url';
 import { chromium } from 'playwright-core';
 
 import { buildFigure, toHtml } from '../../src/index.js';
-import { bindDiagramHost } from '../../src/vendor/theme/ui/runtime/diagram-host.js';
+import { bindDiagramHost } from '@woonyong-choi/design-tokens/ui/runtime/diagram-host.js';
 
 // #272: 실제 CSS·SVG·키보드 스크롤과 홈페이지가 쓰는 iframe 호스트 계약을 함께 확인한다.
 test('narrow HTML preserves readable labels and keyboard access in standalone and embedded views', async () => {

@@ -1,7 +1,7 @@
 // 글의 역할과 모양, 그리고 카드 안 글 한 줄(text)의 자리. 머리의 제목·부제·표시, 열 이름과 형식과 제약, 클래스 멤버, 격자 제목과 칸 글, 내용 줄(태그, 본문, 표시, 값)이 모두 같은 모양이다.
 // 좌표는 도형 왼쪽 위가 원점이다. x는 anchor(start, middle, end)가 가리키는 글의 한 점이고 center는 줄의 세로 가운데다.
 // 그리는 쪽(draw/texts.js)과 이동 글 상자가 피할 사각형(draw/boxes.js)과 그림 검사(check/fit.js)가 같은 text를 읽으므로 글의 자리가 세 곳에서 따로 계산되지 않는다.
-import { values } from '../vendor/theme/tokens.js';
+import { values } from '@woonyong-choi/design-tokens/tokens.js';
 import { measure, wrap } from './fonts.js';
 
 const LEADING = values.leading.normal;

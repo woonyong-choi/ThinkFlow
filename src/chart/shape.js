@@ -1,6 +1,6 @@
 // 꼭짓점과 점의 모양. 범주 번호마다 원, 사각형, 마름모, 삼각형이 돌아가며 정해진다(chart-palette.js 모양 목록). 모양이 달라도 넓이는 원과 같다.
 import { roundCoord as r } from '../text.js';
-import { values } from '../vendor/theme/tokens.js';
+import { values } from '@woonyong-choi/design-tokens/tokens.js';
 
 const BAR_RADIUS = values.radius.sm;
 

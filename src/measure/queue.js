@@ -1,5 +1,5 @@
 // 큐 도형: 이름 아래에 고정 크기 칸을 여러 줄로 놓는다. 빈 칸과 값 변화가 같은 배치를 쓴다(docs/design/figure-syntax.md 큐).
-import { values } from '../vendor/theme/tokens.js';
+import { values } from '@woonyong-choi/design-tokens/tokens.js';
 import { INNER_MAX, PAD } from './card.js';
 import { measure, wrap } from './fonts.js';
 import { STYLE, titleTexts } from './texts.js';

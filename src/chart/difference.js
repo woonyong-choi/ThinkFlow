@@ -2,7 +2,7 @@
 // 길이로 값을 보이는 막대와 달리 위치로 보이므로 0 시작 제약이 없고, 0 자리에 세로선을 긋는다.
 import { measure } from '../measure/fonts.js';
 import { roundCoord as r } from '../text.js';
-import { values } from '../vendor/theme/tokens.js';
+import { values } from '@woonyong-choi/design-tokens/tokens.js';
 import { drawRules, finishRowChart, rowValueScale } from './axis.js';
 import { inkGroup, rowLabelLayout, rowName, valueText } from './labels.js';
 import { dotAttrs } from './legend.js';

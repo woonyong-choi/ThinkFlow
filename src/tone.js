@@ -1,7 +1,7 @@
 // 이름 있는 색(`tone=`, `fill=`, `stroke=`)과 이름 없는 점과 태그가 받는 색의 순서. 이름은 범주 색 도우미(chart-palette.js)의 계열과 무채색 `gray` 하나다.
 // 이름 없는 색의 순서도 같은 도우미(categoryPaint)가 정하고, 상태 색이라고 건너뛰는 자리는 없다.
 import { PALETTE, categoryPaint } from './chart-palette.js';
-import { tokens } from './vendor/theme/tokens.js';
+import { tokens } from '@woonyong-choi/design-tokens/tokens.js';
 
 /** 무채색 이름. 범주 계열이 아니라 명시했을 때만 쓴다. */
 export const NEUTRAL = 'gray';

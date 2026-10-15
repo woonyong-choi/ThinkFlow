@@ -1,14 +1,16 @@
-// 저장소 관문 도구의 계약: 하드코딩 검사(scripts/check-tokens.mjs)와 테마 사본 출처 검사(scripts/sync-theme.mjs --check). 새 프로세스로 돌려 종료 코드와 출력으로만 본다.
+// 저장소 관문 도구의 계약: 하드코딩 검사(design-tokens의 check-tokens.mjs)와 디자인 의존성 선언. 검사는 새 프로세스로 돌려 종료 코드와 출력으로만 본다.
 // 배포하는 명령이 아니라 이 저장소의 `npm run check`가 쓰는 도구라서 시험 이름 첫 낱말(G1~G3)은 요구사항 번호표에 없다.
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
-import { cpSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs';
-import { dirname, join } from 'node:path';
+import { existsSync, readFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
+import { join } from 'node:path';
 import { test } from 'node:test';
 import { ROOT, workspace } from './support.js';
 
 const node = (args, cwd) => spawnSync(process.execPath, args, { cwd, encoding: 'utf8' });
-const checkTokens = (dir) => node([join(ROOT, 'src/vendor/theme/ui/build/check-tokens.mjs'), dir, '--tokens', join(ROOT, 'src/vendor/theme/tokens.json')], ROOT);
+const DESIGN = join(ROOT, 'node_modules/@woonyong-choi/design-tokens/dist');
+const checkTokens = (dir) => node([join(DESIGN, 'ui/build/check-tokens.mjs'), dir, '--tokens', join(DESIGN, 'tokens.json')], ROOT);
 const hits = (run) => run.stdout.trim().split('\n').filter((line) => !line.startsWith('total')).map((line) => line.replace(/^.*[\\/]/, ''));
 
 test('G1 a hard-coded color in JavaScript is found where the language puts it: after a regex or string that contains <!--, and not inside comments or regex literals', (t) => {
@@ -28,15 +30,12 @@ test('G2 a CSS /* */ comment hides its values and the declaration after it is st
   assert.deepEqual(hits(checkTokens(dir)), ['a.css:2: hex color: #00ff00']);
 });
 
-test('G3 an edited design artifact fails verification before rendering', (t) => {
-  const dir = workspace(t);
-  for (const name of ['scripts/check-design.mjs', 'src/vendor/theme']) {
-    mkdirSync(dirname(join(dir, name)), { recursive: true });
-    cpSync(join(ROOT, name), join(dir, name), { recursive: true });
-  }
-  assert.equal(node(['scripts/check-design.mjs'], dir).status, 0);
-  writeFileSync(join(dir, 'src/vendor/theme/tokens.css'), 'changed');
-  const changed = node(['scripts/check-design.mjs'], dir);
-  assert.notEqual(changed.status, 0);
-  assert.match(changed.stderr, /modified design artifact: tokens.css/);
+test('G3 the design is the peer package the host installs, pinned to a commit for this repository, with no copy in src', () => {
+  const pkg = JSON.parse(readFileSync(join(ROOT, 'package.json'), 'utf8'));
+  assert.match(pkg.peerDependencies['@woonyong-choi/design-tokens'], /^\^\d+\.\d+\.\d+$/);
+  assert.match(pkg.devDependencies['@woonyong-choi/design-tokens'], /^github:woonyong-choi\/design-tokens#[0-9a-f]{40}$/);
+  assert.equal(pkg.dependencies['@woonyong-choi/design-tokens'], undefined);
+  assert.equal(existsSync(join(ROOT, 'src/vendor/theme')), false);
+  const resolved = createRequire(join(ROOT, 'src/styles.js')).resolve('@woonyong-choi/design-tokens/tokens.css');
+  assert.equal(resolved, join(DESIGN, 'tokens.css'));
 });

@@ -1,7 +1,7 @@
 import { roundTo } from './format.js';
 // 이동 하나의 글 상자 계획에서 자리를 바꾸는 미끄러짐. 앞 지점의 깨끗한 자리에서 지금 지점의 깨끗한 자리로 미끄러질 수 있는 길을 동적 계획 표에 더한다(docs/design/playback.md 이동 글).
 import { boxAt, CHIP_FRAME_MS, dotAt, isHit, NODE_MS } from './chip-motion.js';
-import { values } from './vendor/theme/tokens.js';
+import { values } from '@woonyong-choi/design-tokens/tokens.js';
 
 /** 글 상자가 점의 움직임에 더해 한 프레임에 움직일 수 있는 최대 거리(px). 미끄러지는 속도의 상한이다. */
 export const CHIP_STEP_MAX = 6;

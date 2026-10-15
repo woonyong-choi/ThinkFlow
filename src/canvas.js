@@ -1,5 +1,5 @@
 // 그림 표시 폭 규칙. 모든 그림은 같은 표준 캔버스 폭으로 보인다(docs/design/layout.md 그림 크기).
-import { values } from './vendor/theme/tokens.js';
+import { values } from '@woonyong-choi/design-tokens/tokens.js';
 
 /** 구조, 순서, 상태, 데이터 그림과 전체 폭 차트의 표시 폭 */
 export const CANVAS = values.spacing.figure["figure-canvas"];

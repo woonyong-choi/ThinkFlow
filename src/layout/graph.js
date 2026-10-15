@@ -1,7 +1,7 @@
 // 구조, 상태, 데이터 관계 그림을 elkjs로 배치한다. 그룹마다 따로 배치하고, 그룹 경계를 넘는 선은 경계마다 연결점을 거친다(docs/design/layout.md).
 import ELK from 'elkjs/lib/elk.bundled.js';
 import { ASPECT_MAX, canvasOf, displayRatio } from '../canvas.js';
-import { values } from '../vendor/theme/tokens.js';
+import { values } from '@woonyong-choi/design-tokens/tokens.js';
 import { toElk } from './elk.js';
 import { LayoutError } from './error.js';
 import { buildModel } from './model.js';

@@ -2,7 +2,7 @@
 // 좁은 배치는 그래프·차트·시간 판을 좁은 컨테이너 폭(COMPACT_WIDTH)에 맞춰 다시 만든 후보다. 이동 글을 원본보다 더 가리면 쓰지 않는다. 순서 판은 다시 만들지 않고 자연 크기를 유지한다.
 import { reflowFigure } from '../build.js';
 import { COMPACT_WIDTH } from '../canvas.js';
-import { values } from '../vendor/theme/tokens.js';
+import { values } from '@woonyong-choi/design-tokens/tokens.js';
 import { figureContent } from './content.js';
 
 const REFLOWED = new Set(['graph', 'plot', 'time']);

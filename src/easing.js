@@ -2,7 +2,7 @@
 // 순수 수학은 motion-math.js가 소유하며 HTML도 같은 함수 원문을 실행한다.
 
 import { motionMath } from './motion-math.js';
-import { values } from './vendor/theme/tokens.js';
+import { values } from '@woonyong-choi/design-tokens/tokens.js';
 
 export const { progressAt, timeAt, paceLength, paceProgress } = motionMath();
 

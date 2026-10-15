@@ -10,7 +10,7 @@ import { rowPulses } from './timeline-rows.js';
 import { createSeg } from './timeline-seg.js';
 import { lightBeat, startedHops, timedHop } from './timeline-timed.js';
 import { valueRows } from './timeline-values.js';
-import { values } from './vendor/theme/tokens.js';
+import { values } from '@woonyong-choi/design-tokens/tokens.js';
 import { initialCardRows } from './values.js';
 
 const DURATION = values.duration;
