@@ -33,10 +33,10 @@ const NOTE_GAP = SPACE['1'];
  */
 export function drawTiming(panel, { glyphs, scene }) {
   const top = panel.rows[0]?.y ?? PAD;
+  // 줄 사이는 구분선 없이 여백으로 나눈다. 줄 이름과 줄 모양이 같은 세로 가운데에 놓여 읽힌다.
   const names = panel.rows.map((row) => {
     glyphs.add(row.label, 'regular');
-    const separator = `<line x1="${PAD}" x2="${r(panel.plotRight)}" y1="${r(row.y + row.h)}" y2="${r(row.y + row.h)}" class="chart-grid"/>`;
-    return labelText(row.label, row.cy, 'chart-label') + separator;
+    return labelText(row.label, row.cy, 'chart-label');
   });
   const scenes = panel.scenes.map((part) => drawScenePart(panel, part, { glyphs, top, shownSi: scene.shownSi, clock: scene.timingClock }));
   return `<g class="fl-timing fl-chart" data-view="${escapeXml(panel.view)}" transform="translate(${r(panel.x)} ${r(panel.y)})">${names.join('')}${scenes.join('')}</g>`;
@@ -92,11 +92,12 @@ function drawHead({ x, y0, y1, end, t0, t1 }, clock) {
 // cost: time O(c), heap O(out), stack O(1)
 // vars: c = 값이 바뀌는 횟수, out = 만든 SVG 글자 수
 // basis: estimate
-// 줄 하나의 장면 모양. 값 줄은 띠나 높낮이 선, 카드 줄은 기준선과 상태 띠다.
+// 줄 하나의 장면 모양. 값 줄은 띠나 높낮이 선, 카드 줄은 생명선이다.
 function drawRow(row, shape, { panel, glyphs, end }) {
   if (shape.wave) return `<polyline points="${shape.wave.map((p) => `${r(p.x)},${r(p.y)}`).join(' ')}" fill="none" stroke="${BAND.border}" stroke-width="${STROKE.edge}" stroke-linejoin="round"/>`;
   if (shape.bands) return shape.bands.map((band) => drawBand(band, row, glyphs)).join('');
-  return `<line x1="${r(panel.plotX)}" x2="${r(end)}" y1="${r(row.cy)}" y2="${r(row.cy)}" class="chart-grid"/>`;
+  // 카드 줄은 순서 보기 참여자의 생명선과 같은 선이다. 이동 화살표가 이 선에서 나가고 들어온다.
+  return `<line x1="${r(panel.plotX)}" x2="${r(end)}" y1="${r(row.cy)}" y2="${r(row.cy)}" class="lifeline"/>`;
 }
 
 // 카드 줄의 장면 상태 알약. 상태는 장면 내내 같으므로 시간 축이 아니라 줄 이름 옆에 놓고, 도형 모서리 알약과 같은 몸통을 쓴다.
