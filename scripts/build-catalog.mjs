@@ -15,7 +15,7 @@ import { supportFiles } from './lib/catalog-support.mjs';
 const EXAMPLES = 'examples';
 // 목록에 나오는 순서. 차트 종류는 문법 표의 차트 종류와 하나씩 맞고, 나머지는 개발 문서에서 자주 그리는 그림이다.
 export const CHART_EXAMPLES = ['bar', 'stacked', 'percent', 'dumbbell', 'difference', 'line', 'step', 'area', 'scatter', 'histogram', 'box', 'ecdf', 'heatmap', 'donut', 'pie', 'waterfall'];
-export const DEVELOPMENT_EXAMPLES = ['architecture', 'flow', 'state', 'schema', 'class', 'api', 'sequence', 'trace', 'metric', 'memory', 'memory-address', 'memory-fault', 'sql-join', 'stack', 'queue', 'pointer', 'integration'];
+export const DEVELOPMENT_EXAMPLES = ['architecture', 'flow', 'state', 'schema', 'class', 'api', 'sequence', 'trace', 'metric', 'memory', 'memory-address', 'memory-fault', 'tcp-header', 'ipv4-header', 'struct-layout', 'sql-join', 'stack', 'queue', 'pointer', 'timing', 'handshake', 'integration'];
 const output = resolve(process.argv[2] ?? '.local/examples');
 
 // cost: time O(n·build), heap O(out), stack O(1), io O(n)
