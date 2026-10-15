@@ -26,8 +26,8 @@ const KINDS = {
 
 // cost: time O(1), heap O(1), stack O(1)
 // basis: estimate
-/** 알약 크기. 왼쪽 안쪽 간격, 기호, 간격, 글자, 오른쪽 안쪽 간격이다. */
-function sizeStatus(kind) {
+/** 알약 크기. 왼쪽 안쪽 간격, 기호, 간격, 글자, 오른쪽 안쪽 간격이다. 타이밍 보기의 카드 줄 알약도 같은 크기다. */
+export function sizeStatus(kind) {
   return { w: SPACE["1-5"] + ICON + SPACE["1"] + measure(KINDS[kind].text, BADGE_STYLE.size, BADGE_STYLE.face) + SPACE["1-5"], h: HEIGHT };
 }
 
@@ -102,19 +102,31 @@ export function statusBoxes(scene, timeline) {
 export function drawStatusPills(scene, timeline, { glyphs, windows, name, isStatic = false }) {
   const drawn = statusPills(timeline).flatMap(({ node, kind, spans }) =>
     instancesOf(scene, node).map((item) => {
-      const { icon, text } = KINDS[kind];
-      const { x, y, w, h } = statusBox(scene.items[item], kind);
-      glyphs.add(text, BADGE_STYLE.face);
-      const markX = x + SPACE["1-5"] + ICON / 2;
-      const textX = x + SPACE["1-5"] + ICON + SPACE["1"];
+      const box = statusBox(scene.items[item], kind);
       return (
         `<g class="fl-status fl-status-${kind}" data-st="${escapeXml(`${name(node, item)}-${kind}`)}" opacity="${isStatic ? 1 : 0}"${hiddenAttr(isStatic)}>` +
-        `<rect x="${r(x)}" y="${r(y)}" width="${r(w)}" height="${r(h)}" rx="${r(h / 2)}" class="status-pill"/>` +
-        `<g class="status-icon" transform="translate(${r(markX - ICON / 2)} ${r(y + (h - ICON) / 2)})">${iconBody(readIcon(icon), { size: ICON, monochrome: true, prefix: `status-${item}-${kind}` })}</g>` +
-        `<text x="${r(textX)}" y="${r(centerBaseline(y + h / 2, BADGE_STYLE.size))}" class="status-text">${text}</text>` +
-        `${windows(spans)}</g>`
+        `${statusPillBody(box, kind, { glyphs, prefix: `status-${item}-${kind}` })}${windows(spans)}</g>`
       );
     }),
   );
   return drawn.length ? `<g class="fl-status-pills">${drawn.join('')}</g>` : '';
+}
+
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+/**
+ * 알약 한 개의 몸통(테두리, 기호, 글자). 색은 감싼 묶음의 `fl-status-종류`가 정한다. 도형 모서리 알약과 타이밍 보기의 카드 줄 알약이 같은 몸통을 쓴다.
+ * @param box 알약 사각형 { x, y, w, h }(sizeStatus의 크기)
+ * @param options { glyphs, prefix }. prefix는 기호 SVG 안 id 앞 글이다
+ */
+export function statusPillBody({ x, y, w, h }, kind, { glyphs, prefix }) {
+  const { icon, text } = KINDS[kind];
+  glyphs.add(text, BADGE_STYLE.face);
+  const markX = x + SPACE["1-5"] + ICON / 2;
+  const textX = x + SPACE["1-5"] + ICON + SPACE["1"];
+  return (
+    `<rect x="${r(x)}" y="${r(y)}" width="${r(w)}" height="${r(h)}" rx="${r(h / 2)}" class="status-pill"/>` +
+    `<g class="status-icon" transform="translate(${r(markX - ICON / 2)} ${r(y + (h - ICON) / 2)})">${iconBody(readIcon(icon), { size: ICON, monochrome: true, prefix })}</g>` +
+    `<text x="${r(textX)}" y="${r(centerBaseline(y + h / 2, BADGE_STYLE.size))}" class="status-text">${text}</text>`
+  );
 }

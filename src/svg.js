@@ -47,7 +47,7 @@ export async function toSvg(result, { scene: selector = 0, isStatic = false, nam
   const shownHeight = height * scale;
   const fonts = await embedFonts(glyphs.used);
   const title = figure.title ?? name;
-  const chartStyle = charts.length || result.scene.times.length ? STYLES.chart : '';
+  const chartStyle = charts.length || usesChartRoles(result.scene) ? STYLES.chart : '';
   const place = (layer, className) => `<g${className ? ` class="${className}"` : ''} transform="translate(${r((width - layer.content.width) / 2)} 0)">\n${layer.content.svg}\n</g>`;
   const layers = stillLayer ? `${place(motionLayer, 'fl-motion')}\n${place({ content: { ...stillLayer.content, svg: scopeIds(stillLayer.content.svg, 'still-') } }, 'fl-still')}` : place(motionLayer);
   const head = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="fl" width="${r(shownWidth)}" height="${r(shownHeight)}" viewBox="0 0 ${r(width)} ${r(height)}" role="img" data-scene="${si}" data-mode="${mode}">
@@ -73,8 +73,13 @@ ${layers}
 function drawLayer(result, { si, timeline, clock, glyphs, charts, root, prefix }) {
   const animator = createAnimator(timeline, clock, { prefix, root });
   for (const chart of charts) animator.chart(chart);
-  const content = drawBody({ ...result, scene: { ...withFrames(result.scene, { timeline, clock }), shownSi: si } }, { animator, glyphs, timeline });
+  const content = drawBody({ ...result, scene: { ...withFrames(result.scene, { timeline, clock }), shownSi: si, timingClock: clock } }, { animator, glyphs, timeline });
   return { content, css: animator.css };
+}
+
+// 차트 밖에서 차트 역할(눈금, 격자, 표식 선)을 쓰는 판: 추적의 시간 보기, 타이밍 보기, 눈금자 격자의 틀과 괄호.
+function usesChartRoles(scene) {
+  return scene.times.length > 0 || (scene.timings?.length ?? 0) > 0 || scene.items.some((it) => it.rulerUnit !== undefined);
 }
 
 // cost: time O(n), heap O(n), stack O(1)
