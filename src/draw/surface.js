@@ -4,9 +4,8 @@ import { bodyOf } from '../measure/decor.js';
 import { roundCoord as r } from '../text.js';
 import { values } from '../vendor/theme/tokens.js';
 
-/** 모서리 반지름의 역할: 바깥 면(카드), 그 안에 놓이는 면(내용, 칸 묶음, 메모), 뾰족한 꼭짓점(갈림길 마름모). 모두 토큰이다.
- * 마름모의 예각 끝은 같은 반지름이어도 접점이 꼭짓점에서 훨씬 멀어져 뭉툭해 보이므로 카드보다 작은 반지름을 쓴다. */
-export const CORNER = Object.freeze({ outer: values.radius.lg, inner: values.radius.md, tip: values.radius.sm });
+/** 모서리 반지름의 두 역할: 바깥 면(카드)과 그 안에 놓이는 면(내용, 칸 묶음, 메모). 둘 다 토큰이다. */
+export const CORNER = Object.freeze({ outer: values.radius.lg, inner: values.radius.md });
 
 /** 사각형 윤곽 여는 글(닫지 않음): 속성이 이어질 자리를 남긴다. */
 export function rectOpen({ x, y, w, h }, radius) {
