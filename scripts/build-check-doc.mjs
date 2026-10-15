@@ -11,4 +11,10 @@ if (start < 0 || end < start) {
   process.stderr.write(`${DOC.pathname}: put ${DOC_START} and ${DOC_END} where the check table goes\n`);
   process.exit(1);
 }
-writeFileSync(DOC, `${text.slice(0, start + DOC_START.length)}\n${renderCheckTable()}\n${text.slice(end)}`);
+const output = `${text.slice(0, start + DOC_START.length)}\n${renderCheckTable()}\n${text.slice(end)}`;
+if (process.argv.includes('--check')) {
+  if (output !== text) {
+    process.stderr.write(`${DOC.pathname}: generated table is stale\n`);
+    process.exitCode = 1;
+  }
+} else writeFileSync(DOC, output);

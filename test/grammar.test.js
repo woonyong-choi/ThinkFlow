@@ -143,6 +143,10 @@ test('V6 every independent error is reported at once, in line order, with the sa
 
 test('V6 a malformed block header or a rejected name is one error: its inner lines and its group add none', async () => {
   const cases = [
+    'unknown g {\n}\n',
+    'class Bad "T" {\n  nonsense\n}\n',
+    'grid Bad "T" {\n  nonsense\n}\n',
+    'table t "T" broken= {\n  id int\n}\n',
     'table users {\n  id int pk\n}\n',
     'table Bad "T" {\n  id int\n  pk (id)\n}\n',
     'table Bad "T" {\n  id int\n  unique (id)\n}\n',
@@ -186,4 +190,40 @@ test('V7 ports are card.part with exactly one dot; classes expose no ports and p
     assert.ok(problems.some((p) => message.test(p.message)), `${edge} -> ${JSON.stringify(problems)}`);
   }
   await build(thinkflow(`${base}b -> t.id\n`));
+});
+
+// 소비자 조사 T-E14: 다른 문장의 오류가 독립적인 값 진단을 가리지 않는다.
+test('V6 앞선 문법 오류가 keep과 set 진단을 숨기지 않는다', async () => {
+  const source = thinkflow('box a "A"\nbox b "B"\nvalue n "N" on=a\na -> b\nbogus bad\nscene "시작"\nscene "다음" keep="missing"\n  a -> b set="n:=absent"\n');
+  const problems = await reject(source);
+  for (const name of ['bogus', 'missing', 'absent']) assert.ok(problems.some(p => p.message.includes(name)), name);
+});
+
+test('원인 하나가 잘못된 reveal 순서와 else 진단으로 번지지 않는다', async () => {
+  const missing = await reject(thinkflow(`chart c "Chart" stacked {
+    x "Value(count)"
+    series a "A"
+    series b "B"
+    row "row" a=1 b=2
+  }
+  scene "s" mode=once
+    reveal c.missing
+    reveal c.a
+    reveal c.b`));
+  assert.equal(missing.length, 1);
+  assert.match(missing[0].message, /unknown series/);
+  const orphan = await reject(thinkflow(`box a "A"\nbox b "B"\na -> b\nscene "s" mode=once\n a -> b else=a`));
+  assert.equal(orphan.length, 1);
+  assert.match(orphan[0].message, /else/);
+});
+
+test('계단과 누적 분포의 값 축 단위를 검사하고 음수 원형 값은 한 번 진단한다', async () => {
+  for (const [kind, rows, axis] of [['step', 'series v "v"\npoint x=0 v=2', 'y'], ['ecdf', 'sample 2', 'x']]) {
+    const errors = await reject(thinkflow(`chart c "Chart" ${kind} {\n${rows}\n}`));
+    assert.equal(errors.length, 1);
+    assert.match(errors[0].message, new RegExp(`${axis} "latency`));
+  }
+  const negative = await reject(thinkflow('chart c "Chart" pie {\nrow "A" value=-1\n}'));
+  assert.equal(negative.length, 1);
+  assert.match(negative[0].message, /negative/);
 });

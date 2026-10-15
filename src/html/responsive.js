@@ -1,5 +1,5 @@
 // HTML은 원본 시간표를 유지한 좁은 배치를 함께 싣는다. 브라우저에서 배치나 사건을 다시 계산하지 않는다.
-// 좁은 배치는 그래프·차트·시간 판을 좁은 컨테이너 폭(COMPACT_WIDTH)에 맞춰 다시 만든 후보다. 이동 글을 원본보다 더 가리면 쓰지 않는다. 순서 판은 다시 만들지 않고 다른 판과 같은 비율로 줄어 구역 안에 들어온다(html.js panelsMarkup).
+// 좁은 배치는 그래프·차트·시간 판을 좁은 컨테이너 폭(COMPACT_WIDTH)에 맞춰 다시 만든 후보다. 이동 글을 원본보다 더 가리면 쓰지 않는다. 순서 판은 다시 만들지 않고 자연 크기를 유지한다.
 import { reflowFigure } from '../build.js';
 import { COMPACT_WIDTH } from '../canvas.js';
 import { values } from '../vendor/theme/tokens.js';
@@ -13,7 +13,7 @@ const REFLOWED = new Set(['graph', 'plot', 'time']);
 /**
  * 좁은 배치의 내용. 다시 만들 판(그래프, 차트, 시간) 가운데 컨테이너보다 넓은 판이 없거나 다시 만들어도 좁아지지 않으면 undefined다.
  * 사건과 시각은 원본 시간표와 같고 그래프의 경로와 차트·시간축의 그림 폭만 다르다. 후보는 이동 글 경고(검사 7번)가 원본보다 늘지 않을 때만 쓴다.
- * 그래프 후보가 시각을 보존하지 못하거나 경고를 늘리면 차트만 좁힌 후보를 같은 기준으로 보고, 그것도 안 되면 undefined라 원본 배치를 폭에 맞춰 줄인다.
+ * 그래프 후보가 시각을 보존하지 못하거나 경고를 늘리거나, 목표 폭을 넘으면서 더 길어지면 차트만 좁힌 후보를 같은 기준으로 본다.
  */
 export async function responsiveContent(result, glyphs) {
   const wide = result.scene.panels;
@@ -33,10 +33,18 @@ async function reflowNarrow(result, hasGraph) {
   const keeps = (narrow) => movingTextWarnings(narrow) <= movingTextWarnings(result);
   if (hasGraph) {
     const graph = await reflowGraph(result);
-    if (graph && keeps(graph)) return graph;
+    if (graph && keeps(graph) && keepsGraphHeight(result, graph)) return graph;
   }
   const charts = await reflowFigure(result, { chartWidth: COMPACT_WIDTH });
   return keeps(charts) ? charts : undefined;
+}
+
+// cost: time O(p), heap O(1), stack O(1)
+// vars: p = 판 수
+// basis: estimate
+// 가로 탐색이 여전히 필요한 그래프는 본문 높이와 장면 탭까지의 거리도 함께 늘리지 않는다.
+function keepsGraphHeight(wide, narrow) {
+  return narrow.scene.panels.every((panel, i) => panel.strategy !== 'graph' || panel.box.w <= COMPACT_WIDTH || panel.box.h <= wide.scene.panels[i].box.h);
 }
 
 // 그래프도 좁은 폭에 배치한다. 새 배치에서 사건 시각을 보존할 수 없으면(layout-timing) undefined다. 다른 오류는 그대로 던진다.

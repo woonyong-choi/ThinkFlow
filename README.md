@@ -7,6 +7,8 @@
 
 # ThinkFlow
 
+Generated HTML uses the same light and dark logos as this README for its browser tab icon, including offline files.
+
 English | [한국어](README.ko.md)
 
 Turn one `.thinkflow` text source into an animated SVG figure for documentation: structure, sequences, states, schemas, classes, traces, and charts, with values that change as dots arrive.
@@ -100,7 +102,7 @@ how-it-works.svg
 how-it-works.html
 ```
 
-The SVG animates without scripts and plays the first scene by its `mode`; `--scene 2` or `--scene "Chat"` picks another scene. A scene name made only of digits is an error, because `--scene` would read it as a scene number. The HTML adds scene tabs and a toolbar on the figure, and a scene never advances to the next one by itself. The toolbar is the same for every figure, standalone or embedded, and holds three actions, left to right: copy the `.thinkflow` source, download the figure as standalone HTML, and fullscreen (which also zooms). The toolbar is not set per figure in the source. There are no play, pause, speed, or repeat buttons; each scene's `mode` decides how it plays. `--static` writes a still SVG of the chosen scene's last state: no dots or pulses, values, cards, and charts at their final state, and any `light` the scene left on. A document without scenes is a still figure that shows the values it declares. An animated SVG used as an `<img>` cannot honor `prefers-reduced-motion` in Chrome; inline it, open it directly, or use `<picture>` with a `media` source that points to the `--static` SVG.
+The SVG animates without scripts and plays the first scene by its `mode`; `--scene 2` or `--scene "Chat"` picks another scene. A scene name made only of digits is an error, because `--scene` would read it as a scene number. The HTML adds scene tabs and a toolbar on the figure, and a scene never advances to the next one by itself. The toolbar is the same for every figure, standalone or embedded, and holds three actions, left to right: copy the `.thinkflow` source, download the figure as standalone HTML, and fullscreen (which also zooms). The toolbar is not set per figure in the source. There are no play, pause, speed, or repeat buttons; each scene's `mode` decides how it plays. `--static` writes a still SVG of the chosen scene's last state: no dots or pulses, values, cards, and charts at their final state, and any `light` the scene left on. A document without scenes is a still figure that shows the values it declares. An animated SVG used as an `<img>` cannot honor `prefers-reduced-motion` in Chrome; inline it, open it directly, or use `<picture>` with a `media` source that points to the `--static` SVG. Horizontal growth uses shared start/end modifiers; consumers pass the direction determined by their geometry.
 
 ### Check a figure
 
@@ -170,9 +172,9 @@ A source must start with `thinkflow`, and only `.thinkflow` files are read. A fi
 - Values that move with the event: a card shows a value, a chart row can read it, and the same event updates both. Changed marks flash and the axes stay put.
 - Architecture diagrams: `no=` numbers edges so the order reads in still images, `badge=` adds a short letter badge that survives in black and white, `count=` stacks N replicas of one role, and `icon=` uses the bundled icons or your own set registered with `icons name "folder"`.
 - Cell grids: bit fields, arrays, stacks, and matrices drawn cell by cell, with lines that start and end at a single cell.
-- Charts: bar, stacked, percent, dumbbell, difference, line, step, area, scatter, histogram, box, ECDF, heatmap, donut, pie, and waterfall. Series are not limited to two. Color is never the only cue: point shapes follow the series number, line, step, area, and ECDF series get end names, bar, scatter, and pie or donut series get numbered keys, and past seven colors patterns are added. A missing value is not a zero (histograms leave a missing sample out of the count, waterfalls do not know the running total after a missing step, and a box with a missing number draws no box), and a reference series draws an expected value apart from the measured one. Values come from the source or a JSON file.
+- Charts: bar, stacked, percent, dumbbell, difference, line, step, area, scatter, histogram, box, ECDF, heatmap, donut, pie, and waterfall. Series are not limited to two. Color is never the only cue: measured points use circles, line, step, and area series get end names, ECDF series use the legend without endpoint leaders, bar, scatter, and pie or donut series get numbered keys, and past seven colors patterns are added. A missing value is not a zero (histograms leave a missing sample out of the count, waterfalls do not know the running total after a missing step, and a box with a missing number draws no box), and reference series in line, step, area, and ECDF charts use neutral dashed curves without point markers. Values come from the source or a JSON file.
 - Colors: eight names (`blue`, `yellow`, `red`, `green`, `orange`, `purple`, `cyan`, `gray`) for `tone=`. Cards, groups, and `show` rows add `appearance=plain|filled|outline`: plain keeps a neutral surface with the colored icon and small marks, filled uses a light surface of the same family, and outline uses a same-family border on a neutral surface. Text reaches contrast 4.5 and shape outlines 3 on the surface they sit on, in light and dark. The yellow series border in light-mode charts stays below 3, so direct labels, numbered keys, patterns, and shapes tell series apart as well. Text uses the embedded Pretendard and JetBrains Mono files.
-- Layout: elkjs layout with per-group direction, using shape sizes measured with the embedded fonts. Text is never shrunk to make a shape fit. On a narrow page the graph and chart panels are redrawn for the container width, and a panel that still does not fit shrinks together with the other panels by one shared ratio (never above its natural size); read small text in full screen and zoom. The narrow layout is built when the HTML is written and gets the same checks, so a source that passes `check` can still fail `render --html` if its text does not fit at the narrow width.
+- Layout: elkjs layout with per-group direction, using shape sizes measured with the embedded fonts. Text is never shrunk to make a shape fit. On a narrow page the graph and chart panels are redrawn for the container width, and panels keep their natural text size. If a panel still does not fit, scroll horizontally within the figure using touch, a trackpad, or the arrow keys after focusing the figure. Fullscreen still offers a fitted overview and zoom. The narrow layout is built when the HTML is written and gets the same checks, so a source that passes `check` can still fail `render --html` if its text does not fit at the narrow width.
 - Figure check: overlaps, edges through nodes, crowded edges, aspect ratio, and readability.
 - Playback: an HTML player and an animated SVG from the same timeline.
 - Markdown: `thinkflow md` renders the `thinkflow` code blocks of a document and keeps the image lines below them up to date, and a GitHub Action checks them in CI.
@@ -199,6 +201,8 @@ Find all guides and detailed designs in the [documentation index](docs/README.md
 
 ## Development
 
+The shared design keeps diagram canvases separate from the page and uses readable neutral outlines in both light and dark themes. Value-change overlays also use shared paint roles; the renderer supplies only mark geometry and series effect values. Horizontal growth uses shared start/end modifiers; consumers pass the direction determined by their geometry. Bright-series point outlines also use a shared color input instead of inline stroke overrides.
+
 The homepage sync delivers the renderer, shared design, and public document snapshot at the same Git revision. See [Architecture](docs/architecture.md).
 
 ```sh
@@ -221,3 +225,5 @@ See [CONTRIBUTING](.github/CONTRIBUTING.md) for branches, commits, and pull requ
 ## License
 
 [MIT](LICENSE)
+
+Chart growth shapes and HTML playback styles are shared by the design source; ThinkFlow owns scene timing for SVG output.

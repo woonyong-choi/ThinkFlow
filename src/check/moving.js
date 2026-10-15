@@ -15,7 +15,9 @@ const SHARE_MIN = values.scale['chip-visible-share'];
 // basis: estimate
 // 7번: 이동의 계획 지점(2프레임 간격)마다 정한 글 상자(점 위, 안 되면 아래)가 그림 안에 있고 도형 이름, 열, 그룹 제목, 도형 테두리, 선 라벨 알약을 가리지 않는다.
 // 글 상자가 그림보다 넓거나 위아래 어디에도 들어가지 않으면 오류, 위아래 어디에 두어도 글자를 가리면 경고다.
-export function checkChips({ scene, timeline }, problems) {
+export function checkChips(context, problems) {
+  const { scene, timeline } = context;
+  context.hiddenChipWarnings = 0;
   const avoid = [...chipObstacles(scene, timeline), ...chipLines(scene)];
   const reported = new Set();
   for (const seg of timeline.segs) {
@@ -23,7 +25,9 @@ export function checkChips({ scene, timeline }, problems) {
       const key = `${hop.track === undefined ? hop.edge : `t${hop.track}`}\u0000${hop.data?.join('\u0000')}`;
       if (!hop.data || reported.has(key)) continue;
       reported.add(key);
-      reportChip(hop, { path: pathName(hop, scene, timeline), issues: issuesOfHop(scene, hop, avoid), scene }, problems);
+      const before = problems.warnings.length;
+      const hidden = reportChip(hop, { path: pathName(hop, scene, timeline), issues: issuesOfHop(scene, hop, avoid), scene }, problems);
+      if (hidden) context.hiddenChipWarnings += problems.warnings.length - before;
     }
   }
   reportClashes(findClashes(scene, timeline), problems);
@@ -66,10 +70,11 @@ function reportChip(hop, { scene, issues, path }, problems) {
   if (hop.track !== undefined) {
     const hidden = Math.round((issues.filter((issue) => issue.hits.length).length / issues.length) * 100);
     problems.warn(hop.line ?? 1, `[check 7] moving text "${text}" is hidden for ${hidden}% of the time it is on screen because it would cover "${covered.hits[0]}" at ${percent(covered.at)}% of ${path}. Shorten the moving text or lengthen the edge so the text fits between the shapes`);
-    return;
+    return true;
   }
   // 박자 이동의 글은 정보라서 보이는 시간이 SHARE_MIN 이상이어야 한다. 모자라면 숨는 시간을 알린다.
   const share = visibleShare({ route: flattenRoute(scene.edges[hop.edge].points), hop, chip: sizeChip(hop.data) }, hop.chipPath);
   if (share >= SHARE_MIN) return;
   problems.warn(hop.line ?? 1, `[check 7] moving text "${text}" is hidden for ${Math.round((1 - share) * 100)}% of the time it is on screen because it would cover "${covered.hits[0]}" at ${percent(covered.at)}% of ${path}. Shorten the moving text or lengthen the edge so the text fits beside the dot`);
+  return true;
 }

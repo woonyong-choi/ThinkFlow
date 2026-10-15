@@ -152,14 +152,19 @@ export const tokens = freeze({
         "5": "var(--color-data-category-label-5)",
         "6": "var(--color-data-category-label-6)",
         "7": "var(--color-data-category-label-7)"
-      }
+      },
+      "reference": "var(--color-data-reference)"
     },
     "figure": {
       "icon": "var(--color-figure-icon)",
       "queue-empty": "var(--color-figure-queue-empty)",
       "number-fill": "var(--color-figure-number-fill)",
       "number-ink": "var(--color-figure-number-ink)",
-      "outline": "var(--color-figure-outline)"
+      "outline": "var(--color-figure-outline)",
+      "selection-fill": "var(--color-figure-selection-fill)",
+      "canvas": "var(--color-figure-canvas)",
+      "flash": "var(--color-figure-flash)",
+      "active-surface": "var(--color-figure-active-surface)"
     },
     "paint": {
       "red": {
@@ -320,7 +325,9 @@ export const tokens = freeze({
         "dark-tint-1": "var(--color-category-blue-dark-tint-1)",
         "dark-tint-3": "var(--color-category-blue-dark-tint-3)",
         "light-effect": "var(--color-category-blue-light-effect)",
-        "dark-effect": "var(--color-category-blue-dark-effect)"
+        "dark-effect": "var(--color-category-blue-dark-effect)",
+        "solid": "var(--color-category-blue-solid)",
+        "on-solid": "var(--color-category-blue-on-solid)"
       },
       "yellow": {
         "anchor": "var(--color-category-yellow-anchor)",
@@ -333,7 +340,9 @@ export const tokens = freeze({
         "dark-ink": "var(--color-category-yellow-dark-ink)",
         "dark-tint-1": "var(--color-category-yellow-dark-tint-1)",
         "light-effect": "var(--color-category-yellow-light-effect)",
-        "dark-effect": "var(--color-category-yellow-dark-effect)"
+        "dark-effect": "var(--color-category-yellow-dark-effect)",
+        "solid": "var(--color-category-yellow-solid)",
+        "on-solid": "var(--color-category-yellow-on-solid)"
       },
       "red": {
         "anchor": "var(--color-category-red-anchor)",
@@ -346,7 +355,9 @@ export const tokens = freeze({
         "dark-ink": "var(--color-category-red-dark-ink)",
         "dark-tint-1": "var(--color-category-red-dark-tint-1)",
         "light-effect": "var(--color-category-red-light-effect)",
-        "dark-effect": "var(--color-category-red-dark-effect)"
+        "dark-effect": "var(--color-category-red-dark-effect)",
+        "solid": "var(--color-category-red-solid)",
+        "on-solid": "var(--color-category-red-on-solid)"
       },
       "green": {
         "anchor": "var(--color-category-green-anchor)",
@@ -359,7 +370,9 @@ export const tokens = freeze({
         "dark-ink": "var(--color-category-green-dark-ink)",
         "dark-tint-1": "var(--color-category-green-dark-tint-1)",
         "light-effect": "var(--color-category-green-light-effect)",
-        "dark-effect": "var(--color-category-green-dark-effect)"
+        "dark-effect": "var(--color-category-green-dark-effect)",
+        "solid": "var(--color-category-green-solid)",
+        "on-solid": "var(--color-category-green-on-solid)"
       },
       "orange": {
         "anchor": "var(--color-category-orange-anchor)",
@@ -372,7 +385,9 @@ export const tokens = freeze({
         "dark-ink": "var(--color-category-orange-dark-ink)",
         "dark-tint-1": "var(--color-category-orange-dark-tint-1)",
         "light-effect": "var(--color-category-orange-light-effect)",
-        "dark-effect": "var(--color-category-orange-dark-effect)"
+        "dark-effect": "var(--color-category-orange-dark-effect)",
+        "solid": "var(--color-category-orange-solid)",
+        "on-solid": "var(--color-category-orange-on-solid)"
       },
       "purple": {
         "anchor": "var(--color-category-purple-anchor)",
@@ -385,7 +400,9 @@ export const tokens = freeze({
         "dark-ink": "var(--color-category-purple-dark-ink)",
         "dark-tint-1": "var(--color-category-purple-dark-tint-1)",
         "light-effect": "var(--color-category-purple-light-effect)",
-        "dark-effect": "var(--color-category-purple-dark-effect)"
+        "dark-effect": "var(--color-category-purple-dark-effect)",
+        "solid": "var(--color-category-purple-solid)",
+        "on-solid": "var(--color-category-purple-on-solid)"
       },
       "cyan": {
         "anchor": "var(--color-category-cyan-anchor)",
@@ -398,7 +415,9 @@ export const tokens = freeze({
         "dark-ink": "var(--color-category-cyan-dark-ink)",
         "dark-tint-1": "var(--color-category-cyan-dark-tint-1)",
         "light-effect": "var(--color-category-cyan-light-effect)",
-        "dark-effect": "var(--color-category-cyan-dark-effect)"
+        "dark-effect": "var(--color-category-cyan-dark-effect)",
+        "solid": "var(--color-category-cyan-solid)",
+        "on-solid": "var(--color-category-cyan-on-solid)"
       }
     },
     "figure-data-line": "var(--color-figure-data-line)",
@@ -410,14 +429,24 @@ export const tokens = freeze({
     "landing-newsletter-note-ink": "var(--color-landing-newsletter-note-ink)",
     "feature-tab-ink": "var(--color-feature-tab-ink)",
     "gallery-selected-ink": "var(--color-gallery-selected-ink)",
-    "tag-background": "var(--color-tag-background)"
+    "tag-background": "var(--color-tag-background)",
+    "help-grouped-bg": "var(--color-help-grouped-bg)",
+    "document-nav-active-ink": "var(--color-document-nav-active-ink)",
+    "workspace": {
+      "sidebar": "var(--color-workspace-sidebar)",
+      "document": "var(--color-workspace-document)",
+      "toolbar": "var(--color-workspace-toolbar)",
+      "hover": "var(--color-workspace-hover)",
+      "selected": "var(--color-workspace-selected)"
+    }
   },
   "font": {
     "sans": "var(--font-sans)",
     "mono": "var(--font-mono)",
     "figure-sans": "var(--font-figure-sans)",
     "figure-mono": "var(--font-figure-mono)",
-    "key-font": "var(--font-key-font)"
+    "key-font": "var(--font-key-font)",
+    "ui": "var(--font-ui)"
   },
   "spacing": {
     "1": "var(--spacing-1)",
@@ -655,7 +684,10 @@ export const tokens = freeze({
     "focus-offset": "var(--spacing-focus-offset)",
     "icon": "var(--spacing-icon)",
     "control": "var(--spacing-control)",
-    "newsletter-button-margin": "var(--spacing-newsletter-button-margin)"
+    "newsletter-button-margin": "var(--spacing-newsletter-button-margin)",
+    "tool-icon": "var(--spacing-tool-icon)",
+    "tool-target": "var(--spacing-tool-target)",
+    "toolbar": "var(--spacing-toolbar)"
   },
   "radius": {
     "lg": "var(--radius-lg)",
@@ -684,7 +716,9 @@ export const tokens = freeze({
     "search-result-radius": "var(--radius-search-result-radius)",
     "prose-rounded-radius": "var(--radius-prose-rounded-radius)",
     "newsletter-input-radius": "var(--radius-newsletter-input-radius)",
-    "newsletter-button-radius": "var(--radius-newsletter-button-radius)"
+    "newsletter-button-radius": "var(--radius-newsletter-button-radius)",
+    "help-grouped-radius": "var(--radius-help-grouped-radius)",
+    "tooltip-radius": "var(--radius-tooltip-radius)"
   },
   "shadow": {
     "help-hover-shadow": "var(--shadow-help-hover-shadow)",
@@ -741,7 +775,8 @@ export const tokens = freeze({
     "figure-meta": "var(--text-figure-meta)",
     "landing-newsletter-note": "var(--text-landing-newsletter-note)",
     "newsletter-button-font": "var(--text-newsletter-button-font)",
-    "5xl": "var(--text-5xl)"
+    "5xl": "var(--text-5xl)",
+    "tool": "var(--text-tool)"
   },
   "leading": {
     "body-sm": "var(--leading-body-sm)",
@@ -1073,6 +1108,9 @@ export const tokens = freeze({
     "icon-accent-soft": "var(--primitive-icon-accent-soft)",
     "icon-accent-edge": "var(--primitive-icon-accent-edge)",
     "icon-positive": "var(--primitive-icon-positive)",
+    "icon-positive-edge": "var(--primitive-icon-positive-edge)",
+    "icon-positive-soft": "var(--primitive-icon-positive-soft)",
+    "icon-line": "var(--primitive-icon-line)",
     "icon-critical": "var(--primitive-icon-critical)",
     "icon-critical-edge": "var(--primitive-icon-critical-edge)",
     "icon-critical-soft": "var(--primitive-icon-critical-soft)",
@@ -1094,7 +1132,6 @@ export const tokens = freeze({
     "control-task-ink": "var(--primitive-control-task-ink)",
     "control-task-stroke": "var(--primitive-control-task-stroke)",
     "prose-rule-color": "var(--primitive-prose-rule-color)",
-    "prose-caption-color": "var(--primitive-prose-caption-color)",
     "prose-link-active": "var(--primitive-prose-link-active)",
     "prose-script-weight": "var(--primitive-prose-script-weight)",
     "prose-definition-margin": "var(--primitive-prose-definition-margin)",
@@ -1173,7 +1210,19 @@ export const tokens = freeze({
     "icon-device-glass": "var(--primitive-icon-device-glass)",
     "icon-device-glass-opacity": "var(--primitive-icon-device-glass-opacity)",
     "icon-key-surface": "var(--primitive-icon-key-surface)",
-    "icon-sheet": "var(--primitive-icon-sheet)"
+    "icon-sheet": "var(--primitive-icon-sheet)",
+    "transparent": "var(--primitive-transparent)",
+    "help-grouped-radius": "var(--primitive-help-grouped-radius)",
+    "tooltip-radius": "var(--primitive-tooltip-radius)",
+    "ui-font": "var(--primitive-ui-font)",
+    "icon-structure-edge": "var(--primitive-icon-structure-edge)",
+    "icon-neutral-soft": "var(--primitive-icon-neutral-soft)",
+    "icon-slate": "var(--primitive-icon-slate)",
+    "icon-slate-edge": "var(--primitive-icon-slate-edge)",
+    "icon-idea-soft": "var(--primitive-icon-idea-soft)",
+    "icon-rose": "var(--primitive-icon-rose)",
+    "icon-violet": "var(--primitive-icon-violet)",
+    "icon-positive-tint-edge": "var(--primitive-icon-positive-tint-edge)"
   },
   "breakpoint": {
     "mobile": "var(--breakpoint-mobile)",
@@ -1265,6 +1314,8 @@ export const tokens = freeze({
   "icon": {
     "paper": "var(--icon-paper)",
     "outline": "var(--icon-outline)",
+    "structure-edge": "var(--icon-structure-edge)",
+    "control-edge": "var(--icon-control-edge)",
     "detail": "var(--icon-detail)",
     "neutral": "var(--icon-neutral)",
     "neutral-edge": "var(--icon-neutral-edge)",
@@ -1272,6 +1323,9 @@ export const tokens = freeze({
     "accent-soft": "var(--icon-accent-soft)",
     "accent-edge": "var(--icon-accent-edge)",
     "positive": "var(--icon-positive)",
+    "positive-edge": "var(--icon-positive-edge)",
+    "positive-soft": "var(--icon-positive-soft)",
+    "line": "var(--icon-line)",
     "critical": "var(--icon-critical)",
     "critical-soft": "var(--icon-critical-soft)",
     "warm-soft": "var(--icon-warm-soft)",
@@ -1286,6 +1340,7 @@ export const tokens = freeze({
     "cloud-edge": "var(--icon-cloud-edge)",
     "device-screen": "var(--icon-device-screen)",
     "brand": {
+      "github": "var(--icon-brand-github)",
       "postgresql": "var(--icon-brand-postgresql)",
       "nginx": "var(--icon-brand-nginx)"
     },
@@ -1293,7 +1348,14 @@ export const tokens = freeze({
     "device-glass": "var(--icon-device-glass)",
     "device-glass-opacity": "var(--icon-device-glass-opacity)",
     "key-surface": "var(--icon-key-surface)",
-    "sheet": "var(--icon-sheet)"
+    "sheet": "var(--icon-sheet)",
+    "neutral-soft": "var(--icon-neutral-soft)",
+    "slate": "var(--icon-slate)",
+    "slate-edge": "var(--icon-slate-edge)",
+    "idea-soft": "var(--icon-idea-soft)",
+    "rose": "var(--icon-rose)",
+    "violet": "var(--icon-violet)",
+    "positive-tint-edge": "var(--icon-positive-tint-edge)"
   },
   "container": {
     "page": "var(--container-page)",
@@ -1446,20 +1508,20 @@ export const values = freeze({
       "category": {
         "1": "#1e6bd6",
         "2": "#f2d024",
-        "3": "#fa1955",
-        "4": "#269c6e",
-        "5": "#ff8906",
+        "3": "#cc0041",
+        "4": "#00744e",
+        "5": "#9d5100",
         "6": "#7d40c8",
-        "7": "#25c0cf"
+        "7": "#00717b"
       },
       "category-outline": {
         "1": "#1e6bd6",
         "2": "#d6b600",
-        "3": "#fa1955",
-        "4": "#149265",
-        "5": "#c46800",
+        "3": "#cc0041",
+        "4": "#00744e",
+        "5": "#9d5100",
         "6": "#7d40c8",
-        "7": "#008e9a"
+        "7": "#00717b"
       },
       "category-ink": {
         "1": "#1161cb",
@@ -1491,11 +1553,11 @@ export const values = freeze({
       "category-on": {
         "1": "#ffffff",
         "2": "#000000",
-        "3": "#000000",
-        "4": "#000000",
-        "5": "#000000",
+        "3": "#ffffff",
+        "4": "#ffffff",
+        "5": "#ffffff",
         "6": "#ffffff",
-        "7": "#000000"
+        "7": "#ffffff"
       },
       "category-pattern": {
         "1": "hatch",
@@ -1504,9 +1566,9 @@ export const values = freeze({
       },
       "category-shape": {
         "1": "circle",
-        "2": "square",
-        "3": "diamond",
-        "4": "triangle"
+        "2": "circle",
+        "3": "circle",
+        "4": "circle"
       },
       "category-revision": {
         "1": {
@@ -1524,14 +1586,19 @@ export const values = freeze({
         "5": "optional",
         "6": "optional",
         "7": "optional"
-      }
+      },
+      "reference": "#c9c9c9"
     },
     "figure": {
       "icon": "#1e6bd6",
       "queue-empty": "#f0f0f0",
       "number-fill": "#303336",
       "number-ink": "#ffffff",
-      "outline": "#888888"
+      "outline": "#888888",
+      "selection-fill": "#d5e4fa",
+      "canvas": "#f6f7fa",
+      "flash": "#d9e6ff",
+      "active-surface": "#ebf1ff"
     },
     "paint": {
       "red": {
@@ -1673,7 +1740,7 @@ export const values = freeze({
     "control-paper": "#ffffff",
     "control-cutout": "#000000",
     "prose-rule-color": "rgba(0,20,49,.18)",
-    "prose-caption-color": "rgba(4,15,26,.5)",
+    "prose-caption-color": "#55606e",
     "prose-link-active": "#114691",
     "prose-mark-background": "#fcf9cf",
     "prose-marker": "rgba(0,15,36,.46)",
@@ -1692,7 +1759,9 @@ export const values = freeze({
         "dark-tint-1": "#303948",
         "dark-tint-3": "#303d54",
         "light-effect": "#3984f2",
-        "dark-effect": "#60a0ff"
+        "dark-effect": "#60a0ff",
+        "solid": "#1e6bd6",
+        "on-solid": "#ffffff"
       },
       "yellow": {
         "anchor": "#f2d024",
@@ -1705,7 +1774,9 @@ export const values = freeze({
         "dark-ink": "#f2d024",
         "dark-tint-1": "#393938",
         "light-effect": "#f0d03b",
-        "dark-effect": "#ffec9a"
+        "dark-effect": "#ffec9a",
+        "solid": "#f2d024",
+        "on-solid": "#000000"
       },
       "red": {
         "anchor": "#fa1955",
@@ -1718,7 +1789,9 @@ export const values = freeze({
         "dark-ink": "#ff7f8b",
         "dark-tint-1": "#413439",
         "light-effect": "#ff697b",
-        "dark-effect": "#ff7785"
+        "dark-effect": "#ff7785",
+        "solid": "#cc0041",
+        "on-solid": "#ffffff"
       },
       "green": {
         "anchor": "#269c6e",
@@ -1731,7 +1804,9 @@ export const values = freeze({
         "dark-ink": "#4cba8a",
         "dark-tint-1": "#323b3c",
         "light-effect": "#3aab7c",
-        "dark-effect": "#46b586"
+        "dark-effect": "#46b586",
+        "solid": "#00744e",
+        "on-solid": "#ffffff"
       },
       "orange": {
         "anchor": "#ff8906",
@@ -1744,7 +1819,9 @@ export const values = freeze({
         "dark-ink": "#ff8906",
         "dark-tint-1": "#3d3738",
         "light-effect": "#df812e",
-        "dark-effect": "#ffb27a"
+        "dark-effect": "#ffb27a",
+        "solid": "#9d5100",
+        "on-solid": "#ffffff"
       },
       "purple": {
         "anchor": "#7d40c8",
@@ -1757,7 +1834,9 @@ export const values = freeze({
         "dark-ink": "#bb91ff",
         "dark-tint-1": "#383547",
         "light-effect": "#945ae3",
-        "dark-effect": "#b78aff"
+        "dark-effect": "#b78aff",
+        "solid": "#7d40c8",
+        "on-solid": "#ffffff"
       },
       "cyan": {
         "anchor": "#25c0cf",
@@ -1770,7 +1849,9 @@ export const values = freeze({
         "dark-ink": "#25c0cf",
         "dark-tint-1": "#333a3f",
         "light-effect": "#33a7b3",
-        "dark-effect": "#4ddae9"
+        "dark-effect": "#4ddae9",
+        "solid": "#00717b",
+        "on-solid": "#ffffff"
       }
     },
     "figure-data-line": "#2576eb",
@@ -1782,14 +1863,24 @@ export const values = freeze({
     "landing-newsletter-note-ink": "#9299a4",
     "feature-tab-ink": "#ffffff",
     "gallery-selected-ink": "#ffffff",
-    "tag-background": "#e9edf2"
+    "tag-background": "#e9edf2",
+    "help-grouped-bg": "rgba(0,0,0,0)",
+    "document-nav-active-ink": "#2576eb",
+    "workspace": {
+      "sidebar": "#f4f4f4",
+      "document": "#ffffff",
+      "toolbar": "#f0f0f0",
+      "hover": "#e7e7e7",
+      "selected": "#c9c9c9"
+    }
   },
   "font": {
     "sans": "Pretendard, \"Pretendard Variable\", -apple-system, BlinkMacSystemFont, \"Apple SD Gothic Neo\", sans-serif",
     "mono": "\"JetBrains Mono\", ui-monospace, SFMono-Regular, Menlo, monospace",
     "figure-sans": "FigSans, FigSansSym, FigSansMath, ui-sans-serif, -apple-system, BlinkMacSystemFont, Roboto, sans-serif",
     "figure-mono": "FigMono, FigSans, FigSansSym, FigSansMath, ui-monospace, SFMono-Regular, Menlo, monospace",
-    "key-font": "ui-sans-serif, -apple-system, BlinkMacSystemFont, \"Apple Symbols\", Roboto, sans-serif"
+    "key-font": "ui-sans-serif, -apple-system, BlinkMacSystemFont, \"Apple Symbols\", Roboto, sans-serif",
+    "ui": "system-ui, -apple-system, BlinkMacSystemFont, sans-serif"
   },
   "spacing": {
     "1": 4,
@@ -1860,7 +1951,7 @@ export const values = freeze({
     "landing-heading-space": 40,
     "landing-heading-margin": "0.75em",
     "landing-description-margin": "0.5em",
-    "landing-heading-width": 440,
+    "landing-heading-width": 640,
     "landing-heading-max": "85%",
     "landing-icon": 64,
     "landing-icon-left": -10,
@@ -2027,7 +2118,10 @@ export const values = freeze({
     "focus-offset": "calc(4px * 0.375)",
     "icon": 24,
     "control": 36,
-    "newsletter-button-margin": 4.24
+    "newsletter-button-margin": 4.24,
+    "tool-icon": 16,
+    "tool-target": 28,
+    "toolbar": 40
   },
   "radius": {
     "lg": 8,
@@ -2056,7 +2150,9 @@ export const values = freeze({
     "search-result-radius": "0.5em",
     "prose-rounded-radius": "1em",
     "newsletter-input-radius": 6.4,
-    "newsletter-button-radius": 7.632
+    "newsletter-button-radius": 7.632,
+    "help-grouped-radius": 10,
+    "tooltip-radius": 24
   },
   "shadow": {
     "help-hover-shadow": "0 4px 8px rgba(0,0,0,.06), 0 8px 16px rgba(0,0,0,.06)",
@@ -2113,7 +2209,8 @@ export const values = freeze({
     "figure-meta": 11,
     "landing-newsletter-note": 15.2,
     "newsletter-button-font": 16.96,
-    "5xl": 48
+    "5xl": 48,
+    "tool": 13
   },
   "leading": {
     "body-sm": 1.43,
@@ -2436,25 +2533,28 @@ export const values = freeze({
     "search-message-width": "20em",
     "search-message-padding": "1em 2em",
     "search-message-color": "#74777c",
-    "icon-yellow": "#ffbf00",
+    "icon-yellow": "#f2d024",
     "icon-size-card": 48,
     "icon-size-proof": 96,
-    "icon-outline": "#a5a7a9",
+    "icon-outline": "#a6acb5",
     "icon-detail": "#cfd0d3",
     "icon-accent": "#1c60c2",
-    "icon-accent-soft": "#c9ddff",
+    "icon-accent-soft": "#cfe0fc",
     "icon-accent-edge": "#9ebef0",
-    "icon-positive": "#28a779",
-    "icon-critical": "#f64f82",
-    "icon-critical-edge": "#d84270",
+    "icon-positive": "#2aa275",
+    "icon-positive-edge": "#1f8560",
+    "icon-positive-soft": "#c9eedd",
+    "icon-line": "#b7bec8",
+    "icon-critical": "#f0245a",
+    "icon-critical-edge": "#cf1446",
     "icon-critical-soft": "#ffd5e1",
     "icon-warm-soft": "#ffe1b5",
-    "icon-neutral-edge": "#35404c",
-    "icon-idea-edge": "#edb300",
-    "icon-cloud": "#639bfa",
-    "icon-cloud-edge": "#528aee",
+    "icon-neutral-edge": "#26344a",
+    "icon-idea-edge": "#d6b30c",
+    "icon-cloud": "#5d9cf5",
+    "icon-cloud-edge": "#3f7fe0",
     "sidebar-width": 200,
-    "icon-device-screen": "#e9eaeb",
+    "icon-device-screen": "#e9ebee",
     "navy-alpha-15": "rgba(4,15,26,.15)",
     "blue-alpha-4": "rgba(0,52,126,.04)",
     "navy-alpha-6": "rgba(0,28,70,.06)",
@@ -2466,7 +2566,6 @@ export const values = freeze({
     "control-task-ink": "rgba(0,0,0,.3)",
     "control-task-stroke": 1.5,
     "prose-rule-color": "rgba(0,20,49,.18)",
-    "prose-caption-color": "rgba(4,15,26,.5)",
     "prose-link-active": "#114691",
     "prose-script-weight": 440,
     "prose-definition-margin": "0 0 .7em 2em",
@@ -2505,7 +2604,7 @@ export const values = freeze({
     "key-size": 14,
     "landing-heading-space": 40,
     "landing-description-margin": "0.5em",
-    "landing-heading-width": 440,
+    "landing-heading-width": 640,
     "landing-panel-gap": 18,
     "landing-nav-gap": 20,
     "landing-review-avatar": 36,
@@ -2544,8 +2643,20 @@ export const values = freeze({
     "icon-device-case-dark": "#89929b",
     "icon-device-glass": "#27313a",
     "icon-device-glass-opacity": 0.102,
-    "icon-key-surface": "#434e5a",
-    "icon-sheet": "#f9fafb"
+    "icon-key-surface": "#3a4a63",
+    "icon-sheet": "#f4f6f9",
+    "transparent": "rgba(0,0,0,0)",
+    "help-grouped-radius": 10,
+    "tooltip-radius": 24,
+    "ui-font": "system-ui, -apple-system, BlinkMacSystemFont, sans-serif",
+    "icon-structure-edge": "#7d8794",
+    "icon-neutral-soft": "#dfe3e8",
+    "icon-slate": "#5c6777",
+    "icon-slate-edge": "#4a5463",
+    "icon-idea-soft": "#f8e47c",
+    "icon-rose": "#f582a5",
+    "icon-violet": "#5a4a92",
+    "icon-positive-tint-edge": "#8fd3b6"
   },
   "breakpoint": {
     "mobile": 560,
@@ -2612,7 +2723,7 @@ export const values = freeze({
     "notice": 2400
   },
   "ease": {
-    "move": "cubic-bezier(0.455, 0.03, 0.515, 0.955)",
+    "move": "cubic-bezier(0, 0, 1, 1)",
     "reveal": "cubic-bezier(0, 0, 0.58, 1)",
     "icon-easing": "cubic-bezier(0, 0, 0.58, 1)"
   },
@@ -2636,36 +2747,49 @@ export const values = freeze({
   },
   "icon": {
     "paper": "#ffffff",
-    "outline": "#a5a7a9",
+    "outline": "#a6acb5",
+    "structure-edge": "#7d8794",
+    "control-edge": "#000000",
     "detail": "#cfd0d3",
     "neutral": "#3d4856",
-    "neutral-edge": "#35404c",
+    "neutral-edge": "#26344a",
     "accent": "#1c60c2",
-    "accent-soft": "#c9ddff",
+    "accent-soft": "#cfe0fc",
     "accent-edge": "#9ebef0",
-    "positive": "#28a779",
-    "critical": "#f64f82",
+    "positive": "#2aa275",
+    "positive-edge": "#1f8560",
+    "positive-soft": "#c9eedd",
+    "line": "#b7bec8",
+    "critical": "#f0245a",
     "critical-soft": "#ffd5e1",
     "warm-soft": "#ffe1b5",
-    "idea": "#ffbf00",
+    "idea": "#f2d024",
     "size-small": 24,
     "size-medium": 32,
     "size-card": 48,
     "size-proof": 96,
-    "critical-edge": "#d84270",
-    "idea-edge": "#edb300",
-    "cloud": "#639bfa",
-    "cloud-edge": "#528aee",
-    "device-screen": "#e9eaeb",
+    "critical-edge": "#cf1446",
+    "idea-edge": "#d6b30c",
+    "cloud": "#5d9cf5",
+    "cloud-edge": "#3f7fe0",
+    "device-screen": "#e9ebee",
     "brand": {
+      "github": "#000000",
       "postgresql": "#336791",
       "nginx": "#009639"
     },
     "device-case": "#23262a",
     "device-glass": "#27313a",
     "device-glass-opacity": 0.102,
-    "key-surface": "#434e5a",
-    "sheet": "#f9fafb"
+    "key-surface": "#3a4a63",
+    "sheet": "#f4f6f9",
+    "neutral-soft": "#dfe3e8",
+    "slate": "#5c6777",
+    "slate-edge": "#4a5463",
+    "idea-soft": "#f8e47c",
+    "rose": "#f582a5",
+    "violet": "#5a4a92",
+    "positive-tint-edge": "#8fd3b6"
   },
   "container": {
     "page": 900,

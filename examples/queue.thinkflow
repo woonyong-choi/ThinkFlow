@@ -25,18 +25,18 @@ view graph down
 scene "큐 구조"
 
 scene "가득 찬 큐" set="jobs=8"
-  prod -> jobs "주문 접수" time=700ms when="jobs<8" reserve="jobs+1"
-  prod -> dlq "자리 없음" time=700ms
-  jobs -> worker "처리" time=700ms when="jobs>0" reserve="jobs-1"
-  prod -> jobs "다시 접수" time=700ms when="jobs<8" reserve="jobs+1"
+  prod -> jobs "주문 접수" when="jobs<8" reserve="jobs+1"
+  prod -> dlq "자리 없음"
+  jobs -> worker "처리" when="jobs>0" reserve="jobs-1"
+  prod -> jobs "다시 접수" when="jobs<8" reserve="jobs+1"
 
 scene "생산이 더 빠를 때" mode=loop for=8s
-  track prod -> jobs at=0s every=1s time=700ms wait="jobs<8" timeout=1500ms else=dlq reserve="jobs+1" tone=blue
-  track jobs -> worker at=500ms every=2s time=700ms wait="jobs>0" reserve="jobs-1" tone=green
+  track prod -> jobs at=0s every=1s wait="jobs<8" timeout=1500ms else=dlq reserve="jobs+1" tone=blue
+  track jobs -> worker at=500ms every=2s wait="jobs>0" reserve="jobs-1" tone=green
 
 scene "처리 결과 전달" keep="done"
-  jobs -> worker "처리" time=700ms set="jobs-1"
-  worker -> admin "완료 알림" time=700ms lost=50%
+  jobs -> worker "처리" set="jobs-1"
+  worker -> admin "완료 알림" lost=50%
 
 scene "워커가 멈춘 큐" for=6s status="worker=wait, dlq=warn"
   track jobs -> worker at=0s time=2s wait="done>100" stuck

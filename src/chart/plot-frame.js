@@ -1,4 +1,5 @@
 // 산점도와 선 차트의 그림 영역: 두 축, 격자, 눈금, 축 제목
+import { STYLE } from '../measure/texts.js';
 import { measure, wrap } from '../measure/fonts.js';
 import { centerBaseline, renderRich, roundCoord as r } from '../text.js';
 import { axisEnd, axisLabels, fitLength, tickReach } from './axis.js';
@@ -9,7 +10,7 @@ import { makeScale } from './scale.js';
 import { compactAxis } from './compact-axis.js';
 
 // 세로축 제목은 그림 영역 위 한 줄에 둔다. 맨 위 눈금 글자와 겹치지 않게 그만큼 내린다.
-const Y_TITLE_H = TEXT['11'] + SPACE["4"];
+const Y_TITLE_GAP = TEXT['11'] + SPACE["4"];
 
 // 잘린 값 축의 끝 격자선 왼쪽에 그리는 지그재그(잘림 표시): 걸음 수, 걸음 가로 폭, 위아래 흔들림
 const BREAK_STEPS = 4;
@@ -53,7 +54,7 @@ function yGrid(sy, { left, plotW, cut }) {
 // basis: estimate
 // 세로축 제목: 그림 영역 위에서 줄바꿈한 각 줄
 function yAxisTitle(lines, top) {
-  return lines.map((line, i) => `<text x="${PAD}" y="${r(top + TEXT['11'] + i * Y_TITLE_H)}" class="chart-unit start">${renderRich(line)}</text>`).join('');
+  return lines.map((line, i) => `<text x="${PAD}" y="${r(top + TEXT['11'] + i * STYLE.meta.line)}" class="chart-unit start">${renderRich(line)}</text>`).join('');
 }
 
 // cost: time O(1), heap O(1), stack O(1)
@@ -77,7 +78,7 @@ export function plotFrame(figure, top, { xs, ys, endRoom = 0, minPlotH = 0, mark
   const plotH = Math.max(SIZE.chart['plot-h'], minPlotH);
   const width = chart.layout?.width ?? WIDTH;
   const titleLines = chart.y ? chart.layout ? wrap(chart.y, width - PAD * 2, { size: TEXT['11'] }) : [chart.y] : [];
-  const plotTop = top + titleLines.length * Y_TITLE_H;
+  const plotTop = top + (titleLines.length ? Y_TITLE_GAP + (titleLines.length - 1) * STYLE.meta.line : 0);
   // 산점도와 누적분포는 가로축이 값 축이라 scale 줄을 따른다. 선과 계단의 가로축은 위치라 늘 linear다.
   const xKind = ['scatter', 'ecdf'].includes(figure.chartType) ? chart.scale : 'linear';
   // 선 차트 가로축은 값 축이 아니라 0에서 시작하지 않는다(docs/design/charts.md 값 축 표).

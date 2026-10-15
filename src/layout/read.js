@@ -1,5 +1,6 @@
 // elkjs 결과를 그림 좌표로 바꾼다. 그룹 경계 연결점에서 끊긴 선 조각은 이어 붙인다(docs/design/layout.md 선 그리기).
 import { hasPill, isOnLinePill, sizePill } from '../measure/sizes.js';
+import { STYLE, textBlock } from '../measure/texts.js';
 import { values } from '../vendor/theme/tokens.js';
 import { LayoutError } from './error.js';
 import { withLeads } from './cell-ports.js';
@@ -78,7 +79,8 @@ function readMultiplicities(edge, labels) {
     if (text === undefined) return [];
     const position = labels.get(`multiplicity::${edge.index}::${end}`);
     if (!position) throw new LayoutError(`missing multiplicity label for ${edge.from} -> ${edge.to}`, edge.line);
-    return [{ end, text, ...position, ...sizePill(text) }];
+    const { w, h } = textBlock(text, { textW: Infinity, pad: 0, style: STYLE.meta });
+    return [{ end, text, ...position, w, h }];
   });
 }
 

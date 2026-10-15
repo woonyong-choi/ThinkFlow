@@ -8,8 +8,8 @@ export function ContentIcon({ graphic, badge, size = 'card' }) {
   return out(`<span class="app-content-icon is-${size}">${slot(graphic, 'graphic')}${badge === undefined ? '' : `<span class="app-content-icon-badge">${slot(badge, 'badge')}</span>`}</span>`);
 }
 
-export function SearchBox({ large = false, query = '', action, labels, suggestions = [], fallback }) {
-  return out(`<section class="app-search app-public-search${large ? ' is-prominent' : ''}" data-public-search aria-label="${escape(labels.region)}"><form action="${safeUrl(action)}" role="search"><label class="app-sr" for="site-query">${escape(labels.input)}</label><div class="app-search-field">${ControlIcon('search', 'app-search-icon')}<input class="app-search-input" id="site-query" name="q" type="text" value="${escape(query)}" placeholder="${escape(labels.placeholder)}" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="search-suggestions"><button class="app-search-clear" type="button" data-clear-query aria-label="${escape(labels.clear)}" hidden>${ControlIcon('clear')}</button></div></form><div class="app-search-panel" id="search-suggestions" role="listbox" hidden></div><p class="app-sr" data-search-status role="status" aria-live="polite"></p>${suggestions.length ? `<p class="app-search-frequent">${escape(labels.suggestions)} ${suggestions.map(query => `<button type="button" data-query="${escape(query)}">${escape(query)}</button>`).join(' ')}</p>` : ''}${fallback ? `<noscript>${slot(fallback, 'fallback')}</noscript>` : ''}</section>`);
+export function SearchBox({ combobox = true, large = false, query = '', action, labels, suggestions = [], fallback }) {
+  return out(`<section class="app-search app-public-search${large ? ' is-prominent' : ''}" data-public-search aria-label="${escape(labels.region)}"><form action="${safeUrl(action)}" role="search"><label class="app-sr" for="site-query">${escape(labels.input)}</label><div class="app-search-field">${ControlIcon('search', 'app-search-icon')}<input class="app-search-input" id="site-query" name="q" type="text" value="${escape(query)}" placeholder="${escape(labels.placeholder)}" autocomplete="off" ${combobox ? 'role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="search-suggestions"' : 'role="searchbox"'}><button class="app-search-clear" type="button" data-clear-query aria-label="${escape(labels.clear)}" hidden>${ControlIcon('clear')}</button></div></form><div class="app-search-panel" id="search-suggestions" role="listbox" hidden></div><p class="app-sr" data-search-status role="status" aria-live="polite"></p>${suggestions.length ? `<p class="app-search-frequent">${escape(labels.suggestions)} ${suggestions.map(query => `<button type="button" data-query="${escape(query)}">${escape(query)}</button>`).join(' ')}</p>` : ''}${fallback ? `<noscript>${slot(fallback, 'fallback')}</noscript>` : ''}</section>`);
 }
 
 export function DocumentArticle({ title, icon, lead, metadata, body, after }) {
@@ -57,7 +57,7 @@ export function BlogCard({ href, title, showTitle = true, level = 3, cover, tags
   const link = safeUrl(href);
   const date = publishedAt ? `<time class="app-blog-card-date" datetime="${escape(publishedAt)}">${escape(dateLabel || publishedAt)}</time>` : '';
   const count = Number.isSafeInteger(commentCount) && commentCount >= 0 ? `댓글 ${commentCount}개` : '댓글 보기';
-  const comments = commentsHref ? `<span class="app-blog-card-comments">${count}</span>` : '';
+  const comments = commentsHref ? `<a class="app-blog-card-comments" href="${safeUrl(commentsHref)}">${count}</a>` : '';
   const byline = author?.name ? `${author.avatar ? `<img class="app-blog-card-avatar" src="${safeUrl(author.avatar)}" alt="" loading="lazy" decoding="async">` : ''}<span>${escape(author.name)}</span>` : '';
   const writer = byline ? `<span class="app-blog-card-author">${byline}</span>` : '';
   const fields = [writer, date, comments].filter(Boolean).join('<span aria-hidden="true">·</span>');
@@ -67,7 +67,7 @@ export function BlogCard({ href, title, showTitle = true, level = 3, cover, tags
 }
 /** 쪽 이동. `before`·`after`는 `{ href, text }`, `numbers`는 `{ page, href, current }`, `summary`는 번호 대신 쓰는 글자다. */
 export function PageLinks({ label, before, after, numbers = [], summary, resultPages = false }) {
-  const edge = (item, rel) => item ? `<a rel="${rel}" href="${safeUrl(item.href)}">${escape(item.text)}</a>` : '';
+  const edge = (item, rel) => item ? `<a class="app-navigation-link${rel === 'prev' ? ' is-back' : ''}" rel="${rel}" href="${safeUrl(item.href)}">${escape(item.text)}</a>` : '';
   const middle = summary === undefined ? numbers.map((item) => item.current ? `<span aria-current="page">${Number(item.page)}</span>` : `<a href="${safeUrl(item.href)}" aria-label="${Number(item.page)}페이지">${Number(item.page)}</a>`).join('') : `<span>${escape(summary)}</span>`;
   return out(`<nav class="app-page-links"${resultPages ? ' data-result-pages' : ''} aria-label="${escape(label)}">${edge(before, 'prev')}${middle}${edge(after, 'next')}</nav>`);
 }
@@ -149,9 +149,24 @@ export function Highlight({ text: source, query = '' }) {
 }
 /** 검색 결과의 링크 부분. 제목과 설명은 글자 또는 슬롯(`Highlight`)이다. */
 export function SearchResultLink({ href, icon, title, example = false, description }) {
-  return out(`<a class="app-search-result-link" href="${safeUrl(href)}">${slot(icon, 'icon')}<strong>${text(title)}</strong>${example ? '<span class="app-search-result-note"> 예시</span>' : ''}<p>${text(description)}</p></a>`);
+  return out(`<a class="app-search-result-link" href="${safeUrl(href)}">${icon === undefined ? '' : slot(icon, 'icon')}<strong>${text(title)}</strong>${example ? '<span class="app-search-result-note"> 예시</span>' : ''}<p>${text(description)}</p></a>`);
 }
 /** 검색 결과 한 줄. 서버 렌더와 브라우저 렌더가 같은 함수를 쓴다. */
 export function SearchResult({ href, icon, title, example = false, description, tags }) {
   return out(`<article class="app-search-entry">${SearchResultLink({ href, icon, title, example, description })}<div class="app-search-result-tags">${tags.map(tag => String(Tag(tag))).join('')}</div></article>`);
+}
+
+/** 프로젝트 목록: 대표 카드와 관련 문서 링크를 한 항목으로 묶는다. 아이콘은 신뢰된 슬롯이다. */
+export function ProjectList({ title, projects }) {
+  const entries = projects.map(({ href, icon, title: name, description = '', links = [] }) => {
+    const card = `<a class="app-knowledge-card" href="${safeUrl(href)}">${icon === undefined ? '' : slot(icon, 'icon')}<h3>${escape(name)}</h3><p>${escape(description)}</p></a>`;
+    const related = links.map(link => `<a href="${safeUrl(link.href)}">${escape(link.title)} →</a>`).join('');
+    return `<article class="app-project-entry">${card}<div class="app-project-links">${related}</div></article>`;
+  }).join('');
+  return out(`<section class="app-knowledge-section"><div class="app-section-heading"><h2>${escape(title)}</h2></div><div class="app-project-grid">${entries}</div></section>`);
+}
+
+/** 검색 상태 안내와 선택 동작을 같은 중앙 정렬 영역에 둔다. */
+export function SearchMessage({ lines }) {
+  return out(`<div class="app-search-message"><p>${lines.map(line => escape(line)).join('<br>')}</p></div>`);
 }

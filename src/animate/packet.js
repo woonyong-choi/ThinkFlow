@@ -33,7 +33,7 @@ export function drawPacket(clock, { seg, hop, name }, glyphs) {
   const chip = hop.data ? drawChip(hop.data, { glyphs, color: hop.tone ? color : undefined, outline }) + pushChip(clock, start, hop) : '';
   const chipMarkup = hop.chipFade ? `<g>${chipFadeAnimate(clock, start, hop.chipFade)}<g>${chip}</g></g>` : `<g>${chip}</g>`;
   const body =
-    `<g class="${name}" opacity="0" fill="${ink}"><circle r="${values.spacing.figure.packet.halo}" fill="${color}" opacity="${values.opacity.halo}"/><circle r="${values.spacing.figure.packet.radius}" fill="${color}"${outline ? ` stroke="${outline}" stroke-width="${values["border-width"].edge}"` : ''}/>${chip ? chipMarkup : ''}` +
+    `<g class="fl-packet ${name}" opacity="0" fill="${ink}"><circle r="${values.spacing.figure.packet.halo}" fill="${color}" opacity="${values.opacity.halo}"/><circle r="${values.spacing.figure.packet.radius}" fill="${color}"${outline ? ` stroke="${outline}" stroke-width="${values["border-width"].edge}"` : ''}/>${chip ? chipMarkup : ''}` +
     (hop.gaps?.length ? discreteWindows(clock, visibleSpans(start, hop)) : showWindow(clock, from, to)) +
     moveMotion(clock, [from, to], { hop, start }) +
     `</g>`;

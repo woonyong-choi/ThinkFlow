@@ -55,3 +55,28 @@ ${TabList({ id: 'scene', label: '장면 선택', labels, controls: labels.map(()
 </div>
 </figure>`;
 }
+
+// HTML과 SVG가 공유하는 성장 모양. 장면의 시각은 소비자가 계산한다.
+export const CHART_GROWTH = [
+  ['rise', 'transform: scaleY(0)', 'transform: none'],
+  ['grow', 'transform: scaleX(0)', 'transform: none'],
+  ['draw', 'stroke-dashoffset: 1', 'stroke-dashoffset: 0'],
+  ['wipe', 'clip-path: inset(0 100% 0 0)', 'clip-path: inset(0 0 0 0)'],
+];
+
+/** 성장 시간과 경로 위 점의 도착 비율로 HTML 재생 스타일을 만든다. */
+export function chartMotionCss(growMs, dotAts = []) {
+  if (!Number.isFinite(growMs) || growMs < 0) throw new RangeError('Chart growth time must be finite and nonnegative');
+  if (!Array.isArray(dotAts) || dotAts.some(at => !Number.isFinite(at) || at < 0 || at > 1)) throw new RangeError('Chart arrival ratios must be between zero and one');
+  const dots = dotAts.map(at => `.fl .play .dot[data-at="${at}"] { animation-delay: ${Math.round(at * growMs)}ms; }`);
+  const growth = CHART_GROWTH.map(([name, from]) => `.fl .play .${name}, .fl .play.${name} { animation: chart-${name} ${growMs}ms var(--ease-reveal) both; }
+@keyframes chart-${name} { from { ${from}; } }`);
+  return `
+.fl .play .dot, .fl .play.dot { animation: chart-dot var(--duration-fast) var(--ease-reveal) both; }
+@keyframes chart-dot { from { opacity: 0; } }
+${dots.join('\n')}
+${growth.join('\n')}
+.fl .play .pop, .fl .play.pop, .fl .play .late, .fl .play.late { animation: chart-fade ${growMs}ms var(--ease-reveal) both; }
+@keyframes chart-fade { 0%, 50% { opacity: 0; } }
+`;
+}

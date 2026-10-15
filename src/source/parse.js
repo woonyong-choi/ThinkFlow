@@ -1,6 +1,7 @@
 // 원본 전체를 읽어 문서 모형(figure) 하나로 만든다. 줄을 머리, 선언, 시간 흐름 세 부분으로 나누고 문장마다 맡을 함수를 고른다.
 import { BLOCK_WORDS, STATEMENTS, VALUES } from './grammar.js';
 import { BLOCK_READERS, openBlock } from './blocks.js';
+import { rejectName, skipBlock } from './names.js';
 import { readDeclaration, readEdge } from './declare.js';
 import { closeGroup } from './group.js';
 import { readIcons } from './icons.js';
@@ -151,14 +152,25 @@ function readStatement(statement, ctx) {
   const { tokens, line } = statement;
   const { problems } = ctx;
   if (ctx.block) {
-    BLOCK_READERS[ctx.block.kind](statement, ctx);
+    if (ctx.block.card.isRejected) {
+      if (tokens[0].type === 'close') {
+        if (tokens.length > 1) problems.error(line, 'put "}" on its own line');
+        ctx.block = undefined;
+      }
+    } else BLOCK_READERS[ctx.block.kind](statement, ctx);
     return;
   }
   if (readSequenceControl(statement, ctx)) return;
   const [head, second] = tokens;
   if (statement.hasLexError) {
     // 그룹이나 블록을 여는 줄이면 닫는 `}`가 짝을 찾도록 자리만 연다.
-    if (tokens.at(-1).type === 'open') ctx.groups.push({ isRejected: true, line });
+    if (tokens.at(-1).type === 'open') {
+      if (head.value === 'group') ctx.groups.push({ isRejected: true, line });
+      else {
+        rejectName(second, ctx);
+        skipBlock(BLOCK_WORDS[head.value] ?? (head.value === 'view' ? 'view' : 'card'), { id: second?.value }, statement, ctx);
+      }
+    }
     return;
   }
   if (head.type === 'close') {

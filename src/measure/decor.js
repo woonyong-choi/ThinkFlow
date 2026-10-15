@@ -55,8 +55,8 @@ export function layoutDecor(item, { iconSize, titleW, titleH = DECOR.pillH, icon
 /** 도형 윗줄의 장식. 너비가 도형 안쪽에 들어가야 하므로 도형 크기를 정하는 쪽이 이 너비를 쓴다. */
 export const nodeDecor = (node) => layoutDecor(node, { iconSize: node.tile ? SIZE.icon.tile : SIZE.icon.node });
 
-/** 그룹 제목 줄의 장식(제목 글과 배지, 개수 알약). 아이콘은 제목 줄 왼쪽 모서리 탭이 맡아(draw/decor.js drawGroupTab) 여기에 없다. 장식이 없으면 undefined이고 제목 글만 그린다. */
-export const groupDecor = (group, titleW) => layoutDecor({ ...group, iconData: undefined }, { iconSize: 0, titleW });
+/** 그룹의 아이콘·제목·배지는 같은 줄에서 공통 간격으로 배치한다. */
+export const groupDecor = (group, titleW) => layoutDecor(group, { iconSize: SIZE.group.title - SPACE["2"], titleW });
 
 /** 복제 개수(count) 상자의 앞 상자(몸통) 사각형. 뒤 윤곽 두 겹이 비치는 만큼 도형 사각형보다 작다. 그 밖의 도형은 도형 사각형 그대로다. */
 export const bodyOf = (it) => ({ x: it.x, y: it.y, w: it.w - (it.stack ?? 0), h: it.h - (it.stack ?? 0) });

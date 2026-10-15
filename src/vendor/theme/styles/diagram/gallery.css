@@ -1,7 +1,4 @@
 /* 여러 그림을 모은 목록 쪽. 시스템 테마에서는 루트가 라이트와 다크를 모두 허용해 iframe 그림도 OS 설정을 따른다. */
-:root {
-  color-scheme: light dark;
-}
 
 body {
   margin: 0;
@@ -89,7 +86,7 @@ code {
 }
 .name {
   font-size: var(--text-figure-13);
-  font-weight: normal;
+  font-weight: var(--font-weight-normal);
   color: var(--color-ui-muted);
   overflow-wrap: anywhere;
 }
@@ -120,14 +117,121 @@ nav a:focus-visible {
 iframe {
   display: block;
   width: 100%;
-  height: var(--spacing-figure-gallery-frame);
   border: 0;
 }
 
+iframe:not(.has-diagram-height) {
+  height: var(--spacing-figure-gallery-frame);
+}
 
 
 .top, main {
   max-width: var(--container-diagram);
   margin-left: auto;
   margin-right: auto;
+}
+
+/* 원본과 장면을 함께 검토하는 예제 목록 변형. */
+.is-examples main {
+  display: block;
+}
+
+.is-examples h2 {
+  margin-block: var(--spacing-12) var(--spacing-3);
+}
+
+h3 {
+  margin: 0;
+  font-size: var(--text-figure-15);
+  overflow-wrap: anywhere;
+}
+
+p {
+  overflow-wrap: anywhere;
+}
+
+pre {
+  overflow: auto;
+  padding: var(--spacing-6);
+  font-size: var(--text-figure-13);
+  background: var(--color-prose-pre-background);
+  border-radius: var(--radius-md);
+}
+
+details {
+  margin-block: var(--spacing-4);
+}
+
+summary {
+  padding-block: var(--spacing-4);
+  cursor: pointer;
+}
+
+.catalog-lead {
+  font-size: var(--text-figure-22);
+  color: var(--color-ui-muted);
+}
+
+.catalog-index {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-3) var(--spacing-6);
+  padding: 0;
+  list-style: none;
+}
+
+.catalog-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--spacing-figure-gallery-column)), 1fr));
+  gap: var(--spacing-6);
+}
+
+.catalog-card {
+  min-width: 0;
+  padding: var(--spacing-8);
+  background: var(--color-ui-card);
+  border-radius: var(--radius-md);
+}
+
+.catalog-card code {
+  font-size: var(--text-figure-13);
+  color: var(--color-ui-muted);
+}
+
+.catalog-preview {
+  display: block;
+  overflow: hidden;
+  margin-block: var(--spacing-4);
+}
+
+.catalog-preview img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: var(--spacing-figure-gallery-frame);
+  object-fit: contain;
+  object-position: top;
+}
+
+.catalog-scenes {
+  margin: 0;
+  padding-left: var(--spacing-8);
+  font-size: var(--text-figure-13);
+}
+
+.catalog-scenes span {
+  color: var(--color-ui-muted);
+}
+
+.catalog-support {
+  margin: 0;
+  font-size: var(--text-figure-13);
+  color: var(--color-ui-muted);
+}
+
+.catalog-downloads {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-2-5);
+  padding-block: var(--spacing-4);
 }

@@ -4,13 +4,14 @@
 // - CSS 계열: 주석을 뺀 전체
 // - JavaScript 계열: 모든 문자열의 색, CSS·마크업으로 보이는 문자열과 값 하나뿐인 문자열(`'12px'`)의 나머지 규칙,
 //   코드의 기본 토큰 경로(`tokens.color.blue['600']`)와 스타일 객체 숫자(`{ fontWeight: 600 }`)
-// - 모든 계열: 색·그림자 기본 토큰 직접 참조(`var(--color-blue-600)`), 토큰 파일 밖 테마 분기(`prefers-color-scheme`, `[data-theme`)
+// - 모든 계열: 미정의 CSS 변수, 색·그림자 기본 토큰 직접 참조(`var(--color-blue-600)`), 토큰 파일 밖 테마 분기(`prefers-color-scheme`, `[data-theme`)
 // 글자 판정(`\w`, `\b`)은 한글 같은 유니코드 글자도 낱말 글자로 본다.
-import { readFileSync } from 'node:fs';
+import { existsSync, readFileSync } from 'node:fs';
 import { extname } from 'node:path';
-import { findHardcoded, findLineNumber, findScriptValues, findSegments, maskJs } from './lib/find-hardcoded.mjs';
+import { fileURLToPath } from 'node:url';
+import { findCustomProperties, findHardcoded, findLineNumber, findScriptValues, findSegments, maskJs } from './lib/find-hardcoded.mjs';
 import { compareText, findTokensFile, iterFiles, TOKEN_SOURCES } from './lib/walk-files.mjs';
-import { ALLOW_MARK, GENERATED_MARK, REFERENCE_IN_VALUE, SCRIPT_EXTS, THEMED_TYPES } from './lib/tokens-patterns.mjs';
+import { ALLOW_MARK, GENERATED_MARK, REFERENCE_IN_VALUE, RUNTIME_PROPERTIES, SCRIPT_EXTS, THEMED_TYPES } from './lib/tokens-patterns.mjs';
 
 const USAGE = 'usage: check-tokens.mjs [--tokens TOKENS] targets [targets ...]';
 
@@ -65,15 +66,15 @@ function exitWithUsage(message) {
 }
 
 
-// cost: time O(t), heap O(t), stack O(1), io 1
-// vars: t = 토큰 수
+// cost: time O(t + n), heap O(t + n), stack O(d), io f + 1
+// vars: t = 토큰 수, n = 정본 CSS 글자 수, d = 폴더 깊이, f = CSS 파일 수
 // basis: estimate
 /**
  * 정본에서 breakpoint 숫자와 테마 기본 토큰을 읽는다.
  * 테마 기본 토큰: 값이 다른 토큰 참조가 아니고 타입이 색이나 그림자인 토큰. 코드는 이 토큰 대신 의미 토큰을 쓴다.
  */
 function loadTokenInfo(path) {
-  const info = { breakpoints: new Set(), primitiveNames: new Set(), primitivePaths: new Set() };
+  const info = { breakpoints: new Set(), primitiveNames: new Set(), primitivePaths: new Set(), knownNames: canonicalProperties() };
   const root = JSON.parse(readFileSync(path, 'utf8'));
   const stack = [{ prefix: [], node: root, groupType: root.$type ?? null }];
   while (stack.length) {
@@ -86,6 +87,7 @@ function loadTokenInfo(path) {
         stack.push({ prefix: tokenPath, node: child, groupType: tokenType });
         continue;
       }
+      info.knownNames.add(`--${tokenPath.join('-')}`);
       const value = child.$value;
       if (tokenPath[0] === 'breakpoint') {
         const raw = isObject(value) ? value.value : value;
@@ -99,6 +101,20 @@ function loadTokenInfo(path) {
     }
   }
   return info;
+}
+
+// cost: time O(n), heap O(n), stack O(d), io f
+// vars: n = 정본 CSS 글자 수, d = 폴더 깊이, f = CSS 파일 수
+// basis: estimate
+/** 검사기와 함께 배포된 CSS 선언만 신뢰한다. source와 vendor는 같은 상대 루트를 쓴다. */
+function canonicalProperties() {
+  const folder = fileURLToPath(new URL('../../styles/', import.meta.url));
+  const files = [...iterFiles([folder], { wants: name => name.endsWith('.css'), skipDirs: new Set() })];
+  const flattened = fileURLToPath(new URL('../../styles.source.css', import.meta.url));
+  if (existsSync(flattened)) files.push(flattened);
+  const names = new Set(RUNTIME_PROPERTIES);
+  for (const file of files) for (const name of findCustomProperties(readFileSync(file, 'utf8'))) names.add(name);
+  return names;
 }
 
 function isObject(value) {

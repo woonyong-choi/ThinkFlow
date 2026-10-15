@@ -4,7 +4,7 @@ import { bodyOf } from '../measure/decor.js';
 import { CONTENT } from '../measure/content.js';
 import { autoTone, toneColors } from '../tone.js';
 import { roundCoord as r } from '../text.js';
-import { tokens, values } from '../vendor/theme/tokens.js';
+import { values } from '../vendor/theme/tokens.js';
 import { faceOf, lookClass } from './look.js';
 import { CORNER, rectOpen } from './surface.js';
 import { drawTexts } from './texts.js';
@@ -52,7 +52,7 @@ export function drawContent(content, { box, i, shown }, { toneOf, decorate, glyp
     .map((layout, k) => `<g id="n-${i}-c${k}" opacity="${k === shown ? 1 : 0}"${hiddenAttr(k === shown)} class="fl-layer${lookClass(contentLook(layout))} ${decorate('layer', i, k)}">${drawFace(layout, box)}${flashes?.card.get(`${i}:${k}`) ?? ''}${drawRows(layout, box, { toneOf, glyphs })}</g>`)
     .join('');
   return (
-    `${rectOpen(box, CORNER.inner)} fill="${tokens.color["ui-card"]}" opacity="0" class="fl-card${shown === undefined ? '' : ' filled'} ${decorate('card', i)}"/>` +
+    `${rectOpen(box, CORNER.inner)} opacity="0" class="fl-card${shown === undefined ? '' : ' filled'} ${decorate('card', i)}"/>` +
     layers
   );
 }
@@ -107,14 +107,10 @@ function drawMiniGraph(laid, box) {
       const [x2, y2] = isSameColumn ? [to.x + to.w / 2, to.y] : [to.x, to.y + to.h / 2];
       d = `M ${r(x + x1)} ${r(y + y1)} L ${r(x + x2)} ${r(y + y2)}`;
     }
-    return `<g class="fl-edge"${isLit ? ' style="color: var(--fx-edge)"' : ''}><path d="${d}" class="fl-path"/></g>`;
+    return `<g class="fl-edge${isLit ? ' fl-mini-lit' : ''}"><path d="${d}" class="fl-path"/></g>`;
   });
   const pills = laid.nodes.map((n) => {
-    // 밝힌 이름은 선택 행과 같은 옅은 면이고 윤곽은 그대로다. 칩의 식별은 실루엣이 맡고 파랑은 면적을 차지하지 않는다.
-    const fill = n.isLit ? 'style="fill: var(--fx-row)"' : `fill="${tokens.color["ui-card"]}"`;
-    // 칩 윤곽은 도형과 표 구획과 같은 경계선 역할(border.thin, color.help-border)이다.
-    const stroke = tokens.color["help-border"];
-    return `<rect x="${r(x + n.x)}" y="${r(y + n.y)}" width="${r(n.w)}" height="${r(n.h)}" rx="${r(n.h / 2)}" ${fill} stroke="${stroke}" stroke-width="${values["border-width"].thin}"/>`;
+    return `<rect class="pill fl-mini-pill${n.isLit ? ' fl-mini-lit' : ''}" x="${r(x + n.x)}" y="${r(y + n.y)}" width="${r(n.w)}" height="${r(n.h)}" rx="${r(n.h / 2)}"/>`;
   });
   return lines.join('') + pills.join('');
 }

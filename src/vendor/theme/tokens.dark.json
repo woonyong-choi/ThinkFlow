@@ -10,7 +10,7 @@
     },
     "state": {
       "active": {
-        "$value": "{primitive.figure-ui-accent}",
+        "$value": "{color.category.blue.dark-border}",
         "$type": "color"
       },
       "active-fill": {
@@ -208,6 +208,22 @@
       "outline": {
         "$type": "color",
         "$value": "{color.line}"
+      },
+      "selection-fill": {
+        "$type": "color",
+        "$value": "{color.category.blue.dark-tint-3}"
+      },
+      "canvas": {
+        "$value": "{primitive.figure-dark-bg}",
+        "$type": "color"
+      },
+      "flash": {
+        "$type": "color",
+        "$value": "{primitive.figure-dark-selection}"
+      },
+      "active-surface": {
+        "$type": "color",
+        "$value": "{primitive.figure-dark-hover}"
       }
     },
     "flow": {
@@ -377,8 +393,8 @@
       "$type": "color"
     },
     "help-title-color": {
-      "$value": "{primitive.figure-dark-muted}",
-      "$type": "color"
+      "$type": "color",
+      "$value": "{color.ink}"
     },
     "ui-card": {
       "$value": "{primitive.figure-dark-node}",
@@ -483,6 +499,144 @@
     "tag-background": {
       "$type": "color",
       "$value": "{color.prose-pre-background}"
+    },
+    "help-bg": {
+      "$type": "color",
+      "$value": "{color.ui-card}"
+    },
+    "help-copy-color": {
+      "$type": "color",
+      "$value": "{color.body}"
+    },
+    "help-active": {
+      "$type": "color",
+      "$value": "{color.figure.active-surface}"
+    },
+    "help-grouped-bg": {
+      "$type": "color",
+      "$value": "{color.ui-card}"
+    },
+    "related-background": {
+      "$type": "color",
+      "$value": "{color.ui-card}"
+    },
+    "document-nav-active-ink": {
+      "$type": "color",
+      "$value": "{color.category.blue.light-tint-3}"
+    },
+    "search-bg": {
+      "$type": "color",
+      "$value": "{color.ui-card}"
+    },
+    "search-results-background": {
+      "$type": "color",
+      "$value": "{color.ui-card}"
+    },
+    "search-result-muted": {
+      "$type": "color",
+      "$value": "{color.ui-muted}"
+    },
+    "workspace": {
+      "sidebar": {
+        "$type": "color",
+        "$value": "{color.gray.878}"
+      },
+      "document": {
+        "$type": "color",
+        "$value": "{color.gray.910}"
+      },
+      "toolbar": {
+        "$type": "color",
+        "$value": "{color.gray.878}"
+      },
+      "hover": {
+        "$type": "color",
+        "$value": "{color.gray.788}"
+      },
+      "selected": {
+        "$type": "color",
+        "$value": "{color.gray.635}"
+      }
+    },
+    "canvas": {
+      "$type": "color",
+      "$value": "{color.prose-pre-background}"
+    },
+    "landing-footer-ink": {
+      "$type": "color",
+      "$value": "{color.ui-muted}"
+    },
+    "search-message-color": {
+      "$type": "color",
+      "$value": "{color.ui-muted}"
+    },
+    "landing-title-color": {
+      "$type": "color",
+      "$value": "{color.ink}"
+    },
+    "description-color": {
+      "$type": "color",
+      "$value": "{color.body}"
+    },
+    "landing-review-meta-ink": {
+      "$type": "color",
+      "$value": "{color.ui-muted}"
+    },
+    "landing-review-link-ink": {
+      "$type": "color",
+      "$value": "{color.action-link}"
+    },
+    "landing-newsletter-note-ink": {
+      "$type": "color",
+      "$value": "{color.ui-muted}"
+    },
+    "control-muted": {
+      "$type": "color",
+      "$value": "{color.ui-muted}"
+    },
+    "feature-canvas": {
+      "$type": "color",
+      "$value": "{color.ui-card}"
+    },
+    "feature-light": {
+      "$type": "color",
+      "$value": "{color.prose-pre-background}"
+    },
+    "feature-medium": {
+      "$type": "color",
+      "$value": "{color.ui-card}"
+    },
+    "feature-box-background": {
+      "$type": "color",
+      "$value": "{color.ui-card}"
+    },
+    "feature-hero-background": {
+      "$type": "color",
+      "$value": "{color.ui-card}"
+    },
+    "nav-color": {
+      "$type": "color",
+      "$value": "{color.body}"
+    },
+    "nav-hover-color": {
+      "$type": "color",
+      "$value": "{color.ink}"
+    },
+    "nav-active-color": {
+      "$type": "color",
+      "$value": "{color.ink}"
+    },
+    "nav-active-background": {
+      "$type": "color",
+      "$value": "{color.control-hover}"
+    },
+    "landing-nav-hover": {
+      "$type": "color",
+      "$value": "{color.control-hover}"
+    },
+    "landing-action-pressed": {
+      "$type": "color",
+      "$value": "{color.control-hover}"
     }
   },
   "icon": {
@@ -491,6 +645,10 @@
       "$value": "{color.ink}"
     },
     "brand": {
+      "github": {
+        "$type": "color",
+        "$value": "{color.gray.0}"
+      },
       "postgresql": {
         "$type": "color",
         "$value": "#6495bb"

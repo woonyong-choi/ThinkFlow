@@ -10,7 +10,7 @@ const CIRCLE_SIDES = { out: ['EAST', 'SOUTH', 'NORTH'], in: ['WEST', 'NORTH', 'S
 /** 격자 칸에 이은 선 끝의 연결점 { side, position, lead }. lead는 칸 면에서 격자 테두리까지의 점(격자 좌표)이다. */
 export function cellPort(node, end) {
   const plan = node.size.cellEnds[`${end.edge.index}:${end.way}`];
-  const chosen = SIDES_BY[node.direction][end.way].map((side) => plan[side]).find(Boolean) ?? plan.LANE;
+  const chosen = (end.isTrailingField && plan.SOUTH) || SIDES_BY[node.direction][end.way].map((side) => plan[side]).find(Boolean) || plan.LANE;
   return { side: chosen.side, position: chosen.port, lead: chosen.lead };
 }
 

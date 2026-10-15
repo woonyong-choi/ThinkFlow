@@ -9,7 +9,7 @@ export const CANVAS_WIDE = values.spacing.figure["figure-canvas-wide"];
 export const FIGURE_PAD = values.spacing["7"];
 /**
  * 좁은 화면(`size.figure-compact-width`)에서 그림 컨테이너가 가지는 폭. 컨테이너는 화면 폭에서 좌우 바깥 여백(`spacing.6`)을 뺀 값이고 그림 안쪽에는 여백이 없다.
- * 좁은 배치의 그래프와 차트는 이 폭에 들어가 표시 배율 1배로 보인다.
+ * 좁은 배치의 그래프와 차트가 목표로 삼는 폭이다. 그래프가 이 폭을 넘으면 HTML은 자연 크기로 가로 스크롤한다.
  */
 export const COMPACT_WIDTH = values.spacing.figure["figure-compact-width"] - values.spacing["6"] * 2;
 /** 보이는 가로세로 비율의 한도. 비율이 이 값이나 그 역수를 넘으면 그림이 읽히지 않는다. */

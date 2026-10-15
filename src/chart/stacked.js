@@ -2,9 +2,10 @@
 // 누적은 부호가 있다: 양수는 0에서 오른쪽으로, 음수는 0에서 왼쪽으로 각각 쌓고 값 축은 양쪽 합을 덮는다. 퍼센트는 행을 합으로 나눠 0~100에 고정한다.
 // 행에 결측이 있거나(퍼센트는 합이 0이어도) 막대는 그리지 않고 칸의 표식은 길이 0으로 남긴다. 0%로 그리지 않는다.
 // 조각은 계열 번호 키(`1`, `2`, ...)를 조각 안에 적고(글자 요소는 labels.js의 segmentKey), 안에 들어가지 않으면 아래 값 목록의 `1: 30`이 키를 잇는다.
+import { values } from '../vendor/theme/tokens.js';
+import { STYLE } from '../measure/texts.js';
 import { measure } from '../measure/fonts.js';
 import { centerBaseline, escapeXml, roundCoord as r } from '../text.js';
-import { values } from '../vendor/theme/tokens.js';
 import { drawRules, finishRowChart, rowValueScale } from './axis.js';
 import { COPY, MISSING } from './copy.js';
 import { isValue, percentRows, stackExtent, stackRows } from './data.js';
@@ -74,7 +75,7 @@ function widestStack(ctx) {
 // 행마다 조각 글의 배치와, 모든 행 가운데 가장 많은 줄의 아래 끝(첫 줄 글자 가운데에서 잰 dy)
 function summaryLayout(ctx, stacks) {
   const { chart } = ctx;
-  const layout = { room: chart.layout ? chart.layout.width - PAD * 2 : RIGHT - ctx.scale.at(0), lineHeight: TEXT['11'] * values.leading.normal };
+  const layout = { room: chart.layout ? chart.layout.width - PAD * 2 : RIGHT - ctx.scale.at(0), lineHeight: STYLE.meta.line };
   const rows = stacks.map((stack) => flow(pieceTexts(ctx, stack, stack.parts), layout));
   const wide = widestStack(ctx);
   const reserve = wide ? flow(pieceTexts(ctx, wide.stack, wide.parts), layout) : [];

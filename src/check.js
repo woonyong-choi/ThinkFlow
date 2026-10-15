@@ -13,6 +13,7 @@ import { hasPill } from './measure/sizes.js';
 function createContext(figure, scene, timeline) {
   const edges = scene.edges.filter((e) => !e.isMark && e.points.length > 1);
   return {
+    hiddenChipWarnings: 0,
     figure,
     scene,
     timeline,
@@ -36,6 +37,7 @@ export function checkFigure({ figure, scene, timeline }, problems) {
   const context = createContext(figure, scene, timeline);
   for (const { judge } of CHECKS) judge?.(context, problems);
   warnStalls(figure, timeline, problems);
+  return { hiddenChipWarnings: context.hiddenChipWarnings };
 }
 
 // cost: time O(c·r·n), heap O(r), stack O(1)

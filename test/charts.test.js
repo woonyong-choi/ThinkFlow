@@ -3,6 +3,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { reflowFigure } from '../src/build.js';
+import { drawHeatmap } from '../src/chart/heatmap.js';
 import { DOT, PAD } from '../src/chart/metrics.js';
 import { measure } from '../src/measure/fonts.js';
 import { values } from '../src/vendor/theme/tokens.js';
@@ -14,6 +15,29 @@ const chart = (kind, body, head = 'x "x(u)"\n  y "y(u)"') => thinkflow(`chart c 
 const marks = (dom) => findAll(dom, (n) => n.tag === 'rect' && /(?:^| )(grow|chart-histogram-bin)(?: |$)/.test(n.attrs.class ?? '') && !/(chart-pattern|fl-mark-pulse)/.test(n.attrs.class ?? ''));
 
 const ratio = (a, b) => a / b;
+
+test('waterfall_growth_direction_follows_geometry_through_shared_modifiers', async () => {
+  const result = await build(chart('waterfall', 'row "up" value=5\nrow "down" value=-9\ntotal "negative total"\nrow "unchanged" value=0', 'x "x(u)"'));
+  for (const [output, html] of [[await toSvg(result), false], [await toHtml(result), true]]) {
+    const groups = findAll(parseMarkup(output, { html }), node => (node.attrs.class ?? '').split(/\s+/).includes('chart-waterfall-growth'));
+    const directions = [false, true, true, false];
+    assert.deepEqual(groups.map(node => node.attrs.class.split(/\s+/).includes('from-end')), html ? [...directions, ...directions] : directions);
+    for (const group of groups) assert.equal(group.attrs.style, undefined);
+  }
+});
+
+test('narrow heatmap fit diagnostics keep the source row and column lines', () => {
+  const rows = [{ row: 'A', col: 'X', line: 10, values: { value: 1 } }, { row: 'B', col: 'Y', line: 20, values: { value: 2 } }];
+  const result = drawHeatmap({ chart: { rows, series: [], layout: { width: 272 } } }, 0);
+  for (const text of ['B', 'Y']) assert.equal(result.fits.find(fit => fit.text === text).line, 20);
+});
+
+test('incomplete box aria labels use the displayed decimal format', async () => {
+  const dom = await stillDom(chart('box', 'row "A" min=1 q1=- median=2.125 q3=- max=-', 'x "x(u)"\n decimals 2'));
+  const label = findAll(dom, node => node.attrs['aria-label']?.startsWith('A:'))[0].attrs['aria-label'];
+  assert.ok(label.includes('최솟값 1.00'));
+  assert.ok(label.includes('중앙값 2.13'));
+});
 const near = (actual, expected, message, tolerance = 0.02) => assert.ok(Math.abs(actual - expected) < tolerance * Math.abs(expected) + 0.01, `${message}: ${actual} vs ${expected}`);
 
 const KINDS = {
@@ -414,4 +438,33 @@ test('C5 chart data from JSON: relative path, element keys become series, and ev
     assert.ok(problems.length && problems.every((p) => p.line === 4), `${file}: ${JSON.stringify(problems)}`);
     for (const problem of problems) assert.ok(!problem.message.includes('PRIVATE_BYTES') && !problem.message.includes('ghp_'), `${file}: the message quotes file bytes: ${problem.message}`);
   }
+});
+
+
+test('chart_axis_titles_share_the_same_wrapped_line_spacing', async () => {
+  const title = 'Long axis title with enough words to wrap over several lines '.repeat(3) + '(ms)';
+  const source = chart('line', 'series s "Series"\npoint x=1 s=2\npoint x=2 s=4', `x "${title}"\n y "${title}"`);
+  const dom = parseMarkup(await toHtml(await build(source), 'axis-titles'), { html: true });
+  const narrow = descendants(dom).find((node) => node.tag === 'template' && /\bfl-narrow\b/.test(node.attrs.class ?? ''));
+  assert.ok(narrow);
+  const units = findAll(narrow, (node) => node.tag === 'text' && /\bchart-unit\b/.test(node.attrs.class ?? ''));
+  const gaps = [false, true].map((start) => {
+    const lines = units.filter((node) => /\bstart\b/.test(node.attrs.class) === start);
+    assert.ok(lines.length > 1);
+    return num(lines[1], 'y') - num(lines[0], 'y');
+  });
+  assert.equal(gaps[0], gaps[1]);
+});
+
+// docs/design/charts.md: ECDF는 같은 100% 끝점에 이름 안내선을 겹치지 않는다.
+test('ecdf_series_keep_the_legend_without_endpoint_leaders', async () => {
+  const result = await build(chart('ecdf', 'series actual "Measured"\nseries target "Target" role=reference\nsample 1 series=actual\nsample 2 series=actual\nsample 1 series=target\nsample 3 series=target'));
+  for (const output of [await toSvg(result, { isStatic: true }), await toHtml(result)]) {
+    assert.doesNotMatch(output, /class="chart-(?:leader|end-label)"/);
+    assert.match(output, />Measured</);
+    assert.match(output, />Target</);
+    assert.match(output, /class="chart-dashed"/);
+  }
+  const empty = await stillDom(chart('ecdf', 'series actual "Measured"\nseries target "Target" role=reference\nsample - series=actual\nsample - series=target'));
+  assert.equal(findAll(empty, node => node.attrs.class === 'chart-leader').length, 0);
 });

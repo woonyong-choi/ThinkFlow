@@ -2,12 +2,31 @@
 // 브라우저가 있어야 보이는 것(탭, 시계, 전체 화면)은 docs/design/expression-coverage.md의 브라우저에서만 보이는 계약 표에 있다. 시험 이름 첫 낱말(X1~X11)이 요구사항 번호이고 시험 번호 표에 대응이 있다.
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
+import { runInNewContext } from 'node:vm';
+import { figureViewBounds } from '../src/html/view-bounds.js';
+import { statusBoxes } from '../src/draw/status.js';
+import { toElk } from '../src/layout/elk.js';
+import { buildModel } from '../src/layout/model.js';
 
 import postcss from 'postcss';
 
 import { EXAMPLES, build, thinkflow, descendants, findAll, findOne, parseMarkup, read, reject, textContent, textsOf, toHtml, toSvg } from './support.js';
 
 const MOVE = (mode, speed = 1, time = '10s') => thinkflow(`box a "A"\nbox b "B"\na -> b\nscene "s" mode=${mode} speed=${speed}\n  a -> b "m" time=${time}\n`);
+test('embedded bounds include status pills beyond the node corner', async () => {
+  const result = await build(thinkflow('box a "A"\nscene "warning" status="a=warn"\n  light a\n'));
+  const svg = await toSvg(result);
+  assert.match(svg, /class="status-pill"/);
+  assert.match(svg, /class="status-icon"/);
+  const bounds = figureViewBounds(result);
+  const pills = statusBoxes(result.scene, result.timeline);
+  assert.equal(pills.length, 1);
+  for (const box of pills) {
+    assert.ok(box.x > bounds.x && box.y > bounds.y);
+    assert.ok(box.x + box.w < bounds.x + bounds.w);
+    assert.ok(box.y + box.h < bounds.y + bounds.h);
+  }
+});
 const ANIMATION = new Set(['animate', 'set', 'animateMotion', 'animateTransform']);
 const animations = (dom) => descendants(dom).filter((n) => ANIMATION.has(n.tag));
 const seconds = (text) => (text.endsWith('ms') ? Number.parseFloat(text) / 1000 : Number.parseFloat(text));
@@ -140,6 +159,9 @@ test('renderers_embed_required_style_variables', async () => {
       // 공통 차트 CSS의 강도 변수는 히트맵 칸이 있을 때만 읽고, 각 칸이 공급한다.
       if (!heatCells.length) required.delete('--s');
       for (const cell of heatCells) assert.match(cell.attrs.style, /(?:^|;)\s*--s\s*:/);
+      const pulses = findAll(dom, (node) => (node.attrs.class ?? '').split(/\s+/).includes('fl-mark-pulse'));
+      if (!pulses.length) required.delete('--pulse-effect');
+      for (const pulse of pulses) assert.match(pulse.attrs.style, /(?:^|;)\s*--pulse-effect\s*:/);
 
       assert.deepEqual([...required].filter((name) => !defined.has(name)).sort(), [], `${format}\n${source}`);
 
@@ -263,7 +285,7 @@ test('X9 siblings keep their declared order when the narrow-screen layout stacks
   }
 });
 
-test('X9b every panel of the wide and the narrow-screen layout shares one width ratio that never exceeds its natural size', async () => {
+test('X9b every panel of the wide and the narrow-screen layout shares its natural viewBox dimensions', async () => {
   const names = ['a', 'b', 'c', 'd', 'e', 'f'];
   const source = thinkflow(`
     ${names.map((n) => `box ${n} "Service ${n.toUpperCase()}"`).join('\n    ')}
@@ -301,13 +323,15 @@ test('X9b every panel of the wide and the narrow-screen layout shares one width 
       assert.doesNotMatch(panel.attrs.style, /--min-w/);
     }
   }
-  // 모든 판이 같은 분모를 쓰는 곳은 이 CSS 한 줄이다. 바닥(max)이나 판 구역의 스크롤이 없다.
-  const css = /<style>([\s\S]*?)<\/style>/.exec(html)[1];
-  assert.match(css, /\.dp-panel > svg \{[^}]*\bwidth: calc\(100% \* var\(--panel-w\) \/ var\(--view-w\)\);/);
-  assert.doesNotMatch(css, /--min-w|max\(calc\(100% \* var\(--panel-w\)/);
-  assert.doesNotMatch(css, /\.dp-panel \{[^}]*overflow/);
-  // 묶음 폭은 자연 폭(보기 폭)도 넘지 않아, 작은 그림은 캔버스 폭 기준으로 줄지 않는다.
-  assert.match(css, /\.dp-panels \{[^}]*\bwidth: min\(100%, var\(--figure-canvas, var\(--spacing-figure-figure-canvas\)\), calc\(var\(--view-w\) \* 1px\)\);/);
+});
+
+test('X9e an unmet narrow target keeps the narrower valid group candidate (#272)', async () => {
+  const source = read(EXAMPLES, 'architecture.thinkflow');
+  const roomy = await build(source, { baseDir: EXAMPLES, layoutWidth: 650, strict: false });
+  const narrow = await build(source, { baseDir: EXAMPLES, layoutWidth: 272, strict: false });
+  assert.ok(narrow.scene.width <= roomy.scene.width, 'a narrower target must not discard an already valid narrower layout');
+  assert.deepEqual(narrow.scene.items.map(item => item.id), roomy.scene.items.map(item => item.id));
+  assert.deepEqual(narrow.scene.edges.map(({ from, to }) => [from, to]), roomy.scene.edges.map(({ from, to }) => [from, to]));
 });
 
 test('X9d the narrow-screen layout is shipped only when it hides no more moving text than the wide one', async () => {
@@ -315,7 +339,7 @@ test('X9d the narrow-screen layout is shipped only when it hides no more moving 
     const dom = parseMarkup(await toHtml(await build(read(EXAMPLES, name)), name), { html: true });
     return descendants(dom).find((n) => n.tag === 'template' && /\bfl-narrow\b/.test(n.attrs.class ?? ''));
   };
-  // 좁은 폭의 구조 배치는 이동 글 4개를 가리므로 쓰지 않고, 넓은 배치를 폭에 맞춰 줄인다.
+  // 좁은 폭의 구조 배치는 이동 글 4개를 가리므로 쓰지 않고, 넓은 배치의 자연 크기를 유지한다.
   assert.equal(await narrowOf('flow.thinkflow'), undefined);
   // 이동 글을 가리지 않는 좁은 배치는 그대로 쓴다.
   assert.ok(await narrowOf('metric.thinkflow'));
@@ -345,4 +369,58 @@ test('X11 the page keeps the original source exactly (line endings and all) so t
   const html = parseMarkup(await toHtml(await build(source), 'doc'), { html: true });
   const carried = findAll(html, (n) => n.tag === 'script' && n.attrs.type === 'application/json').map((n) => JSON.parse(textContent(n)));
   assert.deepEqual(carried.filter((value) => value === source), [source]);
+});
+
+// 부모가 나중에 초기화되어 첫 높이 메시지를 놓쳐도 테마 연결 때 다시 전달한다.
+test('X9d an embedded player reports its height again when a late host connects', async () => {
+  const html = await toHtml(await build(thinkflow('box a "A"\n')), 'x');
+  const script = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(match => match[1]).find(text => text.includes('themeRequest'));
+  const events = {}, messages = [];
+  const parent = { postMessage: message => messages.push(message) };
+  const root = { classList: { add() {} }, style: {}, setAttribute() {}, removeAttribute() {} };
+  runInNewContext(script, { window: { self: {}, top: {} }, parent, document: { documentElement: root, body: { getBoundingClientRect: () => ({ height: 1634.5 }) } }, addEventListener: (name, listener) => events[name] = listener, requestAnimationFrame: callback => callback() });
+  messages.length = 0;
+  events.message({ source: {}, data: { theme: 'light' } });
+  assert.equal(messages.length, 0);
+  events.message({ source: parent, data: { theme: 'light' } });
+  assert.equal(messages.at(-1).figureHeight, 1635);
+});
+
+test('grid-only layout aligns equal memory columns and preserves narrow graph reading', async () => {
+  for (const name of ['memory', 'memory-address', 'sql-join']) {
+    const source = read(EXAMPLES, `${name}.thinkflow`);
+    const wide = await build(source, { baseDir: EXAMPLES, layoutWidth: 1400 });
+    const [first, , last] = wide.scene.items;
+    assert.equal(first.y, last.y, `${name}: equal-height end columns share a baseline`);
+    for (const layoutWidth of [720, 360]) {
+      const narrow = await build(source, { baseDir: EXAMPLES, layoutWidth });
+      assert.ok(narrow.scene.width <= layoutWidth, `${name}: ${narrow.scene.width} exceeds ${layoutWidth}`);
+      assert.equal(narrow.scene.items.length, wide.scene.items.length);
+    }
+  }
+});
+
+test('mixed grid graphs retain collision-free pointer labels and stack flow', async () => {
+  for (const name of ['pointer', 'stack']) {
+    const source = read(EXAMPLES, `${name}.thinkflow`);
+    const wide = await build(source, { baseDir: EXAMPLES, layoutWidth: 1400 });
+    assert.ok(wide.scene.items.some((item) => item.shape !== 'grid'));
+    const narrow = await build(source, { baseDir: EXAMPLES, layoutWidth: 360, strict: false });
+    assert.equal(narrow.scene.items.length, wide.scene.items.length);
+    assert.ok(narrow.warnings.every((warning) => warning.message.includes('exceeding the requested')));
+  }
+});
+
+test('grid-only placement preserves safe and single-layer layout priorities', async () => {
+  const result = await build(read(EXAMPLES, 'sql-join.thinkflow'), { baseDir: EXAMPLES });
+  const sizes = new Map(result.scene.items.map((item) => [item.id, item.size]));
+  const options = (overrides) => {
+    const figure = { ...result.figure, direction: result.scene.items[0].direction, ...overrides };
+    return toElk(buildModel(figure, sizes), figure).layoutOptions;
+  };
+  assert.equal(options({ safeLayout: true })['elk.layered.nodePlacement.strategy'], undefined);
+  const single = options({ safeLayout: true, oneNodePerLayer: true });
+  assert.equal(single['elk.layered.nodePlacement.strategy'], 'SIMPLE');
+  assert.equal(single['elk.layered.layering.coffmanGraham.layerBound'], '1');
+  assert.equal(single['elk.separateConnectedComponents'], 'false');
 });

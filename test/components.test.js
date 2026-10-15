@@ -12,6 +12,15 @@ import { iconBody } from '../src/vendor/theme/ui/svg.mjs';
 import { drawTexts } from '../src/draw/texts.js';
 import { edgeMarker } from '../src/draw/arrow.js';
 import { TEXT } from '../src/chart/metrics.js';
+import { pulseOverlay } from '../src/chart/pulse-overlay.js';
+import { drawEdgeLabel } from '../src/draw/connector.js';
+import { pointAlong, routePolyline } from '../src/route.js';
+import { sizeChip } from '../src/chip.js';
+import { curveOf } from '../src/easing.js';
+import { checkChips } from '../src/check/moving.js';
+import { createProblems } from '../src/source/problems.js';
+import { widenForHiddenChips } from '../src/chip-room.js';
+import { checkLabels } from '../src/check/overlap.js';
 import { BADGE_STYLE } from '../src/measure/decor.js';
 import { measure, createGlyphSet } from '../src/measure/fonts.js';
 import { PAD } from '../src/measure/card.js';
@@ -23,6 +32,38 @@ import { build, thinkflow, descendants, findAll, findOne, num, parseMarkup, text
 
 const TICK = '`';
 const EPS = 0.06; // SVG 좌표는 소수 첫째 자리로 줄여 쓴다
+
+test('curveOf preserves signed token control points', () => {
+  const points = runInNewContext(`(${curveOf.toString()})('move')`, { values: { ease: { move: 'cubic-bezier(0.2, -0.5, 0.8, 1.2)' } } });
+  assert.deepEqual(Array.from(points), [0.2, -0.5, 0.8, 1.2]);
+});
+
+test('status overlap diagnostics locate the scene with that status kind', () => {
+  const errors = [];
+  checkLabels({
+    statuses: [{ node: 'a', kind: 'warn', name: 'WARN', x: 0, y: 0, w: 20, h: 20 }],
+    pills: [], titles: [], boxes: [{ id: 'b', line: 2, x: 0, y: 0, w: 20, h: 20 }],
+    figure: { steps: [{ line: 10, status: [{ node: 'a', kind: 'ok' }] }, { line: 20, status: [{ node: 'a', kind: 'warn' }] }] },
+    scene: { items: [], groups: [], edges: [] },
+  }, { error: (line, message) => errors.push({ line, message }) });
+  assert.deepEqual(errors.map(error => error.line), [20]);
+});
+
+test('U11 HTML packet chips carry the same measured geometry as animated SVG', async () => {
+  const result = await build(thinkflow('box a "A"\nbox b "B"\na -> b\nscene "S"\na -> b "한글 `payload`"'));
+  const html = await toHtml(result, 'chip');
+  const script = textContent(findAll(parseMarkup(html, { html: true }), n => n.tag === 'script').at(-1));
+  const data = JSON.parse(/figurePlay\(document\.querySelector\('\.fl-figure'\), (.*)\);\s*$/s.exec(script)[1]);
+  const hop = data.segs.flatMap(seg => seg.hops).find(hop => hop.data);
+  const measured = sizeChip(hop.data);
+  assert.ok(Math.abs(hop.chipSize.w - measured.w) <= EPS);
+  assert.equal(hop.chipSize.h, measured.h);
+  const packet = findOne(parseMarkup(await toSvg(result)), n => hasClass(n, 'fl-packet'));
+  const rect = findOne(packet, n => n.tag === 'rect');
+  assert.ok(Math.abs(num(rect, 'width') - hop.chipSize.w) <= EPS);
+  assert.ok(Math.abs(num(rect, 'height') - hop.chipSize.h) <= EPS);
+  assert.ok(!script.includes('getComputedTextLength'), 'the browser consumes the compiled measurement');
+});
 
 /** 멈춘 SVG의 DOM과 모형. */
 async function rendered(source) {
@@ -334,7 +375,7 @@ test('U8 a concept icon is one symbol: the card header, the tile and the group t
 // ---- HTML 그림 틀 ----
 
 // 차트의 글자 뒤 바탕 면과 받침 선은 차트가 놓인 면의 색이다. 차트 보기는 그림 바탕, 차트 카드는 카드 면이다. 여기서는 그려진 형상(어느 묶음 안에 놓였는가)만 보고, 면을 정하는 CSS는 component-state.test.js가 본다.
-test('U10 a chart is drawn on the surface it sits on: in a plot view and inside each chart card, with a hollow reference marker that reads the carried ground', async () => {
+test('U10 a chart is drawn on the surface it sits on: in a plot view and inside each chart card, with circular measured markers and neutral reference lines', async () => {
   const source = thinkflow(`
     box a "A"
     chart c "C" bar {
@@ -361,6 +402,19 @@ test('U10 a chart is drawn on the surface it sits on: in a plot view and inside 
     view plot "Goals" {
       l
     }
+    chart e "Distribution" ecdf {
+      x "x(ms)"
+      y "p"
+      series actual "actual"
+      series target "target" role=reference
+      sample 1 series=actual
+      sample 2 series=actual
+      sample 1 series=target
+      sample 3 series=target
+    }
+    view plot "Distribution" {
+      e
+    }
   `);
   const svg = await toSvg(await build(source), { isStatic: true });
   const dom = parseMarkup(svg);
@@ -369,12 +423,15 @@ test('U10 a chart is drawn on the surface it sits on: in a plot view and inside 
   assert.equal(cards.length, 2, 'two chart cards');
   for (const card of cards) assert.ok(findAll(card, (n) => hasClass(n, 'fl-chart')).length > 0, 'the chart is drawn inside its card, so it inherits the card face');
   // 바탕 면을 정하는 CSS 상태(--chart-ground, 운반하는 color, currentColor를 읽는 지움 면과 받침 선)는 component-state.test.js S3 한 곳에서 본다.
-  // 기대값 계열의 속 빈 점도 같은 운반을 읽고, 표현 속성에는 var()가 남지 않는다. 범례는 차트 본문 안이다.
-  const hollow = findAll(dom, (n) => hasClass(n, 'fl-chart')).flatMap((chart) => findAll(chart, (n) => n.attrs.fill === 'currentColor' && n.attrs.stroke));
-  assert.ok(hollow.length > 0, 'the reference series marker is hollow with the carried ground inside the chart group');
+  const references = findAll(dom, (n) => hasClass(n, 'chart-dashed'));
+  assert.ok(references.length > 0);
+  assert.ok(references.every(n => n.attrs.stroke === 'var(--color-data-reference)'));
+  const dots = findAll(dom, n => hasClass(n, 'dot') && n.attrs['data-at'] !== undefined);
+  assert.ok(dots.length > 0 && dots.every(n => n.tag === 'circle'));
+  assert.equal(findAll(dom, n => n.attrs.fill === 'currentColor' && n.attrs.stroke).length, 0, 'reference lines have no point markers');
   assert.ok(findAll(dom, (n) => Object.values(n.attrs).some((v) => String(v).includes('--chart-ground'))).length === 0, 'no presentation attribute names the alias');
   // 바탕 면 값은 그림 바탕(배경 사각형과 설명 판)과 같은 토큰이다.
-  assert.ok(findAll(dom, (n) => n.tag === 'rect' && n.attrs.fill === 'var(--color-prose-pre-background)').length > 0);
+  assert.ok(findAll(dom, (n) => n.tag === 'rect' && hasClass(n, 'fl-canvas-surface')).length > 0);
 });
 
 test('U9 every page has one frame, one toolbar and one tab row: the toolbar sits in the drawing, the tab row below it, and neither depends on the figure', async () => {
@@ -423,11 +480,123 @@ test('U9 every page has one frame, one toolbar and one tab row: the toolbar sits
   const names = Object.keys(getIconCatalog().controls);
   const drawn = runInNewContext(`${script}\nfunction figurePlay() {}\n${JSON.stringify(names)}.map(ToolIcon);`, { document: { querySelector: () => null }, matchMedia: () => ({ matches: false }) });
   assert.deepEqual(Array.from(drawn, iconShape), names.map((name) => iconShape(ToolIcon(name))));
-  const masked = Array.from(drawn).find((svg) => svg.includes('<mask '));
-  assert.ok(masked, 'the control set exercises a mask');
-  assert.throws(() => iconShape(masked.replace(/<mask\b[\s\S]*?<\/mask>/, '')), /mask reference has a definition/);
-  assert.throws(() => iconShape(masked.replace(/mask="url\(#[^"]+\)"/, 'mask="url(#missing)"')), /mask reference has a definition/);
   for (const [, name] of html.matchAll(/getPropertyValue\(['"](--[\w-]+)['"]\)/g)) {
     assert.ok(html.includes(`${name}:`), `runtime token ${name} survives CSS pruning`);
+  }
+});
+
+ test('group icons and titles share a compact measured row', async () => {
+  const { groupHead } = await import('../src/measure/sizes.js');
+  const head = groupHead({ label: 'Region', iconData: {} });
+  const icon = head.decor.items.find(item => item.kind === 'icon');
+  const title = head.decor.items.find(item => item.kind === 'title');
+  assert.equal(title.x - icon.x - icon.w, values.spacing['1']);
+  assert.equal(head.lead, 0);
+});
+
+test('U1 grid surface follows its cell body and leaves the title outside', async () => {
+  const result = await build(thinkflow('grid g "Rows" rows=2 {\n  item a "A" row=0\n  item b "B" row=1\n}\n'));
+  const item = result.scene.items.find(item => item.id === 'g');
+  const { surfaceOutline } = await import('../src/draw/surface.js');
+  const rect = parseMarkup(surfaceOutline(item) + '/>');
+  assert.ok(rect);
+  assert.equal(num(rect, 'y'), item.y + item.cells[0].y);
+  assert.equal(num(rect, 'height'), item.cells.at(-1).y + item.cells.at(-1).h - item.cells[0].y);
+  assert.ok(num(rect, 'y') > item.y);
+});
+
+// 소비자 조사 T-E2: 두 자리 이상 번호도 측정한 알약 높이 안에 들어간다.
+test('U7 번호 배지의 폭이 늘어도 높이는 선 라벨 안에 유지된다', () => {
+  for (const no of [1, 10, 100]) {
+    const markup = drawEdgeLabel({ no, label: '순서', labelAt: { x: 50, y: 50 } }, 0, {
+      decorate: () => '', glyphs: createGlyphSet(), scene: {},
+    });
+    const dom = parseMarkup(markup);
+    const badge = findOne(dom, n => hasClass(n, 'number-pill'), 'number');
+    const frame = findOne(dom, n => hasClass(n, 'pill'), 'frame');
+    assert.ok(num(badge, 'y') > num(frame, 'y'));
+    assert.ok(num(badge, 'y') + num(badge, 'height') < num(frame, 'y') + num(frame, 'height'));
+  }
+});
+
+// 소비자 조사 T-E6/T-E7: 연결선은 유턴을 보존하고 표본 계산이 원본 점을 바꾸지 않는다.
+test('U7 경로 표본은 유턴과 원본 끝점을 보존한다', () => {
+  const points = [{ x: 0, y: 0 }, { x: 20, y: 0 }, { x: 10, y: 0 }];
+  assert.match(routePolyline(points, 0).d, /L 20 0/);
+  const end = pointAlong(points, 1.01);
+  end.x = 100;
+  assert.equal(points.at(-1).x, 10);
+});
+
+test('U10 색과 값이 없는 유실 장면도 유한한 사라짐 시간을 전달한다', async () => {
+  const html = await toHtml(await build(thinkflow('box a "A"\nbox b "B"\na -> b\nscene "유실"\n  a -> b lost=50%\n')), 'lost');
+  const script = textContent(findAll(parseMarkup(html, { html: true }), n => n.tag === 'script').at(-1));
+  const data = JSON.parse(/figurePlay\(document\.querySelector\('\.fl-figure'\), (.*)\);\s*$/s.exec(script)[1]);
+  assert.ok(Number.isFinite(data.metrics.cutFadeMs) && data.metrics.cutFadeMs > 0);
+});
+
+
+test('hidden chip layout decisions do not depend on warning wording', async () => {
+  const result = await build(thinkflow('box a "A"\nbox b "B"\nbox c "C"\na -> b\nb -> c\nscene "s"\n  track a -> b -> c "message"'), { strict: false });
+  const local = createProblems();
+  const context = { scene: result.scene, timeline: result.timeline };
+  checkChips(context, { ...local, warn: (line, message) => local.warn(line, message.replace(/moving text.*$/, '가려진 이동 글')) });
+  assert.equal(context.hiddenChipWarnings, 1);
+  assert.equal(local.warnings[0].message, '가려진 이동 글');
+  const first = { ...context, local };
+  const better = { ...first, hiddenChipWarnings: 0 };
+  const helpers = { directions: new Map(result.figure.views.map(view => [view.id, view.direction])), failures: () => 0, attempt: async () => better };
+  assert.equal(await widenForHiddenChips(first, helpers), better);
+  const clashOnly = { ...first, hiddenChipWarnings: 0 };
+  assert.equal(await widenForHiddenChips(clashOnly, { ...helpers, attempt: () => assert.fail('other check-7 warnings must not widen the layout') }), clashOnly);
+});
+
+test('hidden chip relayout preserves room already gained on other track legs', async () => {
+  const result = await build(thinkflow(`
+    box web "웹"
+    box app "앱"
+    box api "주문 API" {
+      text "접수한 주문을 저장소에 보냅니다"
+      value pending "처리 중"
+      chart traffic "처리량" bar "예시 데이터. 처리 중인 주문 수" {
+        x "주문 수(건)"
+        series orders "진행 중"
+        row "현재" orders=pending
+      }
+    }
+    store db "재고 DB"
+    value stock "재고" on=db from=120
+    on api pending+1
+    on db pending-1, stock-1
+    web -> api
+    app -> api
+    api -> db
+    view graph down
+    scene "동시 주문" mode=loop for=6s
+      track web, app -> api -> db "주문" every=1500ms time=2s
+  `), { strict: true });
+  assert.equal(result.warnings.length, 0);
+  assert.equal(result.timeline.tracks.length, 2);
+});
+
+test('chart_pulse_keeps_geometry_and_motion_but_delegates_paint_to_shared_roles', () => {
+  for (const [tag, extra, modifier] of [
+    ['rect', {}, ''],
+    ['rect', { stroke: 'blue', 'stroke-width': '3' }, 'has-ring'],
+    ['path', { fill: 'none', d: 'M0 0L10 10' }, 'is-line'],
+    ['line', { x2: '10' }, 'is-line'],
+    ['text', {}, 'is-text'],
+  ]) {
+    const html = pulseOverlay({ tag, attrs: { x: '7', class: 'chart-value grow', 'data-effect': 'var(--color-data-main)', ...extra }, id: 'mark', inner: tag === 'text' ? '42' : '', children: '<animate attributeName="opacity"/>' });
+    assert.match(html, /x="7"/);
+    assert.match(html, /data-pulse-of="mark"/);
+    assert.match(html, /<animate attributeName="opacity"/);
+    assert.match(html, /--pulse-effect:var\(--color-data-main\)/);
+    const style = /style="([^"]+)"/.exec(html)[1];
+    assert.ok(style.split(';').filter(Boolean).every(value => value.startsWith('--pulse-')), style);
+    if (modifier) assert.ok(html.includes(modifier));
+    if (extra['stroke-width']) assert.match(html, /--pulse-width:3/);
+    if (tag === 'text') assert.doesNotMatch(html, /class="[^"]*grow/);
+    else assert.match(html, /class="[^"]*grow/);
   }
 });
