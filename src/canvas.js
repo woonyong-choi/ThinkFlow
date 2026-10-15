@@ -57,7 +57,7 @@ export const layoutWidthOf = (figure) => (figure?.width === 'wide' ? CANVAS_WIDE
 // basis: estimate
 /**
  * 그림이 본문에서 차지하는 가로세로 비율. 그림은 내용 폭으로 그려지지만 본문 단(column)보다 좁은 그림도 단 폭의 자리를 차지하므로 폭은 내용 폭과 단 폭 중 큰 쪽이다.
- * 좁고 긴 그림(451x986)은 내용 비율이 0.46이지만 720 단에서 차지하는 자리는 720x986이라 비율은 0.73이다.
+ * 좁고 긴 그림(451x986)은 내용 비율이 0.46이지만 680 단에서 차지하는 자리는 680x986이라 비율은 0.69다.
  */
 export function displayRatio(width, height, column = COLUMN) {
   return Math.max(width, column) / height;

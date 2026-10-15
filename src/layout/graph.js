@@ -115,7 +115,7 @@ function hasColumnEdges(figure) {
  * 한 줄 배치가 캔버스보다 넓을 때 글자 크기를 지키는 배치를 찾는다. 후보 순서는 이렇다.
  * 1. 바깥 방향을 돌린다(right는 down으로). 선이 줄 사이를 돌아오지 않아 접기보다 선이 짧다. 열을 이은 테이블이 있고 이것이 폭에 들지 않으면 열 선을 오른쪽 면으로 모은 묶음 배치도 본다.
  * 2. 자동 비율로 접는다. 폭에 들 때까지 비율을 낮춰 가며 FOLD_TRIES번까지 본다.
- * 3. 별도의 좁은 목표 폭에서도 넘치면 한 층당 도형 하나인 세로 후보를 비교한다. 관계나 사건 순서는 바꾸지 않는다.
+ * 3. 좁은 화면 목표 폭에서도 넘치면 한 층당 도형 하나인 세로 후보를 비교한다. 관계나 사건 순서는 바꾸지 않는다. 본문 단 폭에서는 이 후보를 보지 않는다.
  * 목표 폭(canvas, 보통 본문 단 폭)에 들고 비율이 알맞은 범위(FIT_MIN~FIT_MAX) 안인 첫 후보를 쓴다. 범위 안인 후보가 없으면 목표 폭에 드는 후보 가운데 범위에 가장 가까운 것을 쓴다.
  * 목표 폭에 드는 후보가 없으면 처음 배치를 포함해 표시 폭 상한(cap, 캔버스 폭)에 들고 비율 한도 안인 후보 가운데 가장 좁은 것을, 그것도 없으면 가장 좁은 배치를 쓴다. HTML은 자연 크기와 내부 가로 스크롤을 유지한다.
  */
@@ -145,9 +145,10 @@ async function fitCanvas(figure, sizes, { flat, canvas, cap }) {
     if (consider(folded)) return folded;
   }
   // 가로 형제가 남아 목표 폭을 넘으면 한 층에 하나씩 놓는 세로 후보를 비교한다. 도형과 연결은 그대로 ELK에 맡긴다.
-  // 열을 이은 테이블은 한 줄로 세우면 열 선이 옆면을 오가며 그림을 휘감으므로, 본문 단 폭에서는 이 후보를 보지 않고 좁은 화면 목표 폭에서만 본다.
+  // 열을 이은 테이블도 한 줄로 세우면 열 선이 옆면을 오가며 그림을 휘감는다. 좁은 화면에서는 폭에 드는 것이 우선이라 본다.
   const isNarrowTarget = canvas < layoutWidthOf(figure);
-  if (narrowest.laid.width > canvas && (isNarrowTarget || !hasColumnEdges(figure))) {
+  // 한 층에 하나씩 세우는 후보도 좁은 화면 목표 폭에서만 본다. 본문 단 폭에서 쓰면 형제 카드가 모두 한 줄로 서서 단 폭의 절반만 쓰는 긴 기둥이 되었다(async-orders 336×1440).
+  if (narrowest.laid.width > canvas && isNarrowTarget) {
     consider(await arrange({ ...figure, direction: 'down', aspect: undefined, oneNodePerLayer: true }, sizes));
     // 그룹을 한 층씩 푸는 후보는 좁은 화면 목표 폭에서만 본다. 본문 단 폭에서 쓰면 그룹 사이 선이 한 줄로 몰려 이동 글 상자 자리 찾기가 느려졌다(architecture 예제 빌드가 main의 1.7배).
     if (narrowest.laid.width > canvas && figure.groups.length && isNarrowTarget) {
