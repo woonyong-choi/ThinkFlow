@@ -36,7 +36,8 @@ jobs:
           git config user.email "$(git log origin/main -1 --format=%ae)"
           if git show-ref --verify --quiet refs/remotes/origin/build/repo-design-tokens; then
             git switch --track origin/build/repo-design-tokens
-            git merge --no-edit origin/main
+            git merge --no-edit -s ours origin/main
+            git read-tree -u --reset origin/main
           else
             git switch -c build/repo-design-tokens origin/main
           fi
