@@ -1,5 +1,5 @@
 // 차트 선언 문장을 읽는다. 값의 규칙(계열 수, 음수, log)은 validate.js가 모든 행을 읽은 뒤 확인한다.
-import { VALUES, optionsOf, statementsIn, valueNames } from './grammar.js';
+import { VALUES, statementsIn, valueNames } from './grammar.js';
 import { readOptions } from './options.js';
 import { didYouMean } from './problems.js';
 import { RANGE_MESSAGE, TINY_MESSAGE } from './chart-limits.js';

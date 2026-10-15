@@ -76,7 +76,7 @@ ThinkFlow는 `thinkflow` 원본 하나로 구조, 순서, 상태, 스키마, API
 |---|---|
 | 머리 `aspect`, `width wide` | 그림 비율을 억지로 맞추면 접힌 배치가 오히려 길어지고, 넓은 캔버스는 표시 폭으로 줄어 글자가 12px 아래로 내려간다. 예제가 쓰면 읽기 기준에 어긋난다 |
 | 차트 `series ... key=` | JSON 키와 계열 이름을 따로 둘 때만 필요하다. 예제의 JSON은 `histogram`의 `value` 하나뿐이다 |
-| `shape=circle`, `shape=rect`, 값 목록 `head=end`, `border=solid` | 기본값이거나 짧은 이름을 담는 작은 원 하나라 예제의 이야기에 필요하지 않았다 |
+| `shape=circle`, `shape=rect`, 값 목록 `head=end` | 기본값이거나 짧은 이름을 담는 작은 원 하나라 예제의 이야기에 필요하지 않았다 |
 | `visibility=package`, 색 `red`의 `appearance`(`tone=red`는 쓴다) | 다른 값이 같은 규칙을 보인다 |
 | 추적 `unit=s` | `ms`와 `us`가 단위 규칙을 보인다 |
 
