@@ -19,13 +19,13 @@ function usedTones(scene) {
 // basis: estimate
 /**
  * 고른 색의 CSS. 표현마다 칠하는 곳이 정해져 있다.
- * - plain: 면과 경계는 중립이고 색은 아이콘 실루엣과 그룹 제목 글자뿐이다.
+ * - plain: 면과 경계는 중립이고 색은 아이콘 실루엣뿐이다. 그룹 제목은 고른 색과 상관없이 공통 그룹 제목 색이다.
  * - filled: 도형, 그룹, 카드 내용의 면이 같은 계열의 옅은 면(fill)이다. 경계는 중립이다.
- * - outline: 경계가 같은 계열 경계(outline)이고 면은 중립이다.
+ * - outline: 경계가 같은 계열 경계(outline)를 기본 윤곽과 섞은 색이고(figure.css) 면은 중립이다.
  * 도착 후광(.fl-pulse)과 켜짐은 고른 색과 상관없이 공통 UI 강조다(figure.css). 쓴 색이 없으면 빈 글이다.
  */
 export function paintCss(scene) {
   if (!scene) return '';
-  const rules = usedTones(scene).map((name) => `.fl .tn-${name} {\n  --paint-fill: var(--color-paint-${name}-fill);\n  --paint-outline: var(--color-paint-${name}-outline);\n  --paint-ink: var(--color-paint-${name}-ink);\n}`);
+  const rules = usedTones(scene).map((name) => `.fl .tn-${name} {\n  --paint-fill: var(--color-paint-${name}-fill);\n  --paint-outline: var(--color-paint-${name}-outline);\n}`);
   return rules.length ? `\n${rules.join('\n')}\n` : '';
 }

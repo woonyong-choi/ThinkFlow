@@ -9,7 +9,7 @@ import { roundCoord as r, escapeXml } from '../text.js';
 import { values } from '@woonyong-choi/design-tokens/tokens.js';
 import { drawDecor } from './decor.js';
 import { drawGridBody } from './grid.js';
-import { drawSurface, surfaceClip } from './surface.js';
+import { CORNER, drawSurface, surfaceClip } from './surface.js';
 import { drawTexts } from './texts.js';
 
 // cost: time O(c + t), heap O(out), stack O(1)
@@ -86,7 +86,7 @@ function drawChart(it, stroke, { decorate, glyphs, index }) {
 // basis: estimate
 /** 큐 칸 하나(측정이 놓은 칸 사각형). 빈 칸과 찬 칸(draw/values.js)이 같은 칸 윤곽을 쓰고 면과 선 색만 다르다. */
 export function drawSlot(s) {
-  return `<rect x="${r(s.x)}" y="${r(s.y)}" width="${r(s.w)}" height="${r(s.h)}" rx="${values.radius.sm}" class="fl-queue-slot"/>`;
+  return `<rect x="${r(s.x)}" y="${r(s.y)}" width="${r(s.w)}" height="${r(s.h)}" rx="${CORNER.cell}" class="fl-queue-slot"/>`;
 }
 
 // cost: time O(s), heap O(s), stack O(1)
