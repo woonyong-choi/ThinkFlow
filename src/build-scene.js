@@ -14,6 +14,7 @@ import { composePanels } from './layout/panels.js';
 import { layoutSequence } from './layout/sequence.js';
 import { shiftScene } from './layout/shift.js';
 import { layoutTime } from './layout/time.js';
+import { layoutTiming, timingScenes } from './layout/timing.js';
 import { checkGridBudget, checkGridExtent } from './measure/grid-cost.js';
 import { countLines } from './measure/line-counts.js';
 import { sizeNode, sizeParticipant } from './measure/sizes.js';
@@ -133,6 +134,8 @@ async function attemptScene(figure, inputs, variant) {
   widenForChips(scene, timeline);
   planChips(scene, timeline, limits);
   attachCharts(figure, { scene, timeline, charts }, local);
+  // 타이밍 판의 장면 모양은 시간표의 값 변화, 이동 시각과 장면 표시 길이(presentation)를 읽는다. 판 크기는 시간표와 상관없어 배치를 다시 하지 않는다.
+  for (const timing of scene.timings) timing.scenes = timingScenes(timing, { timeline, scene });
   // 태그 색은 원본에 처음 나온 순서로 정한다(docs/design/figure-syntax.md 카드 줄).
   const rows = [...figure.nodes.flatMap((node) => node.content ?? []), ...figure.steps.flatMap((s) => s.beats.flatMap((b) => b.ops.map((o) => o.row)))];
   scene.tagOrder = rows.filter((row) => row?.tag && !row.tone).map((row) => row.tag);
@@ -149,6 +152,7 @@ async function layoutPanel(figure, view, { cards, charts, texts, names, layoutWi
   const base = { view: view.id, strategy: view.strategy, label: view.label };
   if (view.strategy === 'plot') return { ...base, chart: { ...charts.get(view.cardIds[0]).drawn, id: view.cardIds[0] } };
   if (view.strategy === 'time') return { ...base, time: layoutTime(figure.nodes.find((n) => n.id === view.cardIds[0]), names, chartWidth) };
+  if (view.strategy === 'timing') return { ...base, timing: layoutTiming(view, { width: chartWidth, statuses: sceneStatuses(figure) }) };
   if (view.strategy === 'sequence') {
     const sequence = viewFigure(figure, view);
     // 순서 보기의 참여자는 머리 모양만 그린다(표, API, 클래스는 공통 카드 머리). 카드 내용은 같은 카드를 담은 그래프 보기가 보인다.
@@ -164,6 +168,13 @@ async function layoutPanel(figure, view, { cards, charts, texts, names, layoutWi
   return { ...base, scene: await layoutOrFail(graph, sizes, { problems: local, width: layoutWidth }) };
 }
 
+// 카드 id → 장면들이 그 카드에 쓰는 상태 종류 집합. 타이밍 보기가 상태 알약 자리를 미리 잡는다.
+function sceneStatuses(figure) {
+  const statuses = new Map();
+  for (const { node, kind } of figure.steps.flatMap((step) => step.status ?? [])) statuses.set(node, new Set([...(statuses.get(node) ?? []), kind]));
+  return statuses;
+}
+
 // cost: time O(h·l + s + e·p), heap O(1), stack O(1)
 // vars: h = 이동 수, l = 글 상자 줄 수, s = 도형 수, e = 선 수, p = 경로 점 수
 // basis: estimate
@@ -174,7 +185,7 @@ function widenForChips(scene, timeline) {
   if (need <= scene.width) return;
   const dx = (need - scene.width) / 2;
   shiftScene(scene, dx, 0);
-  for (const item of [...scene.plots, ...scene.times]) item.x += dx;
+  for (const item of [...scene.plots, ...scene.times, ...scene.timings]) item.x += dx;
   for (const panel of scene.panels) {
     panel.box.x += dx;
     if (panel.labelAt) panel.labelAt.x += dx;
