@@ -43,6 +43,8 @@ function createStage(root, data) {
     parts: all('.fl-part'),
     sceneEls: all('[data-si]'),
     statusEls: all('.fl-status'),
+    timingClips: all('.fl-timing-clip'),
+    timingHeads: all('.fl-timing-head'),
     charts: createChartEls(view, data),
     packets: [],
     // 마지막으로 그린 박자와 요소별 값. 같은 값을 다시 쓰지 않으려고 둔다(그린 결과는 모습만으로 정해진다).
@@ -104,6 +106,7 @@ function paintFrame(stage, data, frame) {
   paintValues(stage, frame);
   paintChartFrames(stage, data, frame.charts);
   paintPulses(stage, frame.pulses);
+  paintTimings(stage, data, frame);
   stage.packets.forEach((packet) => packet.move(frame.elapsed));
   driveChartMotion(stage, frame);
 }
@@ -113,6 +116,25 @@ function paintScene(stage, si) {
   if (stage.painted.si === si) return;
   stage.painted.si = si;
   for (const el of stage.sceneEls) el.classList.toggle('fl-off', Number(el.dataset.si) !== si);
+}
+
+// 타이밍 보기의 드러냄 창과 재생 막대. 창 폭은 장면 처음부터 지금 시각까지의 비율이고(data-t0, data-t1은 그 장면 축의 시간표 시각), 마지막 모습은 다 드러나고 막대가 숨는다.
+// 시각은 표본 추출기가 정한 박자와 박자 안 시각에서 읽기만 한다. 다른 장면의 창은 장면 표시(fl-off)가 숨긴다.
+function paintTimings(stage, data, frame) {
+  // 축은 장면의 표시 길이까지라 표시 시각(d)을 논리 시각으로 옮겨 읽는다. 장면의 처음 시각은 data-t0이다.
+  const shown = frame.d * data.steps[frame.si].speed;
+  const isFinal = frame.phase === 'final';
+  const progress = (el) => (isFinal ? 1 : Math.min(1, Math.max(0, shown / Math.max(1, Number(el.dataset.t1) - Number(el.dataset.t0)))));
+  for (const el of stage.timingClips) {
+    if (Number(el.closest('[data-si]').dataset.si) !== frame.si) continue;
+    const from = Number(el.dataset.from);
+    writeAttr(stage, el, 'width', String(from + (Number(el.dataset.w) - from) * progress(el)));
+  }
+  for (const el of stage.timingHeads) {
+    if (Number(el.closest('[data-si]').dataset.si) !== frame.si) continue;
+    writeAttr(stage, el, 'visibility', isFinal ? 'hidden' : 'visible');
+    writeAttr(stage, el, 'transform', `translate(${Number(el.dataset.w) * progress(el)} 0)`);
+  }
 }
 
 // 박자 전체에서 변하지 않는 상태. 상태 알약, 차트 계열(보임과 자람), 점. 마지막 모습(phase가 final)이면 계열이 다 자란 채이고 점이 없다.

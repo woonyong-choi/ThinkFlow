@@ -383,7 +383,7 @@ test('K-grid outside row keys share measured bounds and avoid incoming cell lead
   const svg = await toSvg(result);
   assert.match(svg, /Frame 0/);
   assert.equal((svg.match(/Frame 0<\/text>/g) ?? []).length, 1);
-  await rejectedAt(source.replace('rows=2 {', 'rows=2 cols=2 {'), 'item zero', /key=.*cols=1/);
+  await rejectedAt(source.replace('rows=2 {', 'rows=2 cols=2 {').replace('item one "Free" key="Frame 1" row=1', 'item one "Free" key="Frame 1" row=1 col=1'), 'item one', /key=.*col=0/);
   await rejectedAt(source.replace('item zero "Page 1"', 'gap zero "Page 1" count=2'), 'gap zero', /key=.*item/);
 });
 
@@ -422,4 +422,123 @@ view graph right`));
   const ram = result.scene.items.find(item => item.id === 'ram');
   const ports = Object.values(ram.cellEnds).map(ends => ends.WEST.port.y);
   assert.equal(new Set(ports).size, 2);
+});
+
+
+test('K-grid a unit= grid is a byte layout: ruler, row offsets, proportional fields, two text levels, open end and region brackets', async () => {
+  const source = thinkflow(`
+    grid tcp "TCP header" rows=3 cols=32 unit=bit {
+      item sport "Source Port" cols=16
+      item dport "Destination Port" cols=16
+      item flags "Flags" "CWR ECE" cols=8
+      item win "Window" cols=24
+      item opt "Options" cols=32 open
+      region "Header" rows=2
+      region "Payload"
+    }
+  `);
+  const result = await build(source);
+  const tcp = result.scene.items.find((item) => item.id === 'tcp');
+  const cell = (id) => tcp.cells.find((c) => c.id === id);
+  // 자리를 적지 않은 칸은 앞 칸 뒤에 이어 놓이고, 폭은 차지한 비트 수에 비례한다.
+  assert.deepEqual(['sport', 'dport', 'flags', 'win', 'opt'].map((id) => [cell(id).row, cell(id).col]), [[0, 0], [0, 16], [1, 0], [1, 8], [2, 0]]);
+  assert.ok(Math.abs(cell('dport').w - cell('sport').w) < 0.01 && Math.abs(cell('win').w - cell('flags').w * 3) < 0.01);
+  // 눈금 숫자는 칸 위, 행 오프셋은 같은 단위로 칸 왼쪽, 보조 글은 적은 글이나 차지한 단위 수다.
+  const texts = tcp.texts.map((t) => t.text);
+  for (const label of ['bit', '0', '31', '32', '64', 'Header', 'Payload', '16 bit', 'CWR ECE']) assert.ok(texts.includes(label) || tcp.cells.some((c) => c.texts.some((t) => t.text === label)), label);
+  const ruler = tcp.texts.filter((t) => t.text === '31');
+  assert.ok(ruler.length >= 1 && ruler.every((t) => t.center < cell('sport').y));
+  const offset = tcp.texts.find((t) => t.text === '64');
+  assert.ok(offset.x < cell('opt').x && offset.anchor === 'end');
+  assert.equal(cell('opt').texts.some((t) => t.text.endsWith('bit')), false);
+  // 틀은 칸 사이 선보다 진한 역할이고, 열린 칸 아래는 점선이며, 구간마다 괄호가 하나다.
+  const svg = await toSvg(result, { isStatic: true });
+  assert.equal((svg.match(/class="chart-whisker"/g) ?? []).length, 3);
+  assert.match(svg, /class="grid-cell empty"/);
+  assert.equal(tcp.braces.length, 2);
+  assert.ok(tcp.braces.every((b) => b.x >= cell('sport').x + cell('sport').w * 2 - 0.5));
+});
+
+test('K-grid byte layout lines that break the layout are line-numbered errors', async () => {
+  const base = (body, head = 'rows=2 cols=8 unit=byte') => thinkflow(`
+    grid g "G" ${head} {
+      item a "A" cols=8
+      ${body}
+    }
+  `);
+  await rejectedAt(base('region "R" rows=1', 'rows=2 cols=8'), 'region "R"', /unit=/);
+  await rejectedAt(base('item b "B" cols=8\n      region "One" rows=2\n      region "Two" row=1'), 'region "Two"', /overlaps/);
+  await rejectedAt(base('region "Far" row=1 rows=2'), 'region "Far"', /ends at row 3/);
+  await rejectedAt(base('item b "B" cols=4 open\n      item c "C" row=1 col=4 cols=4', 'rows=3 cols=8 unit=byte'), 'item b', /open marks/);
+  await rejectedAt(base('item b "B" row=1 col=4 cols=4 key="K"'), 'item b', /col=0/);
+  await rejectedAt(base('', 'rows=2 cols=65 unit=bit'), 'grid g', /at most 64 columns/);
+  await rejectedAt(base('item b "B" cols=9'), 'item b', /ends at column/);
+});
+
+test('K-timing a timing view shows value bands, 0/1 lines, card moves and value notes from the same timeline as the sequence view', async () => {
+  const source = thinkflow(`
+    box a "A"
+    box b "B"
+    value lock "Lock" from=free
+    value busy "Busy" from=0
+    view sequence {
+      a b
+    }
+    view timing "Signals" {
+      a b
+      lock busy
+      note lock=held "held"
+    }
+    scene "One" mode=once
+      a -> b "take" time=400ms set="lock=held, busy=1"
+      b -> a "done" time=400ms set="lock=free, busy=0"
+  `);
+  const result = await build(source);
+  const [panel] = result.scene.timings;
+  assert.deepEqual(panel.rows.map((row) => [row.id, row.kind]), [['a', 'card'], ['b', 'card'], ['lock', 'value'], ['busy', 'value']]);
+  const [part] = panel.scenes;
+  const lock = part.rows.find((row) => row.id === 'lock');
+  assert.deepEqual(lock.bands.map((band) => band.text), ['free', 'held', 'free']);
+  // 띠가 바뀌는 자리는 시간표의 값 변화 시각이고, 순서 보기의 메시지 도착 시각과 같다.
+  const change = result.timeline.values.find((row) => row.id === 'lock').changes[0][0];
+  assert.equal(change, 400);
+  assert.ok(Math.abs(lock.bands[1].x0 - part.scale.at(change / (part.unit === 's' ? 1000 : 1))) < 0.01);
+  assert.ok(part.rows.find((row) => row.id === 'busy').wave);
+  assert.deepEqual(part.arrows.map((arrow) => arrow.label), ['take', 'done']);
+  assert.equal(part.notes.length, 1);
+  assert.ok(Math.abs(part.notes[0].x1 - part.notes[0].x0 - (lock.bands[1].x1 - lock.bands[1].x0)) < 0.01);
+  // 움직이는 SVG는 드러냄 창과 재생 막대를 장면 시계로 옮기고, 정지 SVG와 HTML은 다 드러난 모습에서 시작한다.
+  const moving = await toSvg(result);
+  assert.match(moving, /class="fl-timing-clip"[^>]*><animate attributeName="width"/);
+  assert.match(moving, /fl-timing-head"[^>]*><animate attributeName="visibility"/);
+  const still = await toSvg(result, { isStatic: true });
+  assert.doesNotMatch(still, /<animate/);
+  const html = await toHtml(result, 'timing');
+  const [, end] = /class="fl-timing-clip" data-t0="0" data-t1="(\d+)"/.exec(html);
+  assert.ok(Number(end) >= 800);
+});
+
+test('K-timing rows and notes that are not values or moving cards are line-numbered errors, and timing does not hide cards from the default view', async () => {
+  const source = thinkflow(`
+    box a "A"
+    box b "B"
+    grid c "C" {
+      item i "I"
+    }
+    value n "N" from=0
+    a -> b
+    view timing {
+      a n
+      note n=1 "one"
+    }
+    scene "S"
+      a -> b "go" set="n=1"
+  `);
+  const result = await build(source);
+  assert.deepEqual(result.figure.views.map((view) => view.strategy), ['timing', 'graph']);
+  await rejectedAt(source.replace('a n\n', 'a n c\n'), 'a n c', /timing row.*grid/);
+  await rejectedAt(source.replace('a n\n', 'a n m\n'), 'a n m', /unknown value or card "m"/);
+  await rejectedAt(source.replace('note n=1', 'note a=1'), 'note a=1', /card row/);
+  await rejectedAt(source.replace('note n=1 "one"', 'note n=1'), 'note n=1', /note value=state "text"/);
+  await rejectedAt(source.replace(/view timing \{[^}]*\}/, 'view timing'), 'view timing', /block/);
 });
