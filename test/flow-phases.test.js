@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { routeLength } from '../src/route.js';
-import { values } from '../src/vendor/theme/tokens.js';
+import { values } from '@woonyong-choi/design-tokens/tokens.js';
 import { buildFigure, FigureError } from 'thinkflow';
 
 const source = (names, options, length = '3ms') => `thinkflow

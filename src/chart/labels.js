@@ -3,7 +3,7 @@ import { textMarkup } from '../draw/texts.js';
 import { measure, wrap } from '../measure/fonts.js';
 import { STYLE, stackTexts } from '../measure/texts.js';
 import { centerBaseline, escapeXml, plainText, renderRich, roundCoord as r } from '../text.js';
-import { values } from '../vendor/theme/tokens.js';
+import { values } from '@woonyong-choi/design-tokens/tokens.js';
 import { COPY } from './copy.js';
 import { ecdfGroups } from './data.js';
 import { drawLegend } from './legend.js';

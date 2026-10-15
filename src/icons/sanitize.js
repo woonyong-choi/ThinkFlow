@@ -1,7 +1,7 @@
 // 아이콘 SVG 파일을 그림에 넣어도 안전한 모양만 남긴다. 허용한 요소와 속성만 다시 쓰고, 색은 모두 currentColor로 바꾼다(색은 그림이 역할 토큰으로 칠한다).
 // 허용 밖의 요소(script, image, style, use, 그라디언트 같은 것)나 글자는 오류다. 사용자가 등록한 세트의 파일이 그림 안에서 코드나 외부 자원을 부르지 못하게 하기 위해서다.
 
-import { values } from '../vendor/theme/tokens.js';
+import { values } from '@woonyong-choi/design-tokens/tokens.js';
 
 const ICON_GRID = values.icon['size-small'];
 const SHAPE_ATTRS = {

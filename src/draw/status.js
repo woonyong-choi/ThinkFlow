@@ -2,9 +2,9 @@
 import { BADGE_STYLE, bodyOf } from '../measure/decor.js';
 import { measure } from '../measure/fonts.js';
 import { centerBaseline, escapeXml, roundCoord as r } from '../text.js';
-import { values } from '../vendor/theme/tokens.js';
-import { readIcon } from '../vendor/theme/ui/build/icons.mjs';
-import { iconBody } from '../vendor/theme/ui/svg.mjs';
+import { values } from '@woonyong-choi/design-tokens/tokens.js';
+import { readIcon } from '@woonyong-choi/design-tokens/ui/build/icons.mjs';
+import { iconBody } from '@woonyong-choi/design-tokens/ui/svg.mjs';
 import { hiddenAttr } from './visible.js';
 
 const SPACE = values.spacing;

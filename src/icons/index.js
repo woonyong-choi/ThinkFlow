@@ -3,7 +3,7 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 import { sanitizeIcon } from './sanitize.js';
-import { getIconCatalog, readIcon } from '../vendor/theme/ui/build/icons.mjs';
+import { getIconCatalog, readIcon } from '@woonyong-choi/design-tokens/ui/build/icons.mjs';
 
 const CATALOG = getIconCatalog();
 export const DEFAULT_SET = 'builtin';

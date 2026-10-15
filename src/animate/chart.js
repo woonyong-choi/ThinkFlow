@@ -1,7 +1,7 @@
 // 차트의 움직이는 SVG keyframes. 계열마다 보임과, 드러내는 박자에서 자라는 움직임을 만들고, 밝히지 않은 행은 흐린다.
 // 자라는 규칙은 HTML 재생기(공통 chartMotionCss)와 같다. 차트는 카드 id로 가려(`[data-chart="id"]`) 같은 문서의 차트마다, 같은 차트가 여러 곳에 그려져도 따로 움직인다.
-import { CHART_GROWTH } from '../vendor/theme/ui/diagram.mjs';
-import { tokens, values } from '../vendor/theme/tokens.js';
+import { CHART_GROWTH } from '@woonyong-choi/design-tokens/ui/diagram.mjs';
+import { tokens, values } from '@woonyong-choi/design-tokens/tokens.js';
 
 // 점이 나타나는 시각 비율(0~1)을 keyframes 이름에 쓸 정수로 바꾸는 배율
 const AT_KEY_SCALE = 1000;

@@ -115,7 +115,7 @@
 
 ### 색 역할
 
-공통 색과 그림 전용 색은 공통 디자인 정본에서 관리한다. 기본 단계와 역할 토큰을 구분하며 코드와 CSS는 역할 토큰만 사용한다. ThinkFlow는 해시가 있는 공통 완성본 하나를 가져오고 같은 토큰을 다시 정의하지 않는다. 가져온 사본(`src/vendor/theme/`)과 생성 토큰은 손으로 고치지 않는다. 수치는 [라이트 사본](../../src/vendor/theme/tokens.json)과 [다크 사본](../../src/vendor/theme/tokens.dark.json)에서 확인하며 계산값 표를 문서에 복사하지 않는다.
+공통 색과 그림 전용 색은 공통 디자인 정본에서 관리한다. 기본 단계와 역할 토큰을 구분하며 코드와 CSS는 역할 토큰만 사용한다. ThinkFlow는 호스트 앱이 설치한 공통 패키지 하나를 peer 의존성으로 읽고 같은 토큰을 다시 정의하지 않는다. 설치된 패키지(`@woonyong-choi/design-tokens`)와 생성 토큰은 손으로 고치지 않는다. 수치는 [라이트 정본](https://github.com/woonyong-choi/design-tokens/blob/main/tokens/tokens.json)과 [다크 정본](https://github.com/woonyong-choi/design-tokens/blob/main/tokens/tokens.dark.json)에서 확인하며 계산값 표를 문서에 복사하지 않는다.
 
 독립 SVG는 배경, 공통 정의(`defs`), 정지·재생 층과 스타일을 모두 조립한 뒤 필요한 토큰과 그 의존성을 내장한다. HTML도 차트 움직임을 포함한 최종 스타일과 그림 틀을 조립한 뒤 토큰을 고른다. 토큰 사용량을 계산한 뒤 별도 스타일이나 마크업을 덧붙이지 않는다. 두 출력에 필수 변수 정의가 있는지는 `test/exports.test.js`의 `renderers_embed_required_style_variables` 시험으로 확인한다. 기본값이 있는 선택 변수와 실제 히트맵 칸이 공급하는 강도 변수는 해당 사용 조건을 함께 확인한다.
 

@@ -4,7 +4,7 @@ import { placeSequenceLife } from './sequence-life.js';
 import { FIGURE_PAD } from '../canvas.js';
 import { sizePill } from '../measure/sizes.js';
 import { STYLE, textBlock } from '../measure/texts.js';
-import { values } from '../vendor/theme/tokens.js';
+import { values } from '@woonyong-choi/design-tokens/tokens.js';
 
 const SPACE = values.spacing;
 const SIZE = values.spacing.figure;

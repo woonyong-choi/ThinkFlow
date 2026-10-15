@@ -3,9 +3,9 @@ import { createHash } from 'node:crypto';
 import { readFileSync, readdirSync } from 'node:fs';
 import { test } from 'node:test';
 
-// 공통 디자인 사본(src/vendor)은 design-tokens의 출처 검사가 맡는다. 여기서는 이 저장소의 자체 파일만 본다.
+// 공통 디자인(@woonyong-choi/design-tokens 패키지)의 출처는 design-tokens가 검사한다. 여기서는 이 저장소의 자체 파일만 본다.
 const root = new URL('../', import.meta.url).pathname;
-const SKIP = new Set(['node_modules', '.git', '.local', 'src/vendor', 'examples/out']);
+const SKIP = new Set(['node_modules', '.git', '.local', 'examples/out']);
 const RASTER = /\.(png|jpe?g|gif|webp|avif|bmp|ico)$/i;
 const THIRD_PARTY_NAMES = [/-io\d{2}\.[a-z0-9]+$/i, /^fancysection-/i, /^arrivals-/i, /^bezel-/i];
 const TEXT = /\.(m?js|ts|css|html|svg|json|thinkflow|ya?ml)$/i;

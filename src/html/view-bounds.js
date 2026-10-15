@@ -4,7 +4,7 @@ import { sizeChip } from '../chip.js';
 import { chipStateAt } from '../chip-motion.js';
 import { timeAtPosition } from '../easing.js';
 import { flattenRoute } from '../route.js';
-import { values } from '../vendor/theme/tokens.js';
+import { values } from '@woonyong-choi/design-tokens/tokens.js';
 import { statusBoxes } from '../draw/status.js';
 
 // cost: time O(h·(p + k)·(p + k)), heap O(p + k), stack O(1)

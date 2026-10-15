@@ -1,6 +1,6 @@
 // 그림 원본을 배치 모형으로 바꾼다. 그룹 나무, 도형, 선 조각을 만든다. 선 하나는 넘는 경계마다 조각 하나가 더해진다(docs/design/layout.md).
 import { walkUp } from '../source/ancestry.js';
-import { values } from '../vendor/theme/tokens.js';
+import { values } from '@woonyong-choi/design-tokens/tokens.js';
 import { orderByFlow } from './order.js';
 import { isInnerEdge } from './cell-ports.js';
 import { addPort, endpoint } from './ports.js';

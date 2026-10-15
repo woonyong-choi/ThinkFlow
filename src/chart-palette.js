@@ -2,7 +2,7 @@
 // 계열(family)은 판이 정한 앞쪽 목록을 돌고, 한 바퀴를 돌 때마다 층(tier)이 오른다. 층 0은 단색 면이고 층 1부터 무늬가 달라진다. 점의 모양은 층과 상관없이 범주 번호마다 돌아서, 점만 있는 차트도 첫 바퀴 안에서 색 없이 구분된다.
 // 색·무늬·모양 목록은 뒤에만 늘어난다. 늘어나면 `index % n`의 n이 바뀌어 기존 범주의 칠이 달라지므로, 판 하나가 세 목록의 앞쪽 개수를 고정한다. 기본은 언제나 1판이다.
 // 색만으로 구분하지 않는다: 층 1부터와 경계가 대비 3에 못 미치는 계열은 `needsLabel`이 참이라 직접 라벨이나 범례가 있어야 한다.
-import { tokens, values } from './vendor/theme/tokens.js';
+import { tokens, values } from '@woonyong-choi/design-tokens/tokens.js';
 
 /** 소스가 판을 고르지 않을 때 쓰는 판. 최신 판이 아니다. */
 export const BASE_REVISION = 1;

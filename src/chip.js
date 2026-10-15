@@ -2,7 +2,7 @@
 import { FIGURE_PAD } from './canvas.js';
 import { FIT_SLACK, measure, wrap } from './measure/fonts.js';
 import { STYLE } from './measure/texts.js';
-import { values } from './vendor/theme/tokens.js';
+import { values } from '@woonyong-choi/design-tokens/tokens.js';
 
 const SPACE = values.spacing;
 /** 글 상자와 점 사이 간격 */

@@ -3,7 +3,7 @@
 // 값이 없는 점(`-`)에서 선이 끊긴다. 끊긴 곳에는 점도 `data-at`도 없고 선이 자라는 시간도 쓰지 않는다. 계단은 값이 다음 점까지 이어지는 post 방식이다.
 // 기대값(reference) 계열은 회색 점선이고 꼭짓점 표식은 생략한다. 점선은 길이로 드러낼 수 없어 x 위치로 닦아 낸다(wipe).
 import { roundCoord as r } from '../text.js';
-import { tokens } from '../vendor/theme/tokens.js';
+import { tokens } from '@woonyong-choi/design-tokens/tokens.js';
 import { curveOf, timeAt } from '../easing.js';
 import { roundToScale } from '../format.js';
 import { drawRules } from './axis.js';

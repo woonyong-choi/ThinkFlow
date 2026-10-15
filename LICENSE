@@ -22,8 +22,8 @@ SOFTWARE.
 
 ---
 
-Third-party material: the shared icons are in src/vendor/theme/assets/icons/.
-Their catalog.json records library notices and brand provenance; full notices are in
-src/vendor/theme/assets/icons/licenses/. See NOTICE for trademarks and font sources.
+Third-party material: the shared icons come from the @woonyong-choi/design-tokens
+package (dist/assets/icons/). Its catalog.json records library notices and brand
+provenance; full notices are in dist/assets/icons/licenses/ of that package. See NOTICE for trademarks and font sources.
 The fonts the figures embed as subsets (Pretendard, Noto Sans, Noto Sans Math,
 JetBrains Mono) are under the SIL Open Font License 1.1.

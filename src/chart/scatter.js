@@ -2,7 +2,7 @@
 // 계열이 둘 이상이면 점 이름 앞에 그 점 계열의 번호 키(`3 검색 전`)를 붙인다. 번호는 계열 목록 순서이고 범례의 번호와 같다.
 import { centerBaseline, renderRich, roundCoord as r } from '../text.js';
 import { CHART_ARROW, headReach, roleArrow } from '../draw/arrow.js';
-import { values } from '../vendor/theme/tokens.js';
+import { values } from '@woonyong-choi/design-tokens/tokens.js';
 import { drawRules } from './axis.js';
 import { inkGroup } from './labels.js';
 import { dotAttrs, isKeyed } from './legend.js';

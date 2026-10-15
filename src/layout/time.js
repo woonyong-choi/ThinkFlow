@@ -3,7 +3,7 @@
 import { measure, wrap } from '../measure/fonts.js';
 import { categoryPaint } from '../chart-palette.js';
 import { lineHeight, textAt } from '../measure/texts.js';
-import { values } from '../vendor/theme/tokens.js';
+import { values } from '@woonyong-choi/design-tokens/tokens.js';
 import { axisEnd } from '../chart/axis.js';
 import { labelColumn, drawHeader, rowLabelLayout } from '../chart/labels.js';
 import { BAR, PAD, SPACE, TEXT, WIDTH } from '../chart/metrics.js';

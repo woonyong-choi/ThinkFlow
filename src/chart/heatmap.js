@@ -4,7 +4,7 @@ import { roundToScale } from '../format.js';
 import { measure, wrap } from '../measure/fonts.js';
 import { STYLE } from '../measure/texts.js';
 import { centerBaseline, renderRich, roundCoord as r } from '../text.js';
-import { tokens, values } from '../vendor/theme/tokens.js';
+import { tokens, values } from '@woonyong-choi/design-tokens/tokens.js';
 import { labelColumn, labelFit, labelText } from './labels.js';
 import { markAttrs, markId } from './marks.js';
 import { mixOklab } from './oklab.js';

@@ -8,7 +8,7 @@ import { cutPath, dotAt, NODE_MS, visibleShare } from './chip-motion.js';
 import { addSlides, SWITCH_COST } from './chip-slide.js';
 import { positionAt } from './easing.js';
 import { flattenRoute } from './route.js';
-import { values } from './vendor/theme/tokens.js';
+import { values } from '@woonyong-choi/design-tokens/tokens.js';
 
 // 글 상자와 점 사이가 이보다 멀면 떨어졌다고 본다(가리는 것을 비켜 올린 최대 거리까지는 붙은 것이다)
 const DETACH_GAP = CHIP_GAP * 2 + CHIP_GAP * 4;

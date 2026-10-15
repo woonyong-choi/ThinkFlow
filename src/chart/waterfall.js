@@ -3,7 +3,7 @@ import { STYLE } from '../measure/texts.js';
 import { categoryPaint } from '../chart-palette.js';
 import { measure, wrap } from '../measure/fonts.js';
 import { escapeXml, roundCoord as r } from '../text.js';
-import { tokens, values } from '../vendor/theme/tokens.js';
+import { tokens, values } from '@woonyong-choi/design-tokens/tokens.js';
 import { drawRules, finishRowChart, rowValueScale } from './axis.js';
 import { COPY } from './copy.js';
 import { inkGroup, rowLabelLayout, rowName, valueText } from './labels.js';

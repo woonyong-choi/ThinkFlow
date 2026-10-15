@@ -1,7 +1,7 @@
 // 이동 글 상자 계획의 마무리. 겹치는 지점을 흐리게 하고, 60fps 프레임마다 다시 재고, 같은 직선 위의 지점을 줄이고, 그림 검사가 볼 문제를 모은다.
 import { boxAt, CHIP_FRAME_MS, CHIP_VISIBLE_MIN, dotAt, isHit, NODE_MS } from './chip-motion.js';
 import { positionAt } from './easing.js';
-import { values } from './vendor/theme/tokens.js';
+import { values } from '@woonyong-choi/design-tokens/tokens.js';
 
 // 흐려짐 시간(토큰)
 const FADE_MS = values.duration['chip-fade'];

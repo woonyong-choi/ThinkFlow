@@ -1,5 +1,5 @@
 // 도형 윗줄과 그룹 제목 줄에 놓는 장식(아이콘, 글자 배지, 복제 개수 `(N)`)의 크기와 자리. 여기서 정한 크기를 배치에 넘기고 그대로 그린다.
-import { values } from '../vendor/theme/tokens.js';
+import { values } from '@woonyong-choi/design-tokens/tokens.js';
 import { measure } from './fonts.js';
 
 const SPACE = values.spacing;

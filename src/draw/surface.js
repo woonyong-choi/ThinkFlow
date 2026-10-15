@@ -2,7 +2,7 @@
 // 채움은 중립 카드 면이고 경계와 켜짐은 부르는 쪽이 넘기는 stroke(class)가 정한다. 후광과 배경 면(draw/values.js)도 같은 윤곽을 쓴다.
 import { bodyOf } from '../measure/decor.js';
 import { roundCoord as r } from '../text.js';
-import { values } from '../vendor/theme/tokens.js';
+import { values } from '@woonyong-choi/design-tokens/tokens.js';
 
 /** 모서리 반지름의 두 역할: 바깥 면(카드)과 그 안에 놓이는 면(내용, 칸 묶음, 메모). 둘 다 토큰이다. */
 export const CORNER = Object.freeze({ outer: values.radius.lg, inner: values.radius.md });
