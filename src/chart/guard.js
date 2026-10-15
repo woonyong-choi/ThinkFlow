@@ -4,8 +4,8 @@ import { AxisError } from './scale.js';
 
 // 좌표와 크기를 담는 속성. 이 속성 값에 NaN이나 Infinity가 있으면 그림이 깨진다. 사용자 글의 "NaN"은 걸리지 않는다.
 const NUMERIC_ATTRIBUTE = /\s(?:x|y|x1|x2|y1|y2|cx|cy|r|rx|ry|width|height|d|points|transform|style|data-at)="[^"]*(?:NaN|Infinity)/;
-// 숫자만 담는 글(눈금, 값, 바뀐 비율). 사용자 글은 이 class를 쓰지 않는다.
-const NUMERIC_TEXT = /class="chart-(?:tick|value|ratio)[^"]*"[^>]*>[^<]*(?:NaN|Infinity)/;
+// 숫자를 담는 글(눈금, 값, 바뀐 비율). 히트맵의 열 이름처럼 눈금 자리에 놓인 사용자 글도 이 class를 쓰므로, 글 전체가 사용자가 적은 이름과 같으면 보지 않는다.
+const NUMERIC_TEXT = /class="chart-(?:tick|value|ratio)[^"]*"[^>]*>([^<]*(?:NaN|Infinity)[^<]*)</g;
 
 // cost: time O(r), heap O(1), stack O(1)
 // vars: r = 행과 기준선 수
@@ -17,13 +17,23 @@ function axisLine(figure, { min, max }) {
   return (entries.find((e) => e.values.includes(max)) ?? entries.find((e) => e.values.includes(min)))?.line ?? figure.line;
 }
 
+// cost: time O(r), heap O(r), stack O(1)
+// vars: r = 행 수
+// basis: estimate
+// 사용자가 적은 행, 열, 항목 이름. 그린 글에서 XML 특수 문자는 바뀌어 있으므로 같은 꼴로 바꿔 둔다.
+function userNames(figure) {
+  const escape = (text) => String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  return new Set(figure.chart.rows.flatMap((row) => [row.label, row.row, row.col]).filter((name) => name !== undefined).map(escape));
+}
+
 // cost: time O(out), heap O(1), stack O(1)
 // vars: out = 만든 SVG 글자 수
 // basis: estimate
 /** 장면과 좌표가 모두 유한한지. 입력 진단이 아니라 마지막 방어선이라 걸리면 이 도구의 버그다. */
-function assertFinite(chart) {
+function assertFinite(chart, names) {
   const isDrawn = chart.dotAts.every(Number.isFinite) && chart.fits.every(({ width, room }) => Number.isFinite(width) && Number.isFinite(room));
-  if (!isDrawn || NUMERIC_ATTRIBUTE.test(chart.body) || NUMERIC_TEXT.test(chart.body) || ![chart.width, chart.height].every(Number.isFinite)) {    throw new Error('a chart coordinate is not a finite number (NaN or Infinity)');
+  const hasNumericText = [...chart.body.matchAll(NUMERIC_TEXT)].some(([, text]) => !names.has(text));
+  if (!isDrawn || NUMERIC_ATTRIBUTE.test(chart.body) || hasNumericText || ![chart.width, chart.height].every(Number.isFinite)) {    throw new Error('a chart coordinate is not a finite number (NaN or Infinity)');
   }
 }
 
@@ -44,6 +54,6 @@ export function drawChecked(figure, problems) {
     problems.error(axisLine(figure, error), error.message);
     return problems.throwIfAny();
   }
-  assertFinite(chart);
+  assertFinite(chart, userNames(figure));
   return chart;
 }
