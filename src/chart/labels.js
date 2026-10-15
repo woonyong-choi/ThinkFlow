@@ -36,9 +36,10 @@ export function labelFit(name, line) {
 // cost: time O(n), heap O(n), stack O(1)
 // vars: n = 글자 수
 // basis: estimate
-/** 행 이름 글자. 왼쪽 여백에서 시작하고 세로 가운데 cy에 맞춘다. */
-export function labelText(label, cy, className) {
-  return `<text x="${PAD}" y="${r(centerBaseline(cy, TEXT['13']))}" class="${className}">${renderRich(label)}</text>`;
+/** 행 이름 글자. 세로 가운데 cy에 맞추고, right가 있으면 그 x에 오른쪽을 맞춰 값 축 바로 앞에 두며 없으면 왼쪽 여백에서 시작한다. */
+export function labelText(label, cy, className, right) {
+  const x = right === undefined ? `x="${PAD}"` : `x="${r(right)}" text-anchor="end"`;
+  return `<text ${x} y="${r(centerBaseline(cy, TEXT['13']))}" class="${className}">${renderRich(label)}</text>`;
 }
 
 // cost: time O(1), heap O(1), stack O(1)
@@ -70,23 +71,15 @@ export function valueText({ x, cy }, text, className, mark) {
   return back + `<text x="${r(x)}" y="${r(centerBaseline(cy, size))}" class="${className}"${attrs('.t', true)}>${escapeXml(text)}</text>`;
 }
 
-// cost: time O(n), heap O(1), stack O(1)
-// vars: n = 키 글자 수
-// basis: estimate
-/** 번호 키 글자가 차지하는 칸. 글자 폭과 글자 높이에 사방 `space.2` 여백을 더한다. */
-export function keyRoom(key) {
-  return { w: measure(key, TEXT['11'], 'numSemibold') + SPACE["1"] * 2, h: TEXT['11'] + SPACE["1"] * 2 };
-}
-
 // cost: time O(n), heap O(n), stack O(1)
-// vars: n = 키 글자 수
+// vars: n = 글자 수
 // basis: estimate
 /**
- * 면 안에 적는 번호 키 글자. 가운데 (x, cy)에 두고 면색 위 글자색과 면색 테두리로 읽힌다. fits가 거짓이면 자리는 두고 숨긴다.
- * 누적 막대 조각과 원·도넛 조각이 함께 쓴다.
+ * 면 안에 적는 값 글자. 가운데 (x, cy)에 두고 면 위 글자색(paint.on)으로 읽힌다. fits가 거짓이면 자리는 두고 숨긴다(프레임 구조가 같다).
+ * 누적 막대 조각이 쓴다.
  */
-export function segmentKey(chart, { key, x, cy, paint, fits, id }) {
-  return `<text x="${r(x)}" y="${r(centerBaseline(cy, TEXT['11']))}" text-anchor="middle" fill="${paint.on}" stroke="${paint.fill}" stroke-width="${values["border-width"].casing}" paint-order="stroke" class="chart-seg-key late"${fits ? '' : ' visibility="hidden"'}${markAttrs(chart, id, { isText: true })}>${key}</text>`;
+export function insideText(chart, { text, x, cy, paint, fits, id }) {
+  return `<text x="${r(x)}" y="${r(centerBaseline(cy, TEXT['11']))}" text-anchor="middle" fill="${paint.on}" class="chart-seg-key late"${fits ? '' : ' visibility="hidden"'}${markAttrs(chart, id, { isText: true })}>${escapeXml(text)}</text>`;
 }
 
 // cost: time O(s), heap O(s), stack O(1)
@@ -132,7 +125,8 @@ export function drawHeader(figure) {
 // basis: estimate
 /** 좁은 행 차트의 이름 줄과 공통 높이. 모든 행이 같은 막대 시작 위치를 쓴다. */
 export function rowLabelLayout(chart) {
-  if (!chart.layout) return { space: 0 };
+  // 넓은 배치의 이름은 이름 칸 오른쪽(값 축 시작에서 LABEL_GAP 앞)에 맞춰 막대 바로 옆에 붙는다.
+  if (!chart.layout) return { space: 0, right: PAD + labelColumn(chart.rows.map((row) => row.label)) - LABEL_GAP };
   const lines = chart.rows.map((row) => wrap(row.label, chart.layout.width - PAD * 2, { size: TEXT['13'], face: row.total ? 'semibold' : 'regular' }));
   const lineHeight = TEXT['13'] * values.leading.normal;
   return { lines, lineHeight, space: Math.max(...lines.map((row) => row.length)) * lineHeight + SPACE["3"] };
@@ -143,5 +137,5 @@ export function rowLabelLayout(chart) {
 // basis: estimate
 /** 넓은 배치는 행 옆, 좁은 배치는 행 위에 이름을 둔다. */
 export function rowName(label, { layout, k, top, cy, className = 'chart-label' }) {
-  return layout.lines ? layout.lines[k].map((line, i) => labelText(line, top + TEXT['13'] / 2 + i * layout.lineHeight, className)).join('') : labelText(label, cy, className);
+  return layout.lines ? layout.lines[k].map((line, i) => labelText(line, top + TEXT['13'] / 2 + i * layout.lineHeight, className)).join('') : labelText(label, cy, className, layout.right);
 }

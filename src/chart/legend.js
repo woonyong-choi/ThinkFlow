@@ -1,6 +1,6 @@
 // 계열 범례. 막대, 누적, 퍼센트, 선, 계단, 누적분포, 산점도 모두 한 가지 범례 칸(legendSwatch)과 한 가지 줄 배치를 쓴다.
 // 막대 종류는 속이 차거나 빈 칸(무늬 포함), 선 종류는 짧은 선분(점선 포함)과 모양 표식, 점 종류는 모양 표식이다.
-// 막대 종류와 산점도의 둘 이상의 계열은 `1 이름`처럼 번호 키를 달아 색 없이도 조각과 점 이름에 이어 읽게 한다(번호는 계열 목록 순서다. 원본 해석이 main을 앞에 세우고 나머지는 선언 순서를 지킨다).
+// 범례는 계열 이름만 적는다(번호 키가 없다). 누적·퍼센트 막대에서 기타로 묶인 계열은 기타 칸 하나로 적는다(other.js).
 import { STYLE } from '../measure/texts.js';
 import { measure, wrap } from '../measure/fonts.js';
 import { renderRich, roundCoord as r } from '../text.js';
@@ -10,22 +10,21 @@ import { ecdfGroups } from './data.js';
 import { BAR, DOT, PAD, SPACE, TEXT, WIDTH, isReference, seriesBoundary, seriesColor, seriesPaint, seriesStroke } from './metrics.js';
 import { patternRect } from './pattern.js';
 import { markShape } from './shape.js';
+import { OTHER, groupedSeries, memberPaint } from './other.js';
 
 // 차트 종류가 범례 칸에 쓰는 모양
 const KINDS = { bar: 'fill', stacked: 'fill', percent: 'fill', area: 'fill', line: 'line', step: 'line', ecdf: 'line', scatter: 'dot', dumbbell: 'dot', difference: 'dot' };
-// 번호 키를 다는 차트 종류
-const KEYED = new Set(['bar', 'stacked', 'percent', 'scatter']);
-
-/** 번호 키를 다는 차트인가: 막대 종류나 산점도이고 계열이 둘 이상이다. */
-export const isKeyed = (figure) => KEYED.has(figure.chartType) && figure.chart.series.length >= 2;
+// 원본 선언 순서를 지키는 차트 종류. 쌓는 막대는 조각 순서, 막대와 산점도는 선언 순서가 읽는 순서다.
+const DECLARED = new Set(['bar', 'stacked', 'percent', 'scatter']);
 
 // cost: time O(1), heap O(1), stack O(1)
 // basis: estimate
-/** 계열 i의 범례 글: 번호 키가 있으면 번호가 앞에 붙고, 표본이 없는 누적분포 계열은 그 사실이 뒤에 붙는다. */
-function legendText(figure, i) {
+/** 계열 i의 범례 글: 계열 이름이고, 기타로 묶인 계열은 기타, 표본이 없는 누적분포 계열은 그 사실이 뒤에 붙는다. */
+function legendText(figure, i, grouped) {
   const { chart, chartType } = figure;
+  if (grouped.has(i)) return OTHER;
   const note = chartType === 'ecdf' && ecdfGroups(chart)[i]?.n === 0 ? ` · ${COPY.noSample}` : '';
-  return `${isKeyed(figure) ? `${i + 1} ` : ''}${chart.series[i].label}${note}`;
+  return `${chart.series[i].label}${note}`;
 }
 
 // cost: time O(1), heap O(1), stack O(1)
@@ -44,10 +43,10 @@ export function dotAttrs(chart, i, extra = '') {
 
 // cost: time O(1), heap O(1), stack O(1)
 // basis: estimate
-/** 채운 범례 칸. 칸의 왼쪽 위가 (x, y)이고 한 변이 BAR다. 계열 범례와 원·도넛 조각 목록이 같은 칸을 쓴다. */
+/** 채운 범례 칸. 칸의 왼쪽 위가 (x, y)이고 한 변이 BAR다. 막대처럼 테두리 없는 면이다. 계열 범례와 원·도넛 조각 목록이 같은 칸을 쓴다. */
 export function fillSwatch(paint, { x, y }) {
   const box = { x, y, w: BAR, h: BAR, radius: values.radius.sm };
-  return `<rect x="${r(x)}" y="${r(y)}" width="${BAR}" height="${BAR}" rx="${box.radius}" fill="${paint.fill}" stroke="${paint.border}" stroke-width="${values["border-width"].tag}"/>${patternRect(paint, box)}`;
+  return `<rect x="${r(x)}" y="${r(y)}" width="${BAR}" height="${BAR}" rx="${box.radius}" fill="${paint.fill}"/>${patternRect(paint, box)}`;
 }
 
 // cost: time O(1), heap O(1), stack O(1)
@@ -56,11 +55,12 @@ export function fillSwatch(paint, { x, y }) {
  * 범례 칸 하나. 칸의 왼쪽 위가 (x, y)이고 높이는 BAR다.
  * @param kind 'fill' | 'line' | 'dot'
  */
-function legendSwatch(chart, i, kind, { x, y }) {
-  const paint = seriesPaint(chart, i);
+function legendSwatch(chart, i, kind, { x, y, grouped }) {
+  const paint = memberPaint(i, grouped, (j) => seriesPaint(chart, j));
   const cy = y + BAR / 2;
   if (kind === 'fill') {
-    if (isReference(chart, i)) return `<rect x="${r(x)}" y="${r(y)}" width="${BAR}" height="${BAR}" rx="${values.radius.sm}" fill="none" stroke="${paint.border}" stroke-width="${values["border-width"].strong}"/>`;
+    // 기대값 계열은 막대 위의 세로 눈금으로 그리므로 범례도 같은 세로 눈금이다.
+    if (isReference(chart, i)) return `<line x1="${r(x + BAR / 2)}" x2="${r(x + BAR / 2)}" y1="${r(y - SPACE["0-5"])}" y2="${r(y + BAR + SPACE["0-5"])}" stroke="${paint.border}" stroke-width="${values["border-width"].strong}"/>`;
     return fillSwatch(paint, { x, y });
   }
   const marker = markShape({ shape: paint.shape, cx: x + swatchWidth(kind) / 2, cy, radius: DOT, attrs: dotAttrs(chart, i) });
@@ -74,9 +74,12 @@ function legendSwatch(chart, i, kind, { x, y }) {
 // vars: s = 계열 수
 // basis: estimate
 // 범례 순서: 번호 키가 있으면 선언 순서, 아니면 main이 먼저다. 계열 번호는 그대로 둬 재생이 같은 번호로 보임을 건다.
-function legendOrder(figure) {
+function legendOrder(figure, grouped) {
   const items = figure.chart.series.map((s, i) => ({ s, i }));
-  return isKeyed(figure) ? items : items.sort((a, b) => Number(b.s.role === 'main') - Number(a.s.role === 'main'));
+  // 기타 칸은 묶인 계열 가운데 첫 번호로 하나만, 쌓는 순서처럼 맨 뒤에 둔다.
+  const first = Math.min(...grouped);
+  const shown = items.filter(({ i }) => !grouped.has(i)).concat(grouped.size ? [items[first]] : []);
+  return DECLARED.has(figure.chartType) ? shown : shown.sort((a, b) => Number(b.s.role === 'main') - Number(a.s.role === 'main'));
 }
 
 // cost: time O(s·n), heap O(out), stack O(1)
@@ -92,8 +95,9 @@ export function drawLegend(figure, y) {
   const limit = (chart.layout?.width ?? WIDTH) - PAD;
   const lineHeight = STYLE.meta.line;
   const room = limit - PAD - swatchWidth(kind) - SPACE["1-5"];
-  const entries = legendOrder(figure).map(({ i }) => {
-    const lines = wrap(legendText(figure, i), room, { size: TEXT['11'] });
+  const grouped = groupedSeries(chart, chartType);
+  const entries = legendOrder(figure, grouped).map(({ i }) => {
+    const lines = wrap(legendText(figure, i, grouped), room, { size: TEXT['11'] });
     return { i, lines, width: swatchWidth(kind) + SPACE["1-5"] + Math.max(...lines.map((line) => measure(line, TEXT['11']))) + SPACE["4-5"] };
   });
   const rows = [];
@@ -111,7 +115,7 @@ export function drawLegend(figure, y) {
   let top = y;
   for (const row of rows) {
     for (const { i, lines, x: left } of row) {
-      svg.push(legendSwatch(chart, i, kind, { x: left, y: top + SPACE["1"] }));
+      svg.push(legendSwatch(chart, i, kind, { x: left, y: top + SPACE["1"], grouped }));
       const text = lines.map((line, k) => `<text x="${r(left + swatchWidth(kind) + SPACE["1-5"])}" y="${r(top + BAR + k * lineHeight)}" class="chart-legend">${renderRich(line)}</text>`);
       svg.push(...text);
     }

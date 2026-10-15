@@ -15,15 +15,16 @@ import { barRadius } from './shape.js';
 // cost: time O(r), heap O(r), stack O(1)
 // vars: r = 행 수
 // basis: estimate
-// 알 수 없는 누계(null)는 숫자로 쓰지 않는다: 빠진 증감과 알 수 없는 합계는 `값 없음`, 누계를 모르는 뒤 증감은 증감 자신만(`+5`, `=`와 누계 없음)이다.
+// 값 글자는 막대가 말하는 한 가지 수만 적는다: 증감 행은 부호 있는 증감(`+380`, `−610`), 0에서 시작하는 첫 행은 그 값, 합계 행은 누계다.
+// 알 수 없는 누계(null)는 숫자로 쓰지 않는다: 빠진 증감과 알 수 없는 합계는 `값 없음`이다.
 function rowTexts(chart) {
   const format = valueFormat(chart.ledger.flatMap((row) => [row.to, row.change ?? row.to]).filter((value) => value !== null), chart.decimals);
   const number = (value) => format(value).replace(/^-/, '−');
   return chart.ledger.map((row) => {
-    if (row.total) return row.to === null ? COPY.noData : `= ${number(row.to)}`;
+    if (row.total) return row.to === null ? COPY.noData : number(row.to);
     if (row.change === null) return COPY.noData;
-    const sign = row.change < 0 ? '−' : '+';
-    return row.from === null ? `${sign}${number(Math.abs(row.change))}` : `${number(row.from)} ${sign} ${number(Math.abs(row.change))} = ${number(row.to)}`;
+    if (row.from === 0) return number(row.change);
+    return `${row.change < 0 ? '−' : '+'}${number(Math.abs(row.change))}`;
   });
 }
 
@@ -74,11 +75,12 @@ function waterfallRow(source, row, { chart, names, top, pitch, scale, index, cy,
   const color = decreasing ? tokens.color.data['compare-outline'] : tokens.color.data.main;
   // 갱신 효과 칠: 오르면 첫 범주 계열, 내리면 비교 색(면 compare-fill, 테두리 compare-outline)이다.
   const paint = decreasing ? { tint: tokens.color.data['compare-fill'], border: color, effect: color } : categoryPaint(0);
-  const fill = decreasing ? tokens.color.data['compare-fill'] : paint.fill;
+  // 막대는 테두리 없는 평평한 면이다. 내린 막대는 비교 색의 진한 단계로 칠해 면만으로 읽힌다.
+  const fill = decreasing ? color : paint.fill;
   const name = inkGroup(index, rowName(source.label, { layout: names, k: index, top, cy, className: `chart-label${row.total ? ' chart-waterfall-total' : ''}` }));
   // 칸마다 막대와 0 증감 표시가 둘 다 늘 있다. 변화가 없으면(길이 0) 막대는 그려지지 않고 표시만 굵기를 갖고, 있으면 반대다.
   const raw = row.total ? row.to : row.change;
-  const rect = `<rect x="${r(face.x)}" y="${r(face.y)}" width="${r(face.w)}" height="${BAR}" rx="${face.radius}" fill="${fill}" stroke="${color}" stroke-width="${values["border-width"].tag}" class="chart-waterfall-bar"${markAttrs(chart, markId(chart, 0, index), { raw, paint })}/>`;
+  const rect = `<rect x="${r(face.x)}" y="${r(face.y)}" width="${r(face.w)}" height="${BAR}" rx="${face.radius}" fill="${fill}" class="chart-waterfall-bar"${markAttrs(chart, markId(chart, 0, index), { raw, paint })}/>`;
   const zero = `<line x1="${r(from)}" x2="${r(from)}" y1="${r(face.y)}" y2="${r(face.y + BAR)}" stroke="${color}" stroke-width="${face.w ? 0 : values["border-width"].tag}" class="chart-waterfall-zero"${markAttrs(chart, markId(chart, 0, index, '.z'), { raw, paint })}/>`;
   const ends = [['from', row.from], ['to', row.to]].filter(([, value]) => value !== null).map(([name, value]) => ` data-${name}="${value}"`).join('');
   const mark = `<g class="grow chart-waterfall-growth${to < from ? ' from-end' : ''}"><g class="cr-${index}" role="img" aria-label="${escapeXml(`${source.label}: ${text}`)}"${ends}>${isKnown ? rect + zero : ''}</g></g>`;
