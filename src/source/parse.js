@@ -126,6 +126,8 @@ function isPlaced(word, { tokens, line }, ctx) {
   const entry = STATEMENTS[word];
   const foreign = statementMistake(tokens, (name) => Boolean(STATEMENTS[name]) && !STATEMENTS[name].in);
   if (!entry || foreign) {
+    // 모르는 낱말로 시작한 선언 꼴(`bx web "웹"`)의 이름은 버린 이름으로 적어, 같은 원인의 "모르는 이름" 오류를 덧붙이지 않는다.
+    if (tokens[1]?.type === 'word' && tokens[2]?.type === 'text') rejectName(tokens[1], ctx);
     problems.error(line, foreign ? (entry ? foreign : `unknown statement "${word}": ${foreign}`) : `unknown statement "${word}".${didYouMean(word, PLACEABLE)}`, { column: tokens[0].column });
     if (tokens.at(-1).type === 'open') ctx.groups.push({ isRejected: true, line });
     return false;
@@ -168,6 +170,8 @@ function readStatement(statement, ctx) {
   if (readSequenceControl(statement, ctx)) return;
   const [head, second] = tokens;
   if (statement.hasLexError) {
+    // 선언 줄이면 이름을 버린 이름으로 적어, 그 이름을 가리키는 줄에 같은 원인의 "모르는 이름" 오류를 덧붙이지 않는다.
+    if (STATEMENTS[head.value]?.section === 'declare' && second?.type === 'word' && second.value !== '->') rejectName(second, ctx);
     // 그룹이나 블록을 여는 줄이면 닫는 `}`가 짝을 찾도록 자리만 연다.
     if (tokens.at(-1).type === 'open') {
       if (head.value === 'group') ctx.groups.push({ isRejected: true, line });
