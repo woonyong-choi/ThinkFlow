@@ -117,10 +117,12 @@ nav a:focus-visible {
 iframe {
   display: block;
   width: 100%;
-  height: var(--spacing-figure-gallery-frame);
   border: 0;
 }
 
+iframe:not(.has-diagram-height) {
+  height: var(--spacing-figure-gallery-frame);
+}
 
 
 .top, main {
