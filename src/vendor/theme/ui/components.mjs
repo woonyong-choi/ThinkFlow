@@ -181,9 +181,9 @@ export function Player({ id: target, src, poster, title = '기능 소개 영상'
 export function RemoteButton({ id: target, src, icon }) {
   return out(`<button class="app-remote" type="button" data-remote="${id(target)}"${src ? ` data-video-src="${safeUrl(src)}"` : ''} aria-label="Play video">${slot(icon, 'icon')}<span>Play</span></button>`);
 }
-/** 기기 틀. `label`을 주면 이름이 있는 `figure`, `figure: true`면 이름 없는 `figure`, 아니면 `div`다. */
+/** 기기 틀. CSS가 몸체를 그리며 `overlay`는 선택 슬롯이다. `label`을 주면 이름이 있는 `figure`, `figure: true`면 이름 없는 `figure`, 아니면 `div`다. */
 export function Device({ screen, overlay, label, figure = false }) {
-  const inner = `<div class="app-device-screen">${slot(screen, 'screen')}</div>${slot(overlay, 'overlay')}`;
+  const inner = `<div class="app-device-screen">${slot(screen, 'screen')}</div>${overlay === undefined ? '' : slot(overlay, 'overlay')}`;
   if (label !== undefined) return out(`<figure class="app-device" aria-label="${escape(label)}">${inner}</figure>`);
   return out(figure ? `<figure class="app-device">${inner}</figure>` : `<div class="app-device">${inner}</div>`);
 }
