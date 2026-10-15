@@ -1,5 +1,6 @@
 // 시간표에 재생기와 움직이는 SVG가 읽기만 하면 되는 표시 정보를 더한다: 장면 정보 steps는 timeline.js가 정하고, 여기서는 marks, pulses, presentation을 정한다.
 // 모두 시간표가 이미 정한 논리 시각에서 나온 파생 값이다. 어느 것도 t0, t1, at, ms, 값 구간, 프레임 구간을 바꾸지 않는다.
+import { maxOf } from './extremes.js';
 import { hopLegs } from './animate/legs.js';
 import { roundToScale } from './format.js';
 import { PULSE_MS } from './pulse.js';
@@ -99,7 +100,7 @@ export function pulsesOf(timeline, charts) {
     for (const row of chart.rows) for (const [from, , , changed] of row.periods) for (const mark of changed) pulses.push({ key: `chart:${id}:${mark}`, at: from, si: row.si });
   }
   // 카드 글 줄: 실제로 보이는 글이 바뀐 줄(timeline-rows.js)
-  pulses.push(...(timeline.rowPulses ?? []));
+  for (const pulse of timeline.rowPulses ?? []) pulses.push(pulse);
   return pulses.sort((a, b) => a.at - b.at || (a.key < b.key ? -1 : Number(a.key > b.key)));
 }
 
@@ -124,6 +125,6 @@ export function presentationOf(timeline) {
     const exits = segs.flatMap((seg) => seg.hops.flatMap((hop) => hopLegs(hop).map((leg) => Math.min(t1, seg.t0 + (hop.at ?? 0) + leg.to))));
     const shown = (logical) => (logical - t0) / step.speed;
     const tails = [...onsets, ...exits].map((logical) => shown(logical) + PULSE_MS);
-    return roundToScale(Math.max(shown(t1), ...tails), PRESENTATION_PRECISION);
+    return roundToScale(maxOf(tails, shown(t1)), PRESENTATION_PRECISION);
   });
 }

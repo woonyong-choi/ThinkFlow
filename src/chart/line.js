@@ -164,8 +164,7 @@ function seriesMarks(ctx) {
     const bands = intervalMarks(ctx, s, i);
     if (bands.length) parts.push(`<g class="cs-${i}">${bands.join('')}</g>`);
   });
-  parts.push(...ctx.layers.map((layer) => seriesPath(chart, layer)), ...dotMarks(ctx));
-  return parts;
+  return [...parts, ...ctx.layers.map((layer) => seriesPath(chart, layer)), ...dotMarks(ctx)];
 }
 
 // cost: time O(s·n), heap O(s), stack O(1)

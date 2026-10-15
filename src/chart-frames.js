@@ -2,6 +2,7 @@
 // 값이 바뀌면 차트는 다른 프레임으로 바뀐다. 모든 프레임이 같은 축을 쓰도록 값 범위(extent)와 그림 영역 길이를 고정하고,
 // 프레임마다 달라지는 표식(막대, 점, 값 글자)에는 프레임이 바뀌어도 변하지 않는 id를 붙인다(data-mark, 글자는 data-mark-text).
 // 프레임은 이산적으로 바뀌고 시각은 값 줄의 변화 시각 그대로다. 프레임이 시각(t0, t1, at)을 바꾸지 않는다.
+import { minOf } from './extremes.js';
 import { chartText } from './chart/draw.js';
 import { extentOfFrames } from './chart/extent.js';
 import { changedBetween, frameSet } from './chart/frames.js';
@@ -171,7 +172,7 @@ export function drawChartBase(card, { figure, texts, chartWidth, problems }) {
     extent = extentWithin(card, figure, texts, assigns);
     const probe = [];
     for (const assign of assigns) drawFrame(card, { assign, extent, probe, isFull, chartWidth }, createProblems());
-    plotWidth = probe.length ? Math.min(...probe) : undefined;
+    plotWidth = probe.length ? minOf(probe) : undefined;
   }
   const pin = { extent, plotWidth, isFull, chartWidth };
   return { drawn: drawFrame(card, { assign: base, ...pin }, problems), pin };

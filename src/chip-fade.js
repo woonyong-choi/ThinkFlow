@@ -1,4 +1,5 @@
 // 이동 글 상자 계획의 마무리. 겹치는 지점을 흐리게 하고, 60fps 프레임마다 다시 재고, 같은 직선 위의 지점을 줄이고, 그림 검사가 볼 문제를 모은다.
+import { minOf } from './extremes.js';
 import { boxAt, CHIP_FRAME_MS, CHIP_VISIBLE_MIN, dotAt, isHit, NODE_MS } from './chip-motion.js';
 import { positionAt } from './easing.js';
 import { values } from '@woonyong-choi/design-tokens/tokens.js';
@@ -39,7 +40,7 @@ export function settle(ctx, rest) {
 function applyFade(points) {
   const faded = points.filter((p) => p.isFaded);
   for (const p of points) {
-    const near = Math.min(Infinity, ...faded.map((f) => Math.abs(f.t - p.t)));
+    const near = minOf(faded.map((f) => Math.abs(f.t - p.t)));
     p.opacity = near <= NODE_MS ? 0 : Math.min(1, (near - NODE_MS) / FADE_MS);
   }
 }

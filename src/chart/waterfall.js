@@ -1,4 +1,5 @@
 // 증감 막대는 직전 누계에서 시작하고, 합계 막대는 0에서 현재 누계까지 그린다.
+import { maxOf, minOf } from '../extremes.js';
 import { STYLE } from '../measure/texts.js';
 import { categoryPaint } from '../chart-palette.js';
 import { measure, wrap } from '../measure/fonts.js';
@@ -38,7 +39,7 @@ function waterfallScale(chart, texts) {
   const endpoints = chart.ledger.flatMap(knownEnds);
   const ruled = [...endpoints, ...chart.rules.map((rule) => rule.value)];
   const reaches = () => chart.layout ? [] : chart.ledger.map((row, i) => ({ value: Math.max(0, ...knownEnds(row)), extra: SPACE["1-5"] + measure(texts[i], TEXT['11'], row.total ? 'numSemibold' : 'num') }));
-  return rowValueScale(chart, { kind: 'linear', min: Math.min(0, ...ruled), max: Math.max(0, ...ruled), reaches });
+  return rowValueScale(chart, { kind: 'linear', min: minOf(ruled, 0), max: maxOf(ruled, 0), reaches });
 }
 
 // cost: time O(r·(n² + q) + t), heap O(out), stack O(1)
@@ -51,7 +52,7 @@ export function drawWaterfall(figure, top) {
   const names = rowLabelLayout(chart);
   const lines = chart.layout ? texts.map((text, i) => wrap(text, chart.layout.width - PAD * 2, { size: TEXT['11'], face: chart.ledger[i].total ? 'numSemibold' : 'num' })) : undefined;
   const lineHeight = STYLE.meta.line;
-  const pitch = chart.layout ? names.space + BAR + SPACE["1-5"] + Math.max(...lines.map((row) => row.length)) * lineHeight + SPACE["5-5"] : ROW;
+  const pitch = chart.layout ? names.space + BAR + SPACE["1-5"] + maxOf(lines.map((row) => row.length)) * lineHeight + SPACE["5-5"] : ROW;
   const bottom = top + chart.rows.length * pitch;
   // 0선: 넓은 배치는 전체 높이 한 줄이다. 좁은 배치는 이름과 계산식 줄의 글 가림 면이 행 사이를 덮어 눈금처럼 끊겨 보이므로 행마다 막대 높이 안에만 긋는다(기준선과 같다).
   const zeroLine = (y1, y2) => `<line x1="${r(scale.at(0))}" x2="${r(scale.at(0))}" y1="${r(y1)}" y2="${r(y2)}" class="chart-zero"/>`;

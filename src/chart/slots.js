@@ -1,4 +1,5 @@
 // 막대 차트 한 행 안 계열 자리(슬롯). 행 이름의 세로 자리를 그리는 쪽과 시간표가 같은 규칙으로 정한다.
+import { maxOf, minOf } from '../extremes.js';
 import { values } from '@woonyong-choi/design-tokens/tokens.js';
 
 const BAR = values.spacing.figure.chart.bar;
@@ -33,5 +34,5 @@ export function slotIndex(series) {
 // basis: estimate
 /** 슬롯 묶음의 세로 가운데. 첫 슬롯 막대의 윗면에서 잰다(px). step은 슬롯 간격(stepOf)이다. */
 export function slotMiddle(slots, step = STEP) {
-  return ((Math.min(...slots) + Math.max(...slots)) * step) / 2;
+  return ((minOf(slots) + maxOf(slots)) * step) / 2;
 }

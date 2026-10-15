@@ -1,4 +1,5 @@
 // 히스토그램의 구간 경계와 관측값 집계. 마지막 구간만 오른쪽 끝을 포함한다.
+import { maxOf } from './extremes.js';
 import { roundHalfAway, valueFormat } from './chart/scale.js';
 import { DECIMALS_MAX } from './source/grammar.js';
 
@@ -75,7 +76,7 @@ export function histogramLabels(chart) {
 // 소수 자릿수는 머리 줄 decimals가 있으면 그 자릿수로 맞춰 쓰고(`0.50`), 없으면 가장 긴 소수 자릿수(최대 DECIMALS_MAX)까지 반올림한 가장 짧은 표기다(`0.5`, `1`).
 // 자릿수가 모자라 서로 다른 끝이 같은 글자가 되거나 0이 아닌 끝이 0으로 지워지면 구간이 합쳐지거나 틀리게 읽히므로, 그때는 끝마다 15자리 유효숫자의 십진 표기로 쓴다(tickLabels와 같은 규칙).
 function edgeNames(edges, decimals) {
-  const places = decimals ?? Math.min(DECIMALS_MAX, Math.max(0, ...edges.map((edge) => (String(Number(edge.toPrecision(12))).split('e')[0].split('.')[1] ?? '').length)));
+  const places = decimals ?? Math.min(DECIMALS_MAX, maxOf(edges.map((edge) => (String(Number(edge.toPrecision(12))).split('e')[0].split('.')[1] ?? '').length), 0));
   const names = edges.map((edge) => (decimals === undefined ? String(roundHalfAway(edge, places)) : roundHalfAway(edge, places).toFixed(places)));
   const isLossy = new Set(names).size < names.length || edges.some((edge, i) => edge !== 0 && Number(names[i]) === 0);
   return isLossy ? edges.map((edge) => String(Number(edge.toPrecision(15)))) : names;
