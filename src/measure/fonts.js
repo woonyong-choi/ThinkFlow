@@ -141,15 +141,19 @@ function toMarkup(chars) {
 // vars: n = 글자 수
 // basis: estimate
 /**
- * width 안에 들어가게 띄어쓰기 자리로 줄을 나눈다. 띄어쓰기 없는 긴 낱말은 글자 단위로 나눈다.
+ * width 안에 들어가게 띄어쓰기 자리로 줄을 나눈다. 띄어쓰기 없는 긴 낱말은 구분 글자 뒤에서, 그래도 길면 글자 단위로 나눈다.
+ * 고정폭 글(코드)은 `이름: 형식`을 한 덩어리로 두고 `(`와 `,` 뒤, `):` 사이에서 나눈다. `save(item: Order): void`는 `save(item: Order)`와 `: void`로 나뉜다.
  * 글자 모양은 { size, face }다(STYLE 항목을 그대로 넘긴다). 백틱 코드 구간이 줄 사이에 걸치면 줄마다 백틱을 닫고 다시 연다. 돌려주는 줄은 짝이 맞는 백틱 표시 글이다.
  */
 export function wrap(text, width, { size, face = 'regular' }) {
+  const isCode = face === 'mono';
   const chars = codeParts(text, face).flatMap((part) => [...part.text].map((c) => ({ c, code: part.code })));
   const words = [{ sep: undefined, chars: [] }];
   for (const ch of chars) {
-    if (ch.c === ' ') words.push({ sep: ch, chars: [] });
-    else words.at(-1).chars.push(ch);
+    const last = words.at(-1).chars;
+    // 코드의 `이름: 형식`은 콜론 뒤 띄어쓰기에서 나누지 않는다.
+    if (ch.c === ' ' && !(isCode && last.at(-1)?.c === ':')) words.push({ sep: ch, chars: [] });
+    else last.push(ch);
   }
   const lines = [];
   let line = [];
@@ -160,13 +164,14 @@ export function wrap(text, width, { size, face = 'regular' }) {
       line = next;
       return;
     }
-    if (line.length) lines.push(toMarkup(line));
-    line = [];
-    for (const segment of segmentsOf(word.chars)) {
+    // 넘치는 낱말은 조각으로 나눠 지금 줄의 남은 자리부터 채운다.
+    if (line.length) line = [...line, word.sep];
+    for (const segment of segmentsOf(word.chars, { isCode, fits })) {
       if (fits([...line, ...segment])) {
         line = [...line, ...segment];
         continue;
       }
+      if (line.at(-1)?.c === ' ') line = line.slice(0, -1);
       if (line.length) lines.push(toMarkup(line));
       line = [];
       for (const ch of segment) {
@@ -183,17 +188,33 @@ export function wrap(text, width, { size, face = 'regular' }) {
 }
 
 // 이 글자 뒤에서 낱말을 나눌 수 있다. 경로와 식별자(`https://pay.example.com/v1/charges`, `snake_case`)가 낱말 하나로 길 때 구분 글자 뒤에서 먼저 나눈다.
-const BREAK_AFTER = new Set(['/', '-', '_', '.']);
+// 경로 구분(`/`)과 이름 구분(`-`, `_`)이 먼저이고, 그것으로 나눈 조각이 줄보다 길 때만 `.` 뒤에서도 나눈다. 고정폭 글은 `(`와 `,` 뒤에서도 나눈다.
+const BREAK_STRONG = new Set(['/', '-', '_']);
+const BREAK_AFTER = new Set([...BREAK_STRONG, '.']);
+const BREAK_CODE = new Set(['(', ',']);
 
 // cost: time O(n), heap O(n), stack O(1)
 // vars: n = 낱말 글자 수
 // basis: estimate
-// 띄어쓰기 없는 낱말을 줄 바꿀 수 있는 조각으로 나눈다. 구분 글자가 이어지면(`//`, `...`) 한 조각이다. 조각 하나가 줄보다 길면 글자 단위로 나눈다.
-function segmentsOf(chars) {
+// 낱말을 줄 바꿀 수 있는 조각으로 나눈다. 강한 구분으로 나눈 조각이 모두 줄에 들면 그것을 쓰고, 아니면 `.`도 구분으로 쓴다.
+function segmentsOf(chars, { isCode, fits }) {
+  const strong = splitAt(chars, isCode ? new Set([...BREAK_STRONG, ...BREAK_CODE]) : BREAK_STRONG, isCode);
+  return strong.every((segment) => fits(segment)) ? strong : splitAt(chars, isCode ? new Set([...BREAK_AFTER, ...BREAK_CODE]) : BREAK_AFTER, isCode);
+}
+
+// cost: time O(n), heap O(n), stack O(1)
+// vars: n = 낱말 글자 수
+// basis: estimate
+// 구분 글자 뒤에서 나눈 조각. 구분 글자가 이어지면(`//`, `...`) 한 조각이다. 코드는 닫는 괄호 뒤 콜론(`):`) 앞에서도 나눠 반환 형식을 다음 줄로 보낸다.
+function splitAt(chars, breaks, isCode) {
   const segments = [[]];
   chars.forEach((ch, i) => {
     segments.at(-1).push(ch);
-    if (BREAK_AFTER.has(ch.c) && chars[i + 1] && !BREAK_AFTER.has(chars[i + 1].c)) segments.push([]);
+    const next = chars[i + 1];
+    if (!next) return;
+    // 주소의 `://`는 나누지 않는다.
+    const isScheme = ch.c === '/' && chars[i - 1]?.c === '/' && chars[i - 2]?.c === ':';
+    if ((breaks.has(ch.c) && !breaks.has(next.c) && !isScheme) || (isCode && ch.c === ')' && next.c === ':')) segments.push([]);
   });
   return segments;
 }

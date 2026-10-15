@@ -183,7 +183,9 @@ test('S4 움직이는 SVG의 선은 점이 떠나면 평소로 돌아오고, 알
   const [quietClass] = /class="fl-edge quiet (a\d+) a\d+"/.exec(svg).slice(1);
   const quietStops = framesOf(svg, quietClass);
   assert.deepEqual([quietStops.at(-1).at.at(-1), quietStops.at(-1).value], [100, 'opacity: 1'], '조용한 선은 100%에서도 보인다');
-  assert.match(svg, /\.fl \.sa\d+ \{ opacity: 1; \}/, '마지막 모습 층에서도 보인다');
+  // 마지막 모습 층(움직임 줄이기)은 드러내는 움직임이 없어 조용한 선을 숨기는 class 없이 평소 모습으로 그린다.
+  const still = svg.slice(svg.indexOf('class="fl-still"'));
+  assert.match(still, /class="fl-edge quiet\s*"/, '마지막 모습 층에서도 보인다');
   assert.doesNotMatch(svg, /\.fl \.sa\d+ \{[^}]*--fx-edge\)/, '마지막 모습 층의 선과 알약은 평소 색이다');
   // 다른 장면에서 지나간 조용한 선은 이 장면에서 보이지 않는다.
   const later = await toSvg(result, { scene: 1 });

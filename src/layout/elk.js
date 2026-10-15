@@ -9,15 +9,19 @@ import { isBodyShape, outerBox, spreadBodyPorts } from './ports.js';
 
 const SPACE = values.spacing;
 const SIZE = values.spacing.figure;
-const LAYER_GAP = SPACE["15"];
+const LAYER_GAP = SPACE["10"];
 const EDGE_LABEL_GAP = SPACE["1"];
 /** 숨은 라벨이 추가 공간을 요구하기 전에 ELK가 이미 확보하는 층과 라벨 간격. */
 export const ROOM_BASE = LAYER_GAP + EDGE_LABEL_GAP;
 const ELK_DIRECTION = { right: 'RIGHT', down: 'DOWN' };
 // 한 층에 하나씩 놓는 층 나누기는 같은 조건의 형제 순서를 정하지 못하므로, 자식 순서(order.js)를 분할 번호로 줘 위에서 아래로 그 순서를 지키게 한다.
 const SINGLE_LAYER_OPTIONS = Object.freeze({ 'elk.layered.layering.strategy': 'COFFMAN_GRAHAM', 'elk.layered.layering.coffmanGraham.layerBound': '1', 'elk.layered.nodePlacement.strategy': 'SIMPLE', 'elk.partitioning.activate': 'true' });
-// 라벨을 선 위 가운데에 얹는다. 라벨마다 주는 elkjs 선택 사항이다.
-const LABEL_OPTIONS = { 'elk.edgeLabels.inline': 'true', 'elk.edgeLabels.placement': 'CENTER' };
+// 라벨 자리. 라벨마다 주는 elkjs 선택 사항이다.
+// 흐름 방향으로 나가는 선의 라벨은 선이 나가는 끝(꼬리) 옆에 둔다. 가운데 라벨은 elkjs가 라벨만 담은 층을 하나 더 세워 층 간격이 두 배가 되고 라벨이 출발 도형에서 멀어지지만, 꼬리 라벨은 기존 층 사이 간격 안에 자리를 잡는다.
+// 옆면 연결점(테이블 열, 격자 칸)에서 나가는 선은 꼬리 라벨이 층 사이가 아닌 도형 옆을 넓히므로 가운데 라벨을 쓴다.
+const TAIL_LABEL = { 'elk.edgeLabels.inline': 'false', 'elk.edgeLabels.placement': 'TAIL' };
+const CENTER_LABEL = { 'elk.edgeLabels.inline': 'true', 'elk.edgeLabels.placement': 'CENTER' };
+const FLOW_SIDE = { right: 'EAST', down: 'SOUTH' };
 
 // 글 상자 간격 요구(chipRoom)를 elkjs에 알리는 보이지 않는 라벨. 선 끝 쪽에 선 옆으로 두는 라벨은 층 사이 간격을 (기본 간격 + 라벨 크기 + 라벨 간격)으로 만든다.
 const ROOM_OPTIONS = { 'elk.edgeLabels.inline': 'false', 'elk.edgeLabels.placement': 'HEAD' };
@@ -36,13 +40,14 @@ export function toElk(model, figure) {
 // cost: time O(e·k), heap O(e·k), stack O(1)
 // vars: e = 선 수, k = 선의 조각 수
 // basis: estimate
-function edgesByContainer({ containers, pieces, edges, isSafe }, figure) {
+function edgesByContainer({ containers, nodes, pieces, edges, isSafe }, figure) {
   const byContainer = new Map([...containers.keys()].map((k) => [k, []]));
   for (const [index, list] of pieces) {
     const edge = edges.find((e) => e.index === index);
     list.forEach((p, k) => {
       // 번호만 있는 알약은 선을 다 그린 뒤 얹으므로(read.js) 자리를 요구하지 않는다. 안전 배치는 얹을 자리가 없을 때의 대비라 알약도 자리를 받는다.
-      const labels = p.hasLabel && (edge.label !== undefined || (hasPill(edge) && (isSafe || !isOnLinePill(edge)))) && !isBeside(edge, containers.get(p.container)) ? [{ id: `label::${index}`, text: edge.label ?? String(edge.no), ...sizeOf(sizePill(edge.label, edge.no)), layoutOptions: LABEL_OPTIONS }] : [];
+      const container = containers.get(p.container);
+      const labels = p.hasLabel && (edge.label !== undefined || (hasPill(edge) && (isSafe || !isOnLinePill(edge)))) ? [{ id: `label::${index}`, text: edge.label ?? String(edge.no), ...sizeOf(sizePill(edge.label, edge.no)), layoutOptions: labelOptions(p.from, container, nodes) }] : [];
       labels.push(...multiplicityLabels(edge, k, list.length));
       const room = figure.chipRoom?.get(index);
       if (room !== undefined) labels.push(roomLabel(`room::${index}::${k}`, room, containers.get(p.container).direction));
@@ -52,6 +57,16 @@ function edgesByContainer({ containers, pieces, edges, isSafe }, figure) {
   return byContainer;
 }
 
+// cost: time O(p), heap O(1), stack O(1)
+// vars: p = 출발 도형의 연결점 수
+// basis: estimate
+// 선 조각이 출발하는 연결점의 면을 보고 라벨 자리를 고른다. 연결점이 없거나 흐름 방향 면이면 꼬리, 칸·열의 옆면이면 가운데다.
+// 갈림길의 옆 꼭짓점은 꼬리다. 가운데 라벨은 라벨 층 하나를 더 세워 갈래가 닿는 도형을 한 층 아래로 밀기 때문이다.
+function labelOptions(from, container, nodes) {
+  const node = nodes.get(from.split('::')[0]);
+  const side = node?.ports.find((port) => port.id === from)?.side;
+  return side === undefined || side === FLOW_SIDE[container.direction] || node.shape === 'decision' ? TAIL_LABEL : CENTER_LABEL;
+}
 // cost: time O(n), heap O(n), stack O(1)
 // vars: n = 다중성 표시 글자 수
 // basis: estimate
@@ -73,11 +88,6 @@ function multiplicityLabels(edge, index, count) {
 function roomLabel(id, room, direction) {
   const extent = Math.max(1, room - ROOM_BASE);
   return { id, text: ' ', width: direction === 'down' ? 1 : extent, height: direction === 'down' ? extent : 1, layoutOptions: ROOM_OPTIONS };
-}
-
-// 세로로 쌓는 층의 quiet 선 라벨은 층 사이에 자리를 만들지 않고 선 옆에 둔다(read.js). 숨은 선 때문에 층 간격이 벌어져 보이지 않게 하려는 것이다.
-function isBeside(edge, container) {
-  return edge.quiet && container.direction === 'down';
 }
 
 // 줄 바꿈한 그림에서 그룹이 있으면, 그룹이 든 열만 넓어져 같은 열의 상자가 가운데나 왼쪽에 놓이고 칸 간격이 줄마다 달라진다.

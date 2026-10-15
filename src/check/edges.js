@@ -64,12 +64,12 @@ function cellRect(it, id) {
 // cost: time O(c), heap O(1), stack O(1)
 // vars: c = 테이블 열 수와 칸 수
 // basis: estimate
-// 도형별 연결점. 나가는 선은 오른쪽(세로 그룹 안 원통은 아래나 오른쪽), 들어오는 선은 왼쪽(세로 그룹 안 원통은 위나 왼쪽)이다. 격자 칸의 선은 그 칸의 테두리다. 묶음 배치한 테이블 열은 들어오는 선도 오른쪽이다. 그 밖의 도형과 그룹은 경계 어디나다.
+// 도형별 연결점. 나가는 선은 오른쪽(세로 그룹 안 원통은 아래나 오른쪽), 들어오는 선은 왼쪽(세로 그룹 안 원통은 위나 왼쪽)이다. 갈림길은 마름모 꼭짓점 넷 가운데 하나다(갈래마다 다른 꼭짓점, layout/ports.js). 격자 칸의 선은 그 칸의 테두리다. 묶음 배치한 테이블 열은 들어오는 선도 오른쪽이다. 그 밖의 도형과 그룹은 경계 어디나다.
 function isPortPlace(p, it, { way, columns, cell }) {
   const side = way === 'out' ? it.x + it.w : it.x;
   if (it.shape === 'grid' && cell) return onBorder(p, cellRect(it, cell));
   if ((it.shape === 'table' || it.shape === 'api') && columns) return near(p.x, it.isBracket ? it.x + it.w : side) && near(p.y, it.y + columnAnchorY(it.tableRows, columns));
-  if (it.shape === 'decision') return near(p.x, side) && near(p.y, it.y + it.h / 2);
+  if (it.shape === 'decision') return isVertex(p, it);
   // 원통은 뚜껑 윤곽까지가 선이 닿는 면이라 그린 사각형으로 본다.
   if (it.shape === 'store') {
     const drawn = drawnBox(it);
@@ -78,6 +78,12 @@ function isPortPlace(p, it, { way, columns, cell }) {
     return onBorder(p, drawn) && (near(p.y, way === 'out' ? drawn.y + drawn.h : drawn.y) || near(p.x, way === 'out' ? drawn.x + drawn.w : drawn.x));
   }
   return onBorder(p, it);
+}
+
+// 마름모 꼭짓점 넷 가운데 하나에 닿는가
+function isVertex(p, it) {
+  const [cx, cy] = [it.x + it.w / 2, it.y + it.h / 2];
+  return (near(p.x, cx) && (near(p.y, it.y) || near(p.y, it.y + it.h))) || (near(p.y, cy) && (near(p.x, it.x) || near(p.x, it.x + it.w)));
 }
 
 // cost: time O(e²·p²), heap O(1), stack O(1)
