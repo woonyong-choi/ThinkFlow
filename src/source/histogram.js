@@ -1,19 +1,20 @@
 // 히스토그램의 원시 관측값과 구간 선언, 집계 전 검증.
 import { countHistogram, histogramEdges, histogramValue } from '../histogram.js';
 import { MAX_VALUE, RANGE_MESSAGE, TINY_MESSAGE, isTiny } from './chart-limits.js';
-import { valueNames } from './grammar.js';
+import { VALUES } from './grammar.js';
+import { readOptions } from './options.js';
 import { isTinyNumber, parseNumber } from './values.js';
 
 // cost: time O(t), heap O(t), stack O(1)
 // vars: t = 문장 낱말 수
 // basis: estimate
 export function readBins({ tokens, line }, { figure, problems }) {
-  const option = tokens.at(-1);
-  const measure = option.type === 'option' ? option.value : 'count';
-  if (option.type === 'option') {
-    if (option.key !== 'measure' || option.valueType !== 'word' || !valueNames('histogramMeasure').includes(measure)) return problems.error(line, 'bins measure is count, probability, or density');
-    tokens = tokens.slice(0, -1);
-  }
+  const options = tokens.filter((t) => t.type === 'option');
+  const errors = problems.errors.length;
+  const found = readOptions(options, { scopes: ['bins'], what: 'bins', line, ctx: { problems } });
+  if (problems.errors.length > errors) return undefined;
+  const measure = found.measure ?? VALUES.histogramMeasure.default;
+  tokens = tokens.filter((t) => t.type !== 'option');
   const numbers = tokens.slice(1).map((token) => token.type === 'word' && !isTinyNumber(token.value) ? parseNumber(token.value) : undefined);
   if (figure.chartType !== 'histogram') return problems.error(line, 'bins is only for histogram charts');
   if (figure.chart.binning) return problems.error(line, 'bins is already set');

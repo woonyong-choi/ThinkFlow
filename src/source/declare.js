@@ -1,11 +1,15 @@
 // 도형, 그룹, 상태, 테이블, API 카드와 선 선언 문장을 읽는다. 이름 확인과 겹침 확인은 validate.js가 파일을 다 읽은 뒤 한다.
-import { STATEMENTS, flagNames, valueNames } from './grammar.js';
+import { STATEMENTS, flagNames, optionsOf } from './grammar.js';
 import { readGroup } from './group.js';
 import { checkId, parentFor, rejectName, skipBlock } from './names.js';
 import { readNode } from './node.js';
 import { readOptions } from './options.js';
 import { readForeignKeyOptions, readTableKey } from './table-keys.js';
 import { COLUMN_PATTERN, FK_PATTERN, ID_PATTERN, TABLE_PATTERN } from './words.js';
+import { didYouMean } from './problems.js';
+
+// 테이블 열 줄이 받는 낱말과 키
+const COLUMN_WORDS = [...Object.keys(optionsOf('column')), 'ondelete', 'from', 'to'];
 
 // API 카드의 제목. `메서드 경로`이고 경로는 `/`로 시작하거나 전체 주소다.
 const API_LABEL = /^(GET|POST|PUT|PATCH|DELETE|HEAD|OPTIONS) (\/\S*|https?:\/\/\S+)$/;
@@ -150,7 +154,7 @@ function readColumnOptions(rest, column, ctx) {
       column.fk = { table, column: col };
     } else if (t.type === 'option' && ['ondelete', 'from', 'to'].includes(t.key)) {
       referenceOptions.push(t);
-    } else ctx.problems.error(line, `unknown column option "${t.key ?? t.value}". Use pk, unique, nullable, required, fk=table.column, ondelete=policy, from=, or to=`);
+    } else ctx.problems.error(line, `unknown column option "${key}". Use pk, unique, nullable, required, fk=table.column, ondelete=policy, from=, or to=.${didYouMean(key, COLUMN_WORDS)}`, { column: t.column });
   }
   Object.assign(column, readForeignKeyOptions(referenceOptions, line, ctx));
   if (column.nullable && column.required) ctx.problems.error(line, 'nullable and required cannot be combined');
@@ -172,32 +176,25 @@ export function readEdge({ tokens, line }, ctx) {
     ctx.problems.error(line, 'write an edge as: a -> b "label"');
     return;
   }
+  if (to.value.endsWith(':')) {
+    const label = rest.filter((t) => t.type !== 'option').map((t) => t.value).join(' ') || 'label';
+    ctx.problems.error(line, `write the label in quotes after the target: ${from.value} -> ${to.value.slice(0, -1)} "${label}". "a -> b: label" is D2 syntax`, { column: to.column });
+    return;
+  }
   const edge = { from: from.value, to: to.value, label: undefined, quiet: false, dashed: false, head: undefined, no: undefined, line };
   const labels = rest.filter((t) => t.type === 'text');
-  if (labels.length > 1) ctx.problems.error(line, 'an edge takes one label');
+  if (labels.length > 1) ctx.problems.error(line, 'an edge takes one label', { column: labels[1].column });
   edge.label = labels[0]?.value;
-  const options = [];
-  for (const t of rest.filter((w) => w.type !== 'text')) {
-    if (t.type === 'word' && flagNames('edge').includes(t.value)) {
-      if (edge[t.value]) ctx.problems.error(line, `"${t.value}" is written twice`);
-      edge[t.value] = true;
-    } else if (t.type === 'option' && t.key === 'head') readHead(t, edge, { line, ctx });
-    else if (t.type === 'option') options.push(t);
-    else ctx.problems.error(line, `an edge takes a quoted label, quiet, dashed, head=, no=, relation=, from=, and to=. Found "${t.value}"`);
+  const chained = rest.find((t) => t.type === 'arrow');
+  if (chained) {
+    const next = rest[rest.indexOf(chained) + 1]?.value ?? '...';
+    ctx.problems.error(line, `declare one edge per line: ${from.value} -> ${to.value}, then ${to.value} -> ${next}. A chain of arrows is a track line in a scene`, { column: chained.column });
+    return;
   }
-  const found = readOptions(options, { scopes: ['edge', 'relation', 'multiplicity'], what: 'an edge', line, ctx });
-  edge.no = found.no;
+  const found = readOptions(rest.filter((t) => t.type !== 'text'), { scopes: ['edge', 'relation', 'multiplicity'], what: 'an edge', line, ctx });
+  Object.assign(edge, { quiet: found.quiet ?? false, dashed: found.dashed ?? false, head: found.head, no: found.no });
   if (found.relation !== undefined) edge.relation = found.relation;
   if (found.from !== undefined) edge.fromMultiplicity = found.from;
   if (found.to !== undefined) edge.toMultiplicity = found.to;
   ctx.figure.edges.push(edge);
-}
-
-// cost: time O(1), heap O(1), stack O(1)
-// basis: estimate
-// `head=` 한 번. 값은 head 목록의 이름이다.
-function readHead(t, edge, { line, ctx }) {
-  if (edge.head !== undefined) ctx.problems.error(line, '"head" is written twice');
-  else if (t.valueType !== 'word' || !valueNames('head').includes(t.value)) ctx.problems.error(line, `head is one of ${valueNames('head').join(', ')}`);
-  else edge.head = t.value;
 }

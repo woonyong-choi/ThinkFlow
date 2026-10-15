@@ -1,6 +1,6 @@
 // 머리 줄(title, subtitle, pace, aspect, width) 하나를 읽는다. 값은 글, 시간, 숫자, 낱말 중 하나다.
 import { valueNames } from './grammar.js';
-import { isOverTimeLimit, overLimitMessage, parseTime } from './values.js';
+import { isOverTimeLimit, overLimitMessage, parseTime, timeHint } from './values.js';
 import { NUMBER_PATTERN } from './words.js';
 
 // cost: time O(1), heap O(1), stack O(1)
@@ -16,7 +16,7 @@ export function readHeader({ tokens, line }, { figure, problems }) {
   } else if (key === 'pace') {
     const ms = parseTime(value?.value);
     if (value?.type === 'word' && ms === undefined && isOverTimeLimit(value.value)) problems.error(line, overLimitMessage('pace', value.value), { code: 'time-limit' });
-    else if (value?.type !== 'word' || ms === undefined) problems.error(line, 'write pace as a time such as 900ms or 2s');
+    else if (value?.type !== 'word' || ms === undefined) problems.error(line, `write pace as a time such as 900ms or 2s.${value?.type === 'word' ? timeHint(value.value) : ''}`, { column: value?.column });
     else figure.paceMs = ms;
   } else if (key === 'aspect') {
     const ratio = Number(value?.value);

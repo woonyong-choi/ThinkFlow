@@ -31,7 +31,8 @@ export function makeDiagnostic({ severity, line, message }, extra = {}, lines = 
     code: extra.code ?? (check ? `check-${check[1]}` : 'syntax'),
     line,
     column: extra.column ?? firstColumn,
-    message: check ? message.slice(check[0].length) : message,
+    // 메시지 끝에는 마침표를 두지 않는다. 덧붙이는 제안(` Did you mean "x"?`)이 없을 때 남는 마침표도 같이 뗀다.
+    message: (check ? message.slice(check[0].length) : message).replace(/([^.])\.$/, '$1'),
   };
   return diagnostic;
 }
@@ -69,26 +70,67 @@ export function createProblems(source = '') {
 // cost: time O(a·b), heap O(b), stack O(1)
 // vars: a, b = 두 글자 수
 // basis: estimate
-/** 두 글의 편집 거리. 이름 오타에 가까운 이름을 고를 때 쓴다. */
+/** 두 글의 편집 거리(이웃한 두 글자 바꿈도 한 번으로 센다). 이름과 낱말 오타에 가까운 것을 고를 때 쓴다. */
 function editDistance(a, b) {
+  let before = [];
   let previous = Array.from({ length: b.length + 1 }, (_, j) => j);
   for (let i = 1; i <= a.length; i++) {
     const current = [i];
     for (let j = 1; j <= b.length; j++) {
       current[j] = Math.min(previous[j] + 1, current[j - 1] + 1, previous[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+      if (i > 1 && j > 1 && a[i - 1] === b[j - 2] && a[i - 2] === b[j - 1]) current[j] = Math.min(current[j], before[j - 2] + 1);
     }
-    previous = current;
+    [before, previous] = [previous, current];
   }
   return previous[b.length];
+}
+
+// 제안으로 받는 가장 큰 편집 거리. 짧은 낱말은 한 글자만 고쳐도 다른 낱말이 되므로 한 번만 받는다.
+const NEAR_MAX = 2;
+const SHORT_WORD = 3;
+// 줄인 꼴(`alternative`에 대한 `alt`)로 보는 앞부분의 가장 짧은 길이
+const PREFIX_MIN = 3;
+
+// cost: time O(k·n²), heap O(k), stack O(1)
+// vars: k = 후보 수, n = 낱말 글자 수
+// basis: estimate
+/**
+ * 오타로 보이는 낱말에 가장 가까운 후보 하나. 편집 거리가 2 이하(3글자 이하는 1)인 후보이고, 없으면 한쪽이 다른 쪽의 앞부분인 후보다(줄여 쓰거나 늘여 쓴 낱말).
+ * 거리가 같으면 한쪽이 다른 쪽의 앞부분인 것, 첫 글자가 같은 것, 후보 순서가 앞선 것 순이다. 같은 낱말이나 가까운 것이 없으면 undefined다.
+ */
+export function closest(word, candidates) {
+  const text = String(word);
+  const lower = text.toLowerCase();
+  let best;
+  for (const candidate of new Set(candidates)) {
+    if (candidate === text) return undefined;
+    const distance = editDistance(lower, candidate.toLowerCase());
+    const limit = Math.min(text.length, candidate.length) <= SHORT_WORD ? 1 : NEAR_MAX;
+    const isStem = lower.startsWith(candidate) || candidate.startsWith(lower);
+    const isPrefix = isStem && Math.min(text.length, candidate.length) >= PREFIX_MIN;
+    if (distance > limit && !isPrefix) continue;
+    // 거리, 앞부분 관계가 아닌지, 첫 글자가 다른지 순으로 작은 것이 낫다.
+    const score = [distance > limit ? NEAR_MAX + 1 : distance, Number(!isStem), Number(candidate[0] !== lower[0])];
+    const index = best ? score.findIndex((v, i) => v !== best.score[i]) : -1;
+    if (!best || (index >= 0 && score[index] < best.score[index])) best = { candidate, score };
+  }
+  return best?.candidate;
+}
+
+// cost: time O(k·n²), heap O(k), stack O(1)
+// vars: k = 후보 수, n = 낱말 글자 수
+// basis: estimate
+/** 진단 끝에 붙이는 ` Did you mean "x"?`. 가까운 후보가 없으면 빈 글이다. */
+export function didYouMean(word, candidates) {
+  const near = closest(word, candidates);
+  return near === undefined ? '' : ` Did you mean "${near}"?`;
 }
 
 // cost: time O(k·n²), heap O(k), stack O(1)
 // vars: k = 이름 수, n = 이름 글자 수
 // basis: estimate
-/** 없는 이름 오류 메시지. 편집 거리 2 이하의 이름이 있으면 제안하고, 요청한 경우 선언된 이름 목록을 붙인다. */
+/** 없는 이름 오류 메시지. 가까운 이름이 있으면 제안하고, 요청한 경우 선언된 이름 목록을 붙인다. */
 export function unknownName(kind, name, known, { shouldList = true } = {}) {
   const sorted = [...known].sort();
-  const near = sorted.map((k) => [k, editDistance(name, k)]).filter(([, d]) => d <= 2).sort((a, b) => a[1] - b[1])[0];
-  const hint = near ? ` Did you mean "${near[0]}"?` : '';
-  return `unknown ${kind} "${name}".${hint}${shouldList ? ` Declared: ${sorted.join(', ') || 'none'}` : ''}`;
+  return `unknown ${kind} "${name}".${didYouMean(name, sorted)}${shouldList ? ` Declared: ${sorted.join(', ') || 'none'}` : ''}`;
 }

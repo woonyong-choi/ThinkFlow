@@ -3,8 +3,7 @@ import { readStepOptions, readTrack, checkMixedStep } from './flow.js';
 import { readActivation } from './sequence-life.js';
 import { readContent } from './content.js';
 import { readMoveOptions } from './move-options.js';
-import { isOverTimeLimit, overLimitMessage, parseNumber, parseTime } from './values.js';
-import { valueNames } from './grammar.js';
+import { isOverTimeLimit, overLimitMessage, parseNumber, parseTime, timeHint } from './values.js';
 import { ID_PATTERN } from './words.js';
 
 // cost: time O(t), heap O(t), stack O(1)
@@ -35,34 +34,21 @@ function readScene({ tokens, line }, ctx) {
   }
   // `--scene`은 숫자 모양 값을 장면 번호로 읽는다. 숫자만으로 된 이름은 번호와 겹쳐 이름으로 고를 수 없으므로 받지 않는다.
   if (label?.type === 'text' && /^\d+$/.test(label.value)) ctx.problems.error(line, `scene "${label.value}" is only digits, which --scene reads as a scene number. Add a word to the name, such as "step ${label.value}"`);
-  const options = tokens.filter((t) => t.type === 'option');
-  const { forMs, keep, sets, status } = readStepOptions(options.filter((t) => t.key !== 'mode' && t.key !== 'speed'), { line, ctx });
-  const { mode, speed } = readPlayback(options, { line, ctx });
-  ctx.step = { label: label?.value ?? '', mode, speed, line, beats: [], tracks: [], forMs, keep, sets, status, hasConditions: false };
+  const { found, forMs, keep, sets, status } = readStepOptions(tokens.filter((t) => t.type === 'option'), { line, ctx });
+  const speed = readSpeed(found.speed, { line, ctx });
+  ctx.step = { label: label?.value ?? '', mode: found.mode, speed, line, beats: [], tracks: [], forMs, keep, sets, status, hasConditions: false };
   ctx.figure.steps.push(ctx.step);
 }
 
-// cost: time O(t), heap O(1), stack O(1)
-// vars: t = 선택 사항 수
+// cost: time O(1), heap O(1), stack O(1)
 // basis: estimate
-// 장면의 재생 방식. mode는 static, once, loop이고 적지 않으면 줄이 있는 장면은 once, 줄이 없는 장면은 static이다(validate.js가 줄을 센 뒤 정한다).
-// speed는 0보다 큰 유한한 숫자(기본 1)다. 재생 속도일 뿐 시간표의 ms는 바꾸지 않는다.
-function readPlayback(options, { line, ctx }) {
-  const modeToken = options.find((t) => t.key === 'mode');
-  const speedToken = options.find((t) => t.key === 'speed');
-  for (const key of ['mode', 'speed']) if (options.filter((t) => t.key === key).length > 1) ctx.problems.error(line, `"${key}" is written twice`);
-  let mode;
-  if (modeToken) {
-    if (modeToken.valueType !== 'word' || !valueNames('sceneMode').includes(modeToken.value)) ctx.problems.error(line, `mode is one of ${valueNames('sceneMode').join(', ')}. Found "${modeToken.value}"`);
-    else mode = modeToken.value;
-  }
-  let speed = 1;
-  if (speedToken) {
-    const number = parseNumber(speedToken.value);
-    if (speedToken.valueType !== 'word' || number === undefined || !(number > 0)) ctx.problems.error(line, `speed is a number above 0, such as speed=2. Found "${speedToken.value}"`, { code: 'invalid-speed' });
-    else speed = number;
-  }
-  return { mode, speed };
+// 장면의 재생 배속. 0보다 큰 유한한 숫자(기본 1)이고 재생 속도일 뿐 시간표의 ms는 바꾸지 않는다. mode는 적지 않으면 줄이 있는 장면은 once, 줄이 없는 장면은 static이다(validate.js가 줄을 센 뒤 정한다).
+function readSpeed(text, { line, ctx }) {
+  if (text === undefined) return 1;
+  const number = parseNumber(text);
+  if (number !== undefined && number > 0) return number;
+  ctx.problems.error(line, `speed is a number above 0, such as speed=2. Found "${text}"`, { code: 'invalid-speed' });
+  return 1;
 }
 
 // cost: time O(t), heap O(t), stack O(1)
@@ -82,24 +68,15 @@ function readHops({ tokens, line }, ctx) {
       ctx.problems.error(line, 'write a move as: a -> b ["text"] [time=2s]');
       continue;
     }
-    const stuck = rest.filter((t) => t.type === 'word' && t.value === 'stuck');
-    if (stuck.length > 1) ctx.problems.error(line, 'stuck is written twice in one move');
-    const { timeMs, tone, sets, lost, condition } = readMoveOptions(rest.filter((t) => t.type === 'option'), { scope: 'hop', line, ctx, isStuck: stuck.length > 0 });
-    const hop = { from: from.value, to: to.value, data: undefined, timeMs, dashed: false, tone, sets, lost, ...(condition ? { condition } : {}), line };
-    for (const t of rest.filter((w) => w.type !== 'option' && !stuck.includes(w))) readHopWord(t, hop, { line, ctx });
+    const texts = rest.filter((t) => t.type === 'text');
+    if (texts.length > 1) ctx.problems.error(line, 'the move text is written twice in one move', { column: texts[1].column });
+    const { found, timeMs, tone, sets, lost, condition } = readMoveOptions(rest.filter((t) => t.type !== 'text'), { scope: 'hop', line, ctx });
+    const hop = { from: from.value, to: to.value, data: texts[0]?.value, timeMs, dashed: false, tone, sets, lost, ...(condition ? { condition } : {}), line };
+    // 순서 보기의 dashed, create, destroy. 만들어지는 참여자로 가는 메시지는 점선이다.
+    for (const flag of ['dashed', 'create', 'destroy']) if (found[flag]) hop[flag] = true;
     if (hop.create) hop.dashed = true;
     beat.hops.push(hop);
   }
-}
-
-// cost: time O(1), heap O(1), stack O(1)
-// basis: estimate
-// 이동 줄의 글과 순서 보기의 dashed, create, destroy. 선택 사항(time=, tone=, set=)은 readMoveOptions가 읽는다.
-function readHopWord(t, hop, { line, ctx }) {
-  if (t.type === 'text' && hop.data === undefined) hop.data = t.value;
-  else if (t.type === 'word' && ['dashed', 'create', 'destroy'].includes(t.value) && !hop[t.value]) hop[t.value] = true;
-  else if ((t.type === 'text' && hop.data !== undefined) || (['dashed', 'create', 'destroy'].includes(t.value) && hop[t.value])) ctx.problems.error(line, `${t.type === 'text' ? 'the move text' : t.value} is written twice in one move`);
-  else ctx.problems.error(line, `a move takes a quoted text, time=, tone=, set=, lost=, when=, wait=, timeout=, else=, and stuck. Found "${t.value}"`);
 }
 
 // `show id "글"` 또는 `show id graph "가 -> 나"`.
@@ -159,7 +136,7 @@ function readWait({ tokens, line }, ctx) {
   const [, time, extra] = tokens;
   const ms = parseTime(time?.value);
   if (time?.type === 'word' && ms === undefined && !extra && isOverTimeLimit(time.value)) ctx.problems.error(line, overLimitMessage('wait', time.value), { code: 'time-limit' });
-  else if (time?.type !== 'word' || ms === undefined || extra) ctx.problems.error(line, 'write wait as: wait 2s');
+  else if (time?.type !== 'word' || ms === undefined || extra) ctx.problems.error(line, `write wait as: wait 2s.${time?.type === 'word' && !extra ? timeHint(time.value) : ''}`, { column: time?.column });
   pushBeat(ctx, line).waitMs = ms ?? 0;
 }
 

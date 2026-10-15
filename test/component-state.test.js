@@ -260,7 +260,7 @@ test('S1 차트 이름의 하이픈은 애니메이션 이름을 충돌시키지
 
 test('surface_paint_and_relation_dashes_are_owned_by_shared_css', async () => {
   const result = await build(thinkflow(`
-    group g "외부 경계" border=dashed {
+    group g "외부 경계" dashed {
       external e "외부"
     }
     box a "요청" count=2

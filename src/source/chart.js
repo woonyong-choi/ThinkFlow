@@ -1,5 +1,7 @@
 // 차트 선언 문장을 읽는다. 값의 규칙(계열 수, 음수, log)은 validate.js가 모든 행을 읽은 뒤 확인한다.
-import { VALUES, optionsOf, valueNames } from './grammar.js';
+import { VALUES, optionsOf, statementsIn, valueNames } from './grammar.js';
+import { readOptions } from './options.js';
+import { didYouMean } from './problems.js';
 import { RANGE_MESSAGE, TINY_MESSAGE } from './chart-limits.js';
 import { isOverflowNumber, isTinyNumber, parseNumber } from './values.js';
 import { readTotal } from './waterfall.js';
@@ -14,7 +16,7 @@ export function readChartDeclaration(statement, ctx) {
   const word = statement.tokens[0].value;
   const handlers = { total: readTotal, bins: readBins, sample: readSample, series: readSeries, rule: readRule, missing: readMissing, data: readData, row: readRow, point: readPoint, cell: readCell, link: readLink };
   if (!Object.hasOwn(handlers, word)) {
-    ctx.problems.error(statement.line, `unknown chart statement "${word}"`);
+    ctx.problems.error(statement.line, `unknown chart statement "${word}".${didYouMean(word, statementsIn('chart'))}`, { column: statement.tokens[0].column });
     return;
   }
   const rowWord = VALUES.chartType.items[ctx.figure.chartType].rowWord;
@@ -38,17 +40,15 @@ const SERIES_USAGE = `write a series as: series id "name" [role=${valueNames('ro
 // `series id "이름" [role=main|compare] [key="JSON 키"]`
 function readSeries({ tokens, line }, { figure, problems }) {
   const [, id, label, ...options] = tokens;
-  const given = readSeriesOptions(options);
-  if (id?.type !== 'word' || label?.type !== 'text' || !given) {
+  if (id?.type !== 'word' || label?.type !== 'text') {
     problems.error(line, SERIES_USAGE);
     return;
   }
+  const errors = problems.errors.length;
+  const given = readOptions(options, { scopes: ['series'], what: 'a series', line, ctx: { problems } });
+  if (problems.errors.length > errors) return;
   if (!ID_PATTERN.test(id.value)) {
     problems.error(line, `"${id.value}" is not a valid series name. Use lowercase letters, digits, and "-"`);
-    return;
-  }
-  if (given.role !== undefined && !valueNames('role').includes(given.role)) {
-    problems.error(line, `role is one of ${valueNames('role').join(', ')}. Found "${given.role}"`);
     return;
   }
   // 선 차트 행의 `x=`는 가로 값이라 같은 이름의 계열 값과 가를 수 없다.
@@ -72,21 +72,6 @@ function readSeries({ tokens, line }, { figure, problems }) {
 function rangeProblem(text) {
   if (isOverflowNumber(text)) return RANGE_MESSAGE;
   return isTinyNumber(text) ? TINY_MESSAGE : undefined;
-}
-
-// cost: time O(o), heap O(1), stack O(1)
-// vars: o = 선택 낱말 수
-// basis: estimate
-// 계열 선택 낱말(grammar.js series 범위: key, role)을 한 번씩 읽는다. 모양이 틀리면 undefined다.
-function readSeriesOptions(options) {
-  const specs = optionsOf('series');
-  const given = {};
-  for (const t of options) {
-    const isKnown = t.type === 'option' && t.valueType === specs[t.key]?.type;
-    if (!isKnown || Object.hasOwn(given, t.key)) return undefined;
-    given[t.key] = t.value;
-  }
-  return given;
 }
 
 // `rule 값 "라벨"`

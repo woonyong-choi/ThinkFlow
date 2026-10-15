@@ -50,8 +50,8 @@ function buildContainers(figure) {
 }
 
 // 그룹의 테두리 모양, 배지, 아이콘, 면과 테두리 색 선택 사항. 배치와 그리기가 그룹 이름으로 찾는 값이다.
-export function decorOf({ border, badge, icon, iconData, tone, appearance }) {
-  return { border, badge, icon, iconData, tone, appearance };
+export function decorOf({ dashed, badge, icon, iconData, tone, appearance }) {
+  return { dashed, badge, icon, iconData, tone, appearance };
 }
 
 // cost: time O(d), heap O(d), stack O(1)
