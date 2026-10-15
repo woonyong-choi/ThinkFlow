@@ -583,6 +583,8 @@
   --radius-route: 22px;
   --radius-card-radius: var(--primitive-card-radius);
   --radius-media-radius: var(--primitive-media-radius);
+  --radius-device-radius: var(--primitive-device-radius);
+  --radius-device-screen-radius: var(--primitive-device-screen-radius);
   --radius-button-radius: var(--primitive-button-radius);
   --radius-pill: var(--primitive-pill);
   --radius-help-radius: var(--primitive-help-radius);
@@ -747,9 +749,9 @@
   --primitive-nav-color: rgba(38,52,74,.5);
   --primitive-scrollbar: 15px;
   --primitive-device-width: 371px;
-  --primitive-device-pad-top: 21.4117%;
-  --primitive-device-pad-inline: 12.121%;
-  --primitive-device-pad-bottom: 26.6636%;
+  --primitive-device-pad: 4.5%;
+  --primitive-device-radius: 48px;
+  --primitive-device-screen-radius: 32px;
   --primitive-device-ratio: 500 / 889;
   --primitive-tab-inset: 4px;
   --primitive-tab-button-inset: 6px;
@@ -1218,9 +1220,7 @@
   --aspect-ratio-video: var(--primitive-ratio-video);
   --aspect-device-ratio: var(--primitive-device-ratio);
   --aspect-blog-cover-ratio: var(--primitive-ratio-banner);
-  --component-device-pad-top: var(--primitive-device-pad-top);
-  --component-device-pad-inline: var(--primitive-device-pad-inline);
-  --component-device-pad-bottom: var(--primitive-device-pad-bottom);
+  --component-device-pad: var(--primitive-device-pad);
   --component-scroll-speed: var(--primitive-scroll-speed);
   --component-icon-scale: var(--primitive-icon-scale);
   --component-landing-nav-scale: var(--primitive-player-hover-opacity);
