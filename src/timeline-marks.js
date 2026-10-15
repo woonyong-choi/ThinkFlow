@@ -28,6 +28,7 @@ function merge(ranges) {
  * 켜 둔 도형, 부분, 차트 행은 구간 자신이 가진다(seg.nodesOn, seg.partsOn, seg.charts[id].lights는 그 장면에서 지금까지 `light`가 명시한 대상이다). 길이 0인 구간(`light`만 있는 장면의 박자)도 같은 규칙으로 읽히도록 시각 구간으로 옮기지 않는다.
  * 점이 지나간 선은 켜 두지 않는다: 선이 활성인 구간은 이동의 길 계획(hop.legEdges, hop.gaps, hop.cut)이 정하고 재생기와 움직이는 SVG가 같은 규칙(hopLegs)으로 읽는다.
  * 조용한 선(`quiet`)은 활성과 별개로 그 선을 처음 지나는 때(점이 선에 들어서는 시각)부터 그 장면 끝까지 보인다. 보임일 뿐 활성이 아니라 알약의 활성 색은 붙들지 않는다.
+ * 정지 장면(`mode=static`)은 재생하지 않아 드러낼 때가 없으므로 조용한 선이 장면 내내 평소 모습으로 보인다. 그림의 관계가 정지 화면에서 사라지지 않게 하기 위해서다.
  * @param quiet 조용한 선의 선 번호 집합
  * 구간은 출처 장면에 속한다(`si`): 장면 끝 시각에 닿은 구간도 그 장면의 것이고, 다음 장면이 같은 시각에 시작해도 이어 붙지 않는다.
  * @returns { [키]: [시작, 끝, 출처 장면][] }
@@ -36,11 +37,22 @@ export function marksOf(timeline, { quiet = new Set() } = {}) {
   const byKey = new Map();
   const add = (key, from, to, si) => byKey.set(key, [...(byKey.get(key) ?? []), [from, to, si]]);
   for (const [edge, first] of firstPasses(timeline, quiet)) for (const [si, at] of first) add(`quiet:${edge}`, at, sceneEnd(timeline, si), si);
+  for (const si of stillScenes(timeline)) for (const edge of quiet) add(`quiet:${edge}`, sceneStart(timeline, si), sceneEnd(timeline, si), si);
   return Object.fromEntries([...byKey].map(([key, ranges]) => [key, merge(ranges)]));
 }
 
-// 장면 si의 끝 논리 시각
+// 장면 si의 처음과 끝 논리 시각
+const sceneStart = (timeline, si) => timeline.segs.find((seg) => seg.si === si).t0;
 const sceneEnd = (timeline, si) => timeline.segs.findLast((seg) => seg.si === si).t1;
+
+// cost: time O(s + b), heap O(s), stack O(1)
+// vars: s = 장면 수, b = 구간 수
+// basis: estimate
+// 정지 장면(`mode=static`) 번호(구간이 있는 장면만). 정지 장면은 재생하지 않으므로 점이 선을 지나 드러낼 때가 없다.
+function stillScenes(timeline) {
+  const present = new Set(timeline.segs.map((seg) => seg.si));
+  return timeline.steps.flatMap((step, si) => (step.mode === 'static' && present.has(si) ? [si] : []));
+}
 
 // 조용한 선마다 장면별로 점이 처음 그 선에 들어서는 논리 시각: Map<선 번호, Map<장면, 시각>>.
 function firstPasses(timeline, quiet) {

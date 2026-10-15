@@ -13,10 +13,14 @@ import { sceneTag } from './scene-tag.js';
 import { drawSequenceFragments } from './sequence-fragments.js';
 import { drawSequenceLife } from './sequence-life.js';
 import { drawShape } from './shape.js';
-import { CORNER, rectOpen } from './surface.js';
+import { CORNER } from './surface.js';
 import { drawText, drawTexts } from './texts.js';
 import { drawPlot, drawTime } from './time.js';
 import { drawTiming } from './timing.js';
+import { values } from '@woonyong-choi/design-tokens/tokens.js';
+
+// 메모 종이의 접힌 모서리 크기
+const NOTE_FOLD = values.spacing["2-5"];
 
 // cost: time O(s·k·r·n + e·p), heap O(out), stack O(1)
 // vars: s = 도형 수, k = 카드 내용 수, r = 카드 줄 수, n = 글자 수, e = 선 수, p = 경로 점 수, out = 만든 SVG 글자 수
@@ -85,7 +89,11 @@ function drawPanelLabel(panel, glyphs) {
 // cost: time O(l), heap O(out), stack O(1)
 // vars: l = 메모 줄 수, out = 만든 SVG 글자 수
 // basis: estimate
+// 메모는 오른쪽 위 모서리가 접힌 종이 모양이다. 점선 테두리의 외부 참여자와 모양으로 구분된다. 면과 선은 공통 `.note-box`가 정한다.
 function drawNote(note, glyphs, shownSi) {
   const tag = sceneTag(note, shownSi);
-  return `<g class="fl-note${tag.off}"${tag.attr}>${rectOpen(note, CORNER.inner)} class="note-box"/>${drawTexts(note.texts, note, glyphs)}</g>`;
+  const [x, y, right, bottom, f] = [note.x, note.y, note.x + note.w, note.y + note.h, NOTE_FOLD];
+  const sheet = `<path d="M${r(x)} ${r(y)}H${r(right - f)}L${r(right)} ${r(y + f)}V${r(bottom)}H${r(x)}Z" class="note-box"/>`;
+  const fold = `<path d="M${r(right - f)} ${r(y)}V${r(y + f)}H${r(right)}" class="note-box"/>`;
+  return `<g class="fl-note${tag.off}"${tag.attr}>${sheet}${fold}${drawTexts(note.texts, note, glyphs)}</g>`;
 }

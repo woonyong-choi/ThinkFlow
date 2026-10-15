@@ -244,6 +244,9 @@ test('K9 heatmap column names keep a readable gap and their identity at narrow w
 });
 
 // 좁은 가로축 눈금 글자: 양 끝을 지키고, 남은 눈금은 같은 걸음으로 건너뛰며, 이웃 글자 사이에 한 칸이 남고, 그림 안에 든다.
+// 그린 좌표의 반올림 몫
+const ROUNDING = 0.05;
+
 test('K9 narrow value-axis labels keep both ends, thin out at an even stride and stay inside the figure', async () => {
   const stops = Array.from({ length: 25 }, (_, i) => `point x=${i} s=${i + 1}`).join('\n');
   const sources = {
@@ -265,7 +268,8 @@ test('K9 narrow value-axis labels keep both ends, thin out at an even stride and
       assert.equal(new Set(indices.slice(1).map((index, i) => index - indices[i])).size, 1, `${where}: even stride`);
       shown.slice(1).forEach((tick, i) => assert.ok(tick.center - tick.width / 2 - (shown[i].center + shown[i].width / 2) >= values.spacing["3"], `${where}: readable gap`));
       const [left, , width] = dom.attrs.viewBox.split(' ').map(Number);
-      assert.ok(shown.every((t) => t.center - t.width / 2 >= PAD && t.center + t.width / 2 <= left + width - PAD), `${where}: inside the figure`);
+      // 좌표는 소수 첫째 자리로 쓰므로(format.js) 반올림 몫(0.05)만큼은 경계에 닿은 것으로 본다.
+      assert.ok(shown.every((t) => t.center - t.width / 2 >= PAD - ROUNDING && t.center + t.width / 2 <= left + width - PAD + ROUNDING), `${where}: inside the figure`);
     }
   }
 });
