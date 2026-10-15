@@ -422,6 +422,10 @@ view plot ["라벨"] {
 view time ["라벨"] {
   추적 카드 하나
 }
+view timing ["라벨"] {
+  값과 카드 이름들
+  note 값=상태 "글"
+}
 ```
 
 | 방식 | 구성원 | 그리는 것 |
@@ -430,11 +434,12 @@ view time ["라벨"] {
 | `sequence` | `person`, `box`, `external`, `store`, `queue`, `table`, `api`, `class`·`interface`. 표, API, 클래스는 공통 카드 머리(아이콘과 이름)만 참여자로 보이고 칸과 멤버는 같은 카드를 담은 그래프 보기가 보인다. 적은 순서가 참여자 순서다 | 참여자 열, 이 보기에 보이는 이동의 메시지, 메모, 활성 구간, 구획 |
 | `plot` | 차트 카드 정확히 하나 | 문서 폭의 차트 |
 | `time` | 추적 카드 정확히 하나 | 레인과 시간 축 위의 구간 |
+| `timing` | 값과 이동하는 카드(순서 보기 참여자 모양). 카드를 그리지 않아 "적힌" 카드로 세지 않는다 | 장면 시간 축 위의 값 띠, 0/1 높낮이 선, 카드 사이 이동 화살표, 값 구간 표시([타이밍 보기](figure-kinds.md#타이밍-보기)) |
 
 - 구성원이 아닌 이름, 방식에 맞지 않는 카드(`a chart card cannot be a sequence participant`)는 구성원 이름의 자리에서 오류다.
 - 카드는 보기 여럿에 함께 놓일 수 있다. 같은 이름의 카드가 보기마다 한 번씩 그려지고 상태는 하나다.
 - 그래프 보기의 구성원은 그룹을 적으면 그 안 카드와 그룹 전체를 담는다. 그룹 안 카드를 그룹 없이 적으면 `list group "g" instead of "x"` 오류다. 블록을 생략한 그래프 보기는 추적 카드와 `plot` 보기(적은 것과 기본 것)에 놓인 차트를 뺀 모든 카드를 담고(순서 보기에 놓인 카드는 들어간다), 그 차트를 그래프에도 그리려면 블록에 적는다.
-- `view main graph`처럼 보기 방식 앞에 이름을 쓰면 `a view is one of graph, sequence, plot, time. Found "main"` 오류다.
+- `view main graph`처럼 보기 방식 앞에 이름을 쓰면 `a view is one of graph, sequence, plot, time, timing. Found "main"` 오류다.
 - 기본 보기. 적은 보기가 먼저 구성원을 정하고(적은 순서가 판 순서), 어느 보기에도 적히지 않은 카드는 다음 규칙으로 기본 보기를 받는다. 기본 보기는 적은 보기 뒤에 카드 선언 순서로 쌓인다. 같은 카드가 기본 보기와 적은 보기에 겹쳐 그려지는 일은 없다.
   1. 추적 카드는 카드마다 `time` 보기 하나.
   2. 남은 카드가 차트뿐이고 그래프 보기를 적지 않았으며 그룹 안 차트도 없으면 차트마다 `plot` 보기 하나. 일반 카드와 섞이거나 그래프 보기를 적으면 차트도 그래프 카드다. 연결선 유무는 보기 종류를 바꾸지 않는다.
@@ -687,7 +692,7 @@ scene "같은 시각에 요청한다" for=8s
 | `.thinkflow`가 아닌 파일(`render`, `check`의 입력) | `unsupported-extension` | 파일, 1줄 1자리 | `only .thinkflow files are read` |
 | 문법 표에 없는 낱말(`flow`, `step`, `say`, 머리 `speed` 등) | `syntax` | 첫 글자 | `unknown statement "step"` |
 | 글이 둘인 `scene "이름" "설명"` | `syntax` | 둘째 글 | `write a scene as: scene "name" [mode=...] ...` |
-| 이름을 쓴 보기 `view main graph` | `syntax` | 그 줄 | `a view is one of graph, sequence, plot, time. Found "main". A view has no name: write view graph ...` |
+| 이름을 쓴 보기 `view main graph` | `syntax` | 그 줄 | `a view is one of graph, sequence, plot, time, timing. Found "main". A view has no name: write view graph ...` |
 | 도형과 그룹의 `fill=`, `stroke=`, `show`의 `card=` | `syntax` | 그 줄 | `a box takes count=, shape=, badge=, icon=, tone=, appearance=. Found "fill"` |
 | 숫자로만 된 장면 이름 `scene "2"` | `syntax` | 그 줄 | `scene "2" is only digits, which --scene reads as a scene number. Add a word to the name, such as "step 2"` |
 | 머리 자리의 `x`, `y`, `scale`, `zero`, `decimals` | `syntax` | 첫 글자 | `"x" belongs inside a chart block` |
@@ -707,8 +712,8 @@ scene "같은 시각에 요청한다" for=8s
 | 선언 | 테이블 블록 안 | `pk (열, ...)`, `unique (열, ...)`, `fk (열, ...) -> 테이블 (열, ...)` |
 | 시작 선언 | 문서 줄 | `thinkflow` |
 | 머리 | 문서 줄 | `title`, `subtitle`, `pace`, `aspect`, `width` |
-| 선언 | 문서 줄 | `person`, `box`, `external`, `store`, `decision`, `queue`, `state`, `group`, `grid`, `icons`, `value`, `on node id+N`, `start`, `final`, `table`, `api id "METHOD /url" {`, `class`, `interface`, `chart id "title" type ["subtitle"] {`, `trace id "title" [unit=ms] {`, `view graph|sequence|plot|time ["label"] [{]`, `a -> b` |
-| 선언 | 격자 블록 안 | `item`, `gap` |
+| 선언 | 문서 줄 | `person`, `box`, `external`, `store`, `decision`, `queue`, `state`, `group`, `grid`, `icons`, `value`, `on node id+N`, `start`, `final`, `table`, `api id "METHOD /url" {`, `class`, `interface`, `chart id "title" type ["subtitle"] {`, `trace id "title" [unit=ms] {`, `view graph|sequence|plot|time|timing ["label"] [{]`, `a -> b` |
+| 선언 | 격자 블록 안 | `item id "글" ["보조 글"]`, `gap`, `region "글" [row=N] [rows=N]` |
 | 선언 | 카드 본문 안 | `text`, `graph` |
 | 선언 | 클래스 블록 안 | `field`, `method` |
 | 선언 | 추적 블록 안 | `span` |
@@ -790,12 +795,16 @@ scene "같은 시각에 요청한다" for=8s
 | `span.dur` | 0보다 큰 숫자 |
 | `grid.rows` | 양의 정수 |
 | `grid.cols` | 양의 정수 |
+| `grid.unit` | 단위 이름(bit, byte 등) |
 | `item.key` | 글 |
+| `item.open` | 값 없음(낱말만) |
 | `item.row` | 0 이상 정수 |
 | `item.col` | 0 이상 정수 |
 | `item.rows` | 양의 정수 |
 | `item.cols` | 양의 정수 |
 | `gap.count` | 양의 정수 |
+| `region.row` | 0 이상 정수 |
+| `region.rows` | 양의 정수 |
 | `light.x` | 숫자 |
 | `column.pk` | 값 없음(낱말만) |
 | `column.unique` | 값 없음(낱말만) |
@@ -817,7 +826,7 @@ scene "같은 시각에 요청한다" for=8s
 | `histogramMeasure` | `bins.measure` | `count`, `probability`, `density` | `count` |
 | `fragmentRun` | `fragment.run` | `on`, `off` | 없음 |
 | `direction` | `group.direction` | `right`, `down` | `right` |
-| `viewStrategy` |  | `graph`, `sequence`, `plot`, `time` | 없음 |
+| `viewStrategy` |  | `graph`, `sequence`, `plot`, `time`, `timing` | 없음 |
 | `sceneMode` | `scene.mode` | `static`, `once`, `loop` | 줄이 있는 장면은 `once`, 줄이 없는 장면은 `static` |
 | `traceUnit` | `trace.unit` | `ms`, `us`, `s` | `ms` |
 | `scale` | `scale 값` | `linear`, `log` | `linear` |

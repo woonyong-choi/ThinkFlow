@@ -56,6 +56,8 @@ ThinkFlow는 `thinkflow` 원본 하나로 구조, 순서, 상태, 스키마, API
 | API 카드: 메서드와 경로, `https://` 주소, 칸 사이 연결 | `api` | `api`, `integration` | `test/cards.test.js`(S1), `test/examples.test.js` |
 | 클래스: 세 구획, 가시성, 정적, 추상, 여섯 관계, 다중성, 그룹 | `class`, `interface`, `field`, `method`, `relation=`, `from=`, `to=` | `class` | `test/kinds.test.js`(K-class) |
 | 칸 격자: 비트 필드, 합친 칸, 생략한 칸, 칸에서 칸으로 가는 선 | `grid`, `item`, `gap` | `memory`, `stack`, `pointer` | `test/kinds.test.js`(K-grid), `test/cards.test.js`(S2, S3) |
+| 바이트 배치: 단위 눈금, 행 오프셋, 단위 수에 비례한 필드, 두 단계 칸 글, 열린 마지막 필드, 구간 괄호, 칸 값 채우기 | `grid ... unit=`, `item ... "둘째 글"`, `open`, `region`, `key=` | `tcp-header`, `ipv4-header`, `struct-layout` | `test/kinds.test.js`(K-grid byte layout), `test/examples.test.js` |
+| 타이밍: 값 띠, 0/1 높낮이 선, 카드 사이 이동 화살표, 값 구간 표시, 장면 상태, 재생 막대 | `view timing`, `note 값=상태 "글"` | `timing`, `handshake` | `test/kinds.test.js`(K-timing), `test/examples.test.js` |
 | 추적: 구간, 레인, 실제 시간 축, 밀리초와 마이크로초 | `trace`, `span`, `view time`, `unit=` | `trace`, `integration` | `test/kinds.test.js`(K-trace) |
 | 여러 보기가 같은 사건을 공유, 보기를 적지 않은 카드의 기본 보기 | 한 문서의 `view` 여럿, 보기 줄 없음 | `integration`, `trace`, `metric`, `donut` | `test/cards.test.js`(S5, S9, S10), `test/authoring.test.js` |
 | 차트 열여섯 종류 | `chart id "제목" 종류 {` | 종류마다 `bar`, `stacked`, `percent`, `dumbbell`, `difference`, `line`, `step`, `area`, `scatter`, `histogram`, `box`, `ecdf`, `heatmap`, `donut`, `pie`, `waterfall` | `test/charts.test.js`(K1), `test/examples.test.js` |
@@ -190,7 +192,7 @@ ThinkFlow는 `thinkflow` 원본 하나로 구조, 순서, 상태, 스키마, API
 | V | `test/grammar.test.js` | 시작 선언, 줄과 낱말, 이름 공간, 연결점, 오류의 위치와 필드 | [그림 문법](figure-syntax.md) |
 | G | `test/authoring.test.js` | 이름 없는 보기와 기본 보기, 장면 `mode` 기본값, `tone`과 `appearance` | [그림 문법](figure-syntax.md) |
 | S | `test/cards.test.js` | 카드 연결점(표 열, API 칸, 격자 칸, 추적 구간), 여러 보기에 놓인 카드, 보기 규칙(#172, #175) | [그림 문법](figure-syntax.md), [그림 종류](figure-kinds.md), [칸 격자](grid.md) |
-| K, K-종류 | `test/charts.test.js`(K1~K9), `test/kinds.test.js`(K-arch, K-class, K-sequence, K-state, K-trace, K-queue, K-grid, K-view), `test/examples.test.js`(K30) | 종류만의 수학, 의미, 거절. 차트 열여섯 종류와 개발 그림 가족. K-view는 종류가 아니라 판을 합치는 공통 한 곳(`layout/panels.js`)의 판 폭(제목이 잘리지 않고 내용은 가운데)을 그래프 판과 순서 판으로 읽고, 차트 판과 시간 판은 같은 경로여도 따로 읽지 않는다 | [차트](charts.md), [그림 종류](figure-kinds.md), [칸 격자](grid.md) |
+| K, K-종류 | `test/charts.test.js`(K1~K9), `test/kinds.test.js`(K-arch, K-class, K-sequence, K-state, K-trace, K-queue, K-grid, K-timing, K-view), `test/examples.test.js`(K30) | 종류만의 수학, 의미, 거절. 차트 열여섯 종류와 개발 그림 가족. K-view는 종류가 아니라 판을 합치는 공통 한 곳(`layout/panels.js`)의 판 폭(제목이 잘리지 않고 내용은 가운데)을 그래프 판과 순서 판으로 읽고, 차트 판과 시간 판은 같은 경로여도 따로 읽지 않는다 | [차트](charts.md), [그림 종류](figure-kinds.md), [칸 격자](grid.md) |
 | C | `test/charts.test.js` | 값에 묶인 차트, `data` JSON(#171) | [차트](charts.md), [그림 문법](figure-syntax.md) |
 | E | `test/values.test.js` | 값, 이동, 조건, 대기, 예약(#173) | [그림 문법](figure-syntax.md), [재생](playback.md) |
 | X | `test/exports.test.js` | 장면 방식, 움직이는·멈춘 SVG, HTML의 마크업, 결정성, 정본 내려받기 | [재생](playback.md) |
