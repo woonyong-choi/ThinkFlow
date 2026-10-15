@@ -1,0 +1,41 @@
+thinkflow
+title "TCP 헤더 (RFC 9293)"
+subtitle "한 줄은 32비트 · 왼쪽 숫자는 비트 오프셋 · 연결을 여는 SYN과 SYN-ACK이 채우는 필드"
+
+person client "클라이언트"
+grid tcp "TCP 헤더" rows=6 cols=32 unit=bit {
+  item sport "Source Port" cols=16
+  item dport "Destination Port" cols=16
+  item seq "Sequence Number" cols=32
+  item ack "Acknowledgment Number" cols=32
+  item doff "Data Offset" cols=4
+  item rsrvd "Rsrvd" cols=4
+  item flags "Flags" "CWR ECE URG ACK PSH RST SYN FIN" cols=8
+  item win "Window" cols=16
+  item sum "Checksum" cols=16
+  item urg "Urgent Pointer" cols=16
+  item opt "Options" cols=32 open
+  region "고정 헤더 20바이트" rows=5
+  region "옵션 0~40바이트"
+}
+box server "서버"
+client -> tcp "헤더 채우기"
+tcp -> server "전송"
+
+value sp "Source Port" on=tcp.sport from=0
+value dp "Destination Port" on=tcp.dport from=0
+value sq "Sequence Number" on=tcp.seq from=0
+value ak "Acknowledgment Number" on=tcp.ack from=0
+value fl "Flags" on=tcp.flags from=none
+
+view graph down
+
+scene "SYN"
+  client -> tcp set="sp=49152, dp=443, sq=1000, fl=SYN"
+  light tcp.flags tcp.seq
+  tcp -> server
+
+scene "SYN-ACK"
+  client -> tcp set="sp=443, dp=49152, sq=5000, ak=1001, fl=SYN+ACK"
+  light tcp.flags tcp.ack
+  tcp -> server
