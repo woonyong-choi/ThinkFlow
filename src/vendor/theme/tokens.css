@@ -250,7 +250,7 @@
   --color-control-paper: var(--color-gray-0);
   --color-control-cutout: var(--color-gray-1000);
   --color-prose-rule-color: var(--primitive-prose-rule-color);
-  --color-prose-caption-color: var(--primitive-prose-caption-color);
+  --color-prose-caption-color: var(--color-ui-muted);
   --color-prose-link-active: var(--primitive-prose-link-active);
   --color-prose-mark-background: var(--primitive-callout-warning);
   --color-prose-marker: var(--primitive-landing-footer-ink);
@@ -1004,7 +1004,6 @@
   --primitive-control-task-ink: rgba(0,0,0,.3);
   --primitive-control-task-stroke: 1.5;
   --primitive-prose-rule-color: rgba(0,20,49,.18);
-  --primitive-prose-caption-color: rgba(4,15,26,.5);
   --primitive-prose-link-active: #114691;
   --primitive-prose-script-weight: 440;
   --primitive-prose-definition-margin: 0 0 .7em 2em;
