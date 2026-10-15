@@ -25,7 +25,10 @@ export function bindDiagramHost() {
       document.documentElement.classList.toggle('has-fullscreen-diagram', Boolean(document.querySelector(`${selector}.is-fullscreen`)));
     }
     const height = event.data.figureHeight;
-    if (!frame.classList.contains('is-fullscreen') && Number.isFinite(height) && height > 0) frame.height = String(Math.ceil(height));
+    if (!frame.classList.contains('is-fullscreen') && Number.isFinite(height) && height > 0) {
+      frame.height = String(Math.ceil(height));
+      frame.classList.add('has-diagram-height');
+    }
   });
   document.addEventListener('keydown', event => {
     if (event.key !== 'Escape') return;
