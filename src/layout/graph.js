@@ -149,7 +149,8 @@ async function fitCanvas(figure, sizes, { flat, canvas, cap }) {
   const isNarrowTarget = canvas < layoutWidthOf(figure);
   if (narrowest.laid.width > canvas && (isNarrowTarget || !hasColumnEdges(figure))) {
     consider(await arrange({ ...figure, direction: 'down', aspect: undefined, oneNodePerLayer: true }, sizes));
-    if (narrowest.laid.width > canvas && figure.groups.length) {
+    // 그룹을 한 층씩 푸는 후보는 좁은 화면 목표 폭에서만 본다. 본문 단 폭에서 쓰면 그룹 사이 선이 한 줄로 몰려 이동 글 상자 자리 찾기가 느려졌다(architecture 예제 빌드가 main의 1.7배).
+    if (narrowest.laid.width > canvas && figure.groups.length && isNarrowTarget) {
       const grouped = await arrange({ ...figure, direction: 'down', aspect: undefined, oneNodePerLayer: true, compactGroups: true }, sizes);
       consider(grouped);
     }

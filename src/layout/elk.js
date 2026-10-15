@@ -22,6 +22,8 @@ const SINGLE_LAYER_OPTIONS = Object.freeze({ 'elk.layered.layering.strategy': 'C
 const TAIL_LABEL = { 'elk.edgeLabels.inline': 'false', 'elk.edgeLabels.placement': 'TAIL' };
 const CENTER_LABEL = { 'elk.edgeLabels.inline': 'true', 'elk.edgeLabels.placement': 'CENTER' };
 const FLOW_SIDE = { right: 'EAST', down: 'SOUTH' };
+// 칸·열에 선 끝이 닿는 도형. 칸마다 연결점이 따로라 꼬리 라벨이 칸 옆에 쌓여 칸 열의 정렬을 흐트러뜨린다.
+const CELL_SHAPES = new Set(['table', 'api', 'grid']);
 
 // 글 상자 간격 요구(chipRoom)를 elkjs에 알리는 보이지 않는 라벨. 선 끝 쪽에 선 옆으로 두는 라벨은 층 사이 간격을 (기본 간격 + 라벨 크기 + 라벨 간격)으로 만든다.
 const ROOM_OPTIONS = { 'elk.edgeLabels.inline': 'false', 'elk.edgeLabels.placement': 'HEAD' };
@@ -60,12 +62,13 @@ function edgesByContainer({ containers, nodes, pieces, edges, isSafe }, figure) 
 // cost: time O(p), heap O(1), stack O(1)
 // vars: p = 출발 도형의 연결점 수
 // basis: estimate
-// 선 조각이 출발하는 연결점의 면을 보고 라벨 자리를 고른다. 연결점이 없거나 흐름 방향 면이면 꼬리, 칸·열의 옆면이면 가운데다.
+// 선 조각이 출발하는 연결점의 면을 보고 라벨 자리를 고른다. 연결점이 없거나 흐름 방향 면이면 꼬리, 칸·열(테이블, API, 격자)에서 나가는 선이나 옆면이면 가운데다.
 // 갈림길의 옆 꼭짓점은 꼬리다. 가운데 라벨은 라벨 층 하나를 더 세워 갈래가 닿는 도형을 한 층 아래로 밀기 때문이다.
 function labelOptions(from, container, nodes) {
   const node = nodes.get(from.split('::')[0]);
   const side = node?.ports.find((port) => port.id === from)?.side;
-  return side === undefined || side === FLOW_SIDE[container.direction] || node.shape === 'decision' ? TAIL_LABEL : CENTER_LABEL;
+  if (side === undefined || node.shape === 'decision') return TAIL_LABEL;
+  return side === FLOW_SIDE[container.direction] && !CELL_SHAPES.has(node.shape) ? TAIL_LABEL : CENTER_LABEL;
 }
 // cost: time O(n), heap O(n), stack O(1)
 // vars: n = 다중성 표시 글자 수
