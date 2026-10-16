@@ -10,9 +10,11 @@
 //   (빈 줄)
 //   </details>
 //   <!-- /thinkflow fold v1 {id} -->       끝 표식
+// 장면이 여럿인 블록의 둘째 장면부터는 이 배치 바로 다음 줄에 장면 구간(md-scenes.js)이 따로 붙는다. 접기의 소유가 아니라 표식 안으로 들어가지 않는다.
 // 접지 않은 배치는 블록 아래 `(빈 줄) 그림`이다. 표식 두 줄과 그 사이 모양이 정확히 맞는 것만 이 도구가 만든 감싸기로 읽고, 그 밖의 `<details>`는 사용자 것이다.
 import { contextOf } from './md-blocks.js';
 import { findBlocks, imageLine, isMarkedImage } from './md.js';
+import { regionLines, scanRegions } from './md-scenes.js';
 import { detailsBefore } from './md-tags.js';
 
 const FOLD_VERSION = 'v1';
@@ -29,7 +31,7 @@ const ESCAPES = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&
 // vars: t = 제목 글자 수
 // basis: estimate
 /** 제목을 HTML 글로 바꾼다. 특수 문자는 문자 참조로 쓴다. */
-const escapeHtml = (text) => text.replace(/[&<>"']/g, (c) => ESCAPES[c]);
+export const escapeHtml = (text) => text.replace(/[&<>"']/g, (c) => ESCAPES[c]);
 
 // cost: time O(b), heap O(b), stack O(1)
 // vars: b = 블록 수
@@ -82,10 +84,10 @@ function strayMarks(lines, { code }, wrappers) {
 // cost: time O(n·c + b), heap O(n), stack O(1)
 // vars: n = 문서 줄 수, c = 열린 인용·목록 칸 수, b = 블록 수
 // basis: estimate
-// 블록마다 그 앞까지 열려 있는 사용자 `<details>` 깊이 { depth, broken, brokenAt }(docs/design/markdown.md 사용자 details). 이 도구가 만든 감싸기의 태그는 세지 않는다. 세는 규칙은 md-tags.js다.
+// 블록마다 그 앞까지 열려 있는 사용자 `<details>` 깊이 { depth, broken, brokenAt }(docs/design/markdown.md 사용자 details). 이 도구가 만든 감싸기와 장면 구간의 태그는 세지 않는다. 세는 규칙은 md-tags.js다.
 // broken은 짝 없는 `</details>`를 만났다는 뜻이고 brokenAt은 그 줄 번호(1부터)다.
-function userDetails(lines, found, wrappers) {
-  const skip = new Set(wrappers.flatMap((w, k) => (w ? [w.start + 3, found.blocks[k].close + 2] : [])));
+function userDetails(lines, found, { wrappers, tags }) {
+  const skip = new Set([...tags, ...wrappers.flatMap((w, k) => (w ? [w.start + 3, found.blocks[k].close + 2] : []))]);
   const { events } = found.quotes ? found : findBlocks(lines, true);
   const seen = detailsBefore(events, { blocks: new Set(found.blocks.map((block) => block.open)), skip });
   return found.blocks.map((block) => seen.get(block.open));
@@ -96,19 +98,20 @@ function userDetails(lines, found, wrappers) {
 // basis: estimate
 /**
  * 접기에 필요한 것을 문서에서 읽는다. mode는 'fold', 'unfold', 'keep'이다.
- * @returns { items, errors }. items는 블록마다 { block, wrapper?, user, id, ctx }, errors는 { line, message }다. 오류가 있으면 문서를 고치지 않는다.
+ * @returns { items, errors, regions }. items는 블록마다 { block, wrapper?, user, id, ctx }, errors는 { line, message }, regions는 시작 표식 줄에서 장면 구간으로 가는 Map(md-scenes.js)이다. 오류가 있으면 문서를 고치지 않는다.
  */
 export function inspectFold(lines, found, mode) {
   const ids = idsOf(found.blocks);
   const contexts = found.blocks.map(contextOf);
   const wrappers = found.blocks.map((block, k) => wrapperAround(lines, block, contexts[k]));
-  const users = userDetails(lines, found, wrappers);
-  const errors = strayMarks(lines, found, wrappers);
+  const scenes = scanRegions(lines, found);
+  const users = userDetails(lines, found, { wrappers, tags: scenes.tags });
+  const errors = [...strayMarks(lines, found, wrappers), ...scenes.errors];
   const items = found.blocks.map((block, k) => ({ block, wrapper: wrappers[k], user: users[k], id: ids[k], ctx: contexts[k] }));
   for (const { block, wrapper, user } of items) {
     if (mode === 'fold' && !wrapper && user.broken) errors.push({ line: block.open + 1, message: `cannot tell whether this block is inside a <details> written by hand: the </details> on line ${user.brokenAt} has no matching <details> before it. Nothing was changed; fix the tags, or run without --fold` });
   }
-  return { items, errors };
+  return { items, errors, regions: scenes.regions };
 }
 
 // cost: time O(1), heap O(1), stack O(1)
@@ -136,20 +139,23 @@ const summaryOf = (wrapper, title) => (title === undefined ? (wrapper?.summary ?
 
 // cost: time O(1), heap O(1), stack O(1)
 // basis: estimate
-// 블록 하나가 차지하는 줄 범위 { from, to }(그림과 감싸기 포함)와 블록 앞뒤에 새로 쓸 줄들 { before, after }.
-function planItem(lines, item, { mode, title, image, raw }) {
+// 블록 하나가 차지하는 줄 범위 { from, to }(그림, 감싸기, 장면 구간 포함)와 블록 앞뒤에 새로 쓸 줄들 { before, after }.
+function planItem(lines, item, { mode, title, image, scenes, raw, regions }) {
   const { block, wrapper, ctx, id } = item;
   const { wrap, blank } = ctx;
   const folded = wantsFold(item, mode);
   const head = [markLine(wrap, id), image, blank, `${wrap}<details>`, `${wrap}<summary>${summaryOf(wrapper, title)}</summary>`, blank];
   const tail = [blank, `${wrap}</details>`, markLine(wrap, id, true)];
+  const figureEnd = wrapper ? wrapper.end : block.close + oldImageSpan({ lines, raw }, block.close + 1, ctx);
+  const region = regions.get(figureEnd + 1);
   return {
     block,
     ctx,
     from: wrapper ? wrapper.start : block.open,
-    to: wrapper ? wrapper.end : block.close + oldImageSpan({ lines, raw }, block.close + 1, ctx),
+    to: region ? region.end : figureEnd,
+    region,
     before: folded ? head : [],
-    after: folded ? tail : [blank, image],
+    after: [...(folded ? tail : [blank, image]), ...regionLines(ctx, id, scenes)],
   };
 }
 
@@ -161,22 +167,27 @@ function planItem(lines, item, { mode, title, image, raw }) {
  * 이 도구가 만들었지만 블록이 없어진 이미지 줄(울타리 밖)은 지운다. 이미 맞으면 같은 내용이다(멱등).
  * 그림 줄 뒤에 글이 바로 이어지면 빈 줄을 하나 더 둔다.
  * @param doc { lines, ends } 줄 내용과 각 줄의 줄바꿈(마지막 줄은 '')
- * @param inspected inspectFold의 결과 items와 findBlocks의 raw(읽거나 바꾸지 않는 줄)와 quotes
- * @param options { mode, title, images }. images는 블록 순서대로 { alt, href }
+ * 블록에 붙지 않은 온전한 장면 구간(블록이 없어졌다)도 이미지 줄처럼 지운다.
+ * @param inspected inspectFold의 결과 items와 regions, findBlocks의 raw(읽거나 바꾸지 않는 줄)와 quotes
+ * @param options { mode, title, images }. images는 블록 순서대로 { alt, href, scenes }이고 scenes는 둘째 장면부터 { summary(이스케이프한 HTML), alt, href }다(없으면 장면 구간을 두지 않고 있던 구간은 걷는다)
  * @returns { text, end? }[]. end가 없는 줄은 새 줄이라 문서의 줄바꿈을 쓴다
  */
-export function layoutDocument({ lines, ends }, { items, raw, quotes }, options) {
+export function layoutDocument({ lines, ends }, { items, raw, quotes, regions }, options) {
   const orphan = (line) => isMarkedImage(quotes ? line.replace(/^(?:[ \t]*>[ \t]?)+/, '') : line);
   const plans = new Map(items.map((item, k) => {
-    const plan = planItem(lines, item, { ...options, raw, image: imageLine(item.ctx.wrap, options.images[k].alt, options.images[k].href) });
+    const { alt, href, scenes } = options.images[k];
+    const extra = scenes.map((scene) => ({ summary: scene.summary, image: imageLine(item.ctx.wrap, scene.alt, scene.href) }));
+    const plan = planItem(lines, item, { ...options, raw, regions, scenes: extra, image: imageLine(item.ctx.wrap, alt, href) });
     return [plan.from, plan];
   }));
+  const claimed = new Set([...plans.values()].flatMap(({ region }) => (region ? [region.start] : [])));
+  const dead = new Set([...regions.values()].filter(({ start }) => !claimed.has(start)).flatMap(({ start, end }) => Array.from({ length: end - start + 1 }, (_, k) => start + k)));
   const out = [];
   const keep = (i) => out.push({ text: lines[i], end: ends[i] });
   for (let i = 0; i < lines.length; i++) {
     const plan = plans.get(i);
     if (!plan) {
-      if (raw.has(i) || !orphan(lines[i])) keep(i);
+      if (!dead.has(i) && (raw.has(i) || !orphan(lines[i]))) keep(i);
       continue;
     }
     out.push(...plan.before.map((text) => ({ text })));
