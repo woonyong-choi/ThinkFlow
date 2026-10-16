@@ -143,7 +143,7 @@ function withCanonical(template) {
 // vars: p = 판 수, out = 만든 글자 수
 // basis: estimate
 /**
- * 그림 판 묶음 마크업. 판마다 구역(section)과 SVG 한 장이고, 판 상자가 viewBox다.
+ * 그림 판 묶음 마크업. 판마다 구역(section)과 SVG 한 장이고, 판이 그리는 영역(frame, 제목 포함)이 viewBox다.
  * 판의 표시 폭은 보기 폭에 대한 판 상자 폭 비율이고 모든 판이 같은 보기 폭으로 나눈다. 문서 안에서는 자연 크기를 유지하며 넘치는 가로 부분은 그림 영역에서 스크롤한다.
  * 판이 하나뿐인 그림은 둘레 여백을 걷은 보기 영역(data.tight)을 viewBox로 쓸 수 있도록 재생기가 맞춘다(player/play.js).
  * 보기 폭(--view-w)은 판 가운데 가장 넓은 것(content.width)이다. 묶음 폭은 이 자연 폭을 쓰고 구역보다 작은 그림은 가운데에 놓인다.
@@ -152,7 +152,7 @@ function withCanonical(template) {
 function panelsMarkup(content, title, defs) {
   const view = content.width;
   const panels = content.panels.map((panel, i) => {
-    const { box } = panel;
+    const box = panel.frame;
     const label = panel.label ?? (content.panels.length > 1 ? panel.view : undefined);
     const head = i === 0 ? `<title>${escapeXml(title)}</title>` : '';
     const name = i === 0 || !label ? '' : ` aria-label="${escapeXml(plainText(label))}"`;
