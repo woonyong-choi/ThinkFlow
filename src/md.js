@@ -61,8 +61,8 @@ function addBlock(found, lines, fence) {
  *   errors는 { line, message }(1부터 센 줄), code는 코드로 읽는 줄 번호 집합(울타리 줄과 들여쓴 코드), raw는 거기에 HTML 블록 줄을 더한 집합(이 도구가 읽거나 바꾸지 않는 줄), events는 사용자 details를 세는 사건이다
  */
 export function findBlocks(lines, quotes = false) {
-  const { fences, code, raw, events } = scanDocument(lines, quotes);
-  const found = { blocks: [], errors: [], code, raw, events, quotes };
+  const { fences, code, raw, opaque, events } = scanDocument(lines, quotes);
+  const found = { blocks: [], errors: [], code, raw, opaque, events, quotes };
   for (const fence of fences) addBlock(found, lines, fence);
   return found;
 }
