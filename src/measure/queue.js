@@ -25,9 +25,11 @@ export function sizeQueue(node) {
 
 // cost: time O(1), heap O(1), stack O(1)
 // basis: estimate
+// 칸 줄 배치. 선호 폭에 드는 최대 열 수로 줄 수를 정한 뒤, 줄마다 칸 수가 고르게 열 수를 다시 나눈다(10칸은 8+2가 아니라 5+5). 마지막 줄이 짧으면 가운데에 둔다(queueSlots).
 function slotLayout(slots) {
-  const columns = Math.min(slots, Math.max(1, Math.floor((INNER_MAX + SLOT['slot-gap']) / (SLOT['slot-width'] + SLOT['slot-gap']))));
-  const rows = Math.ceil(slots / columns);
+  const most = Math.min(slots, Math.max(1, Math.floor((INNER_MAX + SLOT['slot-gap']) / (SLOT['slot-width'] + SLOT['slot-gap']))));
+  const rows = Math.ceil(slots / most);
+  const columns = Math.ceil(slots / rows);
   return { columns, w: columns * SLOT['slot-width'] + (columns - 1) * SLOT['slot-gap'], h: rows * SLOT['slot-height'] + (rows - 1) * SLOT['slot-gap'] };
 }
 
@@ -39,7 +41,12 @@ export function queueSlots(it) {
   const slots = slotLayout(it.slots);
   const left = it.x + (it.w - slots.w) / 2;
   const top = it.y + it.h - PAD.y - slots.h;
-  return Array.from({ length: it.slots }, (_, k) => ({ x: left + k % slots.columns * (SLOT['slot-width'] + SLOT['slot-gap']), y: top + Math.floor(k / slots.columns) * (SLOT['slot-height'] + SLOT['slot-gap']), w: SLOT['slot-width'], h: SLOT['slot-height'] }));
+  const pitch = SLOT['slot-width'] + SLOT['slot-gap'];
+  const lastRow = Math.floor((it.slots - 1) / slots.columns);
+  const lastCount = it.slots - lastRow * slots.columns;
+  // 마지막 줄의 빈 열 절반만큼 오른쪽으로 옮겨 짧은 줄이 가운데에 놓인다.
+  const indent = (k) => (Math.floor(k / slots.columns) === lastRow ? ((slots.columns - lastCount) * pitch) / 2 : 0);
+  return Array.from({ length: it.slots }, (_, k) => ({ x: left + indent(k) + k % slots.columns * pitch, y: top + Math.floor(k / slots.columns) * (SLOT['slot-height'] + SLOT['slot-gap']), w: SLOT['slot-width'], h: SLOT['slot-height'] }));
 }
 
 // cost: time O(1), heap O(1), stack O(1)
