@@ -20,7 +20,7 @@
   --color-state-active-text: var(--color-category-blue-light-ink);
   --color-ui-focus: var(--color-action-link);
   --color-data-main: var(--color-category-blue-light-border);
-  --color-data-heat-low: var(--color-category-blue-light-tint-3);
+  --color-data-heat-low: var(--primitive-figure-heat-low);
   --color-data-heat-high: var(--color-category-blue-light-border);
   --color-data-heat-ink: var(--color-gray-1000);
   --color-data-heat-ink-on: var(--color-gray-0);
@@ -80,6 +80,8 @@
   --primitive-figure-dark-bg: #26272b;
   --primitive-figure-dark-node: #303136;
   --primitive-figure-dark-edge: #50535b;
+  --primitive-figure-heat-low: #eaf3c0;
+  --primitive-figure-dark-heat-low: #1f3b3e;
   --primitive-figure-dark-separator: #454850;
   --primitive-figure-dark-hover: #343e50;
   --primitive-figure-dark-selection: #274174;
@@ -114,7 +116,7 @@
   --color-state-active: var(--color-category-blue-dark-border);
   --color-state-active-text: var(--color-category-blue-dark-ink);
   --color-data-main: var(--color-category-blue-dark-border);
-  --color-data-heat-low: var(--color-category-blue-dark-tint-3);
+  --color-data-heat-low: var(--primitive-figure-dark-heat-low);
   --color-data-heat-high: var(--color-category-blue-anchor);
   --color-data-heat-ink: var(--color-gray-0);
   --color-data-grid: var(--primitive-figure-dark-edge);
@@ -142,7 +144,7 @@
   --color-state-active: var(--color-category-blue-light-border);
   --color-state-active-text: var(--color-category-blue-light-ink);
   --color-data-main: var(--color-category-blue-light-border);
-  --color-data-heat-low: var(--color-category-blue-light-tint-3);
+  --color-data-heat-low: var(--primitive-figure-heat-low);
   --color-data-heat-high: var(--color-category-blue-light-border);
   --color-data-heat-ink: var(--color-gray-1000);
   --color-data-grid: var(--color-gray-212);
@@ -726,9 +728,9 @@
   text-anchor: start;
 }
 
-/* 칸 색은 변수로 계산해 다크 모드 heat-low를 따라간다. --s는 칸 강도(0~1)다. 보간은 OKLab이고 fill 속성의 대체 색(chart/oklab.js)과 같다. */
+/* 칸 색은 변수로 계산해 다크 모드 heat-low를 따라간다. --s는 칸 강도(0~1)다. 보간은 OKLCH라 두 끝 색 사이의 색상환을 따라 돌아(라이트: 연노랑 → 민트 → 청록 → 파랑) 두 색 그라데이션으로 읽힌다. fill 속성의 대체 색(ThinkFlow chart/oklab.js)도 같은 OKLCH 보간이다. */
 .fl .chart-heat {
-  fill: color-mix(in oklab, var(--color-data-heat-high) calc(var(--s) * 100%), var(--color-data-heat-low));
+  fill: color-mix(in oklch, var(--color-data-heat-high) calc(var(--s) * 100%), var(--color-data-heat-low));
 }
 
 /* 누적 조각 안의 계열 번호 키. 글자색과 가장자리 색은 조각의 범주 값을 속성으로 받는다. */
@@ -945,6 +947,7 @@
 <text x="34" y="71" class="chart-legend">캐시 있음</text>
 <circle cx="97.3" cy="69" r="5" fill="var(--color-data-category-2)" stroke="var(--color-data-category-outline-2)" stroke-width="1.5" style="--chart-boundary: var(--color-data-category-outline-2)"/>
 <text x="109.3" y="71" class="chart-legend">캐시 없음</text>
+<line x1="322.3" x2="322.3" y1="95" y2="263" class="chart-grid"/><line x1="488.6" x2="488.6" y1="95" y2="263" class="chart-grid"/><line x1="654.9" x2="654.9" y1="95" y2="263" class="chart-grid"/>
 <g class="cr-0 ink"><text x="144" text-anchor="end" y="119.7" class="chart-label">GET /products</text></g><g class="cr-0"><g class="cs-0"><circle cx="435.6" cy="115" r="5" fill="var(--color-data-category-2)" stroke="var(--color-data-category-outline-2)" stroke-width="1.5" style="--chart-boundary: var(--color-data-category-outline-2)" class="pop"/></g><g class="cs-1"><line x1="428.6" y1="115" x2="267.9" y2="115" class="chart-arrow arrow-main pop" marker-end="url(#fl-arrow-main)"/><circle cx="259.6" cy="115" r="5" fill="var(--color-data-category-outline-1)" class="chart-after pop"/></g></g><g class="cr-0 ink"><g class="cs-0"><rect x="445.6" y="108.5" width="21.4" height="13" class="chart-text-bg late"/><text x="446.6" y="119" class="chart-value first late start">480</text></g><g class="cs-1"><rect x="234.1" y="108.5" width="15.5" height="13" class="chart-text-bg late"/><text x="248.6" y="119" class="chart-value second late end">42</text><text x="664" y="119.7" class="chart-ratio late">−91%</text></g></g>
 <g class="cr-1 ink"><text x="144" text-anchor="end" y="159.7" class="chart-label">GET /orders</text></g><g class="cr-1"><g class="cs-0"><circle cx="457.5" cy="155" r="5" fill="var(--color-data-category-2)" stroke="var(--color-data-category-outline-2)" stroke-width="1.5" style="--chart-boundary: var(--color-data-category-outline-2)" class="pop"/></g><g class="cs-1"><line x1="450.5" y1="155" x2="343.7" y2="155" class="chart-arrow arrow-main pop" marker-end="url(#fl-arrow-main)"/><circle cx="335.5" cy="155" r="5" fill="var(--color-data-category-outline-1)" class="chart-after pop"/></g></g><g class="cr-1 ink"><g class="cs-0"><rect x="467.5" y="148.5" width="21.4" height="13" class="chart-text-bg late"/><text x="468.5" y="159" class="chart-value first late start">650</text></g><g class="cs-1"><rect x="303.2" y="148.5" width="22.3" height="13" class="chart-text-bg late"/><text x="324.5" y="159" class="chart-value second late end">120</text><text x="664" y="159.7" class="chart-ratio late">−82%</text></g></g>
 <g class="cr-2 ink"><text x="144" text-anchor="end" y="199.7" class="chart-label">GET /search</text></g><g class="cr-2"><g class="cs-0"><circle cx="531" cy="195" r="5" fill="var(--color-data-category-2)" stroke="var(--color-data-category-outline-2)" stroke-width="1.5" style="--chart-boundary: var(--color-data-category-outline-2)" class="pop"/></g><g class="cs-1"><line x1="524" y1="195" x2="418.9" y2="195" class="chart-arrow arrow-main pop" marker-end="url(#fl-arrow-main)"/><circle cx="410.7" cy="195" r="5" fill="var(--color-data-category-outline-1)" class="chart-after pop"/></g></g><g class="cr-2 ink"><g class="cs-0"><rect x="541" y="188.5" width="22.8" height="13" class="chart-text-bg late"/><text x="542" y="199" class="chart-value first late start">1.8k</text></g><g class="cs-1"><rect x="378.4" y="188.5" width="22.3" height="13" class="chart-text-bg late"/><text x="399.7" y="199" class="chart-value second late end">340</text><text x="664" y="199.7" class="chart-ratio late">−81%</text></g></g>

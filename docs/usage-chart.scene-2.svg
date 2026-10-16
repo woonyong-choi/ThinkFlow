@@ -21,7 +21,7 @@
   --color-state-active-text: var(--color-category-blue-light-ink);
   --color-ui-focus: var(--color-action-link);
   --color-data-main: var(--color-category-blue-light-border);
-  --color-data-heat-low: var(--color-category-blue-light-tint-3);
+  --color-data-heat-low: var(--primitive-figure-heat-low);
   --color-data-heat-high: var(--color-category-blue-light-border);
   --color-data-heat-ink: var(--color-gray-1000);
   --color-data-heat-ink-on: var(--color-gray-0);
@@ -77,6 +77,8 @@
   --primitive-figure-dark-bg: #26272b;
   --primitive-figure-dark-node: #303136;
   --primitive-figure-dark-edge: #50535b;
+  --primitive-figure-heat-low: #eaf3c0;
+  --primitive-figure-dark-heat-low: #1f3b3e;
   --primitive-figure-dark-separator: #454850;
   --primitive-figure-dark-hover: #343e50;
   --primitive-figure-dark-selection: #274174;
@@ -112,7 +114,7 @@
   --color-state-active: var(--color-category-blue-dark-border);
   --color-state-active-text: var(--color-category-blue-dark-ink);
   --color-data-main: var(--color-category-blue-dark-border);
-  --color-data-heat-low: var(--color-category-blue-dark-tint-3);
+  --color-data-heat-low: var(--primitive-figure-dark-heat-low);
   --color-data-heat-high: var(--color-category-blue-anchor);
   --color-data-heat-ink: var(--color-gray-0);
   --color-data-grid: var(--primitive-figure-dark-edge);
@@ -139,7 +141,7 @@
   --color-state-active: var(--color-category-blue-dark-border);
   --color-state-active-text: var(--color-category-blue-dark-ink);
   --color-data-main: var(--color-category-blue-dark-border);
-  --color-data-heat-low: var(--color-category-blue-dark-tint-3);
+  --color-data-heat-low: var(--primitive-figure-dark-heat-low);
   --color-data-heat-high: var(--color-category-blue-anchor);
   --color-data-heat-ink: var(--color-gray-0);
   --color-data-grid: var(--primitive-figure-dark-edge);
@@ -165,7 +167,7 @@
   --color-state-active: var(--color-category-blue-light-border);
   --color-state-active-text: var(--color-category-blue-light-ink);
   --color-data-main: var(--color-category-blue-light-border);
-  --color-data-heat-low: var(--color-category-blue-light-tint-3);
+  --color-data-heat-low: var(--primitive-figure-heat-low);
   --color-data-heat-high: var(--color-category-blue-light-border);
   --color-data-heat-ink: var(--color-gray-1000);
   --color-data-grid: var(--color-gray-212);
@@ -747,9 +749,9 @@
   text-anchor: start;
 }
 
-/* 칸 색은 변수로 계산해 다크 모드 heat-low를 따라간다. --s는 칸 강도(0~1)다. 보간은 OKLab이고 fill 속성의 대체 색(chart/oklab.js)과 같다. */
+/* 칸 색은 변수로 계산해 다크 모드 heat-low를 따라간다. --s는 칸 강도(0~1)다. 보간은 OKLCH라 두 끝 색 사이의 색상환을 따라 돌아(라이트: 연노랑 → 민트 → 청록 → 파랑) 두 색 그라데이션으로 읽힌다. fill 속성의 대체 색(ThinkFlow chart/oklab.js)도 같은 OKLCH 보간이다. */
 .fl .chart-heat {
-  fill: color-mix(in oklab, var(--color-data-heat-high) calc(var(--s) * 100%), var(--color-data-heat-low));
+  fill: color-mix(in oklch, var(--color-data-heat-high) calc(var(--s) * 100%), var(--color-data-heat-low));
 }
 
 /* 누적 조각 안의 계열 번호 키. 글자색과 가장자리 색은 조각의 범주 값을 속성으로 받는다. */
@@ -1000,6 +1002,7 @@
 <text x="34" y="71" class="chart-legend">처리</text>
 <rect x="70.4" y="63" width="12" height="12" rx="4" fill="var(--color-data-category-2)"/>
 <text x="88.4" y="71" class="chart-legend">대기</text>
+<line x1="255.7" x2="255.7" y1="95" y2="179" class="chart-grid"/><line x1="355.3" x2="355.3" y1="95" y2="179" class="chart-grid"/><line x1="455" x2="455" y1="95" y2="179" class="chart-grid"/><line x1="554.7" x2="554.7" y1="95" y2="179" class="chart-grid"/><line x1="654.3" x2="654.3" y1="95" y2="179" class="chart-grid"/>
 <g class="cr-0 ink"><text x="144" text-anchor="end" y="114.7" class="chart-label">요청 A</text></g>
 <g class="cr-0"><g class="cs-0"><rect x="156" y="95" width="398.7" height="12" rx="4" fill="var(--color-data-category-1)" class="grow"/></g></g>
 <g class="cr-0"><g class="cs-1"><rect x="156" y="113" width="99.7" height="12" rx="4" fill="var(--color-data-category-2)" class="grow"/></g></g>
@@ -1026,6 +1029,7 @@
 <text x="34" y="71" class="chart-legend">처리</text>
 <rect x="70.4" y="63" width="12" height="12" rx="4" fill="var(--color-data-category-2)"/>
 <text x="88.4" y="71" class="chart-legend">대기</text>
+<line x1="255.7" x2="255.7" y1="95" y2="179" class="chart-grid"/><line x1="355.3" x2="355.3" y1="95" y2="179" class="chart-grid"/><line x1="455" x2="455" y1="95" y2="179" class="chart-grid"/><line x1="554.7" x2="554.7" y1="95" y2="179" class="chart-grid"/><line x1="654.3" x2="654.3" y1="95" y2="179" class="chart-grid"/>
 <g class="cr-0 ink"><text x="144" text-anchor="end" y="114.7" class="chart-label">요청 A</text></g>
 <g class="cr-0"><g class="cs-0"><rect x="156" y="95" width="398.7" height="12" rx="4" fill="var(--color-data-category-1)" class="grow"/></g></g>
 <g class="cr-0"><g class="cs-1"><rect x="156" y="113" width="99.7" height="12" rx="4" fill="var(--color-data-category-2)" class="grow"/></g></g>

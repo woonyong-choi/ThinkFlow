@@ -21,7 +21,7 @@
   --color-state-active-text: var(--color-category-blue-light-ink);
   --color-ui-focus: var(--color-action-link);
   --color-data-main: var(--color-category-blue-light-border);
-  --color-data-heat-low: var(--color-category-blue-light-tint-3);
+  --color-data-heat-low: var(--primitive-figure-heat-low);
   --color-data-heat-high: var(--color-category-blue-light-border);
   --color-data-heat-ink: var(--color-gray-1000);
   --color-data-heat-ink-on: var(--color-gray-0);
@@ -88,6 +88,8 @@
   --primitive-figure-dark-bg: #26272b;
   --primitive-figure-dark-node: #303136;
   --primitive-figure-dark-edge: #50535b;
+  --primitive-figure-heat-low: #eaf3c0;
+  --primitive-figure-dark-heat-low: #1f3b3e;
   --primitive-figure-dark-separator: #454850;
   --primitive-figure-dark-hover: #343e50;
   --primitive-figure-dark-selection: #274174;
@@ -123,7 +125,7 @@
   --color-state-active: var(--color-category-blue-dark-border);
   --color-state-active-text: var(--color-category-blue-dark-ink);
   --color-data-main: var(--color-category-blue-dark-border);
-  --color-data-heat-low: var(--color-category-blue-dark-tint-3);
+  --color-data-heat-low: var(--primitive-figure-dark-heat-low);
   --color-data-heat-high: var(--color-category-blue-anchor);
   --color-data-heat-ink: var(--color-gray-0);
   --color-data-grid: var(--primitive-figure-dark-edge);
@@ -153,7 +155,7 @@
   --color-state-active: var(--color-category-blue-dark-border);
   --color-state-active-text: var(--color-category-blue-dark-ink);
   --color-data-main: var(--color-category-blue-dark-border);
-  --color-data-heat-low: var(--color-category-blue-dark-tint-3);
+  --color-data-heat-low: var(--primitive-figure-dark-heat-low);
   --color-data-heat-high: var(--color-category-blue-anchor);
   --color-data-heat-ink: var(--color-gray-0);
   --color-data-grid: var(--primitive-figure-dark-edge);
@@ -182,7 +184,7 @@
   --color-state-active: var(--color-category-blue-light-border);
   --color-state-active-text: var(--color-category-blue-light-ink);
   --color-data-main: var(--color-category-blue-light-border);
-  --color-data-heat-low: var(--color-category-blue-light-tint-3);
+  --color-data-heat-low: var(--primitive-figure-heat-low);
   --color-data-heat-high: var(--color-category-blue-light-border);
   --color-data-heat-ink: var(--color-gray-1000);
   --color-data-grid: var(--color-gray-212);
@@ -767,9 +769,9 @@
   text-anchor: start;
 }
 
-/* 칸 색은 변수로 계산해 다크 모드 heat-low를 따라간다. --s는 칸 강도(0~1)다. 보간은 OKLab이고 fill 속성의 대체 색(chart/oklab.js)과 같다. */
+/* 칸 색은 변수로 계산해 다크 모드 heat-low를 따라간다. --s는 칸 강도(0~1)다. 보간은 OKLCH라 두 끝 색 사이의 색상환을 따라 돌아(라이트: 연노랑 → 민트 → 청록 → 파랑) 두 색 그라데이션으로 읽힌다. fill 속성의 대체 색(ThinkFlow chart/oklab.js)도 같은 OKLCH 보간이다. */
 .fl .chart-heat {
-  fill: color-mix(in oklab, var(--color-data-heat-high) calc(var(--s) * 100%), var(--color-data-heat-low));
+  fill: color-mix(in oklch, var(--color-data-heat-high) calc(var(--s) * 100%), var(--color-data-heat-low));
 }
 
 /* 누적 조각 안의 계열 번호 키. 글자색과 가장자리 색은 조각의 범주 값을 속성으로 받는다. */
@@ -1016,6 +1018,7 @@
 <text x="16" y="53.7" class="sub">예시 데이터. 처리 중인 주문 수</text>
 <rect x="16" y="63" width="12" height="12" rx="4" fill="var(--color-data-category-1)"/>
 <text x="34" y="71" class="chart-legend">진행 중</text>
+<line x1="101.9" x2="101.9" y1="95" y2="146.5" class="chart-grid"/><line x1="184.6" x2="184.6" y1="95" y2="146.5" class="chart-grid"/><line x1="267.2" x2="267.2" y1="95" y2="146.5" class="chart-grid"/>
 <g class="cr-0 ink"><text x="16" y="106.2" class="chart-label">현재</text></g>
 <g class="cr-0"><g class="cs-0"><rect x="19.2" y="126.5" width="2" height="12" rx="0" fill="var(--color-data-category-1)" class="grow" data-mark="orders:0" data-raw="0" data-effect="var(--color-data-category-effect-1)"><animate attributeName="width" dur="6.15s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.05717;0.18814;0.30107;0.3252;0.43204;0.44715;0.54497;0.56911;0.67594;0.69106;0.78888;0.81301;0.91984;0.93496" values="2;82.7;165.3;248;165.3;248;165.3;248;165.3;248;165.3;248;165.3;248;165.3"/><animate attributeName="rx" dur="6.15s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.05717" values="0;4"/></rect><rect x="19.2" y="126.5" width="2" height="12" rx="0" class="fl-mark-pulse grow" style="--pulse-effect:var(--color-data-category-effect-1)" opacity="0" pointer-events="none" aria-hidden="true" data-pulse-of="orders:0"><animate attributeName="width" dur="6.15s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.05717;0.18814;0.30107;0.3252;0.43204;0.44715;0.54497;0.56911;0.67594;0.69106;0.78888;0.81301;0.91984;0.93496" values="2;82.7;165.3;248;165.3;248;165.3;248;165.3;248;165.3;248;165.3;248;165.3"/><animate attributeName="rx" dur="6.15s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.05717" values="0;4"/><animate attributeName="opacity" dur="6.15s" repeatCount="indefinite" calcMode="linear" keyTimes="0;0.05717;0.07018;0.08318;0.12221;0.18814;0.20114;0.21415;0.25318;0.30107;0.31408;0.3252;0.32709;0.33543;0.33821;0.35122;0.36611;0.39024;0.43204;0.44505;0.44715;0.45806;0.45964;0.46016;0.47317;0.49708;0.5122;0.54497;0.55798;0.56911;0.57099;0.57933;0.58211;0.59512;0.61001;0.63415;0.67594;0.68895;0.69106;0.70196;0.70354;0.70407;0.71707;0.74098;0.7561;0.78888;0.80188;0.81301;0.81489;0.82324;0.82602;0.83902;0.85392;0.87805;0.91984;0.93285;0.93496;0.94586;0.94744;0.94797;0.96098;0.98488;1" values="0;0;1;1;0;0;1;1;0;0;1;1;1;0.7862;1;1;0.61839;0;0;1;1;1;0.9595;1;1;0.38733;0;0;1;1;1;0.7862;1;1;0.61839;0;0;1;1;1;0.9595;1;1;0.38733;0;0;1;1;1;0.7862;1;1;0.61839;0;0;1;1;1;0.9595;1;1;0.38733;0"/></rect></g></g>
 
@@ -1046,6 +1049,7 @@
 <text x="16" y="53.7" class="sub">예시 데이터. 처리 중인 주문 수</text>
 <rect x="16" y="63" width="12" height="12" rx="4" fill="var(--color-data-category-1)"/>
 <text x="34" y="71" class="chart-legend">진행 중</text>
+<line x1="101.9" x2="101.9" y1="95" y2="146.5" class="chart-grid"/><line x1="184.6" x2="184.6" y1="95" y2="146.5" class="chart-grid"/><line x1="267.2" x2="267.2" y1="95" y2="146.5" class="chart-grid"/>
 <g class="cr-0 ink"><text x="16" y="106.2" class="chart-label">현재</text></g>
 <g class="cr-0"><g class="cs-0"><rect x="19.2" y="126.5" width="165.3" height="12" rx="4" fill="var(--color-data-category-1)" class="grow" data-mark="orders:0" data-raw="0" data-effect="var(--color-data-category-effect-1)"></rect></g></g>
 
