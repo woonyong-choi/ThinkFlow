@@ -9,11 +9,12 @@ import { seriesBoundary, seriesOutline } from '../src/chart/metrics.js';
 import { build, thinkflow, toHtml, toSvg } from './support.js';
 
 test('bright_series_boundary_supplies_color_without_overriding_shared_stroke', () => {
-  const chart = { series: [{ role: 'main' }, {}, { role: 'reference' }] };
+  // 넷째 범주(노랑)가 면 위 대비가 낮은 밝은 계열이다(범주 순서 blue, orange, cyan, yellow, ...).
+  const chart = { series: [{ role: 'main' }, {}, {}, {}, { role: 'reference' }] };
   assert.equal(seriesBoundary(chart, 0), '');
-  assert.equal(seriesBoundary(chart, 2), '');
-  const boundary = seriesBoundary(chart, 1);
-  assert.ok(boundary.includes(`--chart-boundary: ${seriesOutline(chart, 1)}`));
+  assert.equal(seriesBoundary(chart, 4), '');
+  const boundary = seriesBoundary(chart, 3);
+  assert.ok(boundary.includes(`--chart-boundary: ${seriesOutline(chart, 3)}`));
   assert.doesNotMatch(boundary, /style="stroke:/);
 });
 

@@ -81,7 +81,8 @@ function arrange(chart, grouped) {
 function labelEntries(chart, { parts, grouped, isUndefined }) {
   const format = valueFormat(chart.rows.map((row) => row.values.value), chart.decimals);
   const percent = valueFormat([], chart.decimals ?? SHARE_PLACES);
-  const detailOf = (value, fraction) => (isUndefined ? format(value) : `${format(value)} · ${percent(fraction * 100)}%`);
+  // 바깥 이름 옆에는 비율만 적는다. 원래 값은 조각의 툴팁·aria와 가운데 합계가 맡아, 이름 줄이 짧고 조각마다 숫자가 둘씩 붙지 않는다. 비율이 정해지지 않는 원(합 0)만 값을 적는다.
+  const detailOf = (value, fraction) => (isUndefined ? format(value) : `${percent(fraction * 100)}%`);
   const entries = chart.rows.flatMap((row, k) => (grouped.has(k) ? [] : [{ key: k, name: row.label, detail: detailOf(parts[k].value, parts[k].fraction), raw: parts[k].value, paint: memberPaint(k, grouped, categoryPaint), start: parts[k].start, end: parts[k].end, hidden: isUndefined || !(parts[k].value > 0) }]));
   if (grouped.size) {
     const members = [...grouped].map((k) => parts[k]);
@@ -191,9 +192,12 @@ export function drawParts(figure, top) {
     // 값에 묶인 조각은 프레임마다 값이 달라지므로 `<title>`(처음 값으로 굳는 툴팁)을 두지 않는다. 현재 값은 보이는 글과 재생기가 바꾸는 aria-label이 읽는다.
     const attrs = markAttrs(chart, markId(chart, 0, index), { raw: part.value, paint });
     // 조각 사이 틈은 차트가 놓인 면의 색(currentColor) 가장자리로 낸다. 조각 묶음 `cr-k`는 밝히지 않은 행으로 함께 흐려진다.
-    const slice = `<path d="${d}" fill="${paint.fill}" stroke="currentColor" stroke-width="${values["border-width"].tag}" stroke-linejoin="round" fill-rule="evenodd" class="chart-part dot" data-at="${r(part.start)}" data-row="${index}" data-fraction="${part.fraction}" role="img" aria-label="${label}"${attrs}>${chart.markIds ? '' : `<title>${label}</title>`}</path>`;
+    // 기타로 묶인 조각끼리는 조각 색 가장자리라 이음매 없이 한 조각으로 보이고, 묶음 둘레의 틈은 아래 groupOutline 하나가 낸다.
+    const edge = grouped.has(index) ? paint.fill : 'currentColor';
+    const slice = `<path d="${d}" fill="${paint.fill}" stroke="${edge}" stroke-width="${values["border-width"].tag}" stroke-linejoin="round" fill-rule="evenodd" class="chart-part dot" data-at="${r(part.start)}" data-row="${index}" data-fraction="${part.fraction}" role="img" aria-label="${label}"${attrs}>${chart.markIds ? '' : `<title>${label}</title>`}</path>`;
     svg.push(`<g class="cr-${index}">${slice}${patternPath(paint, d, markAttrs(chart, markId(chart, 0, index, '.p')))}</g>`);
   });
+  svg.push(groupOutline(parts, grouped, geometry));
   let bottom = top + plotH;
   if (layout.isOutside) {
     const span = { top, bottom: top + plotH };
@@ -212,6 +216,17 @@ export function drawParts(figure, top) {
     bottom = y;
   }
   return { svg: svg.join(''), bottom, rowKeys: chart.rows.map((row) => row.label), dotAts: [...new Set(parts.filter((part) => part.value > 0).map((part) => Number(r(part.start))))] };
+}
+
+// cost: time O(g), heap O(1), stack O(1)
+// vars: g = 묶인 항목 수
+// basis: estimate
+// 기타 묶음 전체의 둘레. 이웃 조각과의 틈만 차트 면 색으로 다시 그어, 묶인 조각 색 가장자리가 이웃 조각의 틈을 덮지 않게 한다. 묶음이 없거나 길이가 0이면 그리지 않는다.
+function groupOutline(parts, grouped, geometry) {
+  const members = [...grouped].map((k) => parts[k]).filter((part) => part.end > part.start);
+  if (!members.length) return '';
+  const run = { start: Math.min(...members.map((p) => p.start)), end: Math.max(...members.map((p) => p.end)) };
+  return `<path d="${sectorPath(run, geometry)}" fill="none" stroke="currentColor" stroke-width="${values["border-width"].tag}" stroke-linejoin="round" class="chart-part-edge" aria-hidden="true"/>`;
 }
 
 // cost: time O(1), heap O(1), stack O(1)
