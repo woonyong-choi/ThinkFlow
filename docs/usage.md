@@ -540,7 +540,7 @@ TypeScript에서는 `import type { BuildOptions, BuiltFigure, FigureDiagnostic, 
 |---|---|
 | 첫 줄에서 문법 오류 | 첫 의미 줄이 숫자나 옵션 없는 `thinkflow`인지 |
 | 이름을 찾지 못함 | 표시 이름 대신 식별자를 썼는지, 철자와 대소문자. 진단의 `Did you mean`이 가까운 이름을 알립니다 |
-| Mermaid·D2 꼴(`A[글]`, `a --> b`, `a: 글`)을 씀 | 진단이 같은 뜻의 ThinkFlow 꼴을 알립니다([흔한 실수](design/figure-syntax.md#흔한-실수)) |
+| Mermaid·D2 꼴(`A[글]`, `a --> b`, `a: 글`)을 씀 | 진단이 같은 뜻의 ThinkFlow 꼴을 알립니다([시작 선언과 없앤 형태](design/figure-syntax.md#시작-선언과-없앤-형태)) |
 | 이동 경로를 찾지 못함 | 그래프에서는 연결을 먼저 선언했는지, 순서 보기에는 참여자가 있는지 |
 | 움직이지 않음 | 장면이 `static`인지, SVG가 첫 정지 장면인지, 움직임 줄이기가 켜졌는지 |
 | 이동 글이 겹침 | 같은 글을 연결과 이동 양쪽에 썼는지 |
