@@ -60,3 +60,15 @@ scene "S" mode=once for=30s
   const explicit = await buildFigure(`${figure} time=1s`);
   assert.equal(explicit.timeline.segs[0].hops[0].ms, 1000);
 });
+
+test('a long chain track with tens of thousands of timed marks builds without exhausting the call stack', async () => {
+  const ids = Array.from({ length: 100 }, (_, i) => `n${i}`);
+  const chain = `thinkflow
+${ids.map((id) => `box ${id} "${id}"`).join('\n')}
+${ids.slice(1).map((id, i) => `${ids[i]} -> ${id}`).join('\n')}
+scene "s" mode=static for=8s
+  track ${ids.join(' -> ')} every=10ms time=1ms
+`;
+  const result = await buildFigure(chain);
+  assert.ok(result.timeline.segs[0].pulses.length > 50000);
+});

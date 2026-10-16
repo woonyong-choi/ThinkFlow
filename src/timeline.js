@@ -103,7 +103,7 @@ export function buildTimeline(figure, deps) {
   };
   const segs = figure.steps.flatMap((step, si) => stepSegs({ step, si }, run, deps));
   // 장면이 없는 문서는 선언한 값의 처음 모습을 값 줄로 갖는다. 장면이 아니라 장면 번호(si)가 없고 시간도 흐르지 않는다(길이 0, 변화 없음).
-  if (!figure.steps.length && figure.values.length) run.values.push(...declaredRows(figure, deps.cards));
+  if (!figure.steps.length && figure.values.length) for (const row of declaredRows(figure, deps.cards)) run.values.push(row);
   const { waits, skips, stalls, events, reserves } = run.conditions ?? {};
   const extra = { ...(run.tracks.length ? { tracks: run.tracks } : {}), ...(run.values.length ? { values: run.values } : {}), ...(run.conditions ? { waits, skips, stalls, events, ...(reserves ? { reserves } : {}) } : {}) };
   return { segs, total: run.t, steps: figure.steps.map(stepInfo), initialCards: deps.cards.initial, growMs, rowPulses: rowPulses(segs, deps.cards.contents), ...extra };
@@ -122,7 +122,7 @@ function stepSegs({ step, si }, run, deps) {
   const first = segs[0];
   const rows = engine ? engine.finish(segs.at(-1).t1) : valueRows(figure, { moves, span: { si, t0: first.t0, t1: segs.at(-1).t1 }, start: startOf(step, run), writers: run.writers });
   if (run.isKept) run.carry = new Map(rows.map((row) => [row.id, row.changes.at(-1)?.[1] ?? row.initial]));
-  run.values.push(...rows.map((row) => ({ ...row, card: first.cards[row.node] ?? first.cardsBefore[row.node] })));
+  for (const row of rows) run.values.push({ ...row, card: first.cards[row.node] ?? first.cardsBefore[row.node] });
   return segs;
 }
 

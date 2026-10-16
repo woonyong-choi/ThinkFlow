@@ -1,4 +1,5 @@
 // 덤벨 차트: 첫 계열 값(compare 노란 점)에서 둘째 계열 값(main 채운 점)으로 이은 한 줄과 오른쪽 바뀐 비율.
+import { maxOf, minOf } from '../extremes.js';
 import { values } from '@woonyong-choi/design-tokens/tokens.js';
 import { STYLE } from '../measure/texts.js';
 import { CHART_ARROW, headReach, roleArrow } from '../draw/arrow.js';
@@ -48,7 +49,7 @@ function dumbbellScale(chart) {
   const [first, second] = chart.series;
   const all = chart.rows.flatMap((row) => [first, second].flatMap((s) => [row.values[s.id], row.values[`${s.id}.low`], row.values[`${s.id}.high`]])).filter((v) => typeof v === 'number');
   const ruled = [...all, ...chart.rules.map((x) => x.value)];
-  return rowValueScale(chart, { kind: chart.scale, min: Math.min(...ruled), max: Math.max(...ruled), reaches: (unit) => chart.layout ? all.map((value) => ({ value, extra: DOT })) : dumbbellReach(chart, unit) });
+  return rowValueScale(chart, { kind: chart.scale, min: minOf(ruled), max: maxOf(ruled), reaches: (unit) => chart.layout ? all.map((value) => ({ value, extra: DOT })) : dumbbellReach(chart, unit) });
 }
 
 // cost: time O(1), heap O(1), stack O(1)
@@ -118,7 +119,7 @@ export function drawDumbbells(figure, top) {
   const formats = seriesFormats(chart);
   const names = rowLabelLayout(chart);
   const summaries = chart.layout ? compactSummaries(chart, formats) : undefined;
-  const summaryH = summaries ? Math.max(...summaries.map((lines) => lines.at(-1).dy)) + TEXT['13'] : 0;
+  const summaryH = summaries ? maxOf(summaries.map((lines) => lines.at(-1).dy)) + TEXT['13'] : 0;
   const pitch = chart.layout ? names.space + DOT * 2 + SPACE["3"] + summaryH + SPACE["5-5"] : ROW;
   const parts = chart.rows.map((row, k) => dumbbellRow({ chart, scale, names, summaries, top: top + k * pitch, cy: top + k * pitch + (chart.layout ? names.space + DOT : ROW / 2), formats }, row, k));
   return finishRowChart(chart, { parts, scale, top, bottom: top + chart.rows.length * pitch });

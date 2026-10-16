@@ -36,8 +36,8 @@ export function chartSegState(run, memory, { si, bi, beat }) {
     const state = memory.charts.get(id) ?? { revealed: [], lights: [] };
     memory.charts.set(id, state);
     const mine = (beat?.reveal ?? []).filter((r) => r.chart === id).map((r) => r.series ?? WHOLE_CHART);
-    state.revealed.push(...mine);
-    state.lights.push(...(beat?.chartLight ?? []).filter((l) => l.chart === id).map((l) => (l.x !== undefined ? `x=${l.x}` : l.names.join('\u0000'))));
+    for (const series of mine) state.revealed.push(series);
+    for (const light of (beat?.chartLight ?? []).filter((l) => l.chart === id)) state.lights.push(light.x !== undefined ? `x=${light.x}` : light.names.join('\u0000'));
     const hidden = chart.sceneReveals.get(si) ?? [];
     out[id] = {
       series: chart.seriesIds.filter((s) => !hidden.includes(s) || state.revealed.includes(s)),

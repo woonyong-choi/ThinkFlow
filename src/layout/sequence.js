@@ -1,4 +1,5 @@
 // 순서 그림 배치. 참여자 열과 메시지 행이 정해진 격자라 elkjs를 쓰지 않는다(docs/design/layout.md 순서 그림 배치).
+import { maxOf } from '../extremes.js';
 import { fragmentRows, finishFragments } from './sequence-fragments.js';
 import { placeSequenceLife } from './sequence-life.js';
 import { FIGURE_PAD } from '../canvas.js';
@@ -46,7 +47,7 @@ export function layoutSequence(figure, sizes) {
   const { edges, notes } = rows;
   const bottom = rows.bottom + SPACE["4"];
   const lifelines = items.map((it) => ({ id: it.id, x: centers[index.get(it.id)], y1: it.y + it.h + it.marginBottom, y2: bottom }));
-  const right = Math.max(...items.map((it) => it.x + it.w), ...notes.map((n) => n.x + n.w), ...edges.flatMap((e) => e.points.map((p) => p.x)), ...edges.map((e) => e.labelAt.x + sizePill(e.label).w / 2));
+  const right = maxOf([...items.map((it) => it.x + it.w), ...notes.map((n) => n.x + n.w), ...edges.flatMap((e) => e.points.map((p) => p.x)), ...edges.map((e) => e.labelAt.x + sizePill(e.label).w / 2)]);
   const scene = { items, groups: [], edges, lifelines, notes, width: right + FIGURE_PAD, height: bottom + FIGURE_PAD };
   if (messages.some((beat) => beat.activations || beat.hops[0].create || beat.hops[0].destroy)) placeSequenceLife(scene, messages, owners, figure.steps.length);
   finishFragments(fragments, scene);
@@ -71,7 +72,7 @@ function layoutRows(messages, noteBoxes, ctx) {
     y = ctx.fragments.before(m, y);
     const row = layoutRow(beat, noteBoxes.filter((n) => n.m === m), { ...ctx, m, y });
     edges.push({ ...row.edge, si: ctx.owners[m] });
-    notes.push(...row.notes.map((note) => ({ ...note, si: ctx.owners[m] })));
+    for (const note of row.notes) notes.push({ ...note, si: ctx.owners[m] });
     y = ctx.fragments.after(m, y + row.height);
   });
   return { edges, notes, bottom: Math.max(bottom, y) };

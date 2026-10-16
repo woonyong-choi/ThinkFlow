@@ -1,5 +1,6 @@
 // 보기마다 도형 크기와 배치를 정하고 판을 합쳐, 시간표와 이동 글상자를 함께 검사한 장면을 만든다.
 // 값 글자 자리는 값이 모든 장면에서 가질 글의 실제 폭이라 시간표에 기대고, 시간표는 배치에 기댄다. 그래서 자리가 더는 넓어지지 않을 때까지 되풀이한다(value-slots.js).
+import { maxOf } from './extremes.js';
 import { checkChartFigure, checkFigure } from './check.js';
 import { buildChartFrames, chartCards, drawChartBase, extentOf } from './chart-frames.js';
 import { mapSceneCharts, sceneCharts } from './chart-scene.js';
@@ -68,8 +69,8 @@ function unstable(figure, grown) {
 // 고른 배치의 진단을 알리고, 장면의 재생 속도가 시간 막대를 0ms로 만들지 않는지 본다. 결과에 논리 시각과 표시 정보를 붙인다.
 function finish(placed, texts, { figure, layoutWidth }, problems) {
   const { scene, timeline, local } = placed;
-  problems.errors.push(...local.errors);
-  problems.warnings.push(...local.warnings);
+  for (const error of local.errors) problems.errors.push(error);
+  for (const warning of local.warnings) problems.warnings.push(warning);
   // 배치 목표 폭은 그래프 보기에만 걸린다. 순서나 차트 판이 더 넓어도 그래프의 폭이 아니다.
   const graphWidth = Math.max(0, ...scene.panels.filter((panel) => panel.strategy === 'graph').map((panel) => panel.box.w));
   if (layoutWidth !== undefined && graphWidth > layoutWidth) problems.warn(figure.line, `the layout needs ${Math.ceil(graphWidth)}px, exceeding the requested ${layoutWidth}px. Shape sizes are preserved`, { code: 'layout-width' });
@@ -180,7 +181,7 @@ function sceneStatuses(figure) {
 // basis: estimate
 // 가장 넓은 글 상자가 그림 폭에 들어가도록 그림을 넓히고 내용을 가운데로 옮긴다. 좁은 세로 그림에서 글 상자가 밖으로 나가지 않게 하기 위해서다.
 function widenForChips(scene, timeline) {
-  const widest = Math.max(0, ...timeline.segs.flatMap((seg) => seg.hops.filter((h) => h.data).map((h) => sizeChip(h.data).w)));
+  const widest = maxOf(timeline.segs.flatMap((seg) => seg.hops.filter((h) => h.data).map((h) => sizeChip(h.data).w)), 0);
   const need = widest + CHIP_GAP * 2;
   if (need <= scene.width) return;
   const dx = (need - scene.width) / 2;

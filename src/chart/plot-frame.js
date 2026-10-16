@@ -1,4 +1,5 @@
 // 산점도와 선 차트의 그림 영역: 두 축, 격자, 눈금, 축 제목
+import { maxOf, minOf } from '../extremes.js';
 import { STYLE } from '../measure/texts.js';
 import { measure, wrap } from '../measure/fonts.js';
 import { centerBaseline, renderRich, roundCoord as r } from '../text.js';
@@ -82,7 +83,7 @@ export function plotFrame(figure, top, { xs, ys, endRoom = 0, minPlotH = 0, mark
   // 산점도와 누적분포는 가로축이 값 축이라 scale 줄을 따른다. 선과 계단의 가로축은 위치라 늘 linear다.
   const xKind = ['scatter', 'ecdf'].includes(figure.chartType) ? chart.scale : 'linear';
   // 선 차트 가로축은 값 축이 아니라 0에서 시작하지 않는다(docs/design/charts.md 값 축 표).
-  const xRange = { min: Math.min(...xs), max: Math.max(...xs), fromZero: figure.chartType === 'scatter' };
+  const xRange = { min: minOf(xs), max: maxOf(xs), fromZero: figure.chartType === 'scatter' };
   // 기준선은 세로 값 축에 긋는다. 기준선이 그림 밖에 그려지지 않게 값 범위에 넣는다.
   // 값에 묶인 차트는 모든 프레임이 같은 눈금을 쓰도록 값 범위(extent)를 넣는다.
   const ruledYs = [...ys, ...chart.rules.map((x) => x.value), ...(chart.extent ? [chart.extent.min, chart.extent.max] : [])];
