@@ -27,9 +27,9 @@ jobs:
       - if: matrix.node == 22
         run: npm run test:browser
       - name: Check installed npm package
-        run: npm run check:package -- "$RUNNER_TEMP/thinkflow-package"
+        run: npm run check:package -- "$RUNNER_TEMP/torso-package"
 
-  # 저장소 루트 action.yml을 이 저장소에서 한 번 써서 동작을 확인한다. 추적하는 모든 .thinkflow와 .md(기본 paths)를 보므로 원본에 오류나 경고가 있거나 마크다운 그림이 낡으면 실패한다.
+  # 저장소 루트 action.yml을 이 저장소에서 한 번 써서 동작을 확인한다. 추적하는 모든 .torso와 .md(기본 paths)를 보므로 원본에 오류나 경고가 있거나 마크다운 그림이 낡으면 실패한다.
   action:
     runs-on: ubuntu-latest
     steps:

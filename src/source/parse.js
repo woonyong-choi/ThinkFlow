@@ -47,7 +47,7 @@ export function readFigure(source, problems) {
   const figure = emptyFigure(source);
   const ctx = { figure, problems, section: 'header', groups: [], block: undefined, step: undefined, headers: new Map(), previous: undefined, arrivalLines: [] };
   if (!statements.length) {
-    problems.error(1, 'the file is empty. The first line is "thinkflow"', { code: 'missing-preamble' });
+    problems.error(1, 'the file is empty. The first line is "torso"', { code: 'missing-preamble' });
     problems.throwIfAny();
   }
   const body = readPreamble(statements, ctx);
@@ -137,7 +137,7 @@ function isPlaced(word, { tokens, line }, ctx) {
     return false;
   }
   if (entry.section === 'preamble') {
-    problems.error(line, 'the first line declaration "thinkflow" must be the first line of the file', { code: 'invalid-preamble' });
+    problems.error(line, 'the first line declaration "torso" must be the first line of the file', { code: 'invalid-preamble' });
     return false;
   }
   if (SECTIONS.indexOf(entry.section) < SECTIONS.indexOf(ctx.section)) {

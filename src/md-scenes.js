@@ -1,28 +1,28 @@
 // md 명령의 장면 구간: 여러 장면을 가진 블록의 둘째 장면부터를 `<details>`로 두는 배치와, 문서에 이미 있는 구간을 알아보는 규칙(docs/design/markdown.md 여러 장면). 파일은 다루지 않는다.
-// 구간은 그림 바로 다음 줄(접힌 블록은 접기 끝 표식 다음 줄)에 놓이고 원본 접기의 감싸기와 소유가 따로다. 접기 표식(`thinkflow fold v1`) 안으로 들어가지 않는다.
-//   <!-- thinkflow scenes v1 {id} -->    시작 표식
+// 구간은 그림 바로 다음 줄(접힌 블록은 접기 끝 표식 다음 줄)에 놓이고 원본 접기의 감싸기와 소유가 따로다. 접기 표식(`torso fold v1`) 안으로 들어가지 않는다.
+//   <!-- torso scenes v1 {id} -->    시작 표식
 //   <details>                             장면마다 여섯 줄
 //   <summary>장면 이름</summary>
 //   (빈 줄)
-//   ![대체 글](주소)<!-- thinkflow -->
+//   ![대체 글](주소)<!-- torso -->
 //   (빈 줄)
 //   </details>
-//   <!-- /thinkflow scenes v1 {id} -->    끝 표식
+//   <!-- /torso scenes v1 {id} -->    끝 표식
 // 표식 두 줄과 그 사이 모양이 정확히 맞는 것만 이 도구가 만든 구간이다. 그 밖의 `<details>`는 사용자 것이다.
 import { contextOf } from './md-blocks.js';
 import { isMarkedImage } from './md.js';
 
 const SCENES_VERSION = 'v1';
-const START = /^((?:[ \t]*>[ \t]?)*)([ \t]*)<!-- thinkflow scenes (v\d+) ((?:name|n)=[a-z0-9-]+) -->$/;
-const END = /^<!-- \/thinkflow scenes (v\d+) ((?:name|n)=[a-z0-9-]+) -->$/;
+const START = /^((?:[ \t]*>[ \t]?)*)([ \t]*)<!-- torso scenes (v\d+) ((?:name|n)=[a-z0-9-]+) -->$/;
+const END = /^<!-- \/torso scenes (v\d+) ((?:name|n)=[a-z0-9-]+) -->$/;
 // 표식처럼 보이지만 온전한 구간에 속하지 않는 줄을 고아 표식으로 알리려고 느슨하게 찾는다.
-const MARK_LIKE = /^(?:[ \t]*>)*[ \t]*<!--\s*\/?thinkflow scenes\b/;
+const MARK_LIKE = /^(?:[ \t]*>)*[ \t]*<!--\s*\/?torso scenes\b/;
 const SUMMARY = /^<summary>.*<\/summary>$/;
 const GROUP_LINES = 6;
 
 // cost: time O(1), heap O(1), stack O(1)
 // basis: estimate
-const markLine = (wrap, id, end = false) => `${wrap}<!-- ${end ? '/' : ''}thinkflow scenes ${SCENES_VERSION} ${id} -->`;
+const markLine = (wrap, id, end = false) => `${wrap}<!-- ${end ? '/' : ''}torso scenes ${SCENES_VERSION} ${id} -->`;
 
 // cost: time O(1), heap O(1), stack O(1)
 // basis: estimate
@@ -72,7 +72,7 @@ export function scanRegions(lines, { code, opaque }) {
     owned.add(region.start).add(region.end);
     for (let k = 0; k < region.count; k++) [region.start + 1 + k * GROUP_LINES, region.start + 6 + k * GROUP_LINES].forEach((tag) => tags.add(tag));
   });
-  const message = 'this thinkflow scenes mark is not part of an intact scene list. A scene list is the start mark, then for each scene <details>, <summary>, a blank line, the image line, a blank line and </details>, and the end mark with the same id, all with the same indentation. Nothing was changed; repair or delete these lines by hand';
+  const message = 'this torso scenes mark is not part of an intact scene list. A scene list is the start mark, then for each scene <details>, <summary>, a blank line, the image line, a blank line and </details>, and the end mark with the same id, all with the same indentation. Nothing was changed; repair or delete these lines by hand';
   const errors = lines.flatMap((line, i) => (!user(i) && !owned.has(i) && MARK_LIKE.test(line) ? [{ line: i + 1, message }] : []));
   return { regions, tags, errors };
 }

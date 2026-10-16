@@ -1,6 +1,6 @@
 # Contributing
 
-This guide explains how to contribute to thinkflow.
+This guide explains how to contribute to torso.
 
 ## Before you start
 
@@ -11,8 +11,8 @@ Open an issue before you start work.
 Requirements: Node.js 20 or later.
 
 ```sh
-git clone https://github.com/woonyong-choi/thinkflow.git
-cd thinkflow
+git clone https://github.com/woonyong-choi/torso.git
+cd torso
 npm install
 ```
 
