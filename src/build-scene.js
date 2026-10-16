@@ -189,6 +189,8 @@ function widenForChips(scene, timeline) {
   for (const item of [...scene.plots, ...scene.times, ...scene.timings]) item.x += dx;
   for (const panel of scene.panels) {
     panel.box.x += dx;
+    // 제목이 있는 판의 그리는 영역은 그림 폭 전체다(layout/panels.js). 제목 없는 판은 frame이 box 그 자체라 위에서 함께 옮겨졌다.
+    if (panel.frame !== panel.box) panel.frame.w = need;
     if (panel.labelAt) panel.labelAt.x += dx;
   }
   for (const track of timeline.tracks ?? []) {
