@@ -490,3 +490,18 @@ test('ecdf_series_keep_the_legend_without_endpoint_leaders', async () => {
   const empty = await stillDom(chart('ecdf', 'series actual "Measured"\nseries target "Target" role=reference\nsample - series=actual\nsample - series=target'));
   assert.equal(findAll(empty, node => node.attrs.class === 'chart-leader').length, 0);
 });
+
+test('C-scatter a link arrow leaves its start point clear of every point name, not only at its head', async () => {
+  const dom = await stillDom(read(EXAMPLES, 'scatter.thinkflow'), 0, { baseDir: EXAMPLES });
+  const backs = findAll(dom, (n) => n.tag === 'rect' && /\bchart-text-bg\b/.test(n.attrs.class ?? '')).map((n) => ({ x0: num(n, 'x'), y0: num(n, 'y'), x1: num(n, 'x') + num(n, 'width'), y1: num(n, 'y') + num(n, 'height') }));
+  const links = findAll(dom, (n) => n.tag === 'line' && /\bchart-link\b/.test(n.attrs.class ?? ''));
+  assert.equal(links.length, 2);
+  for (const link of links) {
+    const [x1, y1, x2, y2] = ['x1', 'y1', 'x2', 'y2'].map((k) => num(link, k));
+    const length = Math.hypot(x2 - x1, y2 - y1);
+    for (let t = 0; t <= Math.min(12, length); t += 1) {
+      const [x, y] = [x1 + ((x2 - x1) * t) / length, y1 + ((y2 - y1) * t) / length];
+      assert.ok(!backs.some((b) => x >= b.x0 && x <= b.x1 && y >= b.y0 && y <= b.y1), `link start at (${x.toFixed(1)}, ${y.toFixed(1)}) runs under a point name`);
+    }
+  }
+});
