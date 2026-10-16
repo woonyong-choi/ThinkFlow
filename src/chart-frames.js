@@ -2,7 +2,6 @@
 // 값이 바뀌면 차트는 다른 프레임으로 바뀐다. 모든 프레임이 같은 축을 쓰도록 값 범위(extent)와 그림 영역 길이를 고정하고,
 // 프레임마다 달라지는 표식(막대, 점, 값 글자)에는 프레임이 바뀌어도 변하지 않는 id를 붙인다(data-mark, 글자는 data-mark-text).
 // 프레임은 이산적으로 바뀌고 시각은 값 줄의 변화 시각 그대로다. 프레임이 시각(t0, t1, at)을 바꾸지 않는다.
-import { panelInner } from './canvas.js';
 import { minOf } from './extremes.js';
 import { chartText } from './chart/draw.js';
 import { extentOfFrames } from './chart/extent.js';
@@ -118,10 +117,10 @@ function plotWith(card, { rows, extent, plotWidth, probe, isFull, chartWidth }) 
   return { ...plot, chart: { ...plot.chart, rows, extent, plotWidth, probe, markIds, ...layoutOf({ isFull, chartWidth }) } };
 }
 
-// 차트 그림 폭 규칙. 차트 보기는 기본으로 본문 단의 판 카드 안쪽 폭 전체이고 그래프 카드만이면 좁은 폭이다. 좁은 배치(chartWidth)는 둘 다 그 폭 이하로 그리고, 차트 보기는 판 카드 둘레 여백만큼 더 좁다(canvas.js panelInner).
+// 차트 그림 폭 규칙. 차트 보기는 기본으로 문서 폭 전체이고 그래프 카드만이면 좁은 폭이다. 좁은 배치(chartWidth)는 둘 다 그 폭 이하로 그린다.
 function layoutOf({ isFull, chartWidth }) {
   if (chartWidth === undefined) return isFull ? {} : { layout: { width: COMPACT_WIDTH } };
-  return { layout: { width: isFull ? panelInner(chartWidth) : Math.min(COMPACT_WIDTH, chartWidth) } };
+  return { layout: { width: isFull ? chartWidth : Math.min(COMPACT_WIDTH, chartWidth) } };
 }
 
 // cost: time O(draw), heap O(out), stack O(1)

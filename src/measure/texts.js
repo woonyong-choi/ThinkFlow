@@ -20,7 +20,7 @@ const META = values.text["figure-meta"];
  * 글 모양. 크기, 글꼴, 줄 높이. 역할 하나가 크기 하나를 쓴다. 차트 제목과 부제도 label과 sub를 쓴다(chart/labels.js).
  * 제목(15): label 카드 제목(regular), group 그룹 제목과 보기 이름(semibold). 문장과 이름표(13): sub 부제, row·mono·cell·item·value 카드 줄, meta 메모와 구획 제목, pill 선 라벨, chip 이동 글, mini 관계 그래프 이름, type 열 형식, rule 제약 줄.
  * 작은 표시(11): tag, key, mark(번호, 태그, 표식, 열 키). CSS가 같은 역할에 같은 크기와 굵기를 그리므로 여기서 잰 폭이 그린 폭이다. 글자 사이 간격도 CSS와 같게 `tracking.text` 하나만 쓴다(fonts.js measure).
- * value는 사용자 자료라 글자 그대로 읽는 글꼴이다(text.js isLiteralFace). 카드 제목보다 가볍게 보통 굵기의 고정폭 숫자로 그린다.
+ * value는 사용자 자료라 글자 그대로 읽는 굵은 글꼴이다(text.js isLiteralFace). 바뀐 값의 초점이라 굵게 둔다.
  */
 export const STYLE = Object.freeze({
   label: { size: TITLE, face: 'regular', line: lineHeight(TITLE, LEADING) },
@@ -31,7 +31,7 @@ export const STYLE = Object.freeze({
   tag: { size: META, face: 'semibold' },
   key: { size: META, face: 'semibold' },
   mark: { size: META, face: 'semibold' },
-  value: { size: FIELD, face: 'numLiteral', line: lineHeight(FIELD, LEADING) },
+  value: { size: FIELD, face: 'semiboldLiteral', line: lineHeight(FIELD, LEADING) },
   pill: { size: FIELD, face: 'regular' },
   group: { size: TITLE, face: 'semibold' },
   chip: { size: FIELD, face: 'regular', line: lineHeight(FIELD, values.leading.snug) },

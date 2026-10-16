@@ -54,8 +54,8 @@ const KINDS = {
   box: { rows: 'row "A" min=1 q1=2 median=3 q3=4 max=5', words: ['A', '중앙값 3'] },
   ecdf: { rows: 'sample 1\nsample 2\nsample 3', words: ['x(u)', 'y(u)'] },
   heatmap: { rows: 'cell "r1" "c1" 3\ncell "r1" "c2" 5\ncell "r2" "c1" 1\ncell "r2" "c2" 9', words: ['r1', 'r2', 'c1', 'c2', '3', '5', '1', '9'], head: '' },
-  pie: { rows: 'row "A" value=30\nrow "B" value=70', words: ['30.0%', '70.0%', '합계 100'], head: '' },
-  donut: { rows: 'row "A" value=30\nrow "B" value=70', words: ['30.0%', '70.0%'], head: '' },
+  pie: { rows: 'row "A" value=30\nrow "B" value=70', words: ['30 · 30.0%', '70 · 70.0%'], head: '' },
+  donut: { rows: 'row "A" value=30\nrow "B" value=70', words: ['30 · 30.0%', '70 · 70.0%'], head: '' },
   waterfall: { rows: 'row "up" value=5\nrow "down" value=-2\ntotal "sum"', words: ['5', '−2', '3'], head: 'x "x(u)"' },
 };
 
@@ -99,14 +99,14 @@ test('K2 lengths are proportional to values: bar, stacked, percent and histogram
 });
 
 test('K2 small series grouped as other read as one piece: their segments touch and one label carries the summed share', async () => {
-  const dom = await stillDom(chart('percent', 'series a "a"\nseries b "b"\nseries c "c"\nseries d "d"\nseries e "e"\nseries f "f"\nrow "A" a=45 b=40 c=4 d=4 e=4 f=3', 'x "x(u)"'));
+  const dom = await stillDom(chart('percent', 'series a "a"\nseries b "b"\nseries c "c"\nseries d "d"\nseries e "e"\nrow "A" a=50 b=40 c=4 d=3 e=3', 'x "x(u)"'));
   const segments = marks(dom).map((m) => ({ x: num(m, 'x'), w: num(m, 'width') })).filter((s) => s.w > 0).sort((p, q) => p.x - q.x);
   const [, , ...grouped] = segments;
-  assert.equal(grouped.length, 4, 'c, d, e and f are each under 5% and fall into other');
+  assert.equal(grouped.length, 3, 'c, d and e are each under 5% and fall into other');
   for (let k = 1; k < grouped.length; k += 1) assert.ok(grouped[k - 1].x + grouped[k - 1].w >= grouped[k].x, `grouped segment ${k} touches the one before it`);
   assert.ok(segments[1].x + segments[1].w < segments[2].x, 'a named segment still keeps its gap before other');
   const shares = visibleTexts(dom).map((n) => textContent(n).trim()).filter((t) => /%$/.test(t));
-  assert.deepEqual(shares, ['45.0%', '40.0%', '15.0%'], 'other is labelled once with c + d + e + f');
+  assert.deepEqual(shares, ['50.0%', '40.0%', '10.0%'], 'other is labelled once with c + d + e');
 });
 
 test('K3 positions follow values: scatter orders points by x and y, a negative difference points left of zero', async () => {

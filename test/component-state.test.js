@@ -9,12 +9,11 @@ import { seriesBoundary, seriesOutline } from '../src/chart/metrics.js';
 import { build, thinkflow, toHtml, toSvg } from './support.js';
 
 test('bright_series_boundary_supplies_color_without_overriding_shared_stroke', () => {
-  // 넷째 범주(노랑)가 면 위 대비가 낮은 밝은 계열이다(범주 순서 blue, orange, cyan, yellow, ...).
-  const chart = { series: [{ role: 'main' }, {}, {}, {}, { role: 'reference' }] };
+  const chart = { series: [{ role: 'main' }, {}, { role: 'reference' }] };
   assert.equal(seriesBoundary(chart, 0), '');
-  assert.equal(seriesBoundary(chart, 4), '');
-  const boundary = seriesBoundary(chart, 3);
-  assert.ok(boundary.includes(`--chart-boundary: ${seriesOutline(chart, 3)}`));
+  assert.equal(seriesBoundary(chart, 2), '');
+  const boundary = seriesBoundary(chart, 1);
+  assert.ok(boundary.includes(`--chart-boundary: ${seriesOutline(chart, 1)}`));
   assert.doesNotMatch(boundary, /style="stroke:/);
 });
 
@@ -58,8 +57,8 @@ test('paintCss supplies only used tone variables; the shared stylesheet owns app
   const rules = postcss.parse(css);
   assert.deepEqual(rules.nodes.map((rule) => rule.selector), ['.fl .tn-blue', '.fl .tn-green', '.fl .tn-red']);
   rules.walkDecls((declaration) => {
-    assert.match(declaration.prop, /^--paint-(fill|outline)$/);
-    assert.match(declaration.value, /^var\(--color-paint-(blue|green|red)-(fill|outline)\)$/);
+    assert.match(declaration.prop, /^--paint-(fill|outline|ink)$/);
+    assert.match(declaration.value, /^var\(--color-paint-(blue|green|red)-(fill|outline|ink)\)$/);
   });
   assert.equal(paintCss({ items: [{}], groups: [] }), '');
 });
@@ -78,7 +77,7 @@ test('S1 켜짐과 평소 모습은 효과 한 벌(--fx-*)을 움직이는 SVG�
   assert.ok(frames.every((k) => !/--color-state-active\)|--color-paint/.test(k)), 'keyframes do not repeat token colors');
   assert.match(html, /\.fl-part\.on :is\(\.part-bg, \.grid-cell\)\s*\{\s*fill: var\(--fx-face-on\)/, 'the HTML lit field and cell read the same lit face as the animated SVG');
   assert.ok(frames.some((k) => k.includes('fill: var(--fx-face-on)') && !k.includes('stroke')) && frames.some((k) => k.includes('fill: var(--fx-face);')), 'the animated SVG lights a field and a cell by that lit face only');
-  assert.match(svg, /\.fl-node\.ap-outline\s*\{\s*--fx-edge-rest: color-mix\(in oklab, var\(--paint-outline\), var\(--color-figure-outline\)\)/, 'the shared appearance changes only the rest values, mixing the chosen outline with the neutral one');
+  assert.match(svg, /\.fl-node\.ap-outline\s*\{\s*--fx-edge-rest: var\(--paint-outline\)/, 'the shared appearance changes only the rest values');
   assert.match(svg, /\.fl-node\.ap-filled\s*\{\s*--fx-face: var\(--paint-fill\)/);
   assert.match(svg, /\.tn-yellow\s*\{[^}]*--paint-outline: var\(--color-paint-yellow-outline\)/);
   assert.match(svg, /\.tn-blue\s*\{[^}]*--paint-fill: var\(--color-paint-blue-fill\)/);
@@ -116,10 +115,10 @@ test('S3 켜진 차트 카드의 글자 바탕과 받침 선은 정지 SVG, 움�
   const [stillName] = groupsOf(still);
   assert.match(stillName ?? '', /^a\d+$/, 'the static SVG puts a lit class on the chart group, not only on the card face');
   assert.ok(still.includes(`.fl .${stillName} { ${GROUND_ON}; }`), 'the final state is lit, so the ground is the lit face');
-  // 면을 정하는 CSS 상태는 여기 한 곳에서 본다(components.test.js U10은 그려진 형상만 본다). 별칭은 그림 바탕, 카드 면(도형 카드와 차트·시간 보기의 판 카드), 켜진 카드 면이고 차트 묶음이 일반 상속 속성 color로 싣는다.
+  // 면을 정하는 CSS 상태는 여기 한 곳에서 본다(components.test.js U10은 그려진 형상만 본다). 별칭은 그림 바탕, 카드 면, 켜진 카드 면이고 차트 묶음이 일반 상속 속성 color로 싣는다.
   // 글자 뒤 바탕 면과 받침 선은 그 color(currentColor)만 읽고 자기 color를 정하지 않는다.
   assert.match(still, /\.fl \{\s*--chart-ground:\s*var\(--color-figure-canvas\);/);
-  assert.match(still, /\.fl :is\(\.fl-node, \.fl-panel\) \{\s*--chart-ground:\s*var\(--fx-face\);/);
+  assert.match(still, /\.fl \.fl-node \{\s*--chart-ground:\s*var\(--fx-face\);/);
   assert.match(still, /\.fl \.fl-node\.on \{\s*--chart-ground:\s*var\(--fx-face-on\);/);
   assert.match(still, /\.fl \.fl-chart \{\s*color:\s*var\(--chart-ground\);/);
   assert.match(still, /\.fl \.chart-text-bg \{\s*fill:\s*currentColor;/);
@@ -275,7 +274,7 @@ test('surface_paint_and_relation_dashes_are_owned_by_shared_css', async () => {
     assert.doesNotMatch(output, /stroke-dasharray="/);
     assert.doesNotMatch(output, /<[^>]*fill="var\(--color-ui-card\)"[^>]*class="fl-stroke/);
     assert.match(output, /class="fl-path dashed"/);
-    assert.match(output, /\.fl :where\(\.fl-node, \.fl-panel\) > \.fl-stroke:where\(:not\(\[fill='none'\]\)\)/);
+    assert.match(output, /\.fl :where\(\.fl-node\) > \.fl-stroke:where\(:not\(\[fill='none'\]\)\)/);
     assert.match(output, /\.fl \.fl-shape-external > :is\(\.fl-stroke, \.fl-pulse\)/);
   }
 });

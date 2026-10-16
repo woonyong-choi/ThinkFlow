@@ -7,7 +7,6 @@ import { centerBaseline, escapeXml, plainText, renderRich, roundCoord as r } fro
 import { values } from '@woonyong-choi/design-tokens/tokens.js';
 import { COPY } from './copy.js';
 import { ecdfGroups } from './data.js';
-import { hasEndLabels } from './end-labels.js';
 import { drawLegend } from './legend.js';
 import { markAttrs } from './marks.js';
 import { PAD, SIZE, SPACE, TEXT, WIDTH } from './metrics.js';
@@ -100,25 +99,21 @@ function excludedNote(figure) {
 // basis: estimate
 /**
  * 제목, 부제, 계열 범례. bottom은 그림 영역이 시작하는 y다.
- * 제목은 카드 제목 크기에 그룹 제목 굵기(CHART_TITLE, CSS `.fl-chart > .label`의 semibold)로 재고 label 역할로 그린다. 부제와 덧붙임과 좁은 배치의 기준선 이름은 카드 부제(sub)와 같은 글 역할과 줄 높이로 위에서 아래로 쌓는다. 차트는 플롯 배치라 왼쪽에 맞추고, 긴 글은 어느 폭에서나 그림 폭 안에서 줄을 나눈다.
+ * 제목은 카드 제목(label), 부제와 덧붙임과 좁은 배치의 기준선 이름은 카드 부제(sub)와 같은 글 역할과 줄 높이로 위에서 아래로 쌓는다. 차트는 플롯 배치라 왼쪽에 맞추고, 긴 글은 어느 폭에서나 그림 폭 안에서 줄을 나눈다.
  */
-// 차트 제목: 카드 제목(label)의 크기와 줄 높이에 그룹 제목의 굵기(semibold).
-const CHART_TITLE = Object.freeze({ ...STYLE.label, face: STYLE.group.face });
-
 export function drawHeader(figure) {
   const { layout } = figure.chart;
   const rules = layout ? figure.chart.rules.map((rule) => `${rule.label} ${formatNumber(rule.value)}`) : [];
   const room = (layout?.width ?? WIDTH) - PAD * 2;
   const linesOf = (text, role, style) => wrap(text, room, style).map((line) => ({ role, text: line, style }));
   const lines = [
-    ...(figure.title ? linesOf(figure.title, 'label', CHART_TITLE) : []),
+    ...(figure.title ? linesOf(figure.title, 'label', STYLE.label) : []),
     ...[figure.subtitle, excludedNote(figure), ...rules].filter(Boolean).flatMap((text) => linesOf(text, 'sub', STYLE.sub)),
   ];
   const texts = stackTexts(lines, { x: PAD, top: PAD, anchor: 'start' });
   const parts = texts.map((t) => textMarkup(t, { x: 0, y: 0 }));
   let y = lines.reduce((bottom, line) => bottom + line.style.line, PAD);
-  // 끝 이름이 계열마다 이름을 직접 다는 차트(선, 계단, 면적의 둘 이상 계열)는 범례를 두지 않는다. 같은 이름을 두 번 적지 않고 그림 영역이 위로 넓어진다(Vega-Lite 끝 이름 예제와 같은 읽기).
-  if (figure.chart.series.length && !hasEndLabels(figure)) {
+  if (figure.chart.series.length) {
     const legend = drawLegend(figure, y);
     parts.push(...legend.svg);
     y = legend.bottom;

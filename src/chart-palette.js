@@ -6,8 +6,8 @@ import { tokens, values } from '@woonyong-choi/design-tokens/tokens.js';
 
 /** 소스가 판을 고르지 않을 때 쓰는 판. 최신 판이 아니다. */
 export const BASE_REVISION = 1;
-// 1판의 앞 네 계열. 색각 이상에서도 가장 잘 갈리는 파랑·주황으로 시작하고, 오류·손실 뜻이 강한 빨강은 맨 뒤다(design-tokens docs/styles.md 범주 색). 계열 색값은 Things 기준색에서 온다.
-const FIRST_FAMILIES = ['blue', 'orange', 'cyan', 'yellow'];
+// 1판의 앞 네 계열은 Things 공식 사이트 기능 아이콘의 solid 면색 그대로라 바뀌지 않는다. 네이티브 앱의 모든 역할이 같은 색이라는 뜻은 아니다.
+const FIRST_FAMILIES = ['blue', 'yellow', 'red', 'green'];
 const COUNTS = ['family', 'pattern', 'shape'];
 
 const orderedKeys = (group) => Object.keys(group).sort((a, b) => a - b);
@@ -18,7 +18,7 @@ const listOf = (group) => orderedKeys(group).map((key) => group[key]);
 // basis: estimate
 /**
  * 토큰의 판 목록(번호 순서). 판은 `{ revision, family, pattern, shape, step }`이고 세 개수는 각 목록의 앞에서부터 쓰는 개수, step은 무늬 간격 배율이다.
- * 번호가 1부터 빈칸 없이 이어지지 않거나, 개수가 줄거나 목록 길이를 넘거나, 최신 판이 목록 전체를 덮지 않거나, 앞 네 계열이 blue, orange, cyan, yellow가 아니면 던진다.
+ * 번호가 1부터 빈칸 없이 이어지지 않거나, 개수가 줄거나 목록 길이를 넘거나, 최신 판이 목록 전체를 덮지 않거나, 앞 네 계열이 blue, yellow, red, green이 아니면 던진다.
  */
 export function readRevisions({ raw = values.color.data } = {}) {
   const lengths = { family: Object.keys(raw['category-family']).length, pattern: Object.keys(raw['category-pattern']).length, shape: Object.keys(raw['category-shape']).length };
