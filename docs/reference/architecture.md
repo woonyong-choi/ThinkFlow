@@ -63,7 +63,7 @@ scene "요청"
 |---|---|---|---|
 | 없는 아이콘 이름 | `unknown icon "nope". Declared: admin, ansible, apigw, ...` | `syntax` | 목록의 이름을 고르거나 `icon=`을 빼고 `badge=`를 씁니다 |
 | 선언하지 않은 이름 | `unknown card "c". Did you mean "a"? Declared: a, b` | `syntax` | 이름을 고칩니다 |
-| 쓸 수 없는 색 이름 | `tone is one of blue, yellow, red, green, orange, purple, cyan, gray. Found "bleu". Colors are names, not hex, so the contrast rules hold. Did you mean "blue"?` | `syntax` | 목록의 이름을 고릅니다 |
+| 쓸 수 없는 색 이름 | `tone is one of blue, orange, cyan, yellow, green, purple, red, gray. Found "bleu". Colors are names, not hex, so the contrast rules hold. Did you mean "blue"?` | `syntax` | 목록의 이름을 고릅니다 |
 | 그룹의 `border=dashed` | `a group takes direction=, dashed, ... Found "border". A dashed border is the word dashed: write dashed instead of border=dashed` | `syntax` | `dashed`로 씁니다 |
 | 받지 않는 선택 사항(`fill=`, `stroke=`, `class=`) | `a box takes count=, shape=, badge=, icon=, tone=, appearance=. Found "fill". There is no fill=. Colors are tone=name and appearance=plain\|filled\|outline; ...` | `syntax` | 메시지가 알리는 선택 사항을 씁니다 |
 | 카드가 하나도 없음 | `a figure needs at least one card` | `syntax` | 그룹 안에 카드를 둡니다 |

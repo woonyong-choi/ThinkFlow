@@ -10,8 +10,10 @@ import { BAR, PAD, SPACE, TEXT, WIDTH } from '../chart/metrics.js';
 import { makeScale } from '../chart/scale.js';
 
 // 구간 줄의 세로 간격과 레인 위아래 여유
-const SUB_ROW = BAR + SPACE['8'];
-const LANE_PAD = SPACE['4'];
+// 구간 막대 두께. 누적·퍼센트 막대와 같은 두께라 시간 보기의 막대가 다른 막대 차트와 같은 무게로 읽힌다.
+const SPAN_BAR = BAR * 2;
+const SUB_ROW = SPAN_BAR + SPACE['2'];
+const LANE_PAD = SPACE['3'];
 // 구간 막대 끝과 그 이름 글 사이 간격
 const NAME_GAP = SPACE['3'];
 
@@ -54,10 +56,10 @@ const SPAN_TEXT = { size: TEXT['11'], face: 'regular', line: lineHeight(TEXT['11
 function wideRows(source, scale, { y, right }) {
   const rows = packRows(source, scale, right);
   const spans = rows.flatMap((row, r) => row.map((s) => {
-    const top = y + LANE_PAD + r * SUB_ROW + SPACE['4'];
-    return { ...s, y: top, h: BAR, texts: [textAt('chart-rule-label', s.label, SPAN_TEXT, { x: s.nameX, center: top + BAR / 2, anchor: s.isLeft ? 'end' : 'start' })] };
+    const top = y + LANE_PAD + r * SUB_ROW;
+    return { ...s, y: top, h: SPAN_BAR, texts: [textAt('chart-rule-label', s.label, SPAN_TEXT, { x: s.nameX, center: top + SPAN_BAR / 2, anchor: s.isLeft ? 'end' : 'start' })] };
   }));
-  return { spans, height: Math.max(SUB_ROW, rows.length * SUB_ROW) + LANE_PAD * 2 };
+  return { spans, height: rows.length * SUB_ROW - SPACE['2'] + LANE_PAD * 2 };
 }
 
 // cost: time O(s + t), heap O(s + t), stack O(1)
@@ -80,8 +82,8 @@ function compactRows(source, scale, y) {
     const texts = lines.map((line, i) => textAt('chart-rule-label', line, SPAN_TEXT, { x: scale.start, center: top + (i + 0.5) * SPAN_TEXT.line }));
     top += lines.length * SPAN_TEXT.line + SPACE['3'];
     const x = scale.at(span.at);
-    const placed = { ...span, x, y: top, w: scale.at(span.at + span.dur) - x, h: BAR, texts };
-    top += BAR + LANE_PAD;
+    const placed = { ...span, x, y: top, w: scale.at(span.at + span.dur) - x, h: SPAN_BAR, texts };
+    top += SPAN_BAR + LANE_PAD;
     return placed;
   });
   return { spans, height: top - y + LANE_PAD };
