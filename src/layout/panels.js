@@ -14,14 +14,14 @@ const SIZE = values.spacing.figure;
 // basis: estimate
 /**
  * 판들을 합친 장면을 만든다.
- * @param panels 보기 순서의 판 목록. 판은 { view, strategy, label?, scene?, chart?, time? }이다. 그래프와 순서 판은 scene({ items, groups, edges, ..., width, height }), 차트 판은 chart(chart/draw.js의 그림 + id), 시간 판은 time(layout/time.js의 배치)을 갖는다
- * @returns { items, groups, edges, lifelines, notes, activations, destructions, fragments, plots, times, panels, width, height }. panels는 { view, strategy, box: { x, y, w, h }, label?, index }다. 합쳐진 도형·그룹·선에는 view와 panel(판 번호), 선에는 strategy가 붙는다
+ * @param panels 보기 순서의 판 목록. 판은 { view, strategy, label?, scene?, chart?, time?, timing? }이다. 그래프와 순서 판은 scene({ items, groups, edges, ..., width, height }), 차트 판은 chart(chart/draw.js의 그림 + id), 시간 판은 time(layout/time.js의 배치), 타이밍 판은 timing(layout/timing.js의 줄 자리)을 갖는다
+ * @returns { items, groups, edges, lifelines, notes, activations, destructions, fragments, plots, times, timings, panels, width, height }. panels는 { view, strategy, box: { x, y, w, h }, label?, index }다. 합쳐진 도형·그룹·선에는 view와 panel(판 번호), 선에는 strategy가 붙는다
  */
 export function composePanels(panels) {
   const sizes = panels.map(sizeOf);
   const width = Math.max(...sizes.map((s) => s.w));
   const labelH = SIZE.group.title;
-  const scene = { items: [], groups: [], edges: [], lifelines: [], notes: [], activations: [], destructions: [], fragments: [], plots: [], times: [], panels: [], width, height: 0 };
+  const scene = { items: [], groups: [], edges: [], lifelines: [], notes: [], activations: [], destructions: [], fragments: [], plots: [], times: [], timings: [], panels: [], width, height: 0 };
   let y = 0;
   panels.forEach((panel, index) => {
     const { w, h, content } = sizes[index];
@@ -43,7 +43,7 @@ export function composePanels(panels) {
 // basis: estimate
 // 판의 크기. content는 배치한 내용 폭이고 w는 제목이 잘리지 않게 늘린 판 폭이다.
 function sizeOf(panel) {
-  const source = panel.scene ?? panel.chart ?? panel.time;
+  const source = panel.scene ?? panel.chart ?? panel.time ?? panel.timing;
   const title = panel.label ? measure(panel.label, STYLE.group.size, STYLE.group.face) + FIGURE_PAD * 2 : 0;
   return { w: Math.max(source.width, title), h: source.height, content: source.width };
 }
@@ -64,5 +64,6 @@ function place_(scene, panel, { dx, dy }, index) {
     return;
   }
   if (panel.chart) scene.plots.push({ id: panel.chart.id, view: panel.view, panel: index, x: dx, y: dy, width: panel.chart.width, height: panel.chart.height, chart: panel.chart });
+  else if (panel.timing) scene.timings.push({ ...panel.timing, view: panel.view, panel: index, x: dx, y: dy });
   else scene.times.push({ ...panel.time, view: panel.view, panel: index, x: dx, y: dy });
 }

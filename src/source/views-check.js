@@ -18,7 +18,8 @@ export function resolveViews(figure, problems) {
   const written = figure.views.filter((v) => !v.isRejected);
   const isWhole = (v) => v.strategy === 'graph' && v.members === undefined;
   for (const view of written) {
-    if (view.strategy !== 'graph') resolveSingle(view, context);
+    if (view.strategy === 'timing') resolveTiming(view, context);
+    else if (view.strategy !== 'graph') resolveSingle(view, context);
     else if (!isWhole(view)) resolveGraph(view, context, { plotOwned: new Set() });
   }
   const listed = new Set([...written.flatMap((v) => v.cardIds ?? []), ...context.refused]);
@@ -164,4 +165,32 @@ function resolveSingle(view, { byId, problems, refused }) {
   }
   if ((view.strategy === 'plot' || view.strategy === 'time') && members.length !== 1) problems.error(view.line, `a ${view.strategy} view lists exactly one ${view.strategy === 'plot' ? 'chart' : 'trace'} card. Found ${members.length}`);
   if (view.strategy === 'sequence' && !members.length) problems.error(view.line, 'a sequence view lists its participants');
+}
+
+// cost: time O(m + n + w), heap O(m), stack O(1)
+// vars: m = 구성원 수, n = 카드 수, w = 값 수
+// basis: estimate
+/**
+ * 타이밍 보기. 구성원은 줄이고, 줄 하나는 값(`value`, 큐) 하나이거나 참여자 모양의 카드 하나다. 값 줄은 값이 바뀌는 시각마다 띠나 높낮이 선을, 카드 줄은 장면의 상태와 오가는 이동을 시간 축 위에 보인다.
+ * 타이밍 보기는 카드를 그리지 않고 다른 보기가 그린 카드와 값의 시간을 보이므로 카드를 "적힌" 카드로 세지 않는다(cardIds가 비어 기본 그래프가 그 카드를 맡는다).
+ * 구간 표시(`note 값=상태 "글"`)는 이 보기의 값 줄을 가리킨다.
+ */
+function resolveTiming(view, { figure, byId, problems }) {
+  const values = new Map(figure.values.map((v) => [v.id, v]));
+  view.cardIds = [];
+  view.groupIds = [];
+  view.rows = [];
+  for (const m of view.members ?? []) {
+    const card = byId.get(m.id);
+    if (values.has(m.id)) view.rows.push({ id: m.id, kind: 'value', label: values.get(m.id).label ?? card?.label ?? m.id, line: m.line });
+    else if (!card) problems.error(m.line, unknownName('value or card', m.id, [...values.keys(), ...byId.keys()]), { column: m.column });
+    else if (!SEQUENCE_SHAPES.includes(card.shape)) problems.error(m.line, `a timing row is a value or a card that sends and receives moves (${SEQUENCE_SHAPES.join(', ')}). "${m.id}" is a ${card.shape}`, { column: m.column });
+    else view.rows.push({ id: m.id, kind: 'card', label: card.label || m.id, line: m.line });
+  }
+  if (!view.members?.length) problems.error(view.line, 'a timing view lists its rows: values and cards');
+  for (const note of view.notes ?? []) {
+    const row = view.rows.find((r) => r.id === note.value);
+    if (!row) problems.error(note.line, `note ${note.value}= marks the times a value holds a state, so "${note.value}" must be a value row of this timing view`, { column: note.column });
+    else if (row.kind !== 'value') problems.error(note.line, `"${note.value}" is a card row. A timing note marks the times a value holds a state`, { column: note.column });
+  }
 }

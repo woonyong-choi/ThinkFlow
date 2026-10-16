@@ -30,14 +30,14 @@ function groupBy(list, keyOf) {
  * 선 끝은 칸이 걸친 면에서 바로 나가고, 걸치지 않은 안쪽 칸은 칸 아래 통로(행 사이 간격)로 돌아 격자 옆면으로 나간다. 통로는 칸 사이가 아니라 행 사이 빈 줄이라 이웃 칸 글을 가리지 않는다.
  * 통로는 가로 흐름(나가는 선 동쪽, 들어오는 선 서쪽)에서 직접 연결이 없는 선 끝마다 잡는다. 세로 흐름은 남쪽·북쪽이 걸쳐 있으면 거기로, 아니면 같은 동쪽·서쪽 직접 연결이나 통로를 쓰므로 이 통로가 모든 방향의 상한이다.
  * @param grid { rows, cols, cells, links }. links는 { index, way, cell, isInner }[]이고 index는 선 번호, isInner는 같은 격자의 두 칸을 잇는 선이다
- * @param geo { pad, keyWidth, keyPad, unitW, unitH, titleH, titleHalf }. keyWidth는 칸 왼쪽 바깥 식별자의 예약 폭이다. titleHalf는 가장 긴 제목 줄 폭의 절반
+ * @param geo { pad, keyWidth, keyPad, unitW, unitH, titleH, titleHalf, rightExtra?, noNorth? }. keyWidth는 칸 왼쪽 바깥 식별자의 예약 폭이다. titleHalf는 가장 긴 제목 줄 폭의 절반, rightExtra는 칸 묶음 오른쪽의 구간 괄호 폭이고, noNorth면 위 면에 눈금자가 있어 위 면으로 들어오지 않는다
  * @returns { w, h, rowTop, gutter, ends, inner }. rowTop은 행 번호 → 그 행 윗변의 y를 주는 함수다. ends는 `번호:way` → { LANE, EAST?, WEST?, SOUTH?, NORTH? }, 각 후보는 { side, port, lead }이고 lead는 칸 면에서 격자 테두리 위 port까지의 점이다. inner는 선 번호 → 점 목록이다
  */
 export function planGridLinks(grid, geo) {
   const { rows, cols, links } = grid;
   const channels = links.filter((l) => l.isInner).length / 2;
   const padRight = channels ? Math.max(geo.pad, (channels + 1) * LANE_STEP) : geo.pad;
-  const w = geo.pad + (geo.keyWidth ?? 0) + cols * geo.unitW + padRight;
+  const w = geo.pad + (geo.keyWidth ?? 0) + cols * geo.unitW + padRight + (geo.rightExtra ?? 0);
   const cells = new Map(grid.cells.map((c) => [c.id, c]));
   const items = links.map((link) => describe(link, { cell: cells.get(link.cell), grid, geo, w }));
   assignSouthX(items);
@@ -61,7 +61,7 @@ function describe(link, { cell, grid, geo, w }) {
   const way = link.isInner ? undefined : link.way;
   const [lateral, vertical] = way ? SIDES[way] : [];
   item.direct = way ? [...new Set([lateral, vertical, ...(grid.rows === 1 ? ['SOUTH'] : [])])].filter((side) => touches[side]) : [];
-  item.northX = touches.NORTH && way === 'in' ? northSpots(item, geo, grid.links) : undefined;
+  item.northX = touches.NORTH && way === 'in' && !geo.noNorth ? northSpots(item, geo, grid.links) : undefined;
   if (way === 'in' && !item.northX) item.direct = item.direct.filter((side) => side !== 'NORTH');
   item.needsLane = !way || !touches[lateral];
   return item;
@@ -178,7 +178,7 @@ function innerRoutes(items, frame) {
   const byEdge = groupBy(items.filter((i) => i.link.isInner), (i) => i.link.index);
   const routes = {};
   [...byEdge].forEach(([index, [from, to]], m) => {
-    const x = frame.w - frame.padRight + ((m + 1) / (byEdge.size + 1)) * frame.padRight;
+    const x = frame.w - (frame.geo.rightExtra ?? 0) - frame.padRight + ((m + 1) / (byEdge.size + 1)) * frame.padRight;
     const [a, b] = [from, to].map((i) => i.candidates.LANE.lead);
     routes[index] = [a[0], a[1], { x, y: a[1].y }, { x, y: b[1].y }, b[1], b[0]];
   });

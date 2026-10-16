@@ -1,5 +1,6 @@
 // 도형, 카드, 선 라벨 크기를 정한다. 여기서 정한 크기를 배치에 넘기고 그대로 그린다(docs/design/layout.md 도형 크기와 연결점).
 import { plainText } from '../text.js';
+import { CANVAS, FIGURE_PAD } from '../canvas.js';
 import { emptyRegions } from '../source/grid-space.js';
 import { tableDescription } from '../table.js';
 import { tableLayout } from './table.js';
@@ -143,7 +144,7 @@ const SEQUENCE_HEADERS = ['table', 'api', 'classifier'];
 // 칸 격자: 제목 줄과 칸 묶음이 모두 배치 사각형 안이다. 칸 단위(가로, 세로)는 모든 칸이 글을 넣을 수 있는 가장 작은 크기이고, 칸은 차지한 단위 수만큼 커진다.
 // 칸에 이은 선이 안쪽 칸으로 돌아 나갈 통로가 있으면 행 사이가 벌어진다(grid-links.js).
 function sizeGrid(node, links = [], valueTexts) {
-  const { titleLines, titleW, unitW, keyWidth: keyBase, lined } = gridLines(node, valueTexts);
+  const { titleLines, titleW, unitW, keyWidth: keyBase, lined, ruler, regionW } = gridLines(node, valueTexts);
   const incoming = new Map();
   let keyExtra = 0;
   if (keyBase) for (const link of links) if (link.way === 'in' && !link.isInner) {
@@ -153,36 +154,70 @@ function sizeGrid(node, links = [], valueTexts) {
   }
   const keyWidth = keyBase + keyExtra;
   const titleH = titleLines.length * STYLE.label.line + GRID.titlePad * 2;
+  const rulerH = ruler ? STYLE.item.line + GRID.cellPadY : 0;
   const unitH = lined.reduce((tallest, cell) => {
     const textHeight = cell.valueId
-      ? Math.max(...cell.variants.map((variant) => variant.lines.length)) * STYLE.value.line
-      : cell.lines.length * STYLE.item.line;
+      ? Math.max(...cell.variants.map((variant) => variant.lines.length)) * STYLE.value.line + cell.detailLines.length * STYLE.item.line
+      : (cell.lines.length + cell.detailLines.length) * STYLE.item.line;
     return Math.max(tallest, Math.ceil((Math.max(textHeight, cell.keyLines.length * STYLE.item.line) + GRID.cellPadY * 2) / cell.rows));
   }, SIZE.grid.cell) + keyExtra * 2;
-  const plan = planGridLinks({ rows: node.rows, cols: node.cols, cells: node.cells, links }, { pad: GRID.pad, keyWidth, keyPad: GRID.cellPadX, unitW, unitH, titleH, titleHalf: titleW / 2 });
+  const plan = planGridLinks({ rows: node.rows, cols: node.cols, cells: node.cells, links }, { pad: GRID.pad, keyWidth, keyPad: GRID.cellPadX, unitW, unitH, titleH: titleH + rulerH, titleHalf: titleW / 2, rightExtra: regionW, noNorth: Boolean(ruler) });
   const box = ({ row, col, rows, cols }) => ({ x: GRID.pad + keyWidth + col * unitW, y: plan.rowTop(row), w: cols * unitW, h: rows * unitH + (rows - 1) * plan.gutter });
   const cells = lined.map(({ text, label, ...c }) => {
     const placed = { ...c, ...box(c) };
     const role = c.kind === 'gap' ? 'item gap' : 'item';
+    const details = c.detailLines.map((line) => ({ role: 'item gap', text: line, style: STYLE.item }));
     if (c.valueId) {
+      // 값 글과 보조 글을 한 묶음으로 칸 세로 가운데에 놓는다. 값 글의 줄 수는 가장 많은 상태로 자리를 잡아 값이 바뀌어도 보조 글이 움직이지 않는다.
+      const valueH = Math.max(...c.variants.map((v) => v.lines.length)) * STYLE.value.line;
+      const top = placed.y + (placed.h - valueH - details.length * STYLE.item.line) / 2;
       const variants = c.variants.map(({ text, lines }) => ({
         text,
         texts: stackTexts(lines.map((line) => ({ role: 'value', text: line, style: STYLE.value })), {
-          x: placed.x + placed.w / 2, top: placed.y, height: placed.h,
+          x: placed.x + placed.w / 2, top, height: valueH,
         }),
       }));
-      return { ...placed, texts: variants.flatMap((variant) => variant.texts), variants };
+      const detailTexts = stackTexts(details, { x: placed.x + placed.w / 2, top: top + valueH });
+      return { ...placed, texts: variants.flatMap((variant) => variant.texts), variants, detailTexts };
     }
-    return { ...placed, texts: stackTexts(c.lines.map((line) => ({ role, text: line, style: STYLE.item })), { x: placed.x + placed.w / 2, top: placed.y, height: placed.h }) };
+    return { ...placed, texts: stackTexts([...c.lines.map((line) => ({ role, text: line, style: STYLE.item })), ...details], { x: placed.x + placed.w / 2, top: placed.y, height: placed.h }) };
   });
   const empties = emptyRegions(node).map((r) => ({ ...r, ...box({ row: r.row0, col: r.col0, rows: r.row1 - r.row0, cols: r.col1 - r.col0 }) }));
   const unit = { w: unitW, h: unitH, gutter: plan.gutter, x: GRID.pad + keyWidth, y: plan.rowTop(0) };
-  const texts = titleTexts({ labelLines: titleLines }, { x: (plan.w + keyWidth) / 2, top: 0, height: titleH });
+  const texts = titleTexts({ labelLines: titleLines }, { x: (plan.w - regionW + keyWidth) / 2, top: 0, height: titleH });
   for (const cell of cells) texts.push(...stackTexts(cell.keyLines.map(text => ({ role: 'item gap', text, style: STYLE.item })), {
     x: cell.x - GRID.cellPadX - keyExtra, top: cell.y, height: cell.h, anchor: 'end',
-  }));
-  return { w: plan.w, h: plan.h, marginTop: 0, marginBottom: 0, texts, cells, empties, unit, titleH, cellEnds: plan.ends, cellRoutes: plan.inner };
+  }), ...(cell.detailTexts ?? []));
+  const extras = ruler ? rulerParts(node, { ruler, unit, rulerTop: titleH, rulerH }) : {};
+  if (extras.texts) texts.push(...extras.texts);
+  return { w: plan.w, h: plan.h, marginTop: 0, marginBottom: 0, texts, cells, empties, unit, titleH: titleH + rulerH, cellEnds: plan.ends, cellRoutes: plan.inner, ...(extras.braces ? { braces: extras.braces } : {}) };
 }
+
+// cost: time O(k + g), heap O(k + g), stack O(1)
+// vars: k = 눈금 수(열 수 이하), g = 구간 수
+// basis: estimate
+/**
+ * 눈금자 격자(`unit=`)의 눈금 숫자, 단위 이름, 오른쪽 구간 괄호와 이름. 눈금 숫자는 칸 위 한 줄에 열 가운데마다 놓고, 숫자가 이웃과 붙으면 2, 4, 8열마다 건너뛴다(ruler.step).
+ * 괄호는 구간이 차지한 행의 칸 묶음 오른쪽에 세로로 놓고, 이름은 괄호 오른쪽의 세로 가운데다.
+ * @returns { texts, braces }. braces는 { x, y0, y1 }(격자 왼쪽 위가 원점) 목록이다
+ */
+function rulerParts(node, { ruler, unit, rulerTop, rulerH }) {
+  const center = rulerTop + rulerH / 2 - GRID.cellPadY / 4;
+  const texts = [];
+  for (let col = 0; col < node.cols; col += ruler.step) texts.push(textAt('item gap', String(col), STYLE.item, { x: unit.x + (col + 0.5) * unit.w, center, anchor: 'middle' }));
+  texts.push(textAt('item gap', node.rulerUnit, STYLE.item, { x: unit.x - GRID.cellPadX, center, anchor: 'end' }));
+  const right = unit.x + node.cols * unit.w;
+  const braces = node.regions.map((region, k) => {
+    const top = unit.y + region.row * (unit.h + unit.gutter);
+    const bottom = top + region.rows * unit.h + (region.rows - 1) * unit.gutter;
+    return { x: right + GRID.cellPadX, y0: top, y1: bottom, lines: ruler.regionLines[k] };
+  });
+  for (const brace of braces) texts.push(...stackTexts(brace.lines.map((text) => ({ role: 'item', text, style: STYLE.item })), { x: brace.x + BRACE_W + GRID.cellPadX, top: brace.y0, height: brace.y1 - brace.y0, anchor: 'start' }));
+  return { texts, braces: braces.map(({ lines, ...brace }) => brace) };
+}
+
+/** 구간 괄호의 폭(괄호 선이 칸 묶음에서 바깥으로 나오는 길이) */
+export const BRACE_W = SPACE["3"];
 
 // 같은 격자의 줄 나눔을 크기 계산과 예산 세기가 다시 하지 않도록 담아 둔다. 칸 목록이 키다.
 const gridLinesMemo = new WeakMap();
@@ -199,27 +234,56 @@ export function gridLines(node, valueTexts = new Map()) {
   if (!dynamic && gridLinesMemo.has(node.cells)) return gridLinesMemo.get(node.cells);
   const titleLines = wrap(node.label, GRID.textMax, STYLE.label);
   const titleW = Math.max(...titleLines.map((l) => measure(l, STYLE.label.size, STYLE.label.face)));
+  const isRuler = node.rulerUnit !== undefined;
   const shown = node.cells.map((cell) => ({
     ...cell,
-    keyLines: cell.key ? wrap(cell.key, GRID.textMax, STYLE.item) : [],
+    keyLines: cell.key ? wrap(cell.key, GRID.textMax, STYLE.item) : isRuler && cell.col === 0 ? [String(cell.row * node.cols)] : [],
     text: cell.kind === 'gap' ? `${cell.label} ×${cell.count}` : cell.label,
+    detailText: cell.detail ?? (isRuler && cell.kind === 'item' ? rulerDetail(cell, node) : undefined),
     ...(cell.valueId ? { valueTexts: [...(valueTexts.get(cell.valueId) ?? [''])] } : {}),
   }));
   const fieldStrip = node.rows === 1 && shown.every((cell) => cell.cols > 1) && shown.reduce((sum, cell) => sum + cell.cols, 0) === node.cols;
-  const unitW = gridUnitWidth(shown, { cols: node.cols, titleRoom: titleW + PAD.x * 2 - GRID.pad * 2, fieldStrip });
+  const titleRoom = titleW + PAD.x * 2 - GRID.pad * 2;
+  const widest = (lines) => lines.reduce((width, line) => Math.max(width, measure(line, STYLE.item.size, STYLE.item.face)), 0);
+  const keyTextWidth = Math.max(shown.reduce((width, cell) => Math.max(width, widest(cell.keyLines)), 0), isRuler ? widest([node.rulerUnit]) : 0);
+  const keyWidth = keyTextWidth ? keyTextWidth + GRID.cellPadX + PAD.x - GRID.pad : 0;
+  const regionLines = isRuler ? node.regions.map((region) => wrap(region.label, GRID.textMax, STYLE.item)) : [];
+  const regionW = regionLines.length ? BRACE_W + GRID.cellPadX * 2 + widest(regionLines.flat()) + PAD.x - GRID.pad : 0;
+  // 바이트 배치는 오프셋 칸과 구간 괄호를 뺀 캔버스 내용 폭을 칸 묶음이 다 쓴다.
+  const unitW = isRuler ? Math.max(titleRoom, RULER_WIDTH - GRID.pad * 2 - keyWidth - regionW) / node.cols : gridUnitWidth(shown, { cols: node.cols, titleRoom, fieldStrip });
   const lined = shown.map((cell) => {
     const width = cell.cols * unitW - GRID.cellPadX * 2;
     return {
       ...cell,
       lines: cell.valueId ? [] : wrap(cell.text, width, STYLE.item),
+      detailLines: cell.detailText === undefined ? [] : wrap(cell.detailText, width, STYLE.item),
       ...(cell.valueId ? { variants: cell.valueTexts.map((text) => ({ text, lines: wrap(text, width, STYLE.value) })) } : {}),
     };
   });
-  const keyTextWidth = shown.reduce((width, cell) => cell.keyLines.reduce((widest, line) => Math.max(widest, measure(line, STYLE.item.size, STYLE.item.face)), width), 0);
-  const keyWidth = keyTextWidth ? keyTextWidth + GRID.cellPadX + PAD.x - GRID.pad : 0;
-  const result = { titleLines, titleW, unitW, keyWidth, lined };
+  const ruler = isRuler ? { step: rulerStep(node.cols, unitW) } : undefined;
+  const result = { titleLines, titleW, unitW, keyWidth, lined, ruler: isRuler ? { ...ruler, regionLines } : undefined, regionW };
   if (!dynamic) gridLinesMemo.set(node.cells, result);
   return result;
+}
+
+// 눈금자 격자 칸의 기본 보조 글. 값이 놓인 칸은 값 글이 칸 글을 대신하므로 필드 이름을, 나머지는 차지한 단위 수를 적는다. 길이가 정해지지 않은 칸은 크기를 적지 않는다.
+function rulerDetail(cell, node) {
+  if (cell.valueId) return cell.label;
+  return cell.isOpen ? undefined : `${cell.rows * cell.cols} ${node.rulerUnit}`;
+}
+
+/** 바이트 배치(오프셋 칸, 칸 묶음, 구간 괄호를 합친 격자)의 폭. 표준 캔버스에서 그림 둘레 여백을 뺀 내용 폭이라 배치가 문서 폭을 다 쓰고, 칸 폭은 단위 수에 비례한다. */
+const RULER_WIDTH = CANVAS - FIGURE_PAD * 2;
+
+// cost: time O(log c), heap O(1), stack O(1)
+// vars: c = 열 수
+// basis: estimate
+// 눈금 숫자가 이웃 숫자와 붙지 않는 가장 작은 간격(1, 2, 4, 8, ... 열). 가장 긴 숫자(열 수 - 1)의 폭에 칸 안쪽 간격을 더해 잰다.
+function rulerStep(cols, unitW) {
+  const need = measure(String(cols - 1), STYLE.item.size, STYLE.item.face) + GRID.cellPadX;
+  let step = 1;
+  while (step < cols && step * unitW < need) step *= 2;
+  return step;
 }
 
 // cost: time O(c), heap O(c), stack O(1)

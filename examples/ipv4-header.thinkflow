@@ -1,0 +1,48 @@
+thinkflow
+title "IPv4 헤더 (RFC 791)"
+subtitle "라우터를 지날 때마다 TTL이 1 줄고 헤더 체크섬을 다시 계산한다 · 한 줄은 32비트"
+
+box host "보내는 호스트"
+box r1 "라우터 1"
+box r2 "라우터 2"
+box dst "받는 호스트"
+host -> r1
+r1 -> r2
+r2 -> dst
+
+grid ip "IPv4 헤더" rows=6 cols=32 unit=bit {
+  item ver "Version" cols=4
+  item ihl "IHL" cols=4
+  item dscp "DSCP" cols=6
+  item ecn "ECN" cols=2
+  item len "Total Length" cols=16
+  item ident "Identification" cols=16
+  item flg "Flags" cols=3
+  item frag "Fragment Offset" cols=13
+  item ttl "TTL" cols=8
+  item proto "Protocol" cols=8
+  item sum "Header Checksum" cols=16
+  item src "Source Address" cols=32
+  item dst "Destination Address" cols=32
+  item opt "Options" cols=32 open
+  region "고정 헤더 20바이트" rows=5
+  region "옵션"
+}
+
+value ttl "TTL" on=ip.ttl from=64
+value csum "Header Checksum" on=ip.sum from=0xb1e6
+on r1 ttl-1
+on r2 ttl-1
+
+view graph right {
+  host r1 r2 dst
+}
+view graph {
+  ip
+}
+
+scene "라우터 두 개 지나기"
+  host -> r1 "패킷" set="csum=0xb2e6"
+  light ip.ttl ip.sum
+  r1 -> r2 "패킷" set="csum=0xb3e6"
+  r2 -> dst "패킷"

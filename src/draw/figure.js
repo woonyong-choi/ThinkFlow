@@ -16,6 +16,7 @@ import { drawShape } from './shape.js';
 import { CORNER, rectOpen } from './surface.js';
 import { drawText, drawTexts } from './texts.js';
 import { drawPlot, drawTime } from './time.js';
+import { drawTiming } from './timing.js';
 
 // cost: time O(s·k·r·n + e·p), heap O(out), stack O(1)
 // vars: s = 도형 수, k = 카드 내용 수, r = 카드 줄 수, n = 글자 수, e = 선 수, p = 경로 점 수, out = 만든 SVG 글자 수
@@ -38,6 +39,7 @@ export function drawScene(scene, decorate, glyphs) {
   for (const note of scene.notes ?? []) parts.push(drawNote(note, glyphs, scene.shownSi));
   for (const plot of scene.plots ?? []) parts.push(drawPlot(plot, glyphs));
   for (const time of scene.times ?? []) parts.push(drawTime(time, paint));
+  for (const timing of scene.timings ?? []) parts.push(drawTiming(timing, paint));
   for (const panel of scene.panels ?? []) if (panel.label) parts.push(drawPanelLabel(panel, glyphs));
   const pills = scene.edges.flatMap((e, j) => drawEdgeLabel(e, j, paint) ?? []);
   return { body: parts.join('\n'), pills: pills.length ? `<g class="fl-pills">${pills.join('')}</g>` : '' };

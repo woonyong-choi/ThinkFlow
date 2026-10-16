@@ -29,6 +29,32 @@ scene "조회"
 
 칸은 `item`으로 적고, 위치는 0부터 세는 `row`, `col`, 크기는 `rows`, `cols`입니다. 칸 이름은 격자 밖에서 `격자.칸`으로 부릅니다.
 
+## 바이트 배치
+
+패킷 헤더와 구조체 배치는 격자에 `unit=`(단위 이름, `bit`나 `byte` 등)을 적습니다. 한 행이 `cols`개 단위이고, 칸 위에 단위 눈금, 왼쪽에 같은 단위의 행 오프셋이 붙습니다. 칸 폭은 차지한 단위 수에 비례하고, 칸 아래 흐린 글은 크기(`16 bit`)나 둘째 글(`item flags "Flags" "CWR ECE"`)입니다.
+
+```thinkflow name=bytes
+thinkflow
+title "UDP 헤더"
+
+grid udp "UDP 헤더" rows=3 cols=32 unit=bit {
+  item sport "Source Port" cols=16
+  item dport "Destination Port" cols=16
+  item len "Length" cols=16
+  item sum "Checksum" cols=16
+  item data "Data" cols=32 open
+  region "헤더 8바이트" rows=2
+  region "데이터"
+}
+```
+
+![UDP 헤더](grid-bytes.svg)<!-- thinkflow -->
+
+- `row`와 `col`을 둘 다 생략한 칸은 앞 칸 바로 뒤에 놓이고, 그 행에 자리가 없으면 다음 행 맨 앞입니다.
+- `open`은 길이가 정해지지 않은 마지막 필드입니다. 바깥 틀의 그 아랫변이 점선입니다.
+- `region "이름" [row=N] [rows=N]`은 오른쪽에 행 구간 괄호와 이름을 둡니다. `row`를 생략하면 앞 구간이 끝난 행부터입니다.
+- `value`를 칸에 놓으면 값이 칸 글 자리에 나오고 필드 이름은 흐린 둘째 줄로 내려갑니다. TCP, IPv4, 구조체 예제는 [tcp-header](../../examples/tcp-header.thinkflow), [ipv4-header](../../examples/ipv4-header.thinkflow), [struct-layout](../../examples/struct-layout.thinkflow)입니다.
+
 ## 문법
 
 줄 종류와 선택 사항은 [그림 문법](../design/figure-syntax.md#문법-표)의 문법 표가 정본이고, 칸 격자의 줄과 크기와 배치는 [칸 격자](../design/grid.md)에 있습니다.
@@ -46,5 +72,8 @@ scene "조회"
 | 격자 폭을 넘는 칸 | `item "b" ends at column 6 but grid "g" has cols=2. Raise cols= on the grid or move the item` | `syntax` | `cols`를 늘리거나 칸을 옮깁니다 |
 | 겹치는 칸 | `item "b" overlaps item "a" (line 3). Move one of them or change row, col, rows, cols` | `syntax` | 위치나 크기를 바꿉니다 |
 | 선언하지 않은 칸을 선 끝으로 씀 | 가까운 이름을 제안하는 `syntax` 메시지 | `syntax` | `격자.칸` 이름을 고칩니다 |
+| `unit=` 없는 격자의 구간 | `region brackets rows of a byte layout. Add unit=bit or unit=byte to grid "g"` | `syntax` | 격자에 `unit=`을 적습니다 |
+| 마지막 행에 닿지 않는 `open` 칸 | `open marks a field whose length varies, so it ends the layout. ...` | `syntax` | 칸을 마지막 행으로 옮기거나 `open`을 뺍니다 |
+| `col=0`이 아닌 칸의 `key=` | `key= labels a row from the left, so it goes on an item at col=0` | `syntax` | 행 맨 앞 칸에 적습니다 |
 
 `code`는 `thinkflow check figure.thinkflow --json`으로 봅니다.
