@@ -240,7 +240,7 @@ test('K-trace spans sit on a linear time axis: position follows "at", length fol
     const zero = at(dom, '0').x;
     const hundred = at(dom, '100').x;
     const unitWidth = hundred - zero;
-    const spans = findAll(dom, (n) => n.tag === 'rect' && !n.attrs.class && num(n, 'height') < 20 && num(n, 'width') > 10);
+    const spans = findAll(dom, (n) => n.tag === 'rect' && n.attrs['data-span'] !== undefined);
     assert.equal(spans.length, 2);
     spans.sort((p, q) => num(p, 'y') - num(q, 'y'));
     assert.ok(Math.abs(num(spans[0], 'x') - zero) < 1.5 && Math.abs(num(spans[0], 'width') - unitWidth) < 1.5, 'ONE starts at 0 and lasts 100');
