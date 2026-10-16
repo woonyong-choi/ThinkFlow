@@ -45,6 +45,7 @@
   --color-ui-line: var(--primitive-line);
   --color-help-title-color: var(--primitive-help-title-color);
   --color-action-link: var(--primitive-link);
+  --color-category-blue-anchor: #1e6bd6;
   --color-category-blue-light-border: #1e6bd6;
   --color-category-blue-light-ink: #1161cb;
   --color-category-blue-light-tint-3: #d5e4fa;
@@ -127,7 +128,7 @@
   --color-state-active-text: var(--color-category-blue-dark-ink);
   --color-data-main: var(--color-category-blue-dark-border);
   --color-data-heat-low: var(--color-category-blue-dark-tint-3);
-  --color-data-heat-high: var(--color-category-blue-dark-border);
+  --color-data-heat-high: var(--color-category-blue-anchor);
   --color-data-heat-ink: var(--color-gray-0);
   --color-data-grid: var(--primitive-figure-dark-edge);
   --color-data-category-outline-1: var(--color-category-blue-dark-data);
@@ -161,7 +162,7 @@
   --color-state-active-text: var(--color-category-blue-dark-ink);
   --color-data-main: var(--color-category-blue-dark-border);
   --color-data-heat-low: var(--color-category-blue-dark-tint-3);
-  --color-data-heat-high: var(--color-category-blue-dark-border);
+  --color-data-heat-high: var(--color-category-blue-anchor);
   --color-data-heat-ink: var(--color-gray-0);
   --color-data-grid: var(--primitive-figure-dark-edge);
   --color-data-category-outline-1: var(--color-category-blue-dark-data);
@@ -507,19 +508,20 @@
   fill: var(--color-figure-number-ink);
 }
 
-/* 도형은 종이 카드다: 옅은 머리카락 윤곽에 부드러운 그림자로 캔버스에서 떠 있다. 관계선(color.line)이 윤곽보다 진해 흐름이 먼저 읽힌다. 면이 없는 윤곽, 외부 도형(점선)과 상태 시작·끝 점은 그림자를 두지 않는다. */
-.fl :where(.fl-node) > .fl-stroke {
+/* 도형은 종이 카드다: 옅은 머리카락 윤곽에 부드러운 그림자로 캔버스에서 떠 있다. 관계선(color.line)이 윤곽보다 진해 흐름이 먼저 읽힌다. 면이 없는 윤곽, 외부 도형(점선)과 상태 시작·끝 점은 그림자를 두지 않는다.
+   차트 보기와 시간 보기의 판(.fl-panel)도 같은 카드 면 위에 놓인다. 판은 도형이 아니라 켜짐·초점 상태가 없고 면과 윤곽과 그림자만 같다. */
+.fl :where(.fl-node, .fl-panel) > .fl-stroke {
   stroke: var(--fx-edge-rest);
   stroke-width: var(--border-width-thin);
 }
 
-.fl :where(.fl-node:not(.fl-shape-external, .fl-shape-start, .fl-shape-final)) > .fl-stroke:where(:not([fill='none'])) {
+.fl :where(.fl-node:not(.fl-shape-external, .fl-shape-start, .fl-shape-final), .fl-panel) > .fl-stroke:where(:not([fill='none'])) {
   filter: drop-shadow(var(--drop-shadow-figure-ambient)) drop-shadow(var(--drop-shadow-figure-card));
 }
 
 /* 구획은 border.hair, 보조 경계는 border.thin, 관계는 border.edge, 생명선은 border.lifeline, 도형 경계는 공통 디자인.node-stroke다. 모든 선은 그림과 함께 확대·축소된다. */
 .fl .fl-path,
-.fl .fl-node > .fl-stroke,
+.fl :is(.fl-node, .fl-panel) > .fl-stroke,
 .fl .grid-cell,
 .fl .col-line,
 .fl .pill,
@@ -553,7 +555,11 @@
   --fx-line-rest: var(--color-line);
 }
 
-/* 도형의 평소 면과 켜진 면. 옅은 면으로 고른 도형(filled)은 켜져도 면이 같다. 면이 없는 윤곽(fill='none')과 점은 자기 면이 없거나 자기 색이다. */
+/* 도형의 평소 면과 켜진 면. 옅은 면으로 고른 도형(filled)은 켜져도 면이 같다. 면이 없는 윤곽(fill='none')과 점은 자기 면이 없거나 자기 색이다. 차트 판은 평소 면만 있다. */
+.fl .fl-panel {
+  --fx-face: var(--color-ui-card);
+}
+
 .fl .fl-node {
   --fx-face: var(--color-ui-card);
   --fx-face-on: var(--color-figure-active-surface);
@@ -599,7 +605,7 @@
   --fx-face-on: none;
 }
 
-.fl :where(.fl-node) > .fl-stroke:where(:not([fill='none'])) {
+.fl :where(.fl-node, .fl-panel) > .fl-stroke:where(:not([fill='none'])) {
   fill: var(--fx-face);
 }
 
@@ -715,12 +721,12 @@
   fill: var(--color-ink);
 }
 
-/* 글자 뒤 바탕 면과 받침 선은 차트가 놓인 면의 색이다. 차트 보기는 그림 바탕(설명 판), 차트 카드는 카드 면이다(켜진 카드는 켜진 면). 받는 쪽은 차트 묶음(.fl-chart)의 color를 currentColor로 읽는다. */
+/* 글자 뒤 바탕 면과 받침 선은 차트가 놓인 면의 색이다. 차트 보기와 시간 보기는 판 카드(.fl-panel)의 면, 차트 카드는 카드 면이다(켜진 카드는 켜진 면). 판 없이 그림 바탕에 놓인 차트는 그림 바탕(설명 판)이다. 받는 쪽은 차트 묶음(.fl-chart)의 color를 currentColor로 읽는다. */
 .fl {
   --chart-ground: var(--color-figure-canvas);
 }
 
-.fl .fl-node {
+.fl :is(.fl-node, .fl-panel) {
   --chart-ground: var(--fx-face);
 }
 
