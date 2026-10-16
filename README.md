@@ -1,7 +1,7 @@
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="docs/assets/thinkflow-logo-dark.png">
-    <img src="docs/assets/thinkflow-logo.png" alt="ThinkFlow logo: a transparent exclamation mark drawing a blue line above the ThinkFlow wordmark" width="320">
+    <img src="docs/assets/thinkflow-logo.png" alt="ThinkFlow icon: a dressmaker's mannequin on a wooden stand wrapped in a yellow tape measure" width="200">
   </picture>
 </p>
 
