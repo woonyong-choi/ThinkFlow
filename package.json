@@ -28,7 +28,7 @@
   "types": "./src/index.d.ts",
   "files": [
     "src",
-    "docs/assets/thinkflow-logo*.png",
+    "docs/assets/thinkflow-favicon*.png",
     "LICENSE",
     "NOTICE"
   ],
@@ -45,7 +45,7 @@
     "check": "design-tokens-check src --tokens node_modules/@woonyong-choi/design-tokens/dist/tokens.json",
     "check:docs": "node scripts/build-grammar-doc.mjs --check && node scripts/build-check-doc.mjs --check",
     "check:sources": "node src/cli.js check examples/*.thinkflow docs/assets/*.thinkflow docs/assets/showcase/*.thinkflow --strict",
-    "check:figures": "node scripts/run-md.mjs --check --strict && node scripts/build-showcase.mjs --check",
+    "check:figures": "node scripts/run-md.mjs --check --strict && node scripts/build-showcase.mjs --check && node scripts/build-favicon.mjs --check",
     "check:advisory": "node scripts/check-cost-comments.mjs --advisory src test && node scripts/check-size.mjs --advisory src scripts",
     "examples": "node scripts/build-catalog.mjs",
     "showcase": "node scripts/build-showcase.mjs",

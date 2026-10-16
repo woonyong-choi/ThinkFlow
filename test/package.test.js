@@ -10,8 +10,8 @@ import { cli, ROOT } from './support.js';
 
 const pkg = JSON.parse(readFileSync(join(ROOT, 'package.json'), 'utf8'));
 
-test('P1 the package ships src, the shared logo PNGs, the licence and the notice, and nothing else', () => {
-  assert.deepEqual(pkg.files, ['src', 'docs/assets/thinkflow-logo*.png', 'LICENSE', 'NOTICE']);
+test('P1 the package ships src, the tab icon PNGs, the licence and the notice, and nothing else', () => {
+  assert.deepEqual(pkg.files, ['src', 'docs/assets/thinkflow-favicon*.png', 'LICENSE', 'NOTICE']);
 });
 
 test('P2 the command and static build API are explicit package entry points', () => {

@@ -322,6 +322,16 @@ test('X9b every panel of the wide and the narrow-screen layout shares its natura
       assert.ok(panelW > 0 && panelW <= viewW, `${panel.attrs['data-strategy']}: panel ${panelW} fits the view ${viewW}`);
       assert.doesNotMatch(panel.attrs.style, /--min-w/);
     }
+    // 판 제목은 그림 왼쪽 여백에서 시작하므로 좁은 판의 SVG viewBox도 그 제목을 담아야 잘리지 않는다.
+    for (const title of ['Structure', 'Calls']) {
+      const panel = panels.find((section) => findAll(section, (n) => n.tag === 'text' && textContent(n).trim() === title).length);
+      assert.ok(panel, `${title}: panel title is drawn`);
+      const svg = findOne(panel, (n) => n.tag === 'svg', 'panel svg');
+      const [x, , w] = svg.attrs.viewBox.split(' ').map(Number);
+      const text = findAll(panel, (n) => n.tag === 'text' && textContent(n).trim() === title)[0];
+      const at = Number(text.attrs.x);
+      assert.ok(at >= x && at < x + w, `${title}: title x ${at} lies inside the panel viewBox ${svg.attrs.viewBox}`);
+    }
   }
 });
 
