@@ -28,9 +28,9 @@ export function drawPacket(clock, { seg, hop, name }, glyphs) {
   const [from, to] = [clock.keyTime(start), clock.keyTime(start + (hop.cut ?? hop.ms))];
   const tone = hop.tone ? toneColors(hop.tone) : undefined;
   const color = tone?.fill ?? tokens.color.state.active;
-  const ink = tone?.ink ?? tokens.color.state['on-active'];
+  const ink = tone?.chipInk ?? tokens.color.state['on-active'];
   const outline = tone?.outline;
-  const chip = hop.data ? drawChip(hop.data, { glyphs, color: hop.tone ? color : undefined, outline }) + pushChip(clock, start, hop) : '';
+  const chip = hop.data ? drawChip(hop.data, { glyphs, color: tone?.chip }) + pushChip(clock, start, hop) : '';
   const chipMarkup = hop.chipFade ? `<g>${chipFadeAnimate(clock, start, hop.chipFade)}<g>${chip}</g></g>` : `<g>${chip}</g>`;
   const body =
     `<g class="fl-packet ${name}" opacity="0" fill="${ink}"><circle r="${values.spacing.figure.packet.halo}" fill="${color}" opacity="${values.opacity.halo}"/><circle r="${values.spacing.figure.packet.radius}" fill="${color}"${outline ? ` stroke="${outline}" stroke-width="${values["border-width"].edge}"` : ''}/>${chip ? chipMarkup : ''}` +
@@ -43,13 +43,13 @@ export function drawPacket(clock, { seg, hop, name }, glyphs) {
 // cost: time O(l·n), heap O(out), stack O(1)
 // vars: l = 줄 수, n = 글자 수, out = 만든 SVG 글자 수
 // basis: estimate
-// 점 위에 뜨는 글 상자. 줄은 시간표가 이미 나눴다. 흐름색의 외곽선 역할이 있으면 면과 별도로 적용한다.
-function drawChip(lines, { glyphs, color, outline }) {
+// 점 위에 뜨는 글 상자. 줄은 시간표가 이미 나눴다. 색 이름이 있으면 그 색의 진한 흐름 면(color.flow.<색>), 없으면 켜짐 면이고 글자는 묶음 fill(흰색)을 받는다. 윤곽은 없다.
+function drawChip(lines, { glyphs, color }) {
   for (const line of lines) glyphs.add(line, STYLE.chip.face);
   const { w, h } = sizeChip(lines);
   const top = -h - CHIP_GAP;
   return (
-    `<rect x="${r(-w / 2)}" y="${r(top)}" width="${r(w)}" height="${r(h)}" rx="${values.radius.lg}" fill="${color ?? tokens.color.state['active-fill']}"${color ? ` stroke="${outline ?? color}" stroke-width="${values["border-width"].edge}"` : ''}/>` +
+    `<rect x="${r(-w / 2)}" y="${r(top)}" width="${r(w)}" height="${r(h)}" rx="${values.radius.lg}" fill="${color ?? tokens.color.state['active-fill']}"/>` +
     lines.map((line, li) => `<text x="0" y="${r(top + STYLE.chip.line * (li + 1))}" class="chip">${renderRich(line)}</text>`).join('')
   );
 }
