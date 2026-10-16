@@ -514,3 +514,16 @@ test('C-bar reference marks share one row line without crowding: a goal equal to
   const row = ticks.filter((n) => Number(n.attrs.y1) < missingY && Number(n.attrs.y1) > missingY - 60);
   assert.ok(row.length && row.every((n) => Number(n.attrs.y2) < missingTop), `the goal tick stops above the missing-slot text at ${missingTop}: ${row.map((n) => n.attrs.y2)}`);
 });
+
+test('C-bar narrow header rule note keeps the rule value once: a name that already has the value is not followed by it again', async () => {
+  const source = (label) => thinkflow(`chart c "C" bar {\n  x "x(%)"\n  series a "A"\n  row "r" a=2\n  rule 1 "${label}"\n}`);
+  const narrowTexts = async (label) => {
+    const dom = parseMarkup(await toHtml(await build(source(label)), 'bar'), { html: true });
+    const narrow = descendants(dom).find((node) => node.tag === 'template' && /\bfl-narrow\b/.test(node.attrs.class ?? ''));
+    return findAll(narrow, (node) => node.tag === 'text').map((node) => textContent(node).trim());
+  };
+  assert.ok((await narrowTexts('SLO 1%')).includes('SLO 1%'));
+  assert.ok(!(await narrowTexts('SLO 1%')).includes('SLO 1% 1'));
+  // 이름의 10은 값 1과 다른 숫자라 값을 덧붙인다.
+  assert.ok((await narrowTexts('SLO 10%')).includes('SLO 10% 1'));
+});

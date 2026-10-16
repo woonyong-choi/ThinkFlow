@@ -91,7 +91,7 @@
 - 이동 글 상자는 문장과 이름표 역할(13)이다.
 - 글 한 줄의 자리와 폭은 `measure/texts.js`가 `textAt`으로 정한 text 하나이고, 기준 점(`anchor`)도 text가 정한다. 카드 내용 줄(`measure/content.js`의 `sizeContent`)도 태그, 오른쪽 표시, 본문, 관계 그래프 이름, 값을 모두 text로 재어 돌려주고, 그리는 쪽(`draw/content.js`, `draw/values.js`)과 그림 검사 1번(`check/fit.js`)은 그 text를 그대로 읽어 따로 폭을 다시 세지 않는다. 메모와 순서 구획 제목은 `textBlock`, 그룹 제목은 `placeGroupHead`가 같은 방식으로 text를 만든다.
 - 구획 카드(표, API, 클래스)와 순서 보기 참여자의 머리는 `measure/card.js`의 `headerOf` 하나다. 제목은 아이콘과 배지를 뺀 폭(`room`)에 한 줄이 들면 그대로 두고, 넘으면 낱말 자리, 이름 안의 `/`, `-`, `_`, `.` 뒤, 글자 단위 순서로 줄을 나눈다. `room`은 본문 폭과 `INNER_MAX` 중 큰 쪽이라 본문이 이미 넓으면 제목은 필요 없이 좁게 나뉘지 않는다. 머리 높이는 줄 수만큼 늘어나고 아이콘은 첫 줄과 가운데가 같다.
-- 차트 머리와 시간 보기 머리는 `chart/labels.js`의 `drawHeader` 하나다. 제목은 `label`, 부제와 덧붙임 글, 좁은 배치의 기준선 이름은 `sub` 역할과 줄 높이로 위에서 아래로 쌓는다. 차트는 플롯 배치라 왼쪽에 맞추고, 긴 글은 좁은 배치의 폭(`chart.layout.width`)이나 없으면 차트 기본 폭(`WIDTH`)에서 줄을 나눈다.
+- 차트 머리와 시간 보기 머리는 `chart/labels.js`의 `drawHeader` 하나다. 제목은 `label`, 부제와 덧붙임 글, 좁은 배치의 기준선 이름은 `sub` 역할과 줄 높이로 위에서 아래로 쌓는다. 좁은 배치의 기준선 줄은 `이름 값`이고, 이름에 그 값이 이미 있으면(`SLO 1%`의 1) 값을 덧붙이지 않는다. 차트는 플롯 배치라 왼쪽에 맞추고, 긴 글은 좁은 배치의 폭(`chart.layout.width`)이나 없으면 차트 기본 폭(`WIDTH`)에서 줄을 나눈다.
 - 결과 SVG에는 그 그림에 쓰인 글자만 잘라 낸 글꼴을 넣는다. 보는 쪽에 글꼴이 없어도 잰 폭과 그려진 폭이 같게 하기 위해서다.
 - 수학 기호는 Pretendard에 없는 것만 뒤 글꼴이 그린다. 글자 순서는 Pretendard, Noto Sans(`FigSansSym`, 위 첨자 `ᵀ`), Noto Sans Math(`FigSansMath`, `∈`, `∇`, `⊙`, `∘` 같은 연산자)다. `⁻¹`, `√`, `×`, `∑`, `≤`, `∞`는 Pretendard에 있다. 두 글꼴 모두 SIL OFL 1.1이고 `@expo-google-fonts/noto-sans`, `@expo-google-fonts/noto-sans-math` 패키지(껍데기 MIT, 글꼴 OFL)로 받는다. Noto Sans Math는 굵기별 파일이 없어 모든 굵기에 한 파일을 쓰고(`font-weight: 400 900`) 브라우저가 글자를 덧칠하지 않게 한다. `font-family` 사슬은 `FigSans, FigSansSym, FigSansMath, ...`다.
 - 글꼴 파일과 대체 글꼴 어디에도 없는 글자(그림 문자 등)는 오류다. 대신 그릴 글꼴의 폭을 알 수 없기 때문이다.

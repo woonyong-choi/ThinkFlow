@@ -94,6 +94,16 @@ function excludedNote(figure) {
   return notes.join(' · ') || undefined;
 }
 
+// cost: time O(n), heap O(n), stack O(1)
+// vars: n = 기준선 이름 글자 수
+// basis: estimate
+// 좁은 배치의 기준선 한 줄. 이름에 값이 이미 있으면(`SLO 1%`의 1) 값을 덧붙이지 않는다.
+function ruleNote(rule) {
+  const value = formatNumber(rule.value);
+  const named = new RegExp(`(^|[^\\d.])${value.replace('.', '\\.')}($|[^\\d.])`).test(rule.label);
+  return named ? rule.label : `${rule.label} ${value}`;
+}
+
 // cost: time O(s·n), heap O(out), stack O(1)
 // vars: s = 계열 수, n = 계열 이름 글자 수, out = 만든 SVG 글자 수
 // basis: estimate
@@ -103,7 +113,7 @@ function excludedNote(figure) {
  */
 export function drawHeader(figure) {
   const { layout } = figure.chart;
-  const rules = layout ? figure.chart.rules.map((rule) => `${rule.label} ${formatNumber(rule.value)}`) : [];
+  const rules = layout ? figure.chart.rules.map(ruleNote) : [];
   const room = (layout?.width ?? WIDTH) - PAD * 2;
   const linesOf = (text, role, style) => wrap(text, room, style).map((line) => ({ role, text: line, style }));
   const lines = [
