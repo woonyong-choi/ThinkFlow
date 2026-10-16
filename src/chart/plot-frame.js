@@ -3,7 +3,7 @@ import { maxOf, minOf } from '../extremes.js';
 import { STYLE } from '../measure/texts.js';
 import { measure, wrap } from '../measure/fonts.js';
 import { centerBaseline, renderRich, roundCoord as r } from '../text.js';
-import { axisEnd, axisLabels, fitLength, tickReach } from './axis.js';
+import { axisEnd, axisLabels, fitLength, tickReach, valueGrid } from './axis.js';
 import { DOT, PAD, SIZE, SPACE, TEXT, WIDTH } from './metrics.js';
 import { COPY } from './copy.js';
 import { valueRange } from './extent.js';
@@ -38,14 +38,16 @@ function breakMark(y, left) {
 // cost: time O(t), heap O(out), stack O(1)
 // vars: t = 눈금 수, out = 만든 SVG 글자 수
 // basis: estimate
-// 세로 눈금: 격자선과 왼쪽 눈금 글자. 잘린 끝 격자선은 지그재그 뒤에서 시작한다.
-function yGrid(sy, { left, plotW, cut }) {
+// 세로 눈금: 격자선과 왼쪽 눈금 글자. 잘린 끝 격자선은 지그재그 뒤에서 시작한다. 기준선(rule)과 같은 값의 격자선은 긋지 않는다. 실선 격자가 점선 기준선을 덮어 기준선이 실선처럼 보이기 때문이다.
+function yGrid(sy, { left, plotW, cut, skip }) {
   return sy.ticks
     .map((t, i) => {
       const isCut = t === cut;
+      const label = `<text x="${r(left - SPACE["1-5"])}" y="${r(centerBaseline(sy.at(t), TEXT['11']))}" class="chart-tick end">${sy.labels[i]}</text>`;
+      if (skip.includes(t) && !isCut) return label;
       const from = isCut ? left + BREAK_STEPS * BREAK_STEP : left;
       const line = `<line x1="${r(from)}" x2="${r(left + plotW)}" y1="${r(sy.at(t))}" y2="${r(sy.at(t))}" class="chart-grid"/>`;
-      return `${line}${isCut ? breakMark(sy.at(t), left) : ''}<text x="${r(left - SPACE["1-5"])}" y="${r(centerBaseline(sy.at(t), TEXT['11']))}" class="chart-tick end">${sy.labels[i]}</text>`;
+      return `${line}${isCut ? breakMark(sy.at(t), left) : ''}${label}`;
     })
     .join('');
 }
@@ -105,6 +107,8 @@ export function plotFrame(figure, top, { xs, ys, endRoom = 0, minPlotH = 0, mark
   const plotW = fitLength(unitX, [...tickReach(unitX), ...xs.map((value) => ({ value, extra: markReach }))], { start: left, right });
   const sx = makeScale(xKind, { ...xRange, start: left, length: plotW });
   const axis = chart.layout ? compactAxis(sx, plotTop + plotH, chart.x) : { svg: axisLabels(sx, plotTop + plotH, chart.x), bottom: axisEnd(plotTop + plotH, Boolean(chart.x)) };
-  const frame = yGrid(sy, { left, plotW, cut: cutTick(chart, yScale.ticks) }) + axis.svg + yAxisTitle(titleLines, top);
+  // 가로 값 자리마다 세로 격자를 더해 가로 격자와 모눈을 이룬다. 히스토그램은 막대가 구간을 채워 세로 격자가 막대 사이 틈과 겹치므로 두지 않는다.
+  const columns = figure.chartType === 'histogram' ? '' : valueGrid(sx, { top: plotTop, bottom: plotTop + plotH });
+  const frame = columns + yGrid(sy, { left, plotW, cut: cutTick(chart, yScale.ticks), skip: chart.rules.map((rule) => rule.value) }) + axis.svg + yAxisTitle(titleLines, top);
   return { sx, sy, frame, top: plotTop, right, bottom: axis.bottom, plotBottom: plotTop + plotH };
 }
