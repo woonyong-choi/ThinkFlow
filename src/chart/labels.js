@@ -7,6 +7,7 @@ import { centerBaseline, escapeXml, plainText, renderRich, roundCoord as r } fro
 import { values } from '@woonyong-choi/design-tokens/tokens.js';
 import { COPY } from './copy.js';
 import { ecdfGroups } from './data.js';
+import { hasEndLabels } from './end-labels.js';
 import { drawLegend } from './legend.js';
 import { markAttrs } from './marks.js';
 import { PAD, SIZE, SPACE, TEXT, WIDTH } from './metrics.js';
@@ -123,7 +124,8 @@ export function drawHeader(figure) {
   const texts = stackTexts(lines, { x: PAD, top: PAD, anchor: 'start' });
   const parts = texts.map((t) => textMarkup(t, { x: 0, y: 0 }));
   let y = lines.reduce((bottom, line) => bottom + line.style.line, PAD);
-  if (figure.chart.series.length) {
+  // 끝 이름이 계열마다 이름을 직접 다는 차트(선, 계단, 면적의 둘 이상 계열)는 범례를 두지 않는다. 같은 이름을 두 번 적지 않고 그림 영역이 위로 넓어진다(Vega-Lite 끝 이름 예제와 같은 읽기).
+  if (figure.chart.series.length && !hasEndLabels(figure)) {
     const legend = drawLegend(figure, y);
     parts.push(...legend.svg);
     y = legend.bottom;
