@@ -542,3 +542,20 @@ test('K-timing rows and notes that are not values or moving cards are line-numbe
   await rejectedAt(source.replace('note n=1 "one"', 'note n=1'), 'note n=1', /note value=state "text"/);
   await rejectedAt(source.replace(/view timing \{[^}]*\}/, 'view timing'), 'view timing', /block/);
 });
+
+test('K-queue slot rows are balanced and a shorter last row is centred under the rows above', async () => {
+  const { queueSlots, sizeQueue } = await import('../src/measure/queue.js');
+  const rowsOf = (count) => {
+    const size = sizeQueue({ label: 'q', slots: count });
+    const slots = queueSlots({ x: 0, y: 0, w: size.w, h: size.h, slots: count });
+    const rows = new Map();
+    for (const s of slots) rows.set(s.y, [...(rows.get(s.y) ?? []), s]);
+    return [...rows.values()];
+  };
+  assert.deepEqual(rowsOf(10).map((row) => row.length), [5, 5]);
+  const [top, bottom] = rowsOf(9);
+  assert.deepEqual([top.length, bottom.length], [5, 4]);
+  const middle = (row) => (row[0].x + row.at(-1).x + row.at(-1).w) / 2;
+  assert.ok(Math.abs(middle(top) - middle(bottom)) < 1e-9, 'the short last row is centred');
+  assert.deepEqual(rowsOf(6).map((row) => row.length), [6]);
+});
