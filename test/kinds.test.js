@@ -6,9 +6,10 @@ import { FIGURE_PAD } from '../src/canvas.js';
 import { reflowFigure } from '../src/build.js';
 import { headReach } from '../src/draw/arrow.js';
 import { measure } from '../src/measure/fonts.js';
+import { sizePill } from '../src/measure/sizes.js';
 import { STYLE } from '../src/measure/texts.js';
 import { values } from '@woonyong-choi/design-tokens/tokens.js';
-import { build, thinkflow, finalValue, findAll, lineOf, num, parseMarkup, reject, stillDom, textContent, textsOf, toHtml, toSvg, visibleTexts } from './support.js';
+import { EXAMPLES, build, thinkflow, finalValue, findAll, lineOf, num, parseMarkup, read, reject, stillDom, textContent, textsOf, toHtml, toSvg, visibleTexts } from './support.js';
 
 const rejectedAt = async (source, needle, pattern) => {
   const problems = await reject(source);
@@ -541,4 +542,19 @@ test('K-timing rows and notes that are not values or moving cards are line-numbe
   await rejectedAt(source.replace('note n=1', 'note a=1'), 'note a=1', /card row/);
   await rejectedAt(source.replace('note n=1 "one"', 'note n=1'), 'note n=1', /note value=state "text"/);
   await rejectedAt(source.replace(/view timing \{[^}]*\}/, 'view timing'), 'view timing', /block/);
+});
+
+test('K-graph an edge label lies inside or outside a group, never across its border (state, architecture)', async () => {
+  for (const name of ['state.thinkflow', 'architecture.thinkflow']) {
+    const { scene } = await build(read(EXAMPLES, name), { baseDir: EXAMPLES });
+    for (const e of scene.edges.filter((edge) => edge.labelAt && !edge.isMark && (edge.label || edge.no))) {
+      const { w, h } = sizePill(e.label, e.no);
+      const box = { x: e.labelAt.x - w / 2, y: e.labelAt.y - h / 2, w, h };
+      for (const g of scene.groups) {
+        const meets = box.x < g.x + g.w && g.x < box.x + box.w && box.y < g.y + g.h && g.y < box.y + box.h;
+        const inside = g.x <= box.x && g.y <= box.y && box.x + box.w <= g.x + g.w && box.y + box.h <= g.y + g.h;
+        assert.ok(!meets || inside, `${name}: label "${e.label ?? e.no}" crosses the border of group ${g.id}`);
+      }
+    }
+  }
 });
