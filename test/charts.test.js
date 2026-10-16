@@ -119,6 +119,13 @@ test('K3 positions follow values: scatter orders points by x and y, a negative d
   assert.ok(sign('−2') < sign('+3'), 'the negative difference sits left of the positive one');
 });
 
+test('K3 a horizontal axis of whole numbers only ticks at whole numbers', async () => {
+  const dom = await stillDom(chart('line', 'series s "s"\npoint x=1 s=50\npoint x=2 s=90\npoint x=3 s=70'));
+  const ticks = findAll(dom, (n) => n.tag === 'text' && (n.attrs.class ?? '').split(' ').includes('chart-tick')).map((n) => textContent(n).trim());
+  const xTicks = ticks.filter((t) => ['1', '1.5', '2', '2.5', '3'].includes(t));
+  assert.deepEqual(xTicks, ['1', '2', '3']);
+});
+
 test('K3 signed value text keeps its sign when decimals round the magnitude to zero: difference and dumbbell', async () => {
   const gap = await stillDom(chart('difference', 'series d "d"\nrow "A" d=-0.04\nrow "B" d=0.04\nrow "C" d=0', 'x "x(u)"\n  decimals 1'));
   assert.deepEqual(['−0.0', '+0.0', '0.0'].filter((word) => !textsOf(gap).includes(word)), [], JSON.stringify(textsOf(gap)));
