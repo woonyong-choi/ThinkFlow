@@ -7,32 +7,38 @@
 :root {
   --color-gray-0: #ffffff;
   --color-gray-59: #f0f0f0;
+  --color-gray-212: #c9c9c9;
+  --color-gray-282: #b7b7b7;
+  --color-gray-467: #888888;
+  --color-gray-529: #787878;
+  --color-gray-910: #171717;
   --color-gray-933: #111111;
   --color-group-title: var(--color-help-title-color);
-  --color-line: var(--primitive-figure-edge);
+  --color-outline: var(--color-gray-529);
+  --color-line: var(--color-gray-282);
   --color-state-active: var(--color-category-blue-light-border);
   --color-state-active-text: var(--color-category-blue-light-ink);
   --color-state-on-active: var(--color-gray-0);
   --color-ui-focus: var(--color-action-link);
+  --color-data-grid: var(--color-gray-212);
   --color-data-category-1: var(--color-category-blue-solid);
   --color-figure-icon: var(--color-category-blue-light-border);
-  --color-figure-queue-empty: var(--color-figure-inner-surface);
+  --color-figure-queue-empty: var(--color-gray-59);
   --color-figure-number-fill: var(--primitive-figure-number-fill);
   --color-figure-number-ink: var(--primitive-figure-number-ink);
-  --color-figure-outline: var(--color-ui-line);
+  --color-figure-outline: var(--color-gray-467);
   --color-figure-selection-fill: var(--color-category-blue-light-tint-3);
   --color-figure-canvas: var(--primitive-help-bg);
   --color-figure-flash: var(--primitive-search-hover);
   --color-figure-active-surface: var(--primitive-help-hover);
-  --color-figure-cell-line: var(--color-figure-outline);
-  --color-figure-inner-surface: var(--primitive-figure-inner);
-  --color-figure-boundary: var(--primitive-figure-boundary);
   --color-ui-card: var(--color-gray-0);
   --color-ink: var(--primitive-ink);
   --color-ui-muted: var(--primitive-muted);
   --color-ui-line: var(--primitive-line);
   --color-help-title-color: var(--primitive-help-title-color);
   --color-action-link: var(--primitive-link);
+  --color-category-blue-anchor: #1e6bd6;
+  --color-category-blue-fill: var(--color-category-blue-anchor);
   --color-category-blue-on: var(--color-gray-0);
   --color-category-blue-light-border: #1e6bd6;
   --color-category-blue-light-ink: #1161cb;
@@ -40,18 +46,15 @@
   --color-category-blue-dark-border: #3a85f2;
   --color-category-blue-dark-ink: #6da8ff;
   --color-category-blue-dark-tint-3: #303d54;
-  --color-category-blue-solid: var(--color-category-blue-light-data);
-  --color-category-blue-light-data: #296ecc;
-  --color-category-blue-dark-data: #518ad6;
+  --color-category-blue-solid: var(--color-category-blue-fill);
   --font-figure-sans: FigSans, FigSansSym, FigSansMath, ui-sans-serif, -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
   --font-figure-mono: FigMono, FigSans, FigSansSym, FigSansMath, ui-monospace, SFMono-Regular, Menlo, monospace;
   --radius-card-radius: var(--primitive-card-radius);
   --text-small-text: var(--primitive-small-text);
   --text-tiny-text: var(--primitive-tiny-text);
-  --text-figure-meta: 12px;
+  --text-figure-meta: 11px;
   --tracking-text: -0.3px;
   --font-weight-semibold: 600;
-  --font-weight-normal: 400;
   --primitive-ink: #303336;
   --primitive-muted: #55606e;
   --primitive-line: #dfe3e8;
@@ -64,18 +67,16 @@
   --primitive-help-title-color: #3d4856;
   --primitive-figure-dark-bg: #26272b;
   --primitive-figure-dark-node: #303136;
+  --primitive-figure-dark-edge: #50535b;
   --primitive-figure-dark-separator: #454850;
   --primitive-figure-dark-hover: #343e50;
   --primitive-figure-dark-selection: #274174;
   --primitive-figure-dark-muted: #a9adb6;
+  --primitive-figure-dark-line: #7f8793;
+  --primitive-figure-dark-outline: #868686;
   --primitive-figure-number-fill: #303336;
   --primitive-figure-number-ink: #ffffff;
   --primitive-card-radius: 18px;
-  --primitive-figure-edge: #7f8793;
-  --primitive-figure-inner: #f1f3f6;
-  --primitive-figure-dark-inner: #3a3b41;
-  --primitive-figure-boundary: #b3b9c2;
-  --primitive-figure-dark-boundary: #5f636c;
   --border-width-thin: 1px;
   --border-width-hair: 0.75px;
   --border-width-lifeline: 1.25px;
@@ -85,88 +86,82 @@
   --dash-gap: 4;
   --dash-card: 3;
   --outline-width-focus: 3px;
-  --drop-shadow-figure-ambient: 0 0 1px rgba(16, 24, 40, 0.16);
-  --drop-shadow-figure-card: 0 1px 3px rgba(16, 24, 40, 0.08);
-  --drop-shadow-figure-float: 0 1px 2px rgba(16, 24, 40, 0.14);
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']):not([data-theme='dark']) {
+  --color-outline: var(--primitive-figure-dark-outline);
+  --color-line: var(--primitive-figure-dark-line);
   --color-state-active: var(--color-category-blue-dark-border);
   --color-state-active-text: var(--color-category-blue-dark-ink);
   --color-state-on-active: var(--color-category-blue-on);
+  --color-data-grid: var(--primitive-figure-dark-edge);
   --color-figure-icon: var(--color-category-blue-dark-border);
+  --color-figure-queue-empty: var(--color-gray-910);
   --color-figure-number-fill: var(--color-gray-59);
   --color-figure-number-ink: var(--color-gray-933);
+  --color-figure-outline: var(--color-line);
   --color-figure-selection-fill: var(--color-category-blue-dark-tint-3);
   --color-figure-canvas: var(--primitive-figure-dark-bg);
   --color-figure-flash: var(--primitive-figure-dark-selection);
   --color-figure-active-surface: var(--primitive-figure-dark-hover);
-  --color-figure-inner-surface: var(--primitive-figure-dark-inner);
-  --color-figure-boundary: var(--primitive-figure-dark-boundary);
   --color-ui-card: var(--primitive-figure-dark-node);
   --color-ink: var(--color-gray-59);
   --color-ui-muted: var(--primitive-figure-dark-muted);
   --color-ui-line: var(--primitive-figure-dark-separator);
   --color-help-title-color: var(--color-ink);
-  --color-category-blue-solid: var(--color-category-blue-dark-data);
-  --drop-shadow-figure-ambient: 0 0 1px rgba(0, 0, 0, 0.6);
-  --drop-shadow-figure-card: 0 1px 3px rgba(0, 0, 0, 0.32);
-  --drop-shadow-figure-float: 0 1px 2px rgba(0, 0, 0, 0.45);
   color-scheme: dark;
   }
 }
 [data-theme='dark'] {
+  --color-outline: var(--primitive-figure-dark-outline);
+  --color-line: var(--primitive-figure-dark-line);
   --color-state-active: var(--color-category-blue-dark-border);
   --color-state-active-text: var(--color-category-blue-dark-ink);
   --color-state-on-active: var(--color-category-blue-on);
+  --color-data-grid: var(--primitive-figure-dark-edge);
   --color-figure-icon: var(--color-category-blue-dark-border);
+  --color-figure-queue-empty: var(--color-gray-910);
   --color-figure-number-fill: var(--color-gray-59);
   --color-figure-number-ink: var(--color-gray-933);
+  --color-figure-outline: var(--color-line);
   --color-figure-selection-fill: var(--color-category-blue-dark-tint-3);
   --color-figure-canvas: var(--primitive-figure-dark-bg);
   --color-figure-flash: var(--primitive-figure-dark-selection);
   --color-figure-active-surface: var(--primitive-figure-dark-hover);
-  --color-figure-inner-surface: var(--primitive-figure-dark-inner);
-  --color-figure-boundary: var(--primitive-figure-dark-boundary);
   --color-ui-card: var(--primitive-figure-dark-node);
   --color-ink: var(--color-gray-59);
   --color-ui-muted: var(--primitive-figure-dark-muted);
   --color-ui-line: var(--primitive-figure-dark-separator);
   --color-help-title-color: var(--color-ink);
-  --color-category-blue-solid: var(--color-category-blue-dark-data);
-  --drop-shadow-figure-ambient: 0 0 1px rgba(0, 0, 0, 0.6);
-  --drop-shadow-figure-card: 0 1px 3px rgba(0, 0, 0, 0.32);
-  --drop-shadow-figure-float: 0 1px 2px rgba(0, 0, 0, 0.45);
   color-scheme: dark;
 }
 [data-theme='light'] {
+  --color-outline: var(--color-gray-529);
+  --color-line: var(--color-gray-282);
   --color-state-active: var(--color-category-blue-light-border);
   --color-state-active-text: var(--color-category-blue-light-ink);
   --color-state-on-active: var(--color-gray-0);
+  --color-data-grid: var(--color-gray-212);
   --color-figure-icon: var(--color-category-blue-light-border);
+  --color-figure-queue-empty: var(--color-gray-59);
   --color-figure-number-fill: var(--primitive-figure-number-fill);
   --color-figure-number-ink: var(--primitive-figure-number-ink);
+  --color-figure-outline: var(--color-gray-467);
   --color-figure-selection-fill: var(--color-category-blue-light-tint-3);
   --color-figure-canvas: var(--primitive-help-bg);
   --color-figure-flash: var(--primitive-search-hover);
   --color-figure-active-surface: var(--primitive-help-hover);
-  --color-figure-inner-surface: var(--primitive-figure-inner);
-  --color-figure-boundary: var(--primitive-figure-boundary);
   --color-ui-card: var(--color-gray-0);
   --color-ink: var(--primitive-ink);
   --color-ui-muted: var(--primitive-muted);
   --color-ui-line: var(--primitive-line);
   --color-help-title-color: var(--primitive-help-title-color);
-  --color-category-blue-solid: var(--color-category-blue-light-data);
-  --drop-shadow-figure-ambient: 0 0 1px rgba(16, 24, 40, 0.16);
-  --drop-shadow-figure-card: 0 1px 3px rgba(16, 24, 40, 0.08);
-  --drop-shadow-figure-float: 0 1px 2px rgba(16, 24, 40, 0.14);
   color-scheme: light;
 }
 /* 그림 안 글자와 모양. HTML 재생기와 움직이는 SVG가 같이 쓴다. */
 /* 카드 안 글(label, sub, meta, cell, item, row)의 기준 점(text-anchor)은 글이 정한다(measure/texts.js의 anchor). 여기서는 글꼴과 색만 정한다. */
-/* 글 위계: 그룹·보기·차트 제목(text.small-text, semibold) > 카드 제목(text.small-text, regular) > 문장·이름표·값(text.tiny-text, regular, 보조 글은 ui-muted) > 작은 표시(text.figure-meta: 번호, 태그, 표식, 키, 눈금, 단위). 값은 굵게 하지 않고 고정폭 숫자로 정렬한다. 크기와 굵기는 ThinkFlow measure/texts.js의 STYLE이 같은 토큰으로 잰다. */
+/* 글 위계는 셋이다: 제목(공통 디자인.label-size 15: 카드 제목은 regular, 그룹 제목은 semibold), 문장과 이름표(detail-size 13: 부제, 선 라벨, 메모, 이동 글, 카드 줄, 제약, 형식), 작은 표시(micro-size 11: 번호, 태그, 표식, 키, 눈금, 단위). 크기와 굵기는 measure/texts.js의 STYLE이 같은 토큰으로 잰다. */
 .fl text {
   font-family: var(--font-figure-sans);
   letter-spacing: var(--tracking-text);
@@ -231,11 +226,10 @@
   fill: var(--color-state-active-text);
 }
 
-/* 값 카드 줄의 값 글자. 줄의 이름(row)은 카드 층이 그리고 값은 오른쪽 끝에 얹힌다. 이름과 같은 크기·굵기이고 고정폭 숫자라 줄마다 자리가 맞는다. 바뀐 값은 굵기가 아니라 갱신 면(fl-flash)으로 알린다. */
+/* 값 카드 줄의 값 글자. 줄의 이름(row)은 카드 층이 그리고 값은 오른쪽 끝에 얹힌다. 이름과 같은 크기이고 굵기만 다르다. */
 .fl .value {
-  font-variant-numeric: tabular-nums;
   font-size: var(--text-tiny-text);
-  font-weight: var(--font-weight-normal);
+  font-weight: var(--font-weight-semibold);
   fill: var(--color-ink);
 }
 
@@ -281,7 +275,7 @@
   fill: var(--color-ink);
 }
 
-/* 그룹은 Things의 영역처럼 굵은 제목과 머리카락 경계로 묶는다. 기본 면이 없고(투명) 깊이에 따라 회색 면을 겹치지 않으며 그림자도 없다. 고른 색은 아래 appearance 역할로 적용한다. */
+/* 그룹은 기본 면이 없다(투명). 경계와 제목만 있고, 깊이에 따라 회색 면을 겹치지 않는다. 고른 색은 아래 appearance 역할로 적용한다. */
 .fl .frame-box {
   --fx-edge-rest: var(--color-figure-outline);
   fill: none;
@@ -295,7 +289,7 @@
 
 .fl .fl-queue-slot {
   fill: var(--color-figure-queue-empty);
-  stroke: var(--color-figure-cell-line);
+  stroke: var(--color-outline);
   stroke-width: var(--border-width-thin);
 }
 
@@ -308,12 +302,6 @@
 .fl .frame-box.dashed,
 .fl .fl-path.dashed {
   stroke-dasharray: var(--dash-line) var(--dash-gap);
-}
-
-/* 점선 경계는 끊긴 선이라 머리카락 윤곽보다 한 단계 진한 color.figure.boundary다. 고른 색과 켜짐은 아래 규칙이 그대로 덮는다. */
-.fl .frame-box.dashed,
-.fl .fl-shape-external {
-  --fx-edge-rest: var(--color-figure-boundary);
 }
 
 .fl .lifeline {
@@ -341,27 +329,15 @@
 
 .fl .note-box {
   fill: var(--color-ui-card);
-  stroke: var(--color-figure-outline);
+  stroke: var(--color-line);
   stroke-dasharray: var(--dash-card) var(--dash-card);
 }
 
-/* 선 라벨 알약은 테두리 없이 카드 면 위에 떠 있어 선 위에서도 읽힌다. 평소 경계는 투명이고 켜질 때만 강조 색 테두리가 생긴다. */
-.fl .pill {
-  --fx-edge-rest: transparent;
+/* 알약은 모두 같은 중립 흰 면과 평소 경계다: 선 라벨, 배지와 개수. */
+.fl .pill,
+.fl .badge-pill {
   fill: var(--color-ui-card);
   stroke: var(--fx-edge-rest);
-  filter: drop-shadow(var(--drop-shadow-figure-ambient)) drop-shadow(var(--drop-shadow-figure-float));
-}
-
-/* 카드 윗줄의 배지와 개수는 카드 안쪽 면의 옅은 알약이다(테두리·그림자 없음). 캔버스 위 그룹 제목의 배지는 선 라벨처럼 떠 있는 카드 면이다. */
-.fl .badge-pill {
-  fill: var(--color-figure-inner-surface);
-  stroke: none;
-}
-
-.fl .fl-group .badge-pill {
-  fill: var(--color-ui-card);
-  filter: drop-shadow(var(--drop-shadow-figure-ambient)) drop-shadow(var(--drop-shadow-figure-float));
 }
 
 .fl .fl-mini-pill {
@@ -383,36 +359,39 @@
 }
 
 .fl .col-line {
-  stroke: var(--color-figure-cell-line);
+  stroke: var(--color-data-grid);
   stroke-width: var(--border-width-hair);
 }
 
 .fl .part-head {
-  fill: var(--color-figure-inner-surface);
+  fill: var(--color-figure-canvas);
 }
 
 .fl .grid-cell {
   --fx-face: var(--color-ui-card);
   --fx-face-on: var(--fx-row);
   fill: var(--fx-face);
-  stroke: var(--color-figure-cell-line);
+  stroke: var(--color-data-grid);
   stroke-width: var(--border-width-thin);
 }
 
 .fl .grid-tray {
   fill: var(--color-ui-card);
-  filter: drop-shadow(var(--drop-shadow-figure-ambient)) drop-shadow(var(--drop-shadow-figure-card));
 }
 
 .fl .grid-cell.gap {
   --fx-face: var(--color-ui-card);
-  stroke: var(--color-figure-cell-line);
+  stroke: var(--color-data-grid);
 }
 
 .fl .grid-cell.empty {
   --fx-face: none;
   stroke: var(--color-line);
   stroke-dasharray: var(--dash-card) var(--dash-card);
+}
+
+.fl .fl-edge.mark {
+  --fx-line-rest: var(--color-ink);
 }
 
 /* 이름과 값은 평소 여백으로 구분한다. 명시한 면(face)과 값 갱신 강조만 배경을 더한다. */
@@ -449,20 +428,15 @@
   fill: var(--color-figure-number-ink);
 }
 
-/* 도형은 종이 카드다: 옅은 머리카락 윤곽에 부드러운 그림자로 캔버스에서 떠 있다. 관계선(color.line)이 윤곽보다 진해 흐름이 먼저 읽힌다. 면이 없는 윤곽, 외부 도형(점선)과 상태 시작·끝 점은 그림자를 두지 않는다.
-   차트 보기와 시간 보기의 판(.fl-panel)도 같은 카드 면 위에 놓인다. 판은 도형이 아니라 켜짐·초점 상태가 없고 면과 윤곽과 그림자만 같다. */
-.fl :where(.fl-node, .fl-panel) > .fl-stroke {
+/* 도형은 그림자 없는 평면이다. 그림자는 떠 있는 메뉴 같은 조작에만 둔다. */
+.fl :where(.fl-node) > .fl-stroke {
   stroke: var(--fx-edge-rest);
   stroke-width: var(--border-width-thin);
 }
 
-.fl :where(.fl-node:not(.fl-shape-external, .fl-shape-start, .fl-shape-final), .fl-panel) > .fl-stroke:where(:not([fill='none'])) {
-  filter: drop-shadow(var(--drop-shadow-figure-ambient)) drop-shadow(var(--drop-shadow-figure-card));
-}
-
 /* 구획은 border.hair, 보조 경계는 border.thin, 관계는 border.edge, 생명선은 border.lifeline, 도형 경계는 공통 디자인.node-stroke다. 모든 선은 그림과 함께 확대·축소된다. */
 .fl .fl-path,
-.fl :is(.fl-node, .fl-panel) > .fl-stroke,
+.fl .fl-node > .fl-stroke,
 .fl .grid-cell,
 .fl .col-line,
 .fl .pill,
@@ -487,6 +461,7 @@
 .fl {
   --paint-fill: var(--color-ui-card);
   --paint-outline: var(--color-figure-outline);
+  --paint-ink: var(--color-group-title);
   --fx-edge: var(--color-state-active);
   --fx-ink: var(--color-state-active-text);
   --fx-row: var(--color-figure-selection-fill);
@@ -496,11 +471,7 @@
   --fx-line-rest: var(--color-line);
 }
 
-/* 도형의 평소 면과 켜진 면. 옅은 면으로 고른 도형(filled)은 켜져도 면이 같다. 면이 없는 윤곽(fill='none')과 점은 자기 면이 없거나 자기 색이다. 차트 판은 평소 면만 있다. */
-.fl .fl-panel {
-  --fx-face: var(--color-ui-card);
-}
-
+/* 도형의 평소 면과 켜진 면. 옅은 면으로 고른 도형(filled)은 켜져도 면이 같다. 면이 없는 윤곽(fill='none')과 점은 자기 면이 없거나 자기 색이다. */
 .fl .fl-node {
   --fx-face: var(--color-ui-card);
   --fx-face-on: var(--color-figure-active-surface);
@@ -511,10 +482,9 @@
   --fx-face-on: var(--fx-face);
 }
 
-/* 소비자는 쓴 톤의 --paint-* 변수만 연결한다. 면·경계·제목·차트 바탕의 역할은 여기서 한 번 정한다.
-   고른 윤곽색은 평소 윤곽과 반씩 섞은 차분한 색이라 켜진 상태(강조 파랑 전체 윤곽과 옅은 강조 면)와 구분된다. 강조 색은 상태에만 쓴다. */
+/* 소비자는 쓴 톤의 --paint-* 변수만 연결한다. 면·경계·제목·차트 바탕의 역할은 여기서 한 번 정한다. */
 .fl .fl-node.ap-outline {
-  --fx-edge-rest: color-mix(in oklab, var(--paint-outline), var(--color-figure-outline));
+  --fx-edge-rest: var(--paint-outline);
 }
 
 .fl .fl-group.ap-filled > .frame-box {
@@ -522,7 +492,11 @@
 }
 
 .fl .fl-group.ap-outline > .frame-box {
-  --fx-edge-rest: color-mix(in oklab, var(--paint-outline), var(--color-figure-outline));
+  --fx-edge-rest: var(--paint-outline);
+}
+
+.fl .fl-group:is(.ap-plain, .ap-filled, .ap-outline) > .frame {
+  fill: var(--paint-ink);
 }
 
 .fl .face.ap-filled {
@@ -546,7 +520,7 @@
   --fx-face-on: none;
 }
 
-.fl :where(.fl-node, .fl-panel) > .fl-stroke:where(:not([fill='none'])) {
+.fl :where(.fl-node) > .fl-stroke:where(:not([fill='none'])) {
   fill: var(--fx-face);
 }
 
@@ -661,37 +635,37 @@
 <defs></defs>
 <rect x="0.5" y="0.5" width="303" height="757" class="fl-canvas-surface"/>
 <g class="fl-motion" transform="translate(0 0)">
-<g id="g-0" class="fl-group" data-id="edge"><rect x="45" y="16" width="128" height="149" rx="8" class="frame-box fl-stroke dashed "/><text x="63" y="35.4" class="frame">엣지</text></g>
-<g id="g-1" class="fl-group tabbed" data-id="app"><rect x="16" y="227" width="272" height="515" rx="8" class="frame-box fl-stroke "/><text x="141" y="246.4" class="frame">애플리케이션</text><g class="fl-symbol fl-symbol-concept"><g class="fl-icon" transform="translate(117 231) scale(0.83333)"><g transform="translate(0 0) scale(0.75)"><g color="#3d4856"><g transform="scale(0.666667)"><g stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="24" r="8.5" fill="#3f7fe0" stroke="#3f7fe0" stroke-width="4.8"/><circle cx="22" cy="16.5" r="11" fill="#3f7fe0" stroke="#3f7fe0" stroke-width="4.8"/><circle cx="31.5" cy="23.5" r="9" fill="#3f7fe0" stroke="#3f7fe0" stroke-width="4.8"/><rect x="12" y="22" width="19.5" height="10.5" fill="#3f7fe0" stroke="#3f7fe0" stroke-width="4.8"/><circle cx="12" cy="24" r="8.5" fill="#5d9cf5"/><circle cx="22" cy="16.5" r="11" fill="#5d9cf5"/><circle cx="31.5" cy="23.5" r="9" fill="#5d9cf5"/><rect x="12" y="22" width="19.5" height="10.5" fill="#5d9cf5"/><path d="M35 41.5L28.45 30.35A7.6 7.6 0 1 1 41.55 30.35Z" fill="#f0245a" stroke="#cf1446" stroke-width="2.4"/><circle cx="35" cy="26.5" r="2.9" fill="#ffffff"/></g></g></g></g></g></g></g>
+<g id="g-0" class="fl-group" data-id="edge"><rect x="44" y="16" width="128" height="149" rx="8" class="frame-box fl-stroke dashed "/><text x="62" y="35.4" class="frame">엣지</text></g>
+<g id="g-1" class="fl-group tabbed" data-id="app"><rect x="16" y="227" width="272" height="515" rx="8" class="frame-box fl-stroke "/><text x="140" y="246.4" class="frame">애플리케이션</text><g class="fl-symbol fl-symbol-concept"><g class="fl-icon" transform="translate(116 231) scale(0.83333)"><g transform="translate(0 0) scale(0.75)"><g color="#3d4856"><g transform="scale(0.666667)"><g stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="24" r="8.5" fill="#3f7fe0" stroke="#3f7fe0" stroke-width="4.8"/><circle cx="22" cy="16.5" r="11" fill="#3f7fe0" stroke="#3f7fe0" stroke-width="4.8"/><circle cx="31.5" cy="23.5" r="9" fill="#3f7fe0" stroke="#3f7fe0" stroke-width="4.8"/><rect x="12" y="22" width="19.5" height="10.5" fill="#3f7fe0" stroke="#3f7fe0" stroke-width="4.8"/><circle cx="12" cy="24" r="8.5" fill="#5d9cf5"/><circle cx="22" cy="16.5" r="11" fill="#5d9cf5"/><circle cx="31.5" cy="23.5" r="9" fill="#5d9cf5"/><rect x="12" y="22" width="19.5" height="10.5" fill="#5d9cf5"/><path d="M35 41.5L28.45 30.35A7.6 7.6 0 1 1 41.55 30.35Z" fill="#f0245a" stroke="#cf1446" stroke-width="2.4"/><circle cx="35" cy="26.5" r="2.9" fill="#ffffff"/></g></g></g></g></g></g></g>
 <g id="g-2" class="fl-group" data-id="web"><rect x="40" y="267" width="154.5" height="282" rx="8" class="frame-box fl-stroke "/><text x="58" y="286.4" class="frame">웹 계층</text></g>
 
-<g id="n-0" class="fl-node fl-shape-box" tabindex="0" role="img" aria-label="CDN" data-id="cdn"><rect x="69" y="56" width="80" height="85" rx="8" class="fl-stroke a0"/><g class="fl-symbol fl-symbol-concept"><g class="fl-icon" transform="translate(93 68) scale(1.33333)"><g transform="translate(0 0) scale(0.5)"><g color="#3d4856"><g><g stroke-linecap="round" stroke-linejoin="round"><circle cx="24" cy="19.5" r="16" fill="#5d9cf5" stroke="#3f7fe0" stroke-width="2.4"/><ellipse cx="24" cy="19.5" rx="7.04" ry="16" fill="none" stroke="#cfe0fc" stroke-width="2.04"/><path d="M8 19.5H40" stroke="#cfe0fc" stroke-width="2.04"/><rect x="3" y="28" width="17" height="16" rx="4" fill="#f4f6f9" stroke="#a6acb5" stroke-width="2.4"/><path d="M8 33.5H15" stroke="#3f7fe0" stroke-width="3"/><rect x="28" y="28" width="17" height="16" rx="4" fill="#f4f6f9" stroke="#a6acb5" stroke-width="2.4"/><path d="M33 33.5H40" stroke="#3f7fe0" stroke-width="3"/></g></g></g></g></g></g><text x="109" y="122.9" class="label" text-anchor="middle">CDN</text></g>
-<g id="n-1" class="fl-node fl-shape-box" tabindex="0" role="img" aria-label="로드 밸런서" data-id="lb"><rect x="68" y="307" width="82.8" height="85" rx="8" class="fl-stroke a0"/><rect x="68" y="307" width="82.8" height="85" rx="8" class="fl-pulse" opacity="0" aria-hidden="true"><animate attributeName="opacity" dur="2.5s" repeatCount="1" fill="freeze" calcMode="linear" keyTimes="0;0.28;0.312;0.344;0.44;1" values="0;0;1;1;0;0"/></rect><g class="fl-symbol fl-symbol-concept"><g class="fl-icon" transform="translate(93.4 319) scale(1.33333)"><g transform="translate(0 0) scale(0.5)"><g color="#3d4856"><g><g stroke-linecap="round" stroke-linejoin="round"><path d="M24 17.6V24M24 24H10V30.6M24 24V30.6M24 24H38V30.6" fill="none" stroke="#7d8794" stroke-width="2.8"/><circle cx="24" cy="11" r="7.6" fill="#5d9cf5" stroke="#3f7fe0" stroke-width="2.4"/><path d="M24 15V10.8M24 10.8L20.8 7.8M24 10.8L27.2 7.8" fill="none" stroke="#ffffff" stroke-width="2.4"/><rect x="5" y="30.6" width="10" height="11.6" rx="2.6" fill="#f4f6f9" stroke="#a6acb5" stroke-width="2.4"/><rect x="7.8" y="34.8" width="4.4" height="3.2" rx="1.4" fill="#5d9cf5"/><rect x="19" y="30.6" width="10" height="11.6" rx="2.6" fill="#f4f6f9" stroke="#a6acb5" stroke-width="2.4"/><rect x="21.8" y="34.8" width="4.4" height="3.2" rx="1.4" fill="#5d9cf5"/><rect x="33" y="30.6" width="10" height="11.6" rx="2.6" fill="#f4f6f9" stroke="#a6acb5" stroke-width="2.4"/><rect x="35.8" y="34.8" width="4.4" height="3.2" rx="1.4" fill="#5d9cf5"/></g></g></g></g></g></g><text x="109.4" y="373.9" class="label" text-anchor="middle">로드 밸런서</text></g>
-<g id="n-2" class="fl-node fl-shape-box" tabindex="0" role="img" aria-label="웹 서버" data-id="server"><rect x="72" y="440" width="81.7" height="85" rx="8" class="fl-stroke a0"/><rect x="68" y="436" width="81.7" height="85" rx="8" class="fl-stroke a0"/><rect x="64" y="432" width="81.7" height="85" rx="8" class="fl-stroke a0"/><rect x="72" y="440" width="81.7" height="85" rx="8" class="fl-pulse" opacity="0" aria-hidden="true"><animate attributeName="opacity" dur="2.5s" repeatCount="1" fill="freeze" calcMode="linear" keyTimes="0;0.56;0.592;0.624;0.72;1" values="0;0;1;1;0;0"/></rect><rect x="68" y="436" width="81.7" height="85" rx="8" class="fl-pulse" opacity="0" aria-hidden="true"><animate attributeName="opacity" dur="2.5s" repeatCount="1" fill="freeze" calcMode="linear" keyTimes="0;0.56;0.592;0.624;0.72;1" values="0;0;1;1;0;0"/></rect><rect x="64" y="432" width="81.7" height="85" rx="8" class="fl-pulse" opacity="0" aria-hidden="true"><animate attributeName="opacity" dur="2.5s" repeatCount="1" fill="freeze" calcMode="linear" keyTimes="0;0.56;0.592;0.624;0.72;1" values="0;0;1;1;0;0"/></rect><g class="fl-symbol fl-symbol-concept"><g class="fl-icon" transform="translate(72 444) scale(1.33333)"><g transform="translate(0 0) scale(0.5)"><g color="#3d4856"><g><g stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="5.2" width="38" height="9.6" rx="3.5" fill="#f4f6f9" stroke="#a6acb5" stroke-width="2.4"/><rect x="9.4" y="8.2" width="14" height="3.6" rx="1.6" fill="#5d9cf5"/><circle cx="37" cy="10" r="2" fill="#2aa275"/><rect x="5" y="19.2" width="38" height="9.6" rx="3.5" fill="#f4f6f9" stroke="#a6acb5" stroke-width="2.4"/><rect x="9.4" y="22.2" width="14" height="3.6" rx="1.6" fill="#5d9cf5"/><circle cx="37" cy="24" r="2" fill="#2aa275"/><rect x="5" y="33.2" width="38" height="9.6" rx="3.5" fill="#f4f6f9" stroke="#a6acb5" stroke-width="2.4"/><rect x="9.4" y="36.2" width="14" height="3.6" rx="1.6" fill="#5d9cf5"/><circle cx="37" cy="38" r="2" fill="#2aa275"/></g></g></g></g></g></g><g class="fl-badge"><rect x="108" y="451" width="29.7" height="18" rx="9" class="badge-pill"/><text x="122.8" y="464.3" class="badge">(3)</text></g><text x="104.8" y="498.9" class="label" text-anchor="middle">웹 서버</text></g>
-<g id="n-3" class="fl-node fl-shape-store" tabindex="0" role="img" aria-label="주 DB" data-id="db"><path d="M59 623 a 50 12 0 0 1 100 0 v 83 a 50 12 0 0 1 -100 0 z" class="fl-stroke a0"/><path d="M59 623 a 50 12 0 0 0 100 0" fill="none" class="fl-stroke a0"/><path d="M59 623 a 50 12 0 0 1 100 0 v 83 a 50 12 0 0 1 -100 0 z" class="fl-pulse" opacity="0" aria-hidden="true"><animate attributeName="opacity" dur="2.5s" repeatCount="1" fill="freeze" calcMode="linear" keyTimes="0;0.84;0.872;0.904;1" values="0;0;1;1;0"/></path><path d="M59 623 a 50 12 0 0 0 100 0" fill="none" class="fl-pulse" opacity="0" aria-hidden="true"><animate attributeName="opacity" dur="2.5s" repeatCount="1" fill="freeze" calcMode="linear" keyTimes="0;0.84;0.872;0.904;1" values="0;0;1;1;0"/></path><g class="fl-symbol fl-symbol-concept"><g class="fl-icon" transform="translate(80.7 647) scale(0.83333)"><g transform="translate(0 0) scale(0.5)"><g color="#3d4856"><g><g stroke-linecap="round" stroke-linejoin="round"><path d="M5 10V33A13 5 0 0 0 31 33V10Z" fill="#5d9cf5" stroke="#3f7fe0" stroke-width="2.4"/><path d="M5 17.67A13 5 0 0 0 31 17.67" fill="none" stroke="#3f7fe0" stroke-width="2.4"/><path d="M5 25.33A13 5 0 0 0 31 25.33" fill="none" stroke="#3f7fe0" stroke-width="2.4"/><ellipse cx="18" cy="10" rx="13" ry="5" fill="#cfe0fc" stroke="#3f7fe0" stroke-width="2.4"/><rect x="18" y="20" width="27" height="24" rx="4" fill="#ffffff" stroke="#a6acb5" stroke-width="2.4"/><path d="M19.2 27V24.4Q19.2 21.2 22.4 21.2H40.6Q43.8 21.2 43.8 24.4V27Z" fill="#cfe0fc"/><path d="M19.2 27.4H43.8" stroke="#a6acb5" stroke-width="1.8" stroke-linecap="butt"/><path d="M27 28.2V42.8M36 28.2V42.8M19.2 33H43.8M19.2 38.4H43.8" stroke="#b7bec8" stroke-width="1.5" stroke-linecap="butt"/></g></g></g></g></g></g><g class="fl-badge"><rect x="104.7" y="648" width="32.5" height="18" rx="9" class="badge-pill"/><text x="121" y="661.3" class="badge">RW</text></g><text x="109" y="687.9" class="label" text-anchor="middle">주 DB</text></g>
-<g id="e-0" class="fl-edge a1"><defs><marker id="fl-arrow-0" viewBox="0 0 5 5" refX="4" refY="2.5" markerWidth="5" markerHeight="5" orient="auto-start-reverse" overflow="visible"><path class="fl-arrowhead" d="M 1.1 0.25 L 4 2.5 L 1.1 4.75 Z" stroke-width="1"/></marker></defs><path id="p-0" d="M 109 141 L 109 307" class="fl-path" marker-end="url(#fl-arrow-0)"/></g>
-<g id="e-1" class="fl-edge a2"><defs><marker id="fl-arrow-1" viewBox="0 0 5 5" refX="4" refY="2.5" markerWidth="5" markerHeight="5" orient="auto-start-reverse" overflow="visible"><path class="fl-arrowhead" d="M 1.1 0.25 L 4 2.5 L 1.1 4.75 Z" stroke-width="1"/></marker></defs><path id="p-1" d="M 109 392 L 109 432" class="fl-path" marker-end="url(#fl-arrow-1)"/></g>
-<g id="e-2" class="fl-edge a3"><defs><marker id="fl-arrow-2" viewBox="0 0 5 5" refX="4" refY="2.5" markerWidth="5" markerHeight="5" orient="auto-start-reverse" overflow="visible"><path class="fl-arrowhead" d="M 1.1 0.25 L 4 2.5 L 1.1 4.75 Z" stroke-width="1"/></marker></defs><path id="p-2" d="M 109 525 L 109 611" class="fl-path" marker-end="url(#fl-arrow-2)"/></g>
+<g id="n-0" class="fl-node fl-shape-box" tabindex="0" role="img" aria-label="CDN" data-id="cdn"><rect x="68" y="56" width="80" height="85" rx="8" class="fl-stroke a0"/><g class="fl-symbol fl-symbol-concept"><g class="fl-icon" transform="translate(92 68) scale(1.33333)"><g transform="translate(0 0) scale(0.5)"><g color="#3d4856"><g><g stroke-linecap="round" stroke-linejoin="round"><circle cx="24" cy="19.5" r="16" fill="#5d9cf5" stroke="#3f7fe0" stroke-width="2.4"/><ellipse cx="24" cy="19.5" rx="7.04" ry="16" fill="none" stroke="#cfe0fc" stroke-width="2.04"/><path d="M8 19.5H40" stroke="#cfe0fc" stroke-width="2.04"/><rect x="3" y="28" width="17" height="16" rx="4" fill="#f4f6f9" stroke="#a6acb5" stroke-width="2.4"/><path d="M8 33.5H15" stroke="#3f7fe0" stroke-width="3"/><rect x="28" y="28" width="17" height="16" rx="4" fill="#f4f6f9" stroke="#a6acb5" stroke-width="2.4"/><path d="M33 33.5H40" stroke="#3f7fe0" stroke-width="3"/></g></g></g></g></g></g><text x="108" y="122.9" class="label" text-anchor="middle">CDN</text></g>
+<g id="n-1" class="fl-node fl-shape-box" tabindex="0" role="img" aria-label="로드 밸런서" data-id="lb"><rect x="67" y="307" width="82.8" height="85" rx="8" class="fl-stroke a0"/><rect x="67" y="307" width="82.8" height="85" rx="8" class="fl-pulse" opacity="0" aria-hidden="true"><animate attributeName="opacity" dur="2.5s" repeatCount="1" fill="freeze" calcMode="linear" keyTimes="0;0.28;0.312;0.344;0.44;1" values="0;0;1;1;0;0"/></rect><g class="fl-symbol fl-symbol-concept"><g class="fl-icon" transform="translate(92.4 319) scale(1.33333)"><g transform="translate(0 0) scale(0.5)"><g color="#3d4856"><g><g stroke-linecap="round" stroke-linejoin="round"><path d="M24 17.6V24M24 24H10V30.6M24 24V30.6M24 24H38V30.6" fill="none" stroke="#7d8794" stroke-width="2.8"/><circle cx="24" cy="11" r="7.6" fill="#5d9cf5" stroke="#3f7fe0" stroke-width="2.4"/><path d="M24 15V10.8M24 10.8L20.8 7.8M24 10.8L27.2 7.8" fill="none" stroke="#ffffff" stroke-width="2.4"/><rect x="5" y="30.6" width="10" height="11.6" rx="2.6" fill="#f4f6f9" stroke="#a6acb5" stroke-width="2.4"/><rect x="7.8" y="34.8" width="4.4" height="3.2" rx="1.4" fill="#5d9cf5"/><rect x="19" y="30.6" width="10" height="11.6" rx="2.6" fill="#f4f6f9" stroke="#a6acb5" stroke-width="2.4"/><rect x="21.8" y="34.8" width="4.4" height="3.2" rx="1.4" fill="#5d9cf5"/><rect x="33" y="30.6" width="10" height="11.6" rx="2.6" fill="#f4f6f9" stroke="#a6acb5" stroke-width="2.4"/><rect x="35.8" y="34.8" width="4.4" height="3.2" rx="1.4" fill="#5d9cf5"/></g></g></g></g></g></g><text x="108.4" y="373.9" class="label" text-anchor="middle">로드 밸런서</text></g>
+<g id="n-2" class="fl-node fl-shape-box" tabindex="0" role="img" aria-label="웹 서버" data-id="server"><rect x="72" y="440" width="80.3" height="85" rx="8" class="fl-stroke a0"/><rect x="68" y="436" width="80.3" height="85" rx="8" class="fl-stroke a0"/><rect x="64" y="432" width="80.3" height="85" rx="8" class="fl-stroke a0"/><rect x="72" y="440" width="80.3" height="85" rx="8" class="fl-pulse" opacity="0" aria-hidden="true"><animate attributeName="opacity" dur="2.5s" repeatCount="1" fill="freeze" calcMode="linear" keyTimes="0;0.56;0.592;0.624;0.72;1" values="0;0;1;1;0;0"/></rect><rect x="68" y="436" width="80.3" height="85" rx="8" class="fl-pulse" opacity="0" aria-hidden="true"><animate attributeName="opacity" dur="2.5s" repeatCount="1" fill="freeze" calcMode="linear" keyTimes="0;0.56;0.592;0.624;0.72;1" values="0;0;1;1;0;0"/></rect><rect x="64" y="432" width="80.3" height="85" rx="8" class="fl-pulse" opacity="0" aria-hidden="true"><animate attributeName="opacity" dur="2.5s" repeatCount="1" fill="freeze" calcMode="linear" keyTimes="0;0.56;0.592;0.624;0.72;1" values="0;0;1;1;0;0"/></rect><g class="fl-symbol fl-symbol-concept"><g class="fl-icon" transform="translate(72 444) scale(1.33333)"><g transform="translate(0 0) scale(0.5)"><g color="#3d4856"><g><g stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="5.2" width="38" height="9.6" rx="3.5" fill="#f4f6f9" stroke="#a6acb5" stroke-width="2.4"/><rect x="9.4" y="8.2" width="14" height="3.6" rx="1.6" fill="#5d9cf5"/><circle cx="37" cy="10" r="2" fill="#2aa275"/><rect x="5" y="19.2" width="38" height="9.6" rx="3.5" fill="#f4f6f9" stroke="#a6acb5" stroke-width="2.4"/><rect x="9.4" y="22.2" width="14" height="3.6" rx="1.6" fill="#5d9cf5"/><circle cx="37" cy="24" r="2" fill="#2aa275"/><rect x="5" y="33.2" width="38" height="9.6" rx="3.5" fill="#f4f6f9" stroke="#a6acb5" stroke-width="2.4"/><rect x="9.4" y="36.2" width="14" height="3.6" rx="1.6" fill="#5d9cf5"/><circle cx="37" cy="38" r="2" fill="#2aa275"/></g></g></g></g></g></g><g class="fl-badge"><rect x="108" y="451" width="28.3" height="18" rx="9" class="badge-pill"/><text x="122.1" y="464" class="badge">(3)</text></g><text x="104.1" y="498.9" class="label" text-anchor="middle">웹 서버</text></g>
+<g id="n-3" class="fl-node fl-shape-store" tabindex="0" role="img" aria-label="주 DB" data-id="db"><path d="M58 623 a 50 12 0 0 1 100 0 v 83 a 50 12 0 0 1 -100 0 z" class="fl-stroke a0"/><path d="M58 623 a 50 12 0 0 0 100 0" fill="none" class="fl-stroke a0"/><path d="M58 623 a 50 12 0 0 1 100 0 v 83 a 50 12 0 0 1 -100 0 z" class="fl-pulse" opacity="0" aria-hidden="true"><animate attributeName="opacity" dur="2.5s" repeatCount="1" fill="freeze" calcMode="linear" keyTimes="0;0.84;0.872;0.904;1" values="0;0;1;1;0"/></path><path d="M58 623 a 50 12 0 0 0 100 0" fill="none" class="fl-pulse" opacity="0" aria-hidden="true"><animate attributeName="opacity" dur="2.5s" repeatCount="1" fill="freeze" calcMode="linear" keyTimes="0;0.84;0.872;0.904;1" values="0;0;1;1;0"/></path><g class="fl-symbol fl-symbol-concept"><g class="fl-icon" transform="translate(80.5 647) scale(0.83333)"><g transform="translate(0 0) scale(0.5)"><g color="#3d4856"><g><g stroke-linecap="round" stroke-linejoin="round"><path d="M5 10V33A13 5 0 0 0 31 33V10Z" fill="#5d9cf5" stroke="#3f7fe0" stroke-width="2.4"/><path d="M5 17.67A13 5 0 0 0 31 17.67" fill="none" stroke="#3f7fe0" stroke-width="2.4"/><path d="M5 25.33A13 5 0 0 0 31 25.33" fill="none" stroke="#3f7fe0" stroke-width="2.4"/><ellipse cx="18" cy="10" rx="13" ry="5" fill="#cfe0fc" stroke="#3f7fe0" stroke-width="2.4"/><rect x="18" y="20" width="27" height="24" rx="4" fill="#ffffff" stroke="#a6acb5" stroke-width="2.4"/><path d="M19.2 27V24.4Q19.2 21.2 22.4 21.2H40.6Q43.8 21.2 43.8 24.4V27Z" fill="#cfe0fc"/><path d="M19.2 27.4H43.8" stroke="#a6acb5" stroke-width="1.8" stroke-linecap="butt"/><path d="M27 28.2V42.8M36 28.2V42.8M19.2 33H43.8M19.2 38.4H43.8" stroke="#b7bec8" stroke-width="1.5" stroke-linecap="butt"/></g></g></g></g></g></g><g class="fl-badge"><rect x="104.5" y="648" width="30.9" height="18" rx="9" class="badge-pill"/><text x="120" y="661" class="badge">RW</text></g><text x="108" y="687.9" class="label" text-anchor="middle">주 DB</text></g>
+<g id="e-0" class="fl-edge a1"><defs><marker id="fl-arrow-0" viewBox="0 0 5 5" refX="4" refY="2.5" markerWidth="5" markerHeight="5" orient="auto-start-reverse" overflow="visible"><path class="fl-arrowhead" d="M 1.1 0.25 L 4 2.5 L 1.1 4.75 Z" stroke-width="1"/></marker></defs><path id="p-0" d="M 108 141 L 108 307" class="fl-path" marker-end="url(#fl-arrow-0)"/></g>
+<g id="e-1" class="fl-edge a2"><defs><marker id="fl-arrow-1" viewBox="0 0 5 5" refX="4" refY="2.5" markerWidth="5" markerHeight="5" orient="auto-start-reverse" overflow="visible"><path class="fl-arrowhead" d="M 1.1 0.25 L 4 2.5 L 1.1 4.75 Z" stroke-width="1"/></marker></defs><path id="p-1" d="M 108 392 L 108 432" class="fl-path" marker-end="url(#fl-arrow-1)"/></g>
+<g id="e-2" class="fl-edge a3"><defs><marker id="fl-arrow-2" viewBox="0 0 5 5" refX="4" refY="2.5" markerWidth="5" markerHeight="5" orient="auto-start-reverse" overflow="visible"><path class="fl-arrowhead" d="M 1.1 0.25 L 4 2.5 L 1.1 4.75 Z" stroke-width="1"/></marker></defs><path id="p-2" d="M 108 525 L 108 611" class="fl-path" marker-end="url(#fl-arrow-2)"/></g>
 
 <g class="fl-packet p0-0" opacity="0" fill="var(--color-state-on-active)"><circle r="10" fill="var(--color-state-active)" opacity="0.2"/><circle r="4.5" fill="var(--color-state-active)"/><animate attributeName="opacity" dur="2.5s" repeatCount="1" fill="freeze" calcMode="discrete" keyTimes="0;0.28" values="1;0"/><animateMotion dur="2.5s" repeatCount="1" fill="freeze" calcMode="spline" keyTimes="0;0.28;1" keySplines="0 0 1 1;0 0 1 1" keyPoints="0;1;1"><mpath href="#p-0" xlink:href="#p-0"/></animateMotion></g>
 <g class="fl-packet p1-0" opacity="0" fill="var(--color-state-on-active)"><circle r="10" fill="var(--color-state-active)" opacity="0.2"/><circle r="4.5" fill="var(--color-state-active)"/><animate attributeName="opacity" dur="2.5s" repeatCount="1" fill="freeze" calcMode="discrete" keyTimes="0;0.28;0.56" values="0;1;0"/><animateMotion dur="2.5s" repeatCount="1" fill="freeze" calcMode="spline" keyTimes="0;0.28;0.56;1" keySplines="0 0 1 1;0 0 1 1;0 0 1 1" keyPoints="0;0;1;1"><mpath href="#p-1" xlink:href="#p-1"/></animateMotion></g>
 <g class="fl-packet p2-0" opacity="0" fill="var(--color-state-on-active)"><circle r="10" fill="var(--color-state-active)" opacity="0.2"/><circle r="4.5" fill="var(--color-state-active)"/><animate attributeName="opacity" dur="2.5s" repeatCount="1" fill="freeze" calcMode="discrete" keyTimes="0;0.56;0.84" values="0;1;0"/><animateMotion dur="2.5s" repeatCount="1" fill="freeze" calcMode="spline" keyTimes="0;0.56;0.84;1" keySplines="0 0 1 1;0 0 1 1;0 0 1 1" keyPoints="0;0;1;1"><mpath href="#p-2" xlink:href="#p-2"/></animateMotion></g>
-<g class="fl-pills"><g id="l-0" class="fl-edge"><g class="fl-pill"><rect x="114" y="169" width="48.9" height="18" rx="9" class="pill a4"/><rect x="116" y="171" width="14" height="14" rx="7" class="number-pill"/><text x="123" y="182.3" class="number">1</text><text x="144.9" y="182.7" class="edgelabel a5">요청</text></g></g><g id="l-1" class="fl-edge"><g class="fl-pill"><rect x="115" y="398" width="14.9" height="14" rx="7" class="number-pill"/><text x="122.5" y="409.3" class="number">2</text></g></g><g id="l-2" class="fl-edge"><g class="fl-pill"><rect x="114" y="553" width="50.2" height="18" rx="9" class="pill a6"/><rect x="116" y="555" width="15.3" height="14" rx="7" class="number-pill"/><text x="123.6" y="566.3" class="number">3</text><text x="146.2" y="566.7" class="edgelabel a7">조회</text></g></g></g>
+<g class="fl-pills"><g id="l-0" class="fl-edge"><g class="fl-pill"><rect x="113" y="169" width="48.9" height="18" rx="9" class="pill a4"/><rect x="115" y="171" width="14" height="14" rx="7" class="number-pill"/><text x="122" y="182" class="number">1</text><text x="143.9" y="182.7" class="edgelabel a5">요청</text></g></g><g id="l-1" class="fl-edge"><g class="fl-pill"><rect x="114" y="398" width="14.3" height="14" rx="7" class="number-pill"/><text x="121.2" y="409" class="number">2</text></g></g><g id="l-2" class="fl-edge"><g class="fl-pill"><rect x="113" y="553" width="49.5" height="18" rx="9" class="pill a6"/><rect x="115" y="555" width="14.7" height="14" rx="7" class="number-pill"/><text x="122.3" y="566" class="number">3</text><text x="144.6" y="566.7" class="edgelabel a7">조회</text></g></g></g>
 </g>
 <g class="fl-still" transform="translate(0 0)">
-<g id="still-g-0" class="fl-group" data-id="edge"><rect x="45" y="16" width="128" height="149" rx="8" class="frame-box fl-stroke dashed "/><text x="63" y="35.4" class="frame">엣지</text></g>
-<g id="still-g-1" class="fl-group tabbed" data-id="app"><rect x="16" y="227" width="272" height="515" rx="8" class="frame-box fl-stroke "/><text x="141" y="246.4" class="frame">애플리케이션</text><g class="fl-symbol fl-symbol-concept"><g class="fl-icon" transform="translate(117 231) scale(0.83333)"><g transform="translate(0 0) scale(0.75)"><g color="#3d4856"><g transform="scale(0.666667)"><g stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="24" r="8.5" fill="#3f7fe0" stroke="#3f7fe0" stroke-width="4.8"/><circle cx="22" cy="16.5" r="11" fill="#3f7fe0" stroke="#3f7fe0" stroke-width="4.8"/><circle cx="31.5" cy="23.5" r="9" fill="#3f7fe0" stroke="#3f7fe0" stroke-width="4.8"/><rect x="12" y="22" width="19.5" height="10.5" fill="#3f7fe0" stroke="#3f7fe0" stroke-width="4.8"/><circle cx="12" cy="24" r="8.5" fill="#5d9cf5"/><circle cx="22" cy="16.5" r="11" fill="#5d9cf5"/><circle cx="31.5" cy="23.5" r="9" fill="#5d9cf5"/><rect x="12" y="22" width="19.5" height="10.5" fill="#5d9cf5"/><path d="M35 41.5L28.45 30.35A7.6 7.6 0 1 1 41.55 30.35Z" fill="#f0245a" stroke="#cf1446" stroke-width="2.4"/><circle cx="35" cy="26.5" r="2.9" fill="#ffffff"/></g></g></g></g></g></g></g>
+<g id="still-g-0" class="fl-group" data-id="edge"><rect x="44" y="16" width="128" height="149" rx="8" class="frame-box fl-stroke dashed "/><text x="62" y="35.4" class="frame">엣지</text></g>
+<g id="still-g-1" class="fl-group tabbed" data-id="app"><rect x="16" y="227" width="272" height="515" rx="8" class="frame-box fl-stroke "/><text x="140" y="246.4" class="frame">애플리케이션</text><g class="fl-symbol fl-symbol-concept"><g class="fl-icon" transform="translate(116 231) scale(0.83333)"><g transform="translate(0 0) scale(0.75)"><g color="#3d4856"><g transform="scale(0.666667)"><g stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="24" r="8.5" fill="#3f7fe0" stroke="#3f7fe0" stroke-width="4.8"/><circle cx="22" cy="16.5" r="11" fill="#3f7fe0" stroke="#3f7fe0" stroke-width="4.8"/><circle cx="31.5" cy="23.5" r="9" fill="#3f7fe0" stroke="#3f7fe0" stroke-width="4.8"/><rect x="12" y="22" width="19.5" height="10.5" fill="#3f7fe0" stroke="#3f7fe0" stroke-width="4.8"/><circle cx="12" cy="24" r="8.5" fill="#5d9cf5"/><circle cx="22" cy="16.5" r="11" fill="#5d9cf5"/><circle cx="31.5" cy="23.5" r="9" fill="#5d9cf5"/><rect x="12" y="22" width="19.5" height="10.5" fill="#5d9cf5"/><path d="M35 41.5L28.45 30.35A7.6 7.6 0 1 1 41.55 30.35Z" fill="#f0245a" stroke="#cf1446" stroke-width="2.4"/><circle cx="35" cy="26.5" r="2.9" fill="#ffffff"/></g></g></g></g></g></g></g>
 <g id="still-g-2" class="fl-group" data-id="web"><rect x="40" y="267" width="154.5" height="282" rx="8" class="frame-box fl-stroke "/><text x="58" y="286.4" class="frame">웹 계층</text></g>
 
-<g id="still-n-0" class="fl-node fl-shape-box" tabindex="0" role="img" aria-label="CDN" data-id="cdn"><rect x="69" y="56" width="80" height="85" rx="8" class="fl-stroke sa0"/><g class="fl-symbol fl-symbol-concept"><g class="fl-icon" transform="translate(93 68) scale(1.33333)"><g transform="translate(0 0) scale(0.5)"><g color="#3d4856"><g><g stroke-linecap="round" stroke-linejoin="round"><circle cx="24" cy="19.5" r="16" fill="#5d9cf5" stroke="#3f7fe0" stroke-width="2.4"/><ellipse cx="24" cy="19.5" rx="7.04" ry="16" fill="none" stroke="#cfe0fc" stroke-width="2.04"/><path d="M8 19.5H40" stroke="#cfe0fc" stroke-width="2.04"/><rect x="3" y="28" width="17" height="16" rx="4" fill="#f4f6f9" stroke="#a6acb5" stroke-width="2.4"/><path d="M8 33.5H15" stroke="#3f7fe0" stroke-width="3"/><rect x="28" y="28" width="17" height="16" rx="4" fill="#f4f6f9" stroke="#a6acb5" stroke-width="2.4"/><path d="M33 33.5H40" stroke="#3f7fe0" stroke-width="3"/></g></g></g></g></g></g><text x="109" y="122.9" class="label" text-anchor="middle">CDN</text></g>
-<g id="still-n-1" class="fl-node fl-shape-box" tabindex="0" role="img" aria-label="로드 밸런서" data-id="lb"><rect x="68" y="307" width="82.8" height="85" rx="8" class="fl-stroke sa0"/><g class="fl-symbol fl-symbol-concept"><g class="fl-icon" transform="translate(93.4 319) scale(1.33333)"><g transform="translate(0 0) scale(0.5)"><g color="#3d4856"><g><g stroke-linecap="round" stroke-linejoin="round"><path d="M24 17.6V24M24 24H10V30.6M24 24V30.6M24 24H38V30.6" fill="none" stroke="#7d8794" stroke-width="2.8"/><circle cx="24" cy="11" r="7.6" fill="#5d9cf5" stroke="#3f7fe0" stroke-width="2.4"/><path d="M24 15V10.8M24 10.8L20.8 7.8M24 10.8L27.2 7.8" fill="none" stroke="#ffffff" stroke-width="2.4"/><rect x="5" y="30.6" width="10" height="11.6" rx="2.6" fill="#f4f6f9" stroke="#a6acb5" stroke-width="2.4"/><rect x="7.8" y="34.8" width="4.4" height="3.2" rx="1.4" fill="#5d9cf5"/><rect x="19" y="30.6" width="10" height="11.6" rx="2.6" fill="#f4f6f9" stroke="#a6acb5" stroke-width="2.4"/><rect x="21.8" y="34.8" width="4.4" height="3.2" rx="1.4" fill="#5d9cf5"/><rect x="33" y="30.6" width="10" height="11.6" rx="2.6" fill="#f4f6f9" stroke="#a6acb5" stroke-width="2.4"/><rect x="35.8" y="34.8" width="4.4" height="3.2" rx="1.4" fill="#5d9cf5"/></g></g></g></g></g></g><text x="109.4" y="373.9" class="label" text-anchor="middle">로드 밸런서</text></g>
-<g id="still-n-2" class="fl-node fl-shape-box" tabindex="0" role="img" aria-label="웹 서버" data-id="server"><rect x="72" y="440" width="81.7" height="85" rx="8" class="fl-stroke sa0"/><rect x="68" y="436" width="81.7" height="85" rx="8" class="fl-stroke sa0"/><rect x="64" y="432" width="81.7" height="85" rx="8" class="fl-stroke sa0"/><g class="fl-symbol fl-symbol-concept"><g class="fl-icon" transform="translate(72 444) scale(1.33333)"><g transform="translate(0 0) scale(0.5)"><g color="#3d4856"><g><g stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="5.2" width="38" height="9.6" rx="3.5" fill="#f4f6f9" stroke="#a6acb5" stroke-width="2.4"/><rect x="9.4" y="8.2" width="14" height="3.6" rx="1.6" fill="#5d9cf5"/><circle cx="37" cy="10" r="2" fill="#2aa275"/><rect x="5" y="19.2" width="38" height="9.6" rx="3.5" fill="#f4f6f9" stroke="#a6acb5" stroke-width="2.4"/><rect x="9.4" y="22.2" width="14" height="3.6" rx="1.6" fill="#5d9cf5"/><circle cx="37" cy="24" r="2" fill="#2aa275"/><rect x="5" y="33.2" width="38" height="9.6" rx="3.5" fill="#f4f6f9" stroke="#a6acb5" stroke-width="2.4"/><rect x="9.4" y="36.2" width="14" height="3.6" rx="1.6" fill="#5d9cf5"/><circle cx="37" cy="38" r="2" fill="#2aa275"/></g></g></g></g></g></g><g class="fl-badge"><rect x="108" y="451" width="29.7" height="18" rx="9" class="badge-pill"/><text x="122.8" y="464.3" class="badge">(3)</text></g><text x="104.8" y="498.9" class="label" text-anchor="middle">웹 서버</text></g>
-<g id="still-n-3" class="fl-node fl-shape-store" tabindex="0" role="img" aria-label="주 DB" data-id="db"><path d="M59 623 a 50 12 0 0 1 100 0 v 83 a 50 12 0 0 1 -100 0 z" class="fl-stroke sa0"/><path d="M59 623 a 50 12 0 0 0 100 0" fill="none" class="fl-stroke sa0"/><g class="fl-symbol fl-symbol-concept"><g class="fl-icon" transform="translate(80.7 647) scale(0.83333)"><g transform="translate(0 0) scale(0.5)"><g color="#3d4856"><g><g stroke-linecap="round" stroke-linejoin="round"><path d="M5 10V33A13 5 0 0 0 31 33V10Z" fill="#5d9cf5" stroke="#3f7fe0" stroke-width="2.4"/><path d="M5 17.67A13 5 0 0 0 31 17.67" fill="none" stroke="#3f7fe0" stroke-width="2.4"/><path d="M5 25.33A13 5 0 0 0 31 25.33" fill="none" stroke="#3f7fe0" stroke-width="2.4"/><ellipse cx="18" cy="10" rx="13" ry="5" fill="#cfe0fc" stroke="#3f7fe0" stroke-width="2.4"/><rect x="18" y="20" width="27" height="24" rx="4" fill="#ffffff" stroke="#a6acb5" stroke-width="2.4"/><path d="M19.2 27V24.4Q19.2 21.2 22.4 21.2H40.6Q43.8 21.2 43.8 24.4V27Z" fill="#cfe0fc"/><path d="M19.2 27.4H43.8" stroke="#a6acb5" stroke-width="1.8" stroke-linecap="butt"/><path d="M27 28.2V42.8M36 28.2V42.8M19.2 33H43.8M19.2 38.4H43.8" stroke="#b7bec8" stroke-width="1.5" stroke-linecap="butt"/></g></g></g></g></g></g><g class="fl-badge"><rect x="104.7" y="648" width="32.5" height="18" rx="9" class="badge-pill"/><text x="121" y="661.3" class="badge">RW</text></g><text x="109" y="687.9" class="label" text-anchor="middle">주 DB</text></g>
-<g id="still-e-0" class="fl-edge "><defs><marker id="still-fl-arrow-0" viewBox="0 0 5 5" refX="4" refY="2.5" markerWidth="5" markerHeight="5" orient="auto-start-reverse" overflow="visible"><path class="fl-arrowhead" d="M 1.1 0.25 L 4 2.5 L 1.1 4.75 Z" stroke-width="1"/></marker></defs><path id="still-p-0" d="M 109 141 L 109 307" class="fl-path" marker-end="url(#still-fl-arrow-0)"/></g>
-<g id="still-e-1" class="fl-edge "><defs><marker id="still-fl-arrow-1" viewBox="0 0 5 5" refX="4" refY="2.5" markerWidth="5" markerHeight="5" orient="auto-start-reverse" overflow="visible"><path class="fl-arrowhead" d="M 1.1 0.25 L 4 2.5 L 1.1 4.75 Z" stroke-width="1"/></marker></defs><path id="still-p-1" d="M 109 392 L 109 432" class="fl-path" marker-end="url(#still-fl-arrow-1)"/></g>
-<g id="still-e-2" class="fl-edge "><defs><marker id="still-fl-arrow-2" viewBox="0 0 5 5" refX="4" refY="2.5" markerWidth="5" markerHeight="5" orient="auto-start-reverse" overflow="visible"><path class="fl-arrowhead" d="M 1.1 0.25 L 4 2.5 L 1.1 4.75 Z" stroke-width="1"/></marker></defs><path id="still-p-2" d="M 109 525 L 109 611" class="fl-path" marker-end="url(#still-fl-arrow-2)"/></g>
+<g id="still-n-0" class="fl-node fl-shape-box" tabindex="0" role="img" aria-label="CDN" data-id="cdn"><rect x="68" y="56" width="80" height="85" rx="8" class="fl-stroke sa0"/><g class="fl-symbol fl-symbol-concept"><g class="fl-icon" transform="translate(92 68) scale(1.33333)"><g transform="translate(0 0) scale(0.5)"><g color="#3d4856"><g><g stroke-linecap="round" stroke-linejoin="round"><circle cx="24" cy="19.5" r="16" fill="#5d9cf5" stroke="#3f7fe0" stroke-width="2.4"/><ellipse cx="24" cy="19.5" rx="7.04" ry="16" fill="none" stroke="#cfe0fc" stroke-width="2.04"/><path d="M8 19.5H40" stroke="#cfe0fc" stroke-width="2.04"/><rect x="3" y="28" width="17" height="16" rx="4" fill="#f4f6f9" stroke="#a6acb5" stroke-width="2.4"/><path d="M8 33.5H15" stroke="#3f7fe0" stroke-width="3"/><rect x="28" y="28" width="17" height="16" rx="4" fill="#f4f6f9" stroke="#a6acb5" stroke-width="2.4"/><path d="M33 33.5H40" stroke="#3f7fe0" stroke-width="3"/></g></g></g></g></g></g><text x="108" y="122.9" class="label" text-anchor="middle">CDN</text></g>
+<g id="still-n-1" class="fl-node fl-shape-box" tabindex="0" role="img" aria-label="로드 밸런서" data-id="lb"><rect x="67" y="307" width="82.8" height="85" rx="8" class="fl-stroke sa0"/><g class="fl-symbol fl-symbol-concept"><g class="fl-icon" transform="translate(92.4 319) scale(1.33333)"><g transform="translate(0 0) scale(0.5)"><g color="#3d4856"><g><g stroke-linecap="round" stroke-linejoin="round"><path d="M24 17.6V24M24 24H10V30.6M24 24V30.6M24 24H38V30.6" fill="none" stroke="#7d8794" stroke-width="2.8"/><circle cx="24" cy="11" r="7.6" fill="#5d9cf5" stroke="#3f7fe0" stroke-width="2.4"/><path d="M24 15V10.8M24 10.8L20.8 7.8M24 10.8L27.2 7.8" fill="none" stroke="#ffffff" stroke-width="2.4"/><rect x="5" y="30.6" width="10" height="11.6" rx="2.6" fill="#f4f6f9" stroke="#a6acb5" stroke-width="2.4"/><rect x="7.8" y="34.8" width="4.4" height="3.2" rx="1.4" fill="#5d9cf5"/><rect x="19" y="30.6" width="10" height="11.6" rx="2.6" fill="#f4f6f9" stroke="#a6acb5" stroke-width="2.4"/><rect x="21.8" y="34.8" width="4.4" height="3.2" rx="1.4" fill="#5d9cf5"/><rect x="33" y="30.6" width="10" height="11.6" rx="2.6" fill="#f4f6f9" stroke="#a6acb5" stroke-width="2.4"/><rect x="35.8" y="34.8" width="4.4" height="3.2" rx="1.4" fill="#5d9cf5"/></g></g></g></g></g></g><text x="108.4" y="373.9" class="label" text-anchor="middle">로드 밸런서</text></g>
+<g id="still-n-2" class="fl-node fl-shape-box" tabindex="0" role="img" aria-label="웹 서버" data-id="server"><rect x="72" y="440" width="80.3" height="85" rx="8" class="fl-stroke sa0"/><rect x="68" y="436" width="80.3" height="85" rx="8" class="fl-stroke sa0"/><rect x="64" y="432" width="80.3" height="85" rx="8" class="fl-stroke sa0"/><g class="fl-symbol fl-symbol-concept"><g class="fl-icon" transform="translate(72 444) scale(1.33333)"><g transform="translate(0 0) scale(0.5)"><g color="#3d4856"><g><g stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="5.2" width="38" height="9.6" rx="3.5" fill="#f4f6f9" stroke="#a6acb5" stroke-width="2.4"/><rect x="9.4" y="8.2" width="14" height="3.6" rx="1.6" fill="#5d9cf5"/><circle cx="37" cy="10" r="2" fill="#2aa275"/><rect x="5" y="19.2" width="38" height="9.6" rx="3.5" fill="#f4f6f9" stroke="#a6acb5" stroke-width="2.4"/><rect x="9.4" y="22.2" width="14" height="3.6" rx="1.6" fill="#5d9cf5"/><circle cx="37" cy="24" r="2" fill="#2aa275"/><rect x="5" y="33.2" width="38" height="9.6" rx="3.5" fill="#f4f6f9" stroke="#a6acb5" stroke-width="2.4"/><rect x="9.4" y="36.2" width="14" height="3.6" rx="1.6" fill="#5d9cf5"/><circle cx="37" cy="38" r="2" fill="#2aa275"/></g></g></g></g></g></g><g class="fl-badge"><rect x="108" y="451" width="28.3" height="18" rx="9" class="badge-pill"/><text x="122.1" y="464" class="badge">(3)</text></g><text x="104.1" y="498.9" class="label" text-anchor="middle">웹 서버</text></g>
+<g id="still-n-3" class="fl-node fl-shape-store" tabindex="0" role="img" aria-label="주 DB" data-id="db"><path d="M58 623 a 50 12 0 0 1 100 0 v 83 a 50 12 0 0 1 -100 0 z" class="fl-stroke sa0"/><path d="M58 623 a 50 12 0 0 0 100 0" fill="none" class="fl-stroke sa0"/><g class="fl-symbol fl-symbol-concept"><g class="fl-icon" transform="translate(80.5 647) scale(0.83333)"><g transform="translate(0 0) scale(0.5)"><g color="#3d4856"><g><g stroke-linecap="round" stroke-linejoin="round"><path d="M5 10V33A13 5 0 0 0 31 33V10Z" fill="#5d9cf5" stroke="#3f7fe0" stroke-width="2.4"/><path d="M5 17.67A13 5 0 0 0 31 17.67" fill="none" stroke="#3f7fe0" stroke-width="2.4"/><path d="M5 25.33A13 5 0 0 0 31 25.33" fill="none" stroke="#3f7fe0" stroke-width="2.4"/><ellipse cx="18" cy="10" rx="13" ry="5" fill="#cfe0fc" stroke="#3f7fe0" stroke-width="2.4"/><rect x="18" y="20" width="27" height="24" rx="4" fill="#ffffff" stroke="#a6acb5" stroke-width="2.4"/><path d="M19.2 27V24.4Q19.2 21.2 22.4 21.2H40.6Q43.8 21.2 43.8 24.4V27Z" fill="#cfe0fc"/><path d="M19.2 27.4H43.8" stroke="#a6acb5" stroke-width="1.8" stroke-linecap="butt"/><path d="M27 28.2V42.8M36 28.2V42.8M19.2 33H43.8M19.2 38.4H43.8" stroke="#b7bec8" stroke-width="1.5" stroke-linecap="butt"/></g></g></g></g></g></g><g class="fl-badge"><rect x="104.5" y="648" width="30.9" height="18" rx="9" class="badge-pill"/><text x="120" y="661" class="badge">RW</text></g><text x="108" y="687.9" class="label" text-anchor="middle">주 DB</text></g>
+<g id="still-e-0" class="fl-edge "><defs><marker id="still-fl-arrow-0" viewBox="0 0 5 5" refX="4" refY="2.5" markerWidth="5" markerHeight="5" orient="auto-start-reverse" overflow="visible"><path class="fl-arrowhead" d="M 1.1 0.25 L 4 2.5 L 1.1 4.75 Z" stroke-width="1"/></marker></defs><path id="still-p-0" d="M 108 141 L 108 307" class="fl-path" marker-end="url(#still-fl-arrow-0)"/></g>
+<g id="still-e-1" class="fl-edge "><defs><marker id="still-fl-arrow-1" viewBox="0 0 5 5" refX="4" refY="2.5" markerWidth="5" markerHeight="5" orient="auto-start-reverse" overflow="visible"><path class="fl-arrowhead" d="M 1.1 0.25 L 4 2.5 L 1.1 4.75 Z" stroke-width="1"/></marker></defs><path id="still-p-1" d="M 108 392 L 108 432" class="fl-path" marker-end="url(#still-fl-arrow-1)"/></g>
+<g id="still-e-2" class="fl-edge "><defs><marker id="still-fl-arrow-2" viewBox="0 0 5 5" refX="4" refY="2.5" markerWidth="5" markerHeight="5" orient="auto-start-reverse" overflow="visible"><path class="fl-arrowhead" d="M 1.1 0.25 L 4 2.5 L 1.1 4.75 Z" stroke-width="1"/></marker></defs><path id="still-p-2" d="M 108 525 L 108 611" class="fl-path" marker-end="url(#still-fl-arrow-2)"/></g>
 
 
-<g class="fl-pills"><g id="still-l-0" class="fl-edge"><g class="fl-pill"><rect x="114" y="169" width="48.9" height="18" rx="9" class="pill "/><rect x="116" y="171" width="14" height="14" rx="7" class="number-pill"/><text x="123" y="182.3" class="number">1</text><text x="144.9" y="182.7" class="edgelabel ">요청</text></g></g><g id="still-l-1" class="fl-edge"><g class="fl-pill"><rect x="115" y="398" width="14.9" height="14" rx="7" class="number-pill"/><text x="122.5" y="409.3" class="number">2</text></g></g><g id="still-l-2" class="fl-edge"><g class="fl-pill"><rect x="114" y="553" width="50.2" height="18" rx="9" class="pill "/><rect x="116" y="555" width="15.3" height="14" rx="7" class="number-pill"/><text x="123.6" y="566.3" class="number">3</text><text x="146.2" y="566.7" class="edgelabel ">조회</text></g></g></g>
+<g class="fl-pills"><g id="still-l-0" class="fl-edge"><g class="fl-pill"><rect x="113" y="169" width="48.9" height="18" rx="9" class="pill "/><rect x="115" y="171" width="14" height="14" rx="7" class="number-pill"/><text x="122" y="182" class="number">1</text><text x="143.9" y="182.7" class="edgelabel ">요청</text></g></g><g id="still-l-1" class="fl-edge"><g class="fl-pill"><rect x="114" y="398" width="14.3" height="14" rx="7" class="number-pill"/><text x="121.2" y="409" class="number">2</text></g></g><g id="still-l-2" class="fl-edge"><g class="fl-pill"><rect x="113" y="553" width="49.5" height="18" rx="9" class="pill "/><rect x="115" y="555" width="14.7" height="14" rx="7" class="number-pill"/><text x="122.3" y="566" class="number">3</text><text x="144.6" y="566.7" class="edgelabel ">조회</text></g></g></g>
 </g>
 </svg>

@@ -7,15 +7,18 @@
   --color-gray-0: #ffffff;
   --color-gray-59: #f0f0f0;
   --color-gray-933: #111111;
+  --color-gray-1000: #000000;
   --color-group-title: var(--color-help-title-color);
   --color-line: var(--primitive-figure-edge);
   --color-state-active: var(--color-category-blue-light-border);
   --color-state-active-text: var(--color-category-blue-light-ink);
   --color-ui-focus: var(--color-action-link);
   --color-data-category-1: var(--color-category-blue-solid);
-  --color-data-category-5: var(--color-category-green-solid);
+  --color-data-category-4: var(--color-category-green-solid);
   --color-data-category-outline-1: var(--color-category-blue-light-data-edge);
-  --color-data-category-outline-5: var(--color-category-green-light-data-edge);
+  --color-data-category-outline-4: var(--color-category-green-light-data-edge);
+  --color-data-category-on-1: var(--color-category-blue-on-solid);
+  --color-data-category-on-4: var(--color-category-green-on-solid);
   --color-figure-icon: var(--color-category-blue-light-border);
   --color-figure-queue-empty: var(--color-figure-inner-surface);
   --color-figure-number-fill: var(--primitive-figure-number-fill);
@@ -41,21 +44,21 @@
   --color-category-blue-dark-ink: #6da8ff;
   --color-category-blue-dark-tint-3: #303d54;
   --color-category-blue-solid: var(--color-category-blue-light-data);
-  --color-category-blue-light-data: #296ecc;
+  --color-category-blue-on-solid: var(--color-gray-0);
+  --color-category-blue-light-data: #3371c1;
   --color-category-blue-light-data-edge: var(--color-category-blue-light-data);
   --color-category-blue-dark-data: #518ad6;
   --color-category-green-solid: var(--color-category-green-light-data);
-  --color-category-green-light-data: #41a679;
+  --color-category-green-on-solid: var(--color-gray-1000);
+  --color-category-green-light-data: #60ba8d;
   --color-category-green-light-data-edge: #349166;
   --color-category-green-dark-data: #61b68b;
-  --color-flow-ink-blue: var(--color-gray-0);
-  --color-flow-ink-green: var(--color-gray-0);
   --font-figure-sans: FigSans, FigSansSym, FigSansMath, ui-sans-serif, -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
   --font-figure-mono: FigMono, FigSans, FigSansSym, FigSansMath, ui-monospace, SFMono-Regular, Menlo, monospace;
   --radius-card-radius: var(--primitive-card-radius);
   --text-small-text: var(--primitive-small-text);
   --text-tiny-text: var(--primitive-tiny-text);
-  --text-figure-meta: 12px;
+  --text-figure-meta: 11px;
   --tracking-text: -0.3px;
   --font-weight-semibold: 600;
   --font-weight-normal: 400;
@@ -102,7 +105,7 @@
   --color-state-active: var(--color-category-blue-dark-border);
   --color-state-active-text: var(--color-category-blue-dark-ink);
   --color-data-category-outline-1: var(--color-category-blue-dark-data);
-  --color-data-category-outline-5: var(--color-category-green-dark-data);
+  --color-data-category-outline-4: var(--color-category-green-dark-data);
   --color-figure-icon: var(--color-category-blue-dark-border);
   --color-figure-number-fill: var(--color-gray-59);
   --color-figure-number-ink: var(--color-gray-933);
@@ -118,6 +121,7 @@
   --color-ui-line: var(--primitive-figure-dark-separator);
   --color-help-title-color: var(--color-ink);
   --color-category-blue-solid: var(--color-category-blue-dark-data);
+  --color-category-blue-on-solid: var(--color-gray-1000);
   --color-category-green-solid: var(--color-category-green-dark-data);
   --drop-shadow-figure-ambient: 0 0 1px rgba(0, 0, 0, 0.6);
   --drop-shadow-figure-card: 0 1px 3px rgba(0, 0, 0, 0.32);
@@ -129,7 +133,7 @@
   --color-state-active: var(--color-category-blue-dark-border);
   --color-state-active-text: var(--color-category-blue-dark-ink);
   --color-data-category-outline-1: var(--color-category-blue-dark-data);
-  --color-data-category-outline-5: var(--color-category-green-dark-data);
+  --color-data-category-outline-4: var(--color-category-green-dark-data);
   --color-figure-icon: var(--color-category-blue-dark-border);
   --color-figure-number-fill: var(--color-gray-59);
   --color-figure-number-ink: var(--color-gray-933);
@@ -145,6 +149,7 @@
   --color-ui-line: var(--primitive-figure-dark-separator);
   --color-help-title-color: var(--color-ink);
   --color-category-blue-solid: var(--color-category-blue-dark-data);
+  --color-category-blue-on-solid: var(--color-gray-1000);
   --color-category-green-solid: var(--color-category-green-dark-data);
   --drop-shadow-figure-ambient: 0 0 1px rgba(0, 0, 0, 0.6);
   --drop-shadow-figure-card: 0 1px 3px rgba(0, 0, 0, 0.32);
@@ -155,7 +160,7 @@
   --color-state-active: var(--color-category-blue-light-border);
   --color-state-active-text: var(--color-category-blue-light-ink);
   --color-data-category-outline-1: var(--color-category-blue-light-data-edge);
-  --color-data-category-outline-5: var(--color-category-green-light-data-edge);
+  --color-data-category-outline-4: var(--color-category-green-light-data-edge);
   --color-figure-icon: var(--color-category-blue-light-border);
   --color-figure-number-fill: var(--primitive-figure-number-fill);
   --color-figure-number-ink: var(--primitive-figure-number-ink);
@@ -171,6 +176,7 @@
   --color-ui-line: var(--primitive-line);
   --color-help-title-color: var(--primitive-help-title-color);
   --color-category-blue-solid: var(--color-category-blue-light-data);
+  --color-category-blue-on-solid: var(--color-gray-0);
   --color-category-green-solid: var(--color-category-green-light-data);
   --drop-shadow-figure-ambient: 0 0 1px rgba(16, 24, 40, 0.16);
   --drop-shadow-figure-card: 0 1px 3px rgba(16, 24, 40, 0.08);
@@ -462,20 +468,19 @@
   fill: var(--color-figure-number-ink);
 }
 
-/* 도형은 종이 카드다: 옅은 머리카락 윤곽에 부드러운 그림자로 캔버스에서 떠 있다. 관계선(color.line)이 윤곽보다 진해 흐름이 먼저 읽힌다. 면이 없는 윤곽, 외부 도형(점선)과 상태 시작·끝 점은 그림자를 두지 않는다.
-   차트 보기와 시간 보기의 판(.fl-panel)도 같은 카드 면 위에 놓인다. 판은 도형이 아니라 켜짐·초점 상태가 없고 면과 윤곽과 그림자만 같다. */
-.fl :where(.fl-node, .fl-panel) > .fl-stroke {
+/* 도형은 종이 카드다: 옅은 머리카락 윤곽에 부드러운 그림자로 캔버스에서 떠 있다. 관계선(color.line)이 윤곽보다 진해 흐름이 먼저 읽힌다. 면이 없는 윤곽, 외부 도형(점선)과 상태 시작·끝 점은 그림자를 두지 않는다. */
+.fl :where(.fl-node) > .fl-stroke {
   stroke: var(--fx-edge-rest);
   stroke-width: var(--border-width-thin);
 }
 
-.fl :where(.fl-node:not(.fl-shape-external, .fl-shape-start, .fl-shape-final), .fl-panel) > .fl-stroke:where(:not([fill='none'])) {
+.fl :where(.fl-node:not(.fl-shape-external, .fl-shape-start, .fl-shape-final)) > .fl-stroke:where(:not([fill='none'])) {
   filter: drop-shadow(var(--drop-shadow-figure-ambient)) drop-shadow(var(--drop-shadow-figure-card));
 }
 
 /* 구획은 border.hair, 보조 경계는 border.thin, 관계는 border.edge, 생명선은 border.lifeline, 도형 경계는 공통 디자인.node-stroke다. 모든 선은 그림과 함께 확대·축소된다. */
 .fl .fl-path,
-.fl :is(.fl-node, .fl-panel) > .fl-stroke,
+.fl .fl-node > .fl-stroke,
 .fl .grid-cell,
 .fl .col-line,
 .fl .pill,
@@ -509,11 +514,7 @@
   --fx-line-rest: var(--color-line);
 }
 
-/* 도형의 평소 면과 켜진 면. 옅은 면으로 고른 도형(filled)은 켜져도 면이 같다. 면이 없는 윤곽(fill='none')과 점은 자기 면이 없거나 자기 색이다. 차트 판은 평소 면만 있다. */
-.fl .fl-panel {
-  --fx-face: var(--color-ui-card);
-}
-
+/* 도형의 평소 면과 켜진 면. 옅은 면으로 고른 도형(filled)은 켜져도 면이 같다. 면이 없는 윤곽(fill='none')과 점은 자기 면이 없거나 자기 색이다. */
 .fl .fl-node {
   --fx-face: var(--color-ui-card);
   --fx-face-on: var(--color-figure-active-surface);
@@ -559,7 +560,7 @@
   --fx-face-on: none;
 }
 
-.fl :where(.fl-node, .fl-panel) > .fl-stroke:where(:not([fill='none'])) {
+.fl :where(.fl-node) > .fl-stroke:where(:not([fill='none'])) {
   fill: var(--fx-face);
 }
 
@@ -682,17 +683,17 @@
 <g id="e-2" class="fl-edge quiet a5 a5"><defs><marker id="fl-arrow-2" viewBox="0 0 5 5" refX="4" refY="2.5" markerWidth="5" markerHeight="5" orient="auto-start-reverse" overflow="visible"><path class="fl-arrowhead" d="M 1.1 0.25 L 4 2.5 L 1.1 4.75 Z" stroke-width="1"/></marker></defs><path id="p-2" d="M 137.3 63 L 137.3 71 Q 137.3 79, 145.3 79 L 245.4 79 Q 257.4 79, 257.4 91 L 257.4 103" class="fl-path" marker-end="url(#fl-arrow-2)"/></g>
 <defs><path id="tp-0" class="fl-track-path" d="M 104 63 L 104 103" fill="none"/><path id="tp-1" class="fl-track-path" d="M 104 170 L 104 210" fill="none"/></defs><g class="fl-value"><g class="queue-fill" opacity="0" visibility="hidden" data-v="0" data-t="1"><rect x="66" y="144" width="16" height="14" rx="4" class="fl-queue-slot"/><animate attributeName="visibility" dur="8s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.0625;0.125" values="hidden;visible;hidden"/><animate attributeName="opacity" dur="8s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.0625;0.125" values="0;1;0"/></g><g class="queue-fill" opacity="0" visibility="hidden" data-v="0" data-t="2"><rect x="66" y="144" width="16" height="14" rx="4" class="fl-queue-slot"/><rect x="86" y="144" width="16" height="14" rx="4" class="fl-queue-slot"/><animate attributeName="visibility" dur="8s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.0625;0.125;0.25;0.3125;0.375" values="visible;hidden;visible;hidden;visible;hidden"/><animate attributeName="opacity" dur="8s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.0625;0.125;0.25;0.3125;0.375" values="1;0;1;0;1;0"/></g><g class="queue-fill" opacity="0" visibility="hidden" data-v="0" data-t="3"><rect x="66" y="144" width="16" height="14" rx="4" class="fl-queue-slot"/><rect x="86" y="144" width="16" height="14" rx="4" class="fl-queue-slot"/><rect x="106" y="144" width="16" height="14" rx="4" class="fl-queue-slot"/><animate attributeName="visibility" dur="8s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.25;0.3125;0.375;0.5;0.5625;0.625" values="hidden;visible;hidden;visible;hidden;visible;hidden"/><animate attributeName="opacity" dur="8s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.25;0.3125;0.375;0.5;0.5625;0.625" values="0;1;0;1;0;1;0"/></g><g class="queue-fill" opacity="0" visibility="hidden" data-v="0" data-t="4"><rect x="66" y="144" width="16" height="14" rx="4" class="fl-queue-slot"/><rect x="86" y="144" width="16" height="14" rx="4" class="fl-queue-slot"/><rect x="106" y="144" width="16" height="14" rx="4" class="fl-queue-slot"/><rect x="126" y="144" width="16" height="14" rx="4" class="fl-queue-slot"/><animate attributeName="visibility" dur="8s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.5;0.5625;0.625" values="hidden;visible;hidden;visible"/><animate attributeName="opacity" dur="8s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.5;0.5625;0.625" values="0;1;0;1"/></g></g>
 <g class="fl-value"><text x="174" y="277.7" class="value" text-anchor="end" opacity="0" visibility="hidden" data-v="1" data-t="0">0<animate attributeName="visibility" dur="8s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.15" values="visible;hidden"/><animate attributeName="opacity" dur="8s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.15" values="1;0"/></text><text x="174" y="277.7" class="value" text-anchor="end" opacity="0" visibility="hidden" data-v="1" data-t="1">1<animate attributeName="visibility" dur="8s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.15;0.4" values="hidden;visible;hidden"/><animate attributeName="opacity" dur="8s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.15;0.4" values="0;1;0"/></text><text x="174" y="277.7" class="value" text-anchor="end" opacity="0" visibility="hidden" data-v="1" data-t="2">2<animate attributeName="visibility" dur="8s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.4;0.65" values="hidden;visible;hidden"/><animate attributeName="opacity" dur="8s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.4;0.65" values="0;1;0"/></text><text x="174" y="277.7" class="value" text-anchor="end" opacity="0" visibility="hidden" data-v="1" data-t="3">3<animate attributeName="visibility" dur="8s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.65;0.9" values="hidden;visible;hidden"/><animate attributeName="opacity" dur="8s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.65;0.9" values="0;1;0"/></text><text x="174" y="277.7" class="value" text-anchor="end" opacity="0" visibility="hidden" data-v="1" data-t="4">4<animate attributeName="visibility" dur="8s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.9" values="hidden;visible"/><animate attributeName="opacity" dur="8s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.9" values="0;1"/></text></g>
-<g class="fl-packet p0-0" opacity="0" fill="var(--color-flow-ink-blue)"><circle r="10" fill="var(--color-data-category-1)" opacity="0.2"/><circle r="4.5" fill="var(--color-data-category-1)" stroke="var(--color-data-category-outline-1)" stroke-width="1.75"/><animate attributeName="opacity" dur="8s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.0875" values="1;0"/><animateMotion dur="8s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.0875;1" keySplines="0 0 1 1;0 0 1 1" keyPoints="0;1;1"><mpath href="#tp-0" xlink:href="#tp-0"/></animateMotion></g>
-<g class="fl-packet p0-1" opacity="0" fill="var(--color-flow-ink-blue)"><circle r="10" fill="var(--color-data-category-1)" opacity="0.2"/><circle r="4.5" fill="var(--color-data-category-1)" stroke="var(--color-data-category-outline-1)" stroke-width="1.75"/><animate attributeName="opacity" dur="8s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.125;0.2125" values="0;1;0"/><animateMotion dur="8s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.125;0.2125;1" keySplines="0 0 1 1;0 0 1 1;0 0 1 1" keyPoints="0;0;1;1"><mpath href="#tp-0" xlink:href="#tp-0"/></animateMotion></g>
-<g class="fl-packet p0-2" opacity="0" fill="var(--color-flow-ink-blue)"><circle r="10" fill="var(--color-data-category-1)" opacity="0.2"/><circle r="4.5" fill="var(--color-data-category-1)" stroke="var(--color-data-category-outline-1)" stroke-width="1.75"/><animate attributeName="opacity" dur="8s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.25;0.3375" values="0;1;0"/><animateMotion dur="8s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.25;0.3375;1" keySplines="0 0 1 1;0 0 1 1;0 0 1 1" keyPoints="0;0;1;1"><mpath href="#tp-0" xlink:href="#tp-0"/></animateMotion></g>
-<g class="fl-packet p0-3" opacity="0" fill="var(--color-flow-ink-blue)"><circle r="10" fill="var(--color-data-category-1)" opacity="0.2"/><circle r="4.5" fill="var(--color-data-category-1)" stroke="var(--color-data-category-outline-1)" stroke-width="1.75"/><animate attributeName="opacity" dur="8s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.375;0.4625" values="0;1;0"/><animateMotion dur="8s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.375;0.4625;1" keySplines="0 0 1 1;0 0 1 1;0 0 1 1" keyPoints="0;0;1;1"><mpath href="#tp-0" xlink:href="#tp-0"/></animateMotion></g>
-<g class="fl-packet p0-4" opacity="0" fill="var(--color-flow-ink-blue)"><circle r="10" fill="var(--color-data-category-1)" opacity="0.2"/><circle r="4.5" fill="var(--color-data-category-1)" stroke="var(--color-data-category-outline-1)" stroke-width="1.75"/><animate attributeName="opacity" dur="8s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.5;0.5875" values="0;1;0"/><animateMotion dur="8s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5;0.5875;1" keySplines="0 0 1 1;0 0 1 1;0 0 1 1" keyPoints="0;0;1;1"><mpath href="#tp-0" xlink:href="#tp-0"/></animateMotion></g>
-<g class="fl-packet p0-5" opacity="0" fill="var(--color-flow-ink-blue)"><circle r="10" fill="var(--color-data-category-1)" opacity="0.2"/><circle r="4.5" fill="var(--color-data-category-1)" stroke="var(--color-data-category-outline-1)" stroke-width="1.75"/><animate attributeName="opacity" dur="8s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.625;0.7125" values="0;1;0"/><animateMotion dur="8s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.625;0.7125;1" keySplines="0 0 1 1;0 0 1 1;0 0 1 1" keyPoints="0;0;1;1"><mpath href="#tp-0" xlink:href="#tp-0"/></animateMotion></g>
-<g class="fl-packet p0-6" opacity="0" fill="var(--color-flow-ink-blue)"><circle r="10" fill="var(--color-data-category-1)" opacity="0.2"/><circle r="4.5" fill="var(--color-data-category-1)" stroke="var(--color-data-category-outline-1)" stroke-width="1.75"/><animate attributeName="opacity" dur="8s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.8125;0.9" values="0;1;0"/><animateMotion dur="8s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.8125;0.9;1" keySplines="0 0 1 1;0 0 1 1;0 0 1 1" keyPoints="0;0;1;1"><mpath href="#tp-0" xlink:href="#tp-0"/></animateMotion></g>
-<g class="fl-packet p0-7" opacity="0" fill="var(--color-flow-ink-green)"><circle r="10" fill="var(--color-data-category-5)" opacity="0.2"/><circle r="4.5" fill="var(--color-data-category-5)" stroke="var(--color-data-category-outline-5)" stroke-width="1.75"/><animate attributeName="opacity" dur="8s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.0625;0.15" values="0;1;0"/><animateMotion dur="8s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.0625;0.15;1" keySplines="0 0 1 1;0 0 1 1;0 0 1 1" keyPoints="0;0;1;1"><mpath href="#tp-1" xlink:href="#tp-1"/></animateMotion></g>
-<g class="fl-packet p0-8" opacity="0" fill="var(--color-flow-ink-green)"><circle r="10" fill="var(--color-data-category-5)" opacity="0.2"/><circle r="4.5" fill="var(--color-data-category-5)" stroke="var(--color-data-category-outline-5)" stroke-width="1.75"/><animate attributeName="opacity" dur="8s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.3125;0.4" values="0;1;0"/><animateMotion dur="8s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.3125;0.4;1" keySplines="0 0 1 1;0 0 1 1;0 0 1 1" keyPoints="0;0;1;1"><mpath href="#tp-1" xlink:href="#tp-1"/></animateMotion></g>
-<g class="fl-packet p0-9" opacity="0" fill="var(--color-flow-ink-green)"><circle r="10" fill="var(--color-data-category-5)" opacity="0.2"/><circle r="4.5" fill="var(--color-data-category-5)" stroke="var(--color-data-category-outline-5)" stroke-width="1.75"/><animate attributeName="opacity" dur="8s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.5625;0.65" values="0;1;0"/><animateMotion dur="8s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5625;0.65;1" keySplines="0 0 1 1;0 0 1 1;0 0 1 1" keyPoints="0;0;1;1"><mpath href="#tp-1" xlink:href="#tp-1"/></animateMotion></g>
-<g class="fl-packet p0-10" opacity="0" fill="var(--color-flow-ink-green)"><circle r="10" fill="var(--color-data-category-5)" opacity="0.2"/><circle r="4.5" fill="var(--color-data-category-5)" stroke="var(--color-data-category-outline-5)" stroke-width="1.75"/><animate attributeName="opacity" dur="8s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.8125;0.9" values="0;1;0"/><animateMotion dur="8s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.8125;0.9;1" keySplines="0 0 1 1;0 0 1 1;0 0 1 1" keyPoints="0;0;1;1"><mpath href="#tp-1" xlink:href="#tp-1"/></animateMotion></g>
+<g class="fl-packet p0-0" opacity="0" fill="var(--color-data-category-on-1)"><circle r="10" fill="var(--color-data-category-1)" opacity="0.2"/><circle r="4.5" fill="var(--color-data-category-1)" stroke="var(--color-data-category-outline-1)" stroke-width="1.75"/><animate attributeName="opacity" dur="8s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.0875" values="1;0"/><animateMotion dur="8s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.0875;1" keySplines="0 0 1 1;0 0 1 1" keyPoints="0;1;1"><mpath href="#tp-0" xlink:href="#tp-0"/></animateMotion></g>
+<g class="fl-packet p0-1" opacity="0" fill="var(--color-data-category-on-1)"><circle r="10" fill="var(--color-data-category-1)" opacity="0.2"/><circle r="4.5" fill="var(--color-data-category-1)" stroke="var(--color-data-category-outline-1)" stroke-width="1.75"/><animate attributeName="opacity" dur="8s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.125;0.2125" values="0;1;0"/><animateMotion dur="8s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.125;0.2125;1" keySplines="0 0 1 1;0 0 1 1;0 0 1 1" keyPoints="0;0;1;1"><mpath href="#tp-0" xlink:href="#tp-0"/></animateMotion></g>
+<g class="fl-packet p0-2" opacity="0" fill="var(--color-data-category-on-1)"><circle r="10" fill="var(--color-data-category-1)" opacity="0.2"/><circle r="4.5" fill="var(--color-data-category-1)" stroke="var(--color-data-category-outline-1)" stroke-width="1.75"/><animate attributeName="opacity" dur="8s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.25;0.3375" values="0;1;0"/><animateMotion dur="8s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.25;0.3375;1" keySplines="0 0 1 1;0 0 1 1;0 0 1 1" keyPoints="0;0;1;1"><mpath href="#tp-0" xlink:href="#tp-0"/></animateMotion></g>
+<g class="fl-packet p0-3" opacity="0" fill="var(--color-data-category-on-1)"><circle r="10" fill="var(--color-data-category-1)" opacity="0.2"/><circle r="4.5" fill="var(--color-data-category-1)" stroke="var(--color-data-category-outline-1)" stroke-width="1.75"/><animate attributeName="opacity" dur="8s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.375;0.4625" values="0;1;0"/><animateMotion dur="8s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.375;0.4625;1" keySplines="0 0 1 1;0 0 1 1;0 0 1 1" keyPoints="0;0;1;1"><mpath href="#tp-0" xlink:href="#tp-0"/></animateMotion></g>
+<g class="fl-packet p0-4" opacity="0" fill="var(--color-data-category-on-1)"><circle r="10" fill="var(--color-data-category-1)" opacity="0.2"/><circle r="4.5" fill="var(--color-data-category-1)" stroke="var(--color-data-category-outline-1)" stroke-width="1.75"/><animate attributeName="opacity" dur="8s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.5;0.5875" values="0;1;0"/><animateMotion dur="8s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5;0.5875;1" keySplines="0 0 1 1;0 0 1 1;0 0 1 1" keyPoints="0;0;1;1"><mpath href="#tp-0" xlink:href="#tp-0"/></animateMotion></g>
+<g class="fl-packet p0-5" opacity="0" fill="var(--color-data-category-on-1)"><circle r="10" fill="var(--color-data-category-1)" opacity="0.2"/><circle r="4.5" fill="var(--color-data-category-1)" stroke="var(--color-data-category-outline-1)" stroke-width="1.75"/><animate attributeName="opacity" dur="8s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.625;0.7125" values="0;1;0"/><animateMotion dur="8s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.625;0.7125;1" keySplines="0 0 1 1;0 0 1 1;0 0 1 1" keyPoints="0;0;1;1"><mpath href="#tp-0" xlink:href="#tp-0"/></animateMotion></g>
+<g class="fl-packet p0-6" opacity="0" fill="var(--color-data-category-on-1)"><circle r="10" fill="var(--color-data-category-1)" opacity="0.2"/><circle r="4.5" fill="var(--color-data-category-1)" stroke="var(--color-data-category-outline-1)" stroke-width="1.75"/><animate attributeName="opacity" dur="8s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.8125;0.9" values="0;1;0"/><animateMotion dur="8s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.8125;0.9;1" keySplines="0 0 1 1;0 0 1 1;0 0 1 1" keyPoints="0;0;1;1"><mpath href="#tp-0" xlink:href="#tp-0"/></animateMotion></g>
+<g class="fl-packet p0-7" opacity="0" fill="var(--color-data-category-on-4)"><circle r="10" fill="var(--color-data-category-4)" opacity="0.2"/><circle r="4.5" fill="var(--color-data-category-4)" stroke="var(--color-data-category-outline-4)" stroke-width="1.75"/><animate attributeName="opacity" dur="8s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.0625;0.15" values="0;1;0"/><animateMotion dur="8s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.0625;0.15;1" keySplines="0 0 1 1;0 0 1 1;0 0 1 1" keyPoints="0;0;1;1"><mpath href="#tp-1" xlink:href="#tp-1"/></animateMotion></g>
+<g class="fl-packet p0-8" opacity="0" fill="var(--color-data-category-on-4)"><circle r="10" fill="var(--color-data-category-4)" opacity="0.2"/><circle r="4.5" fill="var(--color-data-category-4)" stroke="var(--color-data-category-outline-4)" stroke-width="1.75"/><animate attributeName="opacity" dur="8s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.3125;0.4" values="0;1;0"/><animateMotion dur="8s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.3125;0.4;1" keySplines="0 0 1 1;0 0 1 1;0 0 1 1" keyPoints="0;0;1;1"><mpath href="#tp-1" xlink:href="#tp-1"/></animateMotion></g>
+<g class="fl-packet p0-9" opacity="0" fill="var(--color-data-category-on-4)"><circle r="10" fill="var(--color-data-category-4)" opacity="0.2"/><circle r="4.5" fill="var(--color-data-category-4)" stroke="var(--color-data-category-outline-4)" stroke-width="1.75"/><animate attributeName="opacity" dur="8s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.5625;0.65" values="0;1;0"/><animateMotion dur="8s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.5625;0.65;1" keySplines="0 0 1 1;0 0 1 1;0 0 1 1" keyPoints="0;0;1;1"><mpath href="#tp-1" xlink:href="#tp-1"/></animateMotion></g>
+<g class="fl-packet p0-10" opacity="0" fill="var(--color-data-category-on-4)"><circle r="10" fill="var(--color-data-category-4)" opacity="0.2"/><circle r="4.5" fill="var(--color-data-category-4)" stroke="var(--color-data-category-outline-4)" stroke-width="1.75"/><animate attributeName="opacity" dur="8s" repeatCount="indefinite" calcMode="discrete" keyTimes="0;0.8125;0.9" values="0;1;0"/><animateMotion dur="8s" repeatCount="indefinite" calcMode="spline" keyTimes="0;0.8125;0.9;1" keySplines="0 0 1 1;0 0 1 1;0 0 1 1" keyPoints="0;0;1;1"><mpath href="#tp-1" xlink:href="#tp-1"/></animateMotion></g>
 
 </g>
 <g class="fl-still" transform="translate(0 0)">

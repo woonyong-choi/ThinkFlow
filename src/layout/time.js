@@ -4,16 +4,14 @@ import { measure, wrap } from '../measure/fonts.js';
 import { categoryPaint } from '../chart-palette.js';
 import { lineHeight, textAt } from '../measure/texts.js';
 import { values } from '@woonyong-choi/design-tokens/tokens.js';
-import { axisEnd, fitLength, tickReach } from '../chart/axis.js';
+import { axisEnd } from '../chart/axis.js';
 import { labelColumn, drawHeader, rowLabelLayout } from '../chart/labels.js';
 import { BAR, PAD, SPACE, TEXT, WIDTH } from '../chart/metrics.js';
 import { makeScale } from '../chart/scale.js';
 
 // 구간 줄의 세로 간격과 레인 위아래 여유
-// 구간 막대 두께. 누적·퍼센트 막대와 같은 두께라 시간 보기의 막대가 다른 막대 차트와 같은 무게로 읽힌다.
-const SPAN_BAR = BAR * 2;
-const SUB_ROW = SPAN_BAR + SPACE['2'];
-const LANE_PAD = SPACE['3'];
+const SUB_ROW = BAR + SPACE['8'];
+const LANE_PAD = SPACE['4'];
 // 구간 막대 끝과 그 이름 글 사이 간격
 const NAME_GAP = SPACE['3'];
 
@@ -35,11 +33,11 @@ export function layoutTime(card, names, width = WIDTH) {
   const plotX = PAD + labelW;
   const plotRight = width - PAD;
   const total = Math.max(...card.spans.map((s) => s.at + s.dur));
-  const scale = makeScale('linear', { min: 0, max: total, start: plotX, length: layout ? plotRight - plotX : wideLength(card.spans, { total, plotX, plotRight }) });
+  const scale = makeScale('linear', { min: 0, max: total, start: plotX, length: plotRight - plotX });
   let y = header.bottom;
   const laid = lanes.map((id, k) => {
     const source = card.spans.filter((s) => s.lane === id);
-    const rows = layout ? compactRows(source, scale, y + labelLayout.space) : wideRows(source, scale, { y, right: plotRight });
+    const rows = layout ? compactRows(source, scale, y + labelLayout.space) : wideRows(source, scale, y);
     const h = rows.height + labelLayout.space;
     const lane = { id, label: names.get(id) ?? id, y, h, paint: categoryPaint(k), spans: rows.spans.map((s) => ({ ...s, key: `${card.id}.${s.id}` })) };
     y += h;
@@ -53,25 +51,13 @@ export function layoutTime(card, names, width = WIDTH) {
 
 const SPAN_TEXT = { size: TEXT['11'], face: 'regular', line: lineHeight(TEXT['11'], values.leading.normal) };
 
-function wideRows(source, scale, { y, right }) {
-  const rows = packRows(source, scale, right);
+function wideRows(source, scale, y) {
+  const rows = packRows(source, scale);
   const spans = rows.flatMap((row, r) => row.map((s) => {
-    const top = y + LANE_PAD + r * SUB_ROW;
-    return { ...s, y: top, h: SPAN_BAR, texts: [textAt('chart-rule-label', s.label, SPAN_TEXT, { x: s.nameX, center: top + SPAN_BAR / 2, anchor: s.isLeft ? 'end' : 'start' })] };
+    const top = y + LANE_PAD + r * SUB_ROW + SPACE['4'];
+    return { ...s, y: top, h: BAR, texts: [textAt('chart-rule-label', s.label, SPAN_TEXT, { x: s.nameX, center: top + BAR / 2, anchor: s.isLeft ? 'end' : 'start' })] };
   }));
-  return { spans, height: rows.length * SUB_ROW - SPACE['2'] + LANE_PAD * 2 };
-}
-
-// cost: time O(s + t), heap O(s + t), stack O(1)
-// vars: s = 구간 수, t = 눈금 수
-// basis: estimate
-// 넓은 시간축의 길이. 막대 차트의 값 글자처럼(chart/axis.js fitLength) 구간 끝 오른쪽에 이름이 들어가도록 축 길이를 글자 폭으로 정한다.
-// 이름이 너무 길어 축이 그림 영역의 절반보다 짧아지면 절반에서 멈추고, 들어가지 않는 이름은 막대 왼쪽에 놓인다(packRows).
-function wideLength(spans, { total, plotX, plotRight }) {
-  const room = plotRight - plotX;
-  const unit = makeScale('linear', { min: 0, max: total, start: 0, length: 1 });
-  const reaches = spans.map((s) => ({ value: s.at + s.dur, extra: NAME_GAP + measure(s.label, TEXT['11']) }));
-  return Math.min(room, Math.max(room / 2, fitLength(unit, [...reaches, ...tickReach(unit)], { start: plotX, right: plotRight })));
+  return { spans, height: Math.max(SUB_ROW, rows.length * SUB_ROW) + LANE_PAD * 2 };
 }
 
 // 좁은 시간축은 구간 이름을 막대 위에 놓는다. 시간 좌표·길이는 그대로이고 긴 이름과 겹친 구간만 세로 공간을 쓴다.
@@ -82,8 +68,8 @@ function compactRows(source, scale, y) {
     const texts = lines.map((line, i) => textAt('chart-rule-label', line, SPAN_TEXT, { x: scale.start, center: top + (i + 0.5) * SPAN_TEXT.line }));
     top += lines.length * SPAN_TEXT.line + SPACE['3'];
     const x = scale.at(span.at);
-    const placed = { ...span, x, y: top, w: scale.at(span.at + span.dur) - x, h: SPAN_BAR, texts };
-    top += SPAN_BAR + LANE_PAD;
+    const placed = { ...span, x, y: top, w: scale.at(span.at + span.dur) - x, h: BAR, texts };
+    top += BAR + LANE_PAD;
     return placed;
   });
   return { spans, height: top - y + LANE_PAD };
@@ -93,15 +79,15 @@ function compactRows(source, scale, y) {
 // vars: s = 구간 수, r = 줄 수
 // basis: estimate
 // 레인 안 구간을 시작 시각 순으로 줄에 놓는다. 한 줄에서 앞 구간의 막대와 이름 글이 차지한 가로 구간(px)과 겹치면 다음 줄로 간다.
-function packRows(spans, scale, right) {
+function packRows(spans, scale) {
   const rows = [];
   const edges = [];
   for (const span of [...spans].sort((a, b) => a.at - b.at || a.dur - b.dur)) {
     const x = scale.at(span.at);
     const w = Math.max(SPACE['1'], scale.at(span.at + span.dur) - x);
     const nameW = measure(span.label, TEXT['11']);
-    // 이름은 막대 오른쪽에 두고, 그림 영역 오른쪽 끝(right)을 넘으면 막대 왼쪽에 둔다. 축 길이가 이름 자리를 남기므로(wideLength) 보통 오른쪽에 들어간다.
-    const isLeft = x + w + NAME_GAP + nameW > right;
+    // 이름은 막대 오른쪽에 두고, 그림 오른쪽 끝을 넘으면 막대 왼쪽에 둔다.
+    const isLeft = x + w + NAME_GAP + nameW > scale.start + scale.length;
     const [from, to] = isLeft ? [x - NAME_GAP - nameW, x + w] : [x, x + w + NAME_GAP + nameW];
     let k = edges.findIndex((end) => end <= from);
     if (k < 0) k = edges.length;

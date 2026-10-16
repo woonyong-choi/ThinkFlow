@@ -253,7 +253,7 @@ test('U11 a measured text role is the drawn role: the CSS of every role has the 
     const weight = declared(css, selector, 'font-weight').at(-1);
     return weight === undefined ? 400 : values["font-weight"][/--font-weight-(\w+)\)/.exec(weight)[1]];
   };
-  const WEIGHTS = { regular: 400, semibold: 600, numLiteral: 400 };
+  const WEIGHTS = { regular: 400, semibold: 600, semiboldLiteral: 600 };
   const roles = [['.fl .label', STYLE.label], ['.fl .sub', STYLE.sub], ['.fl .frame', STYLE.group], ['.fl .row', STYLE.row], ['.fl .meta', STYLE.meta], ['.fl .cell', STYLE.cell], ['.fl .item', STYLE.item], ['.fl .mini', STYLE.mini], ['.fl .chip', STYLE.chip], ['.fl .edgelabel', STYLE.pill], ['.fl .tag', STYLE.tag], ['.fl .mark', STYLE.mark], ['.fl .cell .key', STYLE.key], ['.fl .value', STYLE.value], ['.fl .badge', BADGE_STYLE]];
   for (const [selector, style] of roles) assert.deepEqual([sizeOf(STYLES.figure, selector), weightOf(STYLES.figure, selector)], [style.size, WEIGHTS[style.face]], selector);
   // 글자 사이 간격은 잰 폭이 아는 것(tracking.text, 문서 전체)뿐이다. 그룹 제목에 따로 간격을 주지 않는다.

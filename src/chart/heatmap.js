@@ -8,12 +8,12 @@ import { centerBaseline, renderRich, roundCoord as r } from '../text.js';
 import { tokens, values } from '@woonyong-choi/design-tokens/tokens.js';
 import { labelColumn, labelFit, labelText } from './labels.js';
 import { markAttrs, markId } from './marks.js';
-import { mixOklch } from './oklab.js';
+import { mixOklab } from './oklab.js';
 import { PAD, RIGHT, SIZE, SPACE, TEXT } from './metrics.js';
 import { valueFormat } from './scale.js';
 
-// 칸 색. 값 0은 옅은 끝(heat-low), 최댓값은 진한 끝(heat-high)이고 그 사이는 OKLCH 보간이라 두 끝 사이 색상환을 지나는 두 색 그라데이션이다.
-// 칸 색은 CSS(.chart-heat의 color-mix in oklch)가 변수로 계산해 다크 모드 값을 따라간다. 여기 hex는 color-mix를 모르는 뷰어용 대체 색(라이트)이고 같은 OKLCH 보간이다.
+// 칸 색. 값 0은 옅은 끝(heat-low), 최댓값은 진한 끝(heat-high)이고 그 사이는 OKLab 보간이다.
+// 칸 색은 CSS(.chart-heat의 color-mix in oklab)가 변수로 계산해 다크 모드 값을 따라간다. 여기 hex는 color-mix를 모르는 뷰어용 대체 색(라이트)이고 같은 OKLab 보간이다.
 // 칸 안 값 글자 후보. 칸마다 대비가 큰 쪽을 빌드 때 고른다. 다크는 두 후보가 같은 밝은 색이고 칸 색 범위가 그 글자와 4.5 이상이 되게 정했다(테스트가 모든 강도를 잰다).
 // 칸 갱신 효과의 칠: 히트맵은 계열이 아니라 옅은 끝(heat-low)에서 짙은 끝(heat-high)으로 가는 하나의 띠라서 두 끝이 효과의 면과 테두리다.
 const HEAT_PAINT = { tint: tokens.color.data['heat-low'], border: tokens.color.data['heat-high'] };
@@ -39,7 +39,7 @@ function columnRoom(cellW) {
  */
 function heatLook(rawStrength, heat) {
   const strength = roundToScale(rawStrength, STRENGTH_PRECISION);
-  const fill = mixOklch(heat.low, heat.high, strength);
+  const fill = mixOklab(heat.low, heat.high, strength);
   return { strength, fill, isOn: pickInk(fill, heat.ink, heat.inkOn) === heat.inkOn };
 }
 
@@ -87,15 +87,13 @@ export function drawHeatmap(figure, top) {
   const valueRoom = maxOf(chart.rows.map((c) => measure(format(c.values.value), TEXT['11'], 'num'))) + SPACE["2"] + SPACE["0-5"];
   // 좁은 폭에서 행 이름 칸은 가장 긴 행 이름이 한 줄로 들어갈 만큼만(기본 최소 너비 없이) 얻고 남는 폭은 열이 가져간다. 이름이 길어도 열과 같은 몫을 넘지 않는다.
   const rowNeed = maxOf(rows.map((row) => measure(row, TEXT['13'], 'regular'))) + SPACE["3"];
-  // 넓은 폭에서도 행 이름 칸은 이름 폭만큼만 쓴다. 다른 차트의 이름 칸 최소 너비(label)를 쓰면 짧은 이름(요일)에서 칸 앞이 비고 칸이 좁아진다.
-  const labelW = chart.layout ? Math.max(SPACE["3"] + TEXT['13'], Math.min(rowNeed, available / (cols.length + 1), available - cols.length * valueRoom)) : Math.min(labelColumn(rows), Math.max(SPACE["3"] + TEXT['13'], rowNeed));
+  const labelW = chart.layout ? Math.max(SPACE["3"] + TEXT['13'], Math.min(rowNeed, available / (cols.length + 1), available - cols.length * valueRoom)) : labelColumn(rows);
   const plotX = labelW + PAD;
   const cellW = (available - labelW + SPACE["0-5"]) / cols.length;
   const names = chart.layout ? { rows: rows.map((row) => wrap(row, labelW - SPACE["3"], { size: TEXT['13'], face: 'regular' })), cols: cols.map((col) => wrap(col, columnRoom(cellW), { size: TEXT['11'], face: 'num' })) } : undefined;
   const leading = values.leading.normal;
   const headerH = names ? maxOf(names.cols.map((lines) => lines.length)) * STYLE.meta.line : TEXT['11'];
-  // 넓은 폭의 칸 높이는 칸 너비의 절반(가로 2:1)까지 키워 넓은 칸이 납작한 띠로 보이지 않게 한다. 토큰 높이(cell)가 하한, 그 두 배가 상한이다.
-  const cellH = names ? Math.max(SIZE.chart.cell, maxOf(names.rows.map((lines) => lines.length)) * TEXT['13'] * leading + SPACE["2"]) : Math.min(SIZE.chart.cell * 2, Math.max(SIZE.chart.cell, cellW / 2));
+  const cellH = names ? Math.max(SIZE.chart.cell, maxOf(names.rows.map((lines) => lines.length)) * TEXT['13'] * leading + SPACE["2"]) : SIZE.chart.cell;
   const grid = { chart, rows, cols, plotX, cellW, cellH, names, top: top + headerH + SPACE["2"], max: maxOf(chart.rows.map((c) => c.values.value)), format };
   const parts = cols.map((c, j) => names ? matrixLabel(names.cols[j], { x: plotX + j * cellW + cellW / 2, cy: top + headerH / 2, size: TEXT['11'], className: 'chart-tick' }) : `<text x="${r(plotX + j * cellW + cellW / 2)}" y="${r(top + TEXT['11'])}" class="chart-tick">${renderRich(c)}</text>`);
   rows.forEach((row, i) => parts.push(names ? matrixLabel(names.rows[i], { x: PAD, cy: grid.top + i * cellH + cellH / 2, size: TEXT['13'], className: 'chart-label' }) : labelText(row, grid.top + i * cellH + cellH / 2, 'chart-label')));

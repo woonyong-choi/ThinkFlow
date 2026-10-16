@@ -14,7 +14,7 @@
   --color-state-active-text: var(--color-category-blue-light-ink);
   --color-ui-focus: var(--color-action-link);
   --color-data-main: var(--color-category-blue-light-border);
-  --color-data-heat-low: var(--primitive-figure-heat-low);
+  --color-data-heat-low: var(--color-category-blue-light-tint-3);
   --color-data-heat-high: var(--color-category-blue-light-border);
   --color-data-heat-ink: var(--color-gray-1000);
   --color-data-heat-ink-on: var(--color-gray-0);
@@ -38,7 +38,6 @@
   --color-ui-line: var(--primitive-line);
   --color-help-title-color: var(--primitive-help-title-color);
   --color-action-link: var(--primitive-link);
-  --color-category-blue-anchor: #1e6bd6;
   --color-category-blue-light-border: #1e6bd6;
   --color-category-blue-light-ink: #1161cb;
   --color-category-blue-light-tint-3: #d5e4fa;
@@ -46,7 +45,7 @@
   --color-category-blue-dark-ink: #6da8ff;
   --color-category-blue-dark-tint-3: #303d54;
   --color-category-blue-solid: var(--color-category-blue-light-data);
-  --color-category-blue-light-data: #296ecc;
+  --color-category-blue-light-data: #3371c1;
   --color-category-blue-dark-data: #518ad6;
   --font-figure-sans: FigSans, FigSansSym, FigSansMath, ui-sans-serif, -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
   --font-figure-mono: FigMono, FigSans, FigSansSym, FigSansMath, ui-monospace, SFMono-Regular, Menlo, monospace;
@@ -54,7 +53,7 @@
   --radius-card-radius: var(--primitive-card-radius);
   --text-small-text: var(--primitive-small-text);
   --text-tiny-text: var(--primitive-tiny-text);
-  --text-figure-meta: 12px;
+  --text-figure-meta: 11px;
   --tracking-text: -0.3px;
   --font-weight-semibold: 600;
   --font-weight-normal: 400;
@@ -71,8 +70,6 @@
   --primitive-figure-dark-bg: #26272b;
   --primitive-figure-dark-node: #303136;
   --primitive-figure-dark-edge: #50535b;
-  --primitive-figure-heat-low: #eaf3c0;
-  --primitive-figure-dark-heat-low: #1f3b3e;
   --primitive-figure-dark-separator: #454850;
   --primitive-figure-dark-hover: #343e50;
   --primitive-figure-dark-selection: #274174;
@@ -112,8 +109,8 @@
   --color-state-active: var(--color-category-blue-dark-border);
   --color-state-active-text: var(--color-category-blue-dark-ink);
   --color-data-main: var(--color-category-blue-dark-border);
-  --color-data-heat-low: var(--primitive-figure-dark-heat-low);
-  --color-data-heat-high: var(--color-category-blue-anchor);
+  --color-data-heat-low: var(--color-category-blue-dark-tint-3);
+  --color-data-heat-high: var(--color-category-blue-dark-border);
   --color-data-heat-ink: var(--color-gray-0);
   --color-data-grid: var(--primitive-figure-dark-edge);
   --color-figure-icon: var(--color-category-blue-dark-border);
@@ -141,8 +138,8 @@
   --color-state-active: var(--color-category-blue-dark-border);
   --color-state-active-text: var(--color-category-blue-dark-ink);
   --color-data-main: var(--color-category-blue-dark-border);
-  --color-data-heat-low: var(--primitive-figure-dark-heat-low);
-  --color-data-heat-high: var(--color-category-blue-anchor);
+  --color-data-heat-low: var(--color-category-blue-dark-tint-3);
+  --color-data-heat-high: var(--color-category-blue-dark-border);
   --color-data-heat-ink: var(--color-gray-0);
   --color-data-grid: var(--primitive-figure-dark-edge);
   --color-figure-icon: var(--color-category-blue-dark-border);
@@ -169,7 +166,7 @@
   --color-state-active: var(--color-category-blue-light-border);
   --color-state-active-text: var(--color-category-blue-light-ink);
   --color-data-main: var(--color-category-blue-light-border);
-  --color-data-heat-low: var(--primitive-figure-heat-low);
+  --color-data-heat-low: var(--color-category-blue-light-tint-3);
   --color-data-heat-high: var(--color-category-blue-light-border);
   --color-data-heat-ink: var(--color-gray-1000);
   --color-data-grid: var(--primitive-figure-grid);
@@ -478,20 +475,19 @@
   fill: var(--color-figure-number-ink);
 }
 
-/* 도형은 종이 카드다: 옅은 머리카락 윤곽에 부드러운 그림자로 캔버스에서 떠 있다. 관계선(color.line)이 윤곽보다 진해 흐름이 먼저 읽힌다. 면이 없는 윤곽, 외부 도형(점선)과 상태 시작·끝 점은 그림자를 두지 않는다.
-   차트 보기와 시간 보기의 판(.fl-panel)도 같은 카드 면 위에 놓인다. 판은 도형이 아니라 켜짐·초점 상태가 없고 면과 윤곽과 그림자만 같다. */
-.fl :where(.fl-node, .fl-panel) > .fl-stroke {
+/* 도형은 종이 카드다: 옅은 머리카락 윤곽에 부드러운 그림자로 캔버스에서 떠 있다. 관계선(color.line)이 윤곽보다 진해 흐름이 먼저 읽힌다. 면이 없는 윤곽, 외부 도형(점선)과 상태 시작·끝 점은 그림자를 두지 않는다. */
+.fl :where(.fl-node) > .fl-stroke {
   stroke: var(--fx-edge-rest);
   stroke-width: var(--border-width-thin);
 }
 
-.fl :where(.fl-node:not(.fl-shape-external, .fl-shape-start, .fl-shape-final), .fl-panel) > .fl-stroke:where(:not([fill='none'])) {
+.fl :where(.fl-node:not(.fl-shape-external, .fl-shape-start, .fl-shape-final)) > .fl-stroke:where(:not([fill='none'])) {
   filter: drop-shadow(var(--drop-shadow-figure-ambient)) drop-shadow(var(--drop-shadow-figure-card));
 }
 
 /* 구획은 border.hair, 보조 경계는 border.thin, 관계는 border.edge, 생명선은 border.lifeline, 도형 경계는 공통 디자인.node-stroke다. 모든 선은 그림과 함께 확대·축소된다. */
 .fl .fl-path,
-.fl :is(.fl-node, .fl-panel) > .fl-stroke,
+.fl .fl-node > .fl-stroke,
 .fl .grid-cell,
 .fl .col-line,
 .fl .pill,
@@ -525,11 +521,7 @@
   --fx-line-rest: var(--color-line);
 }
 
-/* 도형의 평소 면과 켜진 면. 옅은 면으로 고른 도형(filled)은 켜져도 면이 같다. 면이 없는 윤곽(fill='none')과 점은 자기 면이 없거나 자기 색이다. 차트 판은 평소 면만 있다. */
-.fl .fl-panel {
-  --fx-face: var(--color-ui-card);
-}
-
+/* 도형의 평소 면과 켜진 면. 옅은 면으로 고른 도형(filled)은 켜져도 면이 같다. 면이 없는 윤곽(fill='none')과 점은 자기 면이 없거나 자기 색이다. */
 .fl .fl-node {
   --fx-face: var(--color-ui-card);
   --fx-face-on: var(--color-figure-active-surface);
@@ -575,7 +567,7 @@
   --fx-face-on: none;
 }
 
-.fl :where(.fl-node, .fl-panel) > .fl-stroke:where(:not([fill='none'])) {
+.fl :where(.fl-node) > .fl-stroke:where(:not([fill='none'])) {
   fill: var(--fx-face);
 }
 
@@ -691,12 +683,12 @@
   fill: var(--color-ink);
 }
 
-/* 글자 뒤 바탕 면과 받침 선은 차트가 놓인 면의 색이다. 차트 보기와 시간 보기는 판 카드(.fl-panel)의 면, 차트 카드는 카드 면이다(켜진 카드는 켜진 면). 판 없이 그림 바탕에 놓인 차트는 그림 바탕(설명 판)이다. 받는 쪽은 차트 묶음(.fl-chart)의 color를 currentColor로 읽는다. */
+/* 글자 뒤 바탕 면과 받침 선은 차트가 놓인 면의 색이다. 차트 보기는 그림 바탕(설명 판), 차트 카드는 카드 면이다(켜진 카드는 켜진 면). 받는 쪽은 차트 묶음(.fl-chart)의 color를 currentColor로 읽는다. */
 .fl {
   --chart-ground: var(--color-figure-canvas);
 }
 
-.fl :is(.fl-node, .fl-panel) {
+.fl .fl-node {
   --chart-ground: var(--fx-face);
 }
 
@@ -781,9 +773,9 @@
   text-anchor: start;
 }
 
-/* 칸 색은 변수로 계산해 다크 모드 heat-low를 따라간다. --s는 칸 강도(0~1)다. 보간은 OKLCH라 두 끝 색 사이의 색상환을 따라 돌아(라이트: 연노랑 → 민트 → 청록 → 파랑) 두 색 그라데이션으로 읽힌다. fill 속성의 대체 색(ThinkFlow chart/oklab.js)도 같은 OKLCH 보간이다. */
+/* 칸 색은 변수로 계산해 다크 모드 heat-low를 따라간다. --s는 칸 강도(0~1)다. 보간은 OKLab이고 fill 속성의 대체 색(chart/oklab.js)과 같다. */
 .fl .chart-heat {
-  fill: color-mix(in oklch, var(--color-data-heat-high) calc(var(--s) * 100%), var(--color-data-heat-low));
+  fill: color-mix(in oklab, var(--color-data-heat-high) calc(var(--s) * 100%), var(--color-data-heat-low));
 }
 
 /* 누적 조각 안의 계열 번호 키. 글자색과 가장자리 색은 조각의 범주 값을 속성으로 받는다. */
@@ -825,14 +817,9 @@
   --ink: var(--color-data-heat-ink-on);
 }
 
-/* 격자는 읽기를 돕는 안내라 자료 표식보다 옅다. 축선은 값을 재는 기준이라 관계선(color.line)과 같은 진하기로 차트 면 위 3:1 이상이다. */
+.fl .chart-axis,
 .fl .chart-grid {
   stroke: var(--color-data-grid);
-  stroke-width: var(--border-width-thin);
-}
-
-.fl .chart-axis {
-  stroke: var(--color-line);
   stroke-width: var(--border-width-thin);
 }
 

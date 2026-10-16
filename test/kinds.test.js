@@ -2,7 +2,7 @@
 // 예제 원본은 examples.test.js가 읽는다. 시험 이름 첫 낱말(K-arch 등)이 요구사항 번호이고, 대응은 docs/design/expression-coverage.md의 시험 번호 표에 있다.
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { FIGURE_PAD, panelInner } from '../src/canvas.js';
+import { FIGURE_PAD } from '../src/canvas.js';
 import { reflowFigure } from '../src/build.js';
 import { headReach } from '../src/draw/arrow.js';
 import { measure } from '../src/measure/fonts.js';
@@ -240,7 +240,7 @@ test('K-trace spans sit on a linear time axis: position follows "at", length fol
     const zero = at(dom, '0').x;
     const hundred = at(dom, '100').x;
     const unitWidth = hundred - zero;
-    const spans = findAll(dom, (n) => n.tag === 'rect' && n.attrs['data-span'] !== undefined);
+    const spans = findAll(dom, (n) => n.tag === 'rect' && !n.attrs.class && num(n, 'height') < 20 && num(n, 'width') > 10);
     assert.equal(spans.length, 2);
     spans.sort((p, q) => num(p, 'y') - num(q, 'y'));
     assert.ok(Math.abs(num(spans[0], 'x') - zero) < 1.5 && Math.abs(num(spans[0], 'width') - unitWidth) < 1.5, 'ONE starts at 0 and lasts 100');
@@ -259,7 +259,7 @@ test('K-trace span labels use the current time panel boundary when its width gro
   const width = base.scene.times[0].width * 2;
   const wide = await reflowFigure(base, { chartWidth: width });
   const panel = wide.scene.times[0];
-  assert.equal(panel.width, panelInner(width), 'the time panel draws inside its panel card margin');
+  assert.equal(panel.width, width);
   for (const span of panel.lanes[0].spans) {
     assert.ok(span.nameX + measure(span.label, values.text.figure['11']) < panel.plotRight, 'the label fits to the right of its span');
     assert.equal(span.isLeft, false, 'unused space past the original width remains available');
@@ -277,7 +277,7 @@ test('K-trace #170 a narrow time panel preserves duration ratios and puts long l
   const base = await build(source);
   const narrow = await reflowFigure(base, { chartWidth: 272 });
   const panel = narrow.scene.times[0];
-  assert.equal(panel.width, panelInner(272), 'time participates in the compact layout inside its panel card margin');
+  assert.equal(panel.width, 272, 'time participates in the compact layout');
   const spans = panel.lanes[0].spans;
   assert.ok(Math.abs(spans[1].w / spans[0].w - 3) < 0.001, '100ms and 300ms retain their ratio');
   assert.ok(spans[1].y > spans[0].y + spans[0].h, 'overlapping times use different rows');

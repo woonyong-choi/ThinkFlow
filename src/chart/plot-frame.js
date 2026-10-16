@@ -35,17 +35,6 @@ function breakMark(y, left) {
   return `<path d="M ${points.join(' L ')}" class="chart-break"/>`;
 }
 
-// cost: time O(t), heap O(t), stack O(1)
-// vars: t = 가로 눈금 수
-// basis: estimate
-// 가로 눈금마다 긋는 세로 격자. 가로 격자와 함께 모눈을 이뤄 점과 꺾이는 자리가 어느 눈금에 있는지 읽힌다. 가로 값 축의 기준(왼쪽 끝)은 축선이 따로 그리므로 첫 눈금이 그림 영역 왼쪽 끝이면 긋지 않는다.
-function xGrid(sx, { top, bottom }) {
-  return sx.ticks
-    .filter((t) => sx.at(t) > sx.start)
-    .map((t) => `<line x1="${r(sx.at(t))}" x2="${r(sx.at(t))}" y1="${r(top)}" y2="${r(bottom)}" class="chart-grid"/>`)
-    .join('');
-}
-
 // cost: time O(t), heap O(out), stack O(1)
 // vars: t = 눈금 수, out = 만든 SVG 글자 수
 // basis: estimate
@@ -116,6 +105,6 @@ export function plotFrame(figure, top, { xs, ys, endRoom = 0, minPlotH = 0, mark
   const plotW = fitLength(unitX, [...tickReach(unitX), ...xs.map((value) => ({ value, extra: markReach }))], { start: left, right });
   const sx = makeScale(xKind, { ...xRange, start: left, length: plotW });
   const axis = chart.layout ? compactAxis(sx, plotTop + plotH, chart.x) : { svg: axisLabels(sx, plotTop + plotH, chart.x), bottom: axisEnd(plotTop + plotH, Boolean(chart.x)) };
-  const frame = xGrid(sx, { top: plotTop, bottom: plotTop + plotH }) + yGrid(sy, { left, plotW, cut: cutTick(chart, yScale.ticks) }) + axis.svg + yAxisTitle(titleLines, top);
+  const frame = yGrid(sy, { left, plotW, cut: cutTick(chart, yScale.ticks) }) + axis.svg + yAxisTitle(titleLines, top);
   return { sx, sy, frame, top: plotTop, right, bottom: axis.bottom, plotBottom: plotTop + plotH };
 }

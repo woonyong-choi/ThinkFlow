@@ -4,8 +4,8 @@ import { bodyOf } from '../measure/decor.js';
 import { roundCoord as r } from '../text.js';
 import { values } from '@woonyong-choi/design-tokens/tokens.js';
 
-/** 모서리 반지름의 세 역할: 바깥 면(카드), 그 안에 놓이는 면(내용, 칸 묶음, 메모), 작은 칸(큐 칸). 모두 design-tokens의 곡률 역할 토큰이다. */
-export const CORNER = Object.freeze({ outer: values.radius['figure-outer'], inner: values.radius['figure-inner'], cell: values.radius['figure-cell'] });
+/** 모서리 반지름의 두 역할: 바깥 면(카드)과 그 안에 놓이는 면(내용, 칸 묶음, 메모). 둘 다 토큰이다. */
+export const CORNER = Object.freeze({ outer: values.radius.lg, inner: values.radius.md });
 
 /** 사각형 윤곽 여는 글(닫지 않음): 속성이 이어질 자리를 남긴다. */
 export function rectOpen({ x, y, w, h }, radius) {

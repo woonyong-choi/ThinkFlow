@@ -5,7 +5,6 @@ import { rowName } from '../chart/labels.js';
 import { PAD, SPACE } from '../chart/metrics.js';
 import { escapeXml, roundCoord as r } from '../text.js';
 import { drawChartBody } from './chart.js';
-import { drawSurface } from './surface.js';
 import { drawTexts } from './texts.js';
 
 // 막대 둘레에 켜지는 밝힘 면이 막대보다 넓은 만큼
@@ -14,17 +13,9 @@ const LIGHT_GROW = SPACE['1'];
 // cost: time O(c), heap O(out), stack O(1)
 // vars: c = 차트 글자 수, out = 만든 SVG 글자 수
 // basis: estimate
-/** 차트 보기 판. 판 카드 위에 차트 그림을 놓고, 차트 카드 id는 data-chart로 가려 같은 차트가 여러 곳에 그려져도 움직임이 모두 찾는다. */
+/** 차트 보기 판. 차트 그림을 판 자리에 놓고, 차트 카드 id는 data-chart로 가려 같은 차트가 여러 곳에 그려져도 움직임이 모두 찾는다. */
 export function drawPlot(panel, glyphs) {
-  return panelCard(panel, drawChartBody(panel.chart, { ...panel, className: 'fl-plot' }, glyphs));
-}
-
-// cost: time O(1), heap O(out), stack O(1)
-// vars: out = 판 내용 글자 수
-// basis: estimate
-// 판 카드: 도형 카드와 같은 카드 면(draw/surface.js)을 판 자리에 깔고 그 위에 판 내용을 놓는다. 면·윤곽·그림자는 design-tokens의 `.fl-panel > .fl-stroke`가 도형 카드와 같은 규칙으로 그린다.
-function panelCard({ x, y, width, height }, content) {
-  return `<g class="fl-panel">${drawSurface({ x, y, w: width, h: height }, 'class="fl-stroke"')}${content}</g>`;
+  return drawChartBody(panel.chart, { ...panel, className: 'fl-plot' }, glyphs);
 }
 
 // cost: time O(s + t), heap O(out), stack O(1)
@@ -47,7 +38,7 @@ export function drawTime(panel, { decorate, glyphs }) {
     return name + separator + lane.spans.map((s) => drawSpan(s, { lane, decorate, glyphs })).join('');
   });
   const axis = `<line x1="${r(scale.start)}" x2="${r(scale.start + scale.length)}" y1="${r(axisY)}" y2="${r(axisY)}" class="chart-axis"/>${axisLabels(scale, axisY, panel.unit)}`;
-  return panelCard(panel, `<g class="fl-time fl-chart" data-view="${escapeXml(panel.view)}" data-chart="${escapeXml(panel.id)}" transform="translate(${r(panel.x)} ${r(panel.y)})">${panel.header}${grid}${rows.join('')}${axis}</g>`);
+  return `<g class="fl-time" data-view="${escapeXml(panel.view)}" data-chart="${escapeXml(panel.id)}" transform="translate(${r(panel.x)} ${r(panel.y)})">${panel.header}${grid}${rows.join('')}${axis}</g>`;
 }
 
 // cost: time O(1), heap O(out), stack O(1)

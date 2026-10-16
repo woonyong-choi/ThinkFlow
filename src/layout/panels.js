@@ -1,7 +1,6 @@
 // 보기마다 따로 배치한 판을 위에서 아래로 쌓아 장면 하나로 합친다. 판은 가장 넓은 판의 가운데에 맞추고, 보기 이름(label)이 있으면 판 위에 제목 줄을 둔다.
 // 판 제목은 판 폭과 상관없이 모두 그림 왼쪽 여백(FIGURE_PAD)에서 시작한다. 좁은 판의 제목이 가운데로 밀려 판마다 제목 자리가 달라지지 않게 하기 위해서다.
 // 판의 폭은 내용 폭과 제목 폭(왼쪽 여백 FIGURE_PAD + 글 + 오른쪽 여백) 중 큰 쪽이고, 내용은 그 폭 안에서 가운데에 놓인다.
-// 차트 보기와 시간 보기는 도형처럼 카드 면(판 카드) 위에 놓인다. 그래프와 순서 배치가 내용 둘레에 FIGURE_PAD를 두는 것처럼 판 카드 둘레에도 같은 여백을 두므로 내용 폭은 카드 폭에 양옆 여백을 더한 값이다.
 // 합친 장면의 선은 보기 순서대로 이어 붙여 문서 전체 선·메시지 번호(source/project.js)와 같은 번호를 받고, 처음 점·끝 겹원의 선(isMark)은 맨 뒤에 둔다.
 import { FIGURE_PAD } from '../canvas.js';
 import { measure } from '../measure/fonts.js';
@@ -46,14 +45,9 @@ export function composePanels(panels) {
 // 판의 크기. content는 배치한 내용 폭이고 w는 제목이 잘리지 않게 늘린 판 폭이다.
 function sizeOf(panel) {
   const source = panel.scene ?? panel.chart ?? panel.time ?? panel.timing;
-  const inset = isCarded(panel) ? FIGURE_PAD * 2 : 0;
   const title = panel.label ? measure(panel.label, STYLE.group.size, STYLE.group.face) + FIGURE_PAD * 2 : 0;
-  const content = source.width + inset;
-  return { w: Math.max(content, title), h: source.height + inset, content };
+  return { w: Math.max(source.width, title), h: source.height, content: source.width };
 }
-
-/** 판 카드 위에 놓이는 판인가: 차트 보기와 시간 보기 */
-const isCarded = (panel) => Boolean(panel.chart ?? panel.time);
 
 // cost: time O(s + e·pts), heap O(s + e·pts), stack O(1)
 // vars: s = 도형·그룹 수, e = 선 수, pts = 경로 점 수
@@ -70,8 +64,7 @@ function place_(scene, panel, { dx, dy }, index) {
     for (const key of ['lifelines', 'notes', 'activations', 'destructions', 'fragments']) scene[key].push(...(part[key] ?? []).map(tag));
     return;
   }
-  if (panel.timing) return void scene.timings.push({ ...panel.timing, view: panel.view, panel: index, x: dx, y: dy });
-  const [x, y] = [dx + FIGURE_PAD, dy + FIGURE_PAD];
-  if (panel.chart) scene.plots.push({ id: panel.chart.id, view: panel.view, panel: index, x, y, width: panel.chart.width, height: panel.chart.height, chart: panel.chart });
-  else scene.times.push({ ...panel.time, view: panel.view, panel: index, x, y });
+  if (panel.chart) scene.plots.push({ id: panel.chart.id, view: panel.view, panel: index, x: dx, y: dy, width: panel.chart.width, height: panel.chart.height, chart: panel.chart });
+  else if (panel.timing) scene.timings.push({ ...panel.timing, view: panel.view, panel: index, x: dx, y: dy });
+  else scene.times.push({ ...panel.time, view: panel.view, panel: index, x: dx, y: dy });
 }
