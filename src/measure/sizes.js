@@ -11,7 +11,7 @@ import { sizeClassifier } from './class.js';
 import { CONTENT, contentMinWidth, sizeContent } from './content.js';
 import { measure, wrap } from './fonts.js';
 import { LANE_STEP, planGridLinks } from './grid-links.js';
-import { sizeQueue } from './queue.js';
+import { queueSlots, sizeQueue } from './queue.js';
 import { STYLE, stackTexts, textAt, titleTexts } from './texts.js';
 
 const SPACE = values.spacing;
@@ -130,13 +130,44 @@ function sizeTable(node, contents) {
  * «interface» 표시가 클래스와 인터페이스를 가르는 뜻이라 머리만 보이는 참여자에서도 빠지지 않는다.
  */
 export function sizeParticipant(node) {
-  if (!SEQUENCE_HEADERS.includes(node.shape)) return sizeNode(node, []);
+  if (!SEQUENCE_HEADERS.includes(node.shape)) return fitContentWidth(sizeNode(node, []), node);
   const header = headerOf(node);
   const w = Math.max(SIZE.node['min-width'], header.w + PAD.x * 2);
   const { decor, texts } = placeHeader(header, w);
   return { w, h: header.h, marginTop: 0, marginBottom: 0, decor, texts };
 }
 const SEQUENCE_HEADERS = ['table', 'api', 'classifier'];
+
+// cost: time O(t·n + q), heap O(t), stack O(1)
+// vars: t = 글 줄 수, n = 글자 수, q = 큐 칸 수
+// basis: estimate
+/**
+ * 순서 보기 참여자 머리는 도형 최소 폭 없이 내용 폭(가장 긴 글 줄, 윗줄 장식, 큐 칸 줄)에 안쪽 여백을 더한 폭이다. 참여자가 많아도 본문 단 폭 안에 생명선이 들게 하기 위해서다.
+ * 글과 장식은 가운데 정렬이라 줄어든 폭의 반만큼 왼쪽으로 옮긴다. 복제 개수 상자는 뒤 윤곽이 폭에 들어 있어 줄이지 않는다.
+ */
+function fitContentWidth(size, node) {
+  if (size.stack || !size.texts) return size;
+  const lines = size.texts.map((t) => measure(t.text, t.style.size, t.style.face));
+  const slots = node.shape === 'queue' ? queueSlots({ x: 0, y: 0, w: size.w, h: size.h, slots: node.slots }) : [];
+  const slotW = slots.length ? Math.max(...slots.map((b) => b.x + b.w)) - Math.min(...slots.map((b) => b.x)) : 0;
+  const need = Math.max(...lines, size.decor?.w ?? 0, slotW) + PAD.x * 2;
+  const d = (size.w - need) / 2;
+  if (d <= 0) return size;
+  return { ...size, w: need, texts: size.texts.map((t) => ({ ...t, x: t.x - d })), decor: size.decor && { ...size.decor, x: size.decor.x - d } };
+}
+
+// cost: time O(t), heap O(t), stack O(1)
+// vars: t = 글 줄 수
+// basis: estimate
+/**
+ * 잰 도형을 더 큰 높이 h로 늘린다. 글과 윗줄 장식은 늘어난 만큼의 반을 내려 세로 가운데를 지킨다. 순서 보기 참여자 머리를 같은 높이로 맞출 때 쓴다.
+ * 큐의 칸은 도형 아래 안쪽 여백에 붙어 그려지므로(measure/queue.js queueSlots) 따로 옮기지 않는다.
+ */
+export function stretchHeight(size, h) {
+  const d = (h - size.h) / 2;
+  if (d <= 0) return size;
+  return { ...size, h, texts: size.texts?.map((t) => ({ ...t, center: t.center + d })), decor: size.decor && { ...size.decor, y: size.decor.y + d } };
+}
 
 // cost: time O(c·n² + c log c + k·c), heap O(c + k), stack O(1)
 // vars: c = 칸 수, n = 칸 글자 수, k = 칸에 이은 선 끝 수

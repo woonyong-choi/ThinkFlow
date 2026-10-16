@@ -1,6 +1,6 @@
 // 구조, 상태, 데이터 관계 그림을 elkjs로 배치한다. 그룹마다 따로 배치하고, 그룹 경계를 넘는 선은 경계마다 연결점을 거친다(docs/design/layout.md).
 import ELK from 'elkjs/lib/elk.bundled.js';
-import { ASPECT_MAX, canvasOf, displayRatio } from '../canvas.js';
+import { ASPECT_MAX, canvasOf, displayRatio, layoutWidthOf } from '../canvas.js';
 import { values } from '@woonyong-choi/design-tokens/tokens.js';
 import { toElk } from './elk.js';
 import { LayoutError } from './error.js';
@@ -47,7 +47,7 @@ export async function layoutOrFail(figure, sizes, { problems, width }) {
  * @param layoutWidth 배치가 들어갈 목표 폭. 표시 배율이나 글자 크기는 바꾸지 않는다
  * @returns { items, groups, edges, width, height }. items는 도형 사각형(배치 사각형과 바깥 여백), edges는 경로 점과 라벨 자리
  */
-async function layoutGraph(figure, sizes, layoutWidth = canvasOf(figure)) {
+async function layoutGraph(figure, sizes, layoutWidth = layoutWidthOf(figure)) {
   engine ??= new ELK();
   try {
     return await place(figure, sizes, layoutWidth);
@@ -67,8 +67,8 @@ async function layoutGraph(figure, sizes, layoutWidth = canvasOf(figure)) {
 // 배치 한 번. 안전 배치(safeLayout)는 자동 접기와 방향 돌리기를 하지 않는다.
 async function place(figure, sizes, layoutWidth) {
   let best = await arrange(figure, sizes);
-  const canAdapt = figure.aspect === undefined || layoutWidth < canvasOf(figure);
-  if (best.laid.width > layoutWidth && canAdapt && !figure.safeLayout) best = await fitCanvas({ ...figure, aspect: undefined }, sizes, { flat: best, canvas: layoutWidth });
+  const canAdapt = figure.aspect === undefined || layoutWidth < layoutWidthOf(figure);
+  if (best.laid.width > layoutWidth && canAdapt && !figure.safeLayout) best = await fitCanvas({ ...figure, aspect: undefined }, sizes, { flat: best, canvas: layoutWidth, cap: Math.max(layoutWidth, canvasOf(figure)) });
   const scene = readElk(best.laid, best.model);
   // 제목이 선을 비킬 자리가 없는 그룹은 너비를 넓혀 한 번 더 배치한다(그림 검사 13번).
   const blocked = scene.groups.filter((g) => g.isTitleBlocked).map((g) => g.id);
@@ -115,14 +115,16 @@ function hasColumnEdges(figure) {
  * 한 줄 배치가 캔버스보다 넓을 때 글자 크기를 지키는 배치를 찾는다. 후보 순서는 이렇다.
  * 1. 바깥 방향을 돌린다(right는 down으로). 선이 줄 사이를 돌아오지 않아 접기보다 선이 짧다. 열을 이은 테이블이 있고 이것이 폭에 들지 않으면 열 선을 오른쪽 면으로 모은 묶음 배치도 본다.
  * 2. 자동 비율로 접는다. 폭에 들 때까지 비율을 낮춰 가며 FOLD_TRIES번까지 본다.
- * 3. 별도의 좁은 목표 폭에서도 넘치면 한 층당 도형 하나인 세로 후보를 비교한다. 관계나 사건 순서는 바꾸지 않는다.
- * 캔버스에 들고 비율이 알맞은 범위(FIT_MIN~FIT_MAX) 안인 첫 후보를 쓴다. 범위 안인 후보가 없으면 캔버스에 드는 후보 가운데 범위에 가장 가까운 것을 쓴다.
- * 캔버스에 드는 후보가 없으면 가장 좁은 배치를 쓴다. HTML은 자연 크기와 내부 가로 스크롤을 유지한다.
+ * 3. 좁은 화면 목표 폭에서도 넘치면 한 층당 도형 하나인 세로 후보를 비교한다. 관계나 사건 순서는 바꾸지 않는다. 본문 단 폭에서는 이 후보를 보지 않는다.
+ * 목표 폭(canvas, 보통 본문 단 폭)에 들고 비율이 알맞은 범위(FIT_MIN~FIT_MAX) 안인 첫 후보를 쓴다. 범위 안인 후보가 없으면 목표 폭에 드는 후보 가운데 범위에 가장 가까운 것을 쓴다.
+ * 목표 폭에 드는 후보가 없으면 처음 배치를 포함해 표시 폭 상한(cap, 캔버스 폭)에 들고 비율 한도 안인 후보 가운데 가장 좁은 것을, 그것도 없으면 가장 좁은 배치를 쓴다. HTML은 자연 크기와 내부 가로 스크롤을 유지한다.
  */
-async function fitCanvas(figure, sizes, { flat, canvas }) {
+async function fitCanvas(figure, sizes, { flat, canvas, cap }) {
   let narrowest = flat;
+  const tried = [flat];
   const fitting = [];
   const consider = (candidate) => {
+    tried.push(candidate);
     if (candidate.laid.width < narrowest.laid.width) narrowest = candidate;
     if (!fitsCanvas(candidate.laid, canvas)) return false;
     fitting.push(candidate);
@@ -142,13 +144,23 @@ async function fitCanvas(figure, sizes, { flat, canvas }) {
     const folded = await arrange({ ...figure, aspect }, sizes);
     if (consider(folded)) return folded;
   }
-  // 좁은 목표 폭에서 가로 형제가 남으면 한 층에 하나씩 놓는 세로 후보를 비교한다. 도형과 연결은 그대로 ELK에 맡긴다.
-  if (canvas < canvasOf(figure) && narrowest.laid.width > canvas) {
+  // 가로 형제가 남아 목표 폭을 넘으면 한 층에 하나씩 놓는 세로 후보를 비교한다. 도형과 연결은 그대로 ELK에 맡긴다.
+  // 열을 이은 테이블도 한 줄로 세우면 열 선이 옆면을 오가며 그림을 휘감는다. 좁은 화면에서는 폭에 드는 것이 우선이라 본다.
+  const isNarrowTarget = canvas < layoutWidthOf(figure);
+  // 한 층에 하나씩 세우는 후보도 좁은 화면 목표 폭에서만 본다. 본문 단 폭에서 쓰면 형제 카드가 모두 한 줄로 서서 단 폭의 절반만 쓰는 긴 기둥이 되었다(async-orders 336×1440).
+  if (narrowest.laid.width > canvas && isNarrowTarget) {
     consider(await arrange({ ...figure, direction: 'down', aspect: undefined, oneNodePerLayer: true }, sizes));
-    if (narrowest.laid.width > canvas && figure.groups.length) {
+    // 그룹을 한 층씩 푸는 후보는 좁은 화면 목표 폭에서만 본다. 본문 단 폭에서 쓰면 그룹 사이 선이 한 줄로 몰려 이동 글 상자 자리 찾기가 느려졌다(architecture 예제 빌드가 main의 1.7배).
+    if (narrowest.laid.width > canvas && figure.groups.length && isNarrowTarget) {
       const grouped = await arrange({ ...figure, direction: 'down', aspect: undefined, oneNodePerLayer: true, compactGroups: true }, sizes);
       consider(grouped);
     }
   }
-  return fitting.sort((a, b) => ratioMiss(a.laid, canvas) - ratioMiss(b.laid, canvas))[0] ?? narrowest;
+  // 목표 폭에 드는 후보가 없으면 본문 단에서 덜 줄어드는(글자가 큰) 좁은 후보가 낫다.
+  return closest(fitting, canvas) ?? tried.filter((c) => fitsCanvas(c.laid, cap)).sort((a, b) => a.laid.width - b.laid.width)[0] ?? narrowest;
+}
+
+// 후보 가운데 알맞은 비율 범위에 가장 가까운 배치. 같으면 먼저 본 후보다.
+function closest(candidates, canvas) {
+  return [...candidates].sort((a, b) => ratioMiss(a.laid, canvas) - ratioMiss(b.laid, canvas))[0];
 }

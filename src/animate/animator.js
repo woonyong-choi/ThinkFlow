@@ -32,7 +32,8 @@ export function createAnimator({ segs, growMs, pulses = [], marks = {} }, clock,
     segs,
     toggle: (states, on, off) => windows(states, { on, off }),
     // 조용한 선이 보이는 구간(시간표의 marks `quiet:번호`, 이 장면 것만 남아 있다). 지나간 적이 없으면 늘 숨고, 처음 지나간 뒤에는 장면 끝을 지나 한 바퀴 끝(마지막 모습)까지 보인다. 보임만 끝까지 유지하는 유일한 예외다.
-    quiet: (j, options) => spanWindows(marks[`quiet:${j}`] ?? [], { ...options, holdEnd: true }) ?? windows(segs.map(() => false), options),
+    // 멈춘 모습(정지 SVG, 움직임 줄이기 층)은 드러내는 움직임이 없으므로 조용한 선을 평소 모습으로 둔다.
+    quiet: (j, options) => (isStatic ? undefined : spanWindows(marks[`quiet:${j}`] ?? [], { ...options, holdEnd: true }) ?? windows(segs.map(() => false), options)),
     // 점이 이 선을 지나는 동안(HTML 재생기의 `is-current`와 같은 구간). 지나간 선은 누적 켜짐이어도 이 구간에만 강조하고, 점이 떠난 뒤에는 한 바퀴 끝에서 평소 색이다.
     moving: (j, options) => spanWindows(segs.flatMap((s) => s.hops.flatMap((hop) => hopLegs(hop).filter((leg) => leg.edge === j).map((leg) => [s.t0 + (hop.at ?? 0) + leg.from, s.t0 + (hop.at ?? 0) + leg.to]))), options),
     // 도형과 그룹은 `light`가 켠 것만 켜 둔다. 점이 닿은 도형은 테두리 후광(borders)이 맡는다.

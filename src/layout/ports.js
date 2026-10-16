@@ -53,7 +53,7 @@ function portSpec(node, end) {
   if ((node.shape === 'table' || node.shape === 'api') && columns) return columnPort(node, way, columns);
   if (node.shape === 'grid' && (way === 'out' ? edge.fromCell : edge.toCell)) return cellPort(node, end);
   if (node.shape === 'circle') return circlePort(node, way);
-  if (node.shape === 'decision') return { side: way === 'out' ? 'EAST' : 'WEST', position: { x: way === 'out' ? node.size.w : 0, y: node.size.h / 2 } };
+  if (node.shape === 'decision') return decisionPort(node, way, edge.branch ?? 0);
   if (node.shape === 'store') return { side: storeSide(way === 'in' ? flow.direction : node.direction, way) };
   // 그룹 경계를 넘는 선은 도형 자신의 그룹 방향이 선이 놓이는 방향과 다를 때만 선이 놓이는 방향의 면에 닿는다(같으면 elkjs가 같은 면을 고른다).
   if (flow.isCrossing && node.direction !== flow.direction) return { side: way === 'out' ? SIDE_OUT[flow.direction] : SIDE_IN[flow.direction] };
@@ -67,6 +67,23 @@ function portSpec(node, end) {
 function columnPort(node, way, columns) {
   const isEast = way === 'out' || node.isBracket;
   return { side: isEast ? 'EAST' : 'WEST', position: { x: isEast ? node.size.w : 0, y: columnAnchorY(node.size.tableRows, columns) } };
+}
+
+// 마름모 꼭짓점 넷. 면 이름과 도형 왼쪽 위가 원점인 자리다.
+const VERTEX = {
+  NORTH: (size) => ({ x: size.w / 2, y: 0 }),
+  SOUTH: (size) => ({ x: size.w / 2, y: size.h }),
+  EAST: (size) => ({ x: size.w, y: size.h / 2 }),
+  WEST: (size) => ({ x: 0, y: size.h / 2 }),
+};
+// 흐름 방향마다 갈래가 나가는 꼭짓점 순서. 첫 갈래는 흐름의 앞쪽 꼭짓점으로 곧게 이어지고, 둘째와 셋째 갈래는 옆 꼭짓점으로 갈라진다. 넷째부터는 첫 꼭짓점을 함께 쓴다.
+const BRANCH_SIDES = { down: ['SOUTH', 'EAST', 'WEST'], right: ['EAST', 'SOUTH', 'NORTH'] };
+
+// 갈림길 연결점. 들어오는 선은 흐름 뒤쪽 꼭짓점, 나가는 선은 갈래 번호가 고른 꼭짓점이다. 순서도처럼 갈래마다 다른 꼭짓점에서 나가 갈래 라벨이 겹치지 않고 갈래가 한눈에 갈린다.
+function decisionPort(node, way, branch) {
+  const sides = BRANCH_SIDES[node.direction];
+  const side = way === 'in' ? SIDE_IN[node.direction] : sides[branch] ?? sides[0];
+  return { side, position: VERTEX[side](node.size) };
 }
 
 function storeSide(direction, way) {
