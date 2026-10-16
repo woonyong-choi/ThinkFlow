@@ -32,7 +32,7 @@ export function readElk(laid, model) {
     const points = dropCollinear(settleEnd(start.reverse(), freeRect(edge.to, rects), crowd.get(edge.to)?.filter(near('end'))).reverse());
     return { ...edge, points, endpointLabels: readMultiplicities(edge, labels), labelAt: labels.get(`label::${edge.index}`) ?? (model.isSafe ? undefined : numberOnlyLabel(edge, points, items)) };
   });
-  settleLabels(edges, items, laid);
+  settleLabels(edges, items, laid, groups);
   clearEndLabels(edges, { items, sweep: model.sweep });
   placeTitles(groups, edges, model.sweep);
   return { items, groups, edges, width: laid.width, height: laid.height };

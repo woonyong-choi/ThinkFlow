@@ -1,4 +1,4 @@
-// 선 라벨 자리 고르기. elkjs가 선 꼬리 옆에 잡은 자리가 다른 라벨, 도형, 다른 선과 겹치면 자기 선을 따라 출발점에서 가장 가까운 빈 자리로 옮긴다(docs/design/layout.md 선 라벨).
+// 선 라벨 자리 고르기. elkjs가 선 꼬리 옆에 잡은 자리가 다른 라벨, 도형, 다른 선과 겹치거나 그룹 테두리에 걸치면 자기 선을 따라 출발점에서 가장 가까운 빈 자리로 옮긴다(docs/design/layout.md 선 라벨).
 // 경로 점은 건드리지 않고 라벨 가운데 자리만 정한다.
 import { sizePill } from '../measure/sizes.js';
 import { values } from '@woonyong-choi/design-tokens/tokens.js';
@@ -20,8 +20,9 @@ const STEP = values.spacing["1-5"];
  * @param edges 경로 점(points)과 elkjs 라벨 자리(labelAt)를 가진 선. labelAt을 바꾼다
  * @param items 도형 사각형
  * @param bounds 그림 크기 { width, height }
+ * @param groups 그룹 사각형. 라벨은 그룹 안에 들거나 밖에 있어야 하고 테두리에 걸치면 안 된다
  */
-export function settleLabels(edges, items, bounds) {
+export function settleLabels(edges, items, bounds, groups = []) {
   const solids = items.map((it) => inflate({ x: it.x - (it.marginSide ?? 0), y: it.y - (it.marginTop ?? 0), w: it.w + (it.marginSide ?? 0) * 2, h: it.h + (it.marginTop ?? 0) + (it.marginBottom ?? 0) }, CLEAR));
   const runs = edges.flatMap((e) => e.points.slice(1).map((q, k) => ({ p: e.points[k], q })));
   const placed = [];
@@ -32,7 +33,7 @@ export function settleLabels(edges, items, bounds) {
       const box = boxAt(at, size);
       if (box.x < 0 || box.y < 0 || box.x + box.w > bounds.width || box.y + box.h > bounds.height) return false;
       const around = inflate(box, CLEAR);
-      return !solids.some((s) => meets(around, s)) && !placed.some((o) => meets(around, o)) && !runs.some((run) => crosses(run, box));
+      return !solids.some((s) => meets(around, s)) && !placed.some((o) => meets(around, o)) && !runs.some((run) => crosses(run, box)) && !groups.some((g) => straddles(around, g));
     };
     if (!isFree(e.labelAt)) e.labelAt = spotsAlong(e.points, size).find(isFree) ?? e.labelAt;
     placed.push(boxAt(e.labelAt, size));
@@ -63,6 +64,9 @@ function spotsAlong(points, { w, h }) {
 const boxAt = (at, { w, h }) => ({ x: at.x - w / 2, y: at.y - h / 2, w, h });
 const inflate = (r, d) => ({ x: r.x - d, y: r.y - d, w: r.w + d * 2, h: r.h + d * 2 });
 const meets = (a, b) => a.x < b.x + b.w && b.x < a.x + a.w && a.y < b.y + b.h && b.y < a.y + a.h;
+const holds = (outer, inner) => outer.x <= inner.x && outer.y <= inner.y && inner.x + inner.w <= outer.x + outer.w && inner.y + inner.h <= outer.y + outer.h;
+// 사각형이 그룹 테두리에 걸치는가: 그룹과 겹치지만 그룹 안에 다 들지 않는다.
+const straddles = (box, group) => meets(box, group) && !holds(group, box);
 
 // 선 구간 하나가 사각형 안쪽을 지나는가. 가로·세로 선은 폭이 0이라 범위 비교에 작은 여유를 더한다.
 const CROSS_SLACK = 0.01;
