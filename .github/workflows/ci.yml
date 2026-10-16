@@ -23,6 +23,9 @@ jobs:
       - run: npm run check:docs
       - run: npm run check:sources
       - run: npm run check:figures
+      # 좁은 화면 HTML의 자연 글자 크기·가로 스크롤·삽입 높이(#272). ubuntu-latest에 설치된 Chrome을 쓴다.
+      - if: matrix.node == 22
+        run: npm run test:browser
       - name: Check installed npm package
         run: npm run check:package -- "$RUNNER_TEMP/thinkflow-package"
 
