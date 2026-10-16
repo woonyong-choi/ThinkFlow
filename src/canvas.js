@@ -33,16 +33,8 @@ export function tightView(width, height) {
 
 // cost: time O(1), heap O(1), stack O(1)
 // basis: estimate
-/** 차트 보기 하나만 있는 그림의 캔버스 폭. 본문 단 폭과 같아 문서 단 폭에서 줄지 않고 그대로 보인다. 차트는 그 안의 판 카드 위에 놓인다(panelInner). */
+/** 차트 보기 하나만 있는 그림의 캔버스 폭. 차트 그림 폭과 같아 문서 단 폭에서 줄지 않고 그대로 보인다. */
 export const CANVAS_CHART = values.spacing.figure.chart.width;
-
-// cost: time O(1), heap O(1), stack O(1)
-// basis: estimate
-/**
- * 차트 보기와 시간 보기의 판 카드 안에 그리는 차트 폭. 판은 도형 카드와 같은 카드 면(design-tokens `.fl-panel`)이고 그림 둘레 여백(FIGURE_PAD) 안쪽에 놓이므로, 판이 들어갈 폭에서 양옆 여백을 뺀다.
- * @param width 판과 그 둘레 여백이 들어갈 폭(본문 단 폭이나 좁은 화면 폭)
- */
-export const panelInner = (width) => width - FIGURE_PAD * 2;
 
 // cost: time O(v), heap O(1), stack O(1)
 // vars: v = 보기 수

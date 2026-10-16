@@ -76,13 +76,12 @@ test('T12 a literal type keeps its backticks and escaped characters on a class, 
 test('T2 a value is read as written by the measuring and the drawing: the face that reads it as characters has the width of the glyphs it draws', () => {
   const width = (text, face) => measure(text, STYLE.value.size, face);
   const written = `a${TICK}b${TICK}c`;
-  assert.equal(STYLE.value.face, 'numLiteral');
-  // 글자 그대로 읽는 면은 백틱도 글자 폭을 갖고, 같은 굵기(보통)의 서식 읽기와 문자 폭이 같다. 숫자만 고정폭(tnum) 글리프다.
-  assert.ok(Math.abs(width('abc', 'regular') - width('abc', STYLE.value.face)) < 1e-9, 'same weight, same glyph widths for letters');
-  assert.ok(Math.abs(width('1111', 'num') - width('1111', STYLE.value.face)) < 1e-9, 'digits are the tabular glyphs of the same weight');
+  assert.equal(STYLE.value.face, 'semiboldLiteral');
+  // 글자 그대로 읽는 면은 백틱도 글자 폭을 갖고, 같은 굵기의 서식 읽기와 글자 폭이 같다.
+  assert.ok(Math.abs(width('abc', 'semibold') - width('abc', STYLE.value.face)) < 1e-9, 'same weight, same glyph widths');
   assert.ok(width(written, STYLE.value.face) > width('abc', STYLE.value.face), 'the backticks are glyphs');
   // 서식으로 읽는 같은 굵기는 백틱을 지우고 코드 구간을 고정폭으로 재므로 폭이 다르다. 값은 이 읽기를 쓰면 안 된다.
-  assert.notEqual(width(written, 'regular'), width(written, STYLE.value.face));
+  assert.notEqual(width(written, 'semibold'), width(written, STYLE.value.face));
 });
 
 test('T3 a rich label has the text it shows as its accessible name, and a class member keeps its characters across wrapped lines', async () => {

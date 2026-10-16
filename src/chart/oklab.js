@@ -1,5 +1,4 @@
-// OKLCH 보간. 히트맵 칸 색의 CSS(`color-mix(in oklch, ...)`)와 CSS를 모르는 뷰어용 대체 색(fill 속성)이 같은 보간을 쓰게 한다.
-// 색상(hue)은 CSS 기본값과 같이 짧은 쪽으로 돈다. 그래서 두 끝 색 사이의 색상환을 지나는 두 색 그라데이션이 된다(라이트: 연노랑 → 민트 → 청록 → 파랑).
+// OKLab 보간. 히트맵 칸 색의 CSS(`color-mix(in oklab, ...)`)와 CSS를 모르는 뷰어용 대체 색(fill 속성)이 같은 보간을 쓰게 한다.
 // 변환은 Björn Ottosson의 OKLab 정의(2020)를 그대로 따른다.
 
 // cost: time O(1), heap O(1), stack O(1)
@@ -43,19 +42,8 @@ function oklabToHex([L, a, b]) {
 
 // cost: time O(1), heap O(1), stack O(1)
 // basis: estimate
-/** from에서 to로 amount(0~1)만큼 OKLCH 보간한 `#rrggbb`. amount 0은 from, 1은 to다. 색상은 짧은 쪽으로 돌고, 채도가 0에 가까운 끝은 다른 끝의 색상을 따른다(CSS Color 4의 없는 색상 처리). */
-export function mixOklch(from, to, amount) {
-  const [a, b] = [toLch(hexToOklab(from)), toLch(hexToOklab(to))];
-  const [ha, hb] = [a[1] < ACHROMATIC ? b[2] : a[2], b[1] < ACHROMATIC ? a[2] : b[2]];
-  const turn = ((hb - ha + 540) % 360) - 180;
-  const [L, C, H] = [a[0] + (b[0] - a[0]) * amount, a[1] + (b[1] - a[1]) * amount, ((ha + turn * amount) * Math.PI) / 180];
-  return oklabToHex([L, C * Math.cos(H), C * Math.sin(H)]);
+/** from에서 to로 amount(0~1)만큼 OKLab 보간한 `#rrggbb`. amount 0은 from, 1은 to다. */
+export function mixOklab(from, to, amount) {
+  const [a, b] = [hexToOklab(from), hexToOklab(to)];
+  return oklabToHex(a.map((v, i) => v + (b[i] - v) * amount));
 }
-
-// 색상을 정하기에는 채도가 너무 낮은 경계(OKLCH 채도)
-const ACHROMATIC = 1e-4;
-
-// cost: time O(1), heap O(1), stack O(1)
-// basis: estimate
-// OKLab [L, a, b]의 OKLCH [L, C, H(도)]
-const toLch = ([L, a, b]) => [L, Math.hypot(a, b), ((Math.atan2(b, a) * 180) / Math.PI + 360) % 360];

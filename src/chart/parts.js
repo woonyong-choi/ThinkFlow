@@ -81,8 +81,7 @@ function arrange(chart, grouped) {
 function labelEntries(chart, { parts, grouped, isUndefined }) {
   const format = valueFormat(chart.rows.map((row) => row.values.value), chart.decimals);
   const percent = valueFormat([], chart.decimals ?? SHARE_PLACES);
-  // 바깥 이름 옆에는 비율만 적는다. 원래 값은 조각의 툴팁·aria와 가운데 합계가 맡아, 이름 줄이 짧고 조각마다 숫자가 둘씩 붙지 않는다. 비율이 정해지지 않는 원(합 0)만 값을 적는다.
-  const detailOf = (value, fraction) => (isUndefined ? format(value) : `${percent(fraction * 100)}%`);
+  const detailOf = (value, fraction) => (isUndefined ? format(value) : `${format(value)} · ${percent(fraction * 100)}%`);
   const entries = chart.rows.flatMap((row, k) => (grouped.has(k) ? [] : [{ key: k, name: row.label, detail: detailOf(parts[k].value, parts[k].fraction), raw: parts[k].value, paint: memberPaint(k, grouped, categoryPaint), start: parts[k].start, end: parts[k].end, hidden: isUndefined || !(parts[k].value > 0) }]));
   if (grouped.size) {
     const members = [...grouped].map((k) => parts[k]);
