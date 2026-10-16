@@ -86,7 +86,7 @@ scene "동시 주문" mode=loop for=6s
 | 이름을 쓴 보기 | `a view is one of graph, sequence, plot, time. Found "main". A view has no name: write view graph ...` | `syntax` | 보기 방식부터 적습니다(`view graph down`) |
 | 숫자로만 된 장면 이름 | `scene "2" is only digits, which --scene reads as a scene number. Add a word to the name, such as "step 2"` | `syntax` | 이름에 글자를 더합니다 |
 | 장면 이름 뒤 글 | `write a scene as: scene "name" [mode=...] ...` | `syntax` | 장면에는 이름 하나만 적고 설명은 문서 본문에 적습니다 |
-| 쓸 수 없는 색 이름 | `tone is one of blue, yellow, red, green, orange, purple, cyan, gray` | `syntax` | 목록의 이름을 고릅니다 |
+| 쓸 수 없는 색 이름 | `tone is one of blue, orange, cyan, yellow, green, purple, red, gray` | `syntax` | 목록의 이름을 고릅니다 |
 | 이동 글과 선 라벨이 같음 | `the moving text "label" repeats the edge label. Remove one of them` | `check-8` | 한쪽을 지웁니다(경고, `--strict`에서 실패) |
 
 그림 검사 항목 전체는 [그림 검사](../design/figure-check.md)의 표에 있습니다.

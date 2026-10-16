@@ -246,10 +246,10 @@ function createPacket(hop, stage) {
   const g = document.createElementNS(SVG_NS, 'g');
   g.setAttribute('class', 'fl-packet');
   g.style.opacity = 0;
-  g.setAttribute('fill', metrics.toneInks?.[hop.tone] ?? metrics.chipInk);
+  g.setAttribute('fill', metrics.toneChipInks?.[hop.tone] ?? metrics.chipInk);
   g.innerHTML = `<circle r="${metrics.halo}" fill="${color}" opacity="${metrics.haloOpacity}"/><circle r="${metrics.packet}" fill="${color}"${outline ? ` stroke="${outline}" stroke-width="${metrics.chipStroke}"` : ''}/>`;
   layer.appendChild(g);
-  const chip = hop.data ? createChip(hop.data, { size: hop.chipSize, metrics, color: hop.tone ? color : undefined, outline }) : undefined;
+  const chip = hop.data ? createChip(hop.data, { size: hop.chipSize, metrics, color: metrics.toneChips?.[hop.tone] }) : undefined;
   if (chip) g.appendChild(chip.g);
   const length = path.getTotalLength();
   const slide = chipSlide(hop, metrics);
@@ -282,15 +282,11 @@ function cutFade(hop, t, metrics) {
   return hop.cut === undefined ? 1 : Math.min(1, (hop.cut - t) / metrics.cutFadeMs);
 }
 
-function createChip(lines, { size, metrics, color, outline }) {
+function createChip(lines, { size, metrics, color }) {
   const chip = document.createElementNS(SVG_NS, 'g');
   const rect = document.createElementNS(SVG_NS, 'rect');
   rect.setAttribute('rx', metrics.chipRadius);
   rect.setAttribute('fill', color ?? metrics.chipFill);
-  if (color) {
-    rect.setAttribute('stroke', outline ?? color);
-    rect.setAttribute('stroke-width', metrics.chipStroke);
-  }
   chip.appendChild(rect);
   const texts = lines.map((line) => createChipLine(line, chip));
   const { w, h } = size;
