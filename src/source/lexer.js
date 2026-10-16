@@ -1,4 +1,5 @@
 // 원본 한 줄을 낱말로 나눈다. 규칙은 docs/design/figure-syntax.md의 "줄과 낱말" 절이다.
+import { arrowMistake, gluedArrowMistake, mermaidNodeMistake, quoteMistake } from './mistakes.js';
 
 // 앞뒤에 공백이 있어야 하는 기호 낱말
 const SYMBOLS = { '->': 'arrow', '&': 'amp', '{': 'open', '}': 'close' };
@@ -66,8 +67,14 @@ function pushBare(tokens, { text, start, line }, problems) {
     tokens.push({ type: 'option', key: word.slice(0, -1), value: quoted.value, valueType: 'text', column: start + 1, length: quoted.end - start, valueColumn: i + 1 });
     return checkAfterQuote(text, quoted.end, { line, problems });
   }
+  const mermaid = tokens.length === 0 && text[i] === '"' ? mermaidNodeMistake(text.slice(start)) : undefined;
+  if (mermaid) {
+    // `A["글"]`처럼 Mermaid 노드를 쓴 줄은 한 번만 알리고 나머지 글자를 읽지 않는다. 뒤따르는 따옴표와 괄호의 오류가 같은 원인이라서다.
+    problems.error(line, mermaid, { column: start + 1 });
+    return text.length;
+  }
   if (text[i] === '"') problems.error(line, `put a space before the quote after "${word}"`, { column: start + 1 });
-  else pushWord(tokens, { word, line, column: start + 1, isHash: text[i] === '#' }, problems);
+  else pushWord(tokens, { word, line, column: start + 1, isHash: text[i] === '#', isFirst: tokens.length === 0 }, problems);
   return i;
 }
 
@@ -75,10 +82,15 @@ function pushBare(tokens, { text, start, line }, problems) {
 // vars: n = 낱말 글자 수
 // basis: estimate
 // 기호 낱말, 선택 사항, 일반 낱말을 가른다. 기호가 다른 글자에 붙어 있으면 오류다.
-function pushWord(tokens, { word, line, column, isHash }, problems) {
+function pushWord(tokens, { word, line, column, isHash, isFirst }, problems) {
   const place = { column, length: word.length };
   if (Object.hasOwn(SYMBOLS, word)) {
     tokens.push({ type: SYMBOLS[word], value: word, ...place });
+    return;
+  }
+  const foreign = arrowMistake(word) ?? gluedArrowMistake(word) ?? quoteMistake(word) ?? (isFirst ? mermaidNodeMistake(word) : undefined);
+  if (foreign) {
+    problems.error(line, foreign, { column });
     return;
   }
   const glued = Object.keys(SYMBOLS).find((s) => word.includes(s));
@@ -121,6 +133,6 @@ function readQuoted(text, start, { line, problems }) {
     value += text[j];
     j++;
   }
-  if (j >= text.length) problems.error(line, 'close the quote on the same line');
+  if (j >= text.length) problems.error(line, `close the quote that opens at column ${start + 1} on the same line. Text cannot span lines`, { column: start + 1 });
   return { value, end: j + 1 };
 }

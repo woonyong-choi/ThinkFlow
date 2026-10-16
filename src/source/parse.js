@@ -6,7 +6,8 @@ import { readDeclaration, readEdge } from './declare.js';
 import { closeGroup } from './group.js';
 import { readIcons } from './icons.js';
 import { tokenizeLine } from './lexer.js';
-import { createProblems } from './problems.js';
+import { createProblems, didYouMean } from './problems.js';
+import { statementMistake } from './mistakes.js';
 import { readTimeline } from './steps.js';
 import { readHeader } from './header.js';
 import { readSequenceControl, prepareSequenceFragments } from './sequence-fragments.js';
@@ -16,6 +17,8 @@ import { readView } from './view.js';
 import { validateFigure } from './validate.js';
 
 const SECTIONS = ['header', 'declare', 'timeline'];
+// 블록 밖 줄의 첫 낱말이 될 수 있는 문장 낱말. 모르는 첫 낱말에 가까운 것을 제안할 때 쓴다(선과 이동은 첫 낱말이 이름이라 뺀다).
+const PLACEABLE = Object.keys(STATEMENTS).filter((word) => !STATEMENTS[word].in && /^[a-z]+$/.test(word) && word !== 'edge' && word !== 'hop');
 
 // cost: time O(n + s·k), heap O(n), stack O(1)
 // vars: n = 원본 글자 수, s = 문장 수, k = 이름 수
@@ -42,13 +45,14 @@ export function parseFigure(source) {
 export function readFigure(source, problems) {
   const statements = splitStatements(source, problems);
   const figure = emptyFigure(source);
-  const ctx = { figure, problems, section: 'header', groups: [], block: undefined, step: undefined, headers: new Map(), previous: undefined };
+  const ctx = { figure, problems, section: 'header', groups: [], block: undefined, step: undefined, headers: new Map(), previous: undefined, arrivalLines: [] };
   if (!statements.length) {
     problems.error(1, 'the file is empty. The first line is "thinkflow"', { code: 'missing-preamble' });
     problems.throwIfAny();
   }
   const body = readPreamble(statements, ctx);
   for (const statement of body) readStatement(statement, ctx);
+  for (const statement of ctx.arrivalLines) readOn(statement, ctx);
   if (ctx.block) problems.error(ctx.block.card.line, ctx.block.kind === 'view' ? 'close the view block with "}"' : `close ${ctx.block.kind} "${ctx.block.card.id}" with "}"`);
   for (const group of ctx.groups) if (!group.isRejected) problems.error(group.line, `close group "${group.id}" with "}"`);
   for (const block of ctx.sequenceBlocks ?? []) problems.error(block.line, 'close the sequence block with }');
@@ -120,8 +124,11 @@ function splitStatements(source, problems) {
 function isPlaced(word, { tokens, line }, ctx) {
   const { problems } = ctx;
   const entry = STATEMENTS[word];
-  if (!entry) {
-    problems.error(line, `unknown statement "${word}"`);
+  const foreign = statementMistake(tokens, (name) => Boolean(STATEMENTS[name]) && !STATEMENTS[name].in);
+  if (!entry || foreign) {
+    // 모르는 낱말로 시작한 선언 꼴(`bx web "웹"`)의 이름은 버린 이름으로 적어, 같은 원인의 "모르는 이름" 오류를 덧붙이지 않는다.
+    if (tokens[1]?.type === 'word' && tokens[2]?.type === 'text') rejectName(tokens[1], ctx);
+    problems.error(line, foreign ? (entry ? foreign : `unknown statement "${word}": ${foreign}`) : `unknown statement "${word}".${didYouMean(word, PLACEABLE)}`, { column: tokens[0].column });
     if (tokens.at(-1).type === 'open') ctx.groups.push({ isRejected: true, line });
     return false;
   }
@@ -163,6 +170,8 @@ function readStatement(statement, ctx) {
   if (readSequenceControl(statement, ctx)) return;
   const [head, second] = tokens;
   if (statement.hasLexError) {
+    // 선언 줄이면 이름을 버린 이름으로 적어, 그 이름을 가리키는 줄에 같은 원인의 "모르는 이름" 오류를 덧붙이지 않는다.
+    if (STATEMENTS[head.value]?.section === 'declare' && second?.type === 'word' && second.value !== '->') rejectName(second, ctx);
     // 그룹이나 블록을 여는 줄이면 닫는 `}`가 짝을 찾도록 자리만 연다.
     if (tokens.at(-1).type === 'open') {
       if (head.value === 'group') ctx.groups.push({ isRejected: true, line });
@@ -179,7 +188,7 @@ function readStatement(statement, ctx) {
   }
   const isArrowLine = second?.type === 'arrow';
   if (head.type !== 'word') {
-    problems.error(line, 'start a statement with a word, not with quoted text or an option');
+    problems.error(line, head.type === 'open' ? 'put "{" at the end of the line that opens the block' : 'start a statement with a word, not with quoted text or an option', { column: head.column });
     return;
   }
   const word = isArrowLine ? (ctx.section === 'timeline' ? 'hop' : 'edge') : head.value;
@@ -205,7 +214,8 @@ function readByPart({ word, section }, statement, ctx) {
   else if (Object.hasOwn(BLOCK_WORDS, word)) openBlock(word, statement, ctx);
   else if (word === 'icons') readIcons(statement, ctx);
   else if (word === 'value') readValue(statement, ctx);
-  else if (word === 'on') readOn(statement, ctx);
+  // `on` 줄의 식은 선언한 값 이름으로 읽으므로(이름에 `-`가 들어갈 수 있다) 선언을 모두 읽은 뒤 읽는다. 선언 부분 안의 순서는 자유다.
+  else if (word === 'on') ctx.arrivalLines.push(statement);
   else if (word === 'view') readView(statement, ctx);
   else readDeclaration(statement, ctx);
 }

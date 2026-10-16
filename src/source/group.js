@@ -1,4 +1,4 @@
-// 그룹 선언(`group id "이름" [direction=down] [border=dashed] [badge="LB"] [icon=server] [tone=red] [appearance=plain|filled|outline] {`)과 닫는 `}`를 읽는다.
+// 그룹 선언(`group id "이름" [direction=down] [dashed] [badge="LB"] [icon=server] [tone=red] [appearance=plain|filled|outline] {`)과 닫는 `}`를 읽는다.
 import { checkId, parentFor, rejectName } from './names.js';
 import { readLook, readOptions } from './options.js';
 import { ID_PATTERN } from './words.js';
@@ -20,8 +20,8 @@ export function readGroup({ tokens, line }, ctx) {
   if (openAt === -1) ctx.problems.error(line, 'end the group line with "{"');
   else if (openAt < rest.length - 1) ctx.problems.error(line, 'end the group line with "{" and put the group contents on the next lines');
   const found = readOptions(openAt === -1 ? rest : rest.slice(0, openAt), { scopes: ['group'], what: 'a group', line, ctx });
-  const { direction, border, badge, icon } = found;
-  const group = { id: id.value, label: label?.value ?? '', direction, border, badge, icon, ...readLook(found, { line, ctx }), parent: parentFor(id, ctx), line, hasError: openAt !== rest.length - 1 };
+  const { direction, dashed, badge, icon } = found;
+  const group = { id: id.value, label: label?.value ?? '', direction, dashed: dashed ?? false, badge, icon, ...readLook(found), parent: parentFor(id, ctx), line, hasError: openAt !== rest.length - 1 };
   ctx.figure.groups.push(group);
   ctx.groups.push(group);
 }

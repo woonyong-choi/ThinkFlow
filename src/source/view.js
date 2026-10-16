@@ -1,6 +1,8 @@
 // 보기(`view graph|sequence|plot|time ...`)를 읽는다. 보기는 같은 문서의 카드를 다른 방식으로 보이는 판이다. 카드는 여러 보기에 함께 놓일 수 있다.
 // 보기는 이름이 없다. 어떤 문장도 보기를 가리키지 않아서, 보기 번호(v1, v2, ...)는 보기가 정해진 순서대로 내부에서 붙인다(views-check.js).
 import { VALUES, valueNames } from './grammar.js';
+import { didYouMean } from './problems.js';
+import { directionMistake } from './mistakes.js';
 
 // 블록이 꼭 있어야 하는 보기 방식. 그래프는 블록을 생략하면 남은 카드를 모두 담는다.
 const NEEDS_BLOCK = new Set(['sequence', 'plot', 'time', 'timing']);
@@ -20,14 +22,17 @@ export function readView({ tokens, line }, ctx) {
   const strategies = valueNames('viewStrategy');
   if (strategy?.type !== 'word' || !strategies.includes(strategy.value)) {
     const hasId = strategy?.type === 'word' && rest[0]?.type === 'word' && strategies.includes(rest[0].value);
-    problems.error(line, `a view is one of ${strategies.join(', ')}. Found "${strategy?.value ?? ''}"${hasId ? `. A view has no name: write view ${rest[0].value} ...` : ''}`);
+    problems.error(line, `a view is one of ${strategies.join(', ')}. Found "${strategy?.value ?? ''}"${hasId ? `. A view has no name: write view ${rest[0].value} ...` : `.${strategy?.type === 'word' ? didYouMean(strategy.value, strategies) : ''}`}`, { column: strategy?.column });
     return reject();
   }
   const direction = body.find((t) => t.type === 'word');
   const label = body.find((t) => t.type === 'text');
   const extra = body.filter((t) => t !== direction && t !== label);
   if (extra.length || (direction && (strategy.value !== 'graph' || !valueNames('direction').includes(direction.value)))) {
-    problems.error(line, direction && strategy.value !== 'graph' ? `${strategy.value} takes no direction` : `write view as: view ${strategy.value} ${strategy.value === 'graph' ? '[right|down] ' : ''}["label"]${NEEDS_BLOCK.has(strategy.value) ? ' {' : ''}`);
+    const bad = extra[0] ?? direction;
+    const foreign = bad?.type === 'word' ? directionMistake(bad.value) : undefined;
+    const hint = foreign ? ` ${foreign}` : bad?.type === 'word' && strategy.value === 'graph' ? didYouMean(bad.value, valueNames('direction')) : '';
+    problems.error(line, direction && strategy.value !== 'graph' ? `${strategy.value} takes no direction` : `write view as: view ${strategy.value} ${strategy.value === 'graph' ? '[right|down] ' : ''}["label"]${NEEDS_BLOCK.has(strategy.value) ? ' {' : ''}.${hint}`, { column: bad?.column });
     return reject();
   }
   if (NEEDS_BLOCK.has(strategy.value) && !isOpen) problems.error(line, `a ${strategy.value} view lists its ${strategy.value === 'timing' ? 'rows' : 'cards'} in a block: view ${strategy.value} {`);

@@ -2,7 +2,7 @@
 import { parseCondition } from './condition.js';
 import { readOptions } from './options.js';
 import { readSets } from './value.js';
-import { isOverTimeLimit, overLimitMessage, parseTime } from './values.js';
+import { isOverTimeLimit, overLimitMessage, parseTime, timeHint } from './values.js';
 
 const WHAT = { hop: 'a move', track: 'a track' };
 const PERCENT_PATTERN = /^(\d+(?:\.\d+)?)%$/;
@@ -13,13 +13,13 @@ const LOST_MAX = 100;
 // vars: t = 선택 사항 수, e = 식 수
 // basis: estimate
 /**
- * 선택 사항 낱말들을 읽는다. scope는 `hop`이나 `track`이다. isStuck는 줄에 낱말 `stuck`이 있었는지다.
- * @returns { found, timeMs, tone, sets, lost, condition }. found는 읽은 값 그대로({ at, every ... }), timeMs는 time=을 밀리초로, sets는 set= 식 목록, lost는 lost=를 0에서 1 사이 비율로(없으면 undefined),
+ * 선택 사항 낱말과 값 없는 낱말(`stuck`, 이동의 `dashed`, `create`, `destroy`)을 읽는다. scope는 `hop`이나 `track`이다.
+ * @returns { found, timeMs, tone, sets, lost, condition }. found는 읽은 값 그대로({ at, every, dashed ... }), timeMs는 time=을 밀리초로, sets는 set= 식 목록, lost는 lost=를 0에서 1 사이 비율로(없으면 undefined),
  *   condition은 `when`, `wait`, `timeout`, `else`, `stuck` 가운데 쓴 것 { when?, wait?, timeoutMs?, elseNode?, isStuck }(하나도 안 썼으면 undefined)다
  */
-export function readMoveOptions(options, { scope, line, ctx, isStuck = false }) {
+export function readMoveOptions(options, { scope, line, ctx }) {
   const found = readOptions(options, { scopes: [scope], what: WHAT[scope], line, ctx });
-  return { found, timeMs: readTime(found.time, { key: 'time', line, ctx }), tone: found.tone, sets: found.set === undefined ? [] : readSets(found.set, { line, ctx }), lost: readLost(found.lost, { line, ctx }), condition: readCondition(found, { isStuck, line, ctx }) };
+  return { found, timeMs: readTime(found.time, { key: 'time', line, ctx }), tone: found.tone, sets: found.set === undefined ? [] : readSets(found.set, { line, ctx }), lost: readLost(found.lost, { line, ctx }), condition: readCondition(found, { isStuck: found.stuck === true, line, ctx }) };
 }
 
 // cost: time O(c), heap O(c), stack O(d)
@@ -78,7 +78,8 @@ function readLost(text, { line, ctx }) {
   if (text === undefined) return undefined;
   const percent = PERCENT_PATTERN.exec(text);
   if (!percent || Number(percent[1]) > LOST_MAX) {
-    ctx.problems.error(line, `lost is a percent from 0% to ${LOST_MAX}% of the path, such as lost=60%. Found "${text}"`);
+    const hint = /^\d+(?:\.\d+)?$/.test(text) && Number(text) <= LOST_MAX ? ` Did you mean "${text}%"?` : '';
+    ctx.problems.error(line, `lost is a percent from 0% to ${LOST_MAX}% of the path, such as lost=60%. Found "${text}".${hint}`);
     return undefined;
   }
   return Number(percent[1]) / LOST_MAX;
@@ -91,6 +92,6 @@ export function readTime(text, { key, isZeroOk = false, line, ctx }) {
   if (text === undefined) return undefined;
   const ms = parseTime(text, isZeroOk);
   if (ms === undefined && isOverTimeLimit(text)) ctx.problems.error(line, overLimitMessage(key, text), { code: 'time-limit' });
-  else if (ms === undefined) ctx.problems.error(line, `${key} is ${isZeroOk ? 'a time such as 0s, 900ms, or 2s' : 'a positive time such as 900ms or 2s'}. Found "${text}"`);
+  else if (ms === undefined) ctx.problems.error(line, `${key} is ${isZeroOk ? 'a time such as 0s, 900ms, or 2s' : 'a positive time such as 900ms or 2s'}. Found "${text}".${timeHint(text)}`);
   return ms;
 }
