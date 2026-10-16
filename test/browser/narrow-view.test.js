@@ -9,6 +9,19 @@ import { chromium } from 'playwright-core';
 import { buildFigure, toHtml } from '../../src/index.js';
 import { bindDiagramHost } from '@woonyong-choi/design-tokens/ui/runtime/diagram-host.js';
 
+// 설치된 Chrome을 먼저 쓰고, 없으면 Playwright가 내려받은 Chromium으로 같은 검사를 돈다. 둘 다 없으면 첫 오류를 알린다.
+async function launchBrowser() {
+  try {
+    return await chromium.launch({ channel: 'chrome' });
+  } catch (chromeError) {
+    try {
+      return await chromium.launch();
+    } catch {
+      throw chromeError;
+    }
+  }
+}
+
 // #272: 실제 CSS·SVG·키보드 스크롤과 홈페이지가 쓰는 iframe 호스트 계약을 함께 확인한다.
 test('narrow HTML preserves readable labels and keyboard access in standalone and embedded views', async () => {
   const documents = new Map();
@@ -28,7 +41,7 @@ test('narrow HTML preserves readable labels and keyboard access in standalone an
   await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
   let browser;
   try {
-    browser = await chromium.launch({ channel: 'chrome' });
+    browser = await launchBrowser();
     const origin = `http://127.0.0.1:${server.address().port}`;
     for (const width of [320, 390, 430, 1440]) for (const embedded of [false, true]) {
       const context = await browser.newContext({ viewport: { width, height: 900 }, reducedMotion: 'reduce' });
