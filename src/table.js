@@ -2,6 +2,7 @@
 // cost: time O(k+f), heap O(k+f), stack O(1)
 // vars: k = 키에 포함된 열 수, f = 외래 키에 포함된 열 수
 // basis: estimate
+import { maxOf, minOf } from './extremes.js';
 export function columnKeyLabel(column, table) {
   const keys = table.keys ?? [];
   const order = [...keys.filter(key => key.kind === 'pk'), ...(table.foreignKeys ?? []), ...keys.filter(key => key.kind === 'unique')];
@@ -40,5 +41,5 @@ export function tableDescription(table) {
 export function columnAnchorY(rows, columns) {
   const names = new Set(columns);
   const centers = rows.filter(row => names.has(row.id)).map(row => row.center);
-  return (Math.min(...centers) + Math.max(...centers)) / 2;
+  return (minOf(centers) + maxOf(centers)) / 2;
 }

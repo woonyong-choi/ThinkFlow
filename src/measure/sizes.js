@@ -1,4 +1,5 @@
 // 도형, 카드, 선 라벨 크기를 정한다. 여기서 정한 크기를 배치에 넘기고 그대로 그린다(docs/design/layout.md 도형 크기와 연결점).
+import { maxOf } from '../extremes.js';
 import { plainText } from '../text.js';
 import { CANVAS, FIGURE_PAD } from '../canvas.js';
 import { emptyRegions } from '../source/grid-space.js';
@@ -188,7 +189,7 @@ function sizeGrid(node, links = [], valueTexts) {
   const rulerH = ruler ? STYLE.item.line + GRID.cellPadY : 0;
   const unitH = lined.reduce((tallest, cell) => {
     const textHeight = cell.valueId
-      ? Math.max(...cell.variants.map((variant) => variant.lines.length)) * STYLE.value.line + cell.detailLines.length * STYLE.item.line
+      ? maxOf(cell.variants.map((variant) => variant.lines.length)) * STYLE.value.line + cell.detailLines.length * STYLE.item.line
       : (cell.lines.length + cell.detailLines.length) * STYLE.item.line;
     return Math.max(tallest, Math.ceil((Math.max(textHeight, cell.keyLines.length * STYLE.item.line) + GRID.cellPadY * 2) / cell.rows));
   }, SIZE.grid.cell) + keyExtra * 2;
@@ -200,7 +201,7 @@ function sizeGrid(node, links = [], valueTexts) {
     const details = c.detailLines.map((line) => ({ role: 'item gap', text: line, style: STYLE.item }));
     if (c.valueId) {
       // 값 글과 보조 글을 한 묶음으로 칸 세로 가운데에 놓는다. 값 글의 줄 수는 가장 많은 상태로 자리를 잡아 값이 바뀌어도 보조 글이 움직이지 않는다.
-      const valueH = Math.max(...c.variants.map((v) => v.lines.length)) * STYLE.value.line;
+      const valueH = maxOf(c.variants.map((v) => v.lines.length)) * STYLE.value.line;
       const top = placed.y + (placed.h - valueH - details.length * STYLE.item.line) / 2;
       const variants = c.variants.map(({ text, lines }) => ({
         text,
@@ -324,7 +325,7 @@ function rulerStep(cols, unitW) {
 function gridUnitWidth(cells, { cols, titleRoom, fieldStrip }) {
   const need = cells.map((cell) => {
     const width = cell.valueId
-      ? Math.max(...cell.valueTexts.map((text) => measure(text, STYLE.value.size, STYLE.value.face)))
+      ? maxOf(cell.valueTexts.map((text) => measure(text, STYLE.value.size, STYLE.value.face)))
       : measure(cell.text, STYLE.item.size, STYLE.item.face);
     return (Math.min(width, GRID.textMax) + GRID.cellPadX * 2) / cell.cols;
   });

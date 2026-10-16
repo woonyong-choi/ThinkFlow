@@ -1,4 +1,5 @@
 // 차트 축: 값 축 길이 맞춤, 눈금, 축 제목, 기준선, 산점도와 선 차트의 그림 영역.
+import { minOf } from '../extremes.js';
 import { measure } from '../measure/fonts.js';
 import { renderRich, roundCoord as r } from '../text.js';
 import { labelColumn, labelFit } from './labels.js';
@@ -16,7 +17,7 @@ import { compactAxis } from './compact-axis.js';
  * @param span { start, right }. right를 빼면 내용의 오른쪽 끝(RIGHT)이다
  */
 export function fitLength(unit, items, { start, right = RIGHT }) {
-  return Math.min(...items.map(({ value, extra }) => (unit.at(value) > 0 ? (right - start - extra) / unit.at(value) : Infinity)));
+  return minOf(items.map(({ value, extra }) => (unit.at(value) > 0 ? (right - start - extra) / unit.at(value) : Infinity)));
 }
 
 // cost: time O(t), heap O(t), stack O(1)

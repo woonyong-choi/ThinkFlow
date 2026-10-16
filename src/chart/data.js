@@ -1,5 +1,6 @@
 // 차트 데이터 계산: 그리기 좌표와 무관한 순수 함수. 그리기, 시간표, 시험이 같은 계산을 쓴다.
 // 값이 없는 칸(`-`)은 null이고 0과 다르다. 0은 길이 0인 값이고 null은 값이 없다는 뜻이다. 어느 함수도 null을 0으로 바꾸지 않는다.
+import { maxOf, minOf } from '../extremes.js';
 import { roundCoord as r } from '../text.js';
 
 // cost: time O(1), heap O(1), stack O(1)
@@ -89,7 +90,7 @@ export function lengthFractions(lists) {
 /** 왼쪽에서 오른쪽으로 닦아 내며 드러낼 때 x 위치가 닿은 비율(0~1). 점선처럼 길이로 드러낼 수 없는 선이 쓴다. 모든 x가 같으면 0이다. */
 export function spanFractions(lists) {
   const xs = lists.flat().map((v) => v.x);
-  const [low, high] = [Math.min(...xs), Math.max(...xs)];
+  const [low, high] = [minOf(xs), maxOf(xs)];
   return lists.map((list) => list.map((v) => (high > low ? (v.x - low) / (high - low) : 0)));
 }
 
@@ -152,7 +153,7 @@ export function stackRows(rows, ids) {
 /** 누적 막대 값 축이 덮어야 하는 범위. 행마다 양수 합의 최댓값과 음수 합의 최솟값이고 0을 늘 포함한다. 결측 행은 세지 않는다. */
 export function stackExtent(rows, ids) {
   const stacks = stackRows(rows, ids).filter((row) => row.state === 'ok');
-  return { min: Math.min(0, ...stacks.map((row) => row.negative)), max: Math.max(0, ...stacks.map((row) => row.positive)) };
+  return { min: minOf(stacks.map((row) => row.negative), 0), max: maxOf(stacks.map((row) => row.positive), 0) };
 }
 
 // cost: time O(n log n), heap O(n), stack O(1)
