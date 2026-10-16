@@ -1,4 +1,5 @@
 // 보기마다 따로 배치한 판을 위에서 아래로 쌓아 장면 하나로 합친다. 판은 가장 넓은 판의 가운데에 맞추고, 보기 이름(label)이 있으면 판 위에 제목 줄을 둔다.
+// 판 제목은 판 폭과 상관없이 모두 그림 왼쪽 여백(FIGURE_PAD)에서 시작한다. 좁은 판의 제목이 가운데로 밀려 판마다 제목 자리가 달라지지 않게 하기 위해서다.
 // 판의 폭은 내용 폭과 제목 폭(왼쪽 여백 FIGURE_PAD + 글 + 오른쪽 여백) 중 큰 쪽이고, 내용은 그 폭 안에서 가운데에 놓인다.
 // 합친 장면의 선은 보기 순서대로 이어 붙여 문서 전체 선·메시지 번호(source/project.js)와 같은 번호를 받고, 처음 점·끝 겹원의 선(isMark)은 맨 뒤에 둔다.
 import { FIGURE_PAD } from '../canvas.js';
@@ -30,7 +31,7 @@ export function composePanels(panels) {
     const place = { dx: x + (w - content) / 2, dy: y + head };
     place_(scene, panel, place, index);
     const box = { x, y, w, h: h + head };
-    scene.panels.push({ index, view: panel.view, strategy: panel.strategy, box, label: panel.label, ...(panel.label ? { labelAt: { x: x + FIGURE_PAD, y: y + labelH / 2 } } : {}) });
+    scene.panels.push({ index, view: panel.view, strategy: panel.strategy, box, label: panel.label, ...(panel.label ? { labelAt: { x: FIGURE_PAD, y: y + labelH / 2 } } : {}) });
     y += h + head;
   });
   scene.height = y;

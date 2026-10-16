@@ -29,12 +29,28 @@ export function buildModel(figure, sizes) {
   // 처음 점과 그 선은 모델 순서의 맨 앞에 둔다. 선언 순서를 따르는 배치에서 처음 점이 맨 앞(왼쪽, 위)에 오게 하기 위해서다.
   const marks = figure.markEdges ?? [];
   const edges = [...marks.filter((e) => e.isStart), ...figure.edges.map((e, i) => ({ ...e, index: i })), ...marks.filter((e) => !e.isStart)];
+  numberBranches(edges, nodes);
   const pieces = new Map();
   for (const edge of edges) pieces.set(edge.index, splitEdge(edge, nodes, containers));
   // sweep은 박자 이동 글 상자가 선 옆을 쓸고 지나는 폭 Map<선 번호, { x, y }>이다(chip-room.js). 배치 뒤 선 옆에 놓는 그룹 제목과 끝 라벨이 비킨다.
   const model = { containers, nodes, edges, pieces, isSafe: figure.safeLayout === true, sweep: figure.chipSweep ?? new Map() };
   orderByFlow(model);
   return model;
+}
+
+// cost: time O(e), heap O(e), stack O(1)
+// vars: e = 선 수
+// basis: estimate
+// 갈림길에서 나가는 선마다 갈래 번호(선언 순서, 0부터)를 붙인다. 갈래 번호가 마름모의 어느 꼭짓점에서 나갈지를 정한다(ports.js).
+function numberBranches(edges, nodes) {
+  const counts = new Map();
+  for (const edge of edges) {
+    const node = nodes.get(edge.from);
+    if (node?.shape !== 'decision') continue;
+    const k = counts.get(node.id) ?? 0;
+    counts.set(node.id, k + 1);
+    edge.branch = k;
+  }
 }
 
 // cost: time O(g·d), heap O(g), stack O(d)
