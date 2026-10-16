@@ -119,11 +119,11 @@ function isUsable({ ticks, labels, at }, { min, max }) {
  * 값 → 좌표 함수와 눈금. log는 10의 거듭제곱마다, linear는 1, 2, 5 단위로 다섯 칸 안팎이다.
  * linear는 0과 가장 작은 값 가운데 작은 쪽에서 시작한다. 값 축이 아닌 축(선 차트 가로축)은 fromZero=false로 가장 작은 값에서 시작한다.
  * 눈금이 겹치거나 유한하지 않으면 간격을 키워 구분되는 축을 찾고, 그래도 없으면 AxisError를 던진다. 값을 합치지 않는다.
- * @param range { min, max, start, length, fromZero }. 값 범위와, 좌표에서 축이 놓이는 시작과 길이
+ * @param range { min, max, start, length, fromZero, integer }. 값 범위와, 좌표에서 축이 놓이는 시작과 길이. integer는 값이 모두 정수인 축(순서 번호 같은 위치)이라 linear 간격을 1보다 작게 나누지 않는다(눈금 1.5 같은 없는 자리를 적지 않는다)
  * @returns { at, ticks, origin, start, length }
  * @throws AxisError 값이 너무 가까워 구분되는 축을 만들 수 없을 때
  */
-export function makeScale(kind, { min, max, start, length, fromZero = true }) {
+export function makeScale(kind, { min, max, start, length, fromZero = true, integer = false }) {
   const axis = { start, length };
   if (kind === 'log') {
     const [lo, hi] = logBounds(min, max);
@@ -135,6 +135,7 @@ export function makeScale(kind, { min, max, start, length, fromZero = true }) {
   const low = fromZero ? Math.min(0, min) : min;
   const span = max - low;
   let step = niceStep(span / 5 || span || 1);
+  if (integer && step.exponent < 0) step = { mantissa: 1, exponent: 0 };
   for (let tries = 0; tries < STEP_TRIES; tries++, step = nextStep(step)) {
     const scale = linearScale(step, { low, max, ...axis });
     if (isUsable(scale, { min, max })) return scale;
