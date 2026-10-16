@@ -115,10 +115,10 @@ test('S3 켜진 차트 카드의 글자 바탕과 받침 선은 정지 SVG, 움�
   const [stillName] = groupsOf(still);
   assert.match(stillName ?? '', /^a\d+$/, 'the static SVG puts a lit class on the chart group, not only on the card face');
   assert.ok(still.includes(`.fl .${stillName} { ${GROUND_ON}; }`), 'the final state is lit, so the ground is the lit face');
-  // 면을 정하는 CSS 상태는 여기 한 곳에서 본다(components.test.js U10은 그려진 형상만 본다). 별칭은 그림 바탕, 카드 면, 켜진 카드 면이고 차트 묶음이 일반 상속 속성 color로 싣는다.
+  // 면을 정하는 CSS 상태는 여기 한 곳에서 본다(components.test.js U10은 그려진 형상만 본다). 별칭은 그림 바탕, 카드 면(도형 카드와 차트·시간 보기의 판 카드), 켜진 카드 면이고 차트 묶음이 일반 상속 속성 color로 싣는다.
   // 글자 뒤 바탕 면과 받침 선은 그 color(currentColor)만 읽고 자기 color를 정하지 않는다.
   assert.match(still, /\.fl \{\s*--chart-ground:\s*var\(--color-figure-canvas\);/);
-  assert.match(still, /\.fl \.fl-node \{\s*--chart-ground:\s*var\(--fx-face\);/);
+  assert.match(still, /\.fl :is\(\.fl-node, \.fl-panel\) \{\s*--chart-ground:\s*var\(--fx-face\);/);
   assert.match(still, /\.fl \.fl-node\.on \{\s*--chart-ground:\s*var\(--fx-face-on\);/);
   assert.match(still, /\.fl \.fl-chart \{\s*color:\s*var\(--chart-ground\);/);
   assert.match(still, /\.fl \.chart-text-bg \{\s*fill:\s*currentColor;/);
@@ -274,7 +274,7 @@ test('surface_paint_and_relation_dashes_are_owned_by_shared_css', async () => {
     assert.doesNotMatch(output, /stroke-dasharray="/);
     assert.doesNotMatch(output, /<[^>]*fill="var\(--color-ui-card\)"[^>]*class="fl-stroke/);
     assert.match(output, /class="fl-path dashed"/);
-    assert.match(output, /\.fl :where\(\.fl-node\) > \.fl-stroke:where\(:not\(\[fill='none'\]\)\)/);
+    assert.match(output, /\.fl :where\(\.fl-node, \.fl-panel\) > \.fl-stroke:where\(:not\(\[fill='none'\]\)\)/);
     assert.match(output, /\.fl \.fl-shape-external > :is\(\.fl-stroke, \.fl-pulse\)/);
   }
 });

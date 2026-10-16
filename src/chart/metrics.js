@@ -1,5 +1,5 @@
 // 차트 그리기가 함께 쓰는 크기 상수와 색. 값은 모두 토큰에서 온다.
-import { FIGURE_PAD } from '../canvas.js';
+import { COLUMN, FIGURE_PAD, panelInner } from '../canvas.js';
 import { SNAPSHOTS, categoryPaint } from '../chart-palette.js';
 import { tokens, values } from '@woonyong-choi/design-tokens/tokens.js';
 
@@ -7,7 +7,8 @@ export const SPACE = values.spacing;
 export const SIZE = values.spacing.figure;
 // 차트 글자 크기. 그림 안 글 위계의 작은 표시(11)와 문장(13)이고, 카드 안 글(measure/texts.js STYLE)과 chart.css가 읽는 공통 역할 토큰 한 벌이다.
 export const TEXT = Object.freeze({ 11: values.text["figure-meta"], 13: values.text["tiny-text"] });
-export const WIDTH = SIZE.chart.width;
+// 차트 보기의 기본 그림 폭. 본문 단 폭 안의 판 카드 안쪽이다(canvas.js panelInner).
+export const WIDTH = panelInner(COLUMN);
 export const BAR = SIZE.chart.bar;
 export const ROW = SIZE.chart.row;
 export const DOT = SIZE.chart.dot;
