@@ -262,6 +262,14 @@ scene "재시도"
 ```
 
 ![작업의 정상 처리와 재시도](usage-state.svg)<!-- thinkflow -->
+<!-- thinkflow scenes v1 name=state -->
+<details>
+<summary>재시도</summary>
+
+![작업의 정상 처리와 재시도 (재시도)](usage-state.scene-2.svg)<!-- thinkflow -->
+
+</details>
+<!-- /thinkflow scenes v1 name=state -->
 
 같은 구조 위에서 경로만 바꿉니다. 실패 횟수, 재시도 정책, 트랜잭션 보장까지 이 그림이 자동으로 정의하지는 않습니다. 필요한 정책은 본문에 설명하거나 값과 조건을 추가해 표현합니다. 자세한 내용은 [상태 그림](reference/state.md)을 확인합니다.
 
@@ -287,6 +295,14 @@ scene "사용자 찾기"
 ```
 
 ![주문이 사용자를 참조하는 관계](usage-tables.svg)<!-- thinkflow -->
+<!-- thinkflow scenes v1 name=tables -->
+<details>
+<summary>사용자 찾기</summary>
+
+![주문이 사용자를 참조하는 관계 (사용자 찾기)](usage-tables.scene-2.svg)<!-- thinkflow -->
+
+</details>
+<!-- /thinkflow scenes v1 name=tables -->
 
 외래 키 선언이 연결을 만듭니다. `from="0..*" to="1"`을 같은 열에 붙이면 각 끝의 다중성을 표시합니다. 외래 키 없이 직접 적는 선은 설명용 관계입니다. 같은 관계를 `orders.user_id -> users.id`로 장면 밖에 다시 선언하지 않습니다. 복합 키는 테이블 안에 `pk (tenant_id, id)`와 `fk (tenant_id, user_id) -> users (tenant_id, id)`처럼 열 묶음으로 적습니다. 열의 자료형은 표시할 계약이고, SQL을 실행하거나 DB 스키마를 자동으로 변경하지 않습니다. 고유 키와 참조 동작은 [데이터 관계 그림](reference/data.md)에 있습니다.
 
@@ -318,6 +334,14 @@ scene "계열 비교"
 ```
 
 ![대기와 처리 시간을 구분하기](usage-chart.svg)<!-- thinkflow -->
+<!-- thinkflow scenes v1 name=chart -->
+<details>
+<summary>계열 비교</summary>
+
+![대기와 처리 시간을 구분하기 (계열 비교)](usage-chart.scene-2.svg)<!-- thinkflow -->
+
+</details>
+<!-- /thinkflow scenes v1 name=chart -->
 
 `reveal`에 나온 계열만 장면 시작 때 숨었다가 드러납니다. `light latency "요청 B"`는 특정 행을 강조합니다. 값 이름을 행의 숫자 자리에 넣으면 값이 바뀔 때 차트도 따라 바뀝니다. 계열 색·무늬·번호와 범례는 렌더러가 정하므로 차트마다 별도 CSS를 만들지 않습니다.
 
@@ -421,6 +445,14 @@ scene "접수가 더 빠를 때" mode=loop for=8s
 ```
 
 ![접수와 처리가 독립적으로 진행되는 큐](usage-queue.svg)<!-- thinkflow -->
+<!-- thinkflow scenes v1 name=queue -->
+<details>
+<summary>접수가 더 빠를 때</summary>
+
+![접수와 처리가 독립적으로 진행되는 큐 (접수가 더 빠를 때)](usage-queue.scene-2.svg)<!-- thinkflow -->
+
+</details>
+<!-- /thinkflow scenes v1 name=queue -->
 
 `every`는 출발 간격이고 `time`은 한 이동에 걸리는 시간입니다. 이동 시간이 출발 간격보다 길면 여러 점이 같은 경로 위에 동시에 존재합니다. `for=8s`는 장면의 논리 길이이며 실서비스의 실행 시간이 아닙니다. 구간별 속도가 다르면 `legs="500ms, -"`처럼 경로의 각 구간 시간을 나눌 수 있습니다.
 
@@ -451,7 +483,7 @@ scene "접수가 더 빠를 때" mode=loop for=8s
 | 폴더의 원본을 갤러리로 만들기 | `npx thinkflow gallery . --out preview --title "설계 그림"` |
 | 진단을 JSON으로 받기 | `npx thinkflow check request.thinkflow --json` |
 
-SVG의 `--scene` 번호는 1부터입니다. 생략하면 첫 장면이고 장면이 없는 그림에는 지정하지 않습니다. HTML은 모든 장면을 포함하므로 `--static`이나 SVG의 선택 장면이 HTML의 장면 목록을 줄이지 않습니다. `gallery`는 지정한 폴더의 `.thinkflow`를 읽고 목록·문서 미리보기·각 그림의 HTML과 SVG를 만듭니다. 하위 폴더를 재귀적으로 찾는 명령은 아닙니다. `--out`을 생략하면 입력 폴더 아래 `out`에 쓰고, `--title`을 생략하면 입력 폴더명을 목록 제목으로 사용합니다.
+SVG의 `--scene` 번호는 1부터입니다. 생략하면 첫 장면이고 장면이 없는 그림에는 지정하지 않습니다(`thinkflow md`는 장면이 둘 이상인 블록에 생략하면 모든 장면을 `.scene-2.svg`처럼 이름 붙여 쓰고 둘째 장면부터 `<details>`로 둡니다). HTML은 모든 장면을 포함하므로 `--static`이나 SVG의 선택 장면이 HTML의 장면 목록을 줄이지 않습니다. `gallery`는 지정한 폴더의 `.thinkflow`를 읽고 목록·문서 미리보기·각 그림의 HTML과 SVG를 만듭니다. 하위 폴더를 재귀적으로 찾는 명령은 아닙니다. `--out`을 생략하면 입력 폴더 아래 `out`에 쓰고, `--title`을 생략하면 입력 폴더명을 목록 제목으로 사용합니다.
 
 `--strict`는 경고도 실패로 취급합니다. `--json`은 진단마다 JSON 한 줄을 출력하며, 일반 진단은 파일·줄·메시지로 나옵니다. CLI의 종료 코드는 성공 0, 원본·검사·입출력 실패 또는 낡은 결과 1, 사용법 오류 2입니다. 여러 원본의 `render`에서는 실패한 원본의 결과를 쓰지 않지만 성공한 다른 원본의 결과는 쓸 수 있습니다. 출력 경로 충돌은 쓰기 전에 전체를 거절합니다.
 

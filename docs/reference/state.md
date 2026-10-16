@@ -34,6 +34,14 @@ scene "재시도"
 ```
 
 ![작업 상태](state-minimal.svg)<!-- thinkflow -->
+<!-- thinkflow scenes v1 name=minimal -->
+<details>
+<summary>재시도</summary>
+
+![작업 상태 (재시도)](state-minimal.scene-2.svg)<!-- thinkflow -->
+
+</details>
+<!-- /thinkflow scenes v1 name=minimal -->
 
 `start`는 처음 상태, `final`은 끝 상태입니다. 전이마다 사건 글이 필수입니다. 같은 이동 글을 따로 적으면 선 라벨과 겹치므로 이동에는 글을 붙이지 않았습니다.
 

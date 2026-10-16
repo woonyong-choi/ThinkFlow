@@ -457,3 +457,247 @@ test('M13 --json reports each problem as one line with the six fields, and optio
   for (const option of ['--html', '--title', '--out']) assert.equal(md(dir, ['doc.md', option, 'x']).status, 2, option);
   assert.equal(cli(['render', 'x.thinkflow', '--check']).status, 2);
 });
+
+const THREE = 'title "Three"\nbox a "A"\nbox b "B"\na -> b\nscene "first" mode=static\n  a -> b\nscene "second" mode=once\n  b -> a\nscene "third" mode=loop\n  a -> b\n';
+const region = (text) => text.slice(text.indexOf('<!-- thinkflow scenes'), text.indexOf('<!-- /thinkflow scenes'));
+
+test('M14 a block with several scenes writes every scene from one build: the first keeps the name, the others get .scene-N, and each keeps its own mode', (t) => {
+  const dir = workspace(t, { 'doc.md': doc(block('flow', THREE)) });
+  const run = md(dir, ['doc.md']);
+  assert.equal(run.status, 0, run.stderr);
+  assert.deepEqual(svgs(dir), ['doc-flow.scene-2.svg', 'doc-flow.scene-3.svg', 'doc-flow.svg']);
+  for (const [file, scene, mode] of [['doc-flow.svg', 0, 'static'], ['doc-flow.scene-2.svg', 1, 'once'], ['doc-flow.scene-3.svg', 2, 'loop']]) {
+    const svg = read(dir, file);
+    assert.match(svg, new RegExp(`data-scene="${scene}" data-mode="${mode}"`), file);
+    assert.equal(svg.split('\n')[1], '<!-- thinkflow md v2 doc.md -->');
+  }
+  const text = read(dir, 'doc.md');
+  assert.match(text, /```\n\n!\[Three\]\(doc-flow\.svg\)<!-- thinkflow -->\n<!-- thinkflow scenes v1 name=flow -->\n<details>\n<summary>second<\/summary>\n\n!\[Three \(second\)\]\(doc-flow\.scene-2\.svg\)<!-- thinkflow -->\n\n<\/details>\n<details>\n<summary>third<\/summary>\n\n!\[Three \(third\)\]\(doc-flow\.scene-3\.svg\)<!-- thinkflow -->\n\n<\/details>\n<!-- \/thinkflow scenes v1 name=flow -->\n\ntext between|after/);
+  const done = snapshot(dir);
+  assert.equal(md(dir, ['doc.md']).stdout, '');
+  assert.equal(md(dir, ['doc.md', '--check']).status, 0);
+  assert.deepEqual(snapshot(dir), done);
+});
+
+test('M14 --scene keeps the single choice and removes the scene list and its files; --static makes every scene still; dropping to one scene does the same', (t) => {
+  const dir = workspace(t, { 'doc.md': doc(block('flow', THREE)) });
+  md(dir, ['doc.md', '--static']);
+  for (const file of svgs(dir)) assert.match(read(dir, file), /data-mode="static"/, file);
+  const run = md(dir, ['doc.md', '--scene', 'second']);
+  assert.equal(run.status, 0, run.stderr);
+  assert.deepEqual(svgs(dir), ['doc-flow.svg']);
+  assert.match(run.stdout, /removed .*doc-flow\.scene-2\.svg/);
+  assert.match(read(dir, 'doc-flow.svg'), /data-scene="1"/);
+  assert.doesNotMatch(read(dir, 'doc.md'), /thinkflow scenes/);
+  assert.equal(md(dir, ['doc.md']).status, 0);
+  assert.deepEqual(svgs(dir), ['doc-flow.scene-2.svg', 'doc-flow.scene-3.svg', 'doc-flow.svg']);
+  writeFileSync(join(dir, 'doc.md'), read(dir, 'doc.md').replace(/scene "third"[^`]*/, ''));
+  assert.equal(md(dir, ['doc.md']).status, 0);
+  assert.deepEqual(svgs(dir), ['doc-flow.scene-2.svg', 'doc-flow.svg']);
+  assert.equal(md(dir, ['doc.md', '--check']).status, 0);
+});
+
+test('M14 the scene list is its own owned span: --fold keeps it outside the fold marks, --unfold restores the plain bytes, and a user details around it is untouched', (t) => {
+  const dir = workspace(t, { 'doc.md': doc(block('flow', THREE), block('')) });
+  md(dir, ['doc.md']);
+  const plain = read(dir, 'doc.md');
+  assert.equal(md(dir, ['doc.md', '--fold']).status, 0);
+  const folded = read(dir, 'doc.md');
+  assert.match(folded, /<!-- \/thinkflow fold v1 name=flow -->\n<!-- thinkflow scenes v1 name=flow -->\n<details>\n<summary>second/);
+  const afterFold = snapshot(dir);
+  assert.equal(md(dir, ['doc.md']).stdout, '');
+  assert.equal(md(dir, ['doc.md', '--fold']).stdout, '');
+  assert.deepEqual(snapshot(dir), afterFold);
+  assert.equal(md(dir, ['doc.md', '--unfold']).status, 0);
+  assert.equal(read(dir, 'doc.md'), plain);
+
+  const user = `# Doc\n\n<details>\n<summary>mine</summary>\n\n${block('flow', THREE)}\n</details>\n\n${block('other')}`;
+  const mixed = workspace(t, { 'doc.md': user });
+  assert.equal(md(mixed, ['doc.md', '--fold']).status, 0, 'a block after the scene list is still told apart from a user details');
+  const result = read(mixed, 'doc.md');
+  assert.match(result, /<summary>mine<\/summary>/);
+  assert.match(result, /<!-- thinkflow fold v1 name=other -->/);
+  assert.doesNotMatch(result, /<!-- thinkflow fold v1 name=flow -->/, 'inside a user details the block is not folded');
+  assert.equal(md(mixed, ['doc.md', '--fold']).stdout, '');
+});
+
+test('M14 quoted and listed blocks and CRLF documents get the scene list with their own prefix and line ending, idempotently', (t) => {
+  const quoted = ['# Doc', '', '> ```thinkflow name=flow', ...thinkflow(THREE).trimEnd().split('\n').map((l) => `> ${l}`), '> ```', ''].join('\n');
+  const listed = ['# Doc', '', '- item', '', '  ```thinkflow name=flow', ...thinkflow(THREE).trimEnd().split('\n').map((l) => `  ${l}`), '  ```', ''].join('\n');
+  for (const [name, text, args, prefix] of [['quote', quoted, ['--fold'], '> '], ['list', listed, [], '  '], ['crlf', doc(block('flow', THREE)).replace(/\n/g, '\r\n'), [], '']]) {
+    const dir = workspace(t, { 'doc.md': text });
+    const run = md(dir, ['doc.md', ...args]);
+    assert.equal(run.status, 0, `${name}: ${run.stderr}`);
+    const result = read(dir, 'doc.md');
+    assert.match(result, new RegExp(`${prefix}<!-- thinkflow scenes v1 name=flow -->`), name);
+    if (name === 'crlf') assert.doesNotMatch(result.replace(/\r\n/g, ''), /\n/, 'every line keeps CRLF');
+    const done = snapshot(dir);
+    assert.equal(md(dir, ['doc.md', ...args]).stdout, '', name);
+    assert.deepEqual(snapshot(dir), done, name);
+    assert.equal(md(dir, ['doc.md', ...args, '--check']).status, 0, name);
+  }
+});
+
+test('M14 a scene name is written as text and the alt text, whatever it holds', (t) => {
+  const odd = 'title "Odd"\nbox a "A"\nbox b "B"\na -> b\nscene "first" mode=static\n  a -> b\nscene "x <i>&y --> z" mode=static\n  b -> a\n';
+  const dir = workspace(t, { 'doc.md': doc(block('flow', odd)) });
+  const run = md(dir, ['doc.md']);
+  assert.equal(run.status, 0, run.stderr);
+  const list = region(read(dir, 'doc.md'));
+  assert.doesNotMatch(list.match(/<summary>.*<\/summary>/g).join(''), /<i>/);
+  assert.match(list, /<summary>x &lt;i&gt;&amp;y --&gt; z<\/summary>|<summary>x &lt;i&gt;&amp;y --&amp;gt; z<\/summary>/);
+  assert.equal(md(dir, ['doc.md', '--check']).status, 0);
+});
+
+test('M14 a damaged scene mark is diagnosed and nothing is written, --check included; a user details and an unmarked image beside the list stay', (t) => {
+  const dir = workspace(t, { 'doc.md': doc(block('flow', THREE)) });
+  md(dir, ['doc.md']);
+  const good = read(dir, 'doc.md');
+  const user = '<details>\n<summary>mine</summary>\n\nnote\n\n</details>\n\n![mine](mine.png)\n';
+  writeFileSync(join(dir, 'doc.md'), good.replace('after\n', `after\n${user}`));
+  assert.equal(md(dir, ['doc.md', '--scene', '1']).status, 0);
+  assert.match(read(dir, 'doc.md'), /<summary>mine<\/summary>\n\nnote[\s\S]*!\[mine\]\(mine\.png\)\n$/);
+  writeFileSync(join(dir, 'doc.md'), good);
+  for (const broken of [good.replace('</details>\n<!-- /thinkflow scenes', '<!-- /thinkflow scenes'), good.replace('<!-- /thinkflow scenes v1 name=flow -->', '<!-- /thinkflow scenes v1 name=other -->'), good.replace('thinkflow scenes v1', 'thinkflow scenes v9'), good.replace('<summary>second</summary>\n', '<summary>second</summary>\nuser line\n')]) {
+    writeFileSync(join(dir, 'doc.md'), broken);
+    const before = snapshot(dir);
+    for (const args of [[], ['--check'], ['--scene', '1']]) {
+      const run = md(dir, ['doc.md', ...args, '--json']);
+      assert.equal(run.status, 1, args.join(' '));
+      assert.ok(run.stdout.trim().split('\n').map((l) => JSON.parse(l)).some((d) => d.code === 'md-fold' && /scenes mark/.test(d.message)), run.stdout);
+      assert.deepEqual(snapshot(dir), before);
+    }
+  }
+});
+
+test('M14 a block that is removed takes its scene list and files with it, and a scene list in a text fence is only text', (t) => {
+  const shown = '````text\n<!-- thinkflow scenes v1 name=x -->\nnot intact\n````\n';
+  const dir = workspace(t, { 'doc.md': `${doc(block('flow', THREE))}${shown}` });
+  assert.equal(md(dir, ['doc.md']).status, 0);
+  writeFileSync(join(dir, 'doc.md'), read(dir, 'doc.md').replace(/```thinkflow[\s\S]*?\n```\n/, '').replace(/!\[Three\]\(doc-flow\.svg\)<!-- thinkflow -->\n/, ''));
+  const run = md(dir, ['doc.md']);
+  assert.equal(run.status, 0, run.stderr);
+  assert.deepEqual(svgs(dir), []);
+  assert.doesNotMatch(read(dir, 'doc.md'), /name=flow|\.svg/);
+  assert.ok(read(dir, 'doc.md').endsWith(shown), 'the fenced example is untouched');
+});
+
+test('M14 a scene list shown inside opaque HTML (pre, script, style, textarea, CDATA; a comment cannot hold a mark, its first --> ends it) is the user\'s text: kept byte for byte, no diagnostic, with or without a real block', (t) => {
+  const shown = '<!-- thinkflow scenes v1 name=x -->\n<details>\n<summary>Scene</summary>\n\n![x](x.scene-2.svg)<!-- thinkflow -->\n\n</details>\n<!-- /thinkflow scenes v1 name=x -->\n';
+  const wraps = [['<pre>\n', '</pre>\n'], ['<script>\n', '</script>\n'], ['<style>\n', '</style>\n'], ['<textarea>\n', '</textarea>\n'], ['<![CDATA[\n', ']]>\n']];
+  for (const [open, close] of wraps) {
+    const text = `# Doc\n\n${open}${shown}${close}\nafter\n`;
+    const bare = workspace(t, { 'doc.md': text });
+    for (const args of [[], ['--check'], ['--fold'], ['--unfold']]) {
+      const run = md(bare, ['doc.md', ...args]);
+      assert.equal(run.status, 0, `${open.trim()} ${args.join(' ')}: ${run.stderr}`);
+      assert.equal(read(bare, 'doc.md'), text, `${open.trim()} ${args.join(' ')}`);
+    }
+    const mixed = workspace(t, { 'doc.md': `${text}\n${block('flow', THREE)}` });
+    assert.equal(md(mixed, ['doc.md']).status, 0);
+    const result = read(mixed, 'doc.md');
+    assert.ok(result.startsWith(text), `${open.trim()} stays above the block`);
+    assert.deepEqual(svgs(mixed), ['doc-flow.scene-2.svg', 'doc-flow.scene-3.svg', 'doc-flow.svg']);
+    assert.equal(md(mixed, ['doc.md', '--scene', '1']).status, 0);
+    assert.ok(read(mixed, 'doc.md').startsWith(text), 'removing the generated list leaves the shown one');
+  }
+});
+
+test('M14 an opaque element opened inside a blank-ended HTML block (div, details) keeps its text across blank lines until it closes; generated lists next to it still work', (t) => {
+  const shown = '<!-- thinkflow scenes v1 name=x -->\n<details>\n<summary>Scene</summary>\n\n![x](x.scene-2.svg)<!-- thinkflow -->\n\n</details>\n<!-- /thinkflow scenes v1 name=x -->\n';
+  const nests = [`<div>\n<pre>\n${shown}</pre>\n</div>\n`, `<details>\n<pre>\n${shown}</pre>\n</details>\n`, `<div>\n<script>\n${shown}</script>\n</div>\n`, `<details>\n<summary>s</summary>\n\n<pre>\n${shown}</pre>\n\n</details>\n`, `<div><pre>\n${shown}</pre></div>\n`, `<div>\n<PRE class="a">\n${shown}</PRE>\n</div>\n`];
+  for (const nest of nests) {
+    const text = `# Doc\n\n${nest}\nafter\n`;
+    const bare = workspace(t, { 'doc.md': text });
+    for (const args of [[], ['--check'], ['--fold'], ['--unfold']]) {
+      const run = md(bare, ['doc.md', ...args]);
+      assert.equal(run.status, 0, `${nest.split('\n')[1]} ${args.join(' ')}: ${run.stderr}`);
+      assert.equal(read(bare, 'doc.md'), text, `${nest.split('\n')[1]} ${args.join(' ')}`);
+    }
+    // 닫힌 뒤의 블록은 정상으로 만들어지고, 다시 돌려도 같으며, 걷으면 보인 예시만 남는다. 이름을 줄 때 이어진 블록 둘도 각자 구간을 갖는다.
+    const mixed = workspace(t, { 'doc.md': `${text}\n${block('flow', THREE)}\n${block('two', THREE)}` });
+    assert.equal(md(mixed, ['doc.md']).status, 0);
+    const done = snapshot(mixed);
+    assert.equal(md(mixed, ['doc.md']).stdout, '');
+    assert.equal(md(mixed, ['doc.md', '--check']).status, 0);
+    assert.deepEqual(snapshot(mixed), done);
+    assert.equal(read(mixed, 'doc.md').split('<!-- thinkflow scenes v1 name=').length - 1, 3, 'the shown one and two generated');
+    assert.equal(md(mixed, ['doc.md', '--scene', '1']).status, 0);
+    assert.ok(read(mixed, 'doc.md').startsWith(text));
+    assert.equal(read(mixed, 'doc.md').split('<!-- thinkflow scenes v1 name=').length - 1, 1);
+  }
+});
+
+test('M14 protected element text is consumed once: tags and fences inside it are never read, and only what follows the closing tag is', (t) => {
+  const literal = '<div>\n<script>\nconst x = "<pre> <details>"; </script>\n</div>\n';
+  const mixed = workspace(t, { 'doc.md': `# Doc\n\n${literal}\n${block('flow', THREE)}` });
+  assert.equal(md(mixed, ['doc.md', '--fold']).status, 0);
+  const folded = read(mixed, 'doc.md');
+  assert.match(folded, /<!-- thinkflow fold v1 name=flow -->/, 'the string <details> opened nothing');
+  assert.match(folded, /<!-- thinkflow scenes v1 name=flow -->/, 'the string <pre> hid nothing after the closing tag');
+  const done = snapshot(mixed);
+  assert.equal(md(mixed, ['doc.md', '--fold']).stdout, '');
+  assert.deepEqual(snapshot(mixed), done);
+  assert.equal(md(mixed, ['doc.md', '--unfold', '--scene', '1']).status, 0);
+  assert.ok(read(mixed, 'doc.md').startsWith(`# Doc\n\n${literal}`));
+  assert.doesNotMatch(read(mixed, 'doc.md'), /thinkflow scenes/);
+
+  for (const open of ['<script>', '<pre>', '<style>', '<textarea>']) {
+    const name = open.slice(1, -1);
+    const shown = `<div>\n${open}\n\n${block('literal', 'box a "A"\n')}\n</${name}>\n</div>\n`;
+    const dir = workspace(t, { 'doc.md': `# Doc\n\n${shown}\nafter\n` });
+    for (const args of [[], ['--fold'], ['--unfold']]) {
+      const run = md(dir, ['doc.md', ...args]);
+      assert.equal(run.status, 0, `${open} ${args.join(' ')}: ${run.stderr}`);
+      assert.equal(read(dir, 'doc.md'), `# Doc\n\n${shown}\nafter\n`, `${open} ${args.join(' ')}`);
+      assert.deepEqual(svgs(dir), [], 'a fence inside protected text is not a block');
+    }
+  }
+});
+
+test('M14 protected element text lasts only as long as the quote or list item that opened it: a real block after the container ends is still read, and a fence inside it is not', (t) => {
+  const fenced = (prefix) => ['thinkflow name=lit', 'box a "A"'].flatMap((line, k) => (k ? [`${prefix}${line}`] : [`${prefix}\`\`\`${line}`])).concat(`${prefix}\`\`\``).join('\n');
+  const real = `${block('real', 'box b "B"\n')}`;
+  const cases = [
+    ['quote ended by an unmarked line', `> <pre>\n> user example\n\n${real}`],
+    ['fence inside an open quote element, real block after', `> <pre>\n>\n${fenced('> ')}\n> </pre>\n\n${real}`],
+    ['quote never closes the element before it ends', `> <script>\n> const x = "<pre>";\n\n${real}`],
+    ['list item ended by a dedented line', `- <pre>\n  user example\n\n${real}`],
+    ['fence inside an open list item element', `- <pre>\n  x\n\n${fenced('  ')}\n  </pre>\n\n${real}`],
+  ];
+  for (const [name, body] of cases) {
+    const dir = workspace(t, { 'doc.md': `# Doc\n\n${body}` });
+    const run = md(dir, ['doc.md', '--fold']);
+    assert.equal(run.status, 0, `${name}: ${run.stderr}`);
+    assert.deepEqual(svgs(dir), ['doc-real.svg'], name);
+    const text = read(dir, 'doc.md');
+    assert.match(text, /<!-- thinkflow fold v1 name=real -->/, name);
+    assert.doesNotMatch(text, /name=lit -->|doc-lit/, name);
+    assert.equal(md(dir, ['doc.md', '--fold']).stdout, '', name);
+  }
+});
+
+test('M14 scene files go through the same ownership, collision and write checks as the first: a foreign file, a clash, or a failed write leaves everything as it was', (t) => {
+  const dir = workspace(t, { 'doc.md': doc(block('flow', THREE)), 'doc-flow.scene-3.svg': '<svg>mine</svg>\n' });
+  let before = snapshot(dir);
+  let run = md(dir, ['doc.md', '--json']);
+  assert.equal(run.status, 1);
+  assert.ok(run.stdout.trim().split('\n').map((l) => JSON.parse(l)).some((d) => /doc-flow\.scene-3\.svg already exists/.test(d.message) && d.line >= 1), run.stdout);
+  assert.deepEqual(snapshot(dir), before);
+
+  const blocked = workspace(t, { 'doc.md': doc(block('flow', THREE)), 'doc-flow.scene-2.svg/keep.txt': 'a folder in the way' });
+  before = snapshot(blocked);
+  run = md(blocked, ['doc.md', '--json']);
+  assert.equal(run.status, 1);
+  assert.ok(run.stdout.trim().length > 0, 'the folder in the way is diagnosed');
+  assert.deepEqual(snapshot(blocked), before, 'the first figure and the document are not written either');
+
+  const other = workspace(t, { 'x/doc.md': doc(block('flow', THREE)), 'y/doc.md': doc(block('flow', THREE)) });
+  md(other, ['x/doc.md', '--out-dir', 'out']);
+  unlinkSync(join(other, 'out', 'doc-flow.svg'));
+  before = snapshot(other);
+  run = md(other, ['y/doc.md', '--out-dir', 'out']);
+  assert.equal(run.status, 1, 'y/doc.md may not take the scene files x/doc.md made');
+  assert.match(run.stderr, /doc-flow\.scene-2\.svg already exists and was made for another document/);
+  assert.deepEqual(snapshot(other), before);
+});
