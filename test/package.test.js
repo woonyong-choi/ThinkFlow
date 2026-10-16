@@ -30,10 +30,10 @@ test('P3 npm test runs this suite and nothing from a deleted one', () => {
   assert.match(pkg.scripts.test, /test\/\*\.test\.js/);
 });
 
-test('P4 the command with no arguments prints usage for all four commands and exits 2', () => {
+test('P4 the command with no arguments prints usage for all five commands and exits 2', () => {
   const run = cli([]);
   assert.equal(run.status, 2);
-  for (const command of ['render', 'check', 'gallery', 'md']) assert.match(run.stderr, new RegExp(`torso ${command} `));
+  for (const command of ['render', 'check', 'gallery', 'md', 'import']) assert.match(run.stderr, new RegExp(`torso ${command} `));
   assert.equal(run.stdout, '');
 });
 

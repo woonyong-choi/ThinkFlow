@@ -54,3 +54,22 @@ export function toSvg(result: BuiltFigure, options?: SvgOptions): Promise<string
 
 /** 모든 장면이 있는 독립 HTML 문서. name은 원본에 title이 없을 때 쓸 제목이다. */
 export function toHtml(result: BuiltFigure, name?: string): Promise<string>;
+
+/** 가져올 수 있는 다른 도구의 원본 형식. */
+export type ImportFormat = 'mermaid' | 'dbml' | 'd2';
+
+/** 가져올 수 있는 형식 이름 목록. */
+export const IMPORT_FORMATS: readonly ImportFormat[];
+
+export interface ImportResult {
+  /** 옮긴 `.torso` 원본 글. */
+  readonly source: string;
+  /** 건너뛰거나(code `import-skip`) 바꿔 옮긴(code `import-change`) 문장의 경고. 줄은 받은 원본의 줄이다. */
+  readonly warnings: readonly FigureDiagnostic[];
+}
+
+/**
+ * Mermaid, DBML, D2 원본 글을 Torso 원본 글로 옮긴다. 파일은 다루지 않는다.
+ * @throws FigureError 형식의 그림 종류를 모르거나 옮길 카드가 없는 경우(code `import`). 모르는 format은 TypeError다.
+ */
+export function importDiagram(format: ImportFormat, text: string): ImportResult;

@@ -65,5 +65,6 @@ API의 요청·응답 칸은 [API 계약](usage.md#api-계약), 객체의 상속
 | [배치](design/layout.md) | 글 재기, 도형 크기와 연결점, 그룹 배치, 그림 비율 |
 | [재생](design/playback.md) | 장면의 정지·한 번·반복, 논리 시각과 표시 길이, 시간표 규칙(시간 상한과 정밀도, 이벤트, 조건과 대기, 예약), HTML 재생기(탭, 도구 막대, 전체 화면, 반응형, 내려받기), 움직이는 SVG와 멈춘 SVG, 결과 파일 |
 | [마크다운과 배포](design/markdown.md) | `md` 명령, GitHub Action, 배포 워크플로, 패키지 |
+| [가져오기](design/import.md) | `import` 명령: Mermaid·DBML·D2 원본을 `.torso` 원본으로 옮기기, 대응 문법과 경고 |
 | [문서 스킬 연동](design/docs-integration.md) | 문서 스킬의 D2와 Vega-Lite를 대신하는 계약, 디자인 기준·색 계약·수용 게이트와 증거 표 |
 | [결정 기록](decisions/README.md) | 설계를 정한 이유와 버린 선택지 |
