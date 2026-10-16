@@ -2,7 +2,7 @@
 // 시험 이름 첫 낱말(V1~V7)이 요구사항 번호이고, 번호와 계약의 대응은 docs/design/expression-coverage.md의 시험 번호 표에 있다.
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { build, thinkflow, reject, stillDom, textsOf, valueOf } from './support.js';
+import { build, finalValue, findOne, panelStrategies, thinkflow, reject, stillDom, textsOf, valueOf } from './support.js';
 
 const CARD = 'box a "A"\n';
 
@@ -163,7 +163,7 @@ test('V6 each rejection names its real cause and counts what the limit counts', 
   const decimals = (value) => `chart c "T" bar {\n  x "x(u)"\n  decimals ${value}\n  series v "v"\n  row "A" v=1\n}\n`;
   await build(thinkflow(decimals('2')));
   const cases = [
-    ['class k "K" abstract=yes {\n  field x "int"\n}\n', 2, /Found "abstract"/],
+    ['class k "K" abstract=yes {\n  field x "int"\n}\n', 2, /abstract takes no value/],
     ['class k "K" {\n  field x "int" static=yes\n}\n', 3, /static takes no value/],
     ['box a "A"\nscene "s" mode=once\n  light a "x"\n', 4, /"a" is a box, not a chart/],
     ['state s "S"\nvalue v "V" on=s\n', 3, /Put a value on box, external, store, person, table, api/],
@@ -226,4 +226,94 @@ test('계단과 누적 분포의 값 축 단위를 검사하고 음수 원형 �
   const negative = await reject(thinkflow('chart c "Chart" pie {\nrow "A" value=-1\n}'));
   assert.equal(negative.length, 1);
   assert.match(negative[0].message, /negative/);
+});
+
+// 문법 점검(docs/decisions/2026-10-16-one-form-per-meaning.md): 모르는 낱말의 제안과 다른 도구의 습관은 틀린 낱말 자리의 진단 하나로 알린다.
+test('V6 an unknown statement, key, value, unit, or column names the closest word at its line and column', async () => {
+  const base = 'box web "W"\nbox api "A"\nweb -> api\n';
+  const cases = [
+    ['bx db "DB"\n', 5, 1, 'box'],
+    ['scen "s"\n', 5, 1, null, `${base}scen "s"\n`],
+    ['box db "DB" tone=yelow\n', 5, 18, 'yellow'],
+    ['box db "DB" apperance=filled\n', 5, 13, 'appearance'],
+    ['view graph dwon\n', 5, 12, 'down'],
+    ['view graph TD\n', 5, 12, 'down'],
+    ['group g "G" direction=dwn {\n  box c "C"\n}\n', 5, 23, 'down'],
+    ['group g "G" dashd {\n  box c "C"\n}\n', 5, 13, 'dashed'],
+    ['scene "s" mode=lop\n  web -> api\n', 5, 16, 'loop'],
+    ['scene "s"\n  web -> api time=800mss\n', 6, 3, '800ms'],
+    ['scene "s"\n  web -> api time=2\n', 6, 3, '2s'],
+    ['scene "s"\n  web -> api lost=60\n', 6, 3, '60%'],
+    ['scene "s"\n  shw web "x"\n', 6, 3, 'show'],
+    ['table t "T" {\n  id bigint pkk\n}\n', 6, 13, 'pk'],
+    ['table t "T" {\n  user_id bigint pk\n}\nscene "s"\n  light t.userid\n', 9, 3, 'user_id'],
+    ['chart c "C" baar {\n  series v "v"\n  row "a" v=1\n}\n', 5, 13, 'bar'],
+    ['chart c "C" bar {\n  decimal 2\n  series v "v"\n  row "a" v=1\n}\n', 6, 3, 'decimals'],
+    ['chart c "C" line {\n  zero of\n  series v "v"\n  point x=1 v=1\n}\n', 6, 8, 'off'],
+    ['chart c "C" bar {\n  series v "v" role=mian\n  row "a" v=1\n}\n', 6, 21, 'main'],
+    ['grid g "G" rws=2 {\n  item a "a"\n}\n', 5, 12, 'rows'],
+  ];
+  for (const [body, line, column, word, whole] of cases) {
+    const problems = await reject(thinkflow(whole ?? `${base}${body}`));
+    const hit = problems.find((p) => p.line === line);
+    assert.ok(hit, `${body} -> ${JSON.stringify(problems)}`);
+    assert.equal(hit.column, column, `${body} -> ${JSON.stringify(hit)}`);
+    assert.match(hit.message, new RegExp(`Did you mean "${(word ?? 'scene').replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}"\\?`), body);
+    assert.doesNotMatch(hit.message, /\.$/, 'a message has no trailing period');
+  }
+});
+
+test('V6 habits from Mermaid, D2, PlantUML, and CSS are rejected with the ThinkFlow form', async () => {
+  const base = 'box a "A"\nbox b "B"\n';
+  const cases = [
+    ['a --> b\n', /Did you mean "->"/],
+    ['a <- b\n', /b -> a/],
+    ['a <-> b\n', /head=both/],
+    ['a-->|go|b\n', /a -> b "go"/],
+    ['C[Client]\n', /box c "Client"/],
+    ['C["Client"]\n', /box c "Client"/],
+    ['D{ok?}\n', /decision d "ok\?"/],
+    ['graph TD\n', /no diagram-type line/],
+    ['web: Web Server\n', /box web "Web"/],
+    ['title: "x"\n', /title "x"/],
+    ['a -> b: calls\n', /a -> b "calls"/],
+    ['box c "C" class="bg-blue-500"\n', /tone=blue/],
+    ['box c label="C"\n', /box c "C"/],
+    ['box c Client App\n', /box c "Client App"/],
+    ['box WebServer "W"\n', /web-server/],
+    ["box c 'C'\n", /double quotes/],
+    ['// note\n', /comment starts with "#"/],
+    ['a -> b;\n', /one statement per line/],
+    ['box c "C"\na -> b -> c\n', /then b -> c/],
+    ['subgraph g\n', /group id "name"/],
+    ['group g "G" border=dashed {\n  box c "C"\n}\n', /write dashed instead of border=dashed/],
+    ['a -> b dashed=true\n', /dashed takes no value/],
+  ];
+  for (const [body, message] of cases) {
+    const source = thinkflow(`${base}${body}`);
+    const problems = await reject(source);
+    assert.equal(problems.length, 1, `${body} -> ${JSON.stringify(problems)}`);
+    assert.ok(problems[0].line >= 4 && problems[0].column >= 1, JSON.stringify(problems[0]));
+    assert.match(problems[0].message, message, body);
+  }
+});
+
+test('V5 a group border is dashed like an edge, and an on line may come before its value', async () => {
+  const dom = await stillDom(thinkflow('group g "G" dashed {\n  box a "A"\n}\nbox b "B"\na -> b dashed\n'));
+  const frame = findOne(dom, (n) => n.tag === 'rect' && /\bframe-box\b/.test(n.attrs.class ?? ''), 'group frame');
+  assert.match(frame.attrs.class, /\bdashed\b/);
+  assert.equal(await finalValue(thinkflow('box a "A"\nbox b "B"\na -> b\non b n+1\nvalue n "n" on=b from=0\nscene "s"\n  a -> b\n'), 'n'), '1');
+});
+
+test('V5 a trace lane is a card or a quoted lane name, and a lane-name trace draws only its time view', async () => {
+  const trace = 'trace t "T" {\n  span a "A" lane="Gateway" at=0 dur=10\n  span b "B" lane="DB" at=2 dur=5\n}\n';
+  assert.deepEqual(await panelStrategies(thinkflow(trace)), ['time']);
+  assert.deepEqual(textsOf(await stillDom(thinkflow(trace))).filter((t) => t === 'Gateway' || t === 'DB'), ['Gateway', 'DB']);
+  const clash = await reject(thinkflow(`box gw "GW"\n${trace.replace('"Gateway"', '"gw"')}`));
+  assert.ok(clash.some((p) => /lane "gw" is quoted/.test(p.message)), JSON.stringify(clash));
+});
+
+// 퍼징이 찾은 내부 오류의 최소 입력: 눈금 class를 쓰는 히트맵 열 이름이 "Infinity"였다.
+test('V6 user text that reads like a number is not mistaken for a broken coordinate', async () => {
+  await build(thinkflow('chart c "C" heatmap {\n  cell "Infinity" "NaN" 3\n  cell "a" "Infinity~0시" 2\n}\n'));
 });

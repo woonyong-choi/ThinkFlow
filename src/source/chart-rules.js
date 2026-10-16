@@ -4,7 +4,7 @@ import { MAX_VALUE, RANGE_MESSAGE, TINY_MESSAGE, isTiny } from './chart-limits.j
 import { prepareParts } from './parts.js';
 import { prepareWaterfall } from './waterfall.js';
 import { prepareHistogram } from './histogram.js';
-import { unknownName } from './problems.js';
+import { didYouMean, unknownName } from './problems.js';
 
 const CHART_TYPES = VALUES.chartType.items;
 const PREPARE_ROWS = { histogram: prepareHistogram, waterfall: prepareWaterfall, pie: prepareParts, donut: prepareParts };
@@ -226,7 +226,7 @@ function checkRowKeys(row, figure, problems) {
     waterfall: row.total ? [] : ['value'],
   }[chartType];
   const required = { bar: ids, stacked: ids, percent: ids, dumbbell: ids, difference: ids, box: BOX_KEYS, scatter: ['x', 'y', ...(ids.length ? ['series'] : [])], line: ['x', ...ids], step: ['x', ...ids], area: ['x', ...ids], ecdf: ['value', ...(ids.length ? ['series'] : [])], pie: ['value'], donut: ['value'], heatmap: ['value'], histogram: ['value'], waterfall: row.total ? [] : ['value'] }[chartType];
-  for (const key of keys) if (!allowed.includes(key)) problems.error(row.line, `"${key}" is not a value of a ${chartType} chart. Use ${allowed.join(', ')}`);
+  for (const key of keys) if (!allowed.includes(key)) problems.error(row.line, `"${key}" is not a value of a ${chartType} chart. Use ${allowed.join(', ')}.${didYouMean(key, allowed)}`);
   for (const key of required) if (!keys.includes(key)) problems.error(row.line, `the row needs ${key}=value`);
   for (const [key, value] of Object.entries(row.values)) {
     // 계열 값, 표본(누적분포, 히스토그램)과 증감(워터폴)의 value, 상자의 다섯 값이 `-`를 받는다.

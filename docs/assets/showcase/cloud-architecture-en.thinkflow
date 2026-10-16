@@ -4,11 +4,11 @@ subtitle "Web requests reach the app server through DNS, a CDN, a load balancer,
 
 person user "Web user"
 person admin "Operator" icon=admin
-group net "Internet" icon=cdn border=dashed direction=right {
+group net "Internet" icon=cdn dashed direction=right {
   box dns "DNS" shape=tile icon=dns
   box cdn "CDN" shape=tile icon=cdn
 }
-group cloud "Cloud" icon=region direction=down border=dashed {
+group cloud "Cloud" icon=region direction=down dashed {
   box lb "Balancer" shape=tile icon=lb
   box web "Web server" shape=tile icon=server count=3
   box app "App server" shape=tile icon=server

@@ -6,12 +6,16 @@ import { sequenceFigure } from '../views.js';
 // cost: time O(t·s), heap O(k), stack O(1)
 // vars: t = 추적 카드 수, s = 구간 수, k = 이름 수
 // basis: estimate
-/** 추적 카드마다 구간이 있고, 구간의 레인은 선언된 카드다. */
+/** 추적 카드마다 구간이 있고, 구간의 레인은 선언된 카드(`lane=카드`)이거나 카드 없는 레인 이름(`lane="이름"`)이다. 레인 이름 글이 카드 이름과 같으면 어느 쪽인지 알 수 없어 오류다. */
 export function checkTraces(figure, names, problems) {
   for (const trace of figure.nodes.filter((n) => n.shape === 'trace' && !n.isRejected)) {
     if (!trace.spans.length) problems.error(trace.line, `trace "${trace.id}" has no spans`);
     for (const span of trace.spans) {
       const lane = names.get(span.lane);
+      if (span.isTextLane) {
+        if (lane) problems.error(span.line, `lane "${span.lane}" is quoted, but "${span.lane}" is also a card. Write lane=${span.lane} to use the card, or pick another lane name`);
+        continue;
+      }
       if (span.lane !== undefined && (!lane || !figure.nodes.includes(lane)) && !figure.rejectedNames.has(span.lane)) problems.error(span.line, unknownName('card', span.lane, figure.nodes.map((n) => n.id)));
     }
   }

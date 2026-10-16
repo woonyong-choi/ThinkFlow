@@ -265,14 +265,14 @@ scene "소비자 하나가 느려진다" for=6s status="slow=warn"
 - 글은 큰따옴표 안에 쓴다. 빈 글(`""`, 공백만 있는 글)은 오류다. 이름 없는 도형이나 빈 항목을 막기 위해서다. 따옴표 안의 `\"`는 따옴표, `\\`는 역슬래시다. 그 밖의 역슬래시와 줄바꿈은 오류다.
 - 글 안에서 백틱(`` ` ``)으로 감싼 부분은 코드다. 마크다운처럼 백틱은 그리지 않고 그 구간만 고정폭 글꼴로 그린다(예: ``"`session/start` 요청"``). 코드 안 한글은 Pretendard로 그린다. 도형 이름, 부제, 그룹 제목, 카드 글, 선 라벨, 노트, 장면 이름, 차트 글에 쓸 수 있다. 백틱 짝이 맞지 않으면 그 줄의 오류다. 글을 그대로 읽는 칸(클래스 멤버, 테이블과 API 칸의 타입, 카드의 `mono` 줄, 값 글인 `from`과 `set`의 값)은 이미 전부 코드이거나 사용자 자료라서 백틱도 글자다. 그 칸에 쓴 백틱은 짝이 맞든 홀수 개든 지워지지 않고 그대로 그려지고, 잰 폭도 그 글자를 센다. 원본 검사는 이 칸 밖의 글에서만 백틱 짝을 보므로 홀수 개의 백틱은 그 칸에서 오류가 아니다. 그 밖의 칸에서 백틱 글자 자체를 그릴 방법은 없다.
 - 선택 사항은 `키=값` 한 낱말이다. `=` 앞뒤 공백은 오류다. 선택 사항의 순서는 자유다. 같은 키를 두 번 쓰면 오류다.
-- 값이 없는 선택 사항(`quiet`, `dashed`, `mono`, `pk`, `unique`)은 정해진 낱말만 쓴다. 이름 자리의 `quiet` 같은 낱말은 이름이다.
+- 값이 없는 선택 사항(`quiet`, `dashed`, `mono`, `stuck`, `create`, `destroy`, `abstract`, `static`, `pk`, `unique`)은 정해진 낱말만 쓴다. 켜고 끄는 뜻은 이 낱말 하나로 쓰고 `dashed=true`나 `border=dashed` 같은 `키=값` 꼴은 없다. 이름 자리의 `quiet` 같은 낱말은 이름이다. 값 없는 낱말과 `키=값`은 모든 줄에서 같은 읽기(`src/source/options.js`의 `readOptions`)가 문법 표대로 읽는다.
 ### 이름
 
 - 이름(id)은 영어 소문자로 시작하고 영어 소문자, 숫자, `-`만 쓴다. `-`는 낱말 사이에 하나씩만 온다(`a-`, `a--b`는 오류). 테이블 이름은 `-` 대신 `_`를 같은 규칙으로 쓴다. 칸(열, 필드) 이름은 영문자로 시작하고 영문자(대소문자), 숫자, `_`를 쓴다.
 - 파일 안에서 카드, 그룹, 값 이름은 한 이름 공간이고 서로 겹치지 않는다. 보기는 이름이 없어 이 공간에 들지 않는다. 겹치면 `the name "g" is already used (line N)` 오류(코드 `syntax`)를 겹친 선언의 줄에 내고, 이름을 가리키는 선과 이동, 보기 확인은 하지 않는다.
 - 카드 안의 이름은 그 카드 안에서만 겹치지 않는다. 테이블과 API의 칸, 클래스의 멤버, 격자의 칸, 추적의 구간, 차트의 계열이다. 서로 다른 차트가 같은 계열 이름을 써도 된다.
 - 카드 안 칸을 가리키는 연결점은 `카드.칸` 하나다. 점이 둘 이상인 이름(`a.b.c`)은 `write a part as card.part` 오류다. 연결점이 되는 카드는 테이블, API(열), 칸 격자(`item`)다. 클래스 멤버는 연결점이 아니라서 `class members are not ports. Connect "order"` 오류이고, 칸이 없는 카드에 칸을 쓰면 `a box has no parts` 오류다. `light`는 여기에 추적의 구간(`추적.구간`)도 가리킨다.
-- 이름 오류로 버린 선언의 이름을 가리키는 줄에는 `unknown card` 오류를 덧붙이지 않는다. 그 선언이 있던 그룹에도 `group is empty` 오류를 덧붙이지 않는다. 원인이 이름 오류 하나이기 때문이다.
+- 이름 오류로 버린 선언의 이름을 가리키는 줄에는 `unknown card` 오류를 덧붙이지 않는다. 문장 낱말을 잘못 쓴 선언 꼴(`bx web "웹"`)과 낱말을 나누지 못한 선언 줄(닫지 않은 따옴표)의 이름도 같다. 그 선언이 있던 그룹에도 `group is empty` 오류를 덧붙이지 않는다. 원인이 이름 오류 하나이기 때문이다.
 - 카드(순서 보기의 참여자도 카드다)가 하나도 없으면 오류다.
 - 이름 자리에서는 예약어 검사를 하지 않는다. `box data "데이터"`, `box scene "장면"`, `table row "행" {`처럼 문장 낱말, 선택 사항 키, 값 없는 선택 사항 낱말(`quiet`, `dashed`, `mono`, `pk`, `unique`)을 모두 이름으로 쓸 수 있다.
 - 문장 종류는 첫 낱말로 정하고, 둘째 낱말이 `->`인 줄은 첫 낱말이 문장 낱말이어도 선 줄(시간 흐름 안에서는 이동 줄)로 읽는다. 그래서 `scene -> c`는 `scene`이라는 이름에서 `c`로 가는 선이다.
@@ -345,10 +345,10 @@ scene "소비자 하나가 느려진다" for=6s status="slow=warn"
 | `grid id "제목" [rows=N] [cols=N] {` `item`, `gap` 줄 `}` | 칸 격자([칸 격자](grid.md)) |
 | `chart id "제목" 종류 ["부제"] {` 차트 줄 `}` | 차트 카드([차트 카드](#차트-카드)) |
 | `trace id "제목" [unit=ms\|us\|s] {` `span` 줄 `}` | 추적 카드([추적 카드](#추적-카드)) |
-| `group id "이름" [direction=right\|down] [border=dashed] [badge="글"] [icon=이름] [tone=색] [appearance=모양] {`, `}` | 그룹. 두 줄 사이에 카드와 그룹을 둔다. 제목 줄에 배지와 아이콘을 달 수 있다 |
+| `group id "이름" [direction=right\|down] [dashed] [badge="글"] [icon=이름] [tone=색] [appearance=모양] {`, `}` | 그룹. 두 줄 사이에 카드와 그룹을 둔다. 제목 줄에 배지와 아이콘을 달 수 있다 |
 | `icons 이름 "폴더"` | 사용자 아이콘 세트 등록. 폴더의 `<이름>.svg`를 `icon=세트:이름`으로 쓴다 |
 | `value id "이름" [on=카드] [from=값 \| ref=값id]` | 값 |
-| `on 카드 id+N, id-N, id=낱말` | 어떤 점이든 그 카드에 닿을 때 값을 바꾼다. 값 선언 뒤에 둔다 |
+| `on 카드 id+N, id-N, id=낱말` | 어떤 점이든 그 카드에 닿을 때 값을 바꾼다. 선언 부분 안 어디에 두어도 된다(값 선언보다 앞도 된다) |
 | `a[.칸] -> b[.칸] ["라벨"] [quiet] [dashed] [head=end\|both\|none] [no=N] [relation=종류] [from="다중성"] [to="다중성"]` | 선 |
 
 - 카드 크기와 굵기는 적지 않는다. 크기는 글과 카드 내용으로, 모양은 토큰으로 정한다. 색은 기본이 칠하지 않음(중립 면)이고, 고르려면 아래 도형 색의 `tone`과 `appearance`만 쓴다. 아이콘은 `icon=`으로 고르되 모양과 색은 정하지 않는다([배치](layout.md#아이콘)).
@@ -359,15 +359,15 @@ scene "소비자 하나가 느려진다" for=6s status="slow=warn"
 - 자기 자신으로 가는 선과, 그룹과 그 안 모든 하위 카드와 그룹 사이의 선은 오류다. 예외는 상태와 클래스의 자기 연결, 한 격자의 서로 다른 두 칸을 잇는 선(`g.a -> g.b`, 라벨 없음), 테이블이나 API 카드의 서로 다른 두 열을 잇는 선(`products.parent_id -> products.id`, 자기 참조 외래 키 `fk=`도 같다, 라벨 가능)이다. 같은 열끼리, 카드 전체를 잇는 선, 한쪽만 열인 선은 오류다.
 - 모든 선은 두 끝을 함께 담은 그래프 보기가 하나 이상 있어야 한다. 없으면 `edge a -> b is not drawn: no graph view holds both "a" and "b"` 오류다(외래 키 선은 열 줄에서 알린다).
 - `head`는 화살촉 자리다. `end`(기본값)는 도착 끝, `both`는 양 끝, `none`은 없는 무방향 선이다. 이동 점은 `head`와 상관없이 적은 방향(`a -> b`)으로 가고 거꾸로 이동도 선을 따라간다.
-- `dashed` 선은 비동기 흐름이나 선택적 흐름이다. 점선 테두리 카드(`external`)와 뜻이 다르다. `quiet` 선은 그 선을 처음 지나는 박자부터 그 장면 끝까지만 보인다. 한 번도 지나지 않는 `quiet` 선은 [그림 검사](figure-check.md) 11번 경고가 난다.
-- `badge`, `icon`, `count`, `border`는 어느 카드나 그룹에서든 같은 규칙이다. `person`의 `icon`을 생략하면 `user`다.
+- `dashed` 선은 비동기 흐름이나 선택적 흐름이다. 그룹의 `dashed`는 같은 낱말로 점선 테두리(논리 경계)를 뜻한다. 점선 테두리 카드(`external`)와 뜻이 다르다. `quiet` 선은 그 선을 처음 지나는 박자부터 그 장면 끝까지만 보인다. 한 번도 지나지 않는 `quiet` 선은 [그림 검사](figure-check.md) 11번 경고가 난다.
+- `badge`, `icon`, `count`, `dashed`는 어느 카드나 그룹에서든 같은 규칙이다. `person`의 `icon`을 생략하면 `user`다.
 
 #### 번호, 배지, 아이콘, 복제 개수
 
 - `no=N`(1 이상 정수)은 선 번호다. 라벨 알약 왼쪽에 번호 원이 붙고(라벨이 없으면 번호 원만), 정지 SVG와 문서에서도 순서가 읽힌다. 재생 장면과 독립이고 같은 번호를 여러 선에 써도 된다.
 - `badge="글"`(8자 이하)은 카드 윗줄과 그룹 제목 줄에 글자 알약을 단다. 흑백에서도 구성 요소의 종류가 글자로 남는다. 배지는 면과 테두리 색을 바꾸지 않는다. 원(`shape=circle`)은 배지와 아이콘이 오류다.
 - `shape=tile`(`box`만, `icon=` 필수)은 아이콘 카드다. 같은 흰 카드에 아이콘을 크게(`size.icon.tile`) 위에 놓고 이름을 아래에 두며, 최소 너비와 이름 양옆 간격이 작아(`size.node.tile-width`, `size.node.tile-pad`) 가로로 퍼진 구성도가 캔버스 폭 안에 든다.
-- 그룹 `border=dashed`는 경계 그룹의 점선 테두리다. 그룹 아이콘은 틀 왼쪽 위 모서리에 딱 붙는 정사각 탭(`size.group.title`)이다. 기본 그룹 면은 투명하다. `tone`과 `appearance=filled`를 함께 적으면 해당 계열의 옅은 면을 칠하고, `appearance=outline`은 경계에 색을 쓴다. `light`가 켠 그룹은 틀의 경계 색만 강조 색이 되고 굵기, 면, 모서리는 그대로다.
+- 그룹 `dashed`는 경계 그룹의 점선 테두리다. 그룹 아이콘은 틀 왼쪽 위 모서리에 딱 붙는 정사각 탭(`size.group.title`)이다. 기본 그룹 면은 투명하다. `tone`과 `appearance=filled`를 함께 적으면 해당 계열의 옅은 면을 칠하고, `appearance=outline`은 경계에 색을 쓴다. `light`가 켠 그룹은 틀의 경계 색만 강조 색이 되고 굵기, 면, 모서리는 그대로다.
 - `icon=이름`은 기본 세트의 이름이다. 범용 개념(`server`, `db`, `user`)과 기술 브랜드(`git`, `postgresql`)가 한 표에 있다. 등록한 세트는 `icon=세트:이름`이다. 이름이 없거나 파일이 없으면 오류이고, 아이콘 없이 배지로 같은 뜻을 낸다.
 - `count=N`(2 이상, `box`만)은 같은 역할 복제 개수다. 상자 뒤에 윤곽 두 겹이 겹쳐 보이고 윗줄에 `(N)` 알약이 붙는다. 복제는 이름으로 가리킬 수 없고 선은 상자 하나에 닿는다.
 
@@ -378,9 +378,9 @@ scene "소비자 하나가 느려진다" for=6s status="slow=warn"
   - `plain`: 중립 면 그대로 색 아이콘과 작은 표식에만 색을 쓴다. `show`에서는 `tag` 알약의 색이다.
   - `filled`: 같은 계열의 옅은 면.
   - `outline`: 같은 계열의 경계와 중립 면.
-- `filled`와 `outline`은 칠할 색이 있어야 해서 `tone` 없이 쓰면 `appearance=filled needs tone` 오류다. `show`의 `tone`은 `plain`이면 알약을 칠하므로 `tag`가 있어야 하고(`tone colors a tag or, with appearance=filled|outline, the card`), `appearance=filled|outline`이면 `tag` 없이 그 내용의 카드 면이나 경계를 칠한다. 차트의 관측값과 기준값을 가르는 채움과 빈 표시(`series`의 `role`)는 이 규칙과 별개의 차트 역할이다.
+- `filled`와 `outline`에 `tone`을 적지 않으면 무채색 `gray` 계열로 칠한다(`tone=gray`와 같은 그림). 색 이름 없이 면이나 경계만 강조하려는 뜻이고, 다른 계열의 뜻을 빌리지 않기 위해서다. `show`의 `tone`은 `plain`이면 알약을 칠하므로 `tag`가 있어야 하고(`tone colors a tag or, with appearance=filled|outline, the card`), `appearance=filled|outline`이면 `tag` 없이 그 내용의 카드 면이나 경계를 칠한다. 차트의 관측값과 기준값을 가르는 채움과 빈 표시(`series`의 `role`)는 이 규칙과 별개의 차트 역할이다.
 - 색 이름은 문법 표의 `tone` 값 목록이 정한다: 범주 팔레트 계열 일곱(`blue`, `yellow`, `red`, `green`, `orange`, `purple`, `cyan`)과 무채색 `gray`. 흐름의 이동 점 색(`a -> b`와 `track`의 `tone=`)도 같은 목록이다. hex와 따옴표 글은 오류다. 대비 규칙(글자 4.5, 그래픽 3)을 원본이 깨지 못하게 하기 위해서다. 값 없이 `tone=#ff0000`처럼 쓰면 `#`부터 주석이라는 안내가 붙는다.
-- `fill=`, `stroke=`, `card=`는 없다. 쓰면 그 줄이 받는 선택 사항 목록을 알리는 오류다.
+- `fill=`, `stroke=`, `card=`, `class=`, `style=`, `color=`는 없다. 쓰면 그 줄이 받는 선택 사항 목록과 `tone`, `appearance`를 알리는 오류이고, 값에 색 이름이 들어 있으면(`class="bg-blue-500"`) `tone=blue`를 제안한다.
 - 색 단계의 값과 대비는 [색 역할](docs-integration.md#색-역할)이 정한다.
 
 #### 값
@@ -422,10 +422,6 @@ view plot ["라벨"] {
 view time ["라벨"] {
   추적 카드 하나
 }
-view timing ["라벨"] {
-  값과 카드 이름들
-  note 값=상태 "글"
-}
 ```
 
 | 방식 | 구성원 | 그리는 것 |
@@ -434,12 +430,11 @@ view timing ["라벨"] {
 | `sequence` | `person`, `box`, `external`, `store`, `queue`, `table`, `api`, `class`·`interface`. 표, API, 클래스는 공통 카드 머리(아이콘과 이름)만 참여자로 보이고 칸과 멤버는 같은 카드를 담은 그래프 보기가 보인다. 적은 순서가 참여자 순서다 | 참여자 열, 이 보기에 보이는 이동의 메시지, 메모, 활성 구간, 구획 |
 | `plot` | 차트 카드 정확히 하나 | 문서 폭의 차트 |
 | `time` | 추적 카드 정확히 하나 | 레인과 시간 축 위의 구간 |
-| `timing` | 값과 이동하는 카드(순서 보기 참여자 모양). 카드를 그리지 않아 "적힌" 카드로 세지 않는다 | 장면 시간 축 위의 값 띠, 0/1 높낮이 선, 카드 사이 이동 화살표, 값 구간 표시([타이밍 보기](figure-kinds.md#타이밍-보기)) |
 
 - 구성원이 아닌 이름, 방식에 맞지 않는 카드(`a chart card cannot be a sequence participant`)는 구성원 이름의 자리에서 오류다.
 - 카드는 보기 여럿에 함께 놓일 수 있다. 같은 이름의 카드가 보기마다 한 번씩 그려지고 상태는 하나다.
 - 그래프 보기의 구성원은 그룹을 적으면 그 안 카드와 그룹 전체를 담는다. 그룹 안 카드를 그룹 없이 적으면 `list group "g" instead of "x"` 오류다. 블록을 생략한 그래프 보기는 추적 카드와 `plot` 보기(적은 것과 기본 것)에 놓인 차트를 뺀 모든 카드를 담고(순서 보기에 놓인 카드는 들어간다), 그 차트를 그래프에도 그리려면 블록에 적는다.
-- `view main graph`처럼 보기 방식 앞에 이름을 쓰면 `a view is one of graph, sequence, plot, time, timing. Found "main"` 오류다.
+- `view main graph`처럼 보기 방식 앞에 이름을 쓰면 `a view is one of graph, sequence, plot, time. Found "main"` 오류다.
 - 기본 보기. 적은 보기가 먼저 구성원을 정하고(적은 순서가 판 순서), 어느 보기에도 적히지 않은 카드는 다음 규칙으로 기본 보기를 받는다. 기본 보기는 적은 보기 뒤에 카드 선언 순서로 쌓인다. 같은 카드가 기본 보기와 적은 보기에 겹쳐 그려지는 일은 없다.
   1. 추적 카드는 카드마다 `time` 보기 하나.
   2. 남은 카드가 차트뿐이고 그래프 보기를 적지 않았으며 그룹 안 차트도 없으면 차트마다 `plot` 보기 하나. 일반 카드와 섞이거나 그래프 보기를 적으면 차트도 그래프 카드다. 연결선 유무는 보기 종류를 바꾸지 않는다.
@@ -499,8 +494,8 @@ trace t "결제 추적" unit=ms {
 }
 ```
 
-- `unit`은 `ms`(기본), `us`, `s`다. 구간 줄은 `span id "이름" lane=카드 at=시작 dur=길이`이고 셋 모두 꼭 적는다. `at`은 0 이상, `dur`은 0보다 큰 숫자다. 시각은 문서의 시간표(ms)와 상관없는 실제 측정 시간이다.
-- `lane`은 선언된 카드다. 레인은 구간이 처음 나온 순서로 위에서 아래로 쌓고, 같은 레인에서 시간이 겹치는 구간은 줄을 나눈다. 레인 이름은 그 카드의 이름이다.
+- `unit`은 `ms`(기본), `us`, `s`다. 구간 줄은 `span id "이름" lane=레인 at=시작 dur=길이`이고 셋 모두 꼭 적는다. `at`은 0 이상, `dur`은 0보다 큰 숫자다. 시각은 문서의 시간표(ms)와 상관없는 실제 측정 시간이다.
+- `lane`은 선언된 카드 이름(`lane=gw`)이거나 따옴표 레인 이름(`lane="Gateway"`)이다. 카드 이름이면 레인 이름은 그 카드의 이름 글이고, 같은 카드를 그래프 보기에 함께 그려 호출 관계와 시간을 잇는다. 따옴표 이름은 카드를 선언하지 않는 시간만의 추적이라 레인을 위해 카드를 선언할 필요가 없고, 그래서 기본 그래프 보기도 생기지 않는다. 같은 글의 구간은 한 레인이다. 따옴표 이름이 선언된 카드 이름과 같으면 어느 쪽인지 알 수 없어 그 구간 줄의 오류다. 레인은 구간이 처음 나온 순서로 위에서 아래로 쌓고, 같은 레인에서 시간이 겹치는 구간은 줄을 나눈다.
 - `time` 보기는 0에서 시작하는 선형 시간 축 위에 구간을 놓는다. 가로 위치는 `at`에, 길이는 `dur`에 비례하고 눈금은 차트 눈금과 같은 규칙이다. 구간은 `light 추적.구간`으로 밝힌다.
 - 추적은 그래프 보기에 들지 못하고 이동의 끝도 못 된다.
 
@@ -673,12 +668,43 @@ scene "같은 시각에 요청한다" for=8s
 ### 오류와 경고
 
 - 형식: `{파일}:{줄}: {무엇이 틀렸나}. {고치는 방법}`. 경고는 `{파일}:{줄}: warning: {메시지}`다. 영어로 쓴다(code-style 메시지 규칙). 진단 하나의 모양은 `{ severity, code, line, column, message }`이다. `column`은 줄 안 1부터 센 자리다.
-- 이름 오류에는 선언된 이름 목록을 알파벳순으로 붙이고, 편집 거리가 2 이하인 이름이 있으면 `Did you mean "{이름}"?`을 붙인다.
+- 메시지 끝에는 마침표를 두지 않는다. 모든 진단은 줄과 자리(`column`)를 가진다. 자리는 틀린 낱말(선택 사항 값이 틀리면 값)의 첫 글자이고, 줄 전체의 문제는 줄의 첫 글자다.
+- 이름 오류에는 선언된 이름 목록을 알파벳순으로 붙인다. 모르는 이름, 문장 낱말(블록 밖과 블록 안), 선택 사항 키, 값 목록의 값, 칸 이름, 시간 단위에 가까운 후보가 있으면 `Did you mean "{후보}"?`을 붙인다. 후보는 그 자리에서 받는 낱말만이고(문법 표에서 읽는다), 가까움은 이웃 두 글자 바꿈을 한 번으로 세는 편집 거리 2 이하(3글자 이하 낱말은 1)이거나 한쪽이 다른 쪽의 앞부분인 것(`alternative`에 대한 `alt`)이다. 같은 거리면 앞부분 관계, 첫 글자가 같은 것 순이다.
+- 다른 도구의 습관으로 보이는 꼴은 받지 않고, 진단이 같은 뜻의 ThinkFlow 꼴을 알린다(별칭이 아니다. `src/source/mistakes.js`). 아래 [흔한 실수](#흔한-실수) 표가 목록이다.
 - 오류가 하나라도 있으면 파일을 쓰지 않는다. 문법 오류, 글꼴에 없는 글자, `data` 읽기 오류는 한 번에 모두 알린다. 파일이 비었거나 첫 문장이 `thinkflow`가 아니면 거기서 멈춘다. 다음 줄을 읽을 규칙이 없기 때문이다.
 - [그림 검사](figure-check.md)는 배치가 끝나야 돌므로, 원본 오류가 없을 때만 그 오류를 알린다.
 - 생성 예산을 넘으면 `budget-exceeded` 오류다. 필요한 양, 지금 한도, 올리는 방법(`--budget 이름=값`, Action 입력 `budget`)을 적고 파일을 쓰기 전에 끝난다. 격자 예산과 이동 글 상자 계획의 색인 예산(`chip-index`)의 이름과 기본 한도는 [칸 격자](grid.md#예산)가, 이벤트 예산(`events`, `chain`)은 [재생](playback.md#이벤트-예산)이 정한다. `--budget` 값이 틀리면 그림을 만들기 전에 사용법 오류(종료 2)다.
 - 경고는 파일을 쓰고 표준 오류에 남긴다. `--strict`면 경고도 실패다.
 - `--json`은 진단마다 한 줄을 표준 출력에 쓴다. `code`는 `syntax`(문법), `check-1`~`check-14`([그림 검사](figure-check.md) 번호), `time-limit`, `time-precision`, `value-type`(값 종류, 차트 묶음 포함), `leg-time`, `wait-stalled`, `budget-exceeded`, `invalid-speed`, `layout-unstable`(값 글 집합이 수렴하지 않음), `chart-frames`(프레임 구조가 값마다 다름), `binding-unsupported`, `missing-preamble`, `invalid-preamble`, `unsupported-extension`, `layout`, `layout-width`, `layout-timing`, `io`, `internal`이다. 줄 하나는 `{ "file", "line", "message", "severity", "code", "column" }` 여섯 필드이고 `severity`는 `error`나 `warning`이다. 이 밖의 필드와 옛 이름의 별칭은 없다.
+
+### 흔한 실수
+
+다른 도구에서 옮겨 오며 자주 쓰는 꼴과 그 진단이 알리는 ThinkFlow 꼴이다. 어느 것도 받지 않으며 줄과 자리가 있는 `syntax` 오류다.
+
+| 쓴 것 | 진단이 알리는 꼴 |
+|---|---|
+| 닫지 않은 따옴표 `box c "C` | 따옴표가 열린 자리와 같은 줄에서 닫으라는 안내 |
+| `a --> b`, `a => b`, `a ==> b`, `a ->> b`, `a → b` | `a -> b`(`Did you mean "->"?`) |
+| `a <- b` / `a <-> b` / `a -- b` | `b -> a` / `a -> b head=both` / `a -> b head=none` |
+| 붙여 쓴 화살표 `a-->b`, Mermaid 라벨 `a-->\|go\|b` | `a -> b`, `a -> b "go"` |
+| Mermaid 노드 `C[Client]`, `C["Client"]`, `D{ok?}`, `S[(db)]`, `R((x))` | `box c "Client"`, `decision d "ok?"`, `store s "db"`, `box r "x" shape=circle` |
+| Mermaid·PlantUML 첫 줄 `graph TD`, `flowchart LR`, `sequenceDiagram`, `@startuml` | 그림 종류 줄이 없고 카드 선언 뒤 `view graph`, `view sequence`, `view plot`, `view time`을 고른다는 안내 |
+| `subgraph`, `end`, `participant`, `actor`, `direction`, `style`, `classDef` | `group id "이름" {`, `}`, 카드와 `view sequence`, 보기·그룹의 방향, `tone`과 `appearance` |
+| `view graph TD` | `Did you mean "down"?`(`LR`은 `right`) |
+| D2 `web: Web Server`, `title: "x"`, `a -> b: calls` | `box web "Web Server"`, `title "x"`, `a -> b "calls"` |
+| `class="bg-blue-500"`, `style=`, `color=red`, `fill=`, `stroke=` | `tone=`과 `appearance=`(색 이름이 보이면 `tone=blue` 제안). 크기·글꼴·모서리·그림자는 토큰이 정한다 |
+| `label="C"`, `name=`, `text=` | 이름은 id 뒤의 따옴표 글 `box c "C"` |
+| 따옴표 없는 이름 `box c Client App` | `box c "Client App"` |
+| 대문자나 `_` 이름 `box WebServer "W"` | `Did you mean "web-server"?`(테이블은 `_`) |
+| 작은따옴표 `'C'` | `"C"` |
+| `// 주석` | `#` 주석 |
+| `a -> b;` | 한 줄에 문장 하나 |
+| 선언의 사슬 `a -> b -> c` | 선은 한 줄에 하나. 사슬은 장면의 `track` 줄 |
+| 다음 줄의 `{` | 블록을 여는 줄 끝에 `{` |
+| `dashed=true`, `border=dashed` | 값 없는 낱말 `dashed` |
+| 단위 없는 시간 `time=2`, `time=800mss` | `Did you mean "2s"?`, `Did you mean "800ms"?` |
+| `%` 없는 `lost=60` | `Did you mean "60%"?` |
+| 대문자 문장 `Box c "C"` | `Did you mean "box"?` |
 
 ### 시작 선언과 없앤 형태
 
@@ -690,10 +716,11 @@ scene "같은 시각에 요청한다" for=8s
 | `thinkflow` 뒤에 숫자나 옵션이 있다 | `invalid-preamble` | 추가한 낱말 | `write the first line as: thinkflow` |
 | 시작 선언만 있고 본문이 없다 | `invalid-preamble` | 그 문장의 첫 글자 | `the file has no figure. Declare cards after thinkflow` |
 | `.thinkflow`가 아닌 파일(`render`, `check`의 입력) | `unsupported-extension` | 파일, 1줄 1자리 | `only .thinkflow files are read` |
-| 문법 표에 없는 낱말(`flow`, `step`, `say`, 머리 `speed` 등) | `syntax` | 첫 글자 | `unknown statement "step"` |
+| 문법 표에 없는 낱말(`flow`, `step`, `say`, 머리 `speed` 등) | `syntax` | 첫 글자 | `unknown statement "step"`. 가까운 문장 낱말이 있으면 `Did you mean "..."?`가 붙는다 |
 | 글이 둘인 `scene "이름" "설명"` | `syntax` | 둘째 글 | `write a scene as: scene "name" [mode=...] ...` |
-| 이름을 쓴 보기 `view main graph` | `syntax` | 그 줄 | `a view is one of graph, sequence, plot, time, timing. Found "main". A view has no name: write view graph ...` |
-| 도형과 그룹의 `fill=`, `stroke=`, `show`의 `card=` | `syntax` | 그 줄 | `a box takes count=, shape=, badge=, icon=, tone=, appearance=. Found "fill"` |
+| 이름을 쓴 보기 `view main graph` | `syntax` | 그 줄 | `a view is one of graph, sequence, plot, time. Found "main". A view has no name: write view graph ...` |
+| 도형과 그룹의 `fill=`, `stroke=`, `show`의 `card=` | `syntax` | 그 키 | `a box takes count=, shape=, badge=, icon=, tone=, appearance=. Found "fill". There is no fill=. Colors are tone=name and appearance=plain\|filled\|outline; ...` |
+| 그룹의 `border=dashed`(없앤 꼴) | `syntax` | 그 키 | `a group takes direction=, dashed, badge=, ... Found "border". A dashed border is the word dashed: write dashed instead of border=dashed` |
 | 숫자로만 된 장면 이름 `scene "2"` | `syntax` | 그 줄 | `scene "2" is only digits, which --scene reads as a scene number. Add a word to the name, such as "step 2"` |
 | 머리 자리의 `x`, `y`, `scale`, `zero`, `decimals` | `syntax` | 첫 글자 | `"x" belongs inside a chart block` |
 
@@ -726,7 +753,7 @@ scene "같은 시각에 요청한다" for=8s
 | `fragment.times` | 양의 정수 |
 | `fragment.run` | `on`, `off` |
 | `group.direction` | `right`, `down` |
-| `group.border` | `solid`, `dashed` |
+| `group.dashed` | 값 없음(낱말만) |
 | `group.badge` | 글, 최대 8자 |
 | `group.icon` | 이름 또는 세트:이름 |
 | `group.tone` | `blue`, `yellow`, `red`, `green`, `orange`, `purple`, `cyan`, `gray` |
@@ -790,7 +817,7 @@ scene "같은 시각에 요청한다" for=8s
 | `series.key` | 글 |
 | `point.series` | 계열 이름 |
 | `trace.unit` | `ms`, `us`, `s` |
-| `span.lane` | 도형 이름 |
+| `span.lane` | 카드 이름 또는 "레인 이름" |
 | `span.at` | 0 이상 숫자 |
 | `span.dur` | 0보다 큰 숫자 |
 | `grid.rows` | 양의 정수 |
@@ -838,7 +865,6 @@ scene "같은 시각에 요청한다" for=8s
 | `head` | `edge.head` | `end`, `both`, `none` | `end` |
 | `shape` | `box.shape` | `rect`, `circle`, `tile` | `rect` |
 | `width` | `width 값` | `standard`, `wide` | `standard` |
-| `border` | `group.border` | `solid`, `dashed` | `solid` |
 | `status` | `scene.status` | `ok`, `warn`, `fail`, `wait` | 없음 |
 | `deleteAction` | `foreignKey.ondelete` | `restrict`, `cascade`, `set-null`, `no-action` | 없음 |
 | `relation` | `relation.relation` | `association`, `dependency`, `inheritance`, `realization`, `aggregation`, `composition` | `association` |

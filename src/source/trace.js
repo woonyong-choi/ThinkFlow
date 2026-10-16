@@ -1,6 +1,7 @@
 // 추적 카드 블록(`trace id "제목" [unit=ms] {` ... `}`)과 그 안의 구간 줄(`span id "이름" lane=카드 at=0 dur=100`)을 읽는다.
 // 구간은 실제 시간(unit)으로 놓인다. 레인이 선언된 카드인지는 validate.js가 확인한다.
-import { VALUES } from './grammar.js';
+import { VALUES, statementsIn } from './grammar.js';
+import { didYouMean } from './problems.js';
 import { checkId, parentFor, rejectName, skipBlock } from './names.js';
 import { readOptions } from './options.js';
 import { isTinyNumber, parseNumber } from './values.js';
@@ -41,13 +42,13 @@ export function readSpanLine({ tokens, line, hasLexError }, ctx) {
   }
   if (hasLexError || card.isRejected) return;
   const [head, id, label, ...rest] = tokens;
-  const form = 'write a span as: span id "name" lane=card at=0 dur=100';
+  const form = 'write a span as: span id "name" lane=card at=0 dur=100 (or lane="lane name" without a card)';
   if (head.value !== 'span' || id?.type !== 'word' || label?.type !== 'text') {
-    ctx.problems.error(line, form);
+    ctx.problems.error(line, `${form}.${head.value === 'span' ? '' : didYouMean(head.value, statementsIn('trace'))}`, { column: head.column });
     return;
   }
   if (!ID_PATTERN.test(id.value)) {
-    ctx.problems.error(line, `"${id.value}" is not a valid name. Use lowercase letters and digits, joined by single "-", starting with a letter`);
+    ctx.problems.error(line, `"${id.value}" is not a valid name. Use lowercase letters and digits, joined by single "-", starting with a letter`, { column: id.column });
     return;
   }
   const found = readOptions(rest, { scopes: ['span'], what: 'a span', line, ctx });
@@ -55,7 +56,8 @@ export function readSpanLine({ tokens, line, hasLexError }, ctx) {
   const dur = numberOf(found.dur, { key: 'dur', isZeroOk: false, line, ctx });
   for (const key of ['lane', 'at', 'dur']) if (found[key] === undefined && !rest.some((t) => t.key === key)) ctx.problems.error(line, `a span needs ${key}=. ${form}`);
   if (card.spans.some((s) => s.id === id.value)) ctx.problems.error(line, `span "${id.value}" is already in trace "${card.id}"`);
-  card.spans.push({ id: id.value, label: label.value, lane: found.lane, at, dur, line });
+  const isTextLane = rest.some((t) => t.key === 'lane' && t.valueType === 'text');
+  card.spans.push({ id: id.value, label: label.value, lane: found.lane, ...(isTextLane ? { isTextLane } : {}), at, dur, line });
 }
 
 // cost: time O(1), heap O(1), stack O(1)

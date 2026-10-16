@@ -1,4 +1,5 @@
 // 이름 선언의 공통 확인. 이름 낱말 형식, 버린 선언의 이름 기록, 지금 열린 그룹을 모든 선언 읽기가 함께 쓴다.
+import { toId } from './mistakes.js';
 import { TABLE_PATTERN } from './words.js';
 
 // 버린 선언의 이름과, 그 선언이 있던 그룹을 적는다. 그 그룹은 비어 보여도 원인이 이름 오류라 빈 그룹 오류를 덧붙이지 않는다.
@@ -13,12 +14,14 @@ export function rejectName(token, ctx) {
 // 이름 낱말 형식을 확인한다. 문장 종류는 첫 낱말 자리로 정해서 예약어도 이름이 된다.
 export function checkId(token, { line, ctx }, pattern) {
   if (token?.type !== 'word') {
-    ctx.problems.error(line, 'write a name (id) after the statement word');
+    ctx.problems.error(line, token?.type === 'text' ? `write a name (id) before the quoted text: ... ${toId(token.value)} "${token.value}"` : 'write a name (id) after the statement word', { column: token?.column });
     return false;
   }
   if (!pattern.test(token.value)) {
     const joiner = pattern === TABLE_PATTERN ? '_' : '-';
-    ctx.problems.error(line, `"${token.value}" is not a valid name. Use lowercase letters and digits, joined by single "${joiner}", starting with a letter`);
+    const fixed = toId(token.value).replaceAll('-', joiner);
+    const hint = pattern.test(fixed) ? ` Did you mean "${fixed}"?` : '';
+    ctx.problems.error(line, `"${token.value}" is not a valid name. Use lowercase letters and digits, joined by single "${joiner}", starting with a letter.${hint}`, { column: token.column });
     return false;
   }
   return true;

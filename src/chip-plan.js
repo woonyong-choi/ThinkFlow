@@ -44,11 +44,31 @@ export function planHops(scene, timeline, plan) {
     for (const hop of seg.hops) {
       if (!hop.data) continue;
       const key = `${hop.track === undefined ? hop.edge : `t${hop.track}`}\u0000${hop.ms}\u0000${hop.isBack}\u0000${hop.data.join('\u0000')}${hop.pace ? `\u0000${JSON.stringify(hop.pace)}` : ''}`;
-      if (!plans.has(key)) plans.set(key, planWithin(scene, hop.track === undefined ? hop : { ...hop, route: timeline.tracks[hop.track].route }, { avoid, limits }));
+      if (!plans.has(key)) plans.set(key, rememberedPlan(scene, hop.track === undefined ? hop : { ...hop, route: timeline.tracks[hop.track].route }, { avoid, limits }));
       hop.chipPath = hop.cut === undefined ? plans.get(key).path : cutPath(plans.get(key).path, hop);
       plannedIssues.set(hop, { scene, issues: hop.track === undefined ? plans.get(key).issues : reportedOf(plans.get(key).issues, hop) });
     }
   }
+}
+
+// 같은 입력(그림 크기, 피할 사각형, 경로, 이동)으로 세운 계획. 값 글자 자리를 맞추는 되풀이와 배치 재시도는 같은 장면을 다시 만드는 일이 많아서, 입력 글이 같으면 계획을 다시 세우지 않는다.
+// 계획은 입력만의 함수라 결과가 같다. 항목 수는 PLAN_MEMO_MAX를 넘지 않게 넘으면 비운다.
+const planMemo = new Map();
+const PLAN_MEMO_MAX = 256;
+
+// cost: time O(a + p) 계획이 있을 때, O(plan) 없을 때, heap O(a + p), stack O(1)
+// vars: a = 피할 사각형 수, p = 경로 점 수, plan = planWithin 비용
+// basis: estimate
+// planWithin과 같고, 입력 글이 같은 계획은 다시 세우지 않는다. 예산 한도(limits)는 계획을 바꾸지 않고 막기만 하므로 입력 글에 넣는다.
+function rememberedPlan(scene, hop, { avoid, limits }) {
+  const { chipPath, ...input } = hop;
+  const route = hop.route ?? scene.edges[hop.edge].points;
+  const key = JSON.stringify([scene.width, scene.height, route, input, avoid, limits]);
+  if (planMemo.has(key)) return planMemo.get(key);
+  const plan = planWithin(scene, hop, { avoid, limits });
+  if (planMemo.size >= PLAN_MEMO_MAX) planMemo.clear();
+  planMemo.set(key, plan);
+  return plan;
 }
 
 // cost: time O(i·g), heap O(i), stack O(1)
@@ -173,7 +193,8 @@ function slotsAt(ctx, t, { descs, known }) {
     const c = known.get(key) ?? chipCandidateAt(point, ctx.chip, { scene: ctx.scene, avoid: ctx.field, desc, index: ctx.index });
     // c는 이 이동 계획만 쓰는 후보라 그대로 고쳐 쓴다.
     c.point = point;
-    c.cost = isWithinReach(c.box, point) ? unaryCost(c, point) : Infinity;
+    const gap = gapOf(c.box, point);
+    c.cost = gap <= ATTACH_MAX ? unaryCost(c, gap) : Infinity;
     c.isClean = !c.isOutside && c.hits.length === 0;
     slots.set(key, c);
   });
@@ -184,18 +205,17 @@ function slotsAt(ctx, t, { descs, known }) {
 // basis: estimate
 // 글 상자 사각형과 점 중심 사이 거리(px)
 function gapOf(box, point) {
-  return roundTo(Math.hypot(Math.max(box.x - point.x, 0, point.x - box.x - box.w), Math.max(box.y - point.y, 0, point.y - box.y - box.h)), 9);
+  const dx = Math.max(box.x - point.x, 0, point.x - box.x - box.w);
+  const dy = Math.max(box.y - point.y, 0, point.y - box.y - box.h);
+  // 점이 상자 안이거나 변 위면 거리는 0이다. 후보 대부분이 여기라 반올림을 건너뛴다(roundTo(0)과 같은 값).
+  return dx === 0 && dy === 0 ? 0 : roundTo(Math.hypot(dx, dy), 9);
 }
-
-// 글 상자가 점에 붙어 있다고 볼 거리 안인지(흐름의 글 상자 후보 분류)
-const isWithinReach = (box, point) => gapOf(box, point) <= ATTACH_MAX;
 
 // cost: time O(1), heap O(1), stack O(1)
 // basis: estimate
 // 후보 하나의 한 지점 비용. 겹침이나 그림 밖은 흐려져야 하므로 가장 크다.
-function unaryCost({ rank: [, area, near, tight, crowded, order], box, isOutside, hits }, point) {
+function unaryCost({ rank: [, area, near, tight, crowded, order], isOutside, hits }, gap) {
   const unclean = (isOutside || hits.length ? UNCLEAN_COST : 0) + area * Number(hits.length > 0 || isOutside);
-  const gap = gapOf(box, point);
   return unclean + near * NEAR_COST + (tight + crowded) * MARGIN_COST + order * ORDER_COST + Math.max(0, gap - DETACH_GAP) * DETACH_COST_PER_PX;
 }
 

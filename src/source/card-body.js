@@ -2,6 +2,10 @@
 import { readContent } from './content.js';
 import { readChartCard } from './chart-card.js';
 import { readValue } from './value.js';
+import { didYouMean } from './problems.js';
+
+// 카드 본문 줄의 첫 낱말
+const BODY_WORDS = ['text', 'value', 'graph', 'chart'];
 
 export function readCardBody(statement, ctx) {
   const { tokens, line } = statement;
@@ -30,7 +34,7 @@ export function readCardBody(statement, ctx) {
     return;
   }
   if (word !== 'text' && word !== 'graph') {
-    ctx.problems.error(line, 'a card body takes text "...", value id "label", graph "a -> b", or chart id "title" type {', { column: tokens[0].column });
+    ctx.problems.error(line, `a card body takes text "...", value id "label", graph "a -> b", or chart id "title" type {.${tokens[0].type === 'word' ? didYouMean(word, BODY_WORDS) : ''}`, { column: tokens[0].column });
     return;
   }
   const row = readContent({ tokens: word === 'text' ? tokens.slice(1) : tokens, line }, ctx);

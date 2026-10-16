@@ -50,9 +50,8 @@ function drawGroup(g, j, { decorate, glyphs }) {
   const head = placeGroupHead(g);
   const decor = head.decor ? drawDecor(head.decor, { x: g.x + head.decor.x, y: g.y + head.decor.y, iconData: g.iconData, prefix: `icon-g-${j}` }, glyphs) : '';
   // 그룹은 면이 없다(투명). 경계와 제목만 있고, 중첩 깊이로 면을 바꾸지 않는다. 고른 색은 제목과 아이콘, 표현에 따라 옅은 면이나 경계에만 쓴다(look.js).
-  const dashed = g.border === 'dashed';
   return (
-    `<g id="g-${j}" class="fl-group${g.iconData ? ' tabbed' : ''}${lookClass(lookOf(g))}" data-id="${escapeXml(g.id)}"><rect x="${r(g.x)}" y="${r(g.y)}" width="${r(g.w)}" height="${r(g.h)}" rx="${CORNER.outer}" class="frame-box fl-stroke${dashed ? ' dashed' : ''} ${decorate('group', j)}"/>` +
+    `<g id="g-${j}" class="fl-group${g.iconData ? ' tabbed' : ''}${lookClass(lookOf(g))}" data-id="${escapeXml(g.id)}"><rect x="${r(g.x)}" y="${r(g.y)}" width="${r(g.w)}" height="${r(g.h)}" rx="${CORNER.outer}" class="frame-box fl-stroke${g.dashed ? ' dashed' : ''} ${decorate('group', j)}"/>` +
     `${drawText(head.text, g, glyphs)}${decor}</g>`
   );
 }
