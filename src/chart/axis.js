@@ -52,6 +52,17 @@ export function axisLabels(scale, y, title) {
   return ticks + label;
 }
 
+// cost: time O(t), heap O(t), stack O(1)
+// vars: t = 가로 눈금 수
+// basis: estimate
+/** 값 눈금마다 긋는 격자(모눈). 가로 눈금은 세로선, 세로 범위는 top~bottom이다. 왼쪽 끝 눈금은 축이나 기준이 따로 있으므로 긋지 않는다. 기준선(rule)과 같은 값(skip)도 긋지 않는다. 실선 격자가 점선 기준선을 덮으면 기준선이 실선처럼 보이기 때문이다. 막대·상자 같은 가로 행 차트(finishRowChart)와 선·산점도(plot-frame.js)가 같은 함수를 쓴다. */
+export function valueGrid(sx, { top, bottom, skip = [] }) {
+  return sx.ticks
+    .filter((t) => sx.at(t) > sx.start && !skip.includes(t))
+    .map((t) => `<line x1="${r(sx.at(t))}" x2="${r(sx.at(t))}" y1="${r(top)}" y2="${r(bottom)}" class="chart-grid"/>`)
+    .join('');
+}
+
 // cost: time O(1), heap O(1), stack O(1)
 // basis: estimate
 /** 축 글자까지 포함한 차트 내용의 아래 끝. 그림 아래 여백(PAD)은 이 아래에 더한다. 축 제목이 없으면 눈금 글자 줄이 끝이다. */
@@ -128,6 +139,8 @@ export function rowValueScale(chart, { kind, min: low, max: high, reaches }) {
 export function finishRowChart(chart, { parts, over = [], scale, top, bottom }) {
   const rules = chart.layout ? '' : drawRules(chart.rules, scale, { axis: 'x', from: top, to: bottom });
   const axis = drawValueAxis(chart, scale, bottom + SPACE["2"]);
-  const svg = [...parts, rules, ...over, axis.svg];
+  // 값 눈금마다 세로 격자를 행 뒤에 깐다. 막대 끝과 오차 막대, 상자의 값이 어느 눈금 근처인지 읽힌다(시간 보기의 눈금 격자와 같은 선).
+  const grid = valueGrid(scale, { top, bottom: bottom + SPACE["2"], skip: chart.rules.map((rule) => rule.value) });
+  const svg = [grid, ...parts, rules, ...over, axis.svg];
   return { svg: svg.join('\n'), bottom: axis.bottom, rowKeys: chart.rows.map((row) => row.label), fits: chart.rows.map((row) => labelFit(row.label, row.line)) };
 }
