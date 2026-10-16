@@ -98,6 +98,17 @@ test('K2 lengths are proportional to values: bar, stacked, percent and histogram
   near(ratio(bins[0], bins[1]), 2, 'histogram counts 2:1 (samples 1, 2 | 7)');
 });
 
+test('K2 small series grouped as other read as one piece: their segments touch and one label carries the summed share', async () => {
+  const dom = await stillDom(chart('percent', 'series a "a"\nseries b "b"\nseries c "c"\nseries d "d"\nseries e "e"\nrow "A" a=50 b=40 c=4 d=3 e=3', 'x "x(u)"'));
+  const segments = marks(dom).map((m) => ({ x: num(m, 'x'), w: num(m, 'width') })).filter((s) => s.w > 0).sort((p, q) => p.x - q.x);
+  const [, , ...grouped] = segments;
+  assert.equal(grouped.length, 3, 'c, d and e are each under 5% and fall into other');
+  for (let k = 1; k < grouped.length; k += 1) assert.ok(grouped[k - 1].x + grouped[k - 1].w >= grouped[k].x, `grouped segment ${k} touches the one before it`);
+  assert.ok(segments[1].x + segments[1].w < segments[2].x, 'a named segment still keeps its gap before other');
+  const shares = visibleTexts(dom).map((n) => textContent(n).trim()).filter((t) => /%$/.test(t));
+  assert.deepEqual(shares, ['50.0%', '40.0%', '10.0%'], 'other is labelled once with c + d + e');
+});
+
 test('K3 positions follow values: scatter orders points by x and y, a negative difference points left of zero', async () => {
   const dom = await stillDom(chart('scatter', KINDS.scatter.rows));
   const at = (label) => visibleTexts(dom).find((n) => textContent(n).trim() === label);
@@ -106,6 +117,13 @@ test('K3 positions follow values: scatter orders points by x and y, a negative d
   const gap = await stillDom(chart('difference', KINDS.difference.rows));
   const sign = (label) => num(visibleTexts(gap).find((n) => textContent(n).trim() === label), 'x');
   assert.ok(sign('−2') < sign('+3'), 'the negative difference sits left of the positive one');
+});
+
+test('K3 a horizontal axis of whole numbers only ticks at whole numbers', async () => {
+  const dom = await stillDom(chart('line', 'series s "s"\npoint x=1 s=50\npoint x=2 s=90\npoint x=3 s=70'));
+  const ticks = findAll(dom, (n) => n.tag === 'text' && (n.attrs.class ?? '').split(' ').includes('chart-tick')).map((n) => textContent(n).trim());
+  const xTicks = ticks.filter((t) => ['1', '1.5', '2', '2.5', '3'].includes(t));
+  assert.deepEqual(xTicks, ['1', '2', '3']);
 });
 
 test('K3 signed value text keeps its sign when decimals round the magnitude to zero: difference and dumbbell', async () => {
