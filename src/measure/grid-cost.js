@@ -24,12 +24,21 @@ const EXTENT_MAX =2 ** 40;
  */
 function gridCost(grid, valueTexts, rowsByValue) {
   const regions = emptyRegions(grid).length;
-  const { titleLines, lined } = gridLines(grid, valueTexts);
+  const { titleLines, lined, ruler } = gridLines(grid, valueTexts);
   const cells = lined.reduce((sum, cell) => {
     const textElements = cell.valueId ? cellValueElements(cell, rowsByValue?.get(cell.valueId)) : cell.lines.length;
-    return sum + CELL_ELEMENTS[cell.kind] + textElements + (cell.keyLines?.length ?? 0);
+    return sum + CELL_ELEMENTS[cell.kind] + textElements + cell.detailLines.length + (cell.keyLines?.length ?? 0) + (cell.isOpen ? 1 : 0);
   }, 0);
-  return { elements: FRAME_ELEMENTS + titleLines.length + cells + (regions ? EMPTY_ELEMENTS : 0), pathCommands: regions * REGION_COMMANDS };
+  return { elements: FRAME_ELEMENTS + titleLines.length + cells + (regions ? EMPTY_ELEMENTS : 0) + rulerElements(grid, ruler), pathCommands: regions * REGION_COMMANDS };
+}
+
+// cost: time O(g), heap O(1), stack O(1)
+// vars: g = 구간 수
+// basis: estimate
+// 눈금자 격자가 더 그리는 요소: 눈금 숫자(step 열마다 하나), 단위 이름 하나, 바깥 틀 하나, 구간마다 괄호 하나와 이름 줄. 열 수는 RULER_COLS_MAX 이하라 눈금 수도 그 이하다.
+function rulerElements(grid, ruler) {
+  if (!ruler) return 0;
+  return Math.ceil(grid.cols / ruler.step) + 1 + 1 + ruler.regionLines.reduce((sum, lines) => sum + 1 + lines.length, 0);
 }
 
 // cost: time O(v + p), heap O(v + p), stack O(1)

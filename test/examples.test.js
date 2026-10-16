@@ -7,7 +7,7 @@ import { test } from 'node:test';
 import { build, descendants, EXAMPLES, findAll, parseMarkup, textsOf, toHtml, toSvg, valueOf } from './support.js';
 
 const CHARTS = ['area', 'bar', 'box', 'difference', 'donut', 'dumbbell', 'ecdf', 'heatmap', 'histogram', 'line', 'percent', 'pie', 'scatter', 'stacked', 'step', 'waterfall'];
-const FIGURES = ['api', 'architecture', 'class', 'flow', 'integration', 'memory', 'memory-address', 'memory-fault', 'sql-join', 'metric', 'pointer', 'queue', 'schema', 'sequence', 'stack', 'state', 'trace'];
+const FIGURES = ['api', 'architecture', 'class', 'flow', 'handshake', 'integration', 'ipv4-header', 'memory', 'memory-address', 'memory-fault', 'sql-join', 'metric', 'pointer', 'queue', 'schema', 'sequence', 'stack', 'state', 'struct-layout', 'tcp-header', 'timing', 'trace'];
 const ANIMATION = new Set(['animate', 'set', 'animateMotion', 'animateTransform']);
 
 test('K30 the examples are one per expression: chart kinds and the declared development examples', () => {
