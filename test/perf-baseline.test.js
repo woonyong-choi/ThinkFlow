@@ -7,6 +7,8 @@ import { test } from 'node:test';
 import { ROOT, workspace } from './support.js';
 
 const SENTINEL = 'baseline written by another process\n';
+// git 저장소 밖(압축을 푼 사본, 설치된 패키지 폴더)에서도 같은 판정이 나오도록 코드 상태를 고정한다. 기록되는 해시가 이 값인지도 본다.
+const HEAD = 'c0ffee0000000000000000000000000000000001';
 // 실제 계측과 쓰기 경로를 통과하되 계측 목록만 예제 하나로 좁힌다. 측정 첫 읽기는 존재 확인 뒤이므로 경쟁 파일을 만들 시점이 확정된다.
 const PRELOAD = `
 import fs from 'node:fs';
@@ -36,6 +38,8 @@ fs.readFileSync = function(path, ...args) {
 };
 cp.execFileSync = function(file, args, ...rest) {
   if (file === 'git' && args.join(' ') === 'status --porcelain') return '';
+  if (file === 'git' && args.join(' ') === 'rev-parse HEAD') return ${JSON.stringify(HEAD + '\n')};
+  if (file === 'git') throw new Error('unexpected git call: ' + args.join(' '));
   return exec.call(this, file, args, ...rest);
 };
 syncBuiltinESMExports();
@@ -65,6 +69,7 @@ test('G4 --write still creates a new baseline with the measured input and proven
   const baseline = JSON.parse(readFileSync(output, 'utf8'));
   assert.equal(baseline.figures, 1);
   assert.deepEqual(Object.keys(baseline.inputs), ['examples/box.thinkflow']);
-  for (const key of ['codeHash', 'scriptHash']) assert.match(baseline[key], /^[a-f0-9]+$/);
+  assert.equal(baseline.codeHash, HEAD);
+  assert.match(baseline.scriptHash, /^[a-f0-9]{64}$/);
   assert.match(run.stdout, /baseline written to/);
 });
