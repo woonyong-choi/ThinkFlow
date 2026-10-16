@@ -38,7 +38,7 @@ export function drawTime(panel, { decorate, glyphs }) {
     return name + separator + lane.spans.map((s) => drawSpan(s, { lane, decorate, glyphs })).join('');
   });
   const axis = `<line x1="${r(scale.start)}" x2="${r(scale.start + scale.length)}" y1="${r(axisY)}" y2="${r(axisY)}" class="chart-axis"/>${axisLabels(scale, axisY, panel.unit)}`;
-  return `<g class="fl-time" data-view="${escapeXml(panel.view)}" data-chart="${escapeXml(panel.id)}" transform="translate(${r(panel.x)} ${r(panel.y)})">${panel.header}${grid}${rows.join('')}${axis}</g>`;
+  return `<g class="fl-time fl-chart" data-view="${escapeXml(panel.view)}" data-chart="${escapeXml(panel.id)}" transform="translate(${r(panel.x)} ${r(panel.y)})">${panel.header}${grid}${rows.join('')}${axis}</g>`;
 }
 
 // cost: time O(1), heap O(out), stack O(1)

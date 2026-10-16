@@ -8,32 +8,38 @@
 :root {
   --color-gray-0: #ffffff;
   --color-gray-59: #f0f0f0;
+  --color-gray-212: #c9c9c9;
+  --color-gray-282: #b7b7b7;
+  --color-gray-467: #888888;
+  --color-gray-529: #787878;
+  --color-gray-910: #171717;
   --color-gray-933: #111111;
   --color-group-title: var(--color-help-title-color);
-  --color-line: var(--primitive-figure-edge);
+  --color-outline: var(--color-gray-529);
+  --color-line: var(--color-gray-282);
   --color-state-active: var(--color-category-blue-light-border);
   --color-state-active-text: var(--color-category-blue-light-ink);
   --color-state-on-active: var(--color-gray-0);
   --color-ui-focus: var(--color-action-link);
+  --color-data-grid: var(--color-gray-212);
   --color-data-category-1: var(--color-category-blue-solid);
   --color-figure-icon: var(--color-category-blue-light-border);
-  --color-figure-queue-empty: var(--color-figure-inner-surface);
+  --color-figure-queue-empty: var(--color-gray-59);
   --color-figure-number-fill: var(--primitive-figure-number-fill);
   --color-figure-number-ink: var(--primitive-figure-number-ink);
-  --color-figure-outline: var(--color-ui-line);
+  --color-figure-outline: var(--color-gray-467);
   --color-figure-selection-fill: var(--color-category-blue-light-tint-3);
   --color-figure-canvas: var(--primitive-help-bg);
   --color-figure-flash: var(--primitive-search-hover);
   --color-figure-active-surface: var(--primitive-help-hover);
-  --color-figure-cell-line: var(--color-figure-outline);
-  --color-figure-inner-surface: var(--primitive-figure-inner);
-  --color-figure-boundary: var(--primitive-figure-boundary);
   --color-ui-card: var(--color-gray-0);
   --color-ink: var(--primitive-ink);
   --color-ui-muted: var(--primitive-muted);
   --color-ui-line: var(--primitive-line);
   --color-help-title-color: var(--primitive-help-title-color);
   --color-action-link: var(--primitive-link);
+  --color-category-blue-anchor: #1e6bd6;
+  --color-category-blue-fill: var(--color-category-blue-anchor);
   --color-category-blue-on: var(--color-gray-0);
   --color-category-blue-light-border: #1e6bd6;
   --color-category-blue-light-ink: #1161cb;
@@ -41,9 +47,7 @@
   --color-category-blue-dark-border: #3a85f2;
   --color-category-blue-dark-ink: #6da8ff;
   --color-category-blue-dark-tint-3: #303d54;
-  --color-category-blue-solid: var(--color-category-blue-light-data);
-  --color-category-blue-light-data: #3371c1;
-  --color-category-blue-dark-data: #518ad6;
+  --color-category-blue-solid: var(--color-category-blue-fill);
   --font-figure-sans: FigSans, FigSansSym, FigSansMath, ui-sans-serif, -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
   --font-figure-mono: FigMono, FigSans, FigSansSym, FigSansMath, ui-monospace, SFMono-Regular, Menlo, monospace;
   --radius-card-radius: var(--primitive-card-radius);
@@ -52,7 +56,6 @@
   --text-figure-meta: 11px;
   --tracking-text: -0.3px;
   --font-weight-semibold: 600;
-  --font-weight-normal: 400;
   --primitive-ink: #303336;
   --primitive-muted: #55606e;
   --primitive-line: #dfe3e8;
@@ -65,18 +68,16 @@
   --primitive-help-title-color: #3d4856;
   --primitive-figure-dark-bg: #26272b;
   --primitive-figure-dark-node: #303136;
+  --primitive-figure-dark-edge: #50535b;
   --primitive-figure-dark-separator: #454850;
   --primitive-figure-dark-hover: #343e50;
   --primitive-figure-dark-selection: #274174;
   --primitive-figure-dark-muted: #a9adb6;
+  --primitive-figure-dark-line: #7f8793;
+  --primitive-figure-dark-outline: #868686;
   --primitive-figure-number-fill: #303336;
   --primitive-figure-number-ink: #ffffff;
   --primitive-card-radius: 18px;
-  --primitive-figure-edge: #7f8793;
-  --primitive-figure-inner: #f1f3f6;
-  --primitive-figure-dark-inner: #3a3b41;
-  --primitive-figure-boundary: #b3b9c2;
-  --primitive-figure-dark-boundary: #5f636c;
   --border-width-thin: 1px;
   --border-width-hair: 0.75px;
   --border-width-lifeline: 1.25px;
@@ -86,88 +87,82 @@
   --dash-gap: 4;
   --dash-card: 3;
   --outline-width-focus: 3px;
-  --drop-shadow-figure-ambient: 0 0 1px rgba(16, 24, 40, 0.16);
-  --drop-shadow-figure-card: 0 1px 3px rgba(16, 24, 40, 0.08);
-  --drop-shadow-figure-float: 0 1px 2px rgba(16, 24, 40, 0.14);
   color-scheme: light;
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']):not([data-theme='dark']) {
+  --color-outline: var(--primitive-figure-dark-outline);
+  --color-line: var(--primitive-figure-dark-line);
   --color-state-active: var(--color-category-blue-dark-border);
   --color-state-active-text: var(--color-category-blue-dark-ink);
   --color-state-on-active: var(--color-category-blue-on);
+  --color-data-grid: var(--primitive-figure-dark-edge);
   --color-figure-icon: var(--color-category-blue-dark-border);
+  --color-figure-queue-empty: var(--color-gray-910);
   --color-figure-number-fill: var(--color-gray-59);
   --color-figure-number-ink: var(--color-gray-933);
+  --color-figure-outline: var(--color-line);
   --color-figure-selection-fill: var(--color-category-blue-dark-tint-3);
   --color-figure-canvas: var(--primitive-figure-dark-bg);
   --color-figure-flash: var(--primitive-figure-dark-selection);
   --color-figure-active-surface: var(--primitive-figure-dark-hover);
-  --color-figure-inner-surface: var(--primitive-figure-dark-inner);
-  --color-figure-boundary: var(--primitive-figure-dark-boundary);
   --color-ui-card: var(--primitive-figure-dark-node);
   --color-ink: var(--color-gray-59);
   --color-ui-muted: var(--primitive-figure-dark-muted);
   --color-ui-line: var(--primitive-figure-dark-separator);
   --color-help-title-color: var(--color-ink);
-  --color-category-blue-solid: var(--color-category-blue-dark-data);
-  --drop-shadow-figure-ambient: 0 0 1px rgba(0, 0, 0, 0.6);
-  --drop-shadow-figure-card: 0 1px 3px rgba(0, 0, 0, 0.32);
-  --drop-shadow-figure-float: 0 1px 2px rgba(0, 0, 0, 0.45);
   color-scheme: dark;
   }
 }
 [data-theme='dark'] {
+  --color-outline: var(--primitive-figure-dark-outline);
+  --color-line: var(--primitive-figure-dark-line);
   --color-state-active: var(--color-category-blue-dark-border);
   --color-state-active-text: var(--color-category-blue-dark-ink);
   --color-state-on-active: var(--color-category-blue-on);
+  --color-data-grid: var(--primitive-figure-dark-edge);
   --color-figure-icon: var(--color-category-blue-dark-border);
+  --color-figure-queue-empty: var(--color-gray-910);
   --color-figure-number-fill: var(--color-gray-59);
   --color-figure-number-ink: var(--color-gray-933);
+  --color-figure-outline: var(--color-line);
   --color-figure-selection-fill: var(--color-category-blue-dark-tint-3);
   --color-figure-canvas: var(--primitive-figure-dark-bg);
   --color-figure-flash: var(--primitive-figure-dark-selection);
   --color-figure-active-surface: var(--primitive-figure-dark-hover);
-  --color-figure-inner-surface: var(--primitive-figure-dark-inner);
-  --color-figure-boundary: var(--primitive-figure-dark-boundary);
   --color-ui-card: var(--primitive-figure-dark-node);
   --color-ink: var(--color-gray-59);
   --color-ui-muted: var(--primitive-figure-dark-muted);
   --color-ui-line: var(--primitive-figure-dark-separator);
   --color-help-title-color: var(--color-ink);
-  --color-category-blue-solid: var(--color-category-blue-dark-data);
-  --drop-shadow-figure-ambient: 0 0 1px rgba(0, 0, 0, 0.6);
-  --drop-shadow-figure-card: 0 1px 3px rgba(0, 0, 0, 0.32);
-  --drop-shadow-figure-float: 0 1px 2px rgba(0, 0, 0, 0.45);
   color-scheme: dark;
 }
 [data-theme='light'] {
+  --color-outline: var(--color-gray-529);
+  --color-line: var(--color-gray-282);
   --color-state-active: var(--color-category-blue-light-border);
   --color-state-active-text: var(--color-category-blue-light-ink);
   --color-state-on-active: var(--color-gray-0);
+  --color-data-grid: var(--color-gray-212);
   --color-figure-icon: var(--color-category-blue-light-border);
+  --color-figure-queue-empty: var(--color-gray-59);
   --color-figure-number-fill: var(--primitive-figure-number-fill);
   --color-figure-number-ink: var(--primitive-figure-number-ink);
+  --color-figure-outline: var(--color-gray-467);
   --color-figure-selection-fill: var(--color-category-blue-light-tint-3);
   --color-figure-canvas: var(--primitive-help-bg);
   --color-figure-flash: var(--primitive-search-hover);
   --color-figure-active-surface: var(--primitive-help-hover);
-  --color-figure-inner-surface: var(--primitive-figure-inner);
-  --color-figure-boundary: var(--primitive-figure-boundary);
   --color-ui-card: var(--color-gray-0);
   --color-ink: var(--primitive-ink);
   --color-ui-muted: var(--primitive-muted);
   --color-ui-line: var(--primitive-line);
   --color-help-title-color: var(--primitive-help-title-color);
-  --color-category-blue-solid: var(--color-category-blue-light-data);
-  --drop-shadow-figure-ambient: 0 0 1px rgba(16, 24, 40, 0.16);
-  --drop-shadow-figure-card: 0 1px 3px rgba(16, 24, 40, 0.08);
-  --drop-shadow-figure-float: 0 1px 2px rgba(16, 24, 40, 0.14);
   color-scheme: light;
 }
 /* 그림 안 글자와 모양. HTML 재생기와 움직이는 SVG가 같이 쓴다. */
 /* 카드 안 글(label, sub, meta, cell, item, row)의 기준 점(text-anchor)은 글이 정한다(measure/texts.js의 anchor). 여기서는 글꼴과 색만 정한다. */
-/* 글 위계: 그룹·보기·차트 제목(text.small-text, semibold) > 카드 제목(text.small-text, regular) > 문장·이름표·값(text.tiny-text, regular, 보조 글은 ui-muted) > 작은 표시(text.figure-meta: 번호, 태그, 표식, 키, 눈금, 단위). 값은 굵게 하지 않고 고정폭 숫자로 정렬한다. 크기와 굵기는 ThinkFlow measure/texts.js의 STYLE이 같은 토큰으로 잰다. */
+/* 글 위계는 셋이다: 제목(공통 디자인.label-size 15: 카드 제목은 regular, 그룹 제목은 semibold), 문장과 이름표(detail-size 13: 부제, 선 라벨, 메모, 이동 글, 카드 줄, 제약, 형식), 작은 표시(micro-size 11: 번호, 태그, 표식, 키, 눈금, 단위). 크기와 굵기는 measure/texts.js의 STYLE이 같은 토큰으로 잰다. */
 .fl text {
   font-family: var(--font-figure-sans);
   letter-spacing: var(--tracking-text);
@@ -232,11 +227,10 @@
   fill: var(--color-state-active-text);
 }
 
-/* 값 카드 줄의 값 글자. 줄의 이름(row)은 카드 층이 그리고 값은 오른쪽 끝에 얹힌다. 이름과 같은 크기·굵기이고 고정폭 숫자라 줄마다 자리가 맞는다. 바뀐 값은 굵기가 아니라 갱신 면(fl-flash)으로 알린다. */
+/* 값 카드 줄의 값 글자. 줄의 이름(row)은 카드 층이 그리고 값은 오른쪽 끝에 얹힌다. 이름과 같은 크기이고 굵기만 다르다. */
 .fl .value {
-  font-variant-numeric: tabular-nums;
   font-size: var(--text-tiny-text);
-  font-weight: var(--font-weight-normal);
+  font-weight: var(--font-weight-semibold);
   fill: var(--color-ink);
 }
 
@@ -282,7 +276,7 @@
   fill: var(--color-ink);
 }
 
-/* 그룹은 Things의 영역처럼 굵은 제목과 머리카락 경계로 묶는다. 기본 면이 없고(투명) 깊이에 따라 회색 면을 겹치지 않으며 그림자도 없다. 고른 색은 아래 appearance 역할로 적용한다. */
+/* 그룹은 기본 면이 없다(투명). 경계와 제목만 있고, 깊이에 따라 회색 면을 겹치지 않는다. 고른 색은 아래 appearance 역할로 적용한다. */
 .fl .frame-box {
   --fx-edge-rest: var(--color-figure-outline);
   fill: none;
@@ -296,7 +290,7 @@
 
 .fl .fl-queue-slot {
   fill: var(--color-figure-queue-empty);
-  stroke: var(--color-figure-cell-line);
+  stroke: var(--color-outline);
   stroke-width: var(--border-width-thin);
 }
 
@@ -309,12 +303,6 @@
 .fl .frame-box.dashed,
 .fl .fl-path.dashed {
   stroke-dasharray: var(--dash-line) var(--dash-gap);
-}
-
-/* 점선 경계는 끊긴 선이라 머리카락 윤곽보다 한 단계 진한 color.figure.boundary다. 고른 색과 켜짐은 아래 규칙이 그대로 덮는다. */
-.fl .frame-box.dashed,
-.fl .fl-shape-external {
-  --fx-edge-rest: var(--color-figure-boundary);
 }
 
 .fl .lifeline {
@@ -342,27 +330,15 @@
 
 .fl .note-box {
   fill: var(--color-ui-card);
-  stroke: var(--color-figure-outline);
+  stroke: var(--color-line);
   stroke-dasharray: var(--dash-card) var(--dash-card);
 }
 
-/* 선 라벨 알약은 테두리 없이 카드 면 위에 떠 있어 선 위에서도 읽힌다. 평소 경계는 투명이고 켜질 때만 강조 색 테두리가 생긴다. */
-.fl .pill {
-  --fx-edge-rest: transparent;
+/* 알약은 모두 같은 중립 흰 면과 평소 경계다: 선 라벨, 배지와 개수. */
+.fl .pill,
+.fl .badge-pill {
   fill: var(--color-ui-card);
   stroke: var(--fx-edge-rest);
-  filter: drop-shadow(var(--drop-shadow-figure-ambient)) drop-shadow(var(--drop-shadow-figure-float));
-}
-
-/* 카드 윗줄의 배지와 개수는 카드 안쪽 면의 옅은 알약이다(테두리·그림자 없음). 캔버스 위 그룹 제목의 배지는 선 라벨처럼 떠 있는 카드 면이다. */
-.fl .badge-pill {
-  fill: var(--color-figure-inner-surface);
-  stroke: none;
-}
-
-.fl .fl-group .badge-pill {
-  fill: var(--color-ui-card);
-  filter: drop-shadow(var(--drop-shadow-figure-ambient)) drop-shadow(var(--drop-shadow-figure-float));
 }
 
 .fl .fl-mini-pill {
@@ -384,36 +360,39 @@
 }
 
 .fl .col-line {
-  stroke: var(--color-figure-cell-line);
+  stroke: var(--color-data-grid);
   stroke-width: var(--border-width-hair);
 }
 
 .fl .part-head {
-  fill: var(--color-figure-inner-surface);
+  fill: var(--color-figure-canvas);
 }
 
 .fl .grid-cell {
   --fx-face: var(--color-ui-card);
   --fx-face-on: var(--fx-row);
   fill: var(--fx-face);
-  stroke: var(--color-figure-cell-line);
+  stroke: var(--color-data-grid);
   stroke-width: var(--border-width-thin);
 }
 
 .fl .grid-tray {
   fill: var(--color-ui-card);
-  filter: drop-shadow(var(--drop-shadow-figure-ambient)) drop-shadow(var(--drop-shadow-figure-card));
 }
 
 .fl .grid-cell.gap {
   --fx-face: var(--color-ui-card);
-  stroke: var(--color-figure-cell-line);
+  stroke: var(--color-data-grid);
 }
 
 .fl .grid-cell.empty {
   --fx-face: none;
   stroke: var(--color-line);
   stroke-dasharray: var(--dash-card) var(--dash-card);
+}
+
+.fl .fl-edge.mark {
+  --fx-line-rest: var(--color-ink);
 }
 
 /* 이름과 값은 평소 여백으로 구분한다. 명시한 면(face)과 값 갱신 강조만 배경을 더한다. */
@@ -450,14 +429,10 @@
   fill: var(--color-figure-number-ink);
 }
 
-/* 도형은 종이 카드다: 옅은 머리카락 윤곽에 부드러운 그림자로 캔버스에서 떠 있다. 관계선(color.line)이 윤곽보다 진해 흐름이 먼저 읽힌다. 면이 없는 윤곽, 외부 도형(점선)과 상태 시작·끝 점은 그림자를 두지 않는다. */
+/* 도형은 그림자 없는 평면이다. 그림자는 떠 있는 메뉴 같은 조작에만 둔다. */
 .fl :where(.fl-node) > .fl-stroke {
   stroke: var(--fx-edge-rest);
   stroke-width: var(--border-width-thin);
-}
-
-.fl :where(.fl-node:not(.fl-shape-external, .fl-shape-start, .fl-shape-final)) > .fl-stroke:where(:not([fill='none'])) {
-  filter: drop-shadow(var(--drop-shadow-figure-ambient)) drop-shadow(var(--drop-shadow-figure-card));
 }
 
 /* 구획은 border.hair, 보조 경계는 border.thin, 관계는 border.edge, 생명선은 border.lifeline, 도형 경계는 공통 디자인.node-stroke다. 모든 선은 그림과 함께 확대·축소된다. */
@@ -487,6 +462,7 @@
 .fl {
   --paint-fill: var(--color-ui-card);
   --paint-outline: var(--color-figure-outline);
+  --paint-ink: var(--color-group-title);
   --fx-edge: var(--color-state-active);
   --fx-ink: var(--color-state-active-text);
   --fx-row: var(--color-figure-selection-fill);
@@ -507,10 +483,9 @@
   --fx-face-on: var(--fx-face);
 }
 
-/* 소비자는 쓴 톤의 --paint-* 변수만 연결한다. 면·경계·제목·차트 바탕의 역할은 여기서 한 번 정한다.
-   고른 윤곽색은 평소 윤곽과 반씩 섞은 차분한 색이라 켜진 상태(강조 파랑 전체 윤곽과 옅은 강조 면)와 구분된다. 강조 색은 상태에만 쓴다. */
+/* 소비자는 쓴 톤의 --paint-* 변수만 연결한다. 면·경계·제목·차트 바탕의 역할은 여기서 한 번 정한다. */
 .fl .fl-node.ap-outline {
-  --fx-edge-rest: color-mix(in oklab, var(--paint-outline), var(--color-figure-outline));
+  --fx-edge-rest: var(--paint-outline);
 }
 
 .fl .fl-group.ap-filled > .frame-box {
@@ -518,7 +493,11 @@
 }
 
 .fl .fl-group.ap-outline > .frame-box {
-  --fx-edge-rest: color-mix(in oklab, var(--paint-outline), var(--color-figure-outline));
+  --fx-edge-rest: var(--paint-outline);
+}
+
+.fl .fl-group:is(.ap-plain, .ap-filled, .ap-outline) > .frame {
+  fill: var(--paint-ink);
 }
 
 .fl .face.ap-filled {
