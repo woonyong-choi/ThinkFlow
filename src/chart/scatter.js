@@ -58,12 +58,16 @@ function linkArrow(ctx, link) {
 // vars: n = 점 이름 글자 수
 // basis: estimate
 // 점 하나와 이름
-function pointMark(ctx, { p, text, toLeft, shift, lines, box }, k) {
+function pointMark(ctx, { p, text, toLeft, shift, side, lines, box }, k) {
   const { chart, at } = ctx;
   const { x, y } = at.get(p.label);
   const i = seriesOf(chart, p);
-  const label = chart.layout ? lines.map((line, i) => `<tspan x="${r(toLeft ? x - NAME_OFFSET : x + NAME_OFFSET)}" dy="${i ? NAME_STEP : -(lines.length - 1) * NAME_STEP / 2}">${i ? ' ' : ''}${renderRich(line)}</tspan>`).join('') : renderRich(text);
-  const name = `<text x="${r(toLeft ? x - NAME_OFFSET : x + NAME_OFFSET)}" y="${r(centerBaseline(y + shift * NAME_STEP, TEXT['11']))}" class="chart-name late${toLeft ? ' end' : ''}">${label}</text>`;
+  // 위아래 가운데 자리는 글자 상자 가운데에 가운데 맞춤으로, 옆자리는 점에서 NAME_OFFSET 떨어진 끝에 맞춘다.
+  const isStacked = side === 'above' || side === 'below';
+  const textX = isStacked ? (box.x0 + box.x1) / 2 : toLeft ? x - NAME_OFFSET : x + NAME_OFFSET;
+  const centerY = isStacked ? (box.y0 + box.y1) / 2 : y + shift * NAME_STEP;
+  const label = chart.layout ? lines.map((line, i) => `<tspan x="${r(textX)}" dy="${i ? NAME_STEP : -(lines.length - 1) * NAME_STEP / 2}">${i ? ' ' : ''}${renderRich(line)}</tspan>`).join('') : renderRich(text);
+  const name = `<text x="${r(textX)}" y="${r(centerBaseline(centerY, TEXT['11']))}"${isStacked ? ' text-anchor="middle"' : ''} class="chart-name late${toLeft ? ' end' : ''}">${label}</text>`;
   const pad = SPACE["0-25"];
   const back = `<rect x="${r(box.x0 - pad)}" y="${r(box.y0 - pad)}" width="${r(box.x1 - box.x0 + pad * 2)}" height="${r(box.y1 - box.y0 + pad * 2)}" class="chart-text-bg late"/>`;
   const dot = markShape({ shape: seriesPaint(chart, i).shape, cx: x, cy: y, radius: DOT, attrs: dotAttrs(chart, i, ` class="pop"${markAttrs(chart, markId(chart, i, k), { raw: `${p.values.x},${p.values.y}`, paint: seriesPaint(chart, i) })}`) });
