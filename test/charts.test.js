@@ -7,9 +7,9 @@ import { drawHeatmap } from '../src/chart/heatmap.js';
 import { DOT, PAD } from '../src/chart/metrics.js';
 import { measure } from '../src/measure/fonts.js';
 import { values } from '@woonyong-choi/design-tokens/tokens.js';
-import { EXAMPLES, build, thinkflow, descendants, finalValue, findAll, lineOf, num, parseMarkup, read, reject, stillDom, textContent, textsOf, toHtml, toSvg, visibleTexts } from './support.js';
+import { EXAMPLES, build, torso, descendants, finalValue, findAll, lineOf, num, parseMarkup, read, reject, stillDom, textContent, textsOf, toHtml, toSvg, visibleTexts } from './support.js';
 
-const chart = (kind, body, head = 'x "x(u)"\n  y "y(u)"') => thinkflow(`chart c "T-${kind}" ${kind} {\n  ${head}\n${body.split('\n').map((l) => `  ${l.trim()}`).join('\n')}\n}\n`);
+const chart = (kind, body, head = 'x "x(u)"\n  y "y(u)"') => torso(`chart c "T-${kind}" ${kind} {\n  ${head}\n${body.split('\n').map((l) => `  ${l.trim()}`).join('\n')}\n}\n`);
 
 /** 길이를 그리는 사각형. 색 이름이나 정사각형 여부는 값의 기하와 관계없다. */
 const marks = (dom) => findAll(dom, (n) => n.tag === 'rect' && /(?:^| )(grow|chart-histogram-bin)(?: |$)/.test(n.attrs.class ?? '') && !/(chart-pattern|fl-mark-pulse)/.test(n.attrs.class ?? ''));
@@ -72,7 +72,7 @@ test('K1 each of the sixteen chart kinds builds from a minimal source, draws its
 // #209: 제목과 부제의 언어는 inline 자료의 허용 여부를 바꾸지 않는다.
 test('buildFigure_localized_chart_labels_accept_same_inline_data', async () => {
   for (const [title, subtitle] of [['값', '예시 데이터. 설명'], ['Values', 'Illustrative data. Example']]) {
-    const source = thinkflow(`chart sample "${title}" bar "${subtitle}" {\n  x "value (u)"\n  series v "Value"\n  row "A" v=42\n}\n`);
+    const source = torso(`chart sample "${title}" bar "${subtitle}" {\n  x "value (u)"\n  series v "Value"\n  row "A" v=42\n}\n`);
     const result = await build(source);
     const texts = textsOf(parseMarkup(await toSvg(result, { isStatic: true })));
 
@@ -226,7 +226,7 @@ test('K8 a successful figure never writes NaN or Infinity into a coordinate', as
     chart('difference', 'series d "d"\nrow "A" d=0 d.low=0 d.high=0'),
     chart('histogram', 'bins 0 10 2\nsample -'),
     chart('donut', 'row "A" value=0', ''),
-    thinkflow('box a "A"\nbox b "B"\na -> b\nscene "s" mode=once\n  a -> b time=1ms\n'),
+    torso('box a "A"\nbox b "B"\na -> b\nscene "s" mode=once\n  a -> b time=1ms\n'),
   ];
   for (const source of sources) {
     const result = await build(source);
@@ -309,7 +309,7 @@ test('K9 scatter names sit nearer to their own point than to any other point, an
     names.forEach((box, k) => dots.forEach((dot, j) => j === k || assert.ok(gap(box, around(dot)) >= gap(box, around(dots[k])) + values.spacing["3"], `${chartWidth}: name ${k} is ${(gap(box, around(dot)) - gap(box, around(dots[k]))).toFixed(1)}px nearer to point ${j} than the margin`)));
   }
   // 좁은 배치(HTML의 `fl-narrow` 템플릿)에서 점 이름 줄은 낱말 안에서 끊기지 않는다: 이름이 같은 낱말 목록을 줄로 나눠 가진다.
-  const example = await build(read(EXAMPLES, 'scatter.thinkflow'), { baseDir: EXAMPLES });
+  const example = await build(read(EXAMPLES, 'scatter.torso'), { baseDir: EXAMPLES });
   const narrow = descendants(parseMarkup(await toHtml(example, 'scatter'), { html: true })).find((n) => n.tag === 'template' && /\bfl-narrow\b/.test(n.attrs.class ?? ''));
   assert.ok(narrow, 'the scatter ships a narrow-screen layout');
   const labels = example.figure.nodes.find((node) => node.id === 'risk').plot.chart.rows.map((row) => row.label);
@@ -324,7 +324,7 @@ test('K9 scatter names sit nearer to their own point than to any other point, an
 
 // ---- 값에 묶인 차트 ----
 
-const bound = (kind, rows, sets, series = 'series v "v"') => thinkflow(`
+const bound = (kind, rows, sets, series = 'series v "v"') => torso(`
   value depth "depth" from=10
   chart c "Lag" ${kind} {
     x "x(u)"
@@ -359,24 +359,24 @@ test('C1 a bound chart draws each scene with that scene\'s values on one fixed a
 });
 
 test('C2 a value that is not a number cannot feed a chart: at the start, or after a scene turns it into a word', async () => {
-  const start = thinkflow(`value d "d" from=none\nchart c "C" bar {\n  x "x(u)"\n  series v "v"\n  row "A" v=d\n}\n`);
+  const start = torso(`value d "d" from=none\nchart c "C" bar {\n  x "x(u)"\n  series v "v"\n  row "A" v=d\n}\n`);
   assert.ok((await reject(start)).some((p) => p.code === 'value-type'));
   const later = bound('bar', 'row "A" v=depth', ['depth=none']);
   assert.ok((await reject(later)).some((p) => p.code === 'value-type'));
 });
 
 test('C3 kinds that cannot move reject a binding with binding-unsupported', async () => {
-  const boxBound = thinkflow(`value d "d" from=3\nchart c "C" box {\n  x "x(u)"\n  row "A" min=1 q1=2 median=d q3=4 max=5\n}\n`);
+  const boxBound = torso(`value d "d" from=3\nchart c "C" box {\n  x "x(u)"\n  row "A" min=1 q1=2 median=d q3=4 max=5\n}\n`);
   assert.ok((await reject(boxBound)).some((p) => p.code === 'binding-unsupported'));
-  const waterfallBound = thinkflow(`value d "d" from=3\nchart c "C" waterfall {\n  x "x(u)"\n  row "up" value=d\n  total "sum"\n}\n`);
+  const waterfallBound = torso(`value d "d" from=3\nchart c "C" waterfall {\n  x "x(u)"\n  row "up" value=d\n  total "sum"\n}\n`);
   assert.ok((await reject(waterfallBound)).some((p) => p.code === 'binding-unsupported'));
-  const xBound = thinkflow(`value d "d" from=3\nchart c "C" line {\n  x "x(u)"\n  y "y(u)"\n  series s "s"\n  point x=d s=1\n  point x=5 s=2\n}\n`);
+  const xBound = torso(`value d "d" from=3\nchart c "C" line {\n  x "x(u)"\n  y "y(u)"\n  series s "s"\n  point x=d s=1\n  point x=5 s=2\n}\n`);
   assert.ok((await reject(xBound)).some((p) => p.code === 'binding-unsupported'));
 });
 
 // #171: 실행 중 받은 값도 정적 행과 같은 규칙을 받는다. 같은 숫자를 행에 적으면 거절되는 경우마다 시험 하나씩 둔다.
 const TWO = 'series v "v"\nseries w "w"';
-const LOG_LINE = (set) => thinkflow(`value depth "depth" from=10\nchart c "C" line {\n  x "x(u)"\n  y "y(u)"\n  scale log\n  series s "s"\n  point x=1 s=depth\n  point x=2 s=100\n}\nbox a "a"\nbox b "b"\na -> b\nscene "s" mode=static\n  a -> b set="${set}"\n`);
+const LOG_LINE = (set) => torso(`value depth "depth" from=10\nchart c "C" line {\n  x "x(u)"\n  y "y(u)"\n  scale log\n  series s "s"\n  point x=1 s=depth\n  point x=2 s=100\n}\nbox a "a"\nbox b "b"\na -> b\nscene "s" mode=static\n  a -> b set="${set}"\n`);
 for (const [name, dynamic, literal] of [
   ['bar goes negative', bound('bar', 'row "A" v=depth', ['depth=-5']), chart('bar', 'series v "v"\nrow "A" v=-5')],
   ['bar goes negative by subtraction', bound('bar', 'row "A" v=depth', ['depth-15']), chart('bar', 'series v "v"\nrow "A" v=-5')],
@@ -384,7 +384,7 @@ for (const [name, dynamic, literal] of [
   ['percent share goes negative', bound('percent', 'row "A" v=depth w=10', ['depth=-5'], TWO), chart('percent', `${TWO}\nrow "A" v=-5 w=10`)],
   ['stacked total reaches 1e16', bound('stacked', 'row "A" v=depth w=10', ['depth=10000000000000000'], TWO), chart('stacked', `${TWO}\nrow "A" v=10000000000000000 w=10`)],
   ['bar leaves its interval', bound('bar', 'row "A" v=depth v.low=0 v.high=10', ['depth=50']), chart('bar', 'series v "v"\nrow "A" v=50 v.low=0 v.high=10')],
-  ['log line reaches 0', LOG_LINE('depth=0'), thinkflow('chart c "C" line {\n  x "x(u)"\n  y "y(u)"\n  scale log\n  series s "s"\n  point x=1 s=0\n  point x=2 s=100\n}\n')],
+  ['log line reaches 0', LOG_LINE('depth=0'), torso('chart c "C" line {\n  x "x(u)"\n  y "y(u)"\n  scale log\n  series s "s"\n  point x=1 s=0\n  point x=2 s=100\n}\n')],
 ]) {
   test(`C4 #171 ${name}: rejected with a located error, as the same number in a row is`, async () => {
     assert.ok((await reject(literal)).length, 'the static form is rejected');
@@ -401,7 +401,7 @@ test('C4 #171 the boundary values the static rules accept stay accepted when the
 
 // 구간 순서(low ≤ 값 ≤ high)는 여러 값이 함께 정하는 규칙이라 실제로 그려지는 값끼리만 본다. 값 하나만 바꿔 끼운 가정 조합은 실제 프레임이 아니다.
 const INTERVAL_ROW = 'row "A" v=mid v.low=lo v.high=hi';
-const interval = (sets) => thinkflow(`
+const interval = (sets) => torso(`
   value lo "lo" from=0
   value mid "mid" from=5
   value hi "hi" from=10
@@ -451,7 +451,7 @@ test('C5 chart data from JSON: relative path, element keys become series, and ev
     'secret.env': secret,
     'secret.json': `{ ${secret}`,
   });
-  const source = (file, at = '') => thinkflow(`chart c "C" bar {\n  x "x(u)"\n  data "${file}"${at}\n  series ours "ours" key="ours"\n}\n`);
+  const source = (file, at = '') => torso(`chart c "C" bar {\n  x "x(u)"\n  data "${file}"${at}\n  series ours "ours" key="ours"\n}\n`);
   const dom = await stillDom(source('rows.json', ' at "/rows"'), 0, { baseDir: dir });
   const [a, b] = marks(dom).map((m) => num(m, 'width'));
   near(ratio(b, a), 2, 'rows read from the file keep their proportion');
@@ -492,7 +492,7 @@ test('ecdf_series_keep_the_legend_without_endpoint_leaders', async () => {
 });
 
 test('C-bar reference marks share one row line without crowding: a goal equal to a chart rule has no repeated number, ticks skip missing slots, row rules lie under bars and value text steps past a line it starts on', async () => {
-  const dom = await stillDom(read(EXAMPLES, 'bar.thinkflow'), 0, { baseDir: EXAMPLES });
+  const dom = await stillDom(read(EXAMPLES, 'bar.torso'), 0, { baseDir: EXAMPLES });
   const ruleLabels = findAll(dom, (n) => n.tag === 'text' && /\bchart-rule-label\b/.test(n.attrs.class ?? '')).map((n) => textContent(n).trim()).filter(Boolean);
   // 목표 1은 공통 기준선 `SLO 1%`와 같은 값이라 숫자를 다시 적지 않는다. 목표 0.5와 행 기준 0.8만 숫자가 있다.
   assert.ok(!ruleLabels.includes('1.00'), `goal numbers equal to the SLO rule are not repeated: ${ruleLabels}`);
@@ -516,7 +516,7 @@ test('C-bar reference marks share one row line without crowding: a goal equal to
 });
 
 test('C-bar narrow header rule note keeps the rule value once: a name that already has the value is not followed by it again', async () => {
-  const source = (label) => thinkflow(`chart c "C" bar {\n  x "x(%)"\n  series a "A"\n  row "r" a=2\n  rule 1 "${label}"\n}`);
+  const source = (label) => torso(`chart c "C" bar {\n  x "x(%)"\n  series a "A"\n  row "r" a=2\n  rule 1 "${label}"\n}`);
   const narrowTexts = async (label) => {
     const dom = parseMarkup(await toHtml(await build(source(label)), 'bar'), { html: true });
     const narrow = descendants(dom).find((node) => node.tag === 'template' && /\bfl-narrow\b/.test(node.attrs.class ?? ''));
@@ -529,7 +529,7 @@ test('C-bar narrow header rule note keeps the rule value once: a name that alrea
 });
 
 test('C-scatter a link arrow leaves its start point clear of every point name, not only at its head', async () => {
-  const dom = await stillDom(read(EXAMPLES, 'scatter.thinkflow'), 0, { baseDir: EXAMPLES });
+  const dom = await stillDom(read(EXAMPLES, 'scatter.torso'), 0, { baseDir: EXAMPLES });
   const backs = findAll(dom, (n) => n.tag === 'rect' && /\bchart-text-bg\b/.test(n.attrs.class ?? '')).map((n) => ({ x0: num(n, 'x'), y0: num(n, 'y'), x1: num(n, 'x') + num(n, 'width'), y1: num(n, 'y') + num(n, 'height') }));
   const links = findAll(dom, (n) => n.tag === 'line' && /\bchart-link\b/.test(n.attrs.class ?? ''));
   assert.equal(links.length, 2);

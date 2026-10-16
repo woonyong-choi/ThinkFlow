@@ -2,9 +2,9 @@ import assert from 'node:assert/strict';
 import { test } from 'node:test';
 import { routeLength } from '../src/route.js';
 import { values } from '@woonyong-choi/design-tokens/tokens.js';
-import { buildFigure, FigureError } from 'thinkflow';
+import { buildFigure, FigureError } from 'torso-diagram';
 
-const source = (names, options, length = '3ms') => `thinkflow
+const source = (names, options, length = '3ms') => `torso
 ${names.map((id) => `box ${id} "${id}"`).join('\n')}
 box x "X"
 value n "N" on=x from=0
@@ -43,7 +43,7 @@ test('a computed departure at the scene boundary is omitted and explicit simulta
 });
 
 test('default track duration includes the distance crossing an intermediate card', async () => {
-  const figure = `thinkflow
+  const figure = `torso
 box a "A"
 box b "B"
 box c "C"
@@ -63,7 +63,7 @@ scene "S" mode=once for=30s
 
 test('a long chain track with tens of thousands of timed marks builds without exhausting the call stack', async () => {
   const ids = Array.from({ length: 100 }, (_, i) => `n${i}`);
-  const chain = `thinkflow
+  const chain = `torso
 ${ids.map((id) => `box ${id} "${id}"`).join('\n')}
 ${ids.slice(1).map((id, i) => `${ids[i]} -> ${id}`).join('\n')}
 scene "s" mode=static for=8s

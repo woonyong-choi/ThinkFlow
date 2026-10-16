@@ -1,9 +1,9 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { build, descendants, findAll, parseMarkup, textContent, thinkflow, toHtml, toSvg } from './support.js';
+import { build, descendants, findAll, parseMarkup, textContent, torso, toHtml, toSvg } from './support.js';
 
 const hostile = '<b>unsafe</b>';
-const chart = (kind) => thinkflow(`chart c "C" ${kind} {
+const chart = (kind) => torso(`chart c "C" ${kind} {
   x "x(u)"
   series a "${kind === 'dumbbell' ? hostile : 'A'}"
   series b "B"

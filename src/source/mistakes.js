@@ -1,8 +1,8 @@
-// 다른 도구(Mermaid, D2, PlantUML, CSS·Tailwind)의 습관이나 흔한 실수로 보이는 낱말을 알아보고, 같은 뜻의 ThinkFlow 꼴을 알리는 글을 만든다.
+// 다른 도구(Mermaid, D2, PlantUML, CSS·Tailwind)의 습관이나 흔한 실수로 보이는 낱말을 알아보고, 같은 뜻의 Torso 꼴을 알리는 글을 만든다.
 // 별칭이 아니다. 여기 적은 꼴은 어느 것도 받지 않고, 진단 글에 고칠 꼴만 더한다(docs/design/figure-syntax.md의 흔한 실수 절).
 import { TONES } from '../tone.js';
 
-// 화살표처럼 보이지만 ThinkFlow의 화살표 `->`가 아닌 낱말. 값은 고칠 꼴이다.
+// 화살표처럼 보이지만 Torso의 화살표 `->`가 아닌 낱말. 값은 고칠 꼴이다.
 const ARROWS = new Map([
   ...['-->', '--->', '=>', '==>', '->>', '-->>', '-)', '--)', '-.->', '~>', '→', '⟶', '⇒', '-x', '--x', '-o', '--o'].map((arrow) => [arrow, 'write the arrow as "->": a -> b. Did you mean "->"?']),
   ['<-', 'there is no reverse arrow. Write the edge from its source: b -> a'],
@@ -13,22 +13,22 @@ const ARROWS = new Map([
   ['---', 'write an edge without an arrowhead as: a -> b head=none'],
 ]);
 
-// 다이어그램 종류를 정하는 다른 도구의 첫 줄. ThinkFlow는 카드를 선언하고 보기를 고른다.
+// 다이어그램 종류를 정하는 다른 도구의 첫 줄. Torso는 카드를 선언하고 보기를 고른다.
 const DIAGRAM_HEADERS = new Set(['flowchart', 'sequenceDiagram', 'stateDiagram', 'stateDiagram-v2', 'classDiagram', 'erDiagram', 'gantt', 'pie', 'journey', 'gitGraph', 'mindmap', 'timeline', 'xychart-beta', '@startuml', '@enduml', '@startmindmap', 'digraph']);
 const MERMAID_DIRECTIONS = new Set(['TD', 'TB', 'LR', 'RL', 'BT']);
-const NO_DIAGRAM_TYPE = 'ThinkFlow has no diagram-type line. Declare cards (box a "A"), then pick a view: view graph [right|down], view sequence { ... }, view plot { ... }, or view time { ... }';
+const NO_DIAGRAM_TYPE = 'Torso has no diagram-type line. Declare cards (box a "A"), then pick a view: view graph [right|down], view sequence { ... }, view plot { ... }, or view time { ... }';
 
-// 다른 도구의 블록과 참여자 낱말. 값은 같은 뜻의 ThinkFlow 꼴이다.
+// 다른 도구의 블록과 참여자 낱말. 값은 같은 뜻의 Torso 꼴이다.
 const FOREIGN_STATEMENTS = new Map([
   ['subgraph', 'a group is: group id "name" { ... }'],
   ['end', 'close a block with "}" on its own line'],
   ['participant', 'declare a participant as a card (person a "A" or box a "A") and list it in view sequence { a b }'],
   ['actor', 'declare an actor as: person a "A", and list it in view sequence { a b }'],
   ['direction', 'set a direction on the view (view graph down) or on a group (group g "G" direction=down {)'],
-  ['style', 'ThinkFlow has no style lines. Colors are tone=name and appearance=plain|filled|outline on the card line'],
-  ['classDef', 'ThinkFlow has no style classes. Colors are tone=name and appearance=plain|filled|outline on the card line'],
-  ['linkStyle', 'ThinkFlow has no style lines. An edge takes dashed, quiet, and head=end|both|none'],
-  ['skinparam', 'ThinkFlow has no style lines. Sizes and colors come from the design tokens; pick colors with tone=name'],
+  ['style', 'Torso has no style lines. Colors are tone=name and appearance=plain|filled|outline on the card line'],
+  ['classDef', 'Torso has no style classes. Colors are tone=name and appearance=plain|filled|outline on the card line'],
+  ['linkStyle', 'Torso has no style lines. An edge takes dashed, quiet, and head=end|both|none'],
+  ['skinparam', 'Torso has no style lines. Sizes and colors come from the design tokens; pick colors with tone=name'],
 ]);
 
 // 꾸밈 선택 사항 키. 색과 모양은 tone과 appearance뿐이고 크기, 글꼴, 그림자는 디자인 토큰이 정한다.
@@ -132,7 +132,7 @@ export function optionMistake({ key, value }, keys) {
   return undefined;
 }
 
-// Mermaid의 방향 낱말 → ThinkFlow의 방향
+// Mermaid의 방향 낱말 → Torso의 방향
 const MERMAID_DIRECTION = { TD: 'down', TB: 'down', LR: 'right' };
 
 // cost: time O(1), heap O(1), stack O(1)

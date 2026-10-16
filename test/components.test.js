@@ -28,7 +28,7 @@ import { STYLE, allTexts, textAt, textSpan } from '../src/measure/texts.js';
 import { STYLES } from '../src/styles.js';
 import { centerBaseline } from '../src/text.js';
 import { values } from '@woonyong-choi/design-tokens/tokens.js';
-import { build, thinkflow, descendants, findAll, findOne, num, parseMarkup, textContent, toHtml, toSvg } from './support.js';
+import { build, torso, descendants, findAll, findOne, num, parseMarkup, textContent, toHtml, toSvg } from './support.js';
 
 const TICK = '`';
 const EPS = 0.06; // SVG 좌표는 소수 첫째 자리로 줄여 쓴다
@@ -50,7 +50,7 @@ test('status overlap diagnostics locate the scene with that status kind', () => 
 });
 
 test('U11 HTML packet chips carry the same measured geometry as animated SVG', async () => {
-  const result = await build(thinkflow('box a "A"\nbox b "B"\na -> b\nscene "S"\na -> b "한글 `payload`"'));
+  const result = await build(torso('box a "A"\nbox b "B"\na -> b\nscene "S"\na -> b "한글 `payload`"'));
   const html = await toHtml(result, 'chip');
   const script = textContent(findAll(parseMarkup(html, { html: true }), n => n.tag === 'script').at(-1));
   const data = JSON.parse(/figurePlay\(document\.querySelector\('\.fl-figure'\), (.*)\);\s*$/s.exec(script)[1]);
@@ -100,7 +100,7 @@ function iconShape(svg) {
 
 // ---- 카드 ----
 
-const CARDS = thinkflow(`
+const CARDS = torso(`
   person u "Order" icon=server
   box a "Order" "Accepted" icon=server
   box r "Replica" count=3
@@ -222,7 +222,7 @@ test('U4 one text component writes every card text: XML characters are escaped, 
 });
 
 test('U6 a label is rich text in every slot that takes a label: backticks make code, and the card and the line label measure and draw it the same way', async () => {
-  const { result, dom } = await rendered(thinkflow(`
+  const { result, dom } = await rendered(torso(`
     box a "Run ${TICK}npm test${TICK}"
     box b "B"
     a -> b "call ${TICK}run()${TICK}"
@@ -293,9 +293,9 @@ test('U7 an ordinary line has an arrow head at its end or ends, a semantic relat
 });
 
 test('U7 in a drawn figure each head a line points at exists once, and ordinary lines of a graph and a class diagram share one head', async () => {
-  const flow = (await rendered(thinkflow('box a "A"\nbox b "B"\nbox c "C"\nbox d "D"\na -> b\na -> c head=none\na -> d head=both\n'))).dom;
+  const flow = (await rendered(torso('box a "A"\nbox b "B"\nbox c "C"\nbox d "D"\na -> b\na -> c head=none\na -> d head=both\n'))).dom;
   const members = (id) => `class ${id} "${id.toUpperCase()}" {\n  field n "int"\n}`;
-  const uml = (await rendered(thinkflow(`
+  const uml = (await rendered(torso(`
     ${['a', 'b', 'c', 'd', 'e', 'f'].map(members).join('\n')}
     interface i "I" {
       method m "(): void"
@@ -329,7 +329,7 @@ test('U7 in a drawn figure each head a line points at exists once, and ordinary 
 
 test('U8 a concept icon is one symbol: the card header, the tile and the group title draw the same shapes in the same role, a brand keeps its own glyph', async () => {
   for (const name of ['server', 'flag-add']) {
-    const result = await build(thinkflow(`
+    const result = await build(torso(`
       group g "G" icon=${name} {
         box a "A" icon=${name}
         box t "T" shape=tile icon=${name}
@@ -376,7 +376,7 @@ test('U8 a concept icon is one symbol: the card header, the tile and the group t
 
 // 차트의 글자 뒤 바탕 면과 받침 선은 차트가 놓인 면의 색이다. 차트 보기는 그림 바탕, 차트 카드는 카드 면이다. 여기서는 그려진 형상(어느 묶음 안에 놓였는가)만 보고, 면을 정하는 CSS는 component-state.test.js가 본다.
 test('U10 a chart is drawn on the surface it sits on: in a plot view and inside each chart card, with circular measured markers and neutral reference lines', async () => {
-  const source = thinkflow(`
+  const source = torso(`
     box a "A"
     chart c "C" bar {
       x "x(u)"
@@ -435,7 +435,7 @@ test('U10 a chart is drawn on the surface it sits on: in a plot view and inside 
 });
 
 test('U9 every page has one frame, one toolbar and one tab row: the toolbar sits in the drawing, the tab row below it, and neither depends on the figure', async () => {
-  const frame = parseMarkup(figureFrame({ canvas: '<p>x</p>', source: 'thinkflow\n' }), { html: true });
+  const frame = parseMarkup(figureFrame({ canvas: '<p>x</p>', source: 'torso\n' }), { html: true });
   const figure = findOne(frame, (n) => n.tag === 'figure' && hasClass(n, 'fl-figure'), 'figure');
   const [surface, foot] = figure.children.filter((n) => n.tag === 'div');
   assert.ok(hasClass(surface, 'fl-surface') && hasClass(foot, 'fl-foot'));
@@ -459,7 +459,7 @@ test('U9 every page has one frame, one toolbar and one tab row: the toolbar sits
     three: 'box a "A"\nbox b "B"\na -> b\nscene "x" mode=static\n  a -> b "1"\nscene "y" mode=static\n  a -> b "2"\nscene "z" mode=static\n  a -> b "3"\n',
     chart: 'chart c "C" bar {\n  x "x(u)"\n  series v "v"\n  row "r" v=1\n}\n',
   })) {
-    const html = await toHtml(await build(thinkflow(source)), 'doc');
+    const html = await toHtml(await build(torso(source)), 'doc');
     const dom = parseMarkup(html, { html: true });
     const script = textContent(descendants(dom).filter((n) => n.tag === 'script').at(-1));
     pages[name] = {
@@ -475,7 +475,7 @@ test('U9 every page has one frame, one toolbar and one tab row: the toolbar sits
   }
   assert.deepEqual([pages.still.data.segs.length, pages.one.data.steps.length, pages.three.data.steps.length], [0, 1, 3]);
   // 단일 HTML도 공통 조작 아이콘을 외부 모듈 없이 그린다.
-  const html = await toHtml(await build(thinkflow('box a "A"\n')), 'doc');
+  const html = await toHtml(await build(torso('box a "A"\n')), 'doc');
   const script = textContent(findAll(parseMarkup(html, { html: true }), node => node.tag === 'script').at(-1));
   const names = Object.keys(getIconCatalog().controls);
   const drawn = runInNewContext(`${script}\nfunction figurePlay() {}\n${JSON.stringify(names)}.map(ToolIcon);`, { document: { querySelector: () => null }, matchMedia: () => ({ matches: false }) });
@@ -495,7 +495,7 @@ test('U9 every page has one frame, one toolbar and one tab row: the toolbar sits
 });
 
 test('U1 grid surface follows its cell body and leaves the title outside', async () => {
-  const result = await build(thinkflow('grid g "Rows" rows=2 {\n  item a "A" row=0\n  item b "B" row=1\n}\n'));
+  const result = await build(torso('grid g "Rows" rows=2 {\n  item a "A" row=0\n  item b "B" row=1\n}\n'));
   const item = result.scene.items.find(item => item.id === 'g');
   const { surfaceOutline } = await import('../src/draw/surface.js');
   const rect = parseMarkup(surfaceOutline(item) + '/>');
@@ -529,7 +529,7 @@ test('U7 경로 표본은 유턴과 원본 끝점을 보존한다', () => {
 });
 
 test('U10 색과 값이 없는 유실 장면도 유한한 사라짐 시간을 전달한다', async () => {
-  const html = await toHtml(await build(thinkflow('box a "A"\nbox b "B"\na -> b\nscene "유실"\n  a -> b lost=50%\n')), 'lost');
+  const html = await toHtml(await build(torso('box a "A"\nbox b "B"\na -> b\nscene "유실"\n  a -> b lost=50%\n')), 'lost');
   const script = textContent(findAll(parseMarkup(html, { html: true }), n => n.tag === 'script').at(-1));
   const data = JSON.parse(/figurePlay\(document\.querySelector\('\.fl-figure'\), (.*)\);\s*$/s.exec(script)[1]);
   assert.ok(Number.isFinite(data.metrics.cutFadeMs) && data.metrics.cutFadeMs > 0);
@@ -537,7 +537,7 @@ test('U10 색과 값이 없는 유실 장면도 유한한 사라짐 시간을 �
 
 
 test('hidden chip layout decisions do not depend on warning wording', async () => {
-  const result = await build(thinkflow('box a "A"\nbox b "B"\nbox c "C"\na -> b\nb -> c\nview graph down\nscene "s"\n  track a -> b -> c "message"'), { strict: false });
+  const result = await build(torso('box a "A"\nbox b "B"\nbox c "C"\na -> b\nb -> c\nview graph down\nscene "s"\n  track a -> b -> c "message"'), { strict: false });
   const local = createProblems();
   const context = { scene: result.scene, timeline: result.timeline };
   checkChips(context, { ...local, warn: (line, message) => local.warn(line, message.replace(/moving text.*$/, '가려진 이동 글')) });
@@ -552,7 +552,7 @@ test('hidden chip layout decisions do not depend on warning wording', async () =
 });
 
 test('hidden chip relayout preserves room already gained on other track legs', async () => {
-  const result = await build(thinkflow(`
+  const result = await build(torso(`
     box web "웹"
     box app "앱"
     box api "주문 API" {

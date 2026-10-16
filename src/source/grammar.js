@@ -111,7 +111,7 @@ export const STATEMENTS = table({
   pk: { section: 'declare', in: 'table', display: 'pk (열, ...)' },
   unique: { section: 'declare', in: 'table', display: 'unique (열, ...)' },
   fk: { section: 'declare', in: 'table', display: 'fk (열, ...) -> 테이블 (열, ...)' },
-  thinkflow: { section: 'preamble' },
+  torso: { section: 'preamble' },
   title: { section: 'header' },
   subtitle: { section: 'header' },
   pace: { section: 'header' },

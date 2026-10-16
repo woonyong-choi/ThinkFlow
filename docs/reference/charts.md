@@ -4,26 +4,26 @@
 
 | 종류 | 보여 줄 것 | 계열 수 | 행 줄 | 예제 |
 |---|---|---|---|---|
-| `bar` | 조건별 값과 신뢰구간 | 1 이상 | `row "항목" 계열=값` | [bar](../../examples/bar.thinkflow) |
-| `stacked` | 구성값과 합계. 음수는 0 왼쪽에 쌓입니다 | 1 이상 | `row "항목" 계열=값` | [stacked](../../examples/stacked.thinkflow) |
-| `percent` | 행마다 합을 100%로 놓은 몫 | 2 이상 | `row "항목" 계열=값` | [percent](../../examples/percent.thinkflow) |
-| `dumbbell` | 같은 입력에서 두 방식 비교 | 정확히 2 | `row "항목" 계열=값 계열=값` | [dumbbell](../../examples/dumbbell.thinkflow) |
-| `difference` | 음수일 수 있는 차이와 신뢰구간 | 정확히 1 | `row "항목" 계열=값` | [difference](../../examples/difference.thinkflow) |
-| `line` | 순서나 시간에 따른 변화 | 1 이상 | `point x=값 계열=값` | [line](../../examples/line.thinkflow) |
-| `step` | 값이 바뀔 때만 움직이는 계단 변화 | 1 이상 | `point x=값 계열=값` | [step](../../examples/step.thinkflow) |
-| `area` | 0 기준선까지 채운 변화. 계열은 겹쳐 그립니다 | 1 이상 | `point x=값 계열=값` | [area](../../examples/area.thinkflow) |
-| `scatter` | 두 변수의 관계 | 0 이상 | `point "이름" x=값 y=값 [series=계열]`, `link "이름" -> "이름"` | [scatter](../../examples/scatter.thinkflow) |
-| `histogram` | 원시 관측값의 구간별 건수 | 0 | `sample 값`, `bins 최솟값 최댓값 구간수` 또는 `bins auto` | [histogram](../../examples/histogram.thinkflow) |
-| `box` | 연속값 분포 | 0 | `row "항목" min=값 q1=값 median=값 q3=값 max=값` | [box](../../examples/box.thinkflow) |
-| `ecdf` | 표본의 누적분포 | 0 이상 | `sample 값 [series=계열]` | [ecdf](../../examples/ecdf.thinkflow) |
-| `heatmap` | 교차표의 값 크기 | 0 | `cell "행" "열" 값` | [heatmap](../../examples/heatmap.thinkflow) |
-| `donut`, `pie` | 전체에서 차지하는 몫 | 0 | `row "항목" value=값` | [donut](../../examples/donut.thinkflow), [pie](../../examples/pie.thinkflow) |
-| `waterfall` | 증감과 중간·최종 합계 | 0 | `row "항목" value=값`, `total "이름"` | [waterfall](../../examples/waterfall.thinkflow) |
+| `bar` | 조건별 값과 신뢰구간 | 1 이상 | `row "항목" 계열=값` | [bar](../../examples/bar.torso) |
+| `stacked` | 구성값과 합계. 음수는 0 왼쪽에 쌓입니다 | 1 이상 | `row "항목" 계열=값` | [stacked](../../examples/stacked.torso) |
+| `percent` | 행마다 합을 100%로 놓은 몫 | 2 이상 | `row "항목" 계열=값` | [percent](../../examples/percent.torso) |
+| `dumbbell` | 같은 입력에서 두 방식 비교 | 정확히 2 | `row "항목" 계열=값 계열=값` | [dumbbell](../../examples/dumbbell.torso) |
+| `difference` | 음수일 수 있는 차이와 신뢰구간 | 정확히 1 | `row "항목" 계열=값` | [difference](../../examples/difference.torso) |
+| `line` | 순서나 시간에 따른 변화 | 1 이상 | `point x=값 계열=값` | [line](../../examples/line.torso) |
+| `step` | 값이 바뀔 때만 움직이는 계단 변화 | 1 이상 | `point x=값 계열=값` | [step](../../examples/step.torso) |
+| `area` | 0 기준선까지 채운 변화. 계열은 겹쳐 그립니다 | 1 이상 | `point x=값 계열=값` | [area](../../examples/area.torso) |
+| `scatter` | 두 변수의 관계 | 0 이상 | `point "이름" x=값 y=값 [series=계열]`, `link "이름" -> "이름"` | [scatter](../../examples/scatter.torso) |
+| `histogram` | 원시 관측값의 구간별 건수 | 0 | `sample 값`, `bins 최솟값 최댓값 구간수` 또는 `bins auto` | [histogram](../../examples/histogram.torso) |
+| `box` | 연속값 분포 | 0 | `row "항목" min=값 q1=값 median=값 q3=값 max=값` | [box](../../examples/box.torso) |
+| `ecdf` | 표본의 누적분포 | 0 이상 | `sample 값 [series=계열]` | [ecdf](../../examples/ecdf.torso) |
+| `heatmap` | 교차표의 값 크기 | 0 | `cell "행" "열" 값` | [heatmap](../../examples/heatmap.torso) |
+| `donut`, `pie` | 전체에서 차지하는 몫 | 0 | `row "항목" value=값` | [donut](../../examples/donut.torso), [pie](../../examples/pie.torso) |
+| `waterfall` | 증감과 중간·최종 합계 | 0 | `row "항목" value=값`, `total "이름"` | [waterfall](../../examples/waterfall.torso) |
 
 ## 최소 예제
 
-```thinkflow name=minimal
-thinkflow
+```torso name=minimal
+torso
 title "분기별 매출"
 
 chart sales "분기별 매출" bar "예시 데이터. 점선은 목표 100" {
@@ -43,7 +43,7 @@ scene "작년에서 올해로"
   light sales "2분기"
 ```
 
-![분기별 매출](charts-minimal.svg)<!-- thinkflow -->
+![분기별 매출](charts-minimal.svg)<!-- torso -->
 
 계열은 `series 이름 "표시 이름" [role=main|compare|reference]`로 선언하고, 값 축 제목에는 괄호 단위를 붙입니다. 카드 제목과 부제는 카드 줄(`chart` 줄)에 적고, `plot` 보기는 카드 하나를 문서 폭으로 보입니다. 보기에 아직 배치하지 않은 카드가 차트와 추적뿐이고 그룹에 속한 카드나 명시한 `graph` 보기가 없으면, 각 차트에 `plot` 보기가 기본으로 생깁니다. 연결선 유무는 기준이 아닙니다. 아직 어느 보기에 배치하지 않은 일반 카드와 섞이면 그래프에 놓이므로 독립 차트로 보이려면 `view plot`에 명시합니다. 라벨을 붙이거나 순서를 정하려면 `view plot "라벨" {`로 적습니다.
 
@@ -55,7 +55,7 @@ scene "작년에서 올해로"
 - **색.** 계열 색은 범주 번호로 정합니다. 일곱 색(`blue`, `yellow`, `red`, `green`, `orange`, `purple`, `cyan`)을 넘으면 같은 색에 무늬가 더해집니다. 점 모양(원, 사각형, 마름모, 삼각형)은 색 수와 상관없이 범주 번호를 따라 돌므로 파랑과 주황처럼 모양이 같은 쌍도 있습니다. 막대 계열은 범례로, 산점도 계열은 범례와 점 모양으로, 선, 계단, 면적, 누적분포가 둘 이상이면 끝 이름으로 구분합니다. 원과 도넛의 조각은 바깥에 이름과 값·비율을 직접 적고 안내선으로 잇습니다. 누적, 퍼센트, 원, 도넛에서 몫이 5% 미만인 항목이 둘 이상이거나 항목이 일곱 색을 넘으면 작은 쪽을 회색 `기타` 하나로 묶어 적습니다(값에 묶인 차트는 묶지 않습니다). 색만으로 구분하지 않습니다. 무늬 정의는 SVG마다 한 번만 들어갑니다.
 - **빠진 값과 0.** `-`는 측정이 없다는 뜻이고 0과 다릅니다. 막대는 `missing "글"` 문구를 보이고, 선과 계단은 그 점에서 끊기며, 누적과 퍼센트의 행은 그 행을 정하지 않습니다. 퍼센트는 합이 0인 행도 `합계 0 · 비율 정의 불가`로 알리고 0%로 그리지 않습니다. 값이 모두 0이거나 모두 빠져도 오류가 아닙니다. 0은 길이 0의 값으로 그리고, 모두 빠졌으면 틀과 축만 그리며 어떤 표식에도 0을 주지 않습니다. 히스토그램의 `sample -`는 관측에서 빼고 `결측 k개 제외`로 알리며 비율의 분모에도 넣지 않습니다. 워터폴의 `value=-`는 막대 없이 `값 없음`으로 쓰고 그 뒤의 누계는 알 수 없습니다. 상자는 다섯 값 가운데 하나라도 빠진 행에 모양 없이 적힌 숫자만 보입니다. 면(`area`)은 빠진 값을 받지 않습니다.
 - **신뢰구간과 기준선.** 막대, 덤벨, 선, 차이 차트는 `계열.low=값 계열.high=값`을 받습니다. `rule 값 "라벨"`은 모든 행의 기준선이고, 막대 행의 `rule=값`은 그 행에만 겹칩니다.
-- **값 묶기.** 행의 숫자 자리에 값 이름(`ms=p95`)을 쓰면 그 값이 바뀔 때 차트가 바뀝니다. 바뀐 표식만 강조하고 축은 움직이지 않습니다. [metric 예제](../../examples/metric.thinkflow)와 [donut 예제](../../examples/donut.thinkflow)가 카드의 값과 차트를 함께 움직입니다.
+- **값 묶기.** 행의 숫자 자리에 값 이름(`ms=p95`)을 쓰면 그 값이 바뀔 때 차트가 바뀝니다. 바뀐 표식만 강조하고 축은 움직이지 않습니다. [metric 예제](../../examples/metric.torso)와 [donut 예제](../../examples/donut.torso)가 카드의 값과 차트를 함께 움직입니다.
 
 metric 예제의 `API 1 CPU 기록(%)`은 급증 장면의 마지막 도착 때 `snapshot:=cpu1`로 복사한 값이다. 기록 전에는 `미기록`을 표시하고 다음 장면에서도 `keep`으로 마지막 기록을 유지한다. 이는 현재 CPU나 기간 중 최댓값의 자동 집계가 아니며, 기록 뒤 API 1의 CPU가 바뀌어도 함께 바뀌지 않는다. `ref=p95`로 묶은 대시보드 값과 차트는 원천 값의 변화를 계속 따른다.
 
@@ -66,7 +66,7 @@ metric 예제의 `API 1 CPU 기록(%)`은 급증 장면의 마지막 도착 때 
 ## 히스토그램: 지연이 몰리는 구간
 
 ```text
-thinkflow
+torso
 chart latency "응답 지연 분포" histogram {
   x "응답 지연(ms)"
   y "요청(건)"
@@ -81,12 +81,12 @@ scene "가장 많은 구간" mode=static
   light latency x=0
 ```
 
-각 구간의 건수는 2·2·1입니다. 100ms는 두 번째 구간에, 300ms는 마지막 구간에 포함됩니다. 범위를 벗어난 값은 오류이며 버리지 않습니다. 범위를 직접 정하지 않으려면 `bins auto`(Sturges 방식)를 쓰고, 자동 구간은 경계를 알 수 없어 `light`로 고를 수 없습니다. `measure=count|probability|density`로 건수, 비율, 확률밀도를 고릅니다. [histogram 예제](../../examples/histogram.thinkflow)는 같은 표본을 두 방식으로 나란히 보입니다.
+각 구간의 건수는 2·2·1입니다. 100ms는 두 번째 구간에, 300ms는 마지막 구간에 포함됩니다. 범위를 벗어난 값은 오류이며 버리지 않습니다. 범위를 직접 정하지 않으려면 `bins auto`(Sturges 방식)를 쓰고, 자동 구간은 경계를 알 수 없어 `light`로 고를 수 없습니다. `measure=count|probability|density`로 건수, 비율, 확률밀도를 고릅니다. [histogram 예제](../../examples/histogram.torso)는 같은 표본을 두 방식으로 나란히 보입니다.
 
 ## 워터폴: 무엇이 최종 값을 바꿨는가
 
 ```text
-thinkflow
+torso
 chart cost "응답 시간 개선" waterfall {
   x "시간(ms)"
   row "기본 처리" value=120
@@ -115,4 +115,4 @@ scene "캐시 효과" mode=static
 | `data` 파일을 읽지 못함 | `cannot read data "a.json" at "/rows": ENOENT` 또는 `not valid JSON at position 12` | `syntax` | 경로와 JSON을 고칩니다. 메시지에 파일의 내용은 싣지 않습니다 |
 | 값 축 제목에 단위 없음 | `the value axis title needs a unit in parentheses, such as x "latency(ms)"` | `syntax` | 제목에 `(단위)`를 붙입니다(경고, `--strict`에서 실패) |
 
-`code`는 `thinkflow check figure.thinkflow --json`으로 봅니다.
+`code`는 `torso check figure.torso --json`으로 봅니다.
