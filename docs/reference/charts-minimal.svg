@@ -40,6 +40,7 @@
   --color-ui-line: var(--primitive-line);
   --color-help-title-color: var(--primitive-help-title-color);
   --color-action-link: var(--primitive-link);
+  --color-category-blue-anchor: #1e6bd6;
   --color-category-blue-light-border: #1e6bd6;
   --color-category-blue-light-ink: #1161cb;
   --color-category-blue-light-tint-3: #d5e4fa;
@@ -116,7 +117,7 @@
   --color-state-active-text: var(--color-category-blue-dark-ink);
   --color-data-main: var(--color-category-blue-dark-border);
   --color-data-heat-low: var(--color-category-blue-dark-tint-3);
-  --color-data-heat-high: var(--color-category-blue-dark-border);
+  --color-data-heat-high: var(--color-category-blue-anchor);
   --color-data-heat-ink: var(--color-gray-0);
   --color-data-grid: var(--primitive-figure-dark-edge);
   --color-figure-icon: var(--color-category-blue-dark-border);
@@ -146,7 +147,7 @@
   --color-state-active-text: var(--color-category-blue-dark-ink);
   --color-data-main: var(--color-category-blue-dark-border);
   --color-data-heat-low: var(--color-category-blue-dark-tint-3);
-  --color-data-heat-high: var(--color-category-blue-dark-border);
+  --color-data-heat-high: var(--color-category-blue-anchor);
   --color-data-heat-ink: var(--color-gray-0);
   --color-data-grid: var(--primitive-figure-dark-edge);
   --color-figure-icon: var(--color-category-blue-dark-border);
