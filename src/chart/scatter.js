@@ -15,6 +15,8 @@ import { NAME_STEP, placeNames } from './scatter-names.js';
 // 화살 끝을 당길 때 한 번에 움직이는 거리(px)
 const TIP_STEP = 1;
 const ARROW = roleArrow(CHART_ARROW.scatter);
+// 선 시작을 이름 글자에서 떼어 볼 때 살피는 선 첫 부분의 길이(px). 화살촉 길이 정도라 선이 글자 옆을 스치는 첫 구간을 덮는다.
+const TAIL_CLEAR = SPACE["3"];
 
 // cost: time O(1), heap O(1), stack O(1)
 // basis: estimate
@@ -34,10 +36,23 @@ function arrowheadHits(end, dir, box) {
   return points.some(([x, y]) => x >= box.x0 - pad && x <= box.x1 + pad && y >= box.y0 - pad && y <= box.y1 + pad);
 }
 
+// cost: time O(TAIL_CLEAR), heap O(1), stack O(1)
+// basis: estimate
+// 선 첫 부분(from에서 dir로 TAIL_CLEAR까지, 1px 간격)이 글자 상자에 간격 `space.1` 안으로 드는가
+function segmentNear(from, dir, box) {
+  const pad = SPACE["1"];
+  for (let t = 0; t <= TAIL_CLEAR; t += TIP_STEP) {
+    const [x, y] = [from.x + dir.ux * t, from.y + dir.uy * t];
+    if (x >= box.x0 - pad && x <= box.x1 + pad && y >= box.y0 - pad && y <= box.y1 + pad) return true;
+  }
+  return false;
+}
+
 // cost: time O(p·n), heap O(1), stack O(1)
 // vars: p = 점 수, n = 끝 당김 걸음 수
 // basis: estimate
 // link 화살표 한 줄. 두 점의 테두리에서 끊어 화살촉이 끝 점에 가려 방향이 안 보이는 일을 막고, 끝은 화살촉이 어느 점의 이름 글자 상자와도 겹치지 않을 때까지 시작 점 쪽으로 더 당긴다.
+// 시작도 같은 규칙이다. 시작 점의 이름은 점 바로 옆에 놓이므로 선이 그 쪽으로 나가면 첫 부분이 글자에 닿는다. 선 첫 부분(TAIL_CLEAR)이 글자 상자와 간격 `space.1` 안에 들지 않을 때까지 끝 점 쪽으로 민다.
 function linkArrow(ctx, link) {
   const { chart, at, names } = ctx;
   const [a, b] = [at.get(link.from), at.get(link.to)];
@@ -47,9 +62,12 @@ function linkArrow(ctx, link) {
   const endAt = (tip) => ({ x: b.x - dir.ux * tip, y: b.y - dir.uy * tip });
   let tip = gap;
   while (tip < length / 2 && names.some(({ box }) => arrowheadHits(endAt(tip), dir, box))) tip += TIP_STEP;
+  const startAt = (tail) => ({ x: a.x + dir.ux * tail, y: a.y + dir.uy * tail });
+  let tail = gap;
+  while (tail + TAIL_CLEAR < length - tip && names.some(({ box }) => segmentNear(startAt(tail), dir, box))) tail += TIP_STEP;
   // 선은 화살촉의 보이는 꼭지보다 둥근 끝 반지름만큼 앞에서 끝난다. 둥근 끝이 꼭지 밖으로 나오지 않게 하기 위해서다.
   const { cap } = headReach(values["border-width"].strong);
-  const [x1, y1, x2, y2] = [a.x + dir.ux * gap, a.y + dir.uy * gap, endAt(tip).x - dir.ux * cap, endAt(tip).y - dir.uy * cap];
+  const [x1, y1, x2, y2] = [startAt(tail).x, startAt(tail).y, endAt(tip).x - dir.ux * cap, endAt(tip).y - dir.uy * cap];
   const series = seriesOf(chart, b.p);
   return `<g class="cr-${chart.rows.indexOf(a.p)}"><g class="cs-${series}"><line x1="${r(x1)}" y1="${r(y1)}" x2="${r(x2)}" y2="${r(y2)}" class="chart-link ${ARROW.cls} pop"${ARROW.end}/></g></g>`;
 }
