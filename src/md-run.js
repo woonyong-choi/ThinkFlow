@@ -4,7 +4,7 @@ import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs';
 import { basename, dirname, extname, isAbsolute, join, relative, sep } from 'node:path';
 import { buildReported, claimOutputs, commitReported, pickScene, problem, readReported, report } from './build-reported.js';
 import { fileHref } from './href.js';
-import { findForMode, inspectFold, joinLines, layoutDocument } from './md-fold.js';
+import { escapeHtml, findForMode, inspectFold, joinLines, layoutDocument } from './md-fold.js';
 import { acquireLocks } from './md-lock.js';
 import { ownerOf, ownership, realPath, svgMark } from './md-owner.js';
 import { outputKey } from './md-write.js';
@@ -76,15 +76,46 @@ function linksOf(file, targets, json) {
 // cost: time O(b·build), heap O(b·out), stack O(1), io b
 // vars: b = 블록 수, build = 블록 하나를 만드는 비용, out = SVG 글자 수
 // basis: estimate
-// 블록마다 만든다. 하나라도 오류면 undefined다(모든 블록의 오류를 모아 알리려고 끝까지 만든다).
+// 블록마다 한 번 만든다. 하나라도 오류면 undefined다(모든 블록의 오류를 모아 알리려고 끝까지 만든다).
+// scenes는 SVG로 낼 장면 번호(0부터)다. --scene이 없고 장면이 둘 이상이면 모든 장면이고 그 밖에는 고른 장면 하나다.
 async function buildTargets(file, targets, args) {
   const built = [];
   for (const { block, label, svg } of targets) {
     const result = await buildReported(block.source, file, { flags: args.flags, baseDir: dirname(file), lineOffset: block.open + 1, budget: args.budget });
     const scene = result ? pickScene(result, args.scene, { file, json: args.flags.has('json'), line: block.open + 1 }) : undefined;
-    built.push(scene === undefined ? undefined : { label, svg, block, result, scene });
+    const every = args.scene === undefined && result?.timeline.steps.length > 1;
+    built.push(scene === undefined ? undefined : { label, svg, block, result, scenes: every ? result.timeline.steps.map((_, k) => k) : [scene] });
   }
   return built.includes(undefined) ? undefined : built;
+}
+
+// cost: time O(s), heap O(s), stack O(1)
+// vars: s = 블록의 장면 수
+// basis: estimate
+// 블록 하나가 낼 SVG들 { svg, scene, label }. 첫 장면은 블록의 SVG 이름을 그대로 쓰고, 둘째 장면부터는 블록 이름에 올 수 없는 점으로 `{이름}.scene-{장면 번호}.svg`로 구분한다.
+function outputsOf({ svg, result, scenes }) {
+  return scenes.map((scene, k) => ({ svg: k ? svg.replace(/\.svg$/, `.scene-${scene + 1}.svg`) : svg, scene, label: result.timeline.steps[scene]?.label }));
+}
+
+// cost: time O(n), heap O(n), stack O(1)
+// vars: n = 글자 수
+// basis: estimate
+// 장면 이름을 한 줄로 만든다(summary와 대체 글은 줄을 넘지 못한다).
+const oneLine = (text) => text.replace(/\s+/g, ' ').trim();
+
+// cost: time O(b·s), heap O(b·s), stack O(1), io b·s
+// vars: b = 블록 수, s = 블록의 장면 수
+// basis: estimate
+// 둘째 장면부터의 SVG 출력을 첫 SVG와 같은 확인(쓰기 겹침, 소유, 링크)에 건다. 오류가 있으면 undefined이고, 아니면 블록별 { svg, scene, label, href }[]의 Map이다.
+function sceneOutputs(file, built, { owner, claimed, json }) {
+  const extras = built.flatMap((item) => outputsOf(item).slice(1).map((output) => ({ ...output, item, block: item.block })));
+  const unique = claimOutputs(extras.map(({ block, svg }) => claim({ file, line: block.open + 1 }, svg, SVG_HINT)), { claimed, json });
+  const owned = checkOwners(file, extras, { owner, json });
+  const hrefs = linksOf(file, extras, json);
+  if (!unique || !owned || !hrefs) return undefined;
+  const byItem = new Map(built.map((item) => [item, []]));
+  extras.forEach((extra, k) => byItem.get(extra.item).push({ ...extra, href: hrefs[k] }));
+  return byItem;
 }
 
 // cost: time O(out), heap O(out), stack O(1)
@@ -158,13 +189,20 @@ async function planDocument(file, args, claimed) {
   const broken = found.errors.length || inspected.errors.length || !unique || !owned || !hrefs;
   const built = broken ? undefined : await buildTargets(file, targets, args);
   if (!built) return undefined;
-  const images = built.map(({ label, result }, k) => ({ alt: plainText(result.figure.title ?? label), href: hrefs[k] }));
+  const extras = sceneOutputs(file, built, { owner, claimed, json });
+  if (!extras) return undefined;
+  const images = built.map((item, k) => {
+    const alt = plainText(item.result.figure.title ?? item.label);
+    const scenes = extras.get(item).map(({ label, href }) => ({ summary: escapeHtml(oneLine(label)), alt: `${alt} (${oneLine(label)})`, href }));
+    return { alt, href: hrefs[k], scenes };
+  });
   const files = [];
-  for (const item of built) files.push({ path: item.svg, text: await svgText(item, { args, owner }) });
+  const outputs = built.flatMap((item) => outputsOf(item).map((output) => ({ ...output, item })));
+  for (const { svg, scene, item } of outputs) files.push({ path: svg, text: await svgText({ result: item.result, svg, scene }, { args, owner }) });
   // 문서는 SVG 뒤에 쓴다. 문서가 가리키는 SVG가 먼저 놓여 있어야 중간에 멈춰도 깨진 링크가 없다.
   const text = joinLines(layoutDocument(doc, { ...inspected, raw: found.raw, quotes: found.quotes }, { mode, title: args['fold-title'], images }), doc.eol);
   files.push({ path: file, text, isDocument: true });
-  return { files, stale: staleSvgs({ file, outDir, owner }, new Set(built.map((item) => outputKey(item.svg)))) };
+  return { files, stale: staleSvgs({ file, outDir, owner }, new Set(outputs.map(({ svg }) => outputKey(svg)))) };
 }
 
 // cost: time O(f), heap O(f), stack O(1), io f
