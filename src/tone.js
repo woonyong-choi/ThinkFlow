@@ -18,11 +18,14 @@ export const autoTone = (n) => categoryPaint(n).family;
 // cost: time O(f), heap O(1), stack O(1)
 // vars: f = 계열 수
 // basis: estimate
-/** 색 이름의 { fill, ink, outline } 토큰 참조. 흐름 점과 태그의 면(fill), 그 위 글자(ink), 글 상자 윤곽(outline, 무채색은 없다). */
+/**
+ * 색 이름의 { fill, ink, outline, chip, chipInk } 토큰 참조. 흐름 점과 태그의 면(fill), 그 위 글자(ink), 점 윤곽(outline, 무채색은 없다),
+ * 이동 글 상자의 면(chip)과 글자(chipInk). 글 상자는 차트 면색이 아니라 진한 흐름 색(`color.flow.<색>`)과 흰 글자라 어느 색이든 글자가 같은 흰색으로 4.5:1 이상 읽힌다.
+ */
 export function toneColors(name) {
   const entry = PALETTE.find(({ family }) => family === name);
-  if (entry) return { fill: entry.fill, ink: entry.on, outline: entry.border };
-  if (name === NEUTRAL) return { fill: tokens.color.flow.gray, ink: tokens.color['flow-ink'].gray, outline: undefined };
+  if (entry) return { fill: entry.fill, ink: entry.on, outline: entry.border, chip: tokens.color.flow[name], chipInk: tokens.color['flow-ink'][name] };
+  if (name === NEUTRAL) return { fill: tokens.color.flow.gray, ink: tokens.color['flow-ink'].gray, outline: undefined, chip: tokens.color.flow.gray, chipInk: tokens.color['flow-ink'].gray };
   throw new RangeError(`unknown tone: ${name}`);
 }
 
@@ -32,3 +35,5 @@ const colorsOf = (pick) => Object.freeze(Object.fromEntries(TONES.flatMap((name)
 export const TONE_FILLS = colorsOf(({ fill }) => fill);
 export const TONE_INKS = colorsOf(({ ink }) => ink);
 export const TONE_OUTLINES = colorsOf(({ outline }) => outline);
+export const TONE_CHIPS = colorsOf(({ chip }) => chip);
+export const TONE_CHIP_INKS = colorsOf(({ chipInk }) => chipInk);
