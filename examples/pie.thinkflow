@@ -2,7 +2,7 @@ thinkflow
 title "서비스별 스토리지 사용량"
 subtitle "전체 사용량에서 서비스가 차지하는 몫을 조각으로 본다"
 
-chart usage "스토리지 사용량" pie "예시 데이터. 단위 TB. 색이 일곱 가지를 넘으면 무늬와 번호로 구분한다" {
+chart usage "스토리지 사용량" pie "예시 데이터. 단위 TB. 5% 미만인 작은 몫은 기타로 묶는다" {
   row "이미지" value=42
   row "로그" value=31
   row "백업" value=26
@@ -21,7 +21,7 @@ scene "큰 조각"
   wait 1s
   light usage "로그"
 
-scene "무늬 조각"
+scene "기타에 묶인 조각"
   light usage "ML 모델"
   wait 1s
   light usage "임시 파일"

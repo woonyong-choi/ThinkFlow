@@ -42,8 +42,8 @@ const near = (actual, expected, message, tolerance = 0.02) => assert.ok(Math.abs
 
 const KINDS = {
   bar: { rows: 'series v "v"\nrow "A" v=40\nrow "B" v=20', words: ['A', 'B', '40', '20'] },
-  stacked: { rows: 'series p "p"\nseries q "q"\nrow "A" p=30 q=10\nrow "B" p=5 q=15', words: ['A', 'B', '+ 2: 10 = 40'] },
-  percent: { rows: 'series p "p"\nseries q "q"\nrow "A" p=30 q=10\nrow "B" p=5 q=15', words: ['1: 75.0% (30)', '2: 25.0% (10)', '1: 25.0% (5)'] },
+  stacked: { rows: 'series p "p"\nseries q "q"\nrow "A" p=30 q=10\nrow "B" p=5 q=15', words: ['A', 'B', '30', '10', '40', '20'] },
+  percent: { rows: 'series p "p"\nseries q "q"\nrow "A" p=30 q=10\nrow "B" p=5 q=15', words: ['75.0%', '25.0%', '합계 40', '합계 20'] },
   dumbbell: { rows: 'series a "a" role=compare\nseries b "b" role=main\nrow "A" a=10 b=30\nrow "B" a=20 b=15', words: ['+200%', '−25%'] },
   difference: { rows: 'series d "d"\nrow "A" d=3 d.low=1 d.high=5\nrow "B" d=-2 d.low=-4 d.high=0', words: ['+3', '−2'] },
   line: { rows: 'series s "s"\npoint x=1 s=5\npoint x=2 s=9', words: ['s', 'x(u)', 'y(u)'] },
@@ -56,7 +56,7 @@ const KINDS = {
   heatmap: { rows: 'cell "r1" "c1" 3\ncell "r1" "c2" 5\ncell "r2" "c1" 1\ncell "r2" "c2" 9', words: ['r1', 'r2', 'c1', 'c2', '3', '5', '1', '9'], head: '' },
   pie: { rows: 'row "A" value=30\nrow "B" value=70', words: ['30 · 30.0%', '70 · 70.0%'], head: '' },
   donut: { rows: 'row "A" value=30\nrow "B" value=70', words: ['30 · 30.0%', '70 · 70.0%'], head: '' },
-  waterfall: { rows: 'row "up" value=5\nrow "down" value=-2\ntotal "sum"', words: ['0 + 5 = 5', '5 − 2 = 3', '= 3'], head: 'x "x(u)"' },
+  waterfall: { rows: 'row "up" value=5\nrow "down" value=-2\ntotal "sum"', words: ['5', '−2', '3'], head: 'x "x(u)"' },
 };
 
 test('K1 each of the sixteen chart kinds builds from a minimal source, draws its title and its own reading of the numbers', async () => {
@@ -286,7 +286,7 @@ test('K9 scatter names sit nearer to their own point than to any other point, an
     assert.equal(names.length, 3);
     names.forEach((box, k) => dots.forEach((dot, j) => j === k || assert.ok(gap(box, around(dot)) >= gap(box, around(dots[k])) + values.spacing["3"], `${chartWidth}: name ${k} is ${(gap(box, around(dot)) - gap(box, around(dots[k]))).toFixed(1)}px nearer to point ${j} than the margin`)));
   }
-  // 좁은 배치(HTML의 `fl-narrow` 템플릿)에서 점 이름 줄은 낱말 안에서 끊기지 않는다: 번호 키가 앞에 붙은 이름이 같은 낱말 목록을 줄로 나눠 가진다.
+  // 좁은 배치(HTML의 `fl-narrow` 템플릿)에서 점 이름 줄은 낱말 안에서 끊기지 않는다: 이름이 같은 낱말 목록을 줄로 나눠 가진다.
   const example = await build(read(EXAMPLES, 'scatter.thinkflow'), { baseDir: EXAMPLES });
   const narrow = descendants(parseMarkup(await toHtml(example, 'scatter'), { html: true })).find((n) => n.tag === 'template' && /\bfl-narrow\b/.test(n.attrs.class ?? ''));
   assert.ok(narrow, 'the scatter ships a narrow-screen layout');
@@ -295,7 +295,7 @@ test('K9 scatter names sit nearer to their own point than to any other point, an
   assert.equal(drawn.length, labels.length, 'every point has a name');
   for (const name of drawn) {
     const lines = findAll(name, (n) => n.tag === 'tspan').map((n) => textContent(n).trim());
-    const words = lines.join(' ').split(/\s+/).filter(Boolean).slice(1);
+    const words = lines.join(' ').split(/\s+/).filter(Boolean);
     assert.ok(labels.some((label) => label === words.join(' ')), `the lines ${JSON.stringify(lines)} keep every word of one point name whole`);
   }
 });

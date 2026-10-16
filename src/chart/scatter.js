@@ -5,7 +5,7 @@ import { CHART_ARROW, headReach, roleArrow } from '../draw/arrow.js';
 import { values } from '@woonyong-choi/design-tokens/tokens.js';
 import { drawRules } from './axis.js';
 import { inkGroup } from './labels.js';
-import { dotAttrs, isKeyed } from './legend.js';
+import { dotAttrs } from './legend.js';
 import { markAttrs, markId } from './marks.js';
 import { DOT, NAME_OFFSET, PAD, SPACE, TEXT, seriesPaint } from './metrics.js';
 import { plotFrame } from './plot-frame.js';
@@ -77,8 +77,7 @@ export function drawScatter(figure, top) {
   const { chart } = figure;
   const { sx, sy, frame, right, bottom, top: plotTop } = plotFrame(figure, top, { xs: chart.rows.map((p) => p.values.x), ys: chart.rows.map((p) => p.values.y) });
   const at = new Map(chart.rows.map((p) => [p.label, { x: sx.at(p.values.x), y: sy.at(p.values.y), p }]));
-  const keyed = isKeyed(figure);
-  const { names, clashes } = placeNames(chart.rows.map((p) => ({ ...at.get(p.label), p, text: keyed ? `${seriesOf(chart, p) + 1} ${p.label}` : p.label })), right, chart.layout ? { left: sx.start, top: plotTop, bottom: plotTop + sy.length } : undefined);
+  const { names, clashes } = placeNames(chart.rows.map((p) => ({ ...at.get(p.label), p, text: p.label })), right, chart.layout ? { left: sx.start, top: plotTop, bottom: plotTop + sy.length } : undefined);
   const ctx = { chart, at, names };
   const fits = names.map(({ p, nameW, fitsBounds }) => {
     const { x } = at.get(p.label);
