@@ -286,7 +286,7 @@ GitHub 마크다운은 ` ```thinkflow ` 블록을 코드로 보이고 아래 이
 
 1. 태그가 `v{package.json version}`과 다르면 실패한다.
 2. `secrets.NPM_TOKEN`이 없으면 해당 메시지로 실패한다. 현재 인증 방식은 대상 패키지에 쓰기 권한과 bypass 2FA를 가진 granular access token이다. 토큰을 금지한 패키지 설정에서는 이 방식으로 배포할 수 없다. 인증 조건은 [npm 공식 안내](https://docs.npmjs.com/requiring-2fa-for-package-publishing-and-settings-modification/)를 따른다.
-3. `npm ci`로 설치하고 `npm test`, `npm run check`, `npm run check:sources`(예제와 문서 그림, showcase 원본 `--strict`), `npm run check:figures`(모든 마크다운 문서의 `md --check --strict`와 showcase SVG 낡음 검사)를 돈다. 이어서 `npm run check:package`로 실제 배포물의 독립 설치를 확인한다. `npm test`는 브라우저를 열지 않는 공개 계약 시험이라 브라우저 설치가 필요 없다. 워크플로의 실행 여부와 날짜는 GitHub Actions 기록과 이슈가 맡고 이 문서는 설정과 요구만 적는다.
+3. `npm ci`로 설치하고 `npm test`, `npm run check`, `npm run check:sources`(예제와 문서 그림, showcase 원본 `--strict`), `npm run check:figures`(모든 마크다운 문서의 `md --check --strict`와 showcase SVG 낡음 검사)를 돌고, Node 22 작업은 `npm run test:browser`로 설치된 Chrome에서 좁은 화면 HTML 회귀 검사를 돈다. 이어서 `npm run check:package`로 실제 배포물의 독립 설치를 확인한다. `npm test`는 브라우저를 열지 않는 공개 계약 시험이라 브라우저 설치가 필요 없다. 워크플로의 실행 여부와 날짜는 GitHub Actions 기록과 이슈가 맡고 이 문서는 설정과 요구만 적는다.
 4. `npm publish --provenance --access public`을 한다. 버전에 `-`가 있으면 `--tag next`를 붙인다.
 5. `gh release create`로 GitHub Release를 만든다. 버전에 `-`가 있으면 사전 배포 표시를 한다.
 
