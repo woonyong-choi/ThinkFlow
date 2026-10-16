@@ -8,12 +8,12 @@ import { test } from 'node:test';
 import { acquireLocks } from '../src/md-lock.js';
 import { cli, read, snapshot, workspace } from './support.js';
 
-const document = '# Doc\n\n```thinkflow\nthinkflow\nbox a "A"\n```\n';
+const document = '# Doc\n\n```torso\ntorso\nbox a "A"\n```\n';
 const lockText = (pid) => JSON.stringify({ pid, host: hostname(), created: new Date().toISOString(), nonce: 'old-lock' });
 
 test('M10 stale cleanup serializes a second contender before it can replace the lock', (t) => {
   const dir = workspace(t, { 'doc.md': document });
-  const path = join(fs.realpathSync(dir), '.thinkflow-md.lock');
+  const path = join(fs.realpathSync(dir), '.torso-md.lock');
   const dead = spawnSync(process.execPath, ['-e', '']);
   assert.equal(dead.status, 0);
   fs.writeFileSync(path, lockText(dead.pid));
@@ -34,10 +34,10 @@ test('M10 stale cleanup serializes a second contender before it can replace the 
     assert.ok(entered, 'the first process reached stale cleanup');
     assert.ok(contender.busy, 'the contender must not acquire during stale cleanup');
     assert.ok(first.release, 'the first process replaces the stale lock');
-    const owner = read(dir, '.thinkflow-md.lock');
+    const owner = read(dir, '.torso-md.lock');
     assert.equal(JSON.parse(owner).pid, process.pid);
     assert.ok(acquireLocks([dir]).busy, 'a third contender cannot enter the protected write');
-    assert.equal(read(dir, '.thinkflow-md.lock'), owner, 'contenders leave the held lock in place');
+    assert.equal(read(dir, '.torso-md.lock'), owner, 'contenders leave the held lock in place');
   } finally {
     fs.renameSync = rename;
     syncBuiltinESMExports();
@@ -48,7 +48,7 @@ test('M10 stale cleanup serializes a second contender before it can replace the 
 
 test('M10 a leftover acquisition guard requires manual recovery and leaves all files unchanged', (t) => {
   const dir = workspace(t, { 'doc.md': document });
-  fs.mkdirSync(join(dir, '.thinkflow-md.lock.guard'));
+  fs.mkdirSync(join(dir, '.torso-md.lock.guard'));
   const before = snapshot(dir);
   const run = cli(['md', 'doc.md', '--json'], { cwd: dir });
   assert.equal(run.status, 1);
@@ -59,7 +59,7 @@ test('M10 a leftover acquisition guard requires manual recovery and leaves all f
 });
 
 test('M10 a held document folder also blocks writes to a different SVG output folder', (t) => {
-  const dir = workspace(t, { 'doc.md': document, '.thinkflow-md.lock': lockText(process.pid) });
+  const dir = workspace(t, { 'doc.md': document, '.torso-md.lock': lockText(process.pid) });
   const before = snapshot(dir);
   const run = cli(['md', 'doc.md', '--out-dir', 'figures', '--json'], { cwd: dir });
   assert.equal(run.status, 1);

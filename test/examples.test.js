@@ -11,7 +11,7 @@ const FIGURES = ['api', 'architecture', 'class', 'flow', 'handshake', 'integrati
 const ANIMATION = new Set(['animate', 'set', 'animateMotion', 'animateTransform']);
 
 test('K30 the examples are one per expression: chart kinds and the declared development examples', () => {
-  const names = readdirSync(EXAMPLES).filter((f) => f.endsWith('.thinkflow')).map((f) => f.replace(/\.thinkflow$/, '')).sort();
+  const names = readdirSync(EXAMPLES).filter((f) => f.endsWith('.torso')).map((f) => f.replace(/\.torso$/, '')).sort();
   assert.deepEqual(names, [...CHARTS, ...FIGURES].sort());
 });
 
@@ -21,8 +21,8 @@ function declaredTitles(source) {
 }
 
 for (const name of [...CHARTS, ...FIGURES]) {
-  test(`K30 ${name}.thinkflow builds strictly, every scene is a well-formed picture, and the page is standalone`, async () => {
-    const source = readFileSync(join(EXAMPLES, `${name}.thinkflow`), 'utf8');
+  test(`K30 ${name}.torso builds strictly, every scene is a well-formed picture, and the page is standalone`, async () => {
+    const source = readFileSync(join(EXAMPLES, `${name}.torso`), 'utf8');
     const result = await build(source, { baseDir: EXAMPLES });
     assert.deepEqual(result.warnings, []);
     const { steps, presentation } = result.timeline;
@@ -56,13 +56,13 @@ for (const name of [...CHARTS, ...FIGURES]) {
 
 test('K30 every chart example is the chart kind its file is named after, and says so in its title', async () => {
   for (const kind of CHARTS) {
-    const source = readFileSync(join(EXAMPLES, `${kind}.thinkflow`), 'utf8');
+    const source = readFileSync(join(EXAMPLES, `${kind}.torso`), 'utf8');
     assert.match(source, new RegExp(`^chart\\s+[a-z][a-z0-9-]*\\s+"[^"]*"\\s+${kind}\\b`, 'm'), kind);
   }
 });
 
 test('#277 pointer insertion shows the same next field before and after, while preserving addresses and traversal', async () => {
-  const source = readFileSync(join(EXAMPLES, 'pointer.thinkflow'), 'utf8');
+  const source = readFileSync(join(EXAMPLES, 'pointer.torso'), 'utf8');
   const result = await build(source, { baseDir: EXAMPLES });
   const inserted = parseMarkup(await toSvg(result, { scene: 2, isStatic: true }));
   const texts = textsOf(inserted).join(' ');
@@ -77,7 +77,7 @@ test('#277 pointer insertion shows the same next field before and after, while p
 });
 
 test('#279 metric records API 1 CPU at the last surge arrival and keeps that record while live values change', async () => {
-  const source = readFileSync(join(EXAMPLES, 'metric.thinkflow'), 'utf8');
+  const source = readFileSync(join(EXAMPLES, 'metric.torso'), 'utf8');
   const result = await build(source, { baseDir: EXAMPLES });
   const cases = [
     { scene: 0, recorded: '미기록', cpus: ['34', '41', '38'], p95: '110' },

@@ -4,8 +4,8 @@
 
 ## 최소 예제
 
-```thinkflow name=minimal
-thinkflow
+```torso name=minimal
+torso
 title "요청 경로"
 
 box client "클라이언트"
@@ -19,11 +19,11 @@ client -> server "GET /orders"
 server -> db "SELECT"
 ```
 
-![요청 경로](flow-minimal.svg)<!-- thinkflow -->
+![요청 경로](flow-minimal.svg)<!-- torso -->
 
 설명과 값은 카드의 `{ }` 안에 놓습니다. 정지 그림에는 `scene`이 필요하지 않습니다.
 
-첫 줄은 언제나 `thinkflow`입니다. 그다음 카드 줄, 선 줄, 필요하면 보기 줄(`view graph down`), 장면 줄 순서로 적습니다. 보기 줄을 생략하면 모든 카드를 담은 왼쪽에서 오른쪽 그래프 보기 하나가 기본으로 생기고, 방향이나 라벨이 필요할 때만 `view graph down "라벨"`처럼 적습니다. 장면의 `mode`는 `static`(마지막 상태 하나), `once`(한 번 재생), `loop`(되풀이)이고, 생략하면 줄이 있는 장면은 `once`, 줄이 없는 장면은 `static`입니다. 장면 안의 이동에 글을 붙이지 않은 것은 선 라벨이 이미 그 글을 보이기 때문입니다.
+첫 줄은 언제나 `torso`입니다. 그다음 카드 줄, 선 줄, 필요하면 보기 줄(`view graph down`), 장면 줄 순서로 적습니다. 보기 줄을 생략하면 모든 카드를 담은 왼쪽에서 오른쪽 그래프 보기 하나가 기본으로 생기고, 방향이나 라벨이 필요할 때만 `view graph down "라벨"`처럼 적습니다. 장면의 `mode`는 `static`(마지막 상태 하나), `once`(한 번 재생), `loop`(되풀이)이고, 생략하면 줄이 있는 장면은 `once`, 줄이 없는 장면은 `static`입니다. 장면 안의 이동에 글을 붙이지 않은 것은 선 라벨이 이미 그 글을 보이기 때문입니다.
 
 ## 문법
 
@@ -35,8 +35,8 @@ server -> db "SELECT"
 
 `track`은 박자와 따로 도는 흐름입니다. 출발지마다 점이 선들을 멈춤 없이 이어 지나고, 값 줄(`value`, `on`)은 점이 닿을 때 바뀝니다.
 
-```thinkflow name=motion
-thinkflow
+```torso name=motion
+torso
 title "주문이 몰릴 때"
 
 box web "웹"
@@ -66,17 +66,17 @@ scene "동시 주문" mode=loop for=6s
   track web, app -> api -> db "주문" every=1500ms time=2s
 ```
 
-![주문이 몰릴 때](flow-motion.svg)<!-- thinkflow -->
+![주문이 몰릴 때](flow-motion.svg)<!-- torso -->
 
-큐(`queue q "큐" slots=6`)는 칸이 있는 카드이고, 찬 칸 수가 큐 이름으로 부르는 값입니다. `on q q+1`, `set="q-1@q"`처럼 같은 식으로 바꾸면 칸 수가 바뀝니다([그림 문법](../design/figure-syntax.md#큐)). 값, 조건, 대기, 예약, 손실, 장면 사이 값 유지를 한 장면씩 보려면 [flow 예제](../../examples/flow.thinkflow)와 [queue 예제](../../examples/queue.thinkflow)를 엽니다.
+큐(`queue q "큐" slots=6`)는 칸이 있는 카드이고, 찬 칸 수가 큐 이름으로 부르는 값입니다. `on q q+1`, `set="q-1@q"`처럼 같은 식으로 바꾸면 칸 수가 바뀝니다([그림 문법](../design/figure-syntax.md#큐)). 값, 조건, 대기, 예약, 손실, 장면 사이 값 유지를 한 장면씩 보려면 [flow 예제](../../examples/flow.torso)와 [queue 예제](../../examples/queue.torso)를 엽니다.
 
 ## 흔한 오류
 
-진단은 `{파일}:{줄}: {메시지}` 모양이고, 원본 문법 오류의 `code`는 `syntax`, 그림 검사의 `code`는 `check-{번호}`입니다. `thinkflow check figure.thinkflow --json`이 `code`를 줄마다 한 객체로 냅니다. 오류가 하나라도 있으면 결과 파일을 쓰지 않습니다.
+진단은 `{파일}:{줄}: {메시지}` 모양이고, 원본 문법 오류의 `code`는 `syntax`, 그림 검사의 `code`는 `check-{번호}`입니다. `torso check figure.torso --json`이 `code`를 줄마다 한 객체로 냅니다. 오류가 하나라도 있으면 결과 파일을 쓰지 않습니다.
 
 | 원인 | 메시지 | code | 고치는 방법 |
 |---|---|---|---|
-| 첫 문장이 `thinkflow`가 아님 | `the first line must be "thinkflow"` | `missing-preamble` | 첫 줄에 `thinkflow`만 적습니다 |
+| 첫 문장이 `torso`가 아님 | `the first line must be "torso"` | `missing-preamble` | 첫 줄에 `torso`만 적습니다 |
 | 선언하지 않은 이름 | `unknown card "c". Did you mean "a"? Declared: a, b, m` | `syntax` | 이름을 고치거나 카드를 선언합니다 |
 | 같은 이름 두 번 | `the name "a" is already used (line 2)` | `syntax` | 이름을 하나로 줄입니다 |
 | 같은 방향 선 두 개 | `there is already an edge a -> b (line 4). Merge the labels into one` | `syntax` | 선을 하나로 합치고 라벨을 한 글에 적습니다 |

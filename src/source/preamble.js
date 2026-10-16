@@ -3,7 +3,7 @@
 // vars: s = 문장 수
 // basis: estimate
 /**
- * 첫 의미 줄은 숫자나 옵션 없는 thinkflow다.
+ * 첫 의미 줄은 숫자나 옵션 없는 torso다.
  * @throws FigureError 시작 선언이 없거나 잘못되었거나 본문이 없을 때
  */
 export function readPreamble(statements, ctx) {
@@ -16,8 +16,8 @@ export function readPreamble(statements, ctx) {
     problems.errors.splice(0, problems.errors.length, ...problems.errors.filter((e) => e.line <= first.line));
     problems.throwIfAny();
   };
-  if (head.type !== 'word' || head.value !== 'thinkflow') return fail('the first line must be "thinkflow"', { code: 'missing-preamble', column: head.column });
-  if (extra) return fail('write the first line as: thinkflow', { code: 'invalid-preamble', column: extra.column });
-  if (!rest.length) return fail('the file has no figure. Declare cards after thinkflow', { code: 'invalid-preamble', column: head.column });
+  if (head.type !== 'word' || head.value !== 'torso') return fail('the first line must be "torso"', { code: 'missing-preamble', column: head.column });
+  if (extra) return fail('write the first line as: torso', { code: 'invalid-preamble', column: extra.column });
+  if (!rest.length) return fail('the file has no figure. Declare cards after torso', { code: 'invalid-preamble', column: head.column });
   return rest;
 }
