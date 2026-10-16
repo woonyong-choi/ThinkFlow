@@ -1,7 +1,7 @@
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="docs/assets/thinkflow-logo-dark.png">
-    <img src="docs/assets/thinkflow-logo.png" alt="ThinkFlow 로고: 투명한 느낌표가 파란 선을 그리고 그 아래 ThinkFlow 글자가 놓인 모습" width="320">
+    <img src="docs/assets/thinkflow-logo.png" alt="ThinkFlow 아이콘: 노란 줄자를 두른 나무 받침 위의 마네킹" width="200">
   </picture>
 </p>
 
