@@ -15,7 +15,9 @@ export const COPY = {
   // 값이 하나도 없는 계열의 끝 이름 덧붙임. 값 0으로 읽히지 않게 이름 곁에서 밝힌다.
   noData: '값 없음',
   excluded: (count) => `결측 ${count}개 제외`,
+  // 작은 몫을 묶은 항목의 이름(other.js)
+  other: '기타',
 };
 
 /** 차트 글꼴 조각에 넣을 글자: 위 글에 쓰인 글자와 번호 키, 퍼센트 표기에 쓰이는 기호 */
-export const COPY_CHARS = `${MISSING}${COPY.zeroSum}${COPY.total}${COPY.dash}${COPY.noSample}${COPY.noData}${COPY.excluded(0)}.:()%·`;
+export const COPY_CHARS = `${MISSING}${COPY.zeroSum}${COPY.total}${COPY.dash}${COPY.noSample}${COPY.noData}${COPY.excluded(0)}${COPY.other}.:()%·`;

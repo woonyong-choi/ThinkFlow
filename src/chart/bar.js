@@ -1,6 +1,7 @@
 // 막대 차트: 행마다 계열 막대를 쌓고, 신뢰구간 막대기와 값 글자를 붙인다. 계열 수에 상한이 없다.
 // 칸마다 막대(또는 값이 없다는 안내 글)가 늘 하나씩 있다. 값 0은 가장 짧은 막대와 값 글자 `0`이고, 결측은 막대 없이 안내 글이다.
-// 기대값(reference) 계열은 속이 빈 테두리 막대다. 색 수를 넘는 계열은 막대 위에 무늬가 덮인다.
+// 막대는 테두리 없는 평평한 면이다. 신뢰구간은 막대 끝 위에 겹쳐 긋고 값 글자는 그 바로 뒤에 둔다.
+// 기대값(reference) 계열은 슬롯을 차지하지 않고 행 막대 묶음을 가로지르는 세로 눈금이다. 색 수를 넘는 계열은 막대 위에 무늬가 덮인다.
 import { measure } from '../measure/fonts.js';
 import { renderRich, centerBaseline, roundCoord as r } from '../text.js';
 import { values } from '@woonyong-choi/design-tokens/tokens.js';
@@ -8,12 +9,13 @@ import { drawRules, finishRowChart, rowValueScale } from './axis.js';
 import { MISSING } from './copy.js';
 import { valueRange } from './extent.js';
 import { inkGroup, rowLabelLayout, rowName, valueText } from './labels.js';
+import { tokens } from '@woonyong-choi/design-tokens/tokens.js';
 import { markAttrs, markId } from './marks.js';
-import { BAR, SPACE, TEXT, isReference, seriesFill, seriesOutline, seriesPaint } from './metrics.js';
+import { BAR, SPACE, TEXT, isReference, seriesFill, seriesPaint } from './metrics.js';
 import { patternRect } from './pattern.js';
 import { formatNumber, seriesFormats } from './scale.js';
 import { barRadius } from './shape.js';
-import { CI_OFFSET, CI_REACH, presentSlots, slotMiddle, stepOf } from './slots.js';
+import { STEP, presentSlots, slotIndex, slotMiddle } from './slots.js';
 import { hasRowRule } from '../source/chart-rules.js';
 
 // 행 기준 표시가 행 막대 묶음 위아래로 나오는 길이
@@ -72,23 +74,44 @@ function missingMark(chart, plotX, { k, i, cy }) {
 
 // cost: time O(1), heap O(1), stack O(1)
 // basis: estimate
-// 신뢰구간은 막대 아래 독립된 줄에 놓고 양끝 수염으로 범위를 표시한다.
+// 신뢰구간은 막대 가운데 높이에서 막대 끝 위에 겹쳐 긋고, 양끝 수염은 막대 두께만큼이다. 막대 면과 바탕 어느 쪽에서도 읽히게 흐린 글자색이다.
 function confidenceLine({ x1, x2, cy }, mark) {
   const at = `x1="${r(x1)}" x2="${r(x2)}" y1="${r(cy)}" y2="${r(cy)}"`;
-  const cap = SPACE["0-5"];
-  return `<line ${at} class="chart-ci late"${mark.line}/><path d="M${r(x1)} ${r(cy - cap)}v${cap * 2}M${r(x2)} ${r(cy - cap)}v${cap * 2}" class="chart-ci late"${mark.caps}/>`;
+  const cap = BAR / 2;
+  const look = `stroke="${tokens.color['ui-muted']}" stroke-width="${values["border-width"].tag}" fill="none"`;
+  return `<line ${at} ${look} class="late"${mark.line}/><path d="M${r(x1)} ${r(cy - cap)}v${cap * 2}M${r(x2)} ${r(cy - cap)}v${cap * 2}" ${look} class="late"${mark.caps}/>`;
 }
 
 // cost: time O(1), heap O(1), stack O(1)
 // basis: estimate
-// 막대 면. 실제값은 범주 색으로 채우고, 기대값은 채우지 않은 같은 계열 테두리다. 어느 쪽이든 테두리는 같은 계열의 값이다.
+// 막대 면: 범주 색으로 채운 테두리 없는 면
 function barFace(ctx, { i, k }, face) {
   const { chart } = ctx;
   const raw = ctx.row.values[chart.series[i].id];
   const attrs = markAttrs(chart, markId(chart, i, k), { raw, paint: seriesPaint(chart, i) });
-  const look = isReference(chart, i) ? `fill="none" stroke="${seriesOutline(chart, i)}" stroke-width="${values["border-width"].strong}"` : `fill="${seriesFill(chart, i)}" stroke="${seriesOutline(chart, i)}" stroke-width="${values["border-width"].tag}"`;
-  const rect = `<rect x="${r(face.x)}" y="${r(face.y)}" width="${r(face.w)}" height="${face.h}" rx="${face.radius}" ${look} class="grow"${attrs}/>`;
-  return rect + (isReference(chart, i) ? '' : patternRect(seriesPaint(chart, i), face, markAttrs(chart, markId(chart, i, k, '.p')), 'chart-pattern grow'));
+  const rect = `<rect x="${r(face.x)}" y="${r(face.y)}" width="${r(face.w)}" height="${face.h}" rx="${face.radius}" fill="${seriesFill(chart, i)}" class="grow"${attrs}/>`;
+  return rect + patternRect(seriesPaint(chart, i), face, markAttrs(chart, markId(chart, i, k, '.p')), 'chart-pattern grow');
+}
+
+// cost: time O(n), heap O(n), stack O(1)
+// vars: n = 값 글자 수
+// basis: estimate
+// 기대값 계열: 행 막대 묶음을 위아래로 조금 넘는 세로 눈금과 그 위 값 글자. 값이 없으면 자리만 두고 숨긴다.
+function referenceTick(ctx, row, { k, i, y }) {
+  const { chart, scale, plotX, formats } = ctx;
+  const v = row.values[chart.series[i].id];
+  const paint = seriesPaint(chart, i);
+  const x = typeof v === 'number' ? scale.at(v) : plotX;
+  const hidden = typeof v === 'number' ? '' : ' visibility="hidden"';
+  const span = `x1="${r(x)}" x2="${r(x)}" y1="${r(y - RULE_OVERHANG)}" y2="${r(y + ctx.groupH + RULE_OVERHANG)}"`;
+  const tick = `<line ${span} stroke="${paint.ink}" stroke-width="${values["border-width"].strong}" stroke-linecap="round" class="pop"${hidden}${markAttrs(chart, markId(chart, i, k), { raw: v, paint })}/>`;
+  // 행 기준의 숫자 글자가 같은 줄 오른쪽에 있으면 겹치지 않게 눈금 왼쪽으로 적는다.
+  const rule = rowRuleOf(chart, row);
+  const label = typeof v === 'number' ? formats[i](v) : '';
+  const ruleX = rule === undefined ? undefined : scale.at(rule);
+  const isLeft = ruleX !== undefined && ruleX >= x && ruleX - x < measure(label, TEXT['11']) + SPACE["2"];
+  const text = `<text x="${r(isLeft ? x - SPACE["1"] : x + SPACE["1"])}" y="${r(y - RULE_LABEL_RISE)}" class="chart-rule-label${isLeft ? ' end' : ''} late"${hidden}${markAttrs(chart, markId(chart, i, k, '.t'), { isText: true })}>${label}</text>`;
+  return { mark: `<g class="cr-${k}"><g class="cs-${i}">${tick}</g></g>`, value: inkGroup(k, text, i) };
 }
 
 // cost: time O(1), heap O(1), stack O(1)
@@ -97,6 +120,7 @@ function barFace(ctx, { i, k }, face) {
 function barMark(ctx, row, at) {
   const { chart, scale, plotX, formats } = ctx;
   const { k, i, by } = at;
+  if (isReference(chart, i)) return referenceTick(ctx, row, { k, i, y: at.y });
   const cy = by + BAR / 2;
   const s = chart.series[i];
   const v = row.values[s.id];
@@ -106,7 +130,7 @@ function barMark(ctx, row, at) {
   const reach = high !== undefined ? scale.at(high) : end;
   const raw = `${low}~${high}`;
   const mark = { line: markAttrs(chart, markId(chart, i, k, '.ci'), { raw, paint: seriesPaint(chart, i) }), caps: markAttrs(chart, markId(chart, i, k, '.cc'), { raw, paint: seriesPaint(chart, i) }) };
-  const ci = high !== undefined ? confidenceLine({ x1: scale.at(low), x2: reach, cy: by + CI_OFFSET }, mark) : '';
+  const ci = high !== undefined ? confidenceLine({ x1: scale.at(low), x2: reach, cy }, mark) : '';
   const width = Math.max(SPACE["0-5"], end - plotX);
   const face = { x: plotX, y: by, w: width, h: BAR, radius: barRadius(width) };
   const text = valueText({ x: Math.max(end, reach) + SPACE["1-5"], cy }, formats[i](v), `chart-value${i === 0 ? ' ours' : ''} late`, { chart, id: markId(chart, i, k), raw: v, paint: seriesPaint(chart, i) });
@@ -137,9 +161,9 @@ function barRow(ctx, row, k) {
   const { chart, top } = ctx;
   const start = top + k * ctx.pitch;
   const y = start + ctx.labels.space;
-  const middle = BAR / 2 + slotMiddle(presentSlots(row, chart.series), ctx.step);
+  const middle = BAR / 2 + slotMiddle(presentSlots(row, chart.series), STEP);
   const label = inkGroup(k, rowName(row.label, { layout: ctx.labels, k, top: start, cy: y + middle, className: 'chart-label' }));
-  const bars = chart.series.map((_, i) => barMark(ctx, row, { k, i, by: y + i * ctx.step }));
+  const bars = chart.series.map((_, i) => barMark(ctx, row, { k, i, y, by: y + (ctx.slots[i] ?? 0) * STEP }));
   const rule = rowRuleMarks(ctx, row, { k, y, height: ctx.groupH });
   const guides = chart.layout ? drawRules(chart.rules, ctx.scale, { axis: 'x', from: y, to: y + ctx.groupH, labels: false }) : '';
   return { marks: [label, ...bars.map((b) => b.mark), ...rule, guides], values: bars.flatMap((b) => (b.value ? [b.value] : [])) };
@@ -152,12 +176,15 @@ function barRow(ctx, row, k) {
 export function drawBars(figure, top) {
   const { chart } = figure;
   const { scale, plotX } = barScale(chart);
-  const hasInterval = chart.rows.some((row) => chart.series.some((s) => row.values[`${s.id}.high`] !== undefined));
-  const step = stepOf(chart.series.length, hasInterval);
-  const groupH = (chart.series.length - 1) * step + (hasInterval ? CI_REACH : BAR);
+  const slots = slotIndex(chart.series);
+  const count = Math.max(1, ...slots.filter((x) => x !== undefined).map((x) => x + 1));
+  const groupH = (count - 1) * STEP + BAR;
   const labels = rowLabelLayout(chart);
-  const ctx = { chart, scale, plotX, top, groupH, step, labels, pitch: labels.space + groupH + SPACE["5-5"], formats: seriesFormats(chart) };
+  // 기대값 눈금의 값 글자가 행 위로 올라오므로 행 사이에 그만큼 띄운다.
+  const hasReference = slots.includes(undefined);
+  const gap = hasReference ? SPACE["6"] : SPACE["4"];
+  const ctx = { chart, scale, plotX, top: top + (hasReference ? SPACE["3"] : 0), groupH, slots, labels, pitch: labels.space + groupH + gap, formats: seriesFormats(chart) };
   const rows = chart.rows.map((row, k) => barRow(ctx, row, k));
-  const bottom = top + chart.rows.length * ctx.pitch - SPACE["5-5"] + (hasInterval ? SPACE["2"] : 0);
+  const bottom = ctx.top + chart.rows.length * ctx.pitch - gap;
   return finishRowChart(chart, { parts: rows.flatMap((x) => x.marks), over: rows.flatMap((x) => x.values), scale, top, bottom });
 }
