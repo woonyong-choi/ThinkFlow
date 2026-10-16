@@ -16,7 +16,7 @@ const SIZE = values.spacing.figure;
 /**
  * 판들을 합친 장면을 만든다.
  * @param panels 보기 순서의 판 목록. 판은 { view, strategy, label?, scene?, chart?, time?, timing? }이다. 그래프와 순서 판은 scene({ items, groups, edges, ..., width, height }), 차트 판은 chart(chart/draw.js의 그림 + id), 시간 판은 time(layout/time.js의 배치), 타이밍 판은 timing(layout/timing.js의 줄 자리)을 갖는다
- * @returns { items, groups, edges, lifelines, notes, activations, destructions, fragments, plots, times, timings, panels, width, height }. panels는 { view, strategy, box: { x, y, w, h }, label?, index }다. 합쳐진 도형·그룹·선에는 view와 panel(판 번호), 선에는 strategy가 붙는다
+ * @returns { items, groups, edges, lifelines, notes, activations, destructions, fragments, plots, times, timings, panels, width, height }. panels는 { view, strategy, box: { x, y, w, h }, frame, label?, index }다. box는 판의 내용 상자이고 frame은 제목까지 포함해 판이 그리는 영역(제목이 없으면 box와 같다)이다. 합쳐진 도형·그룹·선에는 view와 panel(판 번호), 선에는 strategy가 붙는다
  */
 export function composePanels(panels) {
   const sizes = panels.map(sizeOf);
@@ -31,7 +31,9 @@ export function composePanels(panels) {
     const place = { dx: x + (w - content) / 2, dy: y + head };
     place_(scene, panel, place, index);
     const box = { x, y, w, h: h + head };
-    scene.panels.push({ index, view: panel.view, strategy: panel.strategy, box, label: panel.label, ...(panel.label ? { labelAt: { x: FIGURE_PAD, y: y + labelH / 2 } } : {}) });
+    // 판이 그리는 영역. 제목은 그림 왼쪽 여백에서 시작하므로 제목이 있는 판은 그림 폭 전체를 차지한다. 상자(box)는 내용 폭이라 좁은 판의 제목이 상자 밖에 놓인다.
+    const frame = panel.label ? { x: 0, y, w: width, h: h + head } : box;
+    scene.panels.push({ index, view: panel.view, strategy: panel.strategy, box, frame, label: panel.label, ...(panel.label ? { labelAt: { x: FIGURE_PAD, y: y + labelH / 2 } } : {}) });
     y += h + head;
   });
   scene.height = y;
