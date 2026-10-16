@@ -490,3 +490,27 @@ test('ecdf_series_keep_the_legend_without_endpoint_leaders', async () => {
   const empty = await stillDom(chart('ecdf', 'series actual "Measured"\nseries target "Target" role=reference\nsample - series=actual\nsample - series=target'));
   assert.equal(findAll(empty, node => node.attrs.class === 'chart-leader').length, 0);
 });
+
+test('C-bar reference marks share one row line without crowding: a goal equal to a chart rule has no repeated number, ticks skip missing slots, row rules lie under bars and value text steps past a line it starts on', async () => {
+  const dom = await stillDom(read(EXAMPLES, 'bar.thinkflow'), 0, { baseDir: EXAMPLES });
+  const ruleLabels = findAll(dom, (n) => n.tag === 'text' && /\bchart-rule-label\b/.test(n.attrs.class ?? '')).map((n) => textContent(n).trim()).filter(Boolean);
+  // 목표 1은 공통 기준선 `SLO 1%`와 같은 값이라 숫자를 다시 적지 않는다. 목표 0.5와 행 기준 0.8만 숫자가 있다.
+  assert.ok(!ruleLabels.includes('1.00'), `goal numbers equal to the SLO rule are not repeated: ${ruleLabels}`);
+  assert.deepEqual([...new Set(ruleLabels.filter((t) => t !== 'SLO 1%'))].sort(), ['0.50', '0.8']);
+  // 행 기준 점선은 막대 면 밑에 깔리고 바탕색 테두리로 막대를 끊지 않는다.
+  assert.equal(findAll(dom, (n) => /\bchart-rule-casing\b/.test(n.attrs.class ?? '')).length, 0);
+  const order = descendants(dom).filter((n) => /\bchart-rule\b/.test(n.attrs.class ?? '') && n.tag === 'line' || (n.tag === 'rect' && /\bgrow\b/.test(n.attrs.class ?? '')));
+  const rowRule = order.findIndex((n) => n.tag === 'line' && Number(n.attrs.y2) - Number(n.attrs.y1) < 100);
+  assert.ok(rowRule >= 0 && order.slice(rowRule + 1).some((n) => n.tag === 'rect'), 'the row rule is drawn before the bar faces of later rows');
+  // GET /orders의 값 글자 0.71은 글자 앞쪽에 걸리던 SLO 점선 오른쪽으로 비켜 선 위에 앉지 않는다.
+  const slo = findAll(dom, (n) => n.tag === 'line' && /\bchart-rule\b/.test(n.attrs.class ?? '') && Number(n.attrs.y2) - Number(n.attrs.y1) >= 100)[0];
+  const value = findAll(dom, (n) => n.tag === 'text' && /\bchart-value\b/.test(n.attrs.class ?? '') && textContent(n).trim() === '0.71')[0];
+  assert.ok(num(value, 'x') > num(slo, 'x1'), `0.71 starts right of the SLO line: ${value.attrs.x} vs ${slo.attrs.x1}`);
+  // POST /payments의 목표 눈금은 막대가 있는 슬롯에만 걸쳐 아래 슬롯의 `측정 없음` 글 줄로 내려가지 않는다.
+  const missing = findAll(dom, (n) => n.tag === 'text' && /\bchart-missing\b/.test(n.attrs.class ?? ''))[0];
+  // 글자 기준선에서 글자 크기(11)만큼 위가 글 윗면이다. 아래에 안내 글이 있으면 눈금은 막대 아래로 내밀지 않는다.
+  const [missingY, missingTop] = [num(missing, 'y'), num(missing, 'y') - 11];
+  const ticks = findAll(dom, (n) => n.tag === 'line' && n.attrs['stroke-linecap'] === 'round');
+  const row = ticks.filter((n) => Number(n.attrs.y1) < missingY && Number(n.attrs.y1) > missingY - 60);
+  assert.ok(row.length && row.every((n) => Number(n.attrs.y2) < missingTop), `the goal tick stops above the missing-slot text at ${missingTop}: ${row.map((n) => n.attrs.y2)}`);
+});

@@ -103,15 +103,43 @@ function referenceTick(ctx, row, { k, i, y }) {
   const paint = seriesPaint(chart, i);
   const x = typeof v === 'number' ? scale.at(v) : plotX;
   const hidden = typeof v === 'number' ? '' : ' visibility="hidden"';
-  const span = `x1="${r(x)}" x2="${r(x)}" y1="${r(y - RULE_OVERHANG)}" y2="${r(y + ctx.groupH + RULE_OVERHANG)}"`;
+  const { from, to, below } = barSpan(ctx, row, y);
+  const span = `x1="${r(x)}" x2="${r(x)}" y1="${r(from - RULE_OVERHANG)}" y2="${r(to + (below ? 0 : RULE_OVERHANG))}"`;
   const tick = `<line ${span} stroke="${paint.ink}" stroke-width="${values["border-width"].strong}" stroke-linecap="round" class="pop"${hidden}${markAttrs(chart, markId(chart, i, k), { raw: v, paint })}/>`;
-  // 행 기준의 숫자 글자가 같은 줄 오른쪽에 있으면 겹치지 않게 눈금 왼쪽으로 적는다.
-  const rule = rowRuleOf(chart, row);
-  const label = typeof v === 'number' ? formats[i](v) : '';
-  const ruleX = rule === undefined ? undefined : scale.at(rule);
-  const isLeft = ruleX !== undefined && ruleX >= x && ruleX - x < measure(label, TEXT['11']) + SPACE["2"];
+  // 공통 기준선(rule)과 같은 값이면 그 기준선의 라벨이 이미 값을 말하므로 숫자를 되풀이하지 않는다.
+  const isRuleValue = typeof v === 'number' && chart.rules.some((rule) => rule.value === v);
+  const label = typeof v === 'number' && !isRuleValue ? formats[i](v) : '';
+  const isLeft = label !== '' && labelSide(ctx, row, { x, label }) === 'left';
   const text = `<text x="${r(isLeft ? x - SPACE["1"] : x + SPACE["1"])}" y="${r(y - RULE_LABEL_RISE)}" class="chart-rule-label${isLeft ? ' end' : ''} late"${hidden}${markAttrs(chart, markId(chart, i, k, '.t'), { isText: true })}>${label}</text>`;
   return { mark: `<g class="cr-${k}"><g class="cs-${i}">${tick}</g></g>`, value: inkGroup(k, text, i) };
+}
+
+// cost: time O(s), heap O(1), stack O(1)
+// vars: s = 계열 수
+// basis: estimate
+// 행에서 실제 막대가 놓인 슬롯의 위아래 끝. 값이 없는 슬롯(안내 글)과 기대값은 빼므로 눈금이 안내 글 줄을 가로지르지 않는다. 막대가 하나도 없으면 묶음 전체다.
+// below는 마지막 막대 아래에 안내 글 슬롯이 있다는 뜻이다. 그때는 눈금을 막대 아래로 내밀지 않아 좁은 폭에서 안내 글에 닿지 않는다.
+function barSpan(ctx, row, y) {
+  const { chart, slots } = ctx;
+  const present = chart.series.flatMap((s, i) => (slots[i] !== undefined && typeof row.values[s.id] === 'number' ? [slots[i]] : []));
+  if (!present.length) return { from: y, to: y + ctx.groupH, below: false };
+  const last = Math.max(...present);
+  const below = chart.series.some((s, i) => slots[i] !== undefined && slots[i] > last && row.values[s.id] === null);
+  return { from: y + Math.min(...present) * STEP, to: y + last * STEP + BAR, below };
+}
+
+// cost: time O(1), heap O(1), stack O(1)
+// basis: estimate
+// 기대값 숫자를 눈금 오른쪽에 둘지 왼쪽에 둘지. 같은 줄의 행 기준 숫자(기준선 오른쪽에 적힌다)와 간격 spacing.2 안으로 붙거나 겹치면 반대쪽에 둔다.
+function labelSide(ctx, row, { x, label }) {
+  const rule = rowRuleOf(ctx.chart, row);
+  if (rule === undefined) return 'right';
+  const ruleX = ctx.scale.at(rule);
+  const ruleBox = [ruleX + SPACE["1"], ruleX + SPACE["1"] + measure(formatNumber(rule), TEXT['11'])];
+  const width = measure(label, TEXT['11']);
+  const clear = ([a, b]) => b + SPACE["2"] <= ruleBox[0] || ruleBox[1] + SPACE["2"] <= a;
+  if (clear([x + SPACE["1"], x + SPACE["1"] + width])) return 'right';
+  return clear([x - SPACE["1"] - width, x - SPACE["1"]]) ? 'left' : 'right';
 }
 
 // cost: time O(1), heap O(1), stack O(1)
@@ -133,14 +161,37 @@ function barMark(ctx, row, at) {
   const ci = high !== undefined ? confidenceLine({ x1: scale.at(low), x2: reach, cy }, mark) : '';
   const width = Math.max(SPACE["0-5"], end - plotX);
   const face = { x: plotX, y: by, w: width, h: BAR, radius: barRadius(width) };
-  const text = valueText({ x: Math.max(end, reach) + SPACE["1-5"], cy }, formats[i](v), `chart-value${i === 0 ? ' ours' : ''} late`, { chart, id: markId(chart, i, k), raw: v, paint: seriesPaint(chart, i) });
+  const label = formats[i](v);
+  const textX = clearOfLines(ctx, row, { x: Math.max(end, reach) + SPACE["1-5"], width: measure(label, TEXT['11'], i === 0 ? 'numSemibold' : 'num') });
+  const text = valueText({ x: textX, cy }, label, `chart-value${i === 0 ? ' ours' : ''} late`, { chart, id: markId(chart, i, k), raw: v, paint: seriesPaint(chart, i) });
   return { mark: `<g class="cr-${k}"><g class="cs-${i}">${barFace({ ...ctx, row }, { i, k }, face)}${ci}</g></g>`, value: inkGroup(k, text, i) };
+}
+
+// cost: time O(l), heap O(l), stack O(1)
+// vars: l = 그 행에 걸치는 세로선 수(공통 기준선, 행 기준, 기대값 눈금)
+// basis: estimate
+// 값 글자의 시작 x. 글자 상자 앞쪽 절반에 세로선(공통 기준선, 행 기준, 기대값 눈금)이 걸리면 그 선 바로 오른쪽으로 옮긴다.
+// 옮긴 글자가 차트에서 가장 멀리 닿는 값 글자보다 더 나가면(축 길이 밖) 옮기지 않고 글자 바탕 면이 선을 가리게 둔다.
+function clearOfLines(ctx, row, { x, width }) {
+  const { chart, scale } = ctx;
+  const rowRule = rowRuleOf(chart, row);
+  const references = chart.series.flatMap((s, i) => (isReference(chart, i) && typeof row.values[s.id] === 'number' ? [row.values[s.id]] : []));
+  const lines = [...chart.rules.map((rule) => rule.value), ...(rowRule === undefined ? [] : [rowRule]), ...references].map((value) => scale.at(value)).sort((a, b) => a - b);
+  const pad = SPACE["0-5"] + SPACE["0-25"];
+  let start = x;
+  // 선이 글자 앞쪽 절반에 걸리면 선 오른쪽으로 옮긴다. 뒤쪽 절반에 걸리면 옮길 거리가 글자 폭만큼이라 막대 끝에서 떨어져 보이므로 옮기지 않는다.
+  for (const line of lines) {
+    if (line < start - pad || line > start + width + pad) continue;
+    if (line > start + width / 2) return x;
+    start = line + SPACE["1-5"];
+  }
+  return start + width <= ctx.textLimit ? start : x;
 }
 
 // cost: time O(1), heap O(1), stack O(1)
 // basis: estimate
 // 행 기준: 그 행 막대 묶음에만 걸치는 점선과 위쪽 숫자 글자. 다른 행에는 그려지지 않아 행마다 다른 기준이 섞이지 않는다. 점선은 행 묶음(cr-k)에 속해 밝히지 않은 행에서 함께 흐려진다.
-// 막대 위에 얹히므로 바탕색 테두리(casing)를 먼저 깔아 막대 색과 점선이 갈리게 한다.
+// 막대 밑에 깔아 막대 면을 끊지 않는다. 점선은 묶음 위아래로 나온 부분과 막대 사이 틈에서 보이고, 값은 위쪽 숫자가 말한다.
 function rowRuleMarks(ctx, row, at) {
   const { chart, scale } = ctx;
   const { k, y, height } = at;
@@ -148,7 +199,7 @@ function rowRuleMarks(ctx, row, at) {
   if (rule === undefined) return [];
   const x = scale.at(rule);
   const span = `x1="${r(x)}" x2="${r(x)}" y1="${r(y - RULE_OVERHANG)}" y2="${r(y + height + RULE_OVERHANG)}"`;
-  const line = `<g class="cr-${k}"><line ${span} class="chart-rule-casing"/><line ${span} class="chart-rule"/></g>`;
+  const line = `<g class="cr-${k}"><line ${span} class="chart-rule"/></g>`;
   return [line, inkGroup(k, `<text x="${r(x + SPACE["1"])}" y="${r(y - RULE_LABEL_RISE)}" class="chart-rule-label">${formatNumber(rule)}</text>`)];
 }
 
@@ -166,7 +217,7 @@ function barRow(ctx, row, k) {
   const bars = chart.series.map((_, i) => barMark(ctx, row, { k, i, y, by: y + (ctx.slots[i] ?? 0) * STEP }));
   const rule = rowRuleMarks(ctx, row, { k, y, height: ctx.groupH });
   const guides = chart.layout ? drawRules(chart.rules, ctx.scale, { axis: 'x', from: y, to: y + ctx.groupH, labels: false }) : '';
-  return { marks: [label, ...bars.map((b) => b.mark), ...rule, guides], values: bars.flatMap((b) => (b.value ? [b.value] : [])) };
+  return { marks: [label, ...rule, ...bars.map((b) => b.mark), guides], values: bars.flatMap((b) => (b.value ? [b.value] : [])) };
 }
 
 // cost: time O(r·s + t), heap O(out), stack O(1)
@@ -183,7 +234,9 @@ export function drawBars(figure, top) {
   // 기대값 눈금의 값 글자가 행 위로 올라오므로 행 사이에 그만큼 띄운다.
   const hasReference = slots.includes(undefined);
   const gap = hasReference ? SPACE["6"] : SPACE["4"];
-  const ctx = { chart, scale, plotX, top: top + (hasReference ? SPACE["3"] : 0), groupH, slots, labels, pitch: labels.space + groupH + gap, formats: seriesFormats(chart) };
+  // 값 글자를 세로선 오른쪽으로 옮길 수 있는 끝: 원래 자리에서 가장 멀리 닿는 값 글자의 끝(축 길이가 이 끝까지 들게 정해졌다).
+  const textLimit = Math.max(scale.start + scale.length, ...valueReaches(chart).map((reach) => scale.at(reach.value) + reach.extra));
+  const ctx = { chart, scale, plotX, top: top + (hasReference ? SPACE["3"] : 0), groupH, slots, labels, pitch: labels.space + groupH + gap, formats: seriesFormats(chart), textLimit };
   const rows = chart.rows.map((row, k) => barRow(ctx, row, k));
   const bottom = ctx.top + chart.rows.length * ctx.pitch - gap;
   return finishRowChart(chart, { parts: rows.flatMap((x) => x.marks), over: rows.flatMap((x) => x.values), scale, top, bottom });
