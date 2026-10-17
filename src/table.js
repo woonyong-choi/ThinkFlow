@@ -3,26 +3,17 @@
 // vars: k = 키에 포함된 열 수, f = 외래 키에 포함된 열 수
 // basis: estimate
 import { maxOf, minOf } from './extremes.js';
+// 열 이름 뒤의 작은 표시: 키(PK, FK, UNQ) 다음에 NULL 허용 여부(NN은 required, NULL은 nullable). 한 열이 한 줄이라 표가 열 수만큼만 길다.
 export function columnKeyLabel(column, table) {
   const keys = table.keys ?? [];
   const order = [...keys.filter(key => key.kind === 'pk'), ...(table.foreignKeys ?? []), ...keys.filter(key => key.kind === 'unique')];
-  return [...new Set(order.filter(key => key.columns.includes(column.name)).map(key => key.label))].join(' ');
+  const nullability = column.nullable ? 'NULL' : column.required ? 'NN' : '';
+  return [...new Set(order.filter(key => key.columns.includes(column.name)).map(key => key.label)), nullability].filter(Boolean).join(' ');
 }
 
-// cost: time O(n+f), heap O(n+f), stack O(1)
-// vars: n = 타입과 삭제 정책의 전체 글자 수, f = 외래 키에 포함된 열 수
-// basis: estimate
-function columnType(column, table) {
-  return [column.type, ...columnRules(column, table)].join(' ');
-}
-
-// cost: time O(n+f), heap O(n+f), stack O(1)
-// vars: n = 삭제 정책의 전체 글자 수, f = 외래 키에 포함된 열 수
-// basis: estimate
-export function columnRules(column, table) {
-  const nullability = column.nullable ? 'NULL' : column.required ? 'NOT NULL' : '';
-  const deletions = (table.foreignKeys ?? []).filter(key => key.ondelete && key.columns.includes(column.name)).map(key => `${key.columns.length > 1 ? `${key.label} ` : ''}ON DELETE ${key.ondelete.replaceAll('-', ' ').toUpperCase()}`);
-  return [nullability, ...new Set(deletions)].filter(Boolean);
+/** 삭제 정책 글(ON DELETE CASCADE). 외래 키 선의 라벨과 설명이 같이 쓴다. */
+export function deleteRule(ondelete) {
+  return `${ondelete.replaceAll('-', ' ').toUpperCase()}`;
 }
 
 // cost: time O(n+c*(k+f)), heap O(n+k+f), stack O(1)
@@ -30,8 +21,8 @@ export function columnRules(column, table) {
 // basis: estimate
 export function tableDescription(table) {
   const keys = (table.keys ?? []).map(key => `${key.label} (${key.columns.join(', ')})`);
-  const references = (table.foreignKeys ?? []).map(key => `${key.label} (${key.columns.join(', ')}) references ${key.target.table} (${key.target.columns.join(', ')})`);
-  return [table.label, ...table.columns.map((column) => `${column.name} ${columnKeyLabel(column, table)} ${columnType(column, table)}`), ...keys, ...references].join('; ');
+  const references = (table.foreignKeys ?? []).map(key => [`${key.label} (${key.columns.join(', ')}) references ${key.target.table} (${key.target.columns.join(', ')})`, key.ondelete && deleteRule(key.ondelete)].filter(Boolean).join(' '));
+  return [table.label, ...table.columns.map((column) => [column.name, columnKeyLabel(column, table), column.type].filter(Boolean).join(' ')), ...keys, ...references].join('; ');
 }
 
 // cost: time O(c+r), heap O(c+r), stack O(1)

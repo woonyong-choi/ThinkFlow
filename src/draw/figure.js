@@ -6,6 +6,7 @@ import { STYLE, textAt } from '../measure/texts.js';
 import { escapeXml, plainText, roundCoord as r } from '../text.js';
 import { drawHead } from './card.js';
 import { drawEdge, drawEdgeLabel } from './connector.js';
+import { crossingCuts } from './crossings.js';
 import { contentBox, createTones, drawContent } from './content.js';
 import { drawDecor } from './decor.js';
 import { lookClass, lookOf } from './look.js';
@@ -32,7 +33,7 @@ const NOTE_FOLD = values.spacing["2-5"];
  * @returns { body, pills }. pills는 알약이 있는 선마다 `l-번호` 묶음을 담은 `<g class="fl-pills">`이고 알약이 없으면 빈 글이다
  */
 export function drawScene(scene, decorate, glyphs) {
-  const paint = { toneOf: createTones(scene.tagOrder), decorate, glyphs, scene, flashes: scene.flashes ?? { shape: new Map(), card: new Map() }, borders: scene.borders };
+  const paint = { toneOf: createTones(scene.tagOrder), decorate, glyphs, scene, flashes: scene.flashes ?? { shape: new Map(), card: new Map() }, borders: scene.borders, cuts: crossingCuts(scene.edges) };
   const parts = [];
   scene.groups.forEach((g, j) => parts.push(drawGroup(g, j, paint)));
   for (const line of scene.lifelines ?? []) parts.push(`<line x1="${r(line.x)}" x2="${r(line.x)}" y1="${r(line.y1)}" y2="${r(line.y2)}" class="lifeline${sceneTag(line, scene.shownSi).off}"${sceneTag(line, scene.shownSi).attr}/>`);

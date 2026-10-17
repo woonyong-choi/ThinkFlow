@@ -6,7 +6,7 @@ import { tokens } from '@woonyong-choi/design-tokens/tokens.js';
 /** 무채색 이름. 범주 계열이 아니라 명시했을 때만 쓴다. */
 export const NEUTRAL = 'gray';
 /** 범주 계열 이름(도우미의 1판 순서) */
-export const FAMILIES = Object.freeze(PALETTE.map(({ family }) => family));
+const FAMILIES = Object.freeze(PALETTE.map(({ family }) => family));
 /** 색 이름 전부: 범주 계열과 무채색 */
 export const TONES = Object.freeze([...FAMILIES, NEUTRAL]);
 

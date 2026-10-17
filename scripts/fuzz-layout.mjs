@@ -119,7 +119,7 @@ function nodeDecor(rnd) {
 
 // 그룹 선택 사항: 배지와 아이콘
 function groupDecor(rnd) {
-  return rnd.next() < DECOR_CHANCE ? ` badge="G" icon=${rnd.pick(ICONS)}${rnd.next() < 0.5 ? ' border=dashed' : ''}` : '';
+  return rnd.next() < DECOR_CHANCE ? ` badge="G" icon=${rnd.pick(ICONS)}${rnd.next() < 0.5 ? ' dashed' : ''}` : '';
 }
 
 // cost: time O(n), heap O(n), stack O(1)

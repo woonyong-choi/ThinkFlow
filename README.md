@@ -188,7 +188,7 @@ A source must start with `torso`, and only `.torso` files are read (`import` rea
 - Figure check: overlaps, edges through nodes, crowded edges, aspect ratio, and readability.
 - Playback: an HTML player and an animated SVG from the same timeline.
 - Markdown: `torso md` renders the `torso` code blocks of a document and keeps the image lines below them up to date, and a GitHub Action checks them in CI.
-- Import: `torso import mermaid|dbml|d2` turns a Mermaid, DBML, or D2 file into a `.torso` source and reports what it skipped or drew differently, line by line.
+- Import: `torso import mermaid|dbml|d2|drawio|excalidraw` turns a Mermaid, DBML, D2, draw.io, or Excalidraw file into a `.torso` source and reports what it skipped or drew differently, line by line.
 
 Not supported: 3D, maps, CAD, full BPMN, Gantt charts, CPU simulation, a real-time backend, executing API cards, and class members as edge ends. Sankey, flame graphs, and violin plots are deferred: they are not supported yet and need validation first. [Expression coverage](docs/design/expression-coverage.md) lists what each example covers, what it does not, and the known limits.
 

@@ -14,6 +14,7 @@ import { edgeMarker } from '../src/draw/arrow.js';
 import { TEXT } from '../src/chart/metrics.js';
 import { pulseOverlay } from '../src/chart/pulse-overlay.js';
 import { drawEdgeLabel } from '../src/draw/connector.js';
+import { crossingCuts } from '../src/draw/crossings.js';
 import { pointAlong, routePolyline } from '../src/route.js';
 import { sizeChip } from '../src/chip.js';
 import { curveOf } from '../src/easing.js';
@@ -28,7 +29,7 @@ import { STYLE, allTexts, textAt, textSpan } from '../src/measure/texts.js';
 import { STYLES } from '../src/styles.js';
 import { centerBaseline } from '../src/text.js';
 import { values } from '@woonyong-choi/design-tokens/tokens.js';
-import { build, torso, descendants, findAll, findOne, num, parseMarkup, textContent, toHtml, toSvg } from './support.js';
+import { EXAMPLES, build, read, torso, descendants, findAll, findOne, num, parseMarkup, textContent, toHtml, toSvg } from './support.js';
 
 const TICK = '`';
 const EPS = 0.06; // SVG 좌표는 소수 첫째 자리로 줄여 쓴다
@@ -526,6 +527,29 @@ test('U7 경로 표본은 유턴과 원본 끝점을 보존한다', () => {
   const end = pointAlong(points, 1.01);
   end.x = 100;
   assert.equal(points.at(-1).x, 10);
+});
+
+test('U7 두 선이 곧은 구간에서 직각으로 지나면 세로 선만 끊기고, 모서리·선 끝·장면마다 나타나는 선은 끊지 않는다', async () => {
+  const across = { points: [{ x: 0, y: 100 }, { x: 200, y: 100 }] };
+  const down = { points: [{ x: 100, y: 0 }, { x: 100, y: 200 }] };
+  const cuts = crossingCuts([across, down]);
+  assert.deepEqual([...cuts.keys()], [1], 'the vertical line is the one that breaks');
+  const [cut] = cuts.get(1);
+  assert.ok(cut.x < 100 && cut.x + cut.w > 100 && cut.y < 100 && cut.y + cut.h > 100, 'the gap is centered on the crossing');
+  // 세로 선이 가로 선의 끝(도형 테두리)이나 둥근 모서리 자리에서 만나면 다리가 아니다.
+  assert.equal(crossingCuts([across, { points: [{ x: 200, y: 0 }, { x: 200, y: 200 }] }]).size, 0);
+  assert.equal(crossingCuts([across, { points: [{ x: 100, y: 98 }, { x: 100, y: 300 }] }]).size, 0);
+  assert.equal(crossingCuts([across, { ...down, si: 0 }]).size, 0);
+  // 그린 그림: 끊긴 선은 자기 clipPath를 걸고, 구멍은 바깥 사각형 안에 있다(clip-rule evenodd).
+  const flow = parseMarkup(await toSvg(await build(read(EXAMPLES, 'flow.torso')), { isStatic: true }));
+  const clipped = findAll(flow, (n) => n.tag === 'path' && n.attrs['clip-path']?.startsWith('url(#fl-cut-'));
+  assert.ok(clipped.length >= 1);
+  for (const path of clipped) {
+    const id = path.attrs['clip-path'].slice(5, -1);
+    const [hole] = findAll(flow, (n) => n.tag === 'clipPath' && n.attrs.id === id).flatMap((clip) => findAll(clip, (n) => n.tag === 'path'));
+    assert.equal(hole.attrs['clip-rule'], 'evenodd');
+    assert.ok((hole.attrs.d.match(/Z/g) ?? []).length >= 2, 'an outer box and at least one gap');
+  }
 });
 
 test('U10 색과 값이 없는 유실 장면도 유한한 사라짐 시간을 전달한다', async () => {

@@ -6,7 +6,7 @@
 
 ## 요약
 
-`torso import <mermaid|dbml|d2>`는 다른 도구의 그림 원본을 `.torso` 원본으로 옮긴다. 세 형식의 읽기는 모두 공통 모형 하나를 채우고, 원본 글은 쓰는 곳 한 곳(`src/import/emit.js`)이 쓴다. 그래서 같은 뜻(카드, 그룹, 선, 외래 키, 메시지, 차트 행)은 형식과 상관없이 같은 Torso 문법 하나가 된다. 새 문법은 없다. Torso에 대응 문법이 없는 문장은 원본 줄 번호가 있는 경고와 함께 건너뛰고, 다르게 그리는 문장도 경고한다. 결과 파일은 새로 쓰기만 하고 이미 있는 파일을 바꾸지 않는다.
+`torso import <mermaid|dbml|d2|drawio|excalidraw>`는 다른 도구의 그림 원본을 `.torso` 원본으로 옮긴다. 다섯 형식의 읽기는 모두 공통 모형 하나를 채우고, 원본 글은 쓰는 곳 한 곳(`src/import/emit.js`)이 쓴다. 그래서 같은 뜻(카드, 그룹, 선, 외래 키, 메시지, 차트 행)은 형식과 상관없이 같은 Torso 문법 하나가 된다. 새 문법은 없다. Torso에 대응 문법이 없는 문장은 원본 줄 번호가 있는 경고와 함께 건너뛰고, 다르게 그리는 문장도 경고한다. 결과 파일은 새로 쓰기만 하고 이미 있는 파일을 바꾸지 않는다.
 
 ## 동기
 
@@ -45,10 +45,10 @@ auth -> reject "no" dashed
 ### 명령과 결과 파일
 
 ```text
-torso import [mermaid|dbml|d2] <파일|-> [--out 파일.torso] [--json]
+torso import [mermaid|dbml|d2|drawio|excalidraw] <파일|-> [--out 파일.torso] [--json]
 ```
 
-- 원본은 하나다. 형식을 적지 않으면 원본 확장자로 정한다(`.mmd`·`.mermaid`는 mermaid, `.dbml`, `.d2`). 표준 입력(`-`)은 확장자가 없으므로 형식을 적어야 한다. 형식을 모르거나, 원본이 없거나 둘 이상이거나, `--out`이 `.torso` 파일이 아니거나, 받지 않는 선택 사항(`--html`, `--static`, `--scene`, `--title`, `--strict`, `--budget`, `md` 전용 선택 사항)을 주면 사용법 오류(종료 2)다.
+- 원본은 하나다. 형식을 적지 않으면 원본 확장자로 정한다(`.mmd`·`.mermaid`는 mermaid, `.dbml`, `.d2`, `.drawio`, `.excalidraw`). 표준 입력(`-`)은 확장자가 없으므로 형식을 적어야 한다. 형식을 모르거나, 원본이 없거나 둘 이상이거나, `--out`이 `.torso` 파일이 아니거나, 받지 않는 선택 사항(`--html`, `--static`, `--scene`, `--title`, `--strict`, `--budget`, `md` 전용 선택 사항)을 주면 사용법 오류(종료 2)다.
 - `--out`이 없으면 옮긴 원본 글을 표준 출력에 쓴다(`--json`이면 `{"file":"원본","source":"..."}` 한 줄). `--out`이 있으면 그 파일에 쓰고 쓴 경로를 표준 출력에 알린다.
 - 이미 있는 파일(심볼릭 링크 포함)은 바꾸지 않는다. `--out` 경로에 파일이 있으면 `{경로}: already exists. ...` 오류(code `output-exists`)다. 쓰기는 `render`와 같은 쓰기(`commitReported`)라 쓰는 순간에도 그사이 생긴 파일을 덮지 않는다.
 - 종료 코드는 성공 0(경고 포함), 원본이나 쓰기 오류 1이다.
@@ -58,7 +58,7 @@ torso import [mermaid|dbml|d2] <파일|-> [--out 파일.torso] [--json]
 
 옮긴 원본은 쓰기 전에 `buildFigure`로 한 번 만들어 본다.
 
-- 그림 검사(code `check-N`)의 오류와 경고만 나오면 원본은 맞고 배치를 손볼 곳이다. 파일을 쓰고 그 진단을 새 파일의 줄과 함께 경고로 알린다. 예: 같은 열로 들어오는 다대다 관계선과 외래 키 선의 다중성 글이 겹치는 그림, 표가 많아 캔버스 폭에서 글이 작아지는 스키마. 고친 뒤 `render --strict`로 확인한다.
+- 그림 검사(code `check-N`)의 오류와 경고만 나오면 원본은 맞고 배치를 손볼 곳이다. 파일을 쓰고 그 진단을 새 파일의 줄과 함께 경고로 알린다. 예: 한 열로 들어오는 여러 외래 키 선과 다대다 관계선의 다중성 글이 겹치는 그림, 표가 많아 캔버스 폭에서 글이 작아지는 스키마. 고친 뒤 `render --strict`로 확인한다.
 - 그 밖의 오류는 그대로 알리고 `the imported source does not build, so it is not written`(code `import`)을 덧붙이며 쓰지 않는다. 글꼴에 없는 글자(예: 한자)가 여기에 든다.
 
 ### 공통 모형
@@ -214,6 +214,44 @@ DBML에는 방향이 없어 Torso 기본(`right`)으로 쓴다.
 
 D2 키는 대소문자를 가리지 않아 소문자로 견주고, 보이는 이름은 처음 쓴 꼴이다.
 
+### draw.io
+
+draw.io(diagrams.net)는 좌표가 있는 손 그림이다. 좌표, 색, 글꼴, 꺾은 점은 옮기지 않고 도형과 연결의 뜻만 옮기며 Torso가 다시 배치한다(`src/import/drawio.js`, 셀 읽기는 `drawio-parse.js`). 손 그림 두 형식이 같이 쓰는 판단(흐름 방향, 제목, 글 없는 도형)은 `src/import/drawn.js` 한 곳이다.
+
+| draw.io | Torso | 경고 |
+|---|---|---|
+| 도형 셀(`vertex="1"`)과 라벨(`value`, `UserObject`·`object`의 `label`) | `box id "글"`. 이름(id)은 라벨에서 만든다(셀 id는 뜻이 없다) | 글 없는 도형은 `…`로 쓰고 알림 |
+| `html=1` 라벨 | 태그를 지운 한 줄 글(줄 바꿈 태그는 공백, 문자 참조는 풂) | |
+| `ellipse`, `rhombus`, `shape=cylinder3`, `shape=umlActor` | `box shape=circle`, `decision`, `store`, `person` | |
+| `dashed=1` 상자 | `external`(점선 윤곽 카드) | |
+| 그 밖의 `shape=` | `box` | 바꿔 그림 |
+| `swimlane`, `container=1` | `group`(`dashed=1`이면 `dashed`) | 라벨이 없으면 `그룹`으로 쓰고 알림 |
+| 보이지 않는 묶음(`group`) | 없음. 안의 셀을 바깥 그룹으로 꺼냄 | |
+| 연결선(`edge="1"`)의 `source`, `target`과 라벨, 선에 붙은 라벨 셀(`edgeLabel`) | `a -> b "글"`(라벨은 이어 씀) | |
+| `endArrow=none`, `startArrow=…` | `head=none`, `head=both`, 시작 쪽에만 있으면 방향을 뒤집음 | |
+| `dashed=1` 선 | `dashed` | |
+| 모든 도형보다 위의 자유 글(`text`) | 그림 제목 `title "글"` | |
+| 그 밖의 자유 글, 한쪽 끝이 비어 있는 선 | 없음 | 건너뜀 |
+| 둘째 쪽부터(`diagram`) | 없음 | 건너뜀(쪽마다 파일로 저장) |
+
+압축한 쪽(deflate, base64, URI 인코딩)은 풀어서 읽고, 그 쪽 셀의 경고 줄은 쪽(`diagram` 태그)의 줄이다. 풀 수 없는 쪽은 오류(code `import`)다. 흐름 방향은 연결된 두 도형 가운데 사이의 가로·세로 거리 합으로 고른다(가로가 길거나 같으면 `right`).
+
+### Excalidraw
+
+Excalidraw(`.excalidraw` JSON)도 손 그림이라 draw.io와 같은 기준으로 뜻만 옮긴다(`src/import/excalidraw.js`).
+
+| Excalidraw | Torso | 경고 |
+|---|---|---|
+| `rectangle`, `ellipse`, `diamond`와 그 안의 글(`containerId`) | `box`, `box shape=circle`, `decision` | 글 없는 도형은 `…`로 쓰고 알림 |
+| 점선(`strokeStyle` `dashed`·`dotted`) 사각형 | `external` | |
+| `frame`과 그 안 요소(`frameId`) | `group`(이름 없는 프레임은 `Frame`) | |
+| 두 끝이 도형에 묶인 `arrow`(`startBinding`, `endBinding`)와 화살표 글 | `a -> b "글"`, 화살촉 유무로 `head`, 점선은 `dashed` | |
+| 모든 도형보다 위의 자유 글 | 그림 제목 | |
+| 그 밖의 자유 글, 묶이지 않은 화살표, `line`, `freedraw`, `image`, 삽입 페이지 | 없음 | 건너뜀 |
+| 지운 요소(`isDeleted`), 선택 묶음(`groupIds`) | 없음 | |
+
+JSON에는 문장 줄이 없어 경고 줄은 그 요소 id가 처음 나오는 줄이다.
+
 ### 경고와 오류
 
 | code | 뜻 |
@@ -231,7 +269,7 @@ D2 키는 대소문자를 가리지 않아 소문자로 견주고, 보이는 이
 
 ### 파서 의존성
 
-외부 파서 패키지를 쓰지 않는다. 세 파서는 이 저장소의 작은 읽기다(`src/import/`의 `mermaid*.js`, `dbml-parse.js`, `d2-parse.js`).
+외부 파서 패키지를 쓰지 않는다. 파서는 이 저장소의 작은 읽기다(`src/import/`의 `mermaid*.js`, `dbml-parse.js`, `d2-parse.js`, `drawio-parse.js`). Excalidraw는 JSON이라 `JSON.parse`로 읽고, draw.io의 압축한 쪽은 Node 내장 `zlib`으로 푼다.
 
 - Mermaid 공식 패키지(`mermaid`)는 렌더러와 DOM 정리 도구를 함께 설치하고, 문법 읽기(`mermaid.parse`)도 브라우저 환경을 전제한다.
 - DBML 공식 파서(`@dbml/core`)는 SQL 방언 변환기까지 포함한 큰 패키지이고, 가져오기에 필요한 것은 Table, Ref, Enum, TableGroup의 문장 모양뿐이다.
@@ -254,7 +292,9 @@ D2 키는 대소문자를 가리지 않아 소문자로 견주고, 보이는 이
 | 명령이 원본 옆이나 `--out`에 새 파일만 쓰고, 표준 입력, `--json`, 겹침, 이미 있는 파일, 사용법 오류가 위 계약대로다. 옮긴 파일은 `render --strict`가 통과한다 | `test/import.test.js`(IM9) |
 | 그림 검사 오류만 있는 옮긴 원본은 쓰고 새 파일의 줄로 경고한다 | `test/import.test.js`(IM10) |
 | D2·Mermaid의 점선 선·컨테이너·상자와 D2 제목 관례, 한글 이름의 Mermaid namespace가 옮겨진다 | `test/import.test.js`(IM12) |
-| 옮긴 그림이 실제 화면에서 읽힌다 | 대표 예(IM1~IM8의 원본)를 Chromium으로 렌더해 직접 봤다. 범위는 [예제와 검증 범위](expression-coverage.md#예제와-검증-범위) |
+| draw.io의 도형 모양, 컨테이너, HTML·라벨 셀 글, 점선과 화살촉, 압축한 쪽이 옮겨지고 둘째 쪽과 떨어진 선을 그 줄에서 알린다 | `test/import.test.js`(IM13) |
+| Excalidraw의 도형과 글, 프레임, 묶인 화살표와 화살표 글, 맨 위 자유 글 제목이 옮겨지고 옮길 수 없는 요소를 그 줄에서 알린다 | `test/import.test.js`(IM14) |
+| 옮긴 그림이 실제 화면에서 읽힌다 | 대표 예(IM1~IM8, IM13, IM14의 원본)를 Chromium으로 렌더해 직접 봤다. 범위는 [예제와 검증 범위](expression-coverage.md#예제와-검증-범위) |
 
 ## 단점
 

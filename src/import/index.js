@@ -1,13 +1,15 @@
-// 가져오기의 공개 진입점. 다른 도구의 그림 원본(Mermaid, DBML, D2)을 Torso 원본 글로 옮긴다(docs/design/import.md).
+// 가져오기의 공개 진입점. 다른 도구의 그림 원본(Mermaid, DBML, D2, draw.io, Excalidraw)을 Torso 원본 글로 옮긴다(docs/design/import.md).
 // 파일은 다루지 않는다. 명령은 src/import-run.js다.
 import { readD2 } from './d2.js';
 import { readDbml } from './dbml.js';
+import { readDrawio } from './drawio.js';
 import { emit } from './emit.js';
+import { readExcalidraw } from './excalidraw.js';
 import { readMermaid } from './mermaid.js';
 import { FAIL, createModel } from './model.js';
 
 /** 가져오는 형식과 읽기. 형식 이름이 명령의 첫 인자다. */
-const READERS = { mermaid: readMermaid, dbml: readDbml, d2: readD2 };
+const READERS = { mermaid: readMermaid, dbml: readDbml, d2: readD2, drawio: readDrawio, excalidraw: readExcalidraw };
 
 /** 가져올 수 있는 형식 이름 */
 export const IMPORT_FORMATS = Object.keys(READERS);
@@ -19,7 +21,7 @@ export const IMPORT_FORMATS = Object.keys(READERS);
  * 다른 도구의 원본 글을 Torso 원본 글로 옮긴다.
  * 받지 않는 문장은 건너뛰고 줄 번호가 있는 경고로 알린다(code `import-skip`). 모양이나 글을 바꿔 옮긴 문장도 경고한다(code `import-change`).
  * 형식이나 그림 종류를 모르거나 옮길 카드가 하나도 없으면 FigureError(code `import`)다.
- * @param format 'mermaid' | 'dbml' | 'd2'
+ * @param format 'mermaid' | 'dbml' | 'd2' | 'drawio' | 'excalidraw'
  * @param text 원본 글
  * @returns { source, warnings }. warnings는 진단 { severity, code, line, column, message }[]이고 줄은 받은 원본의 줄이다
  */

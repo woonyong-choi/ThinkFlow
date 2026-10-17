@@ -270,14 +270,10 @@
   fill: var(--color-ui-muted);
 }
 
-/* 열 형식(타입)은 코드 글이라 코드 글꼴의 오른쪽 열이다. 제약 줄(NOT NULL, ON DELETE 등)은 문장이라 일반 글꼴이다. 둘 다 이름보다 옅다. */
+/* 열 형식(타입)은 코드 글이라 코드 글꼴의 오른쪽 열이고 이름보다 옅다. NULL 허용 여부는 키 표시(.key)와 같은 작은 표시이고, 삭제 정책은 외래 키 선의 끝 글이다. */
 .fl .cell.type {
   font-family: var(--font-figure-mono);
   letter-spacing: normal;
-  fill: var(--color-ui-muted);
-}
-
-.fl .cell.rule {
   fill: var(--color-ui-muted);
 }
 
@@ -749,7 +745,7 @@
   text-anchor: start;
 }
 
-/* 칸 색은 변수로 계산해 다크 모드 heat-low를 따라간다. --s는 칸 강도(0~1)다. 보간은 OKLCH라 두 끝 색 사이의 색상환을 따라 돌아(라이트: 연노랑 → 민트 → 청록 → 파랑) 두 색 그라데이션으로 읽힌다. fill 속성의 대체 색(ThinkFlow chart/oklab.js)도 같은 OKLCH 보간이다. */
+/* 칸 색은 변수로 계산해 다크 모드 heat-low를 따라간다. --s는 칸 강도(0~1)다. 보간은 OKLCH라 두 끝 색 사이의 색상환을 따라 돌아(라이트: 연노랑 → 민트 → 청록 → 파랑) 두 색 그라데이션으로 읽힌다. fill 속성의 대체 색(Torso chart/oklab.js)도 같은 OKLCH 보간이다. */
 .fl .chart-heat {
   fill: color-mix(in oklch, var(--color-data-heat-high) calc(var(--s) * 100%), var(--color-data-heat-low));
 }
@@ -1015,6 +1011,7 @@
 <rect x="70.4" y="63" width="12" height="12" rx="4" fill="var(--color-data-category-2)"/>
 <text x="88.4" y="71" class="chart-legend">대기</text>
 <line x1="255.7" x2="255.7" y1="95" y2="179" class="chart-grid"/><line x1="355.3" x2="355.3" y1="95" y2="179" class="chart-grid"/><line x1="455" x2="455" y1="95" y2="179" class="chart-grid"/><line x1="554.7" x2="554.7" y1="95" y2="179" class="chart-grid"/><line x1="654.3" x2="654.3" y1="95" y2="179" class="chart-grid"/>
+
 <g class="cr-0 ink"><text x="144" text-anchor="end" y="114.7" class="chart-label">요청 A</text></g>
 <g class="cr-0"><g class="cs-0"><rect x="156" y="95" width="398.7" height="12" rx="4" fill="var(--color-data-category-1)" class="grow"/></g></g>
 <g class="cr-0"><g class="cs-1"><rect x="156" y="113" width="99.7" height="12" rx="4" fill="var(--color-data-category-2)" class="grow"/></g></g>
@@ -1022,7 +1019,6 @@
 <g class="cr-1 ink"><text x="144" text-anchor="end" y="160.7" class="chart-label">요청 B</text></g>
 <g class="cr-1"><g class="cs-0"><rect x="156" y="141" width="423.6" height="12" rx="4" fill="var(--color-data-category-1)" class="grow"/></g></g>
 <g class="cr-1"><g class="cs-1"><rect x="156" y="159" width="448.5" height="12" rx="4" fill="var(--color-data-category-2)" class="grow"/></g></g>
-
 
 <g class="cr-0 ink"><g class="cs-0"><rect x="559.7" y="94.5" width="15.5" height="13" class="chart-text-bg late"/><text x="560.7" y="105" class="chart-value ours late">80</text></g></g>
 <g class="cr-0 ink"><g class="cs-1"><rect x="260.7" y="112.5" width="14.9" height="13" class="chart-text-bg late"/><text x="261.7" y="123" class="chart-value late">20</text></g></g>
@@ -1042,6 +1038,7 @@
 <rect x="70.4" y="63" width="12" height="12" rx="4" fill="var(--color-data-category-2)"/>
 <text x="88.4" y="71" class="chart-legend">대기</text>
 <line x1="255.7" x2="255.7" y1="95" y2="179" class="chart-grid"/><line x1="355.3" x2="355.3" y1="95" y2="179" class="chart-grid"/><line x1="455" x2="455" y1="95" y2="179" class="chart-grid"/><line x1="554.7" x2="554.7" y1="95" y2="179" class="chart-grid"/><line x1="654.3" x2="654.3" y1="95" y2="179" class="chart-grid"/>
+
 <g class="cr-0 ink"><text x="144" text-anchor="end" y="114.7" class="chart-label">요청 A</text></g>
 <g class="cr-0"><g class="cs-0"><rect x="156" y="95" width="398.7" height="12" rx="4" fill="var(--color-data-category-1)" class="grow"/></g></g>
 <g class="cr-0"><g class="cs-1"><rect x="156" y="113" width="99.7" height="12" rx="4" fill="var(--color-data-category-2)" class="grow"/></g></g>
@@ -1049,7 +1046,6 @@
 <g class="cr-1 ink"><text x="144" text-anchor="end" y="160.7" class="chart-label">요청 B</text></g>
 <g class="cr-1"><g class="cs-0"><rect x="156" y="141" width="423.6" height="12" rx="4" fill="var(--color-data-category-1)" class="grow"/></g></g>
 <g class="cr-1"><g class="cs-1"><rect x="156" y="159" width="448.5" height="12" rx="4" fill="var(--color-data-category-2)" class="grow"/></g></g>
-
 
 <g class="cr-0 ink"><g class="cs-0"><rect x="559.7" y="94.5" width="15.5" height="13" class="chart-text-bg late"/><text x="560.7" y="105" class="chart-value ours late">80</text></g></g>
 <g class="cr-0 ink"><g class="cs-1"><rect x="260.7" y="112.5" width="14.9" height="13" class="chart-text-bg late"/><text x="261.7" y="123" class="chart-value late">20</text></g></g>

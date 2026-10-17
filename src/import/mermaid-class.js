@@ -158,7 +158,7 @@ function readMember(raw, line, model) {
 // vars: n = 글자 수
 // basis: estimate
 /** Mermaid 제네릭 표기 `List~List~int~~`를 `List<List<int>>`로 바꾼다. 뒤에 낱말 글자가 오는 `~`는 열고, 아니면 닫는다. */
-export function generic(text) {
+function generic(text) {
   return text.replace(/~/g, (_, at) => (/[\p{L}\p{N}_?]/u.test(text[at + 1] ?? '') ? '<' : '>'));
 }
 

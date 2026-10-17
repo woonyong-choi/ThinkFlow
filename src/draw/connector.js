@@ -7,6 +7,7 @@ import { routePolyline } from '../route.js';
 import { centerBaseline, escapeXml, renderRich, roundCoord as r } from '../text.js';
 import { values } from '@woonyong-choi/design-tokens/tokens.js';
 import { edgeMarker } from './arrow.js';
+import { cutClip } from './crossings.js';
 import { sceneTag } from './scene-tag.js';
 
 const SPACE = values.spacing;
@@ -15,21 +16,22 @@ const RADIUS = values.radius;
 // cost: time O(p), heap O(out), stack O(1)
 // vars: p = 경로 점 수, out = 만든 SVG 글자 수
 // basis: estimate
-/** 선 하나. 선 라벨 알약은 drawEdgeLabel이 따로 그린다. */
-export function drawEdge(e, j, { decorate, glyphs, scene }) {
+/** 선 하나. 선 라벨 알약은 drawEdgeLabel이 따로 그린다. 다른 선이 위로 지나는 자리(cuts, draw/crossings.js)는 끊어 그린다. */
+export function drawEdge(e, j, { decorate, glyphs, scene, cuts }) {
   const tag = sceneTag(e, scene.shownSi);
   const { d } = routePolyline(e.points, RADIUS.route);
   const marker = edgeMarker(e, j);
-  const path = `<path id="p-${j}" d="${d}" class="fl-path${e.dashed ? ' dashed' : ''}"${marker.attributes}/>`;
+  const clip = cutClip(`fl-cut-${j}`, e.points, cuts?.get(j));
+  const path = `<path id="p-${j}" d="${d}" class="fl-path${e.dashed ? ' dashed' : ''}"${marker.attributes}${clip.attribute}/>`;
   const from = e.fromMultiplicity === undefined ? e.from : `${e.from} [${e.fromMultiplicity}]`;
   const to = e.toMultiplicity === undefined ? e.to : `${e.to} [${e.toMultiplicity}]`;
   const relation = e.relation ?? (e.isForeignKey ? 'references' : e.fromMultiplicity !== undefined || e.toMultiplicity !== undefined ? 'connects to' : undefined);
   const description = relation ? ` role="img" aria-label="${escapeXml(`${from} ${relation} ${to}${e.label ? `: ${e.label}` : ''}`)}"` : '';
-  const ends = (e.endpointLabels ?? []).map((label) => {
+  const ends = (e.endpointLabels ?? []).filter((label) => !label.isPill).map((label) => {
     glyphs.add(label.text, STYLE.pill.face);
-    return `<text class="edgelabel fl-multiplicity ${decorate('pilltext', j)}" data-end="${label.end}" x="${r(label.x)}" y="${r(centerBaseline(label.y, STYLE.pill.size))}">${escapeXml(label.text)}</text>`;
+    return `<text class="edgelabel fl-end-label ${decorate('pilltext', j)}" data-end="${label.end}" x="${r(label.x)}" y="${r(centerBaseline(label.y, STYLE.pill.size))}">${escapeXml(label.text)}</text>`;
   });
-  return `<g id="e-${j}" class="${edgeClass(e, j, decorate)} ${decorate('edge', j)}${tag.off}"${tag.attr}${description}>${marker.defs}${path}${ends.join('')}</g>`;
+  return `<g id="e-${j}" class="${edgeClass(e, j, decorate)} ${decorate('edge', j)}${tag.off}"${tag.attr}${description}>${marker.defs}${clip.defs ? `<defs>${clip.defs}</defs>` : ''}${path}${ends.join('')}</g>`;
 }
 
 // 선과 라벨 묶음이 함께 쓰는 class. 라벨 묶음도 선과 같이 켜지고 조용해진다.
@@ -40,16 +42,28 @@ function edgeClass(e, j, decorate) {
 // cost: time O(n), heap O(out), stack O(1)
 // vars: n = 라벨 글자 수, out = 만든 SVG 글자 수
 // basis: estimate
-/** 선의 라벨 묶음(알약, 번호 원, 글). 라벨 자리는 배치가 정했다. 라벨이 없으면 undefined다. */
+/** 선의 라벨 묶음(알약, 번호 원, 글)과 선 끝 알약(삭제 정책). 자리는 배치가 정했다. 그릴 알약이 없으면 undefined다. */
 export function drawEdgeLabel(e, j, { decorate, glyphs, scene }) {
-  if (!hasPill(e) || !e.labelAt) return undefined;
+  const ends = (e.endpointLabels ?? []).filter((label) => label.isPill).map((label) => `<g class="fl-pill" data-end="${label.end}">${drawPillFrame(label, decorate('pill', j))}${drawLabelText(label.text, { x: label.x, y: label.y, cls: decorate('pilltext', j) }, glyphs)}</g>`);
+  const main = hasPill(e) && e.labelAt ? [drawMainPill(e, j, { decorate, glyphs })] : [];
+  if (!main.length && !ends.length) return undefined;
   const tag = sceneTag(e, scene.shownSi);
+  return `<g id="l-${j}" class="${edgeClass(e, j, decorate)}${tag.off}"${tag.attr}>${[...main, ...ends].join('')}</g>`;
+}
+
+// 선 라벨 알약 하나(라벨과 번호 원)
+function drawMainPill(e, j, { decorate, glyphs }) {
   const { w, h, numW, numH, textW } = sizePill(e.label, e.no);
   const { x, y } = e.labelAt;
-  const frame = e.label === undefined ? '' : `<rect x="${r(x - w / 2)}" y="${r(y - h / 2)}" width="${r(w)}" height="${r(h)}" rx="${r(h / 2)}" class="pill ${decorate('pill', j)}"/>`;
+  const frame = e.label === undefined ? '' : drawPillFrame({ x, y, w, h }, decorate('pill', j));
   const number = e.no === undefined ? '' : drawNumber(e.no, { x: x - w / 2 + SPACE["0-5"], y, numW, numH }, glyphs);
   const text = e.label === undefined ? '' : drawLabelText(e.label, { x: e.no === undefined ? x : x - w / 2 + SPACE["0-5"] + numW + SPACE["1"] + textW / 2, y, cls: decorate('pilltext', j) }, glyphs);
-  return `<g id="l-${j}" class="${edgeClass(e, j, decorate)}${tag.off}"${tag.attr}><g class="fl-pill">${frame}${number}${text}</g></g>`;
+  return `<g class="fl-pill">${frame}${number}${text}</g>`;
+}
+
+// 알약 테두리. 가운데 { x, y }와 크기 { w, h }, 움직이는 SVG가 넣는 박자 class(state)
+function drawPillFrame({ x, y, w, h }, state) {
+  return `<rect x="${r(x - w / 2)}" y="${r(y - h / 2)}" width="${r(w)}" height="${r(h)}" rx="${r(h / 2)}" class="pill ${state}"/>`;
 }
 
 // 선 라벨 글. 번호 원이 왼쪽에 붙으면 글 가운데가 그만큼 오른쪽이다.
