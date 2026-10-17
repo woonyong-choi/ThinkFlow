@@ -69,8 +69,8 @@ function cellRect(it, id) {
 function isPortPlace(p, it, { way, isSelf, columns, cell }) {
   const side = way === 'out' ? it.x + it.w : it.x;
   if (it.shape === 'grid' && cell) return onBorder(p, cellRect(it, cell));
-  // 묶음 배치와 자기 참조 외래 키는 들어오는 선도 오른쪽 면이다(layout/ports.js columnPort).
-  if ((it.shape === 'table' || it.shape === 'api') && columns) return near(p.x, it.isBracket || isSelf ? it.x + it.w : side) && near(p.y, it.y + columnAnchorY(it.tableRows, columns));
+  // 묶음 배치와 자기 참조 외래 키는 들어오는 선도 오른쪽 면이다(layout/ports.js columnPort). 같은 줄 같은 면의 연결점은 줄 높이 안에서 벌어진다(fanColumnPorts).
+  if ((it.shape === 'table' || it.shape === 'api') && columns) return near(p.x, it.isBracket || isSelf ? it.x + it.w : side) && Math.abs(p.y - (it.y + columnAnchorY(it.tableRows, columns))) <= it.tableRows[0].h / 2;
   if (it.shape === 'decision') return isVertex(p, it);
   // 원통은 뚜껑 윤곽까지가 선이 닿는 면이라 그린 사각형으로 본다.
   if (it.shape === 'store') {

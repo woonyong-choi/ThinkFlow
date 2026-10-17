@@ -14,7 +14,7 @@ export function prepareChartRows(figure, problems) {
   PREPARE_ROWS[figure.chartType]?.(figure, problems);
 }
 // 신뢰구간(`값.low`, `값.high`)을 받는 종류
-export const INTERVAL_TYPES = Object.keys(CHART_TYPES).filter((type) => CHART_TYPES[type].isInterval);
+const INTERVAL_TYPES = Object.keys(CHART_TYPES).filter((type) => CHART_TYPES[type].isInterval);
 // 값 자리에 `-`(빠진 값)를 받는 종류
 const MISSING_TYPES = Object.keys(CHART_TYPES).filter((type) => CHART_TYPES[type].allowsMissing);
 // 계열 수 범위 글(`2`, `1 to 3`, `1 or more`)

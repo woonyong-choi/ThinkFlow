@@ -5,7 +5,7 @@ import { createGlyphSet, embedFonts } from './measure/fonts.js';
 import { paintCss } from './draw/paint.js';
 import { hasStatus } from './draw/status.js';
 import { STYLES, tokensFor, figureDefs, patternDefs } from './styles.js';
-import { escapeXml, plainText, roundCoord as r } from './text.js';
+import { escapeXml, figureDesc, plainText, roundCoord as r } from './text.js';
 import { figureContent } from './html/content.js';
 import { responsiveContent } from './html/responsive.js';
 import { faviconLinks } from './html/favicon.js';
@@ -73,7 +73,7 @@ async function canonicalHtml(result, name) {
   // 점이 나타나는 시각은 배치마다 다르므로(좁은 배치는 선 위치가 다르다) 넓은 배치와 좁은 배치의 시각을 모두 규칙으로 둔다.
   const dotAts = [...new Set([...content.dotAts, ...(responsive?.content.dotAts ?? [])])].sort((a, b) => a - b);
   const styles = [STYLES.control, STYLES.player, STYLES.figure, paintCss(result.scene), STYLES.chart, charts ? chartMotionCss(timeline.growMs, dotAts) : '', hasStatus(timeline) ? STYLES.status : ''].join('');
-  const frame = figureFrame({ labels: content.data.steps.map(step => step.label), canvas: panelsMarkup(content, title, defs), style: canvasOf(figure) !== CANVAS ? ` style="--figure-canvas: ${canvasOf(figure)}px"` : '', narrow: responsive ? `<template class="fl-narrow">${panelsMarkup(responsive.content, title)}</template>` : '', source: typeof figure.source === 'string' ? figure.source : undefined });
+  const frame = figureFrame({ labels: content.data.steps.map(step => step.label), canvas: panelsMarkup(content, { title, desc: figureDesc(figure) }, defs), style: canvasOf(figure) !== CANVAS ? ` style="--figure-canvas: ${canvasOf(figure)}px"` : '', narrow: responsive ? `<template class="fl-narrow">${panelsMarkup(responsive.content, { title, desc: figureDesc(figure) })}</template>` : '', source: typeof figure.source === 'string' ? figure.source : undefined });
   return `<!doctype html>
 <html lang="ko">
 <head>
@@ -147,14 +147,15 @@ function withCanonical(template) {
  * 판의 표시 폭은 보기 폭에 대한 판 상자 폭 비율이고 모든 판이 같은 보기 폭으로 나눈다. 문서 안에서는 자연 크기를 유지하며 넘치는 가로 부분은 그림 영역에서 스크롤한다.
  * 판이 하나뿐인 그림은 둘레 여백을 걷은 보기 영역(data.tight)을 viewBox로 쓸 수 있도록 재생기가 맞춘다(player/play.js).
  * 보기 폭(--view-w)은 판 가운데 가장 넓은 것(content.width)이다. 묶음 폭은 이 자연 폭을 쓰고 구역보다 작은 그림은 가운데에 놓인다.
+ * 첫 판 SVG는 그림 제목(`<title>`)과 부제 설명(`<desc>`)을 갖고, 나머지 판은 보기 이름이 접근성 이름이다.
  * 마커와 차트 무늬 정의(defs, documentDefs)는 문서에 한 번만 둔다(보이지 않는 SVG). 판 SVG들이 같은 문서 id로 쓰므로 판마다 정의를 복사하지 않아 문서 안 id가 겹치지 않는다.
  */
-function panelsMarkup(content, title, defs) {
+function panelsMarkup(content, { title, desc }, defs) {
   const view = content.width;
   const panels = content.panels.map((panel, i) => {
     const box = panel.frame;
     const label = panel.label ?? (content.panels.length > 1 ? panel.view : undefined);
-    const head = i === 0 ? `<title>${escapeXml(title)}</title>` : '';
+    const head = i === 0 ? `<title>${escapeXml(title)}</title>${desc}` : '';
     const name = i === 0 || !label ? '' : ` aria-label="${escapeXml(plainText(label))}"`;
     return (
       `<section class="dp-panel" data-view="${escapeXml(panel.view)}" data-strategy="${panel.strategy}" style="--panel-w: ${r(box.w)}">` +

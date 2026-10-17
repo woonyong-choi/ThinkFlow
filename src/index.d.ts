@@ -56,7 +56,7 @@ export function toSvg(result: BuiltFigure, options?: SvgOptions): Promise<string
 export function toHtml(result: BuiltFigure, name?: string): Promise<string>;
 
 /** 가져올 수 있는 다른 도구의 원본 형식. */
-export type ImportFormat = 'mermaid' | 'dbml' | 'd2';
+export type ImportFormat = 'mermaid' | 'dbml' | 'd2' | 'drawio' | 'excalidraw';
 
 /** 가져올 수 있는 형식 이름 목록. */
 export const IMPORT_FORMATS: readonly ImportFormat[];

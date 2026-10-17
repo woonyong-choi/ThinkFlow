@@ -141,6 +141,7 @@ export function finishRowChart(chart, { parts, over = [], scale, top, bottom }) 
   const axis = drawValueAxis(chart, scale, bottom + SPACE["2"]);
   // 값 눈금마다 세로 격자를 행 뒤에 깐다. 막대 끝과 오차 막대, 상자의 값이 어느 눈금 근처인지 읽힌다(시간 보기의 눈금 격자와 같은 선).
   const grid = valueGrid(scale, { top, bottom: bottom + SPACE["2"], skip: chart.rules.map((rule) => rule.value) });
-  const svg = [grid, ...parts, rules, ...over, axis.svg];
+  // 기준선(rule)도 격자처럼 행 뒤에 깐다. 위에 그리면 값 글자(바탕 면이 있어도 그보다 먼저 그려진다)를 관통한다. 막대 사이와 끝 너머로 기준선이 보인다.
+  const svg = [grid, rules, ...parts, ...over, axis.svg];
   return { svg: svg.join('\n'), bottom: axis.bottom, rowKeys: chart.rows.map((row) => row.label), fits: chart.rows.map((row) => labelFit(row.label, row.line)) };
 }

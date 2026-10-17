@@ -92,7 +92,7 @@ export function parseDbml(tokens) {
 // vars: t = 줄 낱말 수
 // basis: estimate
 /** 같은 줄의 낱말들. stopAtOpen이면 `{`에서 끝난다(`{`를 포함한다). 대괄호 안은 줄이 바뀌어도 이어 읽는다. */
-export function takeLine(cursor, stopAtOpen = false) {
+function takeLine(cursor, stopAtOpen = false) {
   const out = [];
   const line = cursor.tokens[cursor.at]?.line;
   let depth = 0;
@@ -114,7 +114,7 @@ export function takeLine(cursor, stopAtOpen = false) {
 // vars: t = 블록 낱말 수, d = 블록 깊이
 // basis: estimate
 /** `{` 뒤부터 짝이 맞는 `}`까지의 줄 목록. 줄은 { tokens, block? }이고 안쪽 블록은 다시 줄 목록이다. */
-export function takeBlock(cursor) {
+function takeBlock(cursor) {
   const lines = [];
   while (cursor.at < cursor.tokens.length) {
     const token = cursor.tokens[cursor.at];

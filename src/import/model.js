@@ -1,4 +1,4 @@
-// 가져오기의 공통 모형. Mermaid, DBML, D2 읽기는 모두 이 모형을 채우고, 원본 글은 emit.js 한 곳이 쓴다.
+// 가져오기의 공통 모형. Mermaid, DBML, D2, draw.io, Excalidraw 읽기는 모두 이 모형을 채우고, 원본 글은 emit.js 한 곳이 쓴다.
 // 그래서 같은 뜻(카드, 그룹, 선, 외래 키, 메시지, 차트 행)은 형식과 상관없이 같은 Torso 문법 하나로 옮겨진다(docs/design/import.md 공통 모형).
 import { createProblems } from '../source/problems.js';
 import { cleanText } from './names.js';
@@ -6,7 +6,7 @@ import { cleanText } from './names.js';
 /**
  * 빈 모형과 진단 그릇을 만든다. 카드와 그룹은 원본의 이름(key)으로 가리키고, Torso 이름은 쓸 때 정한다.
  * - groups: { key, name?, label, parent?, direction?, dashed?, line }[]. name은 이름(id)을 만들 글이고 없으면 key다. dashed는 점선 테두리다
- * - nodes: { key, kind, label, sub?, parent?, columns?, keys?, foreignKeys?, texts?, slots?, classifier?, abstract?, members?, line }[]. kind는 box, external, circle, store, person, decision, queue, state, table, class다. 점선 테두리 상자는 external이다.
+ * - nodes: { key, name?, kind, label, sub?, parent?, columns?, keys?, foreignKeys?, texts?, slots?, classifier?, abstract?, members?, line }[]. name은 이름(id)을 만들 글이고 없으면 key다(그린 그림의 셀 id처럼 뜻 없는 key는 라벨로 이름을 만든다). kind는 box, external, circle, store, person, decision, queue, state, table, class다. 점선 테두리 상자는 external이다.
  *   class의 classifier는 class나 interface, members는 { kind: field|method, name, signature, visibility?, isStatic?, isAbstract?, line }[]다
  * - edges: { from: { key, part? }, to: { key, part? }, label?, dashed?, head?, mult?: { from, to }, line }[]
  * - starts, finals: { key, line }[]
@@ -32,7 +32,7 @@ export function createModel(text) {
 /** 받지 않아 건너뛴 문장의 경고 code */
 export const SKIP = 'import-skip';
 /** 받았지만 모양이나 글을 바꿔 옮긴 문장의 경고 code */
-export const CHANGE = 'import-change';
+const CHANGE = 'import-change';
 /** 가져올 수 없는 원본의 오류 code */
 export const FAIL = 'import';
 

@@ -345,7 +345,7 @@ scene "소비자 하나가 느려진다" for=6s status="slow=warn"
 | `grid id "제목" [rows=N] [cols=N] {` `item`, `gap` 줄 `}` | 칸 격자([칸 격자](grid.md)) |
 | `chart id "제목" 종류 ["부제"] {` 차트 줄 `}` | 차트 카드([차트 카드](#차트-카드)) |
 | `trace id "제목" [unit=ms\|us\|s] {` `span` 줄 `}` | 추적 카드([추적 카드](#추적-카드)) |
-| `group id "이름" [direction=right\|down] [border=dashed] [badge="글"] [icon=이름] [tone=색] [appearance=모양] {`, `}` | 그룹. 두 줄 사이에 카드와 그룹을 둔다. 제목 줄에 배지와 아이콘을 달 수 있다 |
+| `group id "이름" [direction=right\|down] [dashed] [badge="글"] [icon=이름] [tone=색] [appearance=모양] {`, `}` | 그룹. 두 줄 사이에 카드와 그룹을 둔다. 제목 줄에 배지와 아이콘을 달 수 있다 |
 | `icons 이름 "폴더"` | 사용자 아이콘 세트 등록. 폴더의 `<이름>.svg`를 `icon=세트:이름`으로 쓴다 |
 | `value id "이름" [on=카드] [from=값 \| ref=값id]` | 값 |
 | `on 카드 id+N, id-N, id=낱말` | 어떤 점이든 그 카드에 닿을 때 값을 바꾼다. 값 선언 뒤에 둔다 |
@@ -367,7 +367,7 @@ scene "소비자 하나가 느려진다" for=6s status="slow=warn"
 - `no=N`(1 이상 정수)은 선 번호다. 라벨 알약 왼쪽에 번호 원이 붙고(라벨이 없으면 번호 원만), 정지 SVG와 문서에서도 순서가 읽힌다. 재생 장면과 독립이고 같은 번호를 여러 선에 써도 된다.
 - `badge="글"`(8자 이하)은 카드 윗줄과 그룹 제목 줄에 글자 알약을 단다. 흑백에서도 구성 요소의 종류가 글자로 남는다. 배지는 면과 테두리 색을 바꾸지 않는다. 원(`shape=circle`)은 배지와 아이콘이 오류다.
 - `shape=tile`(`box`만, `icon=` 필수)은 아이콘 카드다. 같은 흰 카드에 아이콘을 크게(`size.icon.tile`) 위에 놓고 이름을 아래에 두며, 최소 너비와 이름 양옆 간격이 작아(`size.node.tile-width`, `size.node.tile-pad`) 가로로 퍼진 구성도가 캔버스 폭 안에 든다.
-- 그룹 `border=dashed`는 경계 그룹의 점선 테두리다. 그룹 아이콘은 틀 왼쪽 위 모서리에 딱 붙는 정사각 탭(`size.group.title`)이다. 기본 그룹 면은 투명하다. `tone`과 `appearance=filled`를 함께 적으면 해당 계열의 옅은 면을 칠하고, `appearance=outline`은 경계에 색을 쓴다. `light`가 켠 그룹은 틀의 경계 색만 강조 색이 되고 굵기, 면, 모서리는 그대로다.
+- 그룹 `dashed`는 경계 그룹의 점선 테두리다. 그룹 아이콘은 틀 왼쪽 위 모서리에 딱 붙는 정사각 탭(`size.group.title`)이다. 기본 그룹 면은 투명하다. `tone`과 `appearance=filled`를 함께 적으면 해당 계열의 옅은 면을 칠하고, `appearance=outline`은 경계에 색을 쓴다. `light`가 켠 그룹은 틀의 경계 색만 강조 색이 되고 굵기, 면, 모서리는 그대로다.
 - `icon=이름`은 기본 세트의 이름이다. 범용 개념(`server`, `db`, `user`)과 기술 브랜드(`git`, `postgresql`)가 한 표에 있다. 등록한 세트는 `icon=세트:이름`이다. 이름이 없거나 파일이 없으면 오류이고, 아이콘 없이 배지로 같은 뜻을 낸다.
 - `count=N`(2 이상, `box`만)은 같은 역할 복제 개수다. 상자 뒤에 윤곽 두 겹이 겹쳐 보이고 윗줄에 `(N)` 알약이 붙는다. 복제는 이름으로 가리킬 수 없고 선은 상자 하나에 닿는다.
 

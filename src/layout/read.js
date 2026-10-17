@@ -1,4 +1,5 @@
 // elkjs 결과를 그림 좌표로 바꾼다. 그룹 경계 연결점에서 끊긴 선 조각은 이어 붙인다(docs/design/layout.md 선 그리기).
+import { endMarks } from './end-marks.js';
 import { isOnLinePill, sizePill } from '../measure/sizes.js';
 import { STYLE, textBlock } from '../measure/texts.js';
 import { values } from '@woonyong-choi/design-tokens/tokens.js';
@@ -30,7 +31,7 @@ export function readElk(laid, model) {
     const near = (end) => (other) => other.at !== `${edge.index}:${end}`;
     const start = settleEnd(joined[i], freeRect(edge.from, rects), crowd.get(edge.from)?.filter(near('start')));
     const points = dropCollinear(settleEnd(start.reverse(), freeRect(edge.to, rects), crowd.get(edge.to)?.filter(near('end'))).reverse());
-    return { ...edge, points, endpointLabels: readMultiplicities(edge, labels, points), labelAt: labels.get(`label::${edge.index}`) ?? (model.isSafe ? undefined : numberOnlyLabel(edge, points, items)) };
+    return { ...edge, points, endpointLabels: readEndLabels(edge, labels, points), labelAt: labels.get(`label::${edge.index}`) ?? (model.isSafe ? undefined : numberOnlyLabel(edge, points, items)) };
   });
   settleLabels(edges, items, laid, groups);
   clearEndLabels(edges, { items, sweep: model.sweep });
@@ -41,22 +42,26 @@ export function readElk(laid, model) {
 // cost: time O(l·(c + s + e·p + l)), heap O(c), stack O(1)
 // vars: l = 끝 라벨 수, c = 옆 폭 사각형 수, s = 도형 수, e = 선 수, p = 경로 점 수
 // basis: estimate
-// 끝 라벨(다중성)이 박자 이동 글 상자가 쓸고 지나는 다른 선의 옆 폭(sweep) 안에 있으면 자기 끝 구간의 반대쪽으로 옮긴다. 옮긴 자리가 옆 폭, 도형, 다른 선, 다른 라벨과 만나면 그대로 둔다.
+// 끝 라벨(다중성 글)이 박자 이동 글 상자가 쓸고 지나는 다른 선의 옆 폭(sweep) 안에 있거나, 다른 선 위에 있거나, 앞서 놓인 다른 끝 라벨이나 선 위 알약과 겹치면 자기 끝 구간의 반대쪽으로 옮긴다.
+// 같은 열에서 나가고 들어오는 두 선(묶음 배치에서 둘 다 오른쪽 면)은 elkjs가 두 끝 라벨을 한자리에 둔다. 옮긴 자리가 옆 폭, 도형, 다른 선, 다른 라벨과 만나면 그대로 둔다.
 function clearEndLabels(edges, { items, sweep }) {
-  if (!sweep.size) return;
   const lanes = edges.filter((e) => sweep.has(e.index)).flatMap((e) => e.points.slice(1).map((p, i) => laneOf(e.points[i], p, sweep.get(e.index), e.index)));
   const lines = edges.flatMap((o) => o.points.slice(1).map((p, i) => laneOf(o.points[i], p, { x: 0, y: 0 }, o.index)));
   const labels = edges.flatMap((e) => (e.endpointLabels ?? []).map((label) => ({ e, label })));
-  for (const { e, label } of labels) {
+  labels.forEach(({ e, label }, k) => {
+    if (label.isPill) return;
     const inLane = (box) => lanes.some((lane) => lane.edge !== e.index && meets(box, lane));
-    if (!inLane(labelBox(label))) continue;
+    // 선 위 알약(삭제 정책)은 옮기지 않으므로 순서와 상관없이 모두 피한다.
+    const earlier = labels.filter((o, i) => i < k || o.label.isPill).filter((o) => o.label !== label).map((o) => labelBox(o.label));
+    const onOther = (box) => lines.some((l) => l.edge !== e.index && meets(box, l));
+    if (!inLane(labelBox(label)) && !onOther(labelBox(label)) && !earlier.some((o) => meets(labelBox(label), o))) return;
     const [a, b] = label.end === 'from' ? [e.points[0], e.points[1]] : [e.points.at(-1), e.points.at(-2)];
     const moved = a.x === b.x ? { x: 2 * a.x - label.x, y: label.y } : { x: label.x, y: 2 * a.y - label.y };
     const box = labelBox({ ...label, ...moved });
     const others = labels.filter((o) => o.label !== label).map((o) => labelBox(o.label));
-    if (inLane(box) || items.some((it) => meets(box, it)) || others.some((o) => meets(box, o)) || lines.some((l) => meets(box, l))) continue;
+    if (inLane(box) || items.some((it) => meets(box, it)) || others.some((o) => meets(box, o)) || lines.some((l) => meets(box, l))) return;
     Object.assign(label, moved);
-  }
+  });
 }
 
 // cost: time O(1), heap O(1), stack O(1)
@@ -71,18 +76,30 @@ const labelBox = (label) => ({ x: label.x - label.w / 2, y: label.y - label.h / 
 const meets = (p, q) => p.x < q.x + q.w && q.x < p.x + p.w && p.y < q.y + q.h && q.y < p.y + p.h;
 
 // cost: time O(n), heap O(n), stack O(1)
-// vars: n = 다중성 표시 글자 수
+// vars: n = 선 끝 표시 글자 수
 // basis: estimate
-// 자기 참조 선은 elkjs가 TAIL·HEAD 자리를 고리 한쪽 끝에 함께 쌓는다. 고리 바깥 가로 자리(elkjs가 비워 둔 열)는 그대로 두고, 높이만 그 끝이 닿는 열 줄에 맞춘다.
-function readMultiplicities(edge, labels, points) {
+// 선 끝 표시의 자리. 알약(삭제 정책)은 elkjs가 선을 따라 비워 둔 가로 자리에서 선 위(끝 구간의 높이)로 옮긴다.
+// 같은 끝의 다중성 글은 elkjs가 알약 아래에 쌓아 두는데, 그 자리는 이웃한 열 줄의 선에 걸린다(열 줄 사이가 글 두 개 높이보다 좁다).
+// 그래서 글을 선에서 첫째 자리(알약이 비운 높이)로 올리고 가로로 알약 바로 뒤에 둔다.
+// 자기 참조 선은 elkjs가 TAIL·HEAD 자리를 고리 한쪽 끝에 함께 쌓는다. 고리 바깥 가로 자리는 그대로 두고, 높이만 그 끝이 닿는 열 줄 가운데에 맞춘다(알약이 있으면 글은 그 아래).
+function readEndLabels(edge, labels, points) {
   return ['from', 'to'].flatMap((end) => {
-    const text = edge[`${end}Multiplicity`];
-    if (text === undefined) return [];
-    const position = labels.get(`multiplicity::${edge.index}::${end}`);
-    if (!position) throw new LayoutError(`missing multiplicity label for ${edge.from} -> ${edge.to}`, edge.line);
-    const { w, h } = textBlock(text, { textW: Infinity, pad: 0, style: STYLE.meta });
-    const at = edge.from === edge.to ? { y: (end === 'from' ? points[0] : points.at(-1)).y } : {};
-    return [{ end, text, ...position, w, h, ...at }];
+    const marks = endMarks(edge, end).map((mark) => {
+      const position = labels.get(mark.id);
+      if (!position) throw new LayoutError(`missing end label for ${edge.from} -> ${edge.to}`, edge.line);
+      return { ...mark, ...position };
+    });
+    const tip = end === 'from' ? points[0] : points.at(-1);
+    const pill = marks.find((mark) => mark.isPill);
+    const isSelf = edge.from === edge.to;
+    return marks.map(({ end: side, text, isPill, x, y, w, h }) => {
+      if (isPill) return { end: side, text, isPill, x, y: tip.y, w, h };
+      if (isSelf) return { end: side, text, isPill, x, y: tip.y + (pill ? pill.h / 2 + h / 2 : 0), w, h };
+      if (!pill) return { end: side, text, isPill, x, y, w, h };
+      const gap = Math.abs(pill.y - tip.y) - pill.h / 2;
+      const below = Math.sign(pill.y - tip.y) || 1;
+      return { end: side, text, isPill, x: pill.x + pill.w / 2 + gap + w / 2, y: tip.y + below * (gap + h / 2), w, h };
+    });
   });
 }
 

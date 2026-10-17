@@ -115,6 +115,8 @@ async function checkKeyboard(frame) {
   await canvas.evaluate(node => { node.scrollLeft = 0; });
   await canvas.focus();
   assert(await canvas.evaluate(node => node === document.activeElement));
+  // 스크립트로 준 초점은 다음 그림 틀에서 키보드 스크롤 대상이 된다. 사람은 초점을 옮긴 같은 틀 안에 키를 누르지 않으므로 두 틀을 기다린다(첫 키가 스크롤되지 않던 간헐 실패).
+  await canvas.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
   await canvas.press('ArrowRight');
   await frame.waitForFunction(() => document.querySelector('.fl-canvas').scrollLeft > 0);
   assert.equal((await frame.evaluate(measure)).scene, before.scene, 'arrows on the canvas leave the scene selected');
