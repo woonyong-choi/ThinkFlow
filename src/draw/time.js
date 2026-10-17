@@ -5,6 +5,7 @@ import { rowName } from '../chart/labels.js';
 import { PAD, SPACE } from '../chart/metrics.js';
 import { escapeXml, roundCoord as r } from '../text.js';
 import { drawChartBody } from './chart.js';
+import { textSpan } from '../measure/texts.js';
 import { drawTexts } from './texts.js';
 
 // 막대 둘레에 켜지는 밝힘 면이 막대보다 넓은 만큼
@@ -45,9 +46,17 @@ export function drawTime(panel, { decorate, glyphs }) {
 // vars: out = 만든 SVG 글자 수
 // basis: estimate
 // 구간 하나: 밝힘 면(투명), 막대, 이름. 이름은 막대 오른쪽(들어가지 않으면 왼쪽)이다.
+// 이름 뒤에는 차트 값 글자와 같은 바탕 면(chart-text-bg, 차트가 놓인 면 색)을 깔아 눈금 격자가 글자를 지나지 않게 한다.
 function drawSpan(s, { lane, decorate, glyphs }) {
   const glow = `<rect x="${r(s.x - LIGHT_GROW)}" y="${r(s.y - LIGHT_GROW)}" width="${r(s.w + LIGHT_GROW * 2)}" height="${r(s.h + LIGHT_GROW * 2)}" class="part-bg ${decorate('part', 0, s.key)}"/>`;
   const bar = `<rect x="${r(s.x)}" y="${r(s.y)}" width="${r(s.w)}" height="${r(s.h)}" rx="${LIGHT_GROW}" fill="${lane.paint.fill}" stroke="${lane.paint.border}" data-span="${escapeXml(s.key)}"/>`;
+  const backs = s.texts.map((t) => textBack(textSpan({ x: 0, y: 0 }, t), t.style.size)).join('');
   const name = drawTexts(s.texts, { x: 0, y: 0 }, glyphs);
-  return `<g class="fl-part" data-part="${escapeXml(s.key)}">${glow}${bar}${name}</g>`;
+  return `<g class="fl-part" data-part="${escapeXml(s.key)}">${glow}${bar}${backs}${name}</g>`;
+}
+
+// 글 한 줄 뒤 바탕 면. 값 글자(chart/labels.js valueText)와 같은 여백이다.
+function textBack({ x, center, width }, size) {
+  const pad = SPACE['0-25'];
+  return `<rect x="${r(x - pad)}" y="${r(center - size / 2 - pad)}" width="${r(width + pad * 2)}" height="${r(size + pad * 2)}" class="chart-text-bg"/>`;
 }
