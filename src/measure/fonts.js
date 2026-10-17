@@ -137,6 +137,9 @@ function toMarkup(chars) {
   return isCode ? `${out}\`` : out;
 }
 
+// 고정폭 글 맨 앞에서 이름과 떼지 않는 가시성 기호(클래스 멤버의 +, -, #, ~)
+const VISIBILITY_MARKS = ['+', '-', '#', '~'];
+
 // cost: time O(n²), heap O(n), stack O(1)
 // vars: n = 글자 수
 // basis: estimate
@@ -151,8 +154,9 @@ export function wrap(text, width, { size, face = 'regular' }) {
   const words = [{ sep: undefined, chars: [] }];
   for (const ch of chars) {
     const last = words.at(-1).chars;
-    // 코드의 `이름: 형식`은 콜론 뒤 띄어쓰기에서 나누지 않는다.
-    if (ch.c === ' ' && !(isCode && last.at(-1)?.c === ':')) words.push({ sep: ch, chars: [] });
+    // 코드의 `이름: 형식`은 콜론 뒤 띄어쓰기에서 나누지 않는다. 줄 맨 앞의 가시성 기호(`+ 이름`)도 이름과 떼지 않는다.
+    const isMark = isCode && words.length === 1 && last.length === 1 && VISIBILITY_MARKS.includes(last[0].c);
+    if (ch.c === ' ' && !(isCode && last.at(-1)?.c === ':') && !isMark) words.push({ sep: ch, chars: [] });
     else last.push(ch);
   }
   const lines = [];
