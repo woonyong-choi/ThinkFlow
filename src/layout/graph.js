@@ -14,6 +14,8 @@ const FIT_MAX = values.scale['aspect-fit-max'];
 const TURNED = { right: 'down', down: 'right' };
 // 자동 접기에서 비율을 낮춰 다시 배치해 보는 최대 횟수. 배치 시간이 이 횟수만큼 늘 수 있다.
 const FOLD_TRIES = 4;
+// 본문 단 그림에서 가로형으로 보는 가장 작은 폭/높이 비율. 이보다 정사각형에 가까운 후보는 세로 배치를 바꿀 만큼 낫지 않다(예제 흐름도 807x777은 좁은 화면 재배치에서 이동 글이 그림 밖으로 나갔다).
+const LANDSCAPE_MIN = 1.25;
 
 let engine;
 
@@ -68,7 +70,9 @@ async function layoutGraph(figure, sizes, layoutWidth = layoutWidthOf(figure)) {
 async function place(figure, sizes, layoutWidth) {
   let best = await arrange(figure, sizes);
   const canAdapt = figure.aspect === undefined || layoutWidth < layoutWidthOf(figure);
-  if (best.laid.width > layoutWidth && canAdapt && !figure.safeLayout) best = await fitCanvas({ ...figure, aspect: undefined }, sizes, { flat: best, canvas: layoutWidth, cap: Math.max(layoutWidth, canvasOf(figure)) });
+  // 본문 단 폭 목표에서는 폭에 들어도 세로형(높이가 폭보다 큰) 배치면 가로형 후보를 찾는다.
+  const isPortrait = layoutWidth >= layoutWidthOf(figure) && best.laid.height > best.laid.width;
+  if ((best.laid.width > layoutWidth || isPortrait) && canAdapt && !figure.safeLayout) best = await fitCanvas({ ...figure, aspect: undefined }, sizes, { flat: best, canvas: layoutWidth, cap: Math.max(layoutWidth, canvasOf(figure)) });
   const scene = readElk(best.laid, best.model);
   // 제목이 선을 비킬 자리가 없는 그룹은 너비를 넓혀 한 번 더 배치한다(그림 검사 13번).
   const blocked = scene.groups.filter((g) => g.isTitleBlocked).map((g) => g.id);
@@ -96,7 +100,12 @@ function fitsCanvas({ width, height }, canvas) {
 }
 
 // 알맞은 비율 범위에서 벗어난 정도(비율을 로그로 본 거리). 범위 안이면 0이다.
-function ratioMiss({ width, height }, canvas) {
+// 본문 단 폭 목표에서는 내용 자체의 비율로 재고 가로형(폭이 높이의 LANDSCAPE_MIN배 이상)만 알맞다고 본다. 좁고 긴 기둥도 단 폭의 자리를 차지한다고 보면(displayRatio) 세로 기둥이 접은 배치보다 먼저 뽑혔다.
+function ratioMiss({ width, height }, canvas, isColumn) {
+  if (isColumn) {
+    const ratio = width / height;
+    return Math.max(0, Math.log(LANDSCAPE_MIN / ratio), Math.log(ratio / ASPECT_MAX));
+  }
   const ratio = displayRatio(width, height, canvas);
   return Math.max(0, Math.log(FIT_MIN / ratio), Math.log(ratio / FIT_MAX));
 }
@@ -123,12 +132,13 @@ async function fitCanvas(figure, sizes, { flat, canvas, cap }) {
   let narrowest = flat;
   const tried = [flat];
   const fitting = [];
+  const isColumn = canvas >= layoutWidthOf(figure);
   const consider = (candidate) => {
     tried.push(candidate);
     if (candidate.laid.width < narrowest.laid.width) narrowest = candidate;
     if (!fitsCanvas(candidate.laid, canvas)) return false;
     fitting.push(candidate);
-    return ratioMiss(candidate.laid, canvas) === 0;
+    return ratioMiss(candidate.laid, canvas, isColumn) === 0;
   };
   const turned = await arrange({ ...figure, direction: TURNED[figure.direction] }, sizes);
   if (consider(turned)) return turned;
@@ -156,11 +166,21 @@ async function fitCanvas(figure, sizes, { flat, canvas, cap }) {
       consider(grouped);
     }
   }
-  // 목표 폭에 드는 후보가 없으면 본문 단에서 덜 줄어드는(글자가 큰) 좁은 후보가 낫다.
-  return closest(fitting, canvas) ?? tried.filter((c) => fitsCanvas(c.laid, cap)).sort((a, b) => a.laid.width - b.laid.width)[0] ?? narrowest;
+  const capped = tried.filter((c) => fitsCanvas(c.laid, cap));
+  const byWidth = (a, b) => a.laid.width - b.laid.width;
+  // 본문 단 폭 목표에서는 표시 상한(cap) 안의 가로형(폭이 높이의 LANDSCAPE_MIN배 이상) 후보가 있으면 그 가운데 비율이 알맞고, 목표 폭에 들고, 좁은 것을 고른다.
+  // 그림은 넣는 칸의 폭을 채우도록 줄거나 커지므로(svg width 100%) 목표 폭을 조금 넘는 가로형도 스크롤 없이 줄어 보이고, 세로 기둥은 칸을 채우면 화면보다 길어진다.
+  // 상한 안의 가로형이 없으면 예전 규칙대로 목표 폭 안에서 비율이 알맞은 것, 없으면 덜 줄어드는(글자가 큰) 좁은 후보를 쓴다. 상한을 넘는 가로형은 글자가 가장 작은 글 토큰보다 작아지므로(그림 검사 10번) 고르지 않는다.
+  const landscape = capped.filter((c) => c.laid.width >= c.laid.height * LANDSCAPE_MIN);
+  if (isColumn && landscape.length) {
+    const rank = (c) => [ratioMiss(c.laid, cap, true), c.laid.width > canvas ? 1 : 0, c.laid.width];
+    const byRank = (a, b) => rank(a).reduce((order, value, i) => order || value - rank(b)[i], 0);
+    return landscape.sort(byRank)[0];
+  }
+  return closest(fitting, canvas, false) ?? capped.sort(byWidth)[0] ?? narrowest;
 }
 
 // 후보 가운데 알맞은 비율 범위에 가장 가까운 배치. 같으면 먼저 본 후보다.
-function closest(candidates, canvas) {
-  return [...candidates].sort((a, b) => ratioMiss(a.laid, canvas) - ratioMiss(b.laid, canvas))[0];
+function closest(candidates, canvas, isColumn) {
+  return [...candidates].sort((a, b) => ratioMiss(a.laid, canvas, isColumn) - ratioMiss(b.laid, canvas, isColumn))[0];
 }

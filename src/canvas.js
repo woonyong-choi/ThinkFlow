@@ -62,19 +62,3 @@ export const layoutWidthOf = (figure) => (figure?.width === 'wide' ? CANVAS_WIDE
 export function displayRatio(width, height, column = COLUMN) {
   return Math.max(width, column) / height;
 }
-
-// cost: time O(1), heap O(1), stack O(1)
-// basis: estimate
-/**
- * 내용 크기에서 viewBox 폭과 표시 크기를 정한다. viewBox는 언제나 내용 폭이라 빈 캔버스가 없다.
- * 내용이 canvas보다 좁으면 자연 크기로 보이고, 넓으면 표시 폭만 canvas로 줄인다(글자도 같은 비율로 작아진다).
- * @param width 내용 너비
- * @param height 내용 높이
- * @param canvas 표시 폭 상한(canvasOf)
- * @returns { viewWidth, shownWidth, shownHeight, scale }. scale은 내용이 줄어드는 비율이고 1이면 줄지 않는다
- */
-export function fitCanvas(width, height, canvas = CANVAS) {
-  const shownWidth = Math.min(width, canvas);
-  const scale = shownWidth / width;
-  return { viewWidth: width, shownWidth, shownHeight: height * scale, scale };
-}
