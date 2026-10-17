@@ -1,4 +1,4 @@
-// 선 라벨 자리 고르기. elkjs가 선 꼬리 옆에 잡은 자리가 다른 라벨, 도형, 다른 선과 겹치거나 그룹 테두리에 걸치면 자기 선을 따라 출발점에서 가장 가까운 빈 자리로 옮긴다(docs/design/layout.md 선 라벨).
+// 선 라벨 자리 고르기. elkjs가 선 꼬리 옆에 잡은 자리가 다른 라벨, 도형, 다른 선과 겹치거나 그룹 테두리에 걸치거나 자기 선 곁에 없으면 자기 선을 따라 출발점에서 가장 가까운 빈 자리로 옮긴다(docs/design/layout.md 선 라벨).
 // 경로 점은 건드리지 않고 라벨 가운데 자리만 정한다.
 import { sizePill } from '../measure/sizes.js';
 import { values } from '@woonyong-choi/design-tokens/tokens.js';
@@ -35,7 +35,10 @@ export function settleLabels(edges, items, bounds, groups = []) {
       const around = inflate(box, CLEAR);
       return !solids.some((s) => meets(around, s)) && !placed.some((o) => meets(around, o)) && !runs.some((run) => crosses(run, box)) && !groups.some((g) => straddles(around, g));
     };
-    if (!isFree(e.labelAt)) e.labelAt = spotsAlong(e.points, size).find(isFree) ?? e.labelAt;
+    // 접은 배치(줄 바꿈)에서 elkjs는 되돌아오는 선의 라벨을 자기 선과 떨어진 모서리에 둔다. 자기 선 곁이 아닌 자리도 빈 자리로 보지 않는다.
+    const own = e.points.slice(1).map((q, k) => ({ p: e.points[k], q }));
+    const isBeside = (at) => own.some((run) => crosses(run, inflate(boxAt(at, size), GAP + CLEAR)));
+    if (!isFree(e.labelAt) || !isBeside(e.labelAt)) e.labelAt = spotsAlong(e.points, size).find(isFree) ?? e.labelAt;
     placed.push(boxAt(e.labelAt, size));
   }
 }

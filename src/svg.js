@@ -1,6 +1,5 @@
 // 스크립트 없이 움직이는 SVG와 멈춘 SVG. 장면 하나의 시간표 상태를 CSS keyframes와 SMIL로 옮긴다(docs/design/playback.md).
 // 장면의 mode가 재생 방식을 정한다: static은 마지막 상태 하나, once는 한 번 재생하고 마지막 상태에 머물며, loop는 되풀이한다. speed는 재생 속도일 뿐 시간표의 ms는 바꾸지 않는다.
-import { canvasOf, fitCanvas } from './canvas.js';
 import { chartCards } from './chart-frames.js';
 import { mapSceneCharts, sceneCharts } from './chart-scene.js';
 import { animateFrameBody } from './animate/frames.js';
@@ -42,15 +41,15 @@ export async function toSvg(result, { scene: selector = 0, isStatic = false, nam
   const motionLayer = drawLayer(result, { si, timeline, clock, glyphs, charts, root: isStill ? '.fl' : '.fl .fl-motion' });
   const stillLayer = isStill ? undefined : drawLayer(result, { si, timeline: finalState(sliced), clock: createClock(1, { mode: 'static', displayMs: 1 }), glyphs, charts, root: '.fl .fl-still', prefix: 's' });
   const { content } = motionLayer;
-  const { viewWidth: width, shownWidth, scale } = fitCanvas(content.width, 0, canvasOf(figure));
+  // 그림은 넣는 칸의 폭을 꽉 채운다(width 100%, 높이는 viewBox 비율). 가로 스크롤 없이 칸에 맞춰 줄거나 커진다.
+  const width = content.width;
   const height = content.height;
-  const shownHeight = height * scale;
   const fonts = await embedFonts(glyphs.used);
   const title = figure.title ?? name;
   const chartStyle = charts.length || usesChartRoles(result.scene) ? STYLES.chart : '';
   const place = (layer, className) => `<g${className ? ` class="${className}"` : ''} transform="translate(${r((width - layer.content.width) / 2)} 0)">\n${layer.content.svg}\n</g>`;
   const layers = stillLayer ? `${place(motionLayer, 'fl-motion')}\n${place({ content: { ...stillLayer.content, svg: scopeIds(stillLayer.content.svg, 'still-') } }, 'fl-still')}` : place(motionLayer);
-  const head = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="fl" width="${r(shownWidth)}" height="${r(shownHeight)}" viewBox="0 0 ${r(width)} ${r(height)}" role="img" data-scene="${si}" data-mode="${mode}">
+  const head = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="fl" width="100%" viewBox="0 0 ${r(width)} ${r(height)}" role="img" data-scene="${si}" data-mode="${mode}">
 <title>${escapeXml(plainText(title))}</title>${figureDesc(figure)}
 `;
   const styles = `${STYLES.figure}${paintCss(result.scene)}${chartStyle}${hasStatus(timeline) ? STYLES.status : ''}

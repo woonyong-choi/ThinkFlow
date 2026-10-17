@@ -22,14 +22,12 @@ async function launchBrowser() {
   }
 }
 
-// #272: 실제 CSS·SVG·키보드 스크롤과 홈페이지가 쓰는 iframe 호스트 계약을 함께 확인한다.
-test('narrow HTML preserves readable labels and keyboard access in standalone and embedded views', async () => {
+// #272: 실제 CSS·SVG와 홈페이지가 쓰는 iframe 호스트 계약을 함께 확인한다. 그림은 틀 폭을 꽉 채우고 문서 안에서 가로로 스크롤하지 않는다.
+test('HTML figures fill the frame width without horizontal scroll in standalone and embedded views', async () => {
   const documents = new Map();
-  const graphHeights = new Map();
   for (const id of ['architecture', 'sequence']) {
     const source = new URL(`../../examples/${id}.torso`, import.meta.url);
     const built = await buildFigure(await readFile(source, 'utf8'), { baseDir: fileURLToPath(new URL('.', source)) });
-    graphHeights.set(id, built.scene.height);
     documents.set(`/${id}`, await toHtml(built, id));
     documents.set(`/embed-${id}`, `<!doctype html><html><head><meta name="viewport" content="width=device-width"><style>body{margin:0}iframe{display:block;width:100%;border:0}</style></head><body><iframe data-diagram src="/${id}" title="그림" allow="fullscreen" allowfullscreen></iframe><script>(${bindDiagramHost.toString()})();</script></body></html>`);
   }
@@ -57,19 +55,18 @@ test('narrow HTML preserves readable labels and keyboard access in standalone an
             const initial = await frame.evaluate(() => {
               const canvas = document.querySelector('.fl-canvas').getBoundingClientRect();
               const first = document.querySelector('.fl-canvas .fl-node[data-id="user"]').getBoundingClientRect();
-              return { height: document.querySelector('.fl-canvas .dp-panels').getBoundingClientRect().height, startVisible: first.left >= canvas.left && first.right <= canvas.right };
+              return { startVisible: first.left >= canvas.left && first.right <= canvas.right };
             });
-            assert(initial.startVisible, 'the first architecture card is complete before any horizontal scroll');
-            assert(initial.height <= graphHeights.get(id), 'an overflowing graph must not become taller than its original layout');
+            assert(initial.startVisible, 'the first architecture card is complete inside the frame');
           }
           const tabs = frame.getByRole('tab');
           for (let scene = 0; scene < await tabs.count(); scene++) {
             await tabs.nth(scene).click();
             const current = await frame.evaluate(measure);
-            assert(current.minTextSize >= 10.99, `${id}: labels shrink below their natural 11px minimum`);
+            assert(!current.overflow, `${id}: figure scrolls horizontally inside its frame`);
+            assert(Math.abs(current.panelWidth - current.canvasWidth) <= 1, `${id}: figure does not fill the frame width`);
             assert.equal(current.canvasHeight, current.contentHeight, `${id}: canvas clips vertically`);
             assert(current.pageWidth <= width, `${id}: document overflows horizontally`);
-            if (current.overflow) await checkKeyboard(frame);
           }
           await tabs.first().focus();
           await tabs.first().press('ArrowRight');
@@ -99,32 +96,13 @@ function measure() {
   return {
     minTextSize: Math.min(...sizes),
     panelWidth: panels.getBoundingClientRect().width,
+    canvasWidth: canvas.clientWidth,
     canvasHeight: canvas.clientHeight,
     contentHeight: canvas.scrollHeight,
     pageWidth: document.documentElement.scrollWidth,
     overflow: canvas.scrollWidth > canvas.clientWidth,
     scene: document.querySelector('[role=tab][aria-selected=true]')?.textContent,
   };
-}
-
-async function checkKeyboard(frame) {
-  const canvas = frame.locator('.fl-canvas');
-  const before = await frame.evaluate(measure);
-  assert.equal(await canvas.getAttribute('tabindex'), '0');
-  assert(await canvas.getAttribute('aria-labelledby') || await canvas.getAttribute('aria-label'));
-  await canvas.evaluate(node => { node.scrollLeft = 0; });
-  await canvas.focus();
-  assert(await canvas.evaluate(node => node === document.activeElement));
-  // 스크립트로 준 초점은 다음 그림 틀에서 키보드 스크롤 대상이 된다. 사람은 초점을 옮긴 같은 틀 안에 키를 누르지 않으므로 두 틀을 기다린다(첫 키가 스크롤되지 않던 간헐 실패).
-  await canvas.evaluate(() => new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))));
-  await canvas.press('ArrowRight');
-  await frame.waitForFunction(() => document.querySelector('.fl-canvas').scrollLeft > 0);
-  assert.equal((await frame.evaluate(measure)).scene, before.scene, 'arrows on the canvas leave the scene selected');
-  const atEnd = await canvas.evaluate(node => {
-    node.scrollLeft = node.scrollWidth;
-    return Math.abs(node.scrollLeft + node.clientWidth - node.scrollWidth) <= 1;
-  });
-  assert(atEnd, 'the complete horizontal extent is reachable');
 }
 
 async function checkEmbedHeight(page, frame) {
@@ -137,7 +115,7 @@ async function checkEmbedHeight(page, frame) {
   await frame.waitForFunction(() => document.querySelector('.fl-figure').clientWidth === 260);
   const after = await frame.evaluate(measure);
   assert.equal(after.scene, before.scene);
-  assert(after.minTextSize >= 10.99);
+  assert(!after.overflow, 'a narrowed embed shrinks the figure instead of scrolling');
   await page.locator('iframe').evaluate(node => { node.style.width = ''; });
 }
 
@@ -150,7 +128,7 @@ async function checkFullscreen(frame) {
   for (let index = 0; index < 16; index++) await frame.getByRole('button', { name: '확대', exact: true }).click();
   const zoomed = await frame.evaluate(measure);
   assert(zoomed.panelWidth > fit.panelWidth, 'fullscreen zoom changes the rendered width');
-  assert(zoomed.panelWidth > before.panelWidth, 'embedded natural width does not cap fullscreen zoom');
+  assert(zoomed.panelWidth > before.panelWidth, 'the embedded width does not cap fullscreen zoom');
   assert.equal(zoomed.scene, before.scene);
   await frame.getByRole('button', { name: '전체 보기', exact: true }).click();
   await frame.getByRole('button', { name: '전체화면 종료', exact: true }).click();
