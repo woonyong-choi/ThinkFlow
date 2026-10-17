@@ -17,7 +17,7 @@
 ### 비트 필드의 10 대 6 폭
 
 ```text
-thinkflow
+torso
 title "가상 주소를 VPN과 오프셋으로 나눈다"
 
 grid va "가상 주소 (16비트)" cols=16 {
@@ -49,7 +49,7 @@ scene "바꾸기"
 `col=0`인 `item`은 `key="Frame 0"`처럼 행 식별자를 셀 왼쪽에 따로 둔다. 주소·페이지·프레임 번호와 저장 내용을 구분할 때 사용한다. 셀 본문과 연결점은 기존 `item`과 같으며 `value ... on=ram.f0`가 내용을 바꾸어도 바깥 식별자는 유지된다.
 
 ```text
-thinkflow
+torso
 grid ram "물리 메모리" rows=2 {
   item f0 "Page 1" key="Frame 0"
   item f1 "빈 프레임" key="Frame 1" row=1
@@ -61,7 +61,7 @@ grid ram "물리 메모리" rows=2 {
 ### 바이트 배치: 눈금자, 오프셋, 구간 괄호
 
 ```text
-thinkflow
+torso
 title "TCP 헤더 (RFC 9293)"
 
 grid tcp "TCP 헤더" rows=6 cols=32 unit=bit {
@@ -89,7 +89,7 @@ grid tcp "TCP 헤더" rows=6 cols=32 unit=bit {
 ### 칸을 합치고, 비우고, 글을 길게 쓰기
 
 ```text
-thinkflow
+torso
 title "페이지 표 항목의 필드"
 
 box mmu "MMU" "주소 변환"
@@ -114,7 +114,7 @@ scene "상태 비트" mode=static
 ### 칸에서 칸으로 잇기
 
 ```text
-thinkflow
+torso
 title "가상 칸에서 페이지 표 행을 거쳐 물리 칸으로"
 
 grid virt "가상 주소 공간" rows=3 {
@@ -305,7 +305,7 @@ scene "조회"
 
 ## 페이징 주소 변환
 
-`examples/memory-address.thinkflow`는 기존 `grid`, 병합 칸, `칸 -> 칸`, `view graph right`, `scene`, `light`만 조합한다. `width wide`는 가로 순서를 위한 공통 캔버스 선택이다. VPN과 PFN은 5칸, 오프셋은 3칸을 차지하므로 주소 띠의 비율은 5:3이다. 페이지 표의 VPN은 행 인덱스이며, 왼쪽 조회 칸과 오른쪽 PFN 칸을 직접 연결해 행 사이 통로를 만들지 않는다. 모든 행은 이어지고 선택한 행의 칸을 함께 밝힌다.
+`examples/memory-address.torso`는 기존 `grid`, 병합 칸, `칸 -> 칸`, `view graph right`, `scene`, `light`만 조합한다. `width wide`는 가로 순서를 위한 공통 캔버스 선택이다. VPN과 PFN은 5칸, 오프셋은 3칸을 차지하므로 주소 띠의 비율은 5:3이다. 페이지 표의 VPN은 행 인덱스이며, 왼쪽 조회 칸과 오른쪽 PFN 칸을 직접 연결해 행 사이 통로를 만들지 않는다. 모든 행은 이어지고 선택한 행의 칸을 함께 밝힌다.
 
 가로 배치에서 서로 다른 한 행 격자의 같은 비율을 차지하는 오른쪽 끝 필드끼리 연결하면 두 필드의 아랫면을 연결점으로 쓴다. 필드 이름이나 예제 이름은 검사하지 않는다. 실제 경로는 ELK가 다른 도형을 피하도록 만들며 경로 점을 덮어쓰지 않는다. 좁은 배치로 방향이 바뀌면 기존 세로 연결점 규칙을 사용하고 사건 시각은 재배치 계약을 따른다.
 

@@ -1,6 +1,6 @@
-# ThinkFlow 사용법
+# Torso 사용법
 
-ThinkFlow는 텍스트로 문서용 그림을 만드는 도구입니다. 구성 요소를 한 번 선언한 뒤 연결, 보기, 장면을 조합합니다. 구조·순서·상태·데이터 관계·차트가 같은 카드와 조작부를 사용하고, 애니메이션은 선언한 구조를 따라 움직입니다.
+Torso는 텍스트로 문서용 그림을 만드는 도구입니다. 구성 요소를 한 번 선언한 뒤 연결, 보기, 장면을 조합합니다. 구조·순서·상태·데이터 관계·차트가 같은 카드와 조작부를 사용하고, 애니메이션은 선언한 구조를 따라 움직입니다.
 
 이 문서는 처음 설치해서 글에 그림을 넣는 과정과 지원하는 표현을 설명합니다. 옵션의 전체 목록은 코드에서 생성하는 [그림 문법](design/figure-syntax.md#문법-표)이 정본입니다. 여기의 수치와 서비스는 설명용 예시이며 실제 시스템의 측정값이 아닙니다.
 
@@ -33,32 +33,32 @@ ThinkFlow는 텍스트로 문서용 그림을 만드는 도구입니다. 구성 
 | JavaScript·TypeScript 연동 | [JavaScript에서 조립하기](#javascript에서-조립하기) |
 | 오류 수정과 지원 범위 확인 | [문제가 있을 때](#문제가-있을-때) |
 
-문법을 바로 찾으려면 [문서 안내](README.md)의 문법·검사 항목을 사용합니다. 이 문서는 저장소 기본 브랜치 기준입니다. npm 배포판의 포함 변경은 [릴리스](https://github.com/woonyong-choi/ThinkFlow/releases)에서 확인합니다. npm `0.2.0`에는 이후 반영한 공통 도구 막대의 배경·호버·포커스 조정, 공통 아이콘 갱신, 추적 SVG 스타일 누락 수정이 포함되지 않았습니다. 이 배포판으로 추적 그림을 확인할 때는 `--html`로 만든 HTML을 사용합니다. 원본의 `thinkflow` 선언에는 패키지 버전을 붙이지 않습니다.
+문법을 바로 찾으려면 [문서 안내](README.md)의 문법·검사 항목을 사용합니다. 이 문서는 저장소 기본 브랜치 기준입니다. npm 배포판의 포함 변경은 [릴리스](https://github.com/woonyong-choi/Torso/releases)에서 확인합니다. npm `0.2.0`에는 이후 반영한 공통 도구 막대의 배경·호버·포커스 조정, 공통 아이콘 갱신, 추적 SVG 스타일 누락 수정이 포함되지 않았습니다. 이 배포판으로 추적 그림을 확인할 때는 `--html`로 만든 HTML을 사용합니다. 원본의 `torso` 선언에는 패키지 버전을 붙이지 않습니다.
 
 ## 설치와 버전 확인
 
 Node.js 20 이상과 npm이 필요합니다.
 
 ```sh
-npm install --save-dev thinkflow
+npm install --save-dev torso-diagram
 ```
 
-설치한 프로젝트에서 `npx thinkflow`로 실행합니다. 팀에서 같은 결과를 만들려면 `package-lock.json`을 함께 커밋하고 `npm ci`를 사용합니다.
+설치한 프로젝트에서 `npx torso`로 실행합니다. 팀에서 같은 결과를 만들려면 `package-lock.json`을 함께 커밋하고 `npm ci`를 사용합니다.
 
-패키지 버전은 다음 명령으로 확인할 수 있습니다. 원본 첫 줄에는 버전 숫자 없이 `thinkflow`만 적습니다.
+패키지 버전은 다음 명령으로 확인할 수 있습니다. 원본 첫 줄에는 버전 숫자 없이 `torso`만 적습니다.
 
 ```sh
-node --input-type=module -e "import {createRequire} from 'node:module'; console.log(createRequire(import.meta.url)('thinkflow/package.json').version)"
+node --input-type=module -e "import {createRequire} from 'node:module'; console.log(createRequire(import.meta.url)('torso-diagram/package.json').version)"
 ```
 
-ThinkFlow 패키지에는 공통 디자인, 아이콘, 렌더러와 TypeScript 선언이 포함됩니다. 별도의 디자인 저장소 없이 사용할 수 있습니다. 라이브러리 API도 Node.js에서 실행하며 ESM으로 가져옵니다. 패키지 구성과 배포 절차는 [마크다운과 배포](design/markdown.md#패키지)에 있습니다.
+Torso 패키지에는 공통 디자인, 아이콘, 렌더러와 TypeScript 선언이 포함됩니다. 별도의 디자인 저장소 없이 사용할 수 있습니다. 라이브러리 API도 Node.js에서 실행하며 ESM으로 가져옵니다. 패키지 구성과 배포 절차는 [마크다운과 배포](design/markdown.md#패키지)에 있습니다.
 
 ## 첫 그림 만들기
 
-아래 내용을 `request.thinkflow`에 저장합니다. 카드 세 개와 선 두 개만으로 정적인 구조가 만들어집니다. 좌표, 글꼴, 색, 보기, 장면을 지정할 필요가 없습니다.
+아래 내용을 `request.torso`에 저장합니다. 카드 세 개와 선 두 개만으로 정적인 구조가 만들어집니다. 좌표, 글꼴, 색, 보기, 장면을 지정할 필요가 없습니다.
 
-```thinkflow name=request
-thinkflow
+```torso name=request
+torso
 title "요청을 저장하는 경로"
 person client "사용자"
 box service "주문 서비스"
@@ -67,13 +67,13 @@ client -> service "요청"
 service -> records "기록"
 ```
 
-![요청을 저장하는 경로](usage-request.svg)<!-- thinkflow -->
+![요청을 저장하는 경로](usage-request.svg)<!-- torso -->
 
 검사하고 SVG와 HTML을 만듭니다.
 
 ```sh
-npx thinkflow check request.thinkflow --strict
-npx thinkflow render request.thinkflow --html
+npx torso check request.torso --strict
+npx torso render request.torso --html
 ```
 
 `request.svg`와 `request.html`이 원본 옆에 생깁니다. HTML은 모든 장면을 선택하는 재생기이고 SVG는 선택한 장면 하나입니다. 장면이 없는 위 예제는 두 형식 모두 정지 그림입니다. 그림 제목은 원본의 `title`에 적습니다. `render --title`은 지원하지 않습니다.
@@ -110,8 +110,8 @@ npx thinkflow render request.thinkflow --html
 다음 블록을 `guide.md`에 저장합니다. 블록 이름은 소문자·숫자·`-`를 사용하고 같은 문서 안에서 중복하지 않습니다.
 
 ````text
-```thinkflow name=request
-thinkflow
+```torso name=request
+torso
 box client "사용자"
 box service "주문 서비스"
 client -> service
@@ -119,8 +119,8 @@ client -> service
 ````
 
 ```sh
-npx thinkflow md guide.md --strict
-npx thinkflow md guide.md --check --strict
+npx torso md guide.md --strict
+npx torso md guide.md --check --strict
 ```
 
 첫 명령은 SVG를 만들고 블록 아래에 관리 표식이 있는 이미지 줄을 넣습니다. 둘째 명령은 파일을 바꾸지 않고 낡은 결과가 있는지 검사합니다. 생성된 SVG와 수정된 Markdown을 함께 커밋합니다. 원본을 고친 뒤 SVG를 손으로 고치지 않습니다.
@@ -129,7 +129,7 @@ npx thinkflow md guide.md --check --strict
 
 ### 홈페이지에서 읽는 본문
 
-홈페이지는 `thinkflow` 블록을 빌드할 때 HTML 그림으로 컴파일하고 본문에 삽입합니다. 원본의 `title`이 그림의 이름이 됩니다. 같은 원본은 빌드에서 재사용하고 읽는 브라우저에서 파서나 배치 엔진을 실행하지 않습니다.
+홈페이지는 `torso` 블록을 빌드할 때 HTML 그림으로 컴파일하고 본문에 삽입합니다. 원본의 `title`이 그림의 이름이 됩니다. 같은 원본은 빌드에서 재사용하고 읽는 브라우저에서 파서나 배치 엔진을 실행하지 않습니다.
 
 홈페이지의 블로그와 문서는 같은 삽입 부품을 사용합니다. 장면 탭, 문법 복사, HTML 다운로드, 전체화면을 그림마다 따로 구현하지 않습니다. 정적인 설명으로 충분한 곳에는 장면 없이 넣고, 순서나 변화의 이해를 돕는 곳에만 장면을 추가합니다.
 
@@ -156,8 +156,8 @@ group backend "주문 시스템" direction=down {
 
 장면이 없어도 카드 안에 설명과 현재 값을 표시할 수 있습니다. 다음 원본은 정적인 카드 하나입니다.
 
-```thinkflow name=card
-thinkflow
+```torso name=card
+torso
 title "서비스의 설명과 현재 값"
 box service "주문 서비스" {
   text "주문을 검사한 뒤 저장합니다."
@@ -165,7 +165,7 @@ box service "주문 서비스" {
 }
 ```
 
-![서비스의 설명과 현재 값](usage-card.svg)<!-- thinkflow -->
+![서비스의 설명과 현재 값](usage-card.svg)<!-- torso -->
 
 본문에는 `text`, `value`, 작은 관계 `graph`, 내부 `chart`를 선언한 순서로 넣습니다. 장면에서 `show`로 설명을 추가하고 `clear`로 글과 작은 관계 그래프를 비워도 값 줄은 남습니다. 다음 장면에서는 선언한 본문이 복원됩니다. 내부 차트의 선과 보기는 바깥 카드를 가리킵니다. 카드 본문은 그래프 보기에 표시됩니다. 전체 규칙은 [카드 선언](design/figure-syntax.md#카드-선언), 조합은 [구조 그림](reference/flow.md)에 있습니다.
 
@@ -173,8 +173,8 @@ box service "주문 서비스" {
 
 API 카드는 요청·응답의 칸을 이름으로 연결합니다. `create.body`는 화면 좌표가 아니라 `create` 카드의 `body` 칸입니다.
 
-```thinkflow name=api
-thinkflow
+```torso name=api
+torso
 title "요청 필드가 저장될 곳"
 person client "사용자"
 api create "POST /orders" {
@@ -187,16 +187,16 @@ create.body -> records "저장"
 view graph down
 ```
 
-![요청 필드가 저장될 곳](usage-api.svg)<!-- thinkflow -->
+![요청 필드가 저장될 곳](usage-api.svg)<!-- torso -->
 
-HTTP 요청을 실제로 보내거나 OpenAPI 문서를 가져오는 기능은 아닙니다. 계약에서 설명할 칸을 직접 적습니다. 칸의 선언 규칙은 [카드 선언](design/figure-syntax.md#카드-선언), 인증·외부 결제·테이블을 잇는 예는 [API 예제](../examples/api.thinkflow)를 확인합니다.
+HTTP 요청을 실제로 보내거나 OpenAPI 문서를 가져오는 기능은 아닙니다. 계약에서 설명할 칸을 직접 적습니다. 칸의 선언 규칙은 [카드 선언](design/figure-syntax.md#카드-선언), 인증·외부 결제·테이블을 잇는 예는 [API 예제](../examples/api.torso)를 확인합니다.
 
 ### 클래스와 인터페이스
 
 필드와 메서드는 카드 안에, 클래스 사이의 관계는 카드 밖에 적습니다.
 
-```thinkflow name=class
-thinkflow
+```torso name=class
+torso
 title "저장소 계약과 구현"
 interface repository "Repository" {
   method save "(order: Order): void" visibility=public
@@ -209,16 +209,16 @@ sql-repository -> repository relation=realization
 view graph down
 ```
 
-![저장소 계약과 구현](usage-class.svg)<!-- thinkflow -->
+![저장소 계약과 구현](usage-class.svg)<!-- torso -->
 
-`relation`은 연관 `association`, 의존 `dependency`, 상속 `inheritance`, 구현 `realization`, 집합 `aggregation`, 합성 `composition`을 구분합니다. 클래스 멤버는 연결점이 아니므로 관계는 카드끼리 연결합니다. `abstract`, `static`, 다중성과 자기 관계는 [클래스 카드](design/figure-kinds.md#클래스), 더 큰 조합은 [클래스 예제](../examples/class.thinkflow)에 있습니다.
+`relation`은 연관 `association`, 의존 `dependency`, 상속 `inheritance`, 구현 `realization`, 집합 `aggregation`, 합성 `composition`을 구분합니다. 클래스 멤버는 연결점이 아니므로 관계는 카드끼리 연결합니다. `abstract`, `static`, 다중성과 자기 관계는 [클래스 카드](design/figure-kinds.md#클래스), 더 큰 조합은 [클래스 예제](../examples/class.torso)에 있습니다.
 
 ### 메시지 순서
 
 순서 그림도 카드를 먼저 선언하지만 연결을 별도로 선언하지 않습니다. 보기 안에 참여자의 가로 순서를 놓고, 메시지를 장면 안에 적습니다.
 
-```thinkflow name=sequence
-thinkflow
+```torso name=sequence
+torso
 title "저장 완료 뒤에 응답하기"
 person client "사용자"
 box service "주문 서비스"
@@ -233,7 +233,7 @@ scene "주문 접수" mode=static
   service -> client "주문 번호" dashed
 ```
 
-![저장 완료 뒤에 응답하기](usage-sequence.svg)<!-- thinkflow -->
+![저장 완료 뒤에 응답하기](usage-sequence.svg)<!-- torso -->
 
 `mode=static`은 메시지 전체를 한 번에 보여 줍니다. `once`로 바꾸면 같은 메시지를 순서대로 설명합니다. 한 장면에 여러 가능성을 나누려면 `fragment alt`와 `branch`, 반복에는 `fragment loop`, 병렬에는 `fragment par`, 선택적 실행에는 `fragment opt`를 씁니다. `activate`·`deactivate`는 활성 구간, `note`는 주석, `create`·`destroy`는 참여자의 생명주기입니다. 상세 예제는 [순서 그림](reference/sequence.md)을 확인합니다.
 
@@ -241,8 +241,8 @@ scene "주문 접수" mode=static
 
 상태 그림은 같은 그래프 보기와 장면 문법을 사용합니다. 카드가 서비스 대신 상태를 뜻하고 `start`, `final`로 시작과 끝을 표시합니다.
 
-```thinkflow name=state
-thinkflow
+```torso name=state
+torso
 title "작업의 정상 처리와 재시도"
 state queued "대기"
 state running "처리 중"
@@ -261,24 +261,24 @@ scene "재시도"
   running -> queued
 ```
 
-![작업의 정상 처리와 재시도](usage-state.svg)<!-- thinkflow -->
-<!-- thinkflow scenes v1 name=state -->
+![작업의 정상 처리와 재시도](usage-state.svg)<!-- torso -->
+<!-- torso scenes v1 name=state -->
 <details>
 <summary>재시도</summary>
 
-![작업의 정상 처리와 재시도 (재시도)](usage-state.scene-2.svg)<!-- thinkflow -->
+![작업의 정상 처리와 재시도 (재시도)](usage-state.scene-2.svg)<!-- torso -->
 
 </details>
-<!-- /thinkflow scenes v1 name=state -->
+<!-- /torso scenes v1 name=state -->
 
 같은 구조 위에서 경로만 바꿉니다. 실패 횟수, 재시도 정책, 트랜잭션 보장까지 이 그림이 자동으로 정의하지는 않습니다. 필요한 정책은 본문에 설명하거나 값과 조건을 추가해 표현합니다. 자세한 내용은 [상태 그림](reference/state.md)을 확인합니다.
 
 ### 테이블, 관계와 일반 표
 
-테이블 카드는 열과 키, 외래 키 관계를 설명합니다. 일반적인 속성 비교나 목록 표는 문서의 Markdown 표를 사용하고, 열 사이의 참조를 설명할 때 ThinkFlow 테이블을 사용합니다.
+테이블 카드는 열과 키, 외래 키 관계를 설명합니다. 일반적인 속성 비교나 목록 표는 문서의 Markdown 표를 사용하고, 열 사이의 참조를 설명할 때 Torso 테이블을 사용합니다.
 
-```thinkflow name=tables
-thinkflow
+```torso name=tables
+torso
 title "주문이 사용자를 참조하는 관계"
 table users "users" {
   id bigint pk
@@ -294,15 +294,15 @@ scene "사용자 찾기"
   orders.user_id -> users.id time=800ms
 ```
 
-![주문이 사용자를 참조하는 관계](usage-tables.svg)<!-- thinkflow -->
-<!-- thinkflow scenes v1 name=tables -->
+![주문이 사용자를 참조하는 관계](usage-tables.svg)<!-- torso -->
+<!-- torso scenes v1 name=tables -->
 <details>
 <summary>사용자 찾기</summary>
 
-![주문이 사용자를 참조하는 관계 (사용자 찾기)](usage-tables.scene-2.svg)<!-- thinkflow -->
+![주문이 사용자를 참조하는 관계 (사용자 찾기)](usage-tables.scene-2.svg)<!-- torso -->
 
 </details>
-<!-- /thinkflow scenes v1 name=tables -->
+<!-- /torso scenes v1 name=tables -->
 
 외래 키 선언이 연결을 만듭니다. `from="0..*" to="1"`을 같은 열에 붙이면 각 끝의 다중성을 표시합니다. 외래 키 없이 직접 적는 선은 설명용 관계입니다. 같은 관계를 `orders.user_id -> users.id`로 장면 밖에 다시 선언하지 않습니다. 복합 키는 테이블 안에 `pk (tenant_id, id)`와 `fk (tenant_id, user_id) -> users (tenant_id, id)`처럼 열 묶음으로 적습니다. 열의 자료형은 표시할 계약이고, SQL을 실행하거나 DB 스키마를 자동으로 변경하지 않습니다. 고유 키와 참조 동작은 [데이터 관계 그림](reference/data.md)에 있습니다.
 
@@ -310,14 +310,14 @@ scene "사용자 찾기"
 
 `grid`는 카드 안의 칸을 구성합니다. `item`의 `row`, `col`은 0부터 세며 `rows`, `cols`는 차지하는 칸 수입니다. 이 숫자는 데이터 구조의 의미이며 화면의 픽셀 좌표가 아닙니다. `light address.page`로 칸을 강조하고 `address.page -> page-table`처럼 특정 칸을 연결합니다.
 
-[칸 격자](reference/grid.md)에서 최소 문법을 익힌 뒤 [메모리](../examples/memory.thinkflow), [스택](../examples/stack.thinkflow), [포인터](../examples/pointer.thinkflow)를 확인합니다. 생략 구간 `gap`은 설명용 표시이므로 이동이나 강조의 대상이 아닙니다.
+[칸 격자](reference/grid.md)에서 최소 문법을 익힌 뒤 [메모리](../examples/memory.torso), [스택](../examples/stack.torso), [포인터](../examples/pointer.torso)를 확인합니다. 생략 구간 `gap`은 설명용 표시이므로 이동이나 강조의 대상이 아닙니다.
 
 ### 차트와 측정값
 
 차트는 계열을 먼저 선언하고 행에 값을 적습니다. 단위는 축 제목에 붙입니다. 보기에 아직 배치하지 않은 카드가 차트와 추적뿐이고 그룹에 속한 카드나 명시한 `graph` 보기가 없으면, 각 차트에 `plot` 보기가 생깁니다. 연결선 유무로 결정하지 않습니다. 아직 어느 보기에 배치하지 않은 일반 카드와 섞이면 그래프 안의 차트 카드로 놓이므로, 차트만 문서 폭으로 보이려면 `view plot` 블록 안에 차트 이름을 적습니다.
 
-```thinkflow name=chart
-thinkflow
+```torso name=chart
+torso
 title "대기와 처리 시간을 구분하기"
 chart latency "요청별 시간" bar "예시 데이터. 단위는 ms" {
   x "시간(ms)"
@@ -333,15 +333,15 @@ scene "계열 비교"
   reveal latency.wait
 ```
 
-![대기와 처리 시간을 구분하기](usage-chart.svg)<!-- thinkflow -->
-<!-- thinkflow scenes v1 name=chart -->
+![대기와 처리 시간을 구분하기](usage-chart.svg)<!-- torso -->
+<!-- torso scenes v1 name=chart -->
 <details>
 <summary>계열 비교</summary>
 
-![대기와 처리 시간을 구분하기 (계열 비교)](usage-chart.scene-2.svg)<!-- thinkflow -->
+![대기와 처리 시간을 구분하기 (계열 비교)](usage-chart.scene-2.svg)<!-- torso -->
 
 </details>
-<!-- /thinkflow scenes v1 name=chart -->
+<!-- /torso scenes v1 name=chart -->
 
 `reveal`에 나온 계열만 장면 시작 때 숨었다가 드러납니다. `light latency "요청 B"`는 특정 행을 강조합니다. 값 이름을 행의 숫자 자리에 넣으면 값이 바뀔 때 차트도 따라 바뀝니다. 계열 색·무늬·번호와 범례는 렌더러가 정하므로 차트마다 별도 CSS를 만들지 않습니다.
 
@@ -362,8 +362,8 @@ scene "계열 비교"
 
 호출 관계와 측정한 시간을 한 원본에서 설명할 수 있습니다. 다음 수치는 작성법을 위한 예시입니다.
 
-```thinkflow name=trace
-thinkflow
+```torso name=trace
+torso
 title "호출 관계와 소요 시간"
 box service "주문 서비스"
 store records "저장소"
@@ -378,15 +378,15 @@ view time "소요 시간" {
 }
 ```
 
-![호출 관계와 소요 시간](usage-trace.svg)<!-- thinkflow -->
+![호출 관계와 소요 시간](usage-trace.svg)<!-- torso -->
 
 `trace`에는 `span id "표시 이름" lane=카드 at=시작 dur=길이`를 적습니다. 호출 관계 없이 시간만 보이려면 카드를 선언하지 않고 따옴표 레인 이름(`lane="주문 서비스"`)을 씁니다. 그러면 시간 보기 하나만 그려집니다. `unit=ms|us|s`는 측정값의 단위이고 `at`, `dur`는 그 단위의 숫자입니다. 이는 `track time=700ms` 같은 애니메이션 시간과 다릅니다. 같은 레인에서 겹치는 구간은 다른 줄에 배치합니다.
 
-[추적 예제](../examples/trace.thinkflow)는 호출 관계를 `graph`, 측정 구간을 `time` 보기로 나란히 설명합니다. 같은 카드를 그래프와 순서 보기 양쪽에 배치할 수도 있습니다. 보기는 위에서 아래로 쌓이며 같은 논리 사건이 여러 보기에 함께 표시됩니다. 이를 위해 카드를 복제하거나 사건을 두 번 적지 않습니다. [통합 예제](../examples/integration.thinkflow)에서 여러 보기의 조합을 확인합니다.
+[추적 예제](../examples/trace.torso)는 호출 관계를 `graph`, 측정 구간을 `time` 보기로 나란히 설명합니다. 같은 카드를 그래프와 순서 보기 양쪽에 배치할 수도 있습니다. 보기는 위에서 아래로 쌓이며 같은 논리 사건이 여러 보기에 함께 표시됩니다. 이를 위해 카드를 복제하거나 사건을 두 번 적지 않습니다. [통합 예제](../examples/integration.torso)에서 여러 보기의 조합을 확인합니다.
 
 ## 구조에 장면 추가하기
 
-[첫 그림](#첫-그림-만들기)의 `request.thinkflow` 마지막에 아래 줄을 붙이고 `npx thinkflow render request.thinkflow --html`을 다시 실행합니다. HTML을 새로 열면 구조와 요청 이동을 탭으로 비교할 수 있습니다.
+[첫 그림](#첫-그림-만들기)의 `request.torso` 마지막에 아래 줄을 붙이고 `npx torso render request.torso --html`을 다시 실행합니다. HTML을 새로 열면 구조와 요청 이동을 탭으로 비교할 수 있습니다.
 
 ```text
 scene "구조" mode=static
@@ -423,8 +423,8 @@ scene "요청 처리"
 
 다음 예제는 접수량이 처리량보다 많을 때의 큐를 보여 줍니다. `queue` 자체가 찬 칸 수를 나타내는 값이므로 별도의 큐 길이 변수를 만들지 않습니다.
 
-```thinkflow name=queue
-thinkflow
+```torso name=queue
+torso
 title "접수와 처리가 독립적으로 진행되는 큐"
 box producer "접수" icon=apigw
 queue jobs "대기 작업" slots=4 from=1
@@ -444,15 +444,15 @@ scene "접수가 더 빠를 때" mode=loop for=8s
   track jobs -> worker at=500ms every=2s time=700ms wait="jobs>0" reserve="jobs-1" tone=green
 ```
 
-![접수와 처리가 독립적으로 진행되는 큐](usage-queue.svg)<!-- thinkflow -->
-<!-- thinkflow scenes v1 name=queue -->
+![접수와 처리가 독립적으로 진행되는 큐](usage-queue.svg)<!-- torso -->
+<!-- torso scenes v1 name=queue -->
 <details>
 <summary>접수가 더 빠를 때</summary>
 
-![접수와 처리가 독립적으로 진행되는 큐 (접수가 더 빠를 때)](usage-queue.scene-2.svg)<!-- thinkflow -->
+![접수와 처리가 독립적으로 진행되는 큐 (접수가 더 빠를 때)](usage-queue.scene-2.svg)<!-- torso -->
 
 </details>
-<!-- /thinkflow scenes v1 name=queue -->
+<!-- /torso scenes v1 name=queue -->
 
 `every`는 출발 간격이고 `time`은 한 이동에 걸리는 시간입니다. 이동 시간이 출발 간격보다 길면 여러 점이 같은 경로 위에 동시에 존재합니다. `for=8s`는 장면의 논리 길이이며 실서비스의 실행 시간이 아닙니다. 구간별 속도가 다르면 `legs="500ms, -"`처럼 경로의 각 구간 시간을 나눌 수 있습니다.
 
@@ -469,21 +469,21 @@ scene "접수가 더 빠를 때" mode=loop for=8s
 
 `on worker done+1`은 점이 `worker`에 도착할 때마다 완료 수를 올립니다. `reserve`로 이미 큐 수를 바꾸었다면 같은 수를 `on`에서 다시 바꾸지 않습니다. `value pending "진행 중" from=0`처럼 값만 선언하거나 카드 안에 선언해 표시할 수도 있습니다. `ref=jobs`는 큐 값의 별도 표시 이름을 만들 때 사용합니다.
 
-장면의 논리 사건은 빌드할 때 계산됩니다. 재생기는 같은 시간표를 표시하며 실제 메시지 브로커를 실행하지 않습니다. `speed=1.5`는 화면의 재생 배속만 바꾸고 `every`, `time`과 사건 사이의 논리 관계는 유지합니다. 의도적으로 영원히 기다리는 모습을 설명할 때만 `stuck`을 사용합니다. 조건·예약·값 유지의 더 큰 조합은 [queue 예제](../examples/queue.thinkflow)와 [재생 계약](design/playback.md)을 확인합니다.
+장면의 논리 사건은 빌드할 때 계산됩니다. 재생기는 같은 시간표를 표시하며 실제 메시지 브로커를 실행하지 않습니다. `speed=1.5`는 화면의 재생 배속만 바꾸고 `every`, `time`과 사건 사이의 논리 관계는 유지합니다. 의도적으로 영원히 기다리는 모습을 설명할 때만 `stuck`을 사용합니다. 조건·예약·값 유지의 더 큰 조합은 [queue 예제](../examples/queue.torso)와 [재생 계약](design/playback.md)을 확인합니다.
 
 ## CLI 출력과 검사
 
 | 목적 | 명령 |
 |---|---|
-| 원본만 검사 | `npx thinkflow check request.thinkflow --strict` |
-| SVG 만들기 | `npx thinkflow render request.thinkflow` |
-| SVG와 모든 장면의 HTML | `npx thinkflow render request.thinkflow --html` |
-| 선택한 장면의 정지 SVG | `npx thinkflow render request.thinkflow --static --scene "요청 처리"` |
-| 별도 폴더에 결과 쓰기 | `npx thinkflow render request.thinkflow --html --out figures` |
-| 폴더의 원본을 갤러리로 만들기 | `npx thinkflow gallery . --out preview --title "설계 그림"` |
-| 진단을 JSON으로 받기 | `npx thinkflow check request.thinkflow --json` |
+| 원본만 검사 | `npx torso check request.torso --strict` |
+| SVG 만들기 | `npx torso render request.torso` |
+| SVG와 모든 장면의 HTML | `npx torso render request.torso --html` |
+| 선택한 장면의 정지 SVG | `npx torso render request.torso --static --scene "요청 처리"` |
+| 별도 폴더에 결과 쓰기 | `npx torso render request.torso --html --out figures` |
+| 폴더의 원본을 갤러리로 만들기 | `npx torso gallery . --out preview --title "설계 그림"` |
+| 진단을 JSON으로 받기 | `npx torso check request.torso --json` |
 
-SVG의 `--scene` 번호는 1부터입니다. 생략하면 첫 장면이고 장면이 없는 그림에는 지정하지 않습니다(`thinkflow md`는 장면이 둘 이상인 블록에 생략하면 모든 장면을 `.scene-2.svg`처럼 이름 붙여 쓰고 둘째 장면부터 `<details>`로 둡니다). HTML은 모든 장면을 포함하므로 `--static`이나 SVG의 선택 장면이 HTML의 장면 목록을 줄이지 않습니다. `gallery`는 지정한 폴더의 `.thinkflow`를 읽고 목록·문서 미리보기·각 그림의 HTML과 SVG를 만듭니다. 하위 폴더를 재귀적으로 찾는 명령은 아닙니다. `--out`을 생략하면 입력 폴더 아래 `out`에 쓰고, `--title`을 생략하면 입력 폴더명을 목록 제목으로 사용합니다.
+SVG의 `--scene` 번호는 1부터입니다. 생략하면 첫 장면이고 장면이 없는 그림에는 지정하지 않습니다(`torso md`는 장면이 둘 이상인 블록에 생략하면 모든 장면을 `.scene-2.svg`처럼 이름 붙여 쓰고 둘째 장면부터 `<details>`로 둡니다). HTML은 모든 장면을 포함하므로 `--static`이나 SVG의 선택 장면이 HTML의 장면 목록을 줄이지 않습니다. `gallery`는 지정한 폴더의 `.torso`를 읽고 목록·문서 미리보기·각 그림의 HTML과 SVG를 만듭니다. 하위 폴더를 재귀적으로 찾는 명령은 아닙니다. `--out`을 생략하면 입력 폴더 아래 `out`에 쓰고, `--title`을 생략하면 입력 폴더명을 목록 제목으로 사용합니다.
 
 `--strict`는 경고도 실패로 취급합니다. `--json`은 진단마다 JSON 한 줄을 출력하며, 일반 진단은 파일·줄·메시지로 나옵니다. CLI의 종료 코드는 성공 0, 원본·검사·입출력 실패 또는 낡은 결과 1, 사용법 오류 2입니다. 여러 원본의 `render`에서는 실패한 원본의 결과를 쓰지 않지만 성공한 다른 원본의 결과는 쓸 수 있습니다. 출력 경로 충돌은 쓰기 전에 전체를 거절합니다.
 
@@ -495,9 +495,9 @@ SVG의 `--scene` 번호는 1부터입니다. 생략하면 첫 장면이고 장�
 
 ```js
 import { readFile, writeFile } from 'node:fs/promises';
-import { buildFigure, FigureError, toSvg, toHtml } from 'thinkflow';
+import { buildFigure, FigureError, toSvg, toHtml } from 'torso-diagram';
 
-const source = await readFile('request.thinkflow', 'utf8');
+const source = await readFile('request.torso', 'utf8');
 try {
   const result = await buildFigure(source, {
     strict: true,
@@ -532,15 +532,15 @@ try {
 
 `FigureError.name`은 `FigureError`이며 `problems`는 `FigureDiagnostic` 목록입니다. 각 진단은 `severity`(`error` 또는 `warning`), `code`, `line`, `column`, `message`를 가집니다. 줄과 열은 1부터 시작하며 원본 위치를 모르면 0입니다. `warnings`도 같은 형식을 사용합니다. `code`는 문자열이므로 연동 코드는 모르는 코드도 표시해야 합니다. 진단을 분류할 때 사람이 읽는 `message`를 파싱하지 않습니다. 잘못된 예산 옵션은 `TypeError`이고 그 밖의 실행 오류는 예시처럼 다시 던집니다.
 
-TypeScript에서는 `import type { BuildOptions, BuiltFigure, FigureDiagnostic, SvgOptions } from 'thinkflow'`로 타입을 가져옵니다. Node.js 프로젝트는 `module: "NodeNext"` 설정으로 같은 ESM 진입점을 사용합니다. 타입의 정본은 [공개 선언](../src/index.d.ts)입니다. 내부 모듈 경로 대신 공개 진입점을 가져오고, 디자인을 맞추기 위해 결과 SVG나 HTML을 정규식으로 덮어쓰지 않습니다.
+TypeScript에서는 `import type { BuildOptions, BuiltFigure, FigureDiagnostic, SvgOptions } from 'torso-diagram'`로 타입을 가져옵니다. Node.js 프로젝트는 `module: "NodeNext"` 설정으로 같은 ESM 진입점을 사용합니다. 타입의 정본은 [공개 선언](../src/index.d.ts)입니다. 내부 모듈 경로 대신 공개 진입점을 가져오고, 디자인을 맞추기 위해 결과 SVG나 HTML을 정규식으로 덮어쓰지 않습니다.
 
 ## 문제가 있을 때
 
 | 증상 | 먼저 확인할 것 |
 |---|---|
-| 첫 줄에서 문법 오류 | 첫 의미 줄이 숫자나 옵션 없는 `thinkflow`인지 |
+| 첫 줄에서 문법 오류 | 첫 의미 줄이 숫자나 옵션 없는 `torso`인지 |
 | 이름을 찾지 못함 | 표시 이름 대신 식별자를 썼는지, 철자와 대소문자. 진단의 `Did you mean`이 가까운 이름을 알립니다 |
-| Mermaid·D2 꼴(`A[글]`, `a --> b`, `a: 글`)을 씀 | 진단이 같은 뜻의 ThinkFlow 꼴을 알립니다([시작 선언과 없앤 형태](design/figure-syntax.md#시작-선언과-없앤-형태)) |
+| Mermaid·D2 꼴(`A[글]`, `a --> b`, `a: 글`)을 씀 | 진단이 같은 뜻의 Torso 꼴을 알립니다([시작 선언과 없앤 형태](design/figure-syntax.md#시작-선언과-없앤-형태)) |
 | 이동 경로를 찾지 못함 | 그래프에서는 연결을 먼저 선언했는지, 순서 보기에는 참여자가 있는지 |
 | 움직이지 않음 | 장면이 `static`인지, SVG가 첫 정지 장면인지, 움직임 줄이기가 켜졌는지 |
 | 이동 글이 겹침 | 같은 글을 연결과 이동 양쪽에 썼는지 |
@@ -550,6 +550,6 @@ TypeScript에서는 `import type { BuildOptions, BuiltFigure, FigureDiagnostic, 
 | 차트 값이 거절됨 | 종류별 행 문법·계열 수·부호·결측·단위를 지켰는지 |
 | 모바일에서 읽기 어려움 | 한 그림에 너무 많은 대상을 넣었는지, 세로 방향이나 보기 분리가 적절한지 |
 
-지원하는 표현과 아직 전용 문법이 없는 범위는 [표현 범위](design/expression-coverage.md)에 있습니다. 배치 검사 항목은 [그림 검사](design/figure-check.md), 문법 진단은 [그림 문법의 오류와 경고](design/figure-syntax.md#오류와-경고)에서 찾습니다. 해결되지 않으면 [이슈](https://github.com/woonyong-choi/ThinkFlow/issues)에 재현 가능한 최소 원본, 실행 명령, 패키지 버전과 진단을 남깁니다.
+지원하는 표현과 아직 전용 문법이 없는 범위는 [표현 범위](design/expression-coverage.md)에 있습니다. 배치 검사 항목은 [그림 검사](design/figure-check.md), 문법 진단은 [그림 문법의 오류와 경고](design/figure-syntax.md#오류와-경고)에서 찾습니다. 해결되지 않으면 [이슈](https://github.com/woonyong-choi/Torso/issues)에 재현 가능한 최소 원본, 실행 명령, 패키지 버전과 진단을 남깁니다.
 
 자동 검사 통과는 읽기 쉬움의 전부가 아닙니다. 원본을 고친 뒤 본문 폭과 모바일 폭에서 라벨·선·탭·움직임을 직접 확인합니다. 개별 그림의 CSS나 좌표를 덧대기 전에 공통 배치와 부품의 문제인지 먼저 판단합니다.

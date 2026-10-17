@@ -10,11 +10,11 @@ import { buildModel } from '../src/layout/model.js';
 
 import postcss from 'postcss';
 
-import { EXAMPLES, build, thinkflow, descendants, findAll, findOne, parseMarkup, read, reject, textContent, textsOf, toHtml, toSvg } from './support.js';
+import { EXAMPLES, build, torso, descendants, findAll, findOne, parseMarkup, read, reject, textContent, textsOf, toHtml, toSvg } from './support.js';
 
-const MOVE = (mode, speed = 1, time = '10s') => thinkflow(`box a "A"\nbox b "B"\na -> b\nscene "s" mode=${mode} speed=${speed}\n  a -> b "m" time=${time}\n`);
+const MOVE = (mode, speed = 1, time = '10s') => torso(`box a "A"\nbox b "B"\na -> b\nscene "s" mode=${mode} speed=${speed}\n  a -> b "m" time=${time}\n`);
 test('embedded bounds include status pills beyond the node corner', async () => {
-  const result = await build(thinkflow('box a "A"\nscene "warning" status="a=warn"\n  light a\n'));
+  const result = await build(torso('box a "A"\nscene "warning" status="a=warn"\n  light a\n'));
   const svg = await toSvg(result);
   assert.match(svg, /class="status-pill"/);
   assert.match(svg, /class="status-icon"/);
@@ -62,16 +62,16 @@ test('X2 speed scales the playback length, not the logical times: 10s at speed 2
 
 test('X3 speed must be a positive finite number, and a length of under 1ms after dividing is an invalid-speed error', async () => {
   for (const speed of ['0', '-1', 'abc', 'NaN', 'Infinity', '1e999', '']) {
-    const source = thinkflow(`box a "A"\nbox b "B"\na -> b\nscene "s" mode=once speed=${speed}\n  a -> b time=1s\n`);
+    const source = torso(`box a "A"\nbox b "B"\na -> b\nscene "s" mode=once speed=${speed}\n  a -> b time=1s\n`);
     assert.ok((await reject(source)).length, `speed=${speed}`);
   }
-  const fast = await reject(thinkflow(`box a "A"\nbox b "B"\na -> b\nscene "s" mode=once speed=100000\n  a -> b time=1s\n`));
+  const fast = await reject(torso(`box a "A"\nbox b "B"\na -> b\nscene "s" mode=once speed=100000\n  a -> b time=1s\n`));
   assert.ok(fast.some((p) => p.code === 'invalid-speed'), JSON.stringify(fast));
-  await build(thinkflow(`box a "A"\nbox b "B"\na -> b\nscene "s" mode=once speed=1000\n  a -> b time=1s\n`));
+  await build(torso(`box a "A"\nbox b "B"\na -> b\nscene "s" mode=once speed=1000\n  a -> b time=1s\n`));
 });
 
 test('X4 a scene is chosen by number or by name; only its own messages show; an unknown scene is a RangeError', async () => {
-  const source = thinkflow(`
+  const source = torso(`
     person u "U"
     box s "S"
     view sequence {
@@ -94,14 +94,14 @@ test('X4 a scene is chosen by number or by name; only its own messages show; an 
 });
 
 test('X5 a figure with no scenes is one still picture of the declared start values', async () => {
-  const result = await build(thinkflow('box a "A"\nvalue n "n" on=a from=5\n'));
+  const result = await build(torso('box a "A"\nvalue n "n" on=a from=5\n'));
   const dom = parseMarkup(await toSvg(result));
   assert.equal(animations(dom).length, 0);
   assert.equal(dom.attrs['data-mode'], 'static');
 });
 
 test('X6 builds are deterministic: the same source gives byte-identical SVG and HTML, in any order of calls', async () => {
-  const source = thinkflow(`
+  const source = torso(`
     box a "A"
     box b "B"
     value n "n" on=b from=0
@@ -127,7 +127,7 @@ test('X6 builds are deterministic: the same source gives byte-identical SVG and 
 
 // 독립 결과물은 배경과 정지·재생 층이 읽는 색 선언과 변수 정의를 함께 싣는다.
 test('renderers_embed_required_style_variables', async () => {
-  const trace = thinkflow(`
+  const trace = torso(`
     box a "A"
     trace t "T" unit=ms {
       span one "ONE" lane=a at=0 dur=100
@@ -138,7 +138,7 @@ test('renderers_embed_required_style_variables', async () => {
       wait 1s
       light t.two
   `);
-  const sources = [MOVE('loop'), thinkflow(`
+  const sources = [MOVE('loop'), torso(`
     chart c "Heatmap" heatmap {
       cell "r" "a" 1
       cell "r" "b" 2
@@ -188,7 +188,7 @@ test('renderers_embed_required_style_variables', async () => {
 
 // ---- 정본 내려받기와 단독 HTML ----
 
-const DOC = thinkflow(`
+const DOC = torso(`
   title "Doc </script><img src=x onerror=alert(1)> & \\"q\\""
   box a "A <b>"
   box b "B & 'c'"
@@ -221,19 +221,19 @@ test('X7 the HTML is one standalone file: no outside resource, only inline scrip
 test('X8 the canonical copy in the page head rebuilds the whole page byte for byte (the download contract)', async () => {
   const html = await toHtml(await build(DOC), 'doc');
   const dom = parseMarkup(html, { html: true });
-  const meta = findOne(dom, (n) => n.tag === 'meta' && n.attrs.name === 'thinkflow-canonical', 'canonical meta');
+  const meta = findOne(dom, (n) => n.tag === 'meta' && n.attrs.name === 'torso-canonical', 'canonical meta');
   const template = Buffer.from(meta.attrs.content, 'base64').toString('utf8');
-  assert.match(template, /<meta name="thinkflow-canonical" content="">/);
+  assert.match(template, /<meta name="torso-canonical" content="">/);
   // 내려받기가 하는 일: 칸이 빈 정본에 같은 base64를 다시 채운다
-  const head = '<meta name="thinkflow-canonical" content="';
+  const head = '<meta name="torso-canonical" content="';
   const at = template.indexOf(head) + head.length;
   assert.equal(template.slice(0, at) + meta.attrs.content + template.slice(at), html);
   // 정본 안에는 정본이 또 들어 있지 않아 다시 내려받아도 커지지 않는다
-  assert.equal((template.match(/thinkflow-canonical/g) ?? []).length, 2, 'name and the script constant only, never a nested copy');
+  assert.equal((template.match(/torso-canonical/g) ?? []).length, 2, 'name and the script constant only, never a nested copy');
 });
 
 test('X9 one panel per view, in the order declared, and the same panels in the narrow-screen layout', async () => {
-  const source = thinkflow(`
+  const source = torso(`
     person u "U"
     box s "S"
     chart c "C" bar {
@@ -264,7 +264,7 @@ test('X9 one panel per view, in the order declared, and the same panels in the n
 });
 
 test('X9 siblings keep their declared order when the narrow-screen layout stacks them one per layer, and the wide layout is unchanged', async () => {
-  const source = thinkflow(`
+  const source = torso(`
     box lb "LB" icon=lb
     box a1 "API 1" icon=server
     box a2 "API 2" icon=server
@@ -287,7 +287,7 @@ test('X9 siblings keep their declared order when the narrow-screen layout stacks
 
 test('X9b every panel of the wide and the narrow-screen layout shares its natural viewBox dimensions', async () => {
   const names = ['a', 'b', 'c', 'd', 'e', 'f'];
-  const source = thinkflow(`
+  const source = torso(`
     ${names.map((n) => `box ${n} "Service ${n.toUpperCase()}"`).join('\n    ')}
     chart numbers "Numbers" bar {
       x "x(u)"
@@ -336,7 +336,7 @@ test('X9b every panel of the wide and the narrow-screen layout shares its natura
 });
 
 test('X9e an unmet narrow target keeps the narrower valid group candidate (#272)', async () => {
-  const source = read(EXAMPLES, 'architecture.thinkflow');
+  const source = read(EXAMPLES, 'architecture.torso');
   const roomy = await build(source, { baseDir: EXAMPLES, layoutWidth: 650, strict: false });
   const narrow = await build(source, { baseDir: EXAMPLES, layoutWidth: 272, strict: false });
   assert.ok(narrow.scene.width <= roomy.scene.width, 'a narrower target must not discard an already valid narrower layout');
@@ -350,13 +350,13 @@ test('X9d the narrow-screen layout is shipped only when it hides no more moving 
     return descendants(dom).find((n) => n.tag === 'template' && /\bfl-narrow\b/.test(n.attrs.class ?? ''));
   };
   // 좁은 폭의 구조 배치는 이동 글 4개를 가리므로 쓰지 않고, 넓은 배치의 자연 크기를 유지한다.
-  assert.equal(await narrowOf('flow.thinkflow'), undefined);
+  assert.equal(await narrowOf('flow.torso'), undefined);
   // 이동 글을 가리지 않는 좁은 배치는 그대로 쓴다.
-  assert.ok(await narrowOf('metric.thinkflow'));
+  assert.ok(await narrowOf('metric.torso'));
 });
 
 test('X9c the shared viewer has no viewport-height cap in the document, and keeps the fixed full-screen frame', async () => {
-  const html = await toHtml(await build(thinkflow('box a "A"\n')), 'x');
+  const html = await toHtml(await build(torso('box a "A"\n')), 'x');
   const css = /<style>([\s\S]*?)<\/style>/.exec(html)[1];
   assert.doesNotMatch(css, /max-height:[^;}]*\d+[sld]?vh/);
   assert.match(css, /\.fl-figure\.full \{[^}]*\bposition: fixed;/);
@@ -365,7 +365,7 @@ test('X9c the shared viewer has no viewport-height cap in the document, and keep
 
 // 도구 막대의 순서와 마크업은 components.test.js U9가 본다. 여기서는 어떤 그림에도 재생 조작이 없다는 것만 본다.
 test('X10 no figure has a play, speed, loop or progress control', async () => {
-  const sources = [DOC, thinkflow('box a "A"\n'), thinkflow('chart c "C" bar {\n  x "x(u)"\n  series v "v"\n  row "r" v=1\n}\n')];
+  const sources = [DOC, torso('box a "A"\n'), torso('chart c "C" bar {\n  x "x(u)"\n  series v "v"\n  row "r" v=1\n}\n')];
   for (const source of sources) {
     const html = parseMarkup(await toHtml(await build(source), 'doc'), { html: true });
     const names = findAll(html, (n) => n.tag === 'button').map((n) => n.attrs['aria-label']);
@@ -375,7 +375,7 @@ test('X10 no figure has a play, speed, loop or progress control', async () => {
 });
 
 test('X11 the page keeps the original source exactly (line endings and all) so the copy button copies what the author wrote', async () => {
-  const source = `thinkflow\r\ntitle "한글 \\"따옴표\\" <b>"\r\nbox a "A" # comment\r\n`;
+  const source = `torso\r\ntitle "한글 \\"따옴표\\" <b>"\r\nbox a "A" # comment\r\n`;
   const html = parseMarkup(await toHtml(await build(source), 'doc'), { html: true });
   const carried = findAll(html, (n) => n.tag === 'script' && n.attrs.type === 'application/json').map((n) => JSON.parse(textContent(n)));
   assert.deepEqual(carried.filter((value) => value === source), [source]);
@@ -383,7 +383,7 @@ test('X11 the page keeps the original source exactly (line endings and all) so t
 
 // 부모가 나중에 초기화되어 첫 높이 메시지를 놓쳐도 테마 연결 때 다시 전달한다.
 test('X9d an embedded player reports its height again when a late host connects', async () => {
-  const html = await toHtml(await build(thinkflow('box a "A"\n')), 'x');
+  const html = await toHtml(await build(torso('box a "A"\n')), 'x');
   const script = [...html.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(match => match[1]).find(text => text.includes('themeRequest'));
   const events = {}, messages = [];
   const parent = { postMessage: message => messages.push(message) };
@@ -398,7 +398,7 @@ test('X9d an embedded player reports its height again when a late host connects'
 
 test('grid-only layout aligns equal memory columns and preserves narrow graph reading', async () => {
   for (const name of ['memory', 'memory-address', 'sql-join']) {
-    const source = read(EXAMPLES, `${name}.thinkflow`);
+    const source = read(EXAMPLES, `${name}.torso`);
     const wide = await build(source, { baseDir: EXAMPLES, layoutWidth: 1400 });
     const [first, , last] = wide.scene.items;
     assert.equal(first.y, last.y, `${name}: equal-height end columns share a baseline`);
@@ -412,7 +412,7 @@ test('grid-only layout aligns equal memory columns and preserves narrow graph re
 
 test('mixed grid graphs retain collision-free pointer labels and stack flow', async () => {
   for (const name of ['pointer', 'stack']) {
-    const source = read(EXAMPLES, `${name}.thinkflow`);
+    const source = read(EXAMPLES, `${name}.torso`);
     const wide = await build(source, { baseDir: EXAMPLES, layoutWidth: 1400 });
     assert.ok(wide.scene.items.some((item) => item.shape !== 'grid'));
     const narrow = await build(source, { baseDir: EXAMPLES, layoutWidth: 360, strict: false });
@@ -422,7 +422,7 @@ test('mixed grid graphs retain collision-free pointer labels and stack flow', as
 });
 
 test('grid-only placement preserves safe and single-layer layout priorities', async () => {
-  const result = await build(read(EXAMPLES, 'sql-join.thinkflow'), { baseDir: EXAMPLES });
+  const result = await build(read(EXAMPLES, 'sql-join.torso'), { baseDir: EXAMPLES });
   const sizes = new Map(result.scene.items.map((item) => [item.id, item.size]));
   const options = (overrides) => {
     const figure = { ...result.figure, direction: result.scene.items[0].direction, ...overrides };

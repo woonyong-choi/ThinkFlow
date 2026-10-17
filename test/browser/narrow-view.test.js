@@ -27,7 +27,7 @@ test('narrow HTML preserves readable labels and keyboard access in standalone an
   const documents = new Map();
   const graphHeights = new Map();
   for (const id of ['architecture', 'sequence']) {
-    const source = new URL(`../../examples/${id}.thinkflow`, import.meta.url);
+    const source = new URL(`../../examples/${id}.torso`, import.meta.url);
     const built = await buildFigure(await readFile(source, 'utf8'), { baseDir: fileURLToPath(new URL('.', source)) });
     graphHeights.set(id, built.scene.height);
     documents.set(`/${id}`, await toHtml(built, id));

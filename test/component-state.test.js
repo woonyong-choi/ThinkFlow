@@ -6,7 +6,7 @@ import { test } from 'node:test';
 import postcss from 'postcss';
 import { paintCss } from '../src/draw/paint.js';
 import { seriesBoundary, seriesOutline } from '../src/chart/metrics.js';
-import { build, thinkflow, toHtml, toSvg } from './support.js';
+import { build, torso, toHtml, toSvg } from './support.js';
 
 test('bright_series_boundary_supplies_color_without_overriding_shared_stroke', () => {
   const chart = { series: [{ role: 'main' }, {}, { role: 'reference' }] };
@@ -17,7 +17,7 @@ test('bright_series_boundary_supplies_color_without_overriding_shared_stroke', (
   assert.doesNotMatch(boundary, /style="stroke:/);
 });
 
-const GRAPH = thinkflow(`
+const GRAPH = torso(`
   table t "T" {
     id bigint pk
   }
@@ -86,7 +86,7 @@ test('S1 켜짐과 평소 모습은 효과 한 벌(--fx-*)을 움직이는 SVG�
 // 켜진 차트 카드: 카드 면은 켜짐 면(--fx-face-on)으로 바뀌므로 글자 바탕과 받침 선도 같은 구간에 같은 면을 따라야 한다.
 // 면은 윤곽 요소의 class가, 차트는 그 형제 묶음(.fl-chart)이 가지므로 움직이는 SVG는 묶음에 같은 켜짐 구간을 따로 건다.
 // 건 속성은 일반 상속 속성 color다(chart.css의 `.fl-chart`가 바탕 면을 color로 싣고 받는 쪽이 currentColor로 읽는다). 사용자 정의 속성 keyframes는 시작 때 값이 굳어 테마가 바뀌어도 따라가지 않는다.
-const LIT_CHART = thinkflow(`
+const LIT_CHART = torso(`
   box a "A"
   a -> sales
   chart sales "매출" line {
@@ -145,7 +145,7 @@ test('S3 켜진 차트 카드의 글자 바탕과 받침 선은 정지 SVG, 움�
 });
 
 // 움직이는 SVG의 시간은 재생기(player/sample.js)와 같다: 점이 선을 떠나면 선 색과 알약은 평소로 돌아오고(알약은 표시 400ms, speed와 상관없다), 조용한 선의 보임만 마지막 모습까지 남는다.
-const WALK = thinkflow(`
+const WALK = torso(`
   box a "A"
   box b "B"
   box c "C"
@@ -193,7 +193,7 @@ test('S4 움직이는 SVG의 선은 점이 떠나면 평소로 돌아오고, 알
   assert.deepEqual(framesOf(later, laterClass).map((stop) => stop.value), ['opacity: 0']);
   // 켜짐 구간의 시각은 반올림하지 않는다: 1ms보다 작게 다른 두 일정은 서로 다른 keyframes를 받고, 같은 일정은 class 하나를 나눠 쓴다.
   const edgeClasses = async (first, second) => {
-    const out = await toSvg(await build(thinkflow(`
+    const out = await toSvg(await build(torso(`
       box a "A"
       box b "B"
       box c "C"
@@ -212,7 +212,7 @@ test('S4 움직이는 SVG의 선은 점이 떠나면 평소로 돌아오고, 알
 });
 
 test('S5 light가 켠 그룹은 경계 색만 강조 색이 되고 굵기와 면은 바뀌지 않으며, 켜지 않은 그룹은 아무 class도 받지 않는다', async () => {
-  const result = await build(thinkflow(`
+  const result = await build(torso(`
     group g "G" {
       box a "A"
       box b "B"
@@ -240,7 +240,7 @@ test('S5 light가 켠 그룹은 경계 색만 강조 색이 되고 굵기와 면
 
 for (const [first, order] of [['덤벨', [DUMBBELL, SCATTER]], ['산점도', [SCATTER, DUMBBELL]]]) {
   test(`S2 차트 종류가 섞여도 방향선 화살촉은 몸통과 같은 역할의 색을 읽는다 (${first} 먼저)`, async () => {
-    const result = await build(thinkflow(`${order.join('\n')}\nscene "a"`));
+    const result = await build(torso(`${order.join('\n')}\nscene "a"`));
     for (const out of [await toSvg(result), await toHtml(result, 'arrows')]) {
       assert.deepEqual([...out.matchAll(/<marker id="(fl-arrow-[a-z]+)"/g)].map((m) => m[1]).sort(), ['fl-arrow-main', 'fl-arrow-muted'], 'one marker per role, whatever the declaration order');
       const lines = [...out.matchAll(/class="chart-(?:arrow|link) arrow-([a-z]+) pop" marker-end="url\(#(fl-arrow-[a-z]+)\)"/g)];
@@ -254,14 +254,14 @@ for (const [first, order] of [['덤벨', [DUMBBELL, SCATTER]], ['산점도', [SC
 // 소비자 조사 T-E4: 구두점만 다른 차트 이름도 서로 다른 재생 시각을 가진다.
 test('S1 차트 이름의 하이픈은 애니메이션 이름을 충돌시키지 않는다', async () => {
   const card = id => `chart ${id} "C" bar {\n x "x(u)"\n series v "V"\n row "A" v=1\n}\n`;
-  const result = await build(thinkflow(card('ab') + card('a-b') + 'scene "순서"\n reveal ab.v\n wait 1s\n reveal a-b.v\n'));
+  const result = await build(torso(card('ab') + card('a-b') + 'scene "순서"\n reveal ab.v\n wait 1s\n reveal a-b.v\n'));
   const svg = await toSvg(result);
   const names = [...svg.matchAll(/@keyframes ([^ {]+)/g)].map(m => m[1]);
   assert.equal(new Set(names).size, names.length);
 });
 
 test('surface_paint_and_relation_dashes_are_owned_by_shared_css', async () => {
-  const result = await build(thinkflow(`
+  const result = await build(torso(`
     group g "외부 경계" dashed {
       external e "외부"
     }

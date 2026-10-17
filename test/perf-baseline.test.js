@@ -16,8 +16,8 @@ import cp from 'node:child_process';
 import { syncBuiltinESMExports } from 'node:module';
 import { join, resolve } from 'node:path';
 const root = process.cwd();
-const source = join(root, 'examples', 'box.thinkflow');
-const output = process.env.THINKFLOW_PERF_OUTPUT;
+const source = join(root, 'examples', 'box.torso');
+const output = process.env.TORSO_PERF_OUTPUT;
 const read = fs.readFileSync;
 const list = fs.readdirSync;
 const write = fs.writeFileSync;
@@ -25,14 +25,14 @@ const exec = cp.execFileSync;
 let entered = false;
 fs.readdirSync = function(path, ...args) {
   const dir = resolve(String(path));
-  if (dir === join(root, 'examples')) return ['box.thinkflow'];
+  if (dir === join(root, 'examples')) return ['box.torso'];
   if (['docs/assets', 'docs/assets/showcase'].some(name => dir === join(root, name))) return [];
   return list.call(this, path, ...args);
 };
 fs.readFileSync = function(path, ...args) {
   if (resolve(String(path)) === source && !entered) {
     entered = true;
-    if (process.env.THINKFLOW_PERF_RACE === '1') write(output, ${JSON.stringify(SENTINEL)}, { flag: 'wx' });
+    if (process.env.TORSO_PERF_RACE === '1') write(output, ${JSON.stringify(SENTINEL)}, { flag: 'wx' });
   }
   return read.call(this, path, ...args);
 };
@@ -51,7 +51,7 @@ function measure(t, race) {
   const run = spawnSync(process.execPath, ['--import', join(dir, 'preload.mjs'), 'scripts/perf-chips.mjs', '--write', output], {
     cwd: ROOT,
     encoding: 'utf8',
-    env: { ...process.env, THINKFLOW_PERF_OUTPUT: output, THINKFLOW_PERF_RACE: race ? '1' : '0' },
+    env: { ...process.env, TORSO_PERF_OUTPUT: output, TORSO_PERF_RACE: race ? '1' : '0' },
   });
   return { run, output };
 }
@@ -68,7 +68,7 @@ test('G4 --write still creates a new baseline with the measured input and proven
   assert.equal(run.status, 0, run.stdout + run.stderr);
   const baseline = JSON.parse(readFileSync(output, 'utf8'));
   assert.equal(baseline.figures, 1);
-  assert.deepEqual(Object.keys(baseline.inputs), ['examples/box.thinkflow']);
+  assert.deepEqual(Object.keys(baseline.inputs), ['examples/box.torso']);
   assert.equal(baseline.codeHash, HEAD);
   assert.match(baseline.scriptHash, /^[a-f0-9]{64}$/);
   assert.match(run.stdout, /baseline written to/);

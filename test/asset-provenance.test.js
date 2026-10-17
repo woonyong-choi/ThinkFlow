@@ -8,7 +8,7 @@ const root = new URL('../', import.meta.url).pathname;
 const SKIP = new Set(['node_modules', '.git', '.local', 'examples/out']);
 const RASTER = /\.(png|jpe?g|gif|webp|avif|bmp|ico)$/i;
 const THIRD_PARTY_NAMES = [/-io\d{2}\.[a-z0-9]+$/i, /^fancysection-/i, /^arrivals-/i, /^bezel-/i];
-const TEXT = /\.(m?js|ts|css|html|svg|json|thinkflow|ya?ml)$/i;
+const TEXT = /\.(m?js|ts|css|html|svg|json|torso|ya?ml)$/i;
 const sources = JSON.parse(readFileSync(root + 'docs/assets/sources.json', 'utf8'));
 
 const walk = dir => readdirSync(root + dir, { withFileTypes: true }).flatMap(entry => {
