@@ -57,6 +57,6 @@ function drawSpan(s, { lane, decorate, glyphs }) {
 
 // 글 한 줄 뒤 바탕 면. 값 글자(chart/labels.js valueText)와 같은 여백이다.
 function textBack({ x, center, width }, size) {
-  const pad = SPACE['0-25'];
-  return `<rect x="${r(x - pad)}" y="${r(center - size / 2 - pad)}" width="${r(width + pad * 2)}" height="${r(size + pad * 2)}" class="chart-text-bg"/>`;
+  const [padX, padY] = [SPACE['1'], SPACE['0-25']];
+  return `<rect x="${r(x - padX)}" y="${r(center - size / 2 - padY)}" width="${r(width + padX * 2)}" height="${r(size + padY * 2)}" class="chart-text-bg"/>`;
 }
