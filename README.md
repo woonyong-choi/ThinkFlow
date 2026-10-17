@@ -1,28 +1,73 @@
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="docs/assets/torso-logo-dark.png">
-    <img src="docs/assets/torso-logo.png" alt="Torso icon: a dressmaker's mannequin on a wooden stand wrapped in a yellow tape measure" width="200">
+    <img src="docs/assets/torso-logo.png" alt="Torso 아이콘: 노란 줄자를 두른 나무 받침 위의 마네킹" width="200">
   </picture>
 </p>
 
-# Torso
+<h1 align="center">Torso</h1>
 
-Generated HTML uses the same light and dark logos as this README for its browser tab icon, including offline files.
-
-English | [한국어](README.ko.md)
-
-Turn one `.torso` text source into an animated SVG figure for documentation: structure, sequences, states, schemas, classes, traces, and charts, with values that change as dots arrive.
+<p align="center">
+  텍스트 파일 하나를 구조, 순서, 상태, 데이터 관계와 차트를 담은 움직이는 문서 그림으로 변환<br>
+  한국어 | <a href="README.en.md">English</a>
+</p>
 
 <p align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="docs/assets/showcase/async-orders-en-dark.svg">
-    <img src="docs/assets/showcase/async-orders-en-light.svg" alt="Orders from four sources enter an event queue and spread to stock, payment, and notification consumers, while the queue fills and one mail is lost" width="100%">
+    <source media="(prefers-color-scheme: dark)" srcset="docs/assets/showcase/async-orders-ko-dark.svg">
+    <img src="docs/assets/showcase/async-orders-ko-light.svg" alt="합성 데이터: 네 곳의 주문이 이벤트 큐로 들어가 재고, 결제, 알림 소비자로 퍼지고, 큐가 차오르며 메일 하나가 유실되는 그림" width="100%">
   </picture>
 </p>
 
-Dots in a figure start at their own times and move at their own pace, so one scene shows several flows running at once, values changing as dots arrive, a queue filling, and a message lost on the way. A source declares cards (boxes, tables, APIs, classes, grids, charts, traces) and then lists scenes. Unlisted cards get a default view based on the declared composition. See [Choosing views](docs/usage.md#목적에-맞는-보기-선택하기), or write `view graph`, `view sequence`, `view plot`, `view time`, or `view timing` to choose yourself. The same card can appear in several views, and one event moves it in all of them. Torso measures text with the fonts it embeds, lays out with elkjs, checks the result for overlaps, and writes an animated SVG or an HTML player.
+그림 안의 점은 저마다 다른 시각에 출발해 다른 속도로 움직입니다. 그래서 한 장면에 여러 흐름이 동시에 돌고, 점이 닿을 때 값이 바뀌고, 큐가 차오르고, 메시지가 도중에 유실되는 모습이 보입니다. 원본은 카드(상자, 테이블, API, 클래스, 격자, 차트, 추적)를 선언하고 장면을 차례로 적습니다. `view` 줄에 적지 않은 카드는 구성에 맞는 기본 보기를 받습니다. [보기 선택 안내](docs/usage.md#목적에-맞는-보기-선택하기)를 참고해 직접 고르려면 `view graph`, `view sequence`, `view plot`, `view time`, `view timing`을 씁니다. 같은 카드가 여러 보기에 놓일 수 있고, 사건 하나가 모든 보기에서 함께 움직입니다. Torso는 그림에 넣는 글꼴 파일로 글을 재고, elkjs로 배치하고, 겹침을 검사한 뒤, 움직이는 SVG나 HTML 재생기를 씁니다.
 
-## How it works
+## 목차
+
+- [빠른 시작](#빠른-시작)
+- [해결하는 문제](#해결하는-문제)
+- [작동 방식](#작동-방식)
+- [갤러리](#갤러리)
+- [사용법](#사용법)
+  - [그림 하나 만들기](#그림-하나-만들기)
+  - [그림 검사하기](#그림-검사하기)
+  - [마크다운 문서에 그림 넣기](#마크다운-문서에-그림-넣기)
+  - [CI에서 최신으로 지키기](#ci에서-최신으로-지키기)
+  - [JavaScript와 TypeScript에서 빌드](#javascript와-typescript에서-빌드)
+  - [Mermaid, DBML, D2, draw.io, Excalidraw 가져오기](#mermaid-dbml-d2-drawio-excalidraw-가져오기)
+  - [원본 형식](#원본-형식)
+- [상태](#상태)
+- [문서](#문서)
+- [개발](#개발)
+- [라이선스](#라이선스)
+
+## 빠른 시작
+
+Node.js 20 이상과 Git이 필요합니다. 현재 이름의 npm 패키지는 공개되지 않았으므로 저장소에서 실행합니다(2026-10-17 확인).
+
+```sh
+git clone https://github.com/woonyong-choi/torso.git
+cd torso
+npm ci
+```
+
+복제한 저장소 루트에서 `node src/cli.js <명령>`으로 실행합니다. 패키지에는 Node.js용 ESM API와 TypeScript 선언도 포함됩니다.
+
+[작동 방식](#작동-방식)의 예제를 `how-it-works.torso`로 저장한 뒤 첫 그림을 만듭니다.
+
+```sh
+node src/cli.js render how-it-works.torso --html
+```
+
+같은 폴더에 `how-it-works.svg`와 `how-it-works.html`이 생깁니다.
+
+## 해결하는 문제
+
+문서에서 요청의 이동과 값 변화를 설명하려면 구조 그림과 실행 순서를 함께 보여 줘야 합니다. Torso는 카드와 연결을 적은 텍스트에 장면을 더해, 같은 구조 위에서 점의 이동과 값 변화를 그립니다.
+
+- D2: 더 풍부한 문법과 자체 배치로 그림을 그립니다(2026-10-01 확인). D2 도형이나 테마가 필요하면 이쪽이 맞습니다.
+- Vega-Lite: 훨씬 많은 차트 종류를 그립니다(2026-10-01 확인). 지도, 작은 다중 차트, 상호작용 변환이 필요하면 이쪽이 맞습니다.
+
+## 작동 방식
 
 ```text
 torso
@@ -48,53 +93,36 @@ scene "Chat"
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/assets/how-it-works-dark.svg">
-  <img src="docs/assets/how-it-works-light.svg" alt="Figure rendered from the source above: the developer's question moves from Screen to Engine, then to Codex CLI">
+  <img src="docs/assets/how-it-works-light.svg" alt="위 원본으로 그린 그림: 개발자의 질문이 Screen에서 Engine을 거쳐 Codex CLI로 갑니다">
 </picture>
 
-1. The first line is `torso`, without a version number. Then come cards and edges, optional `view` lines, and scenes from `scene` on. No view is written here: the cards go into one left-to-right graph by default. A scene has one name; its `mode` (`static`, `once`, or `loop`) is `once` when the scene has lines and `static` when it is empty, unless you write it. The explanation lives in the surrounding document, not in the figure.
-2. Torso lays out the cards inside `system` from top to bottom and the rest from left to right.
-3. In the first beat a dot moves from `user` to `tui`, and the card inside `tui` fills in when the dot arrives.
-4. A typo such as `engine -> cdex` stops the build with `how-it-works.torso:19: unknown card "cdex". Did you mean "codex"? Declared: codex, engine, system, tui, user`.
+1. 첫 줄은 숫자 없는 `torso`입니다. 그다음 카드와 선, 필요하면 `view` 줄, `scene`부터 장면을 적습니다. 여기에는 보기를 적지 않았습니다. 카드는 왼쪽에서 오른쪽으로 놓이는 그래프 하나에 기본으로 담깁니다. 장면은 이름 하나를 갖고, 재생 방식 `mode`(`static`, `once`, `loop`)는 적지 않으면 줄이 있는 장면은 `once`, 빈 장면은 `static`입니다. 설명은 그림 밖 문서 본문이 맡습니다.
+2. Torso가 `system` 안 카드는 위에서 아래로, 나머지는 왼쪽에서 오른쪽으로 놓습니다.
+3. 첫 박자에 점이 `user`에서 `tui`로 가고, 점이 닿을 때 `tui` 안 카드가 채워집니다.
+4. `engine -> cdex` 같은 오타는 `how-it-works.torso:19: unknown card "cdex". Did you mean "codex"? Declared: codex, engine, system, tui, user`를 내고 멈춥니다.
 
-## Installation
+전체 규칙은 [그림 문법](docs/design/figure-syntax.md)에 있습니다.
 
-Requirements: Node.js 20 or later.
+## 갤러리
 
-```sh
-npm install --save-dev torso-diagram
-```
+| 그림 | 그림 |
+|---|---|
+| <picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/showcase/order-rush-ko-dark.svg"><img src="docs/assets/showcase/order-rush-ko-light.svg" alt="웹, 앱, 제휴사의 주문이 주문 API에 함께 들어오고 처리 중 개수와 재고가 바뀌는 그림" width="100%"></picture><br>시뮬레이션: 동시에 흐르며 값이 바뀝니다. [구조 그림](docs/reference/flow.md) | <picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/showcase/shop-schema-ko-dark.svg"><img src="docs/assets/showcase/shop-schema-ko-light.svg" alt="주문이 사용자를, 주문 항목이 주문과 상품을 외래 키로 가리키는 쇼핑몰 테이블 그림" width="100%"></picture><br>스키마: 테이블, 키, 외래 키. [데이터 관계 그림](docs/reference/data.md) |
+| <picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/showcase/oauth-ko-dark.svg"><img src="docs/assets/showcase/oauth-ko-light.svg" alt="사용자, 앱, 인가 서버, API 사이의 OAuth 인가 코드와 PKCE 순서 그림" width="100%"></picture><br>순서: 메시지가 오가는 차례. [순서 그림](docs/reference/sequence.md) | <picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/showcase/latency-ko-dark.svg"><img src="docs/assets/showcase/latency-ko-light.svg" alt="엔드포인트별 p95 지연을 캐시를 넣기 전과 뒤로 비교한 덤벨 차트" width="100%"></picture><br>차트: 기준값과 개선 값. [차트](docs/reference/charts.md) |
+| <picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/showcase/cloud-architecture-ko-dark.svg"><img src="docs/assets/showcase/cloud-architecture-ko-light.svg" alt="클라우드 구성도: 웹 요청이 DNS, CDN, 로드 밸런서, 웹 서버를 거쳐 앱 서버로 가고, 운영자는 VPN과 배스천을 거쳐 앱 서버에 닿습니다" width="100%"></picture><br>구성도: 그룹, 아이콘, 번호 붙은 선. [구성도](docs/reference/architecture.md) | <picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/showcase/order-state-ko-dark.svg"><img src="docs/assets/showcase/order-state-ko-light.svg" alt="주문이 생성됨에서 결제됨, 배송 중, 배송 완료로 가고 취소됨이 다른 끝 상태인 상태 그림" width="100%"></picture><br>상태: 상태와 그 사이의 이동. [상태 그림](docs/reference/state.md) |
 
-Run it with `npx torso <command>`. The package also includes an ESM API and TypeScript declarations for Node.js.
+[예제](examples/) 폴더에는 지원하는 표현마다 예제가 하나씩 있습니다. 차트 열여섯 종류와, 구성도, 흐름, 상태, 스키마, 클래스, API, 순서, 추적, 지표, 메모리, 스택, 큐, 포인터, 그리고 흐름, API, 스키마, 지표, 차트를 한 문서로 잇는 통합 그림입니다. `npm run catalog`가 원본과 미리보기를 모은 갤러리를 만듭니다. 예제의 수치는 모두 기능을 설명하려고 만든 예시 데이터입니다.
 
-## Gallery
+## 사용법
 
-<table>
-  <tr>
-    <td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/showcase/order-rush-en-dark.svg"><img src="docs/assets/showcase/order-rush-en-light.svg" alt="Orders from the web, the app, and a partner reach the order API together, and the in-flight count and the stock change" width="100%"></picture><br>Simulation: concurrent flows and values that change. <a href="docs/reference/flow.md">Structure figures</a></td>
-    <td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/showcase/shop-schema-en-dark.svg"><img src="docs/assets/showcase/shop-schema-en-light.svg" alt="Shop database tables with foreign keys from orders to users and from order items to orders and products" width="100%"></picture><br>Schemas: tables, keys, and foreign keys. <a href="docs/reference/data.md">Data relation figures</a></td>
-  </tr>
-  <tr>
-    <td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/showcase/oauth-en-dark.svg"><img src="docs/assets/showcase/oauth-en-light.svg" alt="Sequence of the OAuth authorization code flow with PKCE between a user, an app, an auth server, and an API" width="100%"></picture><br>Sequence: messages in order. <a href="docs/reference/sequence.md">Sequence figures</a></td>
-    <td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/showcase/latency-en-dark.svg"><img src="docs/assets/showcase/latency-en-light.svg" alt="Dumbbell chart of p95 latency per endpoint before and after adding a cache" width="100%"></picture><br>Chart: a baseline and the improved value. <a href="docs/reference/charts.md">Charts</a></td>
-  </tr>
-  <tr>
-    <td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/showcase/cloud-architecture-en-dark.svg"><img src="docs/assets/showcase/cloud-architecture-en-light.svg" alt="Cloud architecture figure: web requests pass DNS, a CDN, a balancer, and web servers to the app server, while administrators reach it through a VPN and a bastion" width="100%"></picture><br>Architecture: groups, icons, and numbered edges. <a href="docs/reference/architecture.md">Architecture</a></td>
-    <td width="50%"><picture><source media="(prefers-color-scheme: dark)" srcset="docs/assets/showcase/order-state-en-dark.svg"><img src="docs/assets/showcase/order-state-en-light.svg" alt="Order states from created to paid, shipped, and delivered, with cancellation as the other end state" width="100%"></picture><br>State: states and the moves between them. <a href="docs/reference/state.md">State figures</a></td>
-  </tr>
-</table>
+[시작하기](docs/usage.md#시작하기)에서 설치 → 첫 그림 → HTML 확인 → 문서 삽입을 따라 합니다. 만들려는 그림은 [작업별 안내](docs/usage.md#목적에-맞는-보기-선택하기), 문법·명령·API·문제 해결은 [문서 안내](docs/README.md)에서 찾습니다.
 
-The [examples](examples/) folder holds one demo for each supported expression: the sixteen chart types, and architecture, flow, state, schema, class, API, sequence, trace, metric, memory, stack, queue, pointer, and one integration figure that connects a flow, an API, a schema, a metric, and a chart. `npm run catalog` renders all of them, with their sources, into `.local/examples/index.html`. The data in every example is made up to explain a feature.
+### 그림 하나 만들기
 
-## Usage
-
-Start with [Getting started](docs/usage.md#시작하기) (Korean): install, make your first figure, open the HTML, and put it in a document. Use the [task guide](docs/usage.md#목적에-맞는-보기-선택하기) to choose a figure, or the [documentation index](docs/README.md) to find syntax, commands, the API, and troubleshooting.
-
-### Render one figure
-
-Save the source from [How it works](#how-it-works) as `how-it-works.torso` and run:
+[작동 방식](#작동-방식)의 원본을 `how-it-works.torso`으로 저장하고 실행합니다.
 
 ```sh
-npx torso render how-it-works.torso --html
+node src/cli.js render how-it-works.torso --html
 ```
 
 ```text
@@ -102,19 +130,19 @@ how-it-works.svg
 how-it-works.html
 ```
 
-The SVG animates without scripts and plays the first scene by its `mode`; `--scene 2` or `--scene "Chat"` picks another scene. A scene name made only of digits is an error, because `--scene` would read it as a scene number. The HTML adds scene tabs and a toolbar on the figure, and a scene never advances to the next one by itself. The toolbar is the same for every figure, standalone or embedded, and holds three actions, left to right: copy the `.torso` source, download the figure as standalone HTML, and fullscreen (which also zooms). The toolbar is not set per figure in the source. There are no play, pause, speed, or repeat buttons; each scene's `mode` decides how it plays. `--static` writes a still SVG of the chosen scene's last state: no dots or pulses, values, cards, and charts at their final state, and any `light` the scene left on. A document without scenes is a still figure that shows the values it declares. An animated SVG used as an `<img>` cannot honor `prefers-reduced-motion` in Chrome; inline it, open it directly, or use `<picture>` with a `media` source that points to the `--static` SVG. Horizontal growth uses shared start/end modifiers; consumers pass the direction determined by their geometry.
+SVG는 스크립트 없이 움직이고 첫 장면을 그 `mode`대로 재생합니다. `--scene 2`나 `--scene "Chat"`으로 다른 장면을 고릅니다. 숫자로만 된 장면 이름은 `--scene`이 장면 번호로 읽으므로 오류입니다. HTML에는 장면 탭과 그림 위 도구막대가 더해지고, 장면은 스스로 다음 장면으로 넘어가지 않습니다. 도구막대는 단독이든 삽입이든 모든 그림이 같고, 왼쪽부터 `.torso` 원본 복사, 독립 실행 HTML 내려받기, 전체 화면(확대 포함) 세 가지입니다. 도구막대는 그림마다 원본에서 정하지 않습니다. 재생, 일시정지, 배속, 반복 단추는 없고 장면의 `mode`가 재생 방식을 정합니다. `--static`은 고른 장면의 마지막 상태를 멈춘 SVG로 씁니다. 점과 펄스는 없고, 값, 카드, 차트는 마지막 상태이며, 그 장면이 켜 둔 `light`는 남습니다. 장면이 없는 문서는 선언한 값을 보이는 정지 그림입니다. `<img>`로 넣은 움직이는 SVG는 Chrome에서 `prefers-reduced-motion`을 따르지 못합니다. 문서에 직접 넣거나 파일을 직접 열거나, `<picture>`의 `media` 소스에 `--static` SVG를 지정합니다.
 
-### Check a figure
+### 그림 검사하기
 
 ```sh
-npx torso check how-it-works.torso --strict --json
+node src/cli.js check how-it-works.torso --strict --json
 ```
 
-The command prints nothing and exits with 0 when the figure has no errors or warnings. `--strict` fails on warnings. `--json` prints one `{ file, line, message, severity, code, column }` object per diagnostic. A figure that would generate more than a budget allows (for example a grid with hundreds of thousands of cells) fails with a `budget-exceeded` error before any file is written; `--budget grid-elements=2000000` raises it, and `render`, `check`, `gallery`, and `md` all take `--budget name=value`.
+오류와 경고가 없으면 아무것도 출력하지 않고 0으로 끝납니다. `--strict`는 경고도 실패로 칩니다. `--json`은 진단마다 `{ file, line, message, severity, code, column }` 한 줄을 출력합니다. 그림이 예산보다 많은 양(예를 들어 수십만 칸의 격자)을 만들어야 하면 파일을 쓰기 전에 `budget-exceeded` 오류로 실패하고, `--budget grid-elements=2000000`으로 올립니다. `render`, `check`, `gallery`, `md`가 모두 `--budget 이름=값`을 받습니다.
 
-### Keep figures in a Markdown document
+### 마크다운 문서에 그림 넣기
 
-Save the following `torso` code block in `guide.md` and run `torso md`:
+다음 `torso` 코드 블록을 `guide.md`에 저장하고 `torso md`를 실행합니다.
 
 ````text
 ```torso name=request
@@ -126,30 +154,30 @@ client -> server "GET /orders"
 ````
 
 ```sh
-npx torso md guide.md
+node src/cli.js md guide.md
 ```
 
-The command writes `guide-request.svg` next to the document and puts `![request](guide-request.svg)<!-- torso -->` right below the block. The alt text is the block's `title`, or its name when there is no title. Run it again and nothing changes.
+명령은 문서 옆에 `guide-request.svg`를 쓰고 블록 바로 아래에 `![request](guide-request.svg)<!-- torso -->`를 넣습니다. 대체 글은 블록의 `title`이고, `title`이 없으면 이름입니다. 다시 돌려도 아무것도 바뀌지 않습니다.
 
-Renaming a `torso` block removes the old SVG, `--out-dir images` writes the SVG files into that folder and points the image lines there (SVG files already next to the document stay, so delete them by hand), and `--check` writes nothing and exits with 1 when a document or SVG is out of date. A block with several scenes writes every scene as its own animated SVG unless you pass `--scene` (the first keeps the block's file name, the others are named like `doc-flow.scene-2.svg`), and the image lines for scenes 2 and later go into one `<details>` per scene right below the first image, kept apart from the source fold; `--scene` writes that one scene only and `--static` makes each file a still. `--fold` shows the figure first and folds each `torso` block into a `<details>` section (`--fold-title "text"` sets the summary text), `--unfold` undoes only the folds torso made, and without either option a document keeps its folded state; the GitHub Action takes the same choice as the `fold` and `fold-title` inputs. A document only writes and removes the SVG files it made. If a block would write over an SVG made for another document, or over a file with no `torso md` mark, the command reports a conflict instead, and two runs cannot write to the same output folder at once. Any error in any block stops the command before it writes. See [Markdown](docs/design/markdown.md) for the rules.
+`torso` 블록 이름을 바꾸면 옛 SVG가 지워지고, `--out-dir images`는 SVG를 그 폴더에 쓰고 이미지 줄이 그곳을 가리키게 하며(이미 문서 옆에 있던 SVG는 그대로 남으므로 직접 지웁니다), `--check`는 쓰지 않고 문서나 SVG가 낡았으면 종료 코드 1로 끝납니다. 장면이 여럿인 블록은 `--scene`을 주지 않으면 모든 장면을 각각 움직이는 SVG로 쓰고(첫 장면은 블록의 파일 이름을 그대로 쓰고 나머지는 `doc-flow.scene-2.svg`처럼 구분합니다), 둘째 장면부터의 이미지 줄은 첫 이미지 바로 다음에 장면 이름을 요약으로 하는 `<details>`로 두며 원본 접기와 따로 관리합니다. `--scene`은 그 장면 하나만 쓰고 `--static`은 각 파일을 멈춘 그림으로 만듭니다. `--fold`는 그림을 먼저 보이고 `torso` 블록을 `<details>` 안에 접으며(`--fold-title "글"`로 요약 글을 정합니다), `--unfold`는 Torso가 만든 접기만 되돌리고, 옵션이 없으면 문서의 접힘 상태를 그대로 둡니다. GitHub Action은 `fold`, `fold-title` 입력으로 같은 선택을 받습니다. 문서는 자기가 만든 SVG만 쓰고 지웁니다. 블록이 다른 문서가 만든 SVG나 `torso md` 표시가 없는 파일을 덮어쓰려 하면 충돌로 알리고, 같은 출력 폴더에는 두 실행이 동시에 쓰지 못합니다. 어느 블록이든 오류가 있으면 아무 파일도 쓰기 전에 멈춥니다. 규칙은 [마크다운](docs/design/markdown.md)에 있습니다.
 
-### Keep them current in CI
+### CI에서 최신으로 지키기
 
-This GitHub Action step fails a pull request when a source has a warning or a Markdown figure is out of date:
+아래 GitHub Action 단계는 원본에 경고가 있거나 마크다운 그림이 낡았을 때 PR을 실패시킵니다.
 
 ```yaml
 - uses: actions/checkout@v4
 - uses: woonyong-choi/torso@main
   with:
     paths: "docs/**/*.torso docs/**/*.md README.md"
-    mode: check   # check (default) or render
-    strict: true  # also fail on warnings
-    budget: "grid-elements=2000000"  # optional: raise generation budgets
+    mode: check   # check(기본) 또는 render
+    strict: true  # 경고도 실패
+    budget: "grid-elements=2000000"  # 선택: 생성 예산을 올림
 ```
 
-`paths` are git globs of tracked files. `mode: render` writes the SVG files and image lines but does not commit them. The step fails when no file matches. `budget` takes `name=value` items separated by spaces or commas and raises the generation budgets (the same as `--budget`); a bad name or value fails the step before any figure is built.
+`paths`는 추적 중인 파일에 쓰는 git 글롭입니다. `mode: render`는 SVG와 이미지 줄을 쓰지만 커밋하지는 않습니다. 맞는 파일이 하나도 없으면 단계가 실패합니다. `budget`은 공백이나 쉼표로 나눈 `이름=값` 목록으로 생성 예산을 올리며(`--budget`과 같습니다), 이름이나 값이 틀리면 그림을 만들기 전에 단계가 실패합니다.
 
-### Build from JavaScript or TypeScript
+### JavaScript와 TypeScript에서 빌드
 
 ```js
 import { buildFigure, toSvg, toHtml } from 'torso-diagram';
@@ -159,82 +187,73 @@ const svg = await toSvg(result);
 const html = await toHtml(result, 'Server');
 ```
 
-All three functions return promises. Pass the build result to the renderers unchanged and read `result.warnings` for diagnostics. Catch the exported `FigureError` and read its `problems` for source or layout errors. [The API guide](docs/usage.md#javascript에서-조립하기) defines options, diagnostic fields, and the opaque `BuiltFigure` type.
+세 함수 모두 Promise를 반환합니다. 빌드 결과는 렌더러에 그대로 전달하고 진단은 `result.warnings`에서 읽습니다. 원본이나 배치 오류는 공개된 `FigureError`를 잡아 `problems`에서 읽습니다. [API 사용법](docs/usage.md#javascript에서-조립하기)에 옵션, 진단 필드와 불투명한 `BuiltFigure` 타입이 정의되어 있습니다.
 
-### Import Mermaid, DBML, or D2
+### Mermaid, DBML, D2, draw.io, Excalidraw 가져오기
 
 ```sh
-npx torso import flow.mmd --out flow.torso
-npx torso import schema.dbml > schema.torso
-cat arch.d2 | npx torso import d2 - --out arch.torso
+node src/cli.js import flow.mmd --out flow.torso
+node src/cli.js import schema.dbml > schema.torso
+cat arch.d2 | node src/cli.js import d2 - --out arch.torso
 ```
 
-`import` reads one source, takes the format from its extension (`.mmd`, `.mermaid`, `.dbml`, `.d2`) unless you name it, and prints the Torso source, or writes it to the `--out` file. It never replaces an existing file: an existing `--out` file is an error and nothing is written. `-` reads standard input and needs the format. Mermaid `flowchart`/`graph`, `sequenceDiagram`, `stateDiagram-v2`, `erDiagram`, and `pie`, DBML tables, refs, enums, and table groups, and D2 nodes, edges, containers, shapes, and `sql_table` become the same cards, edges, groups, tables, foreign keys, sequence views, and chart cards you would write by hand. A statement Torso has no grammar for (styles, notes on states, column defaults) is skipped with a warning on its source line, and a statement drawn differently (a thick edge, a hexagon) gets a warning too, so nothing is dropped silently. The command builds the imported source once; layout checks that need a hand edit are reported against the new file and do not stop it from being written. `importDiagram(format, text)` does the same in JavaScript. See [Import](docs/design/import.md) for every mapping.
+`import`는 원본 하나를 읽고, 형식을 적지 않으면 확장자(`.mmd`, `.mermaid`, `.dbml`, `.d2`, `.drawio`, `.excalidraw`)로 정해 옮긴 Torso 원본을 표준 출력에 씁니다. `--out`을 주면 그 파일에 씁니다. 이미 있는 파일은 바꾸지 않으므로 `--out` 파일이 이미 있으면 오류이고 아무것도 쓰지 않습니다. `-`는 표준 입력을 읽고 형식을 적어야 합니다. Mermaid의 `flowchart`/`graph`, `sequenceDiagram`, `stateDiagram-v2`, `erDiagram`, `pie`, DBML의 테이블, 참조, enum, 테이블 묶음, D2의 노드, 선, 컨테이너, shape, `sql_table`, draw.io와 Excalidraw의 도형, 연결, 컨테이너·프레임은 손으로 쓸 때와 같은 카드, 선, 그룹, 테이블, 외래 키, 순서 보기, 차트 카드가 됩니다. Torso에 대응 문법이 없는 문장(스타일, 상태의 메모, 열 기본값)은 원본 줄 번호가 있는 경고와 함께 건너뛰고, 다르게 그리는 문장(굵은 선, 육각형)도 경고하므로 조용히 버리는 것은 없습니다. 명령은 옮긴 원본을 한 번 만들어 보고, 손으로 고쳐야 하는 배치 검사는 새 파일의 줄로 알리되 파일 쓰기를 막지 않습니다. JavaScript에서는 `importDiagram(format, text)`가 같은 일을 합니다. 대응 전체는 [가져오기](docs/design/import.md)에 있습니다.
 
-### Source format
+### 원본 형식
 
-A source must start with `torso`, and only `.torso` files are read (`import` reads the other formats and writes a `.torso` file). A file with a missing declaration or extra text after it is not read: the build stops with a diagnostic that names the line and column and writes nothing. Torso has no command that rewrites old files, so write them in the current grammar ([Figure syntax](docs/design/figure-syntax.md#시작-선언과-없앤-형태) lists the removed statements and their replacements).
+원본은 `torso`로 시작해야 하고 `.torso` 파일만 읽습니다(`import`는 다른 형식을 읽어 `.torso` 파일을 씁니다). 시작 선언이 없거나 뒤에 숫자·옵션을 붙이면 읽지 않습니다. 줄과 자리를 알리는 진단을 내고 파일을 쓰지 않은 채 멈춥니다. 옛 파일을 고쳐 쓰는 명령은 없으므로 현재 문법으로 다시 씁니다. 없어진 문장과 대체 문장은 [그림 문법](docs/design/figure-syntax.md#시작-선언과-없앤-형태)의 표에 있습니다.
 
-## Features
+## 상태
 
-- Scenes: each scene has one name, a `mode` (`static` shows the last state, `once` plays once, `loop` repeats), and a `speed`. Tracks start at their own times and speeds, values change when a dot arrives, queues fill, and dots are lost on the way. Conditions, waits with timeouts, and atomic reservations decide whether a dot leaves.
-- Cards and views: boxes, people, external systems, stores, decisions, queues, states, tables, API cards, classes and interfaces, cell grids, charts, and traces. A graph view lays cards out, a sequence view lists messages (with alternatives, fixed-count loops, parallel branches, optional parts, creation, destruction, and activation), a plot view shows one chart, a time view shows one trace on a real time axis, and a timing view shows values (state bands and 0/1 lines), card moves, and value intervals on the scene's time axis.
-- Values that move with the event: a card shows a value, a chart row can read it, and the same event updates both. Changed marks flash and the axes stay put.
-- Architecture diagrams: `no=` numbers edges so the order reads in still images, `badge=` adds a short letter badge that survives in black and white, `count=` stacks N replicas of one role, and `icon=` uses the bundled icons or your own set registered with `icons name "folder"`.
-- Cell grids: bit fields, arrays, stacks, and matrices drawn cell by cell, with lines that start and end at a single cell. With `unit=bit` or `unit=byte` a grid is a byte layout (packet headers, struct layouts) with a ruler, row offsets, open-ended fields, and region brackets.
-- Charts: bar, stacked, percent, dumbbell, difference, line, step, area, scatter, histogram, box, ECDF, heatmap, donut, pie, and waterfall. Series are not limited to two. Color is never the only cue: measured points use circles, line, step, and area series get end names, ECDF series use the legend without endpoint leaders, bar, scatter, and pie or donut series get numbered keys, and past seven colors patterns are added. A missing value is not a zero (histograms leave a missing sample out of the count, waterfalls do not know the running total after a missing step, and a box with a missing number draws no box), and reference series in line, step, area, and ECDF charts use neutral dashed curves without point markers. Values come from the source or a JSON file.
-- Colors: eight names (`blue`, `yellow`, `red`, `green`, `orange`, `purple`, `cyan`, `gray`) for `tone=`. Cards, groups, and `show` rows add `appearance=plain|filled|outline`: plain keeps a neutral surface with the colored icon and small marks, filled uses a light surface of the same family, and outline uses a same-family border on a neutral surface. Text reaches contrast 4.5 and shape outlines 3 on the surface they sit on, in light and dark. The yellow series border in light-mode charts stays below 3, so direct labels, numbered keys, patterns, and shapes tell series apart as well. Text uses the embedded Pretendard and JetBrains Mono files.
-- Layout: elkjs layout with per-group direction, using shape sizes measured with the embedded fonts. Text is never shrunk to make a shape fit. On a narrow page the graph and chart panels are redrawn for the container width, and panels keep their natural text size. If a panel still does not fit, scroll horizontally within the figure using touch, a trackpad, or the arrow keys after focusing the figure. Fullscreen still offers a fitted overview and zoom. The narrow layout is built when the HTML is written and gets the same checks, so a source that passes `check` can still fail `render --html` if its text does not fit at the narrow width.
-- Figure check: overlaps, edges through nodes, crowded edges, aspect ratio, and readability.
-- Playback: an HTML player and an animated SVG from the same timeline.
-- Markdown: `torso md` renders the `torso` code blocks of a document and keeps the image lines below them up to date, and a GitHub Action checks them in CI.
-- Import: `torso import mermaid|dbml|d2|drawio|excalidraw` turns a Mermaid, DBML, D2, draw.io, or Excalidraw file into a `.torso` source and reports what it skipped or drew differently, line by line.
+기존 릴리스는 [GitHub Releases](https://github.com/woonyong-choi/torso/releases)에 있습니다. 현재 구현 범위와 한계는 아래에 적습니다. 다음 작업은 [열린 이슈](https://github.com/woonyong-choi/torso/issues)에서 추적합니다. 1.0 전에는 원본 형식과 명령이 바뀔 수 있습니다.
 
-Not supported: 3D, maps, CAD, full BPMN, Gantt charts, CPU simulation, a real-time backend, executing API cards, and class members as edge ends. Sankey, flame graphs, and violin plots are deferred: they are not supported yet and need validation first. [Expression coverage](docs/design/expression-coverage.md) lists what each example covers, what it does not, and the known limits.
+- 장면: 장면은 이름 하나, 재생 방식 `mode`(`static`은 마지막 상태, `once`는 한 번, `loop`는 되풀이), 배속 `speed`를 가집니다. 흐름은 저마다 다른 시각과 속도로 출발하고, 점이 닿을 때 값이 바뀌고, 큐가 차오르고, 점이 도중에 유실됩니다. 조건, 시간 제한이 있는 기다림, 원자적 예약이 점의 출발을 정합니다.
+- 카드와 보기: 상자, 사람, 외부 시스템, 저장소, 갈림길, 큐, 상태, 테이블, API 카드, 클래스와 인터페이스, 칸 격자, 차트, 추적. 그래프 보기는 카드를 배치하고, 순서 보기는 메시지를 늘어놓고(대안 선택, 정해진 횟수의 반복, 병렬 대안, 선택 구간, 생성과 소멸, 활성 구간), 차트 보기는 차트 하나를, 시간 보기는 추적 하나를 실제 시간 축에, 타이밍 보기는 값(상태 띠, 0/1 선)과 카드 사이 이동, 값 구간을 장면 시간 축에 보입니다.
+- 사건과 함께 움직이는 값: 카드가 값을 보이고, 차트 행이 그 값을 읽고, 같은 사건이 둘을 함께 바꿉니다. 바뀐 표식은 잠깐 밝아지고 축은 움직이지 않습니다.
+- 구성도: `no=`는 선 번호라 정지 그림에서도 순서가 읽히고, `badge=`는 흑백에서도 남는 짧은 글자 배지, `count=`는 같은 역할 복제 N개를 겹쳐 그립니다. `icon=`은 내장 아이콘이나 `icons 이름 "폴더"`로 등록한 내 세트를 씁니다.
+- 칸 격자: 비트 필드, 배열, 스택, 행렬을 칸 단위로 그리고, 선이 칸 하나에서 나가고 들어옵니다. `unit=bit`나 `unit=byte`를 적으면 눈금, 행 오프셋, 열린 마지막 필드, 구간 괄호를 갖춘 바이트 배치(패킷 헤더, 구조체 배치)입니다.
+- 차트: 막대, 누적 막대, 퍼센트 누적, 덤벨, 차이, 선, 계단, 면적, 산점도, 히스토그램, 상자, 누적분포(ECDF), 히트맵, 도넛, 원, 워터폴. 계열은 둘로 제한하지 않습니다. 측정값의 점은 원으로 통일하고, 선, 계단, 면적은 끝 이름을, 누적분포는 끝 안내선 없이 범례를, 막대와 산점도는 범례를, 원과 도넛은 직접 라벨을 쓰며, 색이 일곱을 넘으면 무늬가 더해집니다. 빠진 값은 0이 아닙니다(히스토그램은 빠진 표본을 개수에서 빼고, 워터폴은 빠진 증감 뒤의 누계를 알 수 없으며, 상자는 숫자가 빠지면 상자를 그리지 않습니다). 선·계단·면적·누적분포의 기대값 계열은 점 표식 없이 중립색 점선으로 그립니다. 값은 원본이나 JSON 파일에서 읽습니다.
+- 색: `tone=`은 이름 여덟 개(`blue`, `yellow`, `red`, `green`, `orange`, `purple`, `cyan`, `gray`)만 받습니다. 카드, 그룹, `show` 줄은 `appearance=plain|filled|outline`을 더해 고릅니다. plain은 중립 면에 색 아이콘과 작은 표식, filled는 같은 계열의 옅은 면, outline은 중립 면에 같은 계열 경계입니다. 글자는 놓이는 면 위에서 대비 4.5, 도형 외곽선은 3을 라이트와 다크에서 지킵니다. 라이트 차트의 노랑 계열 경계는 3에 못 미치므로 직접 라벨, 범례, 무늬가 계열 구분을 보완합니다. 글자는 그림에 넣는 Pretendard와 JetBrains Mono 파일로 그립니다.
+- 배치: 그룹마다 방향을 정하는 elkjs 배치. 도형 크기는 그림에 넣는 글꼴로 잽니다. 도형에 맞추려고 글자를 줄이지 않습니다. 좁은 화면에서는 준비된 좁은 배치를 고르고, 그림을 컨테이너 폭에 맞춰 줄여 보여 줍니다. 이때 글자도 함께 줄어듭니다. 전체화면은 전체 맞춤과 확대를 제공합니다. 좁은 배치는 HTML을 쓸 때 만들고 같은 검사를 받으므로, `check`를 통과한 원본도 좁은 폭에 글이 들어가지 않으면 `render --html`이 실패할 수 있습니다.
+- 그림 검사: 겹침, 도형을 지나는 선, 붙은 선, 비율, 읽힘.
+- 재생: 같은 시간표로 만드는 HTML 재생기와 움직이는 SVG.
+- 마크다운: `torso md`가 문서의 `torso` 코드 블록을 그리고 블록 아래 이미지 줄을 맞춥니다. GitHub Action이 CI에서 이를 검사합니다.
+- 가져오기: `torso import mermaid|dbml|d2|drawio|excalidraw`가 Mermaid, DBML, D2, draw.io, Excalidraw 파일을 `.torso` 원본으로 옮기고, 건너뛰거나 다르게 그린 것을 줄마다 알립니다.
 
-## Comparison
+지원하지 않는 것: 3차원, 지도, CAD, 전체 BPMN, 간트, CPU 시뮬레이션, 실시간 백엔드, API 카드 실행, 클래스 멤버를 선의 끝으로 쓰기. Sankey, 불꽃 그래프, 바이올린은 아직 지원하지 않는 보류 항목이며 검증이 먼저 필요합니다. [표현 범위](docs/design/expression-coverage.md)에 예제마다 무엇을 덮고 무엇을 덮지 않는지, 알려진 한계가 적혀 있습니다.
 
-- D2: draws diagrams from a richer language and its own layouts (checked 2026-10-01). Use it when you need D2 shapes or themes.
-- Vega-Lite: draws many more chart types (checked 2026-10-01). Use it when you need maps, faceted charts, or interactive transforms.
+## 문서
 
-## Documentation
+- [Torso 사용법](docs/usage.md): 설치, 첫 그림, 표현 선택과 문서 삽입
+- [아키텍처](docs/architecture.md): 구성 요소, 처리 흐름, 지켜야 할 규칙
+- [용어](docs/glossary.md): 이 프로젝트만의 말
+- [전체 문서](docs/README.md)
 
-The usage guide, per-expression references, and design documents are written in Korean.
+## 개발
 
-- [Torso usage guide](docs/usage.md): installation, the first figure, choosing expressions, animation, embedding, CLI and API, and troubleshooting
-- [Structure figures](docs/reference/flow.md), [architecture](docs/reference/architecture.md), [sequence figures](docs/reference/sequence.md), [state figures](docs/reference/state.md), [data relation figures](docs/reference/data.md), [cell grids](docs/reference/grid.md), [timing figures](docs/reference/timing.md), and [charts](docs/reference/charts.md): a minimal example, scenes, and common errors for each
-- [Figure syntax](docs/design/figure-syntax.md): line rules, cards, views, scenes, and the complete options
-- [Figure check](docs/design/figure-check.md): layout checks and diagnostics
-- [Expression and verification coverage](docs/design/expression-coverage.md): supported expressions, verified scope, and limits
-- [Architecture](docs/architecture.md): components, flows, and invariants for contributors changing the implementation
+공통 디자인은 도표 캔버스와 본문을 구분하고 라이트·다크 모두에서 기본 도형 윤곽을 읽을 수 있게 유지합니다. 값 변경 효과의 표현도 공통 역할을 사용하며 렌더러는 표식 기하와 계열 효과값만 전달합니다. 가로 성장의 시작 방향은 공통 변형으로 표현하고, 소비자는 배치로 계산한 방향만 전달합니다. 밝은 계열의 점 윤곽도 인라인 획 덮어쓰기 대신 공통 색 입력으로 전달합니다.
 
-Find all guides and detailed designs in the [documentation index](docs/README.md).
-
-## Development
-
-The shared design keeps diagram canvases separate from the page and uses readable neutral outlines in both light and dark themes. Value-change overlays also use shared paint roles; the renderer supplies only mark geometry and series effect values. Horizontal growth uses shared start/end modifiers; consumers pass the direction determined by their geometry. Bright-series point outlines also use a shared color input instead of inline stroke overrides.
-
-The homepage sync delivers the renderer, shared design, and public document snapshot at the same Git revision. See [Architecture](docs/architecture.md).
+홈페이지 같은 소비자 프로젝트가 Torso와 공통 디자인의 버전을 각각 선택합니다. 다른 저장소로 파일을 자동 전달하지 않습니다([아키텍처](docs/architecture.md)).
 
 ```sh
 git clone https://github.com/woonyong-choi/torso.git
 cd torso
-npm install
+npm ci
 npm test
 npm run check
 npm run check:package -- /absolute/new-consumer-path
 ```
 
-`npm test` runs the contract tests through the public entry points (build results, SVG, HTML, CLI, Markdown) and needs no browser. Looking at the figures in a real browser, at phone and desktop sizes in light and dark, is a separate manual review that the tests do not replace.
+`npm test`는 공개 진입점(빌드 결과, SVG, HTML, 명령, 마크다운)으로 계약을 확인하고 브라우저가 필요 없습니다. 실제 브라우저에서 휴대폰과 데스크톱 크기, 라이트와 다크로 그림을 눈으로 보는 일은 시험이 대신하지 못하는 별도의 수동 검수입니다.
 
-The package check creates a new directory outside the repository, installs the actual tarball with public runtime dependencies, and checks CLI, Markdown and API outputs. It also compiles and runs a TypeScript consumer against the installed declarations and rejects invalid calls. The compiler stays in the development checkout. The check removes its directory afterward and needs access to the public npm registry. It does not publish a release.
+패키지 검사는 저장소 밖의 새 폴더에 실제 tarball과 공개 런타임 의존성을 설치해 CLI·Markdown·API 출력을 확인합니다. 설치된 선언으로 TypeScript 소비자를 컴파일하고 실행하며 잘못된 호출의 거부도 확인합니다. 컴파일러는 개발 작업본에서만 사용합니다. 검사 폴더는 끝나면 지우며 npm 공개 레지스트리 접근이 필요합니다. 새 버전을 발행하는 명령은 아닙니다.
 
-Shared values, CSS, icons, tabs and toolbars come from the `@woonyong-choi/design-tokens` package. It is a peer dependency: the app that installs Torso chooses the design commit, and figures use that same copy. This repository pins a commit in `devDependencies` for its own tests and figures; a design update bumps that pin with `npm install --save-dev github:woonyong-choi/design-tokens#<commit>`, regenerates figures, and goes through a PR. A project that uses Torso without a design installs both: `npm install --save-dev github:woonyong-choi/design-tokens#<commit> github:woonyong-choi/torso#<commit>`. In a clone, run `node src/cli.js` instead of `torso`, and `npm run catalog` to render every example, its source and an index into `.local/examples/`.
+공통 화면 값, CSS, 아이콘, 탭과 도구 막대는 `@woonyong-choi/design-tokens` 패키지를 사용합니다. peer 의존성이므로 Torso를 설치한 앱이 디자인 commit을 정하고 그림은 그 같은 디자인을 씁니다. 이 저장소는 자체 시험과 그림을 위해 `devDependencies`에 commit을 고정합니다. 디자인 갱신은 `npm install --save-dev github:woonyong-choi/design-tokens#<commit>`으로 고정 commit을 올리고 그림을 다시 만든 PR로 반영합니다. 디자인 없이 Torso만 쓰는 프로젝트는 둘을 함께 설치합니다: `npm install --save-dev github:woonyong-choi/design-tokens#<commit> github:woonyong-choi/torso#<commit>`. 복제한 저장소에서는 `torso` 대신 `node src/cli.js`를 실행하고, `npm run catalog`로 모든 예제와 원본, 목록을 갤러리로 만듭니다.
 
-See [CONTRIBUTING](.github/CONTRIBUTING.md) for branches, commits, and pull requests.
+브랜치, 커밋, PR 규칙은 [CONTRIBUTING](.github/CONTRIBUTING.md)에 있습니다.
 
-## License
+생성 HTML은 이 README의 라이트·다크 로고를 브라우저 탭 아이콘으로 내장하므로 오프라인 파일에서도 표시됩니다. 차트 성장 모양과 HTML 재생 스타일은 디자인 정본에서 공유하고, SVG의 장면별 시각 계산은 Torso가 담당합니다.
+
+## 라이선스
 
 [MIT](LICENSE)
-
-Chart growth shapes and HTML playback styles are shared by the design source; Torso owns scene timing for SVG output.
