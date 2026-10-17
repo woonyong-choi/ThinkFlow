@@ -99,6 +99,14 @@ test('T3 a rich label has the text it shows as its accessible name, and a class 
   assert.ok(described[1].startsWith('m0(first: Alpha') && described[1].endsWith('Result0'), described[1]);
   const lines = textsWith(dom, 'row mono');
   assert.ok(lines.length > 3, 'the members wrap');
+  // 그림의 접근성 이름은 제목, 설명은 부제다(<title> 바로 뒤의 <desc>).
+  const { dom: titled } = await rendered(torso(`
+    title "주문 ${TICK}API${TICK}"
+    subtitle "요청에서 저장까지"
+    box a "A"
+  `));
+  const [first, second] = titled.children.filter((n) => n.tag);
+  assert.deepEqual([first.tag, textContent(first), second.tag, textContent(second)], ['title', '주문 API', 'desc', '요청에서 저장까지']);
 });
 
 // ---- 글 자리 ----

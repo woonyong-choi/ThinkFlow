@@ -1,5 +1,6 @@
 // 단일·복합 키와 참조를 테이블 단위에서 검증하고 FK 하나를 공통 연결선 하나로 만든다.
 import { unknownName } from './problems.js';
+import { deleteRule } from '../table.js';
 
 // cost: time O(c + k*c + f*(c+k+log f)), heap O(c+k+f), stack O(1)
 // vars: c = 전체 열 수, k = 키에 포함된 열 수, f = 외래 키에 포함된 열 수
@@ -25,9 +26,16 @@ export function checkTables(figure, problems) {
       if (seen.has(identity)) problems.error(key.line, 'this foreign key is already declared');
       seen.add(identity);
       if (problems.errors.length !== before) continue;
-      figure.edges.push({ from: table.id, to: target.id, fromColumns: key.columns, toColumns: key.target.columns, label: key.columns.length > 1 ? key.label : undefined, quiet: false, dashed: false, line: key.line, isForeignKey: true, fromMultiplicity: key.fromMultiplicity, toMultiplicity: key.toMultiplicity });
+      figure.edges.push({ from: table.id, to: target.id, fromColumns: key.columns, toColumns: key.target.columns, ...foreignKeyMarks(key), quiet: false, dashed: false, line: key.line, isForeignKey: true, fromMultiplicity: key.fromMultiplicity, toMultiplicity: key.toMultiplicity });
     }
   }
+}
+
+// 외래 키 선의 라벨과 삭제 정책. 열 묶음 키는 이름(FK1)이 선 라벨 알약이라 삭제 정책을 그 알약에 잇는다(`FK1 · CASCADE`).
+// 열 하나의 키는 라벨이 없고, 삭제 정책은 참조하는 열 쪽 끝의 선 위 알약이다(layout/end-marks.js). 한 선에 알약이 둘 서지 않는다.
+function foreignKeyMarks(key) {
+  if (key.columns.length === 1) return { label: undefined, ondelete: key.ondelete };
+  return { label: [key.label, key.ondelete && deleteRule(key.ondelete)].filter(Boolean).join(' · '), ondelete: undefined };
 }
 
 // cost: time O(c+k*log k+f*log f), heap O(c+k+f), stack O(1)

@@ -18,7 +18,7 @@ const META = values.text["figure-meta"];
 
 /**
  * 글 모양. 크기, 글꼴, 줄 높이. 역할 하나가 크기 하나를 쓴다. 차트 제목과 부제도 label과 sub를 쓴다(chart/labels.js).
- * 제목(15): label 카드 제목(regular), group 그룹 제목과 보기 이름(semibold). 문장과 이름표(13): sub 부제, row·mono·cell·item·value 카드 줄, meta 메모와 구획 제목, pill 선 라벨, chip 이동 글, mini 관계 그래프 이름, type 열 형식, rule 제약 줄.
+ * 제목(15): label 카드 제목(regular), group 그룹 제목과 보기 이름(semibold). 문장과 이름표(13): sub 부제, row·mono·cell·item·value 카드 줄, meta 메모와 구획 제목, pill 선 라벨, chip 이동 글, mini 관계 그래프 이름, type 열 형식.
  * 작은 표시(11): tag, key, mark(번호, 태그, 표식, 열 키). CSS가 같은 역할에 같은 크기와 굵기를 그리므로 여기서 잰 폭이 그린 폭이다. 글자 사이 간격도 CSS와 같게 `tracking.text` 하나만 쓴다(fonts.js measure).
  * value는 사용자 자료라 글자 그대로 읽는 굵은 글꼴이다(text.js isLiteralFace). 바뀐 값의 초점이라 굵게 둔다.
  */
@@ -39,7 +39,6 @@ export const STYLE = Object.freeze({
   item: { size: FIELD, face: 'regular', line: lineHeight(FIELD, LEADING) },
   mini: { size: FIELD, face: 'regular' },
   type: { size: FIELD, face: 'mono', line: lineHeight(FIELD, LEADING) },
-  rule: { size: FIELD, face: 'regular', line: lineHeight(FIELD, LEADING) },
 });
 
 /** 열 이름과 그 뒤 키 표시(PK, FK) 사이 간격. 키 표시는 이름 text의 key로 붙는다. */
@@ -47,7 +46,7 @@ export const KEY_GAP = values.spacing["1-5"];
 
 /**
  * text 하나.
- * @param role CSS 역할 class(label, sub, meta, cell, cell type, cell rule, row mono, item, tag, mark, value, mini 등). 글꼴과 색은 역할이 정한다
+ * @param role CSS 역할 class(label, sub, meta, cell, cell type, row mono, item, tag, mark, value, mini 등). 글꼴과 색은 역할이 정한다
  * @param style 글 모양(STYLE 항목). 폭과 줄 높이를 잰다
  * @param at { x, center, anchor }. anchor 기본은 start다
  * @param extra { underline?, key?: { text, style }, mutedFrom?, lines? }. key는 이름 뒤에 붙는 작은 표시, mutedFrom은 표시 글자 몇 번째부터 흐린지, lines는 한 text가 여러 줄로 나뉠 때(값 글) 줄 목록이다
