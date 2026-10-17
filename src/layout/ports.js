@@ -1,6 +1,10 @@
 // 도형과 그룹의 연결점. 선 끝이 어디에 닿는지, 몸통 도형의 연결점을 어디에 놓는지를 정한다(docs/design/layout.md 도형 크기와 연결점, 연결점 순서).
 import { cellPort, circlePort } from './cell-ports.js';
+import { values } from '@woonyong-choi/design-tokens/tokens.js';
 import { columnAnchorY } from '../table.js';
+
+/** 같은 열 줄의 같은 면에 연결점이 여럿이면 벌리는 간격의 상한 */
+const FAN_GAP = values.spacing['2'];
 
 const SIDE_OUT = { right: 'EAST', down: 'SOUTH' };
 const SIDE_IN = { right: 'WEST', down: 'NORTH' };
@@ -66,6 +70,32 @@ function portSpec(node, end) {
 function columnPort(node, way, columns, isSelf) {
   const isEast = way === 'out' || node.isBracket || isSelf;
   return { side: isEast ? 'EAST' : 'WEST', position: { x: isEast ? node.size.w : 0, y: columnAnchorY(node.size.tableRows, columns) } };
+}
+
+// cost: time O(q log q), heap O(q), stack O(1)
+// vars: q = 도형의 연결점 수
+// basis: estimate
+/**
+ * 테이블·API의 같은 열 줄, 같은 면에 연결점이 둘 이상이면(묶음 배치에서 들어오는 선과 나가는 선, 한 열에서 나가는 여러 선) 그 줄 높이 안에서 위아래로 고르게 벌린다.
+ * 한 점에 모이면 들어오는 화살촉과 나가는 선이 겹쳐 어느 선이 어디로 가는지 읽히지 않는다. 간격은 줄 높이를 연결점 수 + 1로 나눈 값과 FAN_GAP 가운데 작은 쪽이다.
+ */
+export function fanColumnPorts(nodes) {
+  for (const node of nodes.values()) {
+    if (node.shape !== 'table' && node.shape !== 'api') continue;
+    const rowH = node.size.tableRows?.[0]?.h ?? 0;
+    const groups = new Map();
+    for (const port of node.ports.filter((p) => p.position)) {
+      const key = `${port.side}:${port.position.y}`;
+      groups.set(key, [...(groups.get(key) ?? []), port]);
+    }
+    for (const list of groups.values()) {
+      if (list.length < 2) continue;
+      const gap = Math.min(FAN_GAP, rowH / (list.length + 1));
+      list.forEach((port, k) => {
+        port.position = { ...port.position, y: port.position.y + (k - (list.length - 1) / 2) * gap };
+      });
+    }
+  }
 }
 
 // 마름모 꼭짓점 넷. 면 이름과 도형 왼쪽 위가 원점인 자리다.

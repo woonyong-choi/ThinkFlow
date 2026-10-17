@@ -3,7 +3,7 @@ import { walkUp } from '../source/ancestry.js';
 import { values } from '@woonyong-choi/design-tokens/tokens.js';
 import { orderByFlow } from './order.js';
 import { isInnerEdge } from './cell-ports.js';
-import { addPort, endpoint } from './ports.js';
+import { addPort, endpoint, fanColumnPorts } from './ports.js';
 
 const SIZE = values.spacing.figure;
 /** 가장 바깥 그룹의 내부 이름. 원본 이름은 소문자, 숫자, `-`뿐이라 `_`가 든 이 이름과 부딪히지 않는다. */
@@ -32,6 +32,7 @@ export function buildModel(figure, sizes) {
   numberBranches(edges, nodes);
   const pieces = new Map();
   for (const edge of edges) pieces.set(edge.index, splitEdge(edge, nodes, containers));
+  fanColumnPorts(nodes);
   // sweep은 박자 이동 글 상자가 선 옆을 쓸고 지나는 폭 Map<선 번호, { x, y }>이다(chip-room.js). 배치 뒤 선 옆에 놓는 그룹 제목과 끝 라벨이 비킨다.
   const model = { containers, nodes, edges, pieces, isSafe: figure.safeLayout === true, sweep: figure.chipSweep ?? new Map() };
   orderByFlow(model);
