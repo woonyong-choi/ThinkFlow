@@ -149,6 +149,18 @@ test('S4 table relations and foreign keys share endpoint multiplicity labels wit
     assert.deepEqual(labels.map((node) => [node.attrs['data-end'], textContent(node)]), [['from', '0..*'], ['to', '1']]);
     assert.ok(findAll(dom, (node) => node.attrs['aria-label']?.includes('orders [0..*]')).length);
   }
+  // 자기 참조 외래 키: 양 끝이 카드 오른쪽 면이고, 다중성 표시는 각자 닿는 열 줄 높이에 놓인다.
+  const self = await build(torso(`
+    table users "users" {
+      id bigint pk
+      name text
+      referrer_id bigint fk=users.id from="*" to="1"
+    }
+  `));
+  const [loop] = self.scene.edges;
+  const card = self.scene.items.find((it) => it.id === 'users');
+  assert.ok([loop.points[0], loop.points.at(-1)].every((p) => Math.abs(p.x - (card.x + card.w)) < 1), 'self reference leaves and enters the right side');
+  assert.deepEqual(loop.endpointLabels.map((l) => [l.end, l.y]), [['from', loop.points[0].y], ['to', loop.points.at(-1).y]]);
   assert.equal(findAll(await stillDom(tables('owner bigint fk=users.id')), (node) => node.attrs.class?.includes('fl-multiplicity')).length, 0);
   for (const [source, needle, message] of [
     [`${tables()}orders -> users from="2..1"\n`, 'orders -> users', /invalid multiplicity/],

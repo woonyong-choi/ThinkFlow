@@ -47,7 +47,8 @@ export function checkEnds({ edges, scene }, problems) {
     for (const [end, point, way, part] of [[e.from, e.points[0], 'out', { columns: e.fromColumns, cell: e.fromCell }], [e.to, e.points.at(-1), 'in', { columns: e.toColumns, cell: e.toCell }]]) {
       const id = end.split('.')[0];
       const it = rects.get(id);
-      if (it && !isPortPlace(point, it, { way, ...part })) problems.error(e.line, `[check 4] internal: edge ${e.from} -> ${e.to} does not touch "${id}" at its connection point. Please report this`);
+      const isSelf = e.from.split('.')[0] === e.to.split('.')[0];
+      if (it && !isPortPlace(point, it, { way, isSelf, ...part })) problems.error(e.line, `[check 4] internal: edge ${e.from} -> ${e.to} does not touch "${id}" at its connection point. Please report this`);
     }
   }
 }
@@ -65,10 +66,11 @@ function cellRect(it, id) {
 // vars: c = 테이블 열 수와 칸 수
 // basis: estimate
 // 도형별 연결점. 나가는 선은 오른쪽(세로 그룹 안 원통은 아래나 오른쪽), 들어오는 선은 왼쪽(세로 그룹 안 원통은 위나 왼쪽)이다. 갈림길은 마름모 꼭짓점 넷 가운데 하나다(갈래마다 다른 꼭짓점, layout/ports.js). 격자 칸의 선은 그 칸의 테두리다. 묶음 배치한 테이블 열은 들어오는 선도 오른쪽이다. 그 밖의 도형과 그룹은 경계 어디나다.
-function isPortPlace(p, it, { way, columns, cell }) {
+function isPortPlace(p, it, { way, isSelf, columns, cell }) {
   const side = way === 'out' ? it.x + it.w : it.x;
   if (it.shape === 'grid' && cell) return onBorder(p, cellRect(it, cell));
-  if ((it.shape === 'table' || it.shape === 'api') && columns) return near(p.x, it.isBracket ? it.x + it.w : side) && near(p.y, it.y + columnAnchorY(it.tableRows, columns));
+  // 묶음 배치와 자기 참조 외래 키는 들어오는 선도 오른쪽 면이다(layout/ports.js columnPort).
+  if ((it.shape === 'table' || it.shape === 'api') && columns) return near(p.x, it.isBracket || isSelf ? it.x + it.w : side) && near(p.y, it.y + columnAnchorY(it.tableRows, columns));
   if (it.shape === 'decision') return isVertex(p, it);
   // 원통은 뚜껑 윤곽까지가 선이 닿는 면이라 그린 사각형으로 본다.
   if (it.shape === 'store') {

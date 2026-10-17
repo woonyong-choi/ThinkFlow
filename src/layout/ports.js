@@ -50,7 +50,7 @@ function trailingFieldEdge(edge, nodes) {
 function portSpec(node, end) {
   const { way, edge, flow } = end;
   const columns = way === 'out' ? edge.fromColumns : edge.toColumns;
-  if ((node.shape === 'table' || node.shape === 'api') && columns) return columnPort(node, way, columns);
+  if ((node.shape === 'table' || node.shape === 'api') && columns) return columnPort(node, way, columns, edge.from === edge.to);
   if (node.shape === 'grid' && (way === 'out' ? edge.fromCell : edge.toCell)) return cellPort(node, end);
   if (node.shape === 'circle') return circlePort(node, way);
   if (node.shape === 'decision') return decisionPort(node, way, edge.branch ?? 0);
@@ -64,8 +64,9 @@ function portSpec(node, end) {
 // vars: c = 테이블 열 수
 // basis: estimate
 // 테이블 열 줄 가운데 높이의 연결점. 묶음 배치(`isBracket`)는 들어오는 선도 오른쪽 면이다. 왼쪽 면이면 아래 도형이 오른쪽으로 계단처럼 밀려 캔버스에 들지 않고 줄 바꿈 선이 그림을 가로지른다(docs/design/layout.md 연결점).
-function columnPort(node, way, columns) {
-  const isEast = way === 'out' || node.isBracket;
+// 같은 테이블 안의 외래 키(자기 참조)도 들어오는 선이 오른쪽 면이다. 왼쪽 면이면 선이 카드 아래를 돌아 반대쪽으로 들어가 다른 테이블에서 오는 화살촉과 겹친다. 같은 면이면 오른쪽에 작은 고리로 그려진다.
+function columnPort(node, way, columns, isSelf) {
+  const isEast = way === 'out' || node.isBracket || isSelf;
   return { side: isEast ? 'EAST' : 'WEST', position: { x: isEast ? node.size.w : 0, y: columnAnchorY(node.size.tableRows, columns) } };
 }
 
