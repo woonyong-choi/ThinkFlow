@@ -1,5 +1,6 @@
 // 배치 모형을 elkjs 그래프로 바꾼다. 선택 사항 값은 모두 토큰이다(docs/design/layout.md 간격과 결정성).
 import { FIGURE_PAD } from '../canvas.js';
+import { endMarks } from './end-marks.js';
 import { groupTitleWidth, hasPill, isOnLinePill, sizePill } from '../measure/sizes.js';
 import { STYLE, textBlock } from '../measure/texts.js';
 import { values } from '@woonyong-choi/design-tokens/tokens.js';
@@ -50,7 +51,7 @@ function edgesByContainer({ containers, nodes, pieces, edges, isSafe }, figure) 
       // 번호만 있는 알약은 선을 다 그린 뒤 얹으므로(read.js) 자리를 요구하지 않는다. 안전 배치는 얹을 자리가 없을 때의 대비라 알약도 자리를 받는다.
       const container = containers.get(p.container);
       const labels = p.hasLabel && (edge.label !== undefined || (hasPill(edge) && (isSafe || !isOnLinePill(edge)))) ? [{ id: `label::${index}`, text: edge.label ?? String(edge.no), ...sizeOf(sizePill(edge.label, edge.no)), layoutOptions: labelOptions(p.from, container, nodes) }] : [];
-      labels.push(...multiplicityLabels(edge, k, list.length));
+      labels.push(...endLabels(edge, k, list.length));
       const room = figure.chipRoom?.get(index);
       if (room !== undefined) labels.push(roomLabel(`room::${index}::${k}`, room, containers.get(p.container).direction));
       byContainer.get(p.container).push({ id: `${index}::${k}`, sources: [p.from], targets: [p.to], labels });
@@ -71,17 +72,16 @@ function labelOptions(from, container, nodes) {
   return side === FLOW_SIDE[container.direction] && !CELL_SHAPES.has(node.shape) ? TAIL_LABEL : CENTER_LABEL;
 }
 // cost: time O(n), heap O(n), stack O(1)
-// vars: n = 다중성 표시 글자 수
+// vars: n = 선 끝 표시 글자 수
 // basis: estimate
-function multiplicityLabels(edge, index, count) {
+// 선 끝 표시(다중성 글, 삭제 정책 알약, end-marks.js)는 첫 조각의 꼬리와 마지막 조각의 머리에 자리를 받는다. 알약도 선을 따라 그 폭만큼 자리를 받는다.
+function endLabels(edge, index, count) {
   return [['from', index === 0, 'TAIL'], ['to', index === count - 1, 'HEAD']].flatMap(([end, isEnd, placement]) => {
-    const text = edge[`${end}Multiplicity`];
-    if (!isEnd || text === undefined) return [];
-    return [{
-      id: `multiplicity::${edge.index}::${end}`, text,
-      ...sizeOf(textBlock(text, { textW: Infinity, pad: 0, style: STYLE.meta })),
+    if (!isEnd) return [];
+    return endMarks(edge, end).map((mark) => ({
+      id: mark.id, text: mark.text, ...sizeOf(mark),
       layoutOptions: { 'elk.edgeLabels.inline': 'false', 'elk.edgeLabels.placement': placement },
-    }];
+    }));
   });
 }
 

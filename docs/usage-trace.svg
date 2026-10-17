@@ -279,14 +279,10 @@
   fill: var(--color-ui-muted);
 }
 
-/* 열 형식(타입)은 코드 글이라 코드 글꼴의 오른쪽 열이다. 제약 줄(NOT NULL, ON DELETE 등)은 문장이라 일반 글꼴이다. 둘 다 이름보다 옅다. */
+/* 열 형식(타입)은 코드 글이라 코드 글꼴의 오른쪽 열이고 이름보다 옅다. NULL 허용 여부는 키 표시(.key)와 같은 작은 표시이고, 삭제 정책은 외래 키 선의 끝 글이다. */
 .fl .cell.type {
   font-family: var(--font-figure-mono);
   letter-spacing: normal;
-  fill: var(--color-ui-muted);
-}
-
-.fl .cell.rule {
   fill: var(--color-ui-muted);
 }
 
@@ -758,7 +754,7 @@
   text-anchor: start;
 }
 
-/* 칸 색은 변수로 계산해 다크 모드 heat-low를 따라간다. --s는 칸 강도(0~1)다. 보간은 OKLCH라 두 끝 색 사이의 색상환을 따라 돌아(라이트: 연노랑 → 민트 → 청록 → 파랑) 두 색 그라데이션으로 읽힌다. fill 속성의 대체 색(ThinkFlow chart/oklab.js)도 같은 OKLCH 보간이다. */
+/* 칸 색은 변수로 계산해 다크 모드 heat-low를 따라간다. --s는 칸 강도(0~1)다. 보간은 OKLCH라 두 끝 색 사이의 색상환을 따라 돌아(라이트: 연노랑 → 민트 → 청록 → 파랑) 두 색 그라데이션으로 읽힌다. fill 속성의 대체 색(Torso chart/oklab.js)도 같은 OKLCH 보간이다. */
 .fl .chart-heat {
   fill: color-mix(in oklch, var(--color-data-heat-high) calc(var(--s) * 100%), var(--color-data-heat-low));
 }

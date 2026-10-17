@@ -13,7 +13,7 @@ import { drawTrackPaths } from './draw/tracks.js';
 import { createGlyphSet, embedFonts } from './measure/fonts.js';
 import { STYLES, tokensFor, figureDefs, patternDefs } from './styles.js';
 import { WHOLE_CHART } from './timeline-charts.js';
-import { escapeXml, plainText, roundCoord as r } from './text.js';
+import { escapeXml, figureDesc, plainText, roundCoord as r } from './text.js';
 import { values } from '@woonyong-choi/design-tokens/tokens.js';
 
 // cost: time O(g·b + b·h + out), heap O(out), stack O(1), io 1
@@ -51,7 +51,7 @@ export async function toSvg(result, { scene: selector = 0, isStatic = false, nam
   const place = (layer, className) => `<g${className ? ` class="${className}"` : ''} transform="translate(${r((width - layer.content.width) / 2)} 0)">\n${layer.content.svg}\n</g>`;
   const layers = stillLayer ? `${place(motionLayer, 'fl-motion')}\n${place({ content: { ...stillLayer.content, svg: scopeIds(stillLayer.content.svg, 'still-') } }, 'fl-still')}` : place(motionLayer);
   const head = `<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" class="fl" width="${r(shownWidth)}" height="${r(shownHeight)}" viewBox="0 0 ${r(width)} ${r(height)}" role="img" data-scene="${si}" data-mode="${mode}">
-<title>${escapeXml(plainText(title))}</title>
+<title>${escapeXml(plainText(title))}</title>${figureDesc(figure)}
 `;
   const styles = `${STYLES.figure}${paintCss(result.scene)}${chartStyle}${hasStatus(timeline) ? STYLES.status : ''}
 ${motionLayer.css.join('\n')}${stillLayer ? `\n${stillLayer.css.join('\n')}` : ''}

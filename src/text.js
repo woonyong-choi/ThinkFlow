@@ -87,3 +87,8 @@ export function centerBaseline(center, fontSize) {
 
 /** 좌표를 소수 첫째 자리로 줄인다. SVG 파일 크기를 줄이고 실행 환경마다 다른 끝자리를 없애기 위해서다. */
 export const roundCoord = coord;
+
+/** 그림 설명(`<desc>`). 부제가 있으면 화면 읽기가 제목 다음에 읽는 설명이 된다. 움직이는 SVG와 HTML 판의 첫 SVG가 같이 쓴다. */
+export function figureDesc(figure) {
+  return figure.subtitle ? `<desc>${escapeXml(plainText(figure.subtitle))}</desc>` : '';
+}

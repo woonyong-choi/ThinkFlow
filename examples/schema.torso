@@ -5,7 +5,7 @@ subtitle "키, NULL 허용 여부, 삭제 정책을 열마다 적은 관계형 �
 table users "users" {
   id bigint pk
   email text unique required
-  referrer_id bigint fk=users.id nullable ondelete=set-null
+  referrer_id bigint fk=users.id nullable
   deleted_at timestamp nullable
 }
 table coupons "coupons" {
@@ -14,7 +14,7 @@ table coupons "coupons" {
 }
 table orders "orders" {
   id bigint pk
-  user_id bigint fk=users.id required ondelete=restrict from="0..*" to="1"
+  user_id bigint fk=users.id required ondelete=restrict
   coupon_id bigint fk=coupons.id nullable ondelete=set-null
   status text required
 }

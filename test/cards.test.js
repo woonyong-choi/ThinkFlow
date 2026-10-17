@@ -123,7 +123,7 @@ test('S4 a table foreign key becomes an edge between the two columns, to a key c
   assert.ok((await reject(contradictory)).some((p) => p.line === lineOf(contradictory, 'id bigint')));
 });
 
-test('S4 table relations and foreign keys share endpoint multiplicity labels without inferring constraints', async () => {
+test('S4 table relations and foreign keys share endpoint labels (multiplicity, delete policy) without inferring constraints', async () => {
   const tables = (column = 'owner bigint') => torso(`
     table users "users" {
       id bigint pk
@@ -145,7 +145,7 @@ test('S4 table relations and foreign keys share endpoint multiplicity labels wit
       assert.equal(label.w, measure(label.text, STYLE.pill.size, STYLE.pill.face), 'multiplicity reserves only its rendered text width');
       assert.equal(label.h, STYLE.meta.line);
     }
-    const labels = findAll(dom, (node) => node.tag === 'text' && node.attrs.class?.includes('fl-multiplicity'));
+    const labels = findAll(dom, (node) => node.tag === 'text' && node.attrs.class?.includes('fl-end-label'));
     assert.deepEqual(labels.map((node) => [node.attrs['data-end'], textContent(node)]), [['from', '0..*'], ['to', '1']]);
     assert.ok(findAll(dom, (node) => node.attrs['aria-label']?.includes('orders [0..*]')).length);
   }
@@ -161,7 +161,17 @@ test('S4 table relations and foreign keys share endpoint multiplicity labels wit
   const card = self.scene.items.find((it) => it.id === 'users');
   assert.ok([loop.points[0], loop.points.at(-1)].every((p) => Math.abs(p.x - (card.x + card.w)) < 1), 'self reference leaves and enters the right side');
   assert.deepEqual(loop.endpointLabels.map((l) => [l.end, l.y]), [['from', loop.points[0].y], ['to', loop.points.at(-1).y]]);
-  assert.equal(findAll(await stillDom(tables('owner bigint fk=users.id')), (node) => node.attrs.class?.includes('fl-multiplicity')).length, 0);
+  assert.equal(findAll(await stillDom(tables('owner bigint fk=users.id')), (node) => node.attrs.class?.includes('fl-end-label')).length, 0);
+  // 한 열은 한 줄: NULL 허용 여부는 키 표시 뒤의 작은 표시이고, 삭제 정책은 참조하는 열 쪽 끝의 선 위 알약이다. 다중성 글은 선 옆에 그대로 선다.
+  const policy = await build(tables('owner bigint fk=users.id required ondelete=cascade from="0..*"'));
+  const orders = policy.scene.items.find((it) => it.id === 'orders');
+  assert.deepEqual(orders.tableRows.map((row) => row.h), orders.tableRows.map(() => orders.tableRows[0].h), 'every column is one row');
+  assert.equal(orders.tableRows.find((row) => row.id === 'owner').texts[0].key.text, 'FK NN');
+  const [fk] = policy.scene.edges;
+  assert.deepEqual(fk.endpointLabels.map((l) => [l.end, l.text, l.isPill]), [['from', 'CASCADE', true], ['from', '0..*', false]]);
+  assert.equal(fk.endpointLabels[0].y, fk.points[0].y, 'the delete policy pill sits on its own line');
+  const pills = findAll(parseMarkup(await toSvg(policy, { isStatic: true })), (node) => node.attrs.class === 'fl-pill' && node.attrs['data-end'] === 'from');
+  assert.deepEqual(pills.map((node) => textContent(node)), ['CASCADE']);
   for (const [source, needle, message] of [
     [`${tables()}orders -> users from="2..1"\n`, 'orders -> users', /invalid multiplicity/],
     [`${tables()}orders -> users relation=inheritance\n`, 'orders -> users', /table.*association/],
