@@ -1,5 +1,5 @@
 // HTML은 원본 시간표를 유지한 좁은 배치를 함께 싣는다. 브라우저에서 배치나 사건을 다시 계산하지 않는다.
-// 좁은 배치는 그래프·차트·시간 판을 좁은 컨테이너 폭(COMPACT_WIDTH)에 맞춰 다시 만든 후보다. 이동 글을 원본보다 더 가리면 쓰지 않는다. 순서 판은 다시 만들지 않고 자연 크기를 유지한다.
+// 좁은 배치는 그래프·차트·시간 판을 좁은 컨테이너 폭(COMPACT_WIDTH)에 맞춰 다시 만든 후보다. 이동 글을 원본보다 더 가리면 쓰지 않는다. 순서 판은 다시 만들지 않고 틀 폭에 맞춰 줄어든다.
 import { reflowFigure } from '../build.js';
 import { COMPACT_WIDTH } from '../canvas.js';
 import { values } from '@woonyong-choi/design-tokens/tokens.js';
