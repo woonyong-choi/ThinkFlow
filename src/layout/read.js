@@ -30,7 +30,7 @@ export function readElk(laid, model) {
     const near = (end) => (other) => other.at !== `${edge.index}:${end}`;
     const start = settleEnd(joined[i], freeRect(edge.from, rects), crowd.get(edge.from)?.filter(near('start')));
     const points = dropCollinear(settleEnd(start.reverse(), freeRect(edge.to, rects), crowd.get(edge.to)?.filter(near('end'))).reverse());
-    return { ...edge, points, endpointLabels: readMultiplicities(edge, labels), labelAt: labels.get(`label::${edge.index}`) ?? (model.isSafe ? undefined : numberOnlyLabel(edge, points, items)) };
+    return { ...edge, points, endpointLabels: readMultiplicities(edge, labels, points), labelAt: labels.get(`label::${edge.index}`) ?? (model.isSafe ? undefined : numberOnlyLabel(edge, points, items)) };
   });
   settleLabels(edges, items, laid, groups);
   clearEndLabels(edges, { items, sweep: model.sweep });
@@ -73,14 +73,16 @@ const meets = (p, q) => p.x < q.x + q.w && q.x < p.x + p.w && p.y < q.y + q.h &&
 // cost: time O(n), heap O(n), stack O(1)
 // vars: n = 다중성 표시 글자 수
 // basis: estimate
-function readMultiplicities(edge, labels) {
+// 자기 참조 선은 elkjs가 TAIL·HEAD 자리를 고리 한쪽 끝에 함께 쌓는다. 고리 바깥 가로 자리(elkjs가 비워 둔 열)는 그대로 두고, 높이만 그 끝이 닿는 열 줄에 맞춘다.
+function readMultiplicities(edge, labels, points) {
   return ['from', 'to'].flatMap((end) => {
     const text = edge[`${end}Multiplicity`];
     if (text === undefined) return [];
     const position = labels.get(`multiplicity::${edge.index}::${end}`);
     if (!position) throw new LayoutError(`missing multiplicity label for ${edge.from} -> ${edge.to}`, edge.line);
     const { w, h } = textBlock(text, { textW: Infinity, pad: 0, style: STYLE.meta });
-    return [{ end, text, ...position, w, h }];
+    const at = edge.from === edge.to ? { y: (end === 'from' ? points[0] : points.at(-1)).y } : {};
+    return [{ end, text, ...position, w, h, ...at }];
   });
 }
 
