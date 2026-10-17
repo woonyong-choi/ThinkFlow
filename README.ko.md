@@ -161,7 +161,7 @@ const html = await toHtml(result, 'Server');
 
 세 함수 모두 Promise를 반환합니다. 빌드 결과는 렌더러에 그대로 전달하고 진단은 `result.warnings`에서 읽습니다. 원본이나 배치 오류는 공개된 `FigureError`를 잡아 `problems`에서 읽습니다. [API 사용법](docs/usage.md#javascript에서-조립하기)에 옵션, 진단 필드와 불투명한 `BuiltFigure` 타입이 정의되어 있습니다.
 
-### Mermaid, DBML, D2 가져오기
+### Mermaid, DBML, D2, draw.io, Excalidraw 가져오기
 
 ```sh
 npx torso import flow.mmd --out flow.torso
@@ -169,7 +169,7 @@ npx torso import schema.dbml > schema.torso
 cat arch.d2 | npx torso import d2 - --out arch.torso
 ```
 
-`import`는 원본 하나를 읽고, 형식을 적지 않으면 확장자(`.mmd`, `.mermaid`, `.dbml`, `.d2`)로 정해 옮긴 Torso 원본을 표준 출력에 씁니다. `--out`을 주면 그 파일에 씁니다. 이미 있는 파일은 바꾸지 않으므로 `--out` 파일이 이미 있으면 오류이고 아무것도 쓰지 않습니다. `-`는 표준 입력을 읽고 형식을 적어야 합니다. Mermaid의 `flowchart`/`graph`, `sequenceDiagram`, `stateDiagram-v2`, `erDiagram`, `pie`, DBML의 테이블, 참조, enum, 테이블 묶음, D2의 노드, 선, 컨테이너, shape, `sql_table`은 손으로 쓸 때와 같은 카드, 선, 그룹, 테이블, 외래 키, 순서 보기, 차트 카드가 됩니다. Torso에 대응 문법이 없는 문장(스타일, 상태의 메모, 열 기본값)은 원본 줄 번호가 있는 경고와 함께 건너뛰고, 다르게 그리는 문장(굵은 선, 육각형)도 경고하므로 조용히 버리는 것은 없습니다. 명령은 옮긴 원본을 한 번 만들어 보고, 손으로 고쳐야 하는 배치 검사는 새 파일의 줄로 알리되 파일 쓰기를 막지 않습니다. JavaScript에서는 `importDiagram(format, text)`가 같은 일을 합니다. 대응 전체는 [가져오기](docs/design/import.md)에 있습니다.
+`import`는 원본 하나를 읽고, 형식을 적지 않으면 확장자(`.mmd`, `.mermaid`, `.dbml`, `.d2`, `.drawio`, `.excalidraw`)로 정해 옮긴 Torso 원본을 표준 출력에 씁니다. `--out`을 주면 그 파일에 씁니다. 이미 있는 파일은 바꾸지 않으므로 `--out` 파일이 이미 있으면 오류이고 아무것도 쓰지 않습니다. `-`는 표준 입력을 읽고 형식을 적어야 합니다. Mermaid의 `flowchart`/`graph`, `sequenceDiagram`, `stateDiagram-v2`, `erDiagram`, `pie`, DBML의 테이블, 참조, enum, 테이블 묶음, D2의 노드, 선, 컨테이너, shape, `sql_table`, draw.io와 Excalidraw의 도형, 연결, 컨테이너·프레임은 손으로 쓸 때와 같은 카드, 선, 그룹, 테이블, 외래 키, 순서 보기, 차트 카드가 됩니다. Torso에 대응 문법이 없는 문장(스타일, 상태의 메모, 열 기본값)은 원본 줄 번호가 있는 경고와 함께 건너뛰고, 다르게 그리는 문장(굵은 선, 육각형)도 경고하므로 조용히 버리는 것은 없습니다. 명령은 옮긴 원본을 한 번 만들어 보고, 손으로 고쳐야 하는 배치 검사는 새 파일의 줄로 알리되 파일 쓰기를 막지 않습니다. JavaScript에서는 `importDiagram(format, text)`가 같은 일을 합니다. 대응 전체는 [가져오기](docs/design/import.md)에 있습니다.
 
 ### 원본 형식
 
@@ -188,7 +188,7 @@ cat arch.d2 | npx torso import d2 - --out arch.torso
 - 그림 검사: 겹침, 도형을 지나는 선, 붙은 선, 비율, 읽힘.
 - 재생: 같은 시간표로 만드는 HTML 재생기와 움직이는 SVG.
 - 마크다운: `torso md`가 문서의 `torso` 코드 블록을 그리고 블록 아래 이미지 줄을 맞춥니다. GitHub Action이 CI에서 이를 검사합니다.
-- 가져오기: `torso import mermaid|dbml|d2`가 Mermaid, DBML, D2 파일을 `.torso` 원본으로 옮기고, 건너뛰거나 다르게 그린 것을 줄마다 알립니다.
+- 가져오기: `torso import mermaid|dbml|d2|drawio|excalidraw`가 Mermaid, DBML, D2, draw.io, Excalidraw 파일을 `.torso` 원본으로 옮기고, 건너뛰거나 다르게 그린 것을 줄마다 알립니다.
 
 지원하지 않는 것: 3차원, 지도, CAD, 전체 BPMN, 간트, CPU 시뮬레이션, 실시간 백엔드, API 카드 실행, 클래스 멤버를 선의 끝으로 쓰기. Sankey, 불꽃 그래프, 바이올린은 아직 지원하지 않는 보류 항목이며 검증이 먼저 필요합니다. [표현 범위](docs/design/expression-coverage.md)에 예제마다 무엇을 덮고 무엇을 덮지 않는지, 알려진 한계가 적혀 있습니다.
 

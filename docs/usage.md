@@ -30,7 +30,7 @@ Torso는 텍스트로 문서용 그림을 만드는 도구입니다. 구성 요�
 | 장면 탭과 단계별 강조 추가 | [구조에 장면 추가하기](#구조에-장면-추가하기) |
 | 반복 요청·큐·조건·값 변화 표현 | [동시에 움직이는 트래픽과 큐](#동시에-움직이는-트래픽과-큐) |
 | SVG·HTML·갤러리 출력과 자동 검사 | [CLI 출력과 검사](#cli-출력과-검사) |
-| Mermaid·DBML·D2 원본 옮기기 | [다른 도구의 원본 가져오기](#다른-도구의-원본-가져오기) |
+| Mermaid·DBML·D2·draw.io·Excalidraw 원본 옮기기 | [다른 도구의 원본 가져오기](#다른-도구의-원본-가져오기) |
 | JavaScript·TypeScript 연동 | [JavaScript에서 조립하기](#javascript에서-조립하기) |
 | 오류 수정과 지원 범위 확인 | [문제가 있을 때](#문제가-있을-때) |
 
@@ -483,7 +483,7 @@ scene "접수가 더 빠를 때" mode=loop for=8s
 | 별도 폴더에 결과 쓰기 | `npx torso render request.torso --html --out figures` |
 | 폴더의 원본을 갤러리로 만들기 | `npx torso gallery . --out preview --title "설계 그림"` |
 | 진단을 JSON으로 받기 | `npx torso check request.torso --json` |
-| Mermaid·DBML·D2를 원본으로 옮기기 | `npx torso import flow.mmd --out flow.torso` |
+| Mermaid·DBML·D2·draw.io·Excalidraw를 원본으로 옮기기 | `npx torso import flow.mmd --out flow.torso` |
 
 SVG의 `--scene` 번호는 1부터입니다. 생략하면 첫 장면이고 장면이 없는 그림에는 지정하지 않습니다(`torso md`는 장면이 둘 이상인 블록에 생략하면 모든 장면을 `.scene-2.svg`처럼 이름 붙여 쓰고 둘째 장면부터 `<details>`로 둡니다). HTML은 모든 장면을 포함하므로 `--static`이나 SVG의 선택 장면이 HTML의 장면 목록을 줄이지 않습니다. `gallery`는 지정한 폴더의 `.torso`를 읽고 목록·문서 미리보기·각 그림의 HTML과 SVG를 만듭니다. 하위 폴더를 재귀적으로 찾는 명령은 아닙니다. `--out`을 생략하면 입력 폴더 아래 `out`에 쓰고, `--title`을 생략하면 입력 폴더명을 목록 제목으로 사용합니다.
 
@@ -493,7 +493,7 @@ SVG의 `--scene` 번호는 1부터입니다. 생략하면 첫 장면이고 장�
 
 ### 다른 도구의 원본 가져오기
 
-`torso import [mermaid|dbml|d2] <파일|-> [--out 파일.torso] [--json]`은 원본 하나를 옮겨 표준 출력에 씁니다. 형식을 적지 않으면 확장자(`.mmd`, `.mermaid`, `.dbml`, `.d2`)로 정합니다. `--out`을 주면 그 파일에 쓰고, 그 파일이 이미 있으면 바꾸지 않고 오류(종료 1)입니다. `-`는 표준 입력이고 형식을 적어야 합니다.
+`torso import [mermaid|dbml|d2|drawio|excalidraw] <파일|-> [--out 파일.torso] [--json]`은 원본 하나를 옮겨 표준 출력에 씁니다. 형식을 적지 않으면 확장자(`.mmd`, `.mermaid`, `.dbml`, `.d2`, `.drawio`, `.excalidraw`)로 정합니다. `--out`을 주면 그 파일에 쓰고, 그 파일이 이미 있으면 바꾸지 않고 오류(종료 1)입니다. `-`는 표준 입력이고 형식을 적어야 합니다.
 
 ```sh
 npx torso import flow.mmd --out flow.torso
