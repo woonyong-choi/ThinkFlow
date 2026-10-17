@@ -70,9 +70,7 @@ async function layoutGraph(figure, sizes, layoutWidth = layoutWidthOf(figure)) {
 async function place(figure, sizes, layoutWidth) {
   let best = await arrange(figure, sizes);
   const canAdapt = figure.aspect === undefined || layoutWidth < layoutWidthOf(figure);
-  // 본문 단 폭 목표에서는 폭에 들어도 세로형(높이가 폭보다 큰) 배치면 가로형 후보를 찾는다.
-  const isPortrait = layoutWidth >= layoutWidthOf(figure) && best.laid.height > best.laid.width;
-  if ((best.laid.width > layoutWidth || isPortrait) && canAdapt && !figure.safeLayout) best = await fitCanvas({ ...figure, aspect: undefined }, sizes, { flat: best, canvas: layoutWidth, cap: Math.max(layoutWidth, canvasOf(figure)) });
+  if (best.laid.width > layoutWidth && canAdapt && !figure.safeLayout) best = await fitCanvas({ ...figure, aspect: undefined }, sizes, { flat: best, canvas: layoutWidth, cap: Math.max(layoutWidth, canvasOf(figure)) });
   const scene = readElk(best.laid, best.model);
   // 제목이 선을 비킬 자리가 없는 그룹은 너비를 넓혀 한 번 더 배치한다(그림 검사 13번).
   const blocked = scene.groups.filter((g) => g.isTitleBlocked).map((g) => g.id);
@@ -126,7 +124,7 @@ function hasColumnEdges(figure) {
  * 2. 자동 비율로 접는다. 폭에 들 때까지 비율을 낮춰 가며 FOLD_TRIES번까지 본다.
  * 3. 좁은 화면 목표 폭에서도 넘치면 한 층당 도형 하나인 세로 후보를 비교한다. 관계나 사건 순서는 바꾸지 않는다. 본문 단 폭에서는 이 후보를 보지 않는다.
  * 목표 폭(canvas, 보통 본문 단 폭)에 들고 비율이 알맞은 범위(FIT_MIN~FIT_MAX) 안인 첫 후보를 쓴다. 범위 안인 후보가 없으면 목표 폭에 드는 후보 가운데 범위에 가장 가까운 것을 쓴다.
- * 목표 폭에 드는 후보가 없으면 처음 배치를 포함해 표시 폭 상한(cap, 캔버스 폭)에 들고 비율 한도 안인 후보 가운데 가장 좁은 것을, 그것도 없으면 가장 좁은 배치를 쓴다. HTML은 자연 크기와 내부 가로 스크롤을 유지한다.
+ * 목표 폭에 드는 후보가 없으면 본문 단 목표에서는 표시 상한(cap) 안의 가로형 후보를, 그것도 없으면 상한 안에서 가장 좁은 것을, 그것도 없으면 가장 좁은 배치를 쓴다. SVG와 HTML은 칸 폭을 채우므로 가로 스크롤은 없다.
  */
 async function fitCanvas(figure, sizes, { flat, canvas, cap }) {
   let narrowest = flat;
