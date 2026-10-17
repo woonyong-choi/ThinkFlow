@@ -1,6 +1,6 @@
 # 데이터 관계 그림
 
-테이블 카드(`table`)의 열과 외래 키를 그래프 보기로 보이는 그림입니다. 스키마 설명이나 한 요청이 어느 행을 따라가는지 보일 때 씁니다.
+테이블 카드(`table`)의 열과 외래 키를 그래프 보기로 보이는 그림이다. 스키마 설명이나 한 요청이 어느 행을 따라가는지 보일 때 쓴다.
 
 ## 최소 예제
 
@@ -32,7 +32,7 @@ scene "주문"
 
 ## 문법
 
-줄 종류와 선택 사항은 [그림 문법](../design/figure-syntax.md#문법-표)의 문법 표가 정본이고, 테이블 카드의 규칙은 [카드와 보기](../design/figure-kinds.md#스키마)에 있습니다.
+줄 종류와 선택 사항은 [그림 문법](../design/figure-syntax.md#문법-표)의 문법 표가 정본이고, 테이블 카드의 규칙은 [카드와 보기](../design/figure-kinds.md#스키마)에 있다.
 
 ## 단일 키와 복합 키
 
@@ -83,7 +83,7 @@ scene "주문자 찾기"
 
 ## 장면과 움직임
 
-이동은 외래 키 선을 적은 방향으로 따라가고, 그 방향에 없으면 반대 방향을 거꾸로 따라갑니다. 같은 방향 외래 키가 둘 이상이면 `payments.order_id -> orders.id`처럼 열까지 적습니다. `light 테이블.열 테이블.열`은 열을 밝히고, `show 테이블 "글"`은 테이블 아래 카드에 예시 행을 보입니다. `nullable`과 `required`는 NULL 허용 여부를, `ondelete=cascade`와 `set-null`은 삭제 정책을 열 아래 줄에 보입니다. 같은 테이블의 서로 다른 두 열을 잇는 자기 참조 외래 키(`referrer_id bigint fk=users.id nullable`)는 카드 오른쪽 면을 도는 고리로 그립니다. 같은 열이나 카드 전체를 자기 자신에 잇는 선은 오류입니다(`an edge cannot go from "users.id" to itself`). [schema 예제](../../examples/schema.torso)가 키, 제약, 삭제 정책, 자기 참조 외래 키를 모두 씁니다.
+이동은 외래 키 선을 적은 방향으로 따라가고, 그 방향에 없으면 반대 방향을 거꾸로 따라간다. 같은 방향 외래 키가 둘 이상이면 `payments.order_id -> orders.id`처럼 열까지 적는다. `light 테이블.열 테이블.열`은 열을 밝히고, `show 테이블 "글"`은 테이블 아래 카드에 예시 행을 보인다. `nullable`과 `required`는 NULL 허용 여부를, `ondelete=cascade`와 `set-null`은 삭제 정책을 열 아래 줄에 보인다. 같은 테이블의 서로 다른 두 열을 잇는 자기 참조 외래 키(`referrer_id bigint fk=users.id nullable`)는 카드 오른쪽 면을 도는 고리로 그린다. 같은 열이나 카드 전체를 자기 자신에 잇는 선은 오류이다(`an edge cannot go from "users.id" to itself`). [schema 예제](../../examples/schema.torso)가 키, 제약, 삭제 정책, 자기 참조 외래 키를 모두 쓴다.
 
 ## 흔한 오류
 
@@ -91,9 +91,9 @@ scene "주문자 찾기"
 |---|---|---|---|
 | 키가 아니거나 복합 키 일부만 가리키는 외래 키 | `fk must point to a pk or unique column tuple: reference a whole key of "a"` | `syntax` | 기본 키 또는 고유 키의 전체 열을 참조한다 |
 | 외래 키 양쪽 열 개수가 다름 | `both sides of a foreign key need the same number of columns` | `syntax` | 같은 위치의 열끼리 대응하도록 양쪽 목록을 맞춘다 |
-| 칸 이름에 점이 둘 | `write a part as card.part. Found "a.id.z"` | `syntax` | `테이블.열`로 적습니다 |
-| 기호가 든 타입 | `write a type with symbols as quoted text: "varchar(255)"` | `syntax` | 타입을 따옴표 글로 적습니다 |
-| 열 없는 테이블 | `table "t" has no columns` | `syntax` | 열을 하나 이상 둡니다 |
-| 선언하지 않은 테이블 | `unknown card "c". Did you mean "a"? Declared: a, b` | `syntax` | 이름을 고치거나 테이블을 선언합니다 |
+| 칸 이름에 점이 둘 | `write a part as card.part. Found "a.id.z"` | `syntax` | `테이블.열`로 적는다 |
+| 기호가 든 타입 | `write a type with symbols as quoted text: "varchar(255)"` | `syntax` | 타입을 따옴표 글로 적는다 |
+| 열 없는 테이블 | `table "t" has no columns` | `syntax` | 열을 하나 이상 둔다 |
+| 선언하지 않은 테이블 | `unknown card "c". Did you mean "a"? Declared: a, b` | `syntax` | 이름을 고치거나 테이블을 선언한다 |
 
-`code`는 `torso check figure.torso --json`으로 봅니다.
+`code`는 `torso check figure.torso --json`으로 본다.

@@ -3,7 +3,7 @@
 | 항목 | 값 |
 |---|---|
 | 날짜 | 2026-10-01 |
-| 상태 | 채택 |
+| 상태 | 결정 |
 | 대체 | 없음 |
 | 관련 문서 | [아키텍처](../architecture.md), [그림 문법](../design/figure-syntax.md), [배치](../design/layout.md) |
 
@@ -30,7 +30,7 @@
 - container마다 따로 배치하면(`SEPARATE_CHILDREN`) 안쪽 방향이 지켜지고, container 경계의 연결점(port)을 거쳐 바깥 선과 안쪽 선이 모두 경로를 받는다.
 - container가 없는 그림은 줄 바꿈 배치(`elk.layered.wrapping.strategy`)로 가로세로 비율이 19:1에서 1.4:1로 줄었다. container가 있으면 줄 바꿈이 동작하지 않았다.
 
-## 결과
+## 영향
 
 - 배치와 그리기가 같은 도형 크기와 연결점을 써서 선 끝 붙이기, 끝점 다시 놓기 같은 후처리가 없어진다.
 - container마다 방향을 정해 그림 비율을 맞춘다.

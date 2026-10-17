@@ -1,70 +1,38 @@
-# Torso 사용 안내
+# 문서
 
-텍스트 원본을 그림으로 만들고, 움직임을 더하고, 문서에 넣는 방법을 안내합니다. 문서는 한국어입니다. 처음 쓰는 사람은 시작하기를 따라 하고, 이미 만든 그림을 바꾸려면 작업별 안내에서 필요한 표현을 고릅니다.
+Torso의 사용법과 설계 문서다. 문서는 한국어로 쓴다. 처음이면 [Torso 사용법](usage.md)부터 읽는다.
 
-## 시작하기
+## 시작
 
-1. [설치와 버전 확인](usage.md#설치와-버전-확인)으로 실행 환경을 준비합니다.
-2. [첫 그림 만들기](usage.md#첫-그림-만들기)로 SVG와 HTML을 만듭니다.
-3. [읽는 화면의 동작](usage.md#읽는-화면의-동작)으로 탭·복사·다운로드·전체화면을 익힙니다.
-4. [Markdown과 홈페이지에 넣기](usage.md#markdown과-홈페이지에-넣기)로 본문에 그림을 넣습니다.
+- [Torso 사용법](usage.md): 설치, 첫 그림, 표현 선택과 문서 삽입
+- [아키텍처](architecture.md): 구성 요소, 처리 흐름, 지켜야 할 규칙
+- [용어](glossary.md): 이 프로젝트만의 말
 
-| 문서 | 내용 |
-|---|---|
-| [Torso 사용법](usage.md) | 설치, 기본 작성, 장면과 트래픽, 표현 선택, Markdown과 홈페이지 삽입, CLI, API, 문제 해결 |
+## 설계
 
-## 만들려는 그림 고르기
+- [그림 문법](design/figure-syntax.md): 원본의 구조, 카드, 보기와 장면 규칙
+- [카드와 보기](design/figure-kinds.md): 순서, 상태, 테이블과 클래스의 동작
+- [칸 격자](design/grid.md): 칸과 바이트 배치, 연결과 값 변화
+- [차트](design/charts.md): 차트 종류, 값 출처와 계열 표현
+- [배치](design/layout.md): 글 측정, 도형 크기와 연결점 배치
+- [재생](design/playback.md): 시간표, 장면 재생과 HTML 조작
+- [그림 검사](design/figure-check.md): 배치 검사 항목, 진단과 실패 조건
+- [마크다운 반영과 배포](design/markdown.md): 문서 그림 갱신, Action과 패키지
+- [가져오기](design/import.md): 외부 그림 형식의 변환과 경고
+- [문서 스킬 연동](design/docs-integration.md): 문서 도구 연동과 공통 디자인 계약
+- [표현 범위와 검증 범위](design/expression-coverage.md): 지원 표현, 검증 범위와 알려진 한계
 
-각 레퍼런스에는 최소 원본, 적용할 문법, 장면과 움직임, 흔한 오류가 있습니다. 그림의 이름보다 설명하려는 내용을 기준으로 고릅니다.
+## 명세
 
-| 문서 | 내용 |
-|---|---|
-| [구조 그림 레퍼런스](reference/flow.md) | 구조 그림의 최소 예제, 장면과 움직임, 흔한 오류 |
-| [구성도 레퍼런스](reference/architecture.md) | 그룹, 아이콘, 번호 선을 쓴 구성도의 최소 예제와 흔한 오류 |
-| [순서 그림 레퍼런스](reference/sequence.md) | 순서 보기의 최소 예제, 구획, 흔한 오류 |
-| [상태 그림 레퍼런스](reference/state.md) | 상태 카드의 최소 예제, 장면과 움직임, 흔한 오류 |
-| [데이터 관계 그림 레퍼런스](reference/data.md) | 테이블 카드의 최소 예제, 장면과 움직임, 흔한 오류 |
-| [칸 격자 레퍼런스](reference/grid.md) | 칸 격자와 바이트 배치의 최소 예제, 장면과 움직임, 흔한 오류 |
-| [타이밍 그림 레퍼런스](reference/timing.md) | 타이밍 보기의 최소 예제, 장면과 움직임, 흔한 오류 |
-| [차트 레퍼런스](reference/charts.md) | 차트 열여섯 종류의 표, 계열 규칙, 최소 예제, 흔한 오류 |
+- [구조 그림](reference/flow.md): 카드와 선의 최소 예제와 흔한 오류
+- [구성도](reference/architecture.md): 그룹, 아이콘과 번호 선의 사용법
+- [순서 그림](reference/sequence.md): 메시지 순서, 구획과 생명주기
+- [상태 그림](reference/state.md): 상태 선언, 전이와 장면의 사용법
+- [데이터 관계 그림](reference/data.md): 테이블, 키와 외래 키의 사용법
+- [칸 격자](reference/grid.md): 격자와 바이트 배치의 최소 예제
+- [타이밍 그림](reference/timing.md): 시간에 따른 값과 이동의 표현
+- [차트](reference/charts.md): 차트 종류, 계열 규칙과 흔한 오류
 
-API의 요청·응답 칸은 [API 계약](usage.md#api-계약), 객체의 상속·구현은 [클래스와 인터페이스](usage.md#클래스와-인터페이스), 실제 소요 시간은 [추적과 여러 보기](usage.md#실제-시간의-추적과-여러-보기)에서 시작합니다. 카드 안 설명·값·작은 차트는 [카드 본문](usage.md#카드에-설명과-값-넣기)을 확인합니다.
+## 기록
 
-[예제 원본](../examples/)에는 표현마다 실행 가능한 예제가 있습니다. 저장소에서 `npm ci` 뒤 `npm run catalog`를 실행하면 원본·미리보기·HTML·SVG를 모은 갤러리가 만들어집니다. npm 소비자 프로젝트에서는 [gallery 명령](usage.md#cli-출력과-검사)으로 자신의 원본 폴더를 처리합니다.
-
-## 움직임과 문서 연동
-
-- [장면 추가하기](usage.md#구조에-장면-추가하기): 정지·한 번·반복 재생, 강조, 설명 바꾸기.
-- [트래픽과 큐](usage.md#동시에-움직이는-트래픽과-큐): 동시 요청, 조건과 대기, 예약, 시간 초과와 유실.
-- [CLI 출력과 검사](usage.md#cli-출력과-검사): SVG·HTML·갤러리, 장면 선택, 진단, 생성 예산.
-- [Markdown에 삽입](usage.md#github에서-읽는-markdown): 그림 생성·갱신·검사, 원본 접기.
-- [CI 연동](design/markdown.md#설치와-action): GitHub Action으로 원본과 결과의 차이 검사.
-- [JavaScript와 TypeScript](usage.md#javascript에서-조립하기): 공개 API, 파일 접근 설정, 오류 처리.
-
-## 문법과 문제 해결
-
-[문제가 있을 때](usage.md#문제가-있을-때)에서 증상별 확인 순서를 찾습니다. 옵션 이름과 기본값이 필요하면 그림 문법, 진단의 의미가 필요하면 그림 검사를 읽습니다.
-
-| 문서 | 내용 |
-|---|---|
-| [그림 문법](design/figure-syntax.md) | `torso` 원본의 줄과 글자 규칙, 파일 구조, 카드, 보기, 장면, 값, 오류, 문법 표 |
-| [그림 검사](design/figure-check.md) | 화면 오류 검사 항목과 메시지 |
-| [표현 범위와 검증 범위](design/expression-coverage.md) | 지원 표현과 문법, 예제, 시험의 대응표, 전용 표현이 없는 범위, 승인한 제외와 보류 |
-| [용어](glossary.md) | 이 프로젝트에서만 쓰는 말 |
-
-## 구현과 기여
-
-아래 문서는 Torso 자체를 고치는 사람을 위한 설계입니다. 사용 중인 명령의 상세 계약을 확인할 때도 참고할 수 있습니다. 진행 기록과 검수 결과는 GitHub 이슈에서 관리합니다.
-
-| 문서 | 내용 |
-|---|---|
-| [아키텍처](architecture.md) | 구성 요소, 실행 흐름, 불변 조건 |
-| [카드와 보기](design/figure-kinds.md) | 순서 보기, 상태, 스키마, 클래스 카드의 선언과 장면 규칙, 카드와 보기 사이 규칙 |
-| [칸 격자](design/grid.md) | 칸 단위 카드의 문법, 크기, 칸 밝히기, 칸 단위 선 |
-| [차트](design/charts.md) | 차트 카드, 값 출처, 계열 드러내기, 그리기 |
-| [배치](design/layout.md) | 글 재기, 도형 크기와 연결점, 그룹 배치, 그림 비율 |
-| [재생](design/playback.md) | 장면의 정지·한 번·반복, 논리 시각과 표시 길이, 시간표 규칙(시간 상한과 정밀도, 이벤트, 조건과 대기, 예약), HTML 재생기(탭, 도구 막대, 전체 화면, 반응형, 내려받기), 움직이는 SVG와 멈춘 SVG, 결과 파일 |
-| [마크다운과 배포](design/markdown.md) | `md` 명령, GitHub Action, 배포 워크플로, 패키지 |
-| [가져오기](design/import.md) | `import` 명령: Mermaid·DBML·D2 원본을 `.torso` 원본으로 옮기기, 대응 문법과 경고 |
-| [문서 스킬 연동](design/docs-integration.md) | 문서 스킬의 D2와 Vega-Lite를 대신하는 계약, 디자인 기준·색 계약·수용 게이트와 증거 표 |
-| [결정 기록](decisions/README.md) | 설계를 정한 이유와 버린 선택지 |
+- [결정 기록](decisions/README.md): 설계를 정한 이유와 버린 선택지
