@@ -8,11 +8,11 @@
 
 `torso import <mermaid|dbml|d2|drawio|excalidraw>`는 다른 도구의 그림 원본을 `.torso` 원본으로 옮긴다. 다섯 형식의 읽기는 모두 공통 모형 하나를 채우고, 원본 글은 쓰는 곳 한 곳(`src/import/emit.js`)이 쓴다. 그래서 같은 뜻(카드, 그룹, 선, 외래 키, 메시지, 차트 행)은 형식과 상관없이 같은 Torso 문법 하나가 된다. 새 문법은 없다. Torso에 대응 문법이 없는 문장은 원본 줄 번호가 있는 경고와 함께 건너뛰고, 다르게 그리는 문장도 경고한다. 결과 파일은 새로 쓰기만 하고 이미 있는 파일을 바꾸지 않는다.
 
-## 동기
+## 해결하는 문제
 
 문서에 이미 Mermaid 순서도, DBML 스키마, D2 구성도가 있으면 같은 그림을 Torso로 처음부터 다시 적어야 했다. 손으로 옮기면 이름 규칙(소문자와 `-`), 외래 키가 기본 키를 가리켜야 한다는 규칙, 순서 보기의 참여자 순서처럼 Torso가 요구하는 것을 하나씩 맞춰야 하고, 옮기다 빠뜨린 문장은 알 길이 없다. 가져오기는 옮길 수 있는 것은 Torso 문법으로, 옮길 수 없는 것은 그 줄을 가리키는 경고로 남긴다.
 
-## 예시
+## 사용 예
 
 ```text
 flowchart LR
@@ -40,7 +40,7 @@ auth -> db "yes"
 auth -> reject "no" dashed
 ```
 
-## 상세 설계
+## 작동 방식
 
 ### 명령과 결과 파일
 
@@ -100,21 +100,21 @@ torso import [mermaid|dbml|d2|drawio|excalidraw] <파일|-> [--out 파일.torso]
 
 | Mermaid | Torso | 경고 |
 |---|---|---|
-| `flowchart`/`graph` `TD`·`TB`, `LR` | 그림 방향 `down`, `right`. 방향이 없으면 `down` | |
+| `flowchart`/`graph` `TD`·`TB`, `LR` | 그림 방향 `down`, `right`. 방향이 없으면 `down` | 없음 |
 | `RL`, `BT` | `right`, `down` | 바꿔 그림 |
-| `a[글]`, `a(글)`, 이름만 | `box` | |
-| `a{글}` | `decision` | |
-| `a[(글)]` | `store` | |
-| `a((글))` | `box shape=circle` | |
+| `a[글]`, `a(글)`, 이름만 | `box` | 없음 |
+| `a{글}` | `decision` | 없음 |
+| `a[(글)]` | `store` | 없음 |
+| `a((글))` | `box shape=circle` | 없음 |
 | `a(((글)))`, `a([글])`, `a[[글]]`, `a{{글}}`, `a[/글/]`, `a>글]` 등 | `box`(겹원은 원) | 바꿔 그림 |
-| `-->`, `---`, `<-->` | 선, `head=none`, `head=both` | |
-| `-->\|글\|`, `-- 글 -->` | 라벨 | |
-| `-.->`, `-. 글 .->` | `dashed` | |
+| `-->`, `---`, `<-->` | 선, `head=none`, `head=both` | 없음 |
+| `-->\|글\|`, `-- 글 -->` | 라벨 | 없음 |
+| `-.->`, `-. 글 .->` | `dashed` | 없음 |
 | `==>`, `== 글 ==>` | 보통 선 | 굵기 없음 |
 | `--o`, `--x` | 화살촉 | 바꿔 그림 |
-| `a & b --> c`, `a --> b --> c` | 선 여러 개 | |
-| `subgraph id [제목] ... end`(중첩), 안의 `direction` | `group`(방향을 적지 않으면 바깥 방향) | |
-| subgraph 이름을 선 끝으로 | 그룹으로 가는 선 | |
+| `a & b --> c`, `a --> b --> c` | 선 여러 개 | 없음 |
+| `subgraph id [제목] ... end`(중첩), 안의 `direction` | `group`(방향을 적지 않으면 바깥 방향) | 없음 |
+| subgraph 이름을 선 끝으로 | 그룹으로 가는 선 | 없음 |
 | `~~~` | 없음 | 건너뜀 |
 | `style id stroke-dasharray: ...`(0이 아닌 간격) | subgraph는 `group ... dashed`, 상자는 `external`(점선 윤곽 카드) | 다른 모양은 모양을 지키고 알림, 같은 줄의 색·굵기는 건너뜀 |
 | `classDef`, `class`, `linkStyle`, `click`, `accTitle`, `accDescr`, `:::클래스`, `@{ ... }`, `style`의 색·굵기 | 없음 | 건너뜀 |
@@ -123,20 +123,20 @@ torso import [mermaid|dbml|d2|drawio|excalidraw] <파일|-> [--out 파일.torso]
 
 | Mermaid | Torso | 경고 |
 |---|---|---|
-| `participant a [as 이름]`, `actor a`, 메시지에 처음 나온 이름 | `box`, `person` 참여자 | |
+| `participant a [as 이름]`, `actor a`, 메시지에 처음 나온 이름 | `box`, `person` 참여자 | 없음 |
 | `participant a@{ "type": "database" }` | `store` | 다른 종류는 상자로 바꿔 그림 |
-| `->>`, `->` | 메시지 | |
-| `-->>`, `-->` | `dashed` 메시지 | |
+| `->>`, `->` | 메시지 | 없음 |
+| `-->>`, `-->` | `dashed` 메시지 | 없음 |
 | `-x`, `-)`, `<<->>` | 메시지(한 방향) | 바꿔 그림 |
 | `a->>+b`, `a-->>-b`, `activate`, `deactivate` | 메시지 뒤 `activate b`, `deactivate a` | 메시지 바로 뒤가 아니거나 구획 안, 겹친 활성, 열지 않은 비활성은 건너뜀 |
 | `Note right of a`, `left of`, `over a,b` | 바로 앞 메시지의 참여자에 붙는 `note` | 앞 메시지가 없거나 그 참여자가 아니면 건너뜀 |
 | `alt` / `else` | `fragment alt "첫 조건" choose="첫 조건" { branch ... }` | 대안이 하나면 `opt` |
-| `loop 글` | `fragment loop "글" times=1` | |
-| `opt 글` | `fragment opt "글" run=on` | |
+| `loop 글` | `fragment loop "글" times=1` | 없음 |
+| `opt 글` | `fragment opt "글" run=on` | 없음 |
 | `par` / `and` | `fragment par { branch ... }` | 대안이 하나면 구획 없이 |
 | `critical`/`option`, `break`, `rect`, `box` | 구획 없이 안의 메시지만 | 바꿔 그림 |
 | `create participant`, `destroy` | 다음 메시지의 `create`, `destroy` | 구획 안이거나 보내는 쪽 소멸은 건너뜀 |
-| `title` | 그림 제목과 장면 이름 | |
+| `title` | 그림 제목과 장면 이름 | 없음 |
 | `autonumber`, `links`, `properties`, `accTitle` | 없음 | 건너뜀 |
 
 Mermaid `loop`와 `opt`에는 횟수와 재생 여부가 없으므로 한 번 재생(`times=1`, `run=on`)으로 쓴다. 장면은 하나이고 이름은 `title`이나 `sequence`다.
@@ -147,23 +147,23 @@ Mermaid `loop`와 `opt`에는 횟수와 재생 여부가 없으므로 한 번 �
 |---|---|---|
 | `a --> b : 사건` | `a -> b "사건"` | 사건이 없으면 `…` |
 | `[*] --> a`, `a --> [*]` | `start a`, `final a` | 둘째 처음 상태, 상태가 아닌 끝, 처음·끝 전이의 사건은 건너뜀 |
-| `state "글" as a` | `state a "글"` | |
+| `state "글" as a` | `state a "글"` | 없음 |
 | `state a <<choice>>` | `decision` | `fork`, `join`은 상태로 바꿔 그림 |
 | `state a { ... }` | `group`(안의 `[*] --> b`는 묶음으로 들어오는 전이가 닿을 상태) | 묶음으로 들어오는 전이는 그 상태로 바꿔 그림, 묶음에서 나가는 전이와 안의 끝은 건너뜀 |
-| `direction` | 그림·그룹 방향(기본 `down`) | |
+| `direction` | 그림·그룹 방향(기본 `down`) | 없음 |
 | `a : 설명`, `note`, `--`, `classDef`, `class`, `style` | 없음 | 건너뜀 |
 
 #### 개체 관계 그림
 
 | Mermaid | Torso | 경고 |
 |---|---|---|
-| 속성이 있는 개체 `A { 타입 이름 PK }` | `table` | |
+| 속성이 있는 개체 `A { 타입 이름 PK }` | `table` | 없음 |
 | 속성이 없는 개체 | `box` | 바꿔 그림 |
-| `PK`, `UK` | `pk`, `unique` | |
+| `PK`, `UK` | `pk`, `unique` | 없음 |
 | `FK`, 속성 설명 | 없음 | 건너뜀(가리키는 열이 원본에 없다) |
-| `A \|\|--o{ B : 글` | `a -> b "글" relation=association from="1" to="0..*"` | |
-| 기수 `\|o`, `\|\|`, `}o`, `}\|` | `0..1`, `1`, `0..*`, `1..*` | |
-| `..`(식별하지 않는 관계) | `dashed` | |
+| `A \|\|--o{ B : 글` | `a -> b "글" relation=association from="1" to="0..*"` | 없음 |
+| 기수 `\|o`, `\|\|`, `}o`, `}\|` | `0..1`, `1`, `0..*`, `1..*` | 없음 |
+| `..`(식별하지 않는 관계) | `dashed` | 없음 |
 
 #### 원 차트
 
@@ -175,15 +175,15 @@ Mermaid `loop`와 `opt`에는 횟수와 재생 여부가 없으므로 한 번 �
 |---|---|---|
 | `Project 이름 { }` | 그림 제목 | 안의 설정은 건너뜀 |
 | `Table [schema.]이름 [as 별칭] { }` | `table`(별칭은 참조에서 푼다) | 표 설정(`[headercolor: ...]`)은 건너뜀 |
-| 열 `이름 타입 [설정]` | 열 줄(타입은 원본 글 그대로) | |
-| `pk`, `primary key`, `unique`, `not null`, `null` | `pk`, `unique`, `required`, `nullable` | |
+| 열 `이름 타입 [설정]` | 열 줄(타입은 원본 글 그대로) | 없음 |
+| `pk`, `primary key`, `unique`, `not null`, `null` | `pk`, `unique`, `required`, `nullable` | 없음 |
 | `default`, `note`, `increment`, `check` | 없음 | 건너뜀 |
 | `indexes { (a, b) [pk] }`, `[unique]` | `pk (a, b)`, `unique (a, b)`(열 하나면 열 표시) | 그 밖의 색인은 건너뜀 |
-| `ref: > t.c`, `Ref: a.x > b.y`, 블록 `Ref { }` | `fk=b.y from="*" to="1"` | |
-| `<` | 두 끝을 바꾼 `>` | |
-| `-`(일대일) | 키를 가리키는 쪽에서 `fk=... from="1" to="1"` | |
-| `<>`(다대다) | `relation=association from="*" to="*"` 관계선 | |
-| `a.(x, y) > b.(x, y)` | `fk (x, y) -> b (x, y)` | |
+| `ref: > t.c`, `Ref: a.x > b.y`, 블록 `Ref { }` | `fk=b.y from="*" to="1"` | 없음 |
+| `<` | 두 끝을 바꾼 `>` | 없음 |
+| `-`(일대일) | 키를 가리키는 쪽에서 `fk=... from="1" to="1"` | 없음 |
+| `<>`(다대다) | `relation=association from="*" to="*"` 관계선 | 없음 |
+| `a.(x, y) > b.(x, y)` | `fk (x, y) -> b (x, y)` | 없음 |
 | `[delete: cascade\|restrict\|set null\|no action]` | `ondelete=cascade\|restrict\|set-null\|no-action` | `update`, `set default`, 색은 건너뜀 |
 | `Enum 이름 { 값 }` | `box id "이름" "enum" { text "값" mono }`, 타입이 그 enum인 열에서 카드로 선 | 값 설정은 건너뜀 |
 | `TableGroup 이름 { 테이블 }` | `group` | 없는 테이블, 두 번째 묶음은 건너뜀 |
@@ -195,21 +195,21 @@ DBML에는 방향이 없어 Torso 기본(`right`)으로 쓴다.
 
 | D2 | Torso | 경고 |
 |---|---|---|
-| `a`, `a: 글`, `a.label: 글`, `a: { label: 글 }` | `box a "글"`(라벨이 없으면 키) | |
-| `a.b.c`, `a: { b }`, `_.c` | 중첩 `group`과 그 안 카드(이름은 경로 `a-b-c`) | |
-| `->`, `<-`, `<->`, `--` | `a -> b`, `b -> a`, `head=both`, `head=none` | |
-| `a -> b -> c: 글` | 선마다 같은 라벨 | |
-| `shape: rectangle`, `square` | `box` | |
-| `cylinder`, `person`, `diamond`, `circle` | `store`, `person`, `decision`, `box shape=circle` | |
+| `a`, `a: 글`, `a.label: 글`, `a: { label: 글 }` | `box a "글"`(라벨이 없으면 키) | 없음 |
+| `a.b.c`, `a: { b }`, `_.c` | 중첩 `group`과 그 안 카드(이름은 경로 `a-b-c`) | 없음 |
+| `->`, `<-`, `<->`, `--` | `a -> b`, `b -> a`, `head=both`, `head=none` | 없음 |
+| `a -> b -> c: 글` | 선마다 같은 라벨 | 없음 |
+| `shape: rectangle`, `square` | `box` | 없음 |
+| `cylinder`, `person`, `diamond`, `circle` | `store`, `person`, `decision`, `box shape=circle` | 없음 |
 | `queue` | `queue ... slots=4` | 칸 수가 없어 4로 바꿔 그림 |
-| `sql_table`과 `열: 타입 {constraint: primary_key\|unique}` | `table`과 열 줄 | |
+| `sql_table`과 `열: 타입 {constraint: primary_key\|unique}` | `table`과 열 줄 | 없음 |
 | `foreign_key` 열에서 다른 열로 가는 라벨 없는 화살표 | `fk=테이블.열`(DBML 참조와 같은 문법) | 화살표가 없는 표시는 건너뜀 |
 | 그 밖의 shape | `box` | 바꿔 그림 |
 | 컨테이너의 shape | 그룹 | 바꿔 그림 |
 | `direction: right\|down` | 그림·그룹 방향(기본 `down`, D2와 같다) | `left`, `up`은 같은 축으로 바꿔 그림 |
-| `|md ...|` 블록 글 | 한 줄 글 | 바꿔 그림 |
+| `\|md ...\|` 블록 글 | 한 줄 글 | 바꿔 그림 |
 | `style.stroke-dash: n`(n > 0) | 선은 `dashed`, 컨테이너는 `group ... dashed`, 상자는 `external`(점선 윤곽 카드) | 다른 모양은 모양을 지키고 알림 |
-| 맨 위의 `title: 글 {shape: text ...}`(D2 그림 제목 관례) | 그림 제목 `title "글"` | |
+| 맨 위의 `title: 글 {shape: text ...}`(D2 그림 제목 관례) | 그림 제목 `title "글"` | 없음 |
 | 그 밖의 `style`, `icon`, `tooltip`, `link`, `near`, `width`, `height`, `class`, `vars`, `layers`, `scenarios`, `steps`, `(a -> b)[0]`, `*` 글롭, `...@`, `null` | 없음 | 건너뜀 |
 
 D2 키는 대소문자를 가리지 않아 소문자로 견주고, 보이는 이름은 처음 쓴 꼴이다.
@@ -221,16 +221,16 @@ draw.io(diagrams.net)는 좌표가 있는 손 그림이다. 좌표, 색, 글꼴,
 | draw.io | Torso | 경고 |
 |---|---|---|
 | 도형 셀(`vertex="1"`)과 라벨(`value`, `UserObject`·`object`의 `label`) | `box id "글"`. 이름(id)은 라벨에서 만든다(셀 id는 뜻이 없다) | 글 없는 도형은 `…`로 쓰고 알림 |
-| `html=1` 라벨 | 태그를 지운 한 줄 글(줄 바꿈 태그는 공백, 문자 참조는 풂) | |
-| `ellipse`, `rhombus`, `shape=cylinder3`, `shape=umlActor` | `box shape=circle`, `decision`, `store`, `person` | |
-| `dashed=1` 상자 | `external`(점선 윤곽 카드) | |
+| `html=1` 라벨 | 태그를 지운 한 줄 글(줄 바꿈 태그는 공백, 문자 참조는 풂) | 없음 |
+| `ellipse`, `rhombus`, `shape=cylinder3`, `shape=umlActor` | `box shape=circle`, `decision`, `store`, `person` | 없음 |
+| `dashed=1` 상자 | `external`(점선 윤곽 카드) | 없음 |
 | 그 밖의 `shape=` | `box` | 바꿔 그림 |
 | `swimlane`, `container=1` | `group`(`dashed=1`이면 `dashed`) | 라벨이 없으면 `그룹`으로 쓰고 알림 |
-| 보이지 않는 묶음(`group`) | 없음. 안의 셀을 바깥 그룹으로 꺼냄 | |
-| 연결선(`edge="1"`)의 `source`, `target`과 라벨, 선에 붙은 라벨 셀(`edgeLabel`) | `a -> b "글"`(라벨은 이어 씀) | |
-| `endArrow=none`, `startArrow=…` | `head=none`, `head=both`, 시작 쪽에만 있으면 방향을 뒤집음 | |
-| `dashed=1` 선 | `dashed` | |
-| 모든 도형보다 위의 자유 글(`text`) | 그림 제목 `title "글"` | |
+| 보이지 않는 묶음(`group`) | 없음. 안의 셀을 바깥 그룹으로 꺼냄 | 없음 |
+| 연결선(`edge="1"`)의 `source`, `target`과 라벨, 선에 붙은 라벨 셀(`edgeLabel`) | `a -> b "글"`(라벨은 이어 씀) | 없음 |
+| `endArrow=none`, `startArrow=…` | `head=none`, `head=both`, 시작 쪽에만 있으면 방향을 뒤집는다 | 없음 |
+| `dashed=1` 선 | `dashed` | 없음 |
+| 모든 도형보다 위의 자유 글(`text`) | 그림 제목 `title "글"` | 없음 |
 | 그 밖의 자유 글, 한쪽 끝이 비어 있는 선 | 없음 | 건너뜀 |
 | 둘째 쪽부터(`diagram`) | 없음 | 건너뜀(쪽마다 파일로 저장) |
 
@@ -243,12 +243,12 @@ Excalidraw(`.excalidraw` JSON)도 손 그림이라 draw.io와 같은 기준으�
 | Excalidraw | Torso | 경고 |
 |---|---|---|
 | `rectangle`, `ellipse`, `diamond`와 그 안의 글(`containerId`) | `box`, `box shape=circle`, `decision` | 글 없는 도형은 `…`로 쓰고 알림 |
-| 점선(`strokeStyle` `dashed`·`dotted`) 사각형 | `external` | |
-| `frame`과 그 안 요소(`frameId`) | `group`(이름 없는 프레임은 `Frame`) | |
-| 두 끝이 도형에 묶인 `arrow`(`startBinding`, `endBinding`)와 화살표 글 | `a -> b "글"`, 화살촉 유무로 `head`, 점선은 `dashed` | |
-| 모든 도형보다 위의 자유 글 | 그림 제목 | |
+| 점선(`strokeStyle` `dashed`·`dotted`) 사각형 | `external` | 없음 |
+| `frame`과 그 안 요소(`frameId`) | `group`(이름 없는 프레임은 `Frame`) | 없음 |
+| 두 끝이 도형에 묶인 `arrow`(`startBinding`, `endBinding`)와 화살표 글 | `a -> b "글"`, 화살촉 유무로 `head`, 점선은 `dashed` | 없음 |
+| 모든 도형보다 위의 자유 글 | 그림 제목 | 없음 |
 | 그 밖의 자유 글, 묶이지 않은 화살표, `line`, `freedraw`, `image`, 삽입 페이지 | 없음 | 건너뜀 |
-| 지운 요소(`isDeleted`), 선택 묶음(`groupIds`) | 없음 | |
+| 지운 요소(`isDeleted`), 선택 묶음(`groupIds`) | 없음 | 없음 |
 
 JSON에는 문장 줄이 없어 경고 줄은 그 요소 id가 처음 나오는 줄이다.
 

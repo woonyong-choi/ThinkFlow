@@ -4,7 +4,7 @@
 
 이 도구는 `.torso` 원본 하나를 움직이는 문서 그림 하나로 바꾸는 명령이다. 구성 요소는 셋이고, `cli`가 원본을 읽어 배치하고 검사한 장면과 시간표를 `player`(HTML)와 `svg`(움직이는 SVG)에 담는다. 이전의 D2 호환 첫 구현은 git 태그 `d2-compat`에 있다.
 
-## 맥락
+## 외부 연결
 
 | 외부 요소 | 종류 | 주고받는 것 |
 |---|---|---|
@@ -12,13 +12,13 @@
 | 실험 결과 JSON | 파일 | 차트 `data` 줄이 읽는 값 |
 | elkjs | 외부 프로그램 | 도형 크기와 연결점 제약, 도형 좌표와 직교 경로 |
 | 글꼴 파일 | 파일 | Pretendard, JetBrains Mono의 글자 너비 표와 글자 모양 |
-| 공통 디자인 완성본 | 배포 사본 | 토큰·CSS·아이콘·탭·프레임과 파일 해시 |
+| 공통 디자인 완성본 | 파일 | 토큰·CSS·아이콘·탭·프레임과 파일 해시 |
 | repo-docs-figures 스킬 | 외부 프로그램 | `render_figures`가 부르는 `render` 명령과 그 종료 코드 |
 | 브라우저 | 외부 프로그램 | 만든 HTML과 SVG |
 
 예제 목록과 명령줄 갤러리는 `src/html/listing.js`의 문서 틀을 함께 사용한다. 예제의 원본·장면 목록은 같은 갤러리의 변형이며, 스타일은 디자인 정본 `styles/diagram/gallery.css`에서 관리한다.
 
-## 코드 지도
+## 구성 요소
 
 | 구성 요소 | 하는 일 | 기술 | 위치 |
 |---|---|---|---|
@@ -47,11 +47,11 @@
 
 호출의 방향은 `build-scene.js` → `measure/` → `layout/` → `draw/` → `svg.js`, `html/content.js` → `html.js`다. `measure/`는 `draw/`를 부르지 않고, `draw/`가 `measure/`의 `texts.js`, `content.js`, `decor.js`, `sizes.js`의 값(`STYLE`, `CONTENT`)을 읽어 잰 값과 그린 값이 같은 출처를 갖는다.
 
-## 실행 흐름
+## 처리 흐름
 
 ### 그림 만들기
 
-1. `cli`가 원본을 읽어 문서 모형 하나(`figure`)로 만든다. 첫 문장이 `torso`인지 보고(`source/preamble.js`), 줄을 머리, 선언, 시간 흐름으로 나눠 읽는다. 카드, 칸, 선, 값, 보기, 장면이 모든 카드에 같은 규칙으로 놓이고 그림 종류는 없다. 모형은 받은 원본 글을 그대로(`figure.source`, 줄바꿈과 첫 글자 포함) 간직해, 재생기의 문법 복사가 같은 글을 쓴다. 보기는 이름이 없고, 어느 보기에도 적히지 않은 카드는 기본 보기를 받으며, 보기에는 정해진 순서대로 내부 열쇠 `v1`, `v2`, ...가 붙는다(`views-check.js`). 도형과 그룹, `show` 줄의 색은 `tone`과 `appearance`로 모형에 들어간다. 파일을 다 읽은 뒤 이름 공간, 연결점(`카드.칸`), 보기 구성원, 선의 그릴 수 있음, 차트 묶음, 이동의 보기별 투영을 확인한다(`source/validate.js`, `views-check.js`, `project.js`. [그림 문법](design/figure-syntax.md)).
+1. `cli`가 원본을 읽어 문서 모형 하나(`figure`)로 만든다. 첫 문장이 `torso`인지 보고(`source/preamble.js`), 줄을 머리, 선언, 시간 흐름으로 나눠 읽는다. 카드, 칸, 선, 값, 보기, 장면이 모든 카드에 같은 규칙으로 놓이고 그림 종류는 없다. 모형은 받은 원본 글을 그대로(`figure.source`, 줄바꿈과 첫 글자 포함) 간직해, 재생기의 문법 복사가 같은 글을 쓴다. 보기는 이름이 없고, 어느 보기에도 적히지 않은 카드는 기본 보기를 받으며, 보기에는 정해진 순서대로 내부 열쇠 `v1`, `v2`처럼 순서가 붙은 이름이 붙는다(`views-check.js`). 도형과 그룹, `show` 줄의 색은 `tone`과 `appearance`로 모형에 들어간다. 파일을 다 읽은 뒤 이름 공간, 연결점(`카드.칸`), 보기 구성원, 선의 그릴 수 있음, 차트 묶음, 이동의 보기별 투영을 확인한다(`source/validate.js`, `views-check.js`, `project.js`. [그림 문법](design/figure-syntax.md)).
 2. 값 글자 자리는 값이 모든 장면에서 가질 글의 실제 폭이라 시간표에 기대고 시간표는 배치에 기대므로, `build-scene.js`가 배치와 시간표를 되풀이하되 자리가 줄어들지 않고 네 번을 넘지 않는다(`value-slots.js`, 못 맞추면 `layout-unstable`).
 3. 한 번의 되풀이 안에서: 글꼴 파일로 모든 글의 폭을 재 카드 크기와 연결점을 정하고(차트 카드는 모든 프레임 가운데 가장 큰 차트 크기), 보기마다 배치한다. 그래프는 그룹마다 그다음 바깥을 elkjs로 배치하고 경로 조각을 잇는다([배치](design/layout.md)). 순서는 격자 배치, 차트는 그림 크기, 시간 보기는 `layout/time.js`다. `layout/panels.js`가 판을 위에서 아래로 쌓아 장면 하나로 합친다.
 4. `views.js`가 보기마다 모형을 줄이고(`viewFigure`), 합친 장면에서 시간표를 만든다. 점 이동 시간은 선 길이에 비례해 배치 뒤에 만들고, 이동 하나는 보기마다 hop 하나로 펼치되 시간은 첫 투영이 한 번만 정한다. 값에 묶인 차트는 프레임과 시간표 구간을 만든다(`chart-frames.js`). 모든 선과 가장 큰 카드가 보이는 상태에서 화면 오류를 검사한다([그림 검사](design/figure-check.md)).
@@ -70,7 +70,7 @@
 - `timeline.marks`: `{ [키]: [[from, to, si], ...] }`. 조용한 선이 보이는 구간이다(`quiet:번호`). 같은 장면 안에서만 합치고 길이 0 구간도 남기며, 세 번째 값이 구간을 소유한 장면이다. 점이 지나는 동안의 선은 이동 목록(`hops`)에서 구하고, 켜 둔 도형과 부분, 차트 행은 구간(`nodesOn`, `partsOn`, `charts[id].lights`)이 가진다.
 - `timeline.pulses`: `[{ key, at, si }]` 시각 순. 키는 `value:값 줄 번호`나 `chart:차트:표식 id`이고 `si`는 출처 장면이다. 펄스 모양은 `src/pulse.js`다(`PULSE`, `PULSE_MS`, `envelopeKeys`).
 - `timeline.presentation[si]`: 장면마다 표시 길이(화면 ms). 논리 길이를 `speed`로 나눈 값과 마지막 펄스·선 이탈에 `PULSE_MS`를 더한 값 가운데 큰 것이고, 컴파일러가 한 번 정해(`timeline-marks.js`의 `presentationOf`) 재생기와 SVG가 읽는다([재생](design/playback.md#장면과-재생-방식)).
-- `scene`: `{ items, groups, edges, lifelines, notes, activations, destructions, fragments, plots, times, panels, chartFrames, width, height, tagOrder }`. 도형, 그룹, 선에는 `view`(보기의 내부 열쇠 `v1`, `v2`, ...)가 있고 선에는 `strategy`가 있다. 같은 카드가 여러 보기에 그려지면 `items`에 같은 `id`가 여러 번 있다. `panels[]`는 `{ index, view, strategy, box: { x, y, w, h }, label?, labelAt? }`이고 `box.w`는 판의 자연 폭이다. `plots[]`와 `times[]`는 차트 보기와 시간 보기 판이다.
+- `scene`: `{ items, groups, edges, lifelines, notes, activations, destructions, fragments, plots, times, panels, chartFrames, width, height, tagOrder }`. 도형, 그룹, 선에는 `view`(보기의 내부 열쇠 `v1`, `v2`처럼 순서가 붙은 이름)가 있고 선에는 `strategy`가 있다. 같은 카드가 여러 보기에 그려지면 `items`에 같은 `id`가 여러 번 있다. `panels[]`는 `{ index, view, strategy, box: { x, y, w, h }, label?, labelAt? }`이고 `box.w`는 판의 자연 폭이다. `plots[]`와 `times[]`는 차트 보기와 시간 보기 판이다.
 - 재생기가 해야 할 일: 같은 `id`의 요소는 `querySelectorAll`로 모두 찾고, 시각의 상태는 `periods`와 `charts`의 같은 규칙으로 정하고, 펄스는 `timeline.pulses`로 건다. 애니메이션 끝 이벤트는 논리 상태를 정하지 않는다.
 
 장면 생성은 `build-scene.js`가 맡고 최초 빌드와 재배치가 같은 카드 크기·배치·충돌 검사를 사용한다.
@@ -80,7 +80,7 @@
 1. 디자인은 `@woonyong-choi/design-tokens` 패키지다. `peerDependencies`(`^0.1.1` 같은 semver 범위)로 선언하므로 Torso를 설치한 앱이 고른 commit 하나를 그림도 읽는다. 홈페이지 같은 호스트의 그림은 호스트의 토큰·CSS·아이콘으로 그려진다.
 2. 이 저장소는 자체 시험·그림 생성을 위해 `devDependencies`에 `github:woonyong-choi/design-tokens#<commit>`을 고정한다. 코드는 패키지 이름으로 가져오고(`@woonyong-choi/design-tokens/ui/index.mjs`) 파일은 `createRequire(import.meta.url).resolve`로 찾는다. 저장소에 디자인 사본을 두지 않는다.
 3. 디자인을 올릴 때는 `npm install --save-dev github:woonyong-choi/design-tokens#<commit>` 뒤 `npm run figures`, `npm test`, `npm run check`를 실행해 PR로 반영한다. Torso에서 토큰을 합치거나 다시 생성하지 않는다.
-4. 다른 저장소로 파일을 밀어 넣는 자동 전달은 없다. 홈페이지는 자기 `package.json`에서 Torso와 디자인의 commit을 함께 고른다.
+4. 다른 저장소로 파일을 밀어 넣는 자동 전달은 없다. 소비자 저장소는 자기 `package.json`에서 렌더러와 디자인의 commit을 고른다. 홈페이지는 이름 변경 전 `thinkflow` 버전을 사용할 수 있어 현재 Torso 문법과 일치한다고 가정하지 않는다.
 
 ### 재생하기
 
@@ -88,7 +88,7 @@
 2. `player`가 박자마다 시간표의 상태를 그대로 그리고 점을 경로 위로 옮긴다([재생](design/playback.md)).
 3. 브라우저가 SVG를 열면 `svg` 안의 keyframes와 SMIL이 장면 하나의 시간표를 `mode`와 `speed`대로 재생한다.
 
-## 불변 조건
+## 지켜야 할 규칙
 
 - 배치에 넘긴 도형 크기와 연결점은 그리는 도형과 같다. 선 끝이 도형에서 떨어지는 일을 막기 위해서다.
 - elkjs가 돌려준 좌표와 경로 점은 옮기지 않는다. 경로 후처리끼리 충돌하는 일을 막기 위해서다. 예외는 [배치](design/layout.md) 선 그리기 절의 선 끝 계단 펴기 하나다.
@@ -115,7 +115,7 @@
 
 ## 소비자 API와 좁은 화면
 
-공개 API는 `buildFigure`, `toSvg`, `toHtml`이다. 홈페이지는 빌드 때 `buildFigure(source, { allowFileAccess: false })`로 문서에 포함된 도표를 만들고 `toHtml`의 결과를 저장한다. 이 옵션은 차트 data와 사용자 아이콘 폴더를 읽기 전에 거절한다. 브라우저는 완성된 HTML의 시간표만 재생한다. 그림은 호스트 앱이 설치한 `@woonyong-choi/design-tokens`를 읽으므로 디자인 해시를 따로 맞추지 않는다.
+공개 API는 `buildFigure`, `toSvg`, `toHtml`이다. 소비자 호스트는 빌드 때 `buildFigure(source, { allowFileAccess: false })`로 문서에 포함된 도표를 만들고 `toHtml`의 결과를 저장한다. 이 옵션은 차트 data와 사용자 아이콘 폴더를 읽기 전에 거절한다. 브라우저는 완성된 HTML의 시간표만 재생한다. 그림은 호스트 앱이 설치한 `@woonyong-choi/design-tokens`를 읽으므로 디자인 해시를 따로 맞추지 않는다.
 
 `buildFigure`는 원본의 의미와 배치에서 시간표를 만들며, `reflowFigure`는 기존 시간표의 사건을 보존하고 그래프 보기의 새 배치에 경로만 대응하며, `chartWidth`가 있으면 차트를 그 폭 이하로 다시 그린다. `track-geometry.js`는 경로 기하만 계산하고 `reflow-timeline.js`는 중간 도착 시각을 유지하는 거리 비율을 만든다. 브라우저가 새 사건이나 값을 계산하지 않는 규칙은 같다. 자세한 계약은 [좁은 화면 배치](design/layout.md#좁은-화면을-위한-배치-목표-폭)에 있다.
 

@@ -26,7 +26,7 @@ try {
   });
   const run = (command, args, cwd = consumer) => execFileSync(command, args, { cwd, env, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], maxBuffer: 16 * 1024 * 1024 });
   const [pack] = JSON.parse(run('npm', ['pack', '--json', '--ignore-scripts', '--pack-destination', consumer], root));
-  const allowed = /^(?:src\/|docs\/assets\/torso-favicon(?:-dark)?\.png$|LICENSE$|NOTICE$|README(?:\.ko)?\.md$|package\.json$)/;
+  const allowed = /^(?:src\/|docs\/assets\/torso-favicon(?:-dark)?\.png$|LICENSE$|NOTICE$|README(?:\.en)?\.md$|package\.json$)/;
   assert.deepEqual(pack.files.filter(({ path }) => !allowed.test(path)), [], '배포 허용 목록 밖 파일');
   writeFileSync(join(consumer, 'package.json'), JSON.stringify({ private: true, type: 'module' }) + '\n');
   const pkg = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8'));
