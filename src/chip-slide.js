@@ -4,7 +4,7 @@ import { boxAt, CHIP_FRAME_MS, dotAt, isHit, NODE_MS } from './chip-motion.js';
 import { values } from '@woonyong-choi/design-tokens/tokens.js';
 
 /** 글 상자가 점의 움직임에 더해 한 프레임에 움직일 수 있는 최대 거리(px). 미끄러지는 속도의 상한이다. */
-export const CHIP_STEP_MAX = 6;
+const CHIP_STEP_MAX = 6;
 /** 자리 바꿈(미끄러짐) 한 번의 비용. 겹침(1e7)보다 작고, 지점 수백 개의 작은 비용 합보다 크다 */
 export const SWITCH_COST = 1e6;
 // 미끄러짐 시간(토큰)

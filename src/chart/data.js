@@ -164,7 +164,7 @@ export function stackExtent(rows, ids) {
  * 개수는 정수로 세고 마지막에 나눈다. `[1,1,3,4]`는 (1, .5), (3, .75), (4, 1)이다.
  * @returns { n, missing, points: { value, count, p }[] }. n은 쓴 표본 수, missing은 뺀 수. n이 0이면 points가 비어 곡선이 없다
  */
-export function ecdfPoints(samples) {
+function ecdfPoints(samples) {
   const finite = samples.filter(isValue).sort((a, b) => a - b);
   const n = finite.length;
   const points = [];

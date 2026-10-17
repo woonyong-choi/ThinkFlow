@@ -7,7 +7,7 @@ import { drawHeatmap } from '../src/chart/heatmap.js';
 import { DOT, PAD } from '../src/chart/metrics.js';
 import { measure } from '../src/measure/fonts.js';
 import { values } from '@woonyong-choi/design-tokens/tokens.js';
-import { EXAMPLES, build, torso, descendants, finalValue, findAll, lineOf, num, parseMarkup, read, reject, stillDom, textContent, textsOf, toHtml, toSvg, visibleTexts } from './support.js';
+import { EXAMPLES, build, torso, descendants, findAll, lineOf, num, parseMarkup, read, reject, stillDom, textContent, textsOf, toHtml, toSvg, visibleTexts } from './support.js';
 
 const chart = (kind, body, head = 'x "x(u)"\n  y "y(u)"') => torso(`chart c "T-${kind}" ${kind} {\n  ${head}\n${body.split('\n').map((l) => `  ${l.trim()}`).join('\n')}\n}\n`);
 

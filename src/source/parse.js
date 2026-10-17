@@ -6,7 +6,7 @@ import { readDeclaration, readEdge } from './declare.js';
 import { closeGroup } from './group.js';
 import { readIcons } from './icons.js';
 import { tokenizeLine } from './lexer.js';
-import { createProblems, didYouMean } from './problems.js';
+import { didYouMean } from './problems.js';
 import { statementMistake } from './mistakes.js';
 import { readTimeline } from './steps.js';
 import { readHeader } from './header.js';
@@ -19,21 +19,6 @@ import { validateFigure } from './validate.js';
 const SECTIONS = ['header', 'declare', 'timeline'];
 // 블록 밖 줄의 첫 낱말이 될 수 있는 문장 낱말. 모르는 첫 낱말에 가까운 것을 제안할 때 쓴다(선과 이동은 첫 낱말이 이름이라 뺀다).
 const PLACEABLE = Object.keys(STATEMENTS).filter((word) => !STATEMENTS[word].in && /^[a-z]+$/.test(word) && word !== 'edge' && word !== 'hop');
-
-// cost: time O(n + s·k), heap O(n), stack O(1)
-// vars: n = 원본 글자 수, s = 문장 수, k = 이름 수
-// basis: estimate
-/**
- * 원본을 문서 모형으로 읽는다.
- * @returns { figure, warnings }. figure 형식은 emptyFigure 주석
- * @throws FigureError 오류가 하나라도 있을 때. 오류를 모두 담는다
- */
-export function parseFigure(source) {
-  const problems = createProblems(source);
-  const figure = readFigure(source, problems);
-  problems.throwIfAny();
-  return { figure, warnings: problems.warnings };
-}
 
 // cost: time O(n + s·k), heap O(n), stack O(1)
 // vars: n = 원본 글자 수, s = 문장 수, k = 이름 수
