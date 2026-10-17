@@ -17,7 +17,7 @@ const USAGE = [
   '  torso check <file.torso ...> [--strict] [--budget name=value ...] [--json]',
   '  torso gallery <dir> [--out dir] [--title "text"] [--strict] [--budget name=value ...]',
   '  torso md <file.md ...> [--check] [--out-dir dir] [--fold [--fold-title "text"] | --unfold] [--static] [--scene n|label] [--strict] [--budget name=value ...] [--json]',
-  '  torso import [mermaid|dbml|d2] <file|-> [--out file.torso] [--json]',
+  '  torso import [mermaid|dbml|d2|drawio|excalidraw] <file|-> [--out file.torso] [--json]',
   `budget names: ${BUDGET_NAMES.join(', ')}`,
 ].join('\n');
 // gallery가 받는 옵션. --html은 gallery가 늘 HTML을 쓰므로 받기만 한다.

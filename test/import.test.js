@@ -1,7 +1,8 @@
-// torso import: Mermaid, DBML, D2 원본을 Torso 원본으로 옮긴다. 공개 진입점(importDiagram, 명령)으로 형식별 대표 예, 경고의 줄 번호, 왕복(옮긴 원본의 strict 빌드), 결과 파일 쓰기를 본다.
-// 시험 이름 첫 낱말(IM1~IM11)이 요구사항 번호이고, 번호와 계약의 대응은 docs/design/import.md 요구사항 표에 있다.
+// torso import: Mermaid, DBML, D2, draw.io, Excalidraw 원본을 Torso 원본으로 옮긴다. 공개 진입점(importDiagram, 명령)으로 형식별 대표 예, 경고의 줄 번호, 왕복(옮긴 원본의 strict 빌드), 결과 파일 쓰기를 본다.
+// 시험 이름 첫 낱말(IM1~IM14)이 요구사항 번호이고, 번호와 계약의 대응은 docs/design/import.md 요구사항 표에 있다.
 import assert from 'node:assert/strict';
 import { existsSync } from 'node:fs';
+import { deflateRawSync } from 'node:zlib';
 import { join } from 'node:path';
 import { test } from 'node:test';
 import { FigureError, importDiagram } from 'torso-diagram';
@@ -439,19 +440,19 @@ test('IM9 a source that cannot be imported is exit 1 on its line with nothing wr
     const run = cli(args, { cwd: dir });
     assert.equal(run.status, 2, args.join(' '));
     assert.ok(run.stderr.includes(message), `${args.join(' ')}: ${run.stderr}`);
-    assert.match(run.stderr, /torso import \[mermaid\|dbml\|d2\]/);
+    assert.match(run.stderr, /torso import \[mermaid\|dbml\|d2\|drawio\|excalidraw\]/);
   }
   assert.deepEqual(snapshot(dir), before);
 });
 
 test('IM10 an imported figure that Torso lays out with a figure check error is still written, with the check as a warning on the result line', (t) => {
-  // 같은 열로 들어오는 다대다 관계선과 외래 키 선의 다중성 글이 겹친다. 원본은 맞고 배치를 손볼 곳이라 파일을 쓴다.
-  const text = 'Table p {\n  id int [pk]\n}\nTable t {\n  id int [pk]\n}\nTable pt {\n  t_id int [ref: > t.id]\n}\nRef: p.id <> t.id\n';
+  // 한 열로 들어오는 외래 키 선 셋과 다대다 관계선의 다중성 글이 겹친다. 원본은 맞고 배치를 손볼 곳이라 파일을 쓴다.
+  const text = 'Table a {\n  id int [pk]\n}\nTable b {\n  id int [pk]\n  a1 int [ref: > a.id]\n  a2 int [ref: > a.id]\n  a3 int [ref: > a.id]\n}\nRef: a.id <> b.id\n';
   const dir = workspace(t, { 'x.dbml': text });
   const run = cli(['import', 'x.dbml', '--out', 'x.torso'], { cwd: dir });
   assert.equal(run.status, 0);
   assert.equal(run.stdout, 'x.torso\n');
-  assert.match(run.stderr, /^x\.torso:\d+: warning: edge label "\*" overlaps edge label "1"/m);
+  assert.match(run.stderr, /^x\.torso:\d+: warning: edge label "1" overlaps edge label "1"/m);
   assert.ok(existsSync(join(dir, 'x.torso')));
   assert.equal(cli(['render', 'x.torso'], { cwd: dir }).status, 1, 'render still refuses the figure until the source is fixed');
 });
@@ -472,3 +473,64 @@ test('IM12 dashed outlines and lines carry over as Torso dashes, and the D2 titl
   assert.deepEqual(classes.warnings, []);
   assert.match(classes.source, /"도메인"/);
 });
+
+const DRAWIO_MODEL = `<mxGraphModel>
+  <root>
+    <mxCell id="0" />
+    <mxCell id="1" parent="0" />
+    <mxCell id="t" value="Content site" style="text;html=1;" vertex="1" parent="1"><mxGeometry x="40" y="0" width="200" height="30" as="geometry" /></mxCell>
+    <mxCell id="r" value="Reader&lt;br&gt;Browser" style="rounded=1;whiteSpace=wrap;html=1;" vertex="1" parent="1"><mxGeometry x="40" y="100" width="120" height="60" as="geometry" /></mxCell>
+    <mxCell id="cf" value="Cloudflare" style="rounded=1;" vertex="1" parent="1"><mxGeometry x="240" y="100" width="120" height="60" as="geometry" /></mxCell>
+    <mxCell id="g" value="Content" style="swimlane;dashed=1;" vertex="1" parent="1"><mxGeometry x="440" y="40" width="200" height="260" as="geometry" /></mxCell>
+    <mxCell id="db" value="CMS" style="shape=cylinder3;" vertex="1" parent="g"><mxGeometry x="40" y="40" width="120" height="60" as="geometry" /></mxCell>
+    <UserObject label="MDX" id="mdx"><mxCell style="shape=hexagon;" vertex="1" parent="g"><mxGeometry x="40" y="160" width="120" height="60" as="geometry" /></mxCell></UserObject>
+    <mxCell id="e1" value="HTTPS" edge="1" parent="1" source="r" target="cf"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="e2" style="dashed=1;" edge="1" parent="1" source="cf" target="db"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="e2l" value="query" style="edgeLabel;html=1;" vertex="1" connectable="0" parent="e2"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="e3" style="endArrow=none;startArrow=block;" edge="1" parent="1" source="mdx" target="cf"><mxGeometry relative="1" as="geometry" /></mxCell>
+    <mxCell id="e4" edge="1" parent="1" source="cf"><mxGeometry relative="1" as="geometry" /></mxCell>
+  </root>
+</mxGraphModel>`;
+const DRAWIO = `<mxfile>\n<diagram id="a" name="Page-1">\n${DRAWIO_MODEL}\n</diagram>\n<diagram id="b" name="Page-2">\n${DRAWIO_MODEL}\n</diagram>\n</mxfile>\n`;
+
+test('IM13 draw.io shapes, containers, labels (HTML and label cells), dashes and arrow ends map to one Torso grammar each; pages after the first and loose edges are reported on their line', async () => {
+  const { lines, warnings } = await roundTrip('drawio', DRAWIO);
+  for (const expected of ['title "Content site"', 'group content "Content" dashed {', 'store cms "CMS"', 'box mdx "MDX"', 'box reader-browser "Reader Browser"', 'reader-browser -> cloudflare "HTTPS"', 'cloudflare -> cms "query" dashed', 'cloudflare -> mdx']) assert.ok(lines.includes(expected), `${expected}\n${lines.join('\n')}`);
+  assert.ok(!lines.some((line) => line.startsWith('view graph down')), 'a figure drawn left to right flows right');
+  assert.deepEqual(warningsAt(warnings, lineOf(DRAWIO, 'name="Page-2"')), ['import-skip: the page "Page-2" is not imported. Only the first page is imported; save each page as its own file']);
+  assert.ok(warningsAt(warnings, lineOf(DRAWIO, 'shape=hexagon')).some((w) => /hexagon.*box/.test(w)));
+  assert.ok(warningsAt(warnings, lineOf(DRAWIO, 'id="e4"')).some((w) => /not attached to two shapes/.test(w)));
+  // 압축한 쪽(deflate + base64 + URI 인코딩)도 같은 원본이 된다. 압축한 쪽의 경고는 그 쪽의 줄이다.
+  const packed = `<mxfile>\n<diagram id="a" name="Page-1">${deflateRawSync(Buffer.from(encodeURIComponent(DRAWIO_MODEL))).toString('base64')}</diagram>\n</mxfile>\n`;
+  assert.equal(importDiagram('drawio', packed).source, importDiagram('drawio', DRAWIO).source);
+  assert.throws(() => importDiagram('drawio', '<mxfile><diagram id="a">not-compressed!</diagram></mxfile>'), (error) => error instanceof FigureError && /cannot be read/.test(error.problems[0].message));
+});
+
+const EXCALIDRAW = JSON.stringify({ type: 'excalidraw', version: 2, elements: [
+  { id: 'title', type: 'text', x: 0, y: 0, width: 200, height: 30, text: 'Login flow' },
+  { id: 'web', type: 'rectangle', x: 0, y: 100, width: 120, height: 60, frameId: 'frame' },
+  { id: 'web-text', type: 'text', x: 10, y: 110, width: 100, height: 20, text: 'Web', containerId: 'web' },
+  { id: 'check', type: 'diamond', x: 0, y: 300, width: 120, height: 80, frameId: 'frame' },
+  { id: 'check-text', type: 'text', x: 10, y: 310, width: 100, height: 20, text: 'Valid?', containerId: 'check' },
+  { id: 'done', type: 'ellipse', x: 0, y: 500, width: 120, height: 60 },
+  { id: 'done-text', type: 'text', x: 10, y: 510, width: 100, height: 20, text: 'Done', containerId: 'done' },
+  { id: 'auth', type: 'rectangle', x: 300, y: 500, width: 120, height: 60, strokeStyle: 'dashed' },
+  { id: 'auth-text', type: 'text', x: 300, y: 510, width: 100, height: 20, text: 'Auth API', containerId: 'auth' },
+  { id: 'frame', type: 'frame', x: -20, y: 80, width: 200, height: 320, name: 'Client' },
+  { id: 'submit', type: 'arrow', x: 0, y: 0, startBinding: { elementId: 'web' }, endBinding: { elementId: 'check' }, endArrowhead: 'arrow' },
+  { id: 'submit-text', type: 'text', x: 0, y: 0, text: 'submit', containerId: 'submit' },
+  { id: 'ok', type: 'arrow', x: 0, y: 0, startBinding: { elementId: 'check' }, endBinding: { elementId: 'done' }, endArrowhead: 'arrow', strokeStyle: 'dashed' },
+  { id: 'ask', type: 'arrow', x: 0, y: 0, startBinding: { elementId: 'auth' }, endBinding: { elementId: 'check' }, startArrowhead: 'arrow', endArrowhead: null },
+  { id: 'loose', type: 'arrow', x: 0, y: 0, startBinding: { elementId: 'web' } },
+  { id: 'aside', type: 'text', x: 500, y: 300, width: 100, height: 20, text: 'note' },
+  { id: 'scribble', type: 'freedraw', x: 0, y: 0 },
+  { id: 'gone', type: 'rectangle', x: 0, y: 0, isDeleted: true },
+] }, null, 2);
+
+test('IM14 Excalidraw shapes with their text, frames, bound arrows and arrow text map to one Torso grammar each; the top free text is the title and what cannot be placed is reported on its line', async () => {
+  const { lines, warnings } = await roundTrip('excalidraw', EXCALIDRAW);
+  for (const expected of ['title "Login flow"', 'group client "Client" {', 'box web "Web"', 'decision valid "Valid?"', 'box done "Done" shape=circle', 'external auth-api "Auth API"', 'web -> valid "submit"', 'valid -> done dashed', 'valid -> auth-api', 'view graph down']) assert.ok(lines.includes(expected), `${expected}\n${lines.join('\n')}`);
+  for (const [needle, message] of [['"loose"', /not bound to two shapes/], ['"aside"', /free text "note"/], ['"scribble"', /freehand stroke/]]) assert.ok(warningsAt(warnings, lineOf(EXCALIDRAW, needle)).some((w) => message.test(w)), needle);
+  assert.throws(() => importDiagram('excalidraw', '{ "elements": 3 }'), (error) => error instanceof FigureError && /no "elements" list/.test(error.problems[0].message));
+});
+

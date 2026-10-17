@@ -55,7 +55,7 @@ function assignIds(model, groups) {
   for (const group of model.groups) if (groups.has(group.key)) ids.group.set(group.key, names.take(group.name ?? group.key, { fallback: 'group' }));
   for (const node of model.nodes) {
     const isTable = node.kind === 'table';
-    ids.node.set(node.key, names.take(node.key, isTable ? { joiner: '_', fallback: 'table' } : {}));
+    ids.node.set(node.key, names.take(node.name || node.key, isTable ? { joiner: '_', fallback: 'table' } : {}));
     if (isTable) ids.column.set(node.key, columnNames(model, node));
   }
   if (model.chart) ids.chart = names.take(model.chart.title, { fallback: 'chart' });
