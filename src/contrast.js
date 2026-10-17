@@ -35,7 +35,7 @@ export function contrast(a, b) {
 // cost: time O(1), heap O(1), stack O(1)
 // basis: estimate
 /** from에서 to로 amount(0~1)만큼 sRGB 보간한 `#rrggbb` */
-export function mixHex(from, to, amount) {
+function mixHex(from, to, amount) {
   const [a, b] = [channels(from), channels(to)];
   return `#${a.map((v, i) => Math.round(v + (b[i] - v) * amount).toString(16).padStart(2, '0')).join('')}`;
 }

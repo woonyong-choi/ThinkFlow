@@ -4,12 +4,12 @@ import { values } from '@woonyong-choi/design-tokens/tokens.js';
 /** 구조, 순서, 상태, 데이터 그림의 표시 폭 상한. 내용이 이보다 넓을 때만 줄여 보인다. */
 export const CANVAS = values.spacing.figure["figure-canvas"];
 /** 그림 머리 `width wide`를 쓴 그림의 표시 폭 상한이자 배치 목표 폭 */
-export const CANVAS_WIDE = values.spacing.figure["figure-canvas-wide"];
+const CANVAS_WIDE = values.spacing.figure["figure-canvas-wide"];
 /**
  * 본문 단 폭. 기술 블로그 본문 단과 차트 그림 폭(`spacing.figure.chart.width`)이 같은 값이다.
  * 구조 그림의 배치는 이 폭 안에 들도록 방향을 돌리거나 접는다. 그 안에 든 그림은 본문 단에서 줄지 않아 가장 작은 글 토큰이 그대로 보인다.
  */
-export const COLUMN = values.spacing.figure.chart.width;
+const COLUMN = values.spacing.figure.chart.width;
 /** 그림 둘레 안쪽 여백. 배치와 차트가 내용 둘레에 같은 값을 둔다. 그림 폭이 내용 폭이라 이 여백이 캔버스의 빈 테두리 전부다. */
 export const FIGURE_PAD = values.spacing["4"];
 /**
@@ -34,13 +34,13 @@ export function tightView(width, height) {
 // cost: time O(1), heap O(1), stack O(1)
 // basis: estimate
 /** 차트 보기 하나만 있는 그림의 캔버스 폭. 차트 그림 폭과 같아 문서 단 폭에서 줄지 않고 그대로 보인다. */
-export const CANVAS_CHART = values.spacing.figure.chart.width;
+const CANVAS_CHART = values.spacing.figure.chart.width;
 
 // cost: time O(v), heap O(1), stack O(1)
 // vars: v = 보기 수
 // basis: estimate
 /** 보기가 모두 차트 보기(plot)나 시간 보기(time)인 그림인가. 이런 그림은 내용이 차트 폭이라 표준 캔버스로 넓히면 양옆이 비고 글자가 줄어든다. */
-export const isChartOnly = (figure) => Boolean(figure?.views?.length) && figure.views.every((v) => v.strategy === 'plot' || v.strategy === 'time');
+const isChartOnly = (figure) => Boolean(figure?.views?.length) && figure.views.every((v) => v.strategy === 'plot' || v.strategy === 'time');
 
 // cost: time O(v), heap O(1), stack O(1)
 // vars: v = 보기 수
