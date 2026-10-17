@@ -9,8 +9,8 @@ const ASSETS = new URL('../docs/assets/', import.meta.url);
 const SOURCES = new URL('sources.json', ASSETS);
 export const FAVICON_SIZE = 64;
 export const FAVICONS = [
-  { logo: 'thinkflow-logo.png', icon: 'thinkflow-favicon.png' },
-  { logo: 'thinkflow-logo-dark.png', icon: 'thinkflow-favicon-dark.png' },
+  { logo: 'torso-logo.png', icon: 'torso-favicon.png' },
+  { logo: 'torso-logo-dark.png', icon: 'torso-favicon-dark.png' },
 ];
 const SIGNATURE = Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]);
 const RGBA = 4;

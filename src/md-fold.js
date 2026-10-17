@@ -1,15 +1,15 @@
 // md 명령의 원본 접기: 블록을 `<details>`로 감싸고 그 위에 그림을 두는 배치와, 문서에 이미 있는 감싸기를 알아보는 규칙(docs/design/markdown.md 원본 접기). 파일은 다루지 않는다.
 // 접힌 배치(블록 하나)는 다음 줄들이다. 앞머리(인용 표시와 들여쓰기)는 블록의 여는 울타리 줄과 같다.
-//   <!-- thinkflow fold v1 {id} -->       시작 표식
-//   ![대체 글](주소)<!-- thinkflow -->         그림
+//   <!-- torso fold v1 {id} -->       시작 표식
+//   ![대체 글](주소)<!-- torso -->         그림
 //   (빈 줄)
 //   <details>
 //   <summary>그림 원본</summary>
 //   (빈 줄)
-//   ```thinkflow ...  ```                      원본 블록(한 글자도 바꾸지 않는다)
+//   ```torso ...  ```                      원본 블록(한 글자도 바꾸지 않는다)
 //   (빈 줄)
 //   </details>
-//   <!-- /thinkflow fold v1 {id} -->       끝 표식
+//   <!-- /torso fold v1 {id} -->       끝 표식
 // 장면이 여럿인 블록의 둘째 장면부터는 이 배치 바로 다음 줄에 장면 구간(md-scenes.js)이 따로 붙는다. 접기의 소유가 아니라 표식 안으로 들어가지 않는다.
 // 접지 않은 배치는 블록 아래 `(빈 줄) 그림`이다. 표식 두 줄과 그 사이 모양이 정확히 맞는 것만 이 도구가 만든 감싸기로 읽고, 그 밖의 `<details>`는 사용자 것이다.
 import { contextOf } from './md-blocks.js';
@@ -19,9 +19,9 @@ import { detailsBefore } from './md-tags.js';
 
 const FOLD_VERSION = 'v1';
 const DEFAULT_TITLE = '그림 원본';
-const MARK = /^<!-- (\/?)thinkflow fold (v\d+) ((?:name|n)=[a-z0-9-]+) -->$/;
+const MARK = /^<!-- (\/?)torso fold (v\d+) ((?:name|n)=[a-z0-9-]+) -->$/;
 // 표식처럼 보이는 줄. 정확한 모양이 아니어도 고아 표식으로 알리려고 느슨하게 찾는다.
-const MARK_LIKE = /^(?:[ \t]*>)*[ \t]*<!--\s*\/?thinkflow fold\b/;
+const MARK_LIKE = /^(?:[ \t]*>)*[ \t]*<!--\s*\/?torso fold\b/;
 const SUMMARY = /^<summary>(.*)<\/summary>$/;
 const PRE_LINES = 6;
 const POST_LINES = 3;
@@ -52,7 +52,7 @@ function markOf(text) {
 
 // cost: time O(1), heap O(1), stack O(1)
 // basis: estimate
-const markLine = (wrap, id, end = false) => `${wrap}<!-- ${end ? '/' : ''}thinkflow fold ${FOLD_VERSION} ${id} -->`;
+const markLine = (wrap, id, end = false) => `${wrap}<!-- ${end ? '/' : ''}torso fold ${FOLD_VERSION} ${id} -->`;
 
 // cost: time O(1), heap O(1), stack O(1)
 // basis: estimate
@@ -77,7 +77,7 @@ function wrapperAround(lines, block, ctx) {
 // 표식처럼 보이지만 어느 감싸기에도 속하지 않는 줄(울타리와 들여쓴 코드 밖)의 오류들.
 function strayMarks(lines, { code }, wrappers) {
   const owned = new Set(wrappers.flatMap((w) => (w ? [w.start, w.end] : [])));
-  const message = 'this thinkflow fold mark is not part of an intact wrapper. A wrapper is the start mark, the image line, a blank line, <details>, <summary>, a blank line, the thinkflow block, a blank line, </details>, and the end mark with the same id, all with the block\'s indentation. Nothing was changed; repair or delete these lines by hand';
+  const message = 'this torso fold mark is not part of an intact wrapper. A wrapper is the start mark, the image line, a blank line, <details>, <summary>, a blank line, the torso block, a blank line, </details>, and the end mark with the same id, all with the block\'s indentation. Nothing was changed; repair or delete these lines by hand';
   return lines.flatMap((line, i) => (!code.has(i) && !owned.has(i) && MARK_LIKE.test(line) ? [{ line: i + 1, message }] : []));
 }
 

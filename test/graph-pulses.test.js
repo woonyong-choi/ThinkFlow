@@ -1,9 +1,9 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { buildFigure } from 'thinkflow';
+import { buildFigure } from 'torso-diagram';
 
 const changed = async (before, after) => {
-  const result = await buildFigure(`thinkflow
+  const result = await buildFigure(`torso
 box a "A" {
   graph ${before}
 }

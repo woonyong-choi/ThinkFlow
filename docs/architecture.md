@@ -2,13 +2,13 @@
 
 도표 캔버스는 공통 디자인의 옅은 배경으로 본문과 구분한다. 기본 도형·그룹 윤곽은 같은 `color.figure.outline` 역할을 사용하며, 선택·재생 강조와 지정 색은 유지한다. SVG와 HTML은 이 공통 스타일을 함께 가져온다.
 
-이 도구는 `.thinkflow` 원본 하나를 움직이는 문서 그림 하나로 바꾸는 명령이다. 구성 요소는 셋이고, `cli`가 원본을 읽어 배치하고 검사한 장면과 시간표를 `player`(HTML)와 `svg`(움직이는 SVG)에 담는다. 이전의 D2 호환 첫 구현은 git 태그 `d2-compat`에 있다.
+이 도구는 `.torso` 원본 하나를 움직이는 문서 그림 하나로 바꾸는 명령이다. 구성 요소는 셋이고, `cli`가 원본을 읽어 배치하고 검사한 장면과 시간표를 `player`(HTML)와 `svg`(움직이는 SVG)에 담는다. 이전의 D2 호환 첫 구현은 git 태그 `d2-compat`에 있다.
 
 ## 맥락
 
 | 외부 요소 | 종류 | 주고받는 것 |
 |---|---|---|
-| `.thinkflow` 원본 | 파일 | 첫 문장 `thinkflow`, 카드, 칸, 선, 값, 보기, 장면, 차트 값 |
+| `.torso` 원본 | 파일 | 첫 문장 `torso`, 카드, 칸, 선, 값, 보기, 장면, 차트 값 |
 | 실험 결과 JSON | 파일 | 차트 `data` 줄이 읽는 값 |
 | elkjs | 외부 프로그램 | 도형 크기와 연결점 제약, 도형 좌표와 직교 경로 |
 | 글꼴 파일 | 파일 | Pretendard, JetBrains Mono의 글자 너비 표와 글자 모양 |
@@ -41,7 +41,7 @@
 | 화살촉 | `draw/arrow.js`의 `headReach`(선 끝이 차지하는 크기). 차트 산점도와 덤벨이 읽는다 | 모양은 `arrowMarker` 하나다. 연결선은 `draw/connector.js`가 `edgeMarker`(보통 화살표와 클래스 관계의 머리)로 선 묶음 안에 정의를 두고 묶음의 `color`를 상속한다. 차트 방향선은 종류가 `CHART_ARROW`로 색 역할을 고르고(덤벨 main, 산점도 muted), `chart/dumbbell.js`와 `chart/scatter.js`가 `roleArrow`의 class와 끝 표식을 달며, `styles.js`가 `roleArrowDefs`로 쓰인 역할마다 정의 하나를 문서에 한 번 둔다. 역할 색은 `@woonyong-choi/design-tokens/styles/diagram/chart.css`의 `.arrow-<역할>`이 한 번 정한다 | `test/components.test.js`(U7), `test/component-state.test.js` |
 | 켜짐과 평소의 모습 | 없음 | `@woonyong-choi/design-tokens/styles/diagram/figure.css`의 효과 한 벌(`--fx-*`)이 유일한 정의다. 정지 그림의 평소 규칙, HTML 재생기의 `.on` 규칙(`figure.css`, `@woonyong-choi/design-tokens/styles/diagram/player.css`), 움직이는 SVG의 keyframes(`animate/animator.js`, 속성 이름만 쓴다)가 같은 속성을 읽는다. 고른 색(`tone`, `appearance`)은 `draw/paint.js`가 평소 값(`--fx-face`, `--fx-edge-rest`)만 바꾼다. 차트의 글자 바탕과 받침 선은 차트 묶음(`.fl-chart`)의 `color`가 싣는 면의 색(`--chart-ground`, `@woonyong-choi/design-tokens/styles/diagram/chart.css`)을 `currentColor`로 읽고, 움직이는 SVG는 켜진 차트 카드에서 이 `color`만 켜짐 구간에 맞춰 바꾼다([차트](design/charts.md#그리기)) | `test/component-state.test.js`, `test/components.test.js`(U10). 둘은 선언을 읽는 시험이고 계산된 색은 Chrome에서 본 범위만 있다([표현 범위](design/expression-coverage.md#예제와-검증-범위)) |
 | 아이콘 | `measure/decor.js`의 `layoutDecor`가 아이콘 칸 자리를 정한다 | 공통 SVG 원본과 `icons/index.js`의 `loadIcon`이 `iconData`를 만들고 `draw/decor.js`이 상자 머리, 그룹 탭, 타일에서 같은 도형을 그린다 | `test/components.test.js`(U8), `test/escaping.test.js`(I2, 사용자 SVG의 안전) |
-| 장면 탭과 도구 막대 | 없음 | 공통 `DiagramFrame`·`TabList`가 마크업을 만들고 `bindTabs`가 선택·키보드를 연결한다. ThinkFlow는 장면 재생만 연결한다 | `test/components.test.js`(U9), `test/exports.test.js`(X10, X11) |
+| 장면 탭과 도구 막대 | 없음 | 공통 `DiagramFrame`·`TabList`가 마크업을 만들고 `bindTabs`가 선택·키보드를 연결한다. Torso는 장면 재생만 연결한다 | `test/components.test.js`(U9), `test/exports.test.js`(X10, X11) |
 
 카드 본문과 `show`는 `source/content.js`의 글·관계 그래프 해석을 공유한다. `values.js`의 `initialCardRows`가 선언 본문과 값 줄의 순서를 합치고, 각 장면은 이 본문에서 시작한다. 차트는 독립 판, 차트 카드, 카드 본문에서 `draw/chart.js`의 `drawChartBody` 하나로 그리며 `chart-scene.js`가 세 자리의 프레임·효과를 함께 적용한다. 카드 안 차트는 별도 노드가 아니므로 연결과 보기에는 소유 카드를 쓴다.
 
@@ -51,7 +51,7 @@
 
 ### 그림 만들기
 
-1. `cli`가 원본을 읽어 문서 모형 하나(`figure`)로 만든다. 첫 문장이 `thinkflow`인지 보고(`source/preamble.js`), 줄을 머리, 선언, 시간 흐름으로 나눠 읽는다. 카드, 칸, 선, 값, 보기, 장면이 모든 카드에 같은 규칙으로 놓이고 그림 종류는 없다. 모형은 받은 원본 글을 그대로(`figure.source`, 줄바꿈과 첫 글자 포함) 간직해, 재생기의 문법 복사가 같은 글을 쓴다. 보기는 이름이 없고, 어느 보기에도 적히지 않은 카드는 기본 보기를 받으며, 보기에는 정해진 순서대로 내부 열쇠 `v1`, `v2`, ...가 붙는다(`views-check.js`). 도형과 그룹, `show` 줄의 색은 `tone`과 `appearance`로 모형에 들어간다. 파일을 다 읽은 뒤 이름 공간, 연결점(`카드.칸`), 보기 구성원, 선의 그릴 수 있음, 차트 묶음, 이동의 보기별 투영을 확인한다(`source/validate.js`, `views-check.js`, `project.js`. [그림 문법](design/figure-syntax.md)).
+1. `cli`가 원본을 읽어 문서 모형 하나(`figure`)로 만든다. 첫 문장이 `torso`인지 보고(`source/preamble.js`), 줄을 머리, 선언, 시간 흐름으로 나눠 읽는다. 카드, 칸, 선, 값, 보기, 장면이 모든 카드에 같은 규칙으로 놓이고 그림 종류는 없다. 모형은 받은 원본 글을 그대로(`figure.source`, 줄바꿈과 첫 글자 포함) 간직해, 재생기의 문법 복사가 같은 글을 쓴다. 보기는 이름이 없고, 어느 보기에도 적히지 않은 카드는 기본 보기를 받으며, 보기에는 정해진 순서대로 내부 열쇠 `v1`, `v2`, ...가 붙는다(`views-check.js`). 도형과 그룹, `show` 줄의 색은 `tone`과 `appearance`로 모형에 들어간다. 파일을 다 읽은 뒤 이름 공간, 연결점(`카드.칸`), 보기 구성원, 선의 그릴 수 있음, 차트 묶음, 이동의 보기별 투영을 확인한다(`source/validate.js`, `views-check.js`, `project.js`. [그림 문법](design/figure-syntax.md)).
 2. 값 글자 자리는 값이 모든 장면에서 가질 글의 실제 폭이라 시간표에 기대고 시간표는 배치에 기대므로, `build-scene.js`가 배치와 시간표를 되풀이하되 자리가 줄어들지 않고 네 번을 넘지 않는다(`value-slots.js`, 못 맞추면 `layout-unstable`).
 3. 한 번의 되풀이 안에서: 글꼴 파일로 모든 글의 폭을 재 카드 크기와 연결점을 정하고(차트 카드는 모든 프레임 가운데 가장 큰 차트 크기), 보기마다 배치한다. 그래프는 그룹마다 그다음 바깥을 elkjs로 배치하고 경로 조각을 잇는다([배치](design/layout.md)). 순서는 격자 배치, 차트는 그림 크기, 시간 보기는 `layout/time.js`다. `layout/panels.js`가 판을 위에서 아래로 쌓아 장면 하나로 합친다.
 4. `views.js`가 보기마다 모형을 줄이고(`viewFigure`), 합친 장면에서 시간표를 만든다. 점 이동 시간은 선 길이에 비례해 배치 뒤에 만들고, 이동 하나는 보기마다 hop 하나로 펼치되 시간은 첫 투영이 한 번만 정한다. 값에 묶인 차트는 프레임과 시간표 구간을 만든다(`chart-frames.js`). 모든 선과 가장 큰 카드가 보이는 상태에서 화면 오류를 검사한다([그림 검사](design/figure-check.md)).
@@ -77,10 +77,10 @@
 
 ### 공통 디자인 가져오기
 
-1. 디자인은 `@woonyong-choi/design-tokens` 패키지다. `peerDependencies`(`^0.1.1` 같은 semver 범위)로 선언하므로 ThinkFlow를 설치한 앱이 고른 commit 하나를 그림도 읽는다. 홈페이지 같은 호스트의 그림은 호스트의 토큰·CSS·아이콘으로 그려진다.
+1. 디자인은 `@woonyong-choi/design-tokens` 패키지다. `peerDependencies`(`^0.1.1` 같은 semver 범위)로 선언하므로 Torso를 설치한 앱이 고른 commit 하나를 그림도 읽는다. 홈페이지 같은 호스트의 그림은 호스트의 토큰·CSS·아이콘으로 그려진다.
 2. 이 저장소는 자체 시험·그림 생성을 위해 `devDependencies`에 `github:woonyong-choi/design-tokens#<commit>`을 고정한다. 코드는 패키지 이름으로 가져오고(`@woonyong-choi/design-tokens/ui/index.mjs`) 파일은 `createRequire(import.meta.url).resolve`로 찾는다. 저장소에 디자인 사본을 두지 않는다.
-3. 디자인을 올릴 때는 `npm install --save-dev github:woonyong-choi/design-tokens#<commit>` 뒤 `npm run figures`, `npm test`, `npm run check`를 실행해 PR로 반영한다. ThinkFlow에서 토큰을 합치거나 다시 생성하지 않는다.
-4. 다른 저장소로 파일을 밀어 넣는 자동 전달은 없다. 홈페이지는 자기 `package.json`에서 ThinkFlow와 디자인의 commit을 함께 고른다.
+3. 디자인을 올릴 때는 `npm install --save-dev github:woonyong-choi/design-tokens#<commit>` 뒤 `npm run figures`, `npm test`, `npm run check`를 실행해 PR로 반영한다. Torso에서 토큰을 합치거나 다시 생성하지 않는다.
+4. 다른 저장소로 파일을 밀어 넣는 자동 전달은 없다. 홈페이지는 자기 `package.json`에서 Torso와 디자인의 commit을 함께 고른다.
 
 ### 재생하기
 

@@ -12,7 +12,7 @@ const GALLERY_SCRIPT = `<script>${bindDiagramHost.toString()}; bindDiagramHost()
 // vars: n = 이름과 제목 글자 수
 // basis: estimate
 // 카드 머리와 문서 미리보기 절 제목. 원본 파일 이름(코드 글꼴)과 종류 꼬리표가 기본이다. 그림이 제목을 직접 그리는 차트는 그림 제목을 되풀이하지 않고, 그리지 않는 그림(흐름, 순서, 상태, 데이터)만 제목을 앞에 붙인다. 세 요소는 따로 놓인 flex 칸이라 간격과 기준선을 CSS가 정한다.
-function cardHead({ name, ext = '.thinkflow', title, kind, isChart }) {
+function cardHead({ name, ext = '.torso', title, kind, isChart }) {
   const heading = title && !isChart ? `<span class="title">${renderRichHtml(title)}</span>` : '';
   return `<h2>${heading}<code class="name">${escapeXml(name)}${escapeXml(ext)}</code><span class="kind">${escapeXml(kind)}</span></h2>`;
 }
@@ -101,11 +101,11 @@ export function toExamples(entries, heading) {
   const groups = [...new Set(entries.map((entry) => entry.group))];
   const sections = groups.map((group) => {
     const cards = entries.filter((entry) => entry.group === group).map((entry) => `<article class="catalog-card" id="${escapeXml(entry.id)}">
-<h3>${escapeXml(entry.title)} <code>${escapeXml(entry.id)}.thinkflow</code></h3>
+<h3>${escapeXml(entry.title)} <code>${escapeXml(entry.id)}.torso</code></h3>
 <p>${escapeXml(entry.subtitle ?? '')}</p>
 <a class="catalog-preview" href="${hrefAttr(`${entry.id}.html`)}"><img src="${hrefAttr(`${entry.id}.svg`)}" alt="${escapeXml(entry.title)} 첫 장면" loading="lazy"></a>
 ${sceneList(entry.scenes)}
-<nav class="catalog-downloads"><a href="${hrefAttr(`${entry.id}.html`)}">재생 화면 열기</a><a href="${hrefAttr(`${entry.id}.svg`)}">SVG</a><a href="${hrefAttr(`${entry.id}.thinkflow`)}" download>원본 내려받기</a></nav>
+<nav class="catalog-downloads"><a href="${hrefAttr(`${entry.id}.html`)}">재생 화면 열기</a><a href="${hrefAttr(`${entry.id}.svg`)}">SVG</a><a href="${hrefAttr(`${entry.id}.torso`)}" download>원본 내려받기</a></nav>
 ${supportList(entry.support ?? [])}
 <details><summary>원본 보기</summary><pre><code>${escapeXml(entry.source)}</code></pre></details>
 </article>`).join('\n');
@@ -118,7 +118,7 @@ ${supportList(entry.support ?? [])}
 function galleryDocument(heading, content, { count } = {}) {
   const examples = count === undefined;
   const top = examples
-    ? `<a href="index.html">ThinkFlow · 예제 갤러리</a>`
+    ? `<a href="index.html">Torso · 예제 갤러리</a>`
     : `<h1>${escapeXml(heading)}</h1><p>그림 ${count}개 · <a href="document.html">문서 안 모습 보기</a></p>`;
   return `<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escapeXml(heading)}</title>${faviconLinks()}<style>${STYLES.tokens}${STYLES.control}${STYLES.gallery}</style><script>${THEME_SCRIPT}</script></head><body${examples ? ' class="is-examples"' : ''}><div class="top${examples ? ' catalog-header' : ''}">${top}<div class="theme app-tablist is-segmented" role="group" aria-label="테마">${THEME_BUTTONS}</div></div><main${examples ? ' class="catalog-main"' : ''}>${content}</main>${GALLERY_SCRIPT}</body></html>`;
 }

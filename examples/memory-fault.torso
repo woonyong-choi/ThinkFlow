@@ -1,0 +1,52 @@
+torso
+title "페이지 부재에서 명령 재시도까지"
+width wide
+subtitle "저장장치 읽기가 필요한 유효한 접근의 예 · 빈 Frame 1 사용 · 권한 위반·페이지 교체·TLB는 생략 · 적재 후 프레임과 페이지 표가 함께 갱신"
+
+box cpu "실행 중인 명령" "Page 2 읽기"
+grid pt "페이지 표 · VPN 2" rows=2 cols=2 {
+  item state "상주 여부" row=0 col=0
+  item frame "프레임 번호" row=0 col=1
+  item absent "상주 여부" row=1 col=0
+  item target "프레임 번호" row=1 col=1
+}
+box os "운영체제"
+store disk "보조 저장장치" "Page 2 데이터"
+grid ram "물리 메모리" rows=4 {
+  item f0 "사용 중" key="Frame 0" row=0
+  item f1 "프레임 내용" key="Frame 1" row=1
+  item f2 "사용 중" key="Frame 2" row=2
+  gap rest "나머지 프레임" row=3 count=13
+}
+value present "상주 비트" on=pt.absent from=0
+value frame "프레임 번호" on=pt.target from=없음
+value page "프레임 내용" on=ram.f1 from=빈프레임
+value loaded "적재 완료 페이지" on=os from=0
+cpu -> pt.absent no=1
+pt.absent -> os no=2
+os -> disk no=3
+disk -> ram.f1 no=4
+ram.f1 -> pt.target no=5
+pt.target -> cpu no=6 quiet
+view graph right
+scene "구조와 처리 순서" mode=static
+scene "페이지 부재 처리" mode=once
+  show os "유효한 접근 · 페이지 부재"
+  cpu -> pt.absent
+  light pt.absent
+  pt.absent -> os
+  clear os
+  show os "저장 위치 확인"
+  os -> disk
+  clear os
+  show os "Frame 1에 적재"
+  disk -> ram.f1 set="loaded=1, page=Page2"
+  light ram.f1
+  clear os
+  show os "적재 완료 · 매핑 갱신"
+  ram.f1 -> pt.target set="present=1, frame=1"
+  light pt.absent pt.target
+  clear os
+  show os "VPN 2 → PFN 1"
+  pt.target -> cpu
+  show cpu "같은 명령 다시 실행"

@@ -1,4 +1,4 @@
-// thinkflow md: 문서의 ```thinkflow 블록을 SVG와 이미지 줄로 반영한다. 소유 표시, 낡은 파일 정리, 접기, 잠금, 쓰기 실패를 파일과 출력으로만 본다.
+// torso md: 문서의 ```torso 블록을 SVG와 이미지 줄로 반영한다. 소유 표시, 낡은 파일 정리, 접기, 잠금, 쓰기 실패를 파일과 출력으로만 본다.
 // 시험 이름 첫 낱말(M1~M13)이 요구사항 번호이고, 번호와 계약의 대응은 docs/design/expression-coverage.md의 시험 번호 표에 있다.
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
@@ -7,10 +7,10 @@ import { hostname } from 'node:os';
 import { join } from 'node:path';
 import { test } from 'node:test';
 import { findBlocks } from '../src/md.js';
-import { cli, thinkflow, read, snapshot, workspace } from './support.js';
+import { cli, torso, read, snapshot, workspace } from './support.js';
 
 const FENCE = '```';
-const block = (name, body = 'title "Flow"\nbox a "A"\n') => `${FENCE}thinkflow${name ? ` name=${name}` : ''}\n${thinkflow(body)}${FENCE}\n`;
+const block = (name, body = 'title "Flow"\nbox a "A"\n') => `${FENCE}torso${name ? ` name=${name}` : ''}\n${torso(body)}${FENCE}\n`;
 const doc = (...blocks) => `# Doc\n\nintro\n\n${blocks.join('\ntext between\n\n')}\nafter\n`;
 const md = (dir, args, options) => cli(['md', ...args], { cwd: dir, ...options });
 const svgs = (dir) => readdirSync(dir).filter((f) => f.endsWith('.svg')).sort();
@@ -21,15 +21,15 @@ test('M1 a named block becomes {doc}-{name}.svg and a marked image line right be
   assert.equal(run.status, 0, run.stderr);
   assert.deepEqual(svgs(dir), ['doc-flow.svg']);
   const text = read(dir, 'doc.md');
-  assert.match(text, /```\n\n!\[Flow\]\(doc-flow\.svg\)<!-- thinkflow -->\n/);
+  assert.match(text, /```\n\n!\[Flow\]\(doc-flow\.svg\)<!-- torso -->\n/);
   assert.equal(run.stdout.trim().split('\n').length, 2, 'the svg and the document are reported');
   assert.match(read(dir, 'doc-flow.svg'), /^<svg /);
 });
 
-test('M1 the SVG carries its owner as "thinkflow md v2 {document path}" on its second line', (t) => {
+test('M1 the SVG carries its owner as "torso md v2 {document path}" on its second line', (t) => {
   const dir = workspace(t, { 'doc.md': doc(block('flow')) });
   md(dir, ['doc.md']);
-  assert.equal(read(dir, 'doc-flow.svg').split('\n')[1], '<!-- thinkflow md v2 doc.md -->');
+  assert.equal(read(dir, 'doc-flow.svg').split('\n')[1], '<!-- torso md v2 doc.md -->');
 });
 
 test('M2 running again changes nothing and prints nothing; --check agrees and an edit makes it fail without writing', (t) => {
@@ -45,7 +45,7 @@ test('M2 running again changes nothing and prints nothing; --check agrees and an
   const edited = snapshot(dir);
   const check = md(dir, ['doc.md', '--check']);
   assert.equal(check.status, 1);
-  assert.match(check.stderr, /is out of date\. Run thinkflow md to update it/);
+  assert.match(check.stderr, /is out of date\. Run torso md to update it/);
   assert.deepEqual(snapshot(dir), edited, '--check writes nothing');
 });
 
@@ -57,7 +57,7 @@ test('M3 renaming a block moves its figure: the new file appears, the old one th
   assert.equal(run.status, 0, run.stderr);
   assert.deepEqual(svgs(dir), ['doc-path.svg']);
   assert.match(run.stdout, /removed .*doc-flow\.svg/);
-  assert.match(read(dir, 'doc.md'), /\]\(doc-path\.svg\)<!-- thinkflow -->/);
+  assert.match(read(dir, 'doc.md'), /\]\(doc-path\.svg\)<!-- torso -->/);
   assert.doesNotMatch(read(dir, 'doc.md'), /doc-flow/);
 });
 
@@ -75,7 +75,7 @@ test('M3 blocks without a name are numbered among themselves, and a named block 
 test('M4 files the tool does not own are never taken, overwritten or removed: no mark, another document, an old-style or foreign mark', (t) => {
   const user = '<svg xmlns="http://www.w3.org/2000/svg"/>\n';
   const marked = (mark) => `<svg xmlns="http://www.w3.org/2000/svg">\n<!-- ${mark} -->\n</svg>\n`;
-  const cases = [['no mark', user], ['another document', marked('thinkflow md v2 other.md')], ['an unversioned mark', marked('thinkflow md doc.md')], ['a foreign mark', marked('mutoscope md v2 doc.md')]];
+  const cases = [['no mark', user], ['another document', marked('torso md v2 other.md')], ['an unversioned mark', marked('torso md doc.md')], ['a foreign mark', marked('mutoscope md v2 doc.md')]];
   for (const [what, content] of cases) {
     const dir = workspace(t, { 'doc.md': doc(block('flow')), 'doc-flow.svg': content });
     const before = snapshot(dir);
@@ -86,13 +86,13 @@ test('M4 files the tool does not own are never taken, overwritten or removed: no
     assert.equal(md(dir, ['doc.md', '--check']).status, 1, `${what}: --check reports the same conflict`);
   }
   // 소유하지 않은 낡은 이름은 정리하지 않는다
-  const dir = workspace(t, { 'doc.md': doc(block('flow')), 'doc-old.svg': user, 'doc-older.svg': marked('thinkflow md doc.md') });
+  const dir = workspace(t, { 'doc.md': doc(block('flow')), 'doc-old.svg': user, 'doc-older.svg': marked('torso md doc.md') });
   assert.equal(md(dir, ['doc.md']).status, 0);
   assert.deepEqual(svgs(dir), ['doc-flow.svg', 'doc-old.svg', 'doc-older.svg']);
 });
 
 test('M4 only marked image lines are the tool\'s: an unmarked image or one with another mark stays, and an orphaned marked line is removed', (t) => {
-  const text = doc(block('flow')).replace('after', '![mine](mine.png)\n\n![theirs](theirs.svg)<!-- other -->\n\n![gone](old.svg)<!-- thinkflow -->\n\nafter');
+  const text = doc(block('flow')).replace('after', '![mine](mine.png)\n\n![theirs](theirs.svg)<!-- other -->\n\n![gone](old.svg)<!-- torso -->\n\nafter');
   const dir = workspace(t, { 'doc.md': text });
   assert.equal(md(dir, ['doc.md']).status, 0);
   const result = read(dir, 'doc.md');
@@ -101,29 +101,29 @@ test('M4 only marked image lines are the tool\'s: an unmarked image or one with 
   assert.doesNotMatch(result, /old\.svg/);
 });
 
-test('M4 other fences are not blocks: a muto fence, a thinkflow line inside a text fence, and a block with a bad name option', (t) => {
-  const foreign = `${FENCE}muto name=x\nthinkflow\nbox a "A"\n${FENCE}\n\n${'````'}text\n${FENCE}thinkflow name=inside\nthinkflow\nbox a "A"\n${FENCE}\n${'````'}\n`;
+test('M4 other fences are not blocks: a muto fence, a torso line inside a text fence, and a block with a bad name option', (t) => {
+  const foreign = `${FENCE}muto name=x\ntorso\nbox a "A"\n${FENCE}\n\n${'````'}text\n${FENCE}torso name=inside\ntorso\nbox a "A"\n${FENCE}\n${'````'}\n`;
   const dir = workspace(t, { 'doc.md': foreign });
   const before = snapshot(dir);
   const run = md(dir, ['doc.md']);
   assert.equal(run.status, 0);
   assert.deepEqual(snapshot(dir), before);
-  const bad = workspace(t, { 'doc.md': `${FENCE}thinkflow name=Bad_Name\nthinkflow\nbox a "A"\n${FENCE}\n` });
+  const bad = workspace(t, { 'doc.md': `${FENCE}torso name=Bad_Name\ntorso\nbox a "A"\n${FENCE}\n` });
   const badRun = md(bad, ['doc.md']);
   assert.equal(badRun.status, 1);
   assert.deepEqual(svgs(bad), []);
 });
 
 test('M4 text the document shows literally is never read or rewritten: indented code, HTML comments, and a fence that a four-space line cannot close', (t) => {
-  const source = thinkflow('box a "A"');
+  const source = torso('box a "A"');
   const literal = `${[
     '# Doc',
     'Indented code shows the tool\'s own lines:',
-    `    ![Flow](doc-flow.svg)<!-- thinkflow -->\n\n    ${FENCE}thinkflow name=indented\n    ${source.replaceAll('\n', '\n    ').trimEnd()}\n    ${FENCE}`,
-    '<!--\n![Old](doc-old.svg)<!-- thinkflow -->',
-    `<!--\n${FENCE}thinkflow name=hidden\n${source}${FENCE}\n-->`,
-    `\`\`\`\`text\n    \`\`\`\`\n${FENCE}thinkflow name=inner\n${source}${FENCE}\n\`\`\`\``,
-    ...['     ', '\t'].map((closer, k) => `  ${FENCE}text\n${closer}${FENCE}\n  ${FENCE}thinkflow name=held${k}\n  ${source.replaceAll('\n', '\n  ').trimEnd()}\n  ${FENCE}`),
+    `    ![Flow](doc-flow.svg)<!-- torso -->\n\n    ${FENCE}torso name=indented\n    ${source.replaceAll('\n', '\n    ').trimEnd()}\n    ${FENCE}`,
+    '<!--\n![Old](doc-old.svg)<!-- torso -->',
+    `<!--\n${FENCE}torso name=hidden\n${source}${FENCE}\n-->`,
+    `\`\`\`\`text\n    \`\`\`\`\n${FENCE}torso name=inner\n${source}${FENCE}\n\`\`\`\``,
+    ...['     ', '\t'].map((closer, k) => `  ${FENCE}text\n${closer}${FENCE}\n  ${FENCE}torso name=held${k}\n  ${source.replaceAll('\n', '\n  ').trimEnd()}\n  ${FENCE}`),
     'end',
   ].join('\n\n')}\n`;
   const dir = workspace(t, { 'doc.md': literal });
@@ -135,22 +135,22 @@ test('M4 text the document shows literally is never read or rewritten: indented 
 });
 
 test('M9 a fence is read where Markdown reads one: up to three spaces in, inside a list item whatever its indent, and behind ~~~', (t) => {
-  const body = thinkflow('title "Flow"\nbox a "A"').trimEnd();
-  const fenced = (pad, name, fence = FENCE) => `${pad}${fence}thinkflow name=${name}\n${body.replace(/^/gm, pad)}\n${pad}${fence}`;
+  const body = torso('title "Flow"\nbox a "A"').trimEnd();
+  const fenced = (pad, name, fence = FENCE) => `${pad}${fence}torso name=${name}\n${body.replace(/^/gm, pad)}\n${pad}${fence}`;
   const text = `${['1.  step', fenced('    ', 'item'), fenced('', 'tilde', '~~~'), fenced('  ', 'two')].join('\n\n')}\n`;
   const dir = workspace(t, { 'doc.md': text });
   const run = md(dir, ['doc.md']);
   assert.equal(run.status, 0, run.stderr);
   assert.deepEqual(svgs(dir), ['doc-item.svg', 'doc-tilde.svg', 'doc-two.svg']);
   const result = read(dir, 'doc.md');
-  assert.match(result, /\n {4}```\n\n {4}!\[Flow\]\(doc-item\.svg\)<!-- thinkflow -->\n/, 'the list image line keeps the item indent');
-  assert.match(result, /~~~\n\n!\[Flow\]\(doc-tilde\.svg\)<!-- thinkflow -->\n/);
-  assert.match(result, /\n {2}```\n\n {2}!\[Flow\]\(doc-two\.svg\)<!-- thinkflow -->\n/);
+  assert.match(result, /\n {4}```\n\n {4}!\[Flow\]\(doc-item\.svg\)<!-- torso -->\n/, 'the list image line keeps the item indent');
+  assert.match(result, /~~~\n\n!\[Flow\]\(doc-tilde\.svg\)<!-- torso -->\n/);
+  assert.match(result, /\n {2}```\n\n {2}!\[Flow\]\(doc-two\.svg\)<!-- torso -->\n/);
   assert.equal(md(dir, ['doc.md']).stdout, '', 'a second run changes nothing');
 });
 
 test('M9 a closing fence is measured from its list or quote, not from the opener: the opener\'s own indent is not taken off, so five spaces or a tab never close', () => {
-  const lines = (opener, closer, quoted = '') => [`${quoted}${opener}${FENCE}thinkflow`, `${quoted}${opener}thinkflow`, `${quoted}${opener}box a "A"`, `${quoted}${closer}${FENCE}`];
+  const lines = (opener, closer, quoted = '') => [`${quoted}${opener}${FENCE}torso`, `${quoted}${opener}torso`, `${quoted}${opener}box a "A"`, `${quoted}${closer}${FENCE}`];
   // [opener indent, closer indent, closes?]. 목록 칸은 4칸(`1.  x`)이고 중첩 목록은 4칸(`- a` 안 `- b`)이다.
   const flat = [['', '', true], ['', '   ', true], ['', '    ', false], ['  ', '', true], ['  ', '   ', true], ['  ', '     ', false], ['  ', '\t', false], ['   ', '       ', false], ['', '\t', false]];
   for (const [opener, closer, closes] of flat) {
@@ -170,9 +170,9 @@ test('M9 a closing fence is measured from its list or quote, not from the opener
   assert.equal(findBlocks(lines('  ', '   ', '> '), true).blocks.length, 1);
 });
 
-test('M9 a five-space or tab line cannot close a thinkflow fence, so the document is reported and nothing is drawn or rewritten', (t) => {
+test('M9 a five-space or tab line cannot close a torso fence, so the document is reported and nothing is drawn or rewritten', (t) => {
   for (const closer of ['     ', '\t']) {
-    const text = `intro\n\n  ${FENCE}thinkflow name=open\n  thinkflow\n  box a "A"\n${closer}${FENCE}\n`;
+    const text = `intro\n\n  ${FENCE}torso name=open\n  torso\n  box a "A"\n${closer}${FENCE}\n`;
     const dir = workspace(t, { 'doc.md': text });
     const run = md(dir, ['doc.md']);
     assert.equal(run.status, 1);
@@ -223,11 +223,11 @@ test('M6 the image link is relative to the real document, so a folder or a docum
   const dir = workspace(t, { 'real/sub/doc.md': doc(block('flow')), 'sub/b.md': doc(block('x')) });
   symlinkSync(join(dir, 'real/sub'), join(dir, 'alias'));
   assert.equal(md(dir, ['alias/doc.md', '--out-dir', 'out']).status, 0);
-  assert.match(read(dir, 'real/sub/doc.md'), /\]\(\.\.\/\.\.\/out\/doc-flow\.svg\)<!-- thinkflow -->/);
+  assert.match(read(dir, 'real/sub/doc.md'), /\]\(\.\.\/\.\.\/out\/doc-flow\.svg\)<!-- torso -->/);
   assert.equal(md(dir, ['real/sub/doc.md', '--out-dir', 'out', '--check']).status, 0, 'the real path agrees with the alias');
   symlinkSync('sub/b.md', join(dir, 'a.md'));
   assert.equal(md(dir, ['a.md']).status, 0);
-  assert.match(read(dir, 'sub/b.md'), /\]\(\.\.\/a-x\.svg\)<!-- thinkflow -->/, 'the figure sits next to the link and the document one folder deeper');
+  assert.match(read(dir, 'sub/b.md'), /\]\(\.\.\/a-x\.svg\)<!-- torso -->/, 'the figure sits next to the link and the document one folder deeper');
 });
 
 test('M6 #176 two blocks whose figures are symbolic links to one file clash before any write: both links, the target and the document stay as they were', (t) => {
@@ -260,7 +260,7 @@ test('M6 a document and a symbolic link to it are one output: md a.md b.md is re
   // 사용자가 만든 링크는 그대로 두고 가리키는 문서를 바꾼다
   assert.equal(md(dir, ['a.md']).status, 0);
   assert.equal(lstatSync(join(dir, 'a.md')).isSymbolicLink(), true);
-  assert.match(read(dir, 'b.md'), /<!-- thinkflow -->/);
+  assert.match(read(dir, 'b.md'), /<!-- torso -->/);
 });
 
 test('M11 a document that is a symbolic link to nothing is reported as unreadable and nothing is written', (t) => {
@@ -275,15 +275,15 @@ test('M11 a document that is a symbolic link to nothing is reported as unreadabl
 
 test('M3 an owned figure whose existing name differs from the new one only by letter case is the same file, not a stale one to remove', (t) => {
   // 블록 이름은 소문자뿐이라 문서에서 대소문자만 바꾼 이름은 만들 수 없다. 이 도구의 표시가 붙은 파일이 대문자 이름으로 이미 있는 경우(손으로 옮겼거나 옛 실행의 결과)를 쓴다.
-  const owned = '<svg xmlns="http://www.w3.org/2000/svg">\n<!-- thinkflow md v2 doc.md -->\n</svg>\n';
+  const owned = '<svg xmlns="http://www.w3.org/2000/svg">\n<!-- torso md v2 doc.md -->\n</svg>\n';
   const dir = workspace(t, { 'doc.md': doc(block('flow')), 'doc-Flow.svg': owned });
   if (!existsSync(join(dir, 'doc-flow.svg'))) return t.skip('this file system tells names apart by case');
   const run = md(dir, ['doc.md']);
   assert.equal(run.status, 0, run.stderr);
   assert.doesNotMatch(run.stdout, /removed/);
-  assert.match(read(dir, 'doc.md'), /\]\(doc-flow\.svg\)<!-- thinkflow -->/);
+  assert.match(read(dir, 'doc.md'), /\]\(doc-flow\.svg\)<!-- torso -->/);
   assert.equal(svgs(dir).length, 1);
-  assert.match(read(dir, 'doc-flow.svg'), /^<svg [\s\S]*thinkflow md v2 doc\.md[\s\S]*Flow/, 'the figure the document points to exists and is the new figure');
+  assert.match(read(dir, 'doc-flow.svg'), /^<svg [\s\S]*torso md v2 doc\.md[\s\S]*Flow/, 'the figure the document points to exists and is the new figure');
   assert.equal(md(dir, ['doc.md']).stdout, '');
   assert.equal(md(dir, ['doc.md', '--check']).status, 0);
 });
@@ -335,9 +335,9 @@ test('M7 --fold puts the picture first and the source in details; folding, unfol
   const fold = md(dir, ['doc.md', '--fold']);
   assert.equal(fold.status, 0, fold.stderr);
   const folded = read(dir, 'doc.md');
-  assert.match(folded, /<!-- thinkflow fold v1 name=flow -->\n!\[Flow\]\(doc-flow\.svg\)<!-- thinkflow -->\n\n<details>\n<summary>그림 원본<\/summary>\n\n```thinkflow name=flow\n/);
-  assert.match(folded, /<!-- \/thinkflow fold v1 name=flow -->/);
-  assert.match(folded, /<!-- thinkflow fold v1 n=1 -->/);
+  assert.match(folded, /<!-- torso fold v1 name=flow -->\n!\[Flow\]\(doc-flow\.svg\)<!-- torso -->\n\n<details>\n<summary>그림 원본<\/summary>\n\n```torso name=flow\n/);
+  assert.match(folded, /<!-- \/torso fold v1 name=flow -->/);
+  assert.match(folded, /<!-- torso fold v1 n=1 -->/);
   const afterFold = snapshot(dir);
   assert.equal(md(dir, ['doc.md', '--fold']).stdout, '');
   assert.equal(md(dir, ['doc.md']).stdout, '', 'a plain run keeps the fold');
@@ -363,9 +363,9 @@ test('M7 a details element the user wrote is never rewritten, and a block inside
   const dir = workspace(t, { 'doc.md': text });
   assert.equal(md(dir, ['doc.md', '--fold']).status, 0);
   const result = read(dir, 'doc.md');
-  assert.doesNotMatch(result, /thinkflow fold/);
+  assert.doesNotMatch(result, /torso fold/);
   assert.match(result, /<summary>mine<\/summary>/);
-  assert.match(result, /!\[Flow\]\(doc-flow\.svg\)<!-- thinkflow -->/);
+  assert.match(result, /!\[Flow\]\(doc-flow\.svg\)<!-- torso -->/);
   assert.equal(md(dir, ['doc.md', '--unfold']).stdout, '', 'unfold leaves a user details alone');
 });
 
@@ -375,38 +375,38 @@ test('M8 line endings: untouched lines keep their ending and new lines use CRLF 
   assert.equal(md(dir, ['doc.md']).status, 0);
   const result = read(dir, 'doc.md');
   assert.equal(result.replaceAll('\r\n', '').includes('\n'), false, 'no bare LF');
-  assert.match(result, /\]\(doc-flow\.svg\)<!-- thinkflow -->\r\n/);
+  assert.match(result, /\]\(doc-flow\.svg\)<!-- torso -->\r\n/);
   const mixed = workspace(t, { 'doc.md': doc(block('flow')).replace('intro\n', 'intro\r\n') });
   md(mixed, ['doc.md']);
   assert.match(read(mixed, 'doc.md'), /intro\r\n/);
-  assert.match(read(mixed, 'doc.md'), /<!-- thinkflow -->\r\n/, 'new lines follow the document once it has any CRLF');
+  assert.match(read(mixed, 'doc.md'), /<!-- torso -->\r\n/, 'new lines follow the document once it has any CRLF');
 });
 
 test('M9 a quoted block is read only when it already carries the tool\'s mark or an option asks; a plain run leaves the document byte for byte', (t) => {
-  const quoted = '# Doc\n\n> ```thinkflow name=q\n> thinkflow\n> box a "A"\n> ```\n';
+  const quoted = '# Doc\n\n> ```torso name=q\n> torso\n> box a "A"\n> ```\n';
   const dir = workspace(t, { 'doc.md': quoted });
   assert.equal(md(dir, ['doc.md']).status, 0);
   assert.equal(read(dir, 'doc.md'), quoted);
   assert.deepEqual(svgs(dir), []);
   assert.equal(md(dir, ['doc.md', '--fold']).status, 0);
   assert.deepEqual(svgs(dir), ['doc-q.svg']);
-  assert.match(read(dir, 'doc.md'), /^> <!-- thinkflow fold v1 name=q -->$/m);
+  assert.match(read(dir, 'doc.md'), /^> <!-- torso fold v1 name=q -->$/m);
 });
 
 test('M10 two runs at once: a live lock refuses with md-locked and changes nothing; a lock whose process is gone is cleared', (t) => {
   const dir = workspace(t, { 'doc.md': doc(block('flow')) });
   const lock = (pid, host = hostname()) => `${JSON.stringify({ pid, host, created: new Date().toISOString(), nonce: 'test-nonce' })}\n`;
-  writeFileSync(join(dir, '.thinkflow-md.lock'), lock(process.pid));
+  writeFileSync(join(dir, '.torso-md.lock'), lock(process.pid));
   const before = snapshot(dir);
   const busy = md(dir, ['doc.md', '--json']);
   assert.equal(busy.status, 1);
   assert.equal(JSON.parse(busy.stdout.trim().split('\n')[0]).code, 'md-locked');
   assert.deepEqual(snapshot(dir), before);
   assert.equal(md(dir, ['doc.md', '--check']).status, 1, '--check does not lock, and reports the missing figure instead');
-  writeFileSync(join(dir, '.thinkflow-md.lock'), lock(process.pid, 'some-other-host'));
+  writeFileSync(join(dir, '.torso-md.lock'), lock(process.pid, 'some-other-host'));
   assert.equal(md(dir, ['doc.md']).status, 1, 'a lock from another host is never cleared automatically');
   const finished = spawnSync(process.execPath, ['-e', ''], { encoding: 'utf8' });
-  writeFileSync(join(dir, '.thinkflow-md.lock'), lock(finished.pid));
+  writeFileSync(join(dir, '.torso-md.lock'), lock(finished.pid));
   const cleared = md(dir, ['doc.md']);
   assert.equal(cleared.status, 0, cleared.stderr);
   assert.deepEqual(readdirSync(dir).filter((f) => f.startsWith('.')), [], 'the lock is gone afterwards');
@@ -455,11 +455,11 @@ test('M13 --json reports each problem as one line with the six fields, and optio
   assert.ok(lines.length >= 1);
   for (const line of lines) assert.deepEqual(Object.keys(line).sort(), ['code', 'column', 'file', 'line', 'message', 'severity']);
   for (const option of ['--html', '--title', '--out']) assert.equal(md(dir, ['doc.md', option, 'x']).status, 2, option);
-  assert.equal(cli(['render', 'x.thinkflow', '--check']).status, 2);
+  assert.equal(cli(['render', 'x.torso', '--check']).status, 2);
 });
 
 const THREE = 'title "Three"\nbox a "A"\nbox b "B"\na -> b\nscene "first" mode=static\n  a -> b\nscene "second" mode=once\n  b -> a\nscene "third" mode=loop\n  a -> b\n';
-const region = (text) => text.slice(text.indexOf('<!-- thinkflow scenes'), text.indexOf('<!-- /thinkflow scenes'));
+const region = (text) => text.slice(text.indexOf('<!-- torso scenes'), text.indexOf('<!-- /torso scenes'));
 
 test('M14 a block with several scenes writes every scene from one build: the first keeps the name, the others get .scene-N, and each keeps its own mode', (t) => {
   const dir = workspace(t, { 'doc.md': doc(block('flow', THREE)) });
@@ -469,10 +469,10 @@ test('M14 a block with several scenes writes every scene from one build: the fir
   for (const [file, scene, mode] of [['doc-flow.svg', 0, 'static'], ['doc-flow.scene-2.svg', 1, 'once'], ['doc-flow.scene-3.svg', 2, 'loop']]) {
     const svg = read(dir, file);
     assert.match(svg, new RegExp(`data-scene="${scene}" data-mode="${mode}"`), file);
-    assert.equal(svg.split('\n')[1], '<!-- thinkflow md v2 doc.md -->');
+    assert.equal(svg.split('\n')[1], '<!-- torso md v2 doc.md -->');
   }
   const text = read(dir, 'doc.md');
-  assert.match(text, /```\n\n!\[Three\]\(doc-flow\.svg\)<!-- thinkflow -->\n<!-- thinkflow scenes v1 name=flow -->\n<details>\n<summary>second<\/summary>\n\n!\[Three \(second\)\]\(doc-flow\.scene-2\.svg\)<!-- thinkflow -->\n\n<\/details>\n<details>\n<summary>third<\/summary>\n\n!\[Three \(third\)\]\(doc-flow\.scene-3\.svg\)<!-- thinkflow -->\n\n<\/details>\n<!-- \/thinkflow scenes v1 name=flow -->\n\ntext between|after/);
+  assert.match(text, /```\n\n!\[Three\]\(doc-flow\.svg\)<!-- torso -->\n<!-- torso scenes v1 name=flow -->\n<details>\n<summary>second<\/summary>\n\n!\[Three \(second\)\]\(doc-flow\.scene-2\.svg\)<!-- torso -->\n\n<\/details>\n<details>\n<summary>third<\/summary>\n\n!\[Three \(third\)\]\(doc-flow\.scene-3\.svg\)<!-- torso -->\n\n<\/details>\n<!-- \/torso scenes v1 name=flow -->\n\ntext between|after/);
   const done = snapshot(dir);
   assert.equal(md(dir, ['doc.md']).stdout, '');
   assert.equal(md(dir, ['doc.md', '--check']).status, 0);
@@ -488,7 +488,7 @@ test('M14 --scene keeps the single choice and removes the scene list and its fil
   assert.deepEqual(svgs(dir), ['doc-flow.svg']);
   assert.match(run.stdout, /removed .*doc-flow\.scene-2\.svg/);
   assert.match(read(dir, 'doc-flow.svg'), /data-scene="1"/);
-  assert.doesNotMatch(read(dir, 'doc.md'), /thinkflow scenes/);
+  assert.doesNotMatch(read(dir, 'doc.md'), /torso scenes/);
   assert.equal(md(dir, ['doc.md']).status, 0);
   assert.deepEqual(svgs(dir), ['doc-flow.scene-2.svg', 'doc-flow.scene-3.svg', 'doc-flow.svg']);
   writeFileSync(join(dir, 'doc.md'), read(dir, 'doc.md').replace(/scene "third"[^`]*/, ''));
@@ -503,7 +503,7 @@ test('M14 the scene list is its own owned span: --fold keeps it outside the fold
   const plain = read(dir, 'doc.md');
   assert.equal(md(dir, ['doc.md', '--fold']).status, 0);
   const folded = read(dir, 'doc.md');
-  assert.match(folded, /<!-- \/thinkflow fold v1 name=flow -->\n<!-- thinkflow scenes v1 name=flow -->\n<details>\n<summary>second/);
+  assert.match(folded, /<!-- \/torso fold v1 name=flow -->\n<!-- torso scenes v1 name=flow -->\n<details>\n<summary>second/);
   const afterFold = snapshot(dir);
   assert.equal(md(dir, ['doc.md']).stdout, '');
   assert.equal(md(dir, ['doc.md', '--fold']).stdout, '');
@@ -516,20 +516,20 @@ test('M14 the scene list is its own owned span: --fold keeps it outside the fold
   assert.equal(md(mixed, ['doc.md', '--fold']).status, 0, 'a block after the scene list is still told apart from a user details');
   const result = read(mixed, 'doc.md');
   assert.match(result, /<summary>mine<\/summary>/);
-  assert.match(result, /<!-- thinkflow fold v1 name=other -->/);
-  assert.doesNotMatch(result, /<!-- thinkflow fold v1 name=flow -->/, 'inside a user details the block is not folded');
+  assert.match(result, /<!-- torso fold v1 name=other -->/);
+  assert.doesNotMatch(result, /<!-- torso fold v1 name=flow -->/, 'inside a user details the block is not folded');
   assert.equal(md(mixed, ['doc.md', '--fold']).stdout, '');
 });
 
 test('M14 quoted and listed blocks and CRLF documents get the scene list with their own prefix and line ending, idempotently', (t) => {
-  const quoted = ['# Doc', '', '> ```thinkflow name=flow', ...thinkflow(THREE).trimEnd().split('\n').map((l) => `> ${l}`), '> ```', ''].join('\n');
-  const listed = ['# Doc', '', '- item', '', '  ```thinkflow name=flow', ...thinkflow(THREE).trimEnd().split('\n').map((l) => `  ${l}`), '  ```', ''].join('\n');
+  const quoted = ['# Doc', '', '> ```torso name=flow', ...torso(THREE).trimEnd().split('\n').map((l) => `> ${l}`), '> ```', ''].join('\n');
+  const listed = ['# Doc', '', '- item', '', '  ```torso name=flow', ...torso(THREE).trimEnd().split('\n').map((l) => `  ${l}`), '  ```', ''].join('\n');
   for (const [name, text, args, prefix] of [['quote', quoted, ['--fold'], '> '], ['list', listed, [], '  '], ['crlf', doc(block('flow', THREE)).replace(/\n/g, '\r\n'), [], '']]) {
     const dir = workspace(t, { 'doc.md': text });
     const run = md(dir, ['doc.md', ...args]);
     assert.equal(run.status, 0, `${name}: ${run.stderr}`);
     const result = read(dir, 'doc.md');
-    assert.match(result, new RegExp(`${prefix}<!-- thinkflow scenes v1 name=flow -->`), name);
+    assert.match(result, new RegExp(`${prefix}<!-- torso scenes v1 name=flow -->`), name);
     if (name === 'crlf') assert.doesNotMatch(result.replace(/\r\n/g, ''), /\n/, 'every line keeps CRLF');
     const done = snapshot(dir);
     assert.equal(md(dir, ['doc.md', ...args]).stdout, '', name);
@@ -558,7 +558,7 @@ test('M14 a damaged scene mark is diagnosed and nothing is written, --check incl
   assert.equal(md(dir, ['doc.md', '--scene', '1']).status, 0);
   assert.match(read(dir, 'doc.md'), /<summary>mine<\/summary>\n\nnote[\s\S]*!\[mine\]\(mine\.png\)\n$/);
   writeFileSync(join(dir, 'doc.md'), good);
-  for (const broken of [good.replace('</details>\n<!-- /thinkflow scenes', '<!-- /thinkflow scenes'), good.replace('<!-- /thinkflow scenes v1 name=flow -->', '<!-- /thinkflow scenes v1 name=other -->'), good.replace('thinkflow scenes v1', 'thinkflow scenes v9'), good.replace('<summary>second</summary>\n', '<summary>second</summary>\nuser line\n')]) {
+  for (const broken of [good.replace('</details>\n<!-- /torso scenes', '<!-- /torso scenes'), good.replace('<!-- /torso scenes v1 name=flow -->', '<!-- /torso scenes v1 name=other -->'), good.replace('torso scenes v1', 'torso scenes v9'), good.replace('<summary>second</summary>\n', '<summary>second</summary>\nuser line\n')]) {
     writeFileSync(join(dir, 'doc.md'), broken);
     const before = snapshot(dir);
     for (const args of [[], ['--check'], ['--scene', '1']]) {
@@ -571,10 +571,10 @@ test('M14 a damaged scene mark is diagnosed and nothing is written, --check incl
 });
 
 test('M14 a block that is removed takes its scene list and files with it, and a scene list in a text fence is only text', (t) => {
-  const shown = '````text\n<!-- thinkflow scenes v1 name=x -->\nnot intact\n````\n';
+  const shown = '````text\n<!-- torso scenes v1 name=x -->\nnot intact\n````\n';
   const dir = workspace(t, { 'doc.md': `${doc(block('flow', THREE))}${shown}` });
   assert.equal(md(dir, ['doc.md']).status, 0);
-  writeFileSync(join(dir, 'doc.md'), read(dir, 'doc.md').replace(/```thinkflow[\s\S]*?\n```\n/, '').replace(/!\[Three\]\(doc-flow\.svg\)<!-- thinkflow -->\n/, ''));
+  writeFileSync(join(dir, 'doc.md'), read(dir, 'doc.md').replace(/```torso[\s\S]*?\n```\n/, '').replace(/!\[Three\]\(doc-flow\.svg\)<!-- torso -->\n/, ''));
   const run = md(dir, ['doc.md']);
   assert.equal(run.status, 0, run.stderr);
   assert.deepEqual(svgs(dir), []);
@@ -583,7 +583,7 @@ test('M14 a block that is removed takes its scene list and files with it, and a 
 });
 
 test('M14 a scene list shown inside opaque HTML (pre, script, style, textarea, CDATA; a comment cannot hold a mark, its first --> ends it) is the user\'s text: kept byte for byte, no diagnostic, with or without a real block', (t) => {
-  const shown = '<!-- thinkflow scenes v1 name=x -->\n<details>\n<summary>Scene</summary>\n\n![x](x.scene-2.svg)<!-- thinkflow -->\n\n</details>\n<!-- /thinkflow scenes v1 name=x -->\n';
+  const shown = '<!-- torso scenes v1 name=x -->\n<details>\n<summary>Scene</summary>\n\n![x](x.scene-2.svg)<!-- torso -->\n\n</details>\n<!-- /torso scenes v1 name=x -->\n';
   const wraps = [['<pre>\n', '</pre>\n'], ['<script>\n', '</script>\n'], ['<style>\n', '</style>\n'], ['<textarea>\n', '</textarea>\n'], ['<![CDATA[\n', ']]>\n']];
   for (const [open, close] of wraps) {
     const text = `# Doc\n\n${open}${shown}${close}\nafter\n`;
@@ -604,7 +604,7 @@ test('M14 a scene list shown inside opaque HTML (pre, script, style, textarea, C
 });
 
 test('M14 an opaque element opened inside a blank-ended HTML block (div, details) keeps its text across blank lines until it closes; generated lists next to it still work', (t) => {
-  const shown = '<!-- thinkflow scenes v1 name=x -->\n<details>\n<summary>Scene</summary>\n\n![x](x.scene-2.svg)<!-- thinkflow -->\n\n</details>\n<!-- /thinkflow scenes v1 name=x -->\n';
+  const shown = '<!-- torso scenes v1 name=x -->\n<details>\n<summary>Scene</summary>\n\n![x](x.scene-2.svg)<!-- torso -->\n\n</details>\n<!-- /torso scenes v1 name=x -->\n';
   const nests = [`<div>\n<pre>\n${shown}</pre>\n</div>\n`, `<details>\n<pre>\n${shown}</pre>\n</details>\n`, `<div>\n<script>\n${shown}</script>\n</div>\n`, `<details>\n<summary>s</summary>\n\n<pre>\n${shown}</pre>\n\n</details>\n`, `<div><pre>\n${shown}</pre></div>\n`, `<div>\n<PRE class="a">\n${shown}</PRE>\n</div>\n`];
   for (const nest of nests) {
     const text = `# Doc\n\n${nest}\nafter\n`;
@@ -621,10 +621,10 @@ test('M14 an opaque element opened inside a blank-ended HTML block (div, details
     assert.equal(md(mixed, ['doc.md']).stdout, '');
     assert.equal(md(mixed, ['doc.md', '--check']).status, 0);
     assert.deepEqual(snapshot(mixed), done);
-    assert.equal(read(mixed, 'doc.md').split('<!-- thinkflow scenes v1 name=').length - 1, 3, 'the shown one and two generated');
+    assert.equal(read(mixed, 'doc.md').split('<!-- torso scenes v1 name=').length - 1, 3, 'the shown one and two generated');
     assert.equal(md(mixed, ['doc.md', '--scene', '1']).status, 0);
     assert.ok(read(mixed, 'doc.md').startsWith(text));
-    assert.equal(read(mixed, 'doc.md').split('<!-- thinkflow scenes v1 name=').length - 1, 1);
+    assert.equal(read(mixed, 'doc.md').split('<!-- torso scenes v1 name=').length - 1, 1);
   }
 });
 
@@ -633,14 +633,14 @@ test('M14 protected element text is consumed once: tags and fences inside it are
   const mixed = workspace(t, { 'doc.md': `# Doc\n\n${literal}\n${block('flow', THREE)}` });
   assert.equal(md(mixed, ['doc.md', '--fold']).status, 0);
   const folded = read(mixed, 'doc.md');
-  assert.match(folded, /<!-- thinkflow fold v1 name=flow -->/, 'the string <details> opened nothing');
-  assert.match(folded, /<!-- thinkflow scenes v1 name=flow -->/, 'the string <pre> hid nothing after the closing tag');
+  assert.match(folded, /<!-- torso fold v1 name=flow -->/, 'the string <details> opened nothing');
+  assert.match(folded, /<!-- torso scenes v1 name=flow -->/, 'the string <pre> hid nothing after the closing tag');
   const done = snapshot(mixed);
   assert.equal(md(mixed, ['doc.md', '--fold']).stdout, '');
   assert.deepEqual(snapshot(mixed), done);
   assert.equal(md(mixed, ['doc.md', '--unfold', '--scene', '1']).status, 0);
   assert.ok(read(mixed, 'doc.md').startsWith(`# Doc\n\n${literal}`));
-  assert.doesNotMatch(read(mixed, 'doc.md'), /thinkflow scenes/);
+  assert.doesNotMatch(read(mixed, 'doc.md'), /torso scenes/);
 
   for (const open of ['<script>', '<pre>', '<style>', '<textarea>']) {
     const name = open.slice(1, -1);
@@ -656,7 +656,7 @@ test('M14 protected element text is consumed once: tags and fences inside it are
 });
 
 test('M14 protected element text lasts only as long as the quote or list item that opened it: a real block after the container ends is still read, and a fence inside it is not', (t) => {
-  const fenced = (prefix) => ['thinkflow name=lit', 'box a "A"'].flatMap((line, k) => (k ? [`${prefix}${line}`] : [`${prefix}\`\`\`${line}`])).concat(`${prefix}\`\`\``).join('\n');
+  const fenced = (prefix) => ['torso name=lit', 'box a "A"'].flatMap((line, k) => (k ? [`${prefix}${line}`] : [`${prefix}\`\`\`${line}`])).concat(`${prefix}\`\`\``).join('\n');
   const real = `${block('real', 'box b "B"\n')}`;
   const cases = [
     ['quote ended by an unmarked line', `> <pre>\n> user example\n\n${real}`],
@@ -671,7 +671,7 @@ test('M14 protected element text lasts only as long as the quote or list item th
     assert.equal(run.status, 0, `${name}: ${run.stderr}`);
     assert.deepEqual(svgs(dir), ['doc-real.svg'], name);
     const text = read(dir, 'doc.md');
-    assert.match(text, /<!-- thinkflow fold v1 name=real -->/, name);
+    assert.match(text, /<!-- torso fold v1 name=real -->/, name);
     assert.doesNotMatch(text, /name=lit -->|doc-lit/, name);
     assert.equal(md(dir, ['doc.md', '--fold']).stdout, '', name);
   }

@@ -13,7 +13,7 @@ let cached;
 /** `<link rel="icon">` 두 줄(라이트, 다크). 첫 호출에 파일을 읽고 이후는 같은 글을 돌려준다. */
 export function faviconLinks() {
   cached ??= SCHEMES.map((scheme) => {
-    const logo = readFileSync(new URL(`thinkflow-favicon${scheme === 'dark' ? '-dark' : ''}.png`, ASSETS));
+    const logo = readFileSync(new URL(`torso-favicon${scheme === 'dark' ? '-dark' : ''}.png`, ASSETS));
     return `<link rel="icon" type="image/png" media="(prefers-color-scheme: ${scheme})" href="data:image/png;base64,${logo.toString('base64')}">`; // tokens-allow: 브라우저 탭은 문서 토큰이 닿지 않아 media로 승인된 로고 테마를 선택한다
   }).join('\n');
   return cached;
