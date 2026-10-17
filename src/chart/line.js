@@ -112,11 +112,22 @@ function occupiedRects(ctx) {
 // vars: p = 계열의 점 수
 // basis: estimate
 // 면적 차트는 x 순서의 값과 0 기준선으로 닫는다. 계열을 더하지 않고 같은 축 위에 겹쳐 비교한다.
+// 면은 계열 색을 차트 바탕에 미리 섞은 불투명 면이다(공통 CSS `.chart-area`, 계열 색은 `--chart-area`). 겹친 곳에서 색이 다시 섞이지 않으므로 넓은 면을 먼저, 좁은 면을 나중에 그려 작은 계열이 큰 계열 면에 가려지지 않게 한다.
 function areaMark({ chart, points, sx, sy }, i) {
   const id = chart.series[i].id;
   const xy = points.map((p) => `${r(sx.at(p.values.x))} ${r(sy.at(p.values[id]))}`);
   const bottom = [points.at(-1), points[0]].map((p) => `${r(sx.at(p.values.x))} ${r(sy.at(0))}`);
-  return `<g class="cs-${i}"><path d="M ${[...xy, ...bottom].join(' L ')} Z" fill="${seriesFill(chart, i)}" class="chart-area chart-band wipe"${markAttrs(chart, markId(chart, i, 'area'))}/></g>`;
+  const fill = seriesFill(chart, i);
+  return `<g class="cs-${i}"><path d="M ${[...xy, ...bottom].join(' L ')} Z" fill="${fill}" style="--chart-area: ${fill}" class="chart-area wipe"${markAttrs(chart, markId(chart, i, 'area'))}/></g>`;
+}
+
+// cost: time O(s·p), heap O(s), stack O(1)
+// vars: s = 계열 수, p = 점 수
+// basis: estimate
+// 면을 그릴 순서: 값의 합이 큰 계열부터. 합이 같으면 계열 순서다.
+function areaOrder({ chart, points }) {
+  const total = (s) => points.reduce((sum, p) => sum + (isValue(p.values[s.id]) ? p.values[s.id] : 0), 0);
+  return chart.series.map((s, i) => ({ i, sum: total(s) })).sort((a, b) => b.sum - a.sum || a.i - b.i).map(({ i }) => i);
 }
 
 // cost: time O(p), heap O(p), stack O(1)
@@ -159,7 +170,7 @@ function dotMarks(ctx) {
 // 계열마다 띠, 선, 그리고 점 순서의 SVG 조각
 function seriesMarks(ctx) {
   const { chart } = ctx;
-  const parts = ctx.area ? chart.series.map((_, i) => areaMark(ctx, i)) : [];
+  const parts = ctx.area ? areaOrder(ctx).map((i) => areaMark(ctx, i)) : [];
   chart.series.forEach((s, i) => {
     const bands = intervalMarks(ctx, s, i);
     if (bands.length) parts.push(`<g class="cs-${i}">${bands.join('')}</g>`);

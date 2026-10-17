@@ -147,6 +147,19 @@ test('renderers_embed_required_style_variables', async () => {
       light c "r" "a"
       wait 1s
       light c "r" "b"
+  `), torso(`
+    chart load "Area" area {
+      x "x(u)"
+      y "y(u)"
+      series a "A"
+      series b "B"
+      point x=0 a=1 b=3
+      point x=1 a=4 b=2
+    }
+    scene "areas" mode=loop
+      reveal load.a
+      wait 1s
+      reveal load.b
   `), trace];
   for (const source of sources) {
     const result = await build(source);
@@ -162,6 +175,10 @@ test('renderers_embed_required_style_variables', async () => {
       const pulses = findAll(dom, (node) => (node.attrs.class ?? '').split(/\s+/).includes('fl-mark-pulse'));
       if (!pulses.length) required.delete('--pulse-effect');
       for (const pulse of pulses) assert.match(pulse.attrs.style, /(?:^|;)\s*--pulse-effect\s*:/);
+      // 면적 차트 면의 계열 색은 면적 면이 있을 때만 읽고, 각 면이 공급한다.
+      const areas = findAll(dom, (node) => (node.attrs.class ?? '').split(/\s+/).includes('chart-area'));
+      if (!areas.length) required.delete('--chart-area');
+      for (const area of areas) assert.match(area.attrs.style, /(?:^|;)\s*--chart-area\s*:/);
 
       assert.deepEqual([...required].filter((name) => !defined.has(name)).sort(), [], `${format}\n${source}`);
 

@@ -821,6 +821,18 @@
   fill-opacity: var(--opacity-band);
 }
 
+/* 면적 차트의 면은 계열 색을 띠 불투명도만큼 차트 바탕(currentColor, .fl-chart가 싣는 바탕 색)에 미리 섞은 불투명 면이다. 면끼리 겹친 곳에서 반투명 색이 다시 섞여 제3의 탁한 색(노랑 위 파랑의 올리브 등)이 생기지 않고, 겹친 곳은 앞에 그린 면의 색 하나로 읽힌다. 계열 색은 --chart-area로 받는다. color-mix를 모르는 뷰어는 띠와 같은 반투명 면이다. */
+.fl .chart-area {
+  fill-opacity: var(--opacity-band);
+}
+
+@supports (fill: color-mix(in srgb, currentColor 50%, currentColor)) {
+  .fl .chart-area {
+    fill: color-mix(in srgb, var(--chart-area) calc(var(--opacity-band) * 100%), currentColor);
+    fill-opacity: 1;
+  }
+}
+
 .fl .chart-range {
   stroke-linecap: round;
   stroke-opacity: var(--opacity-range);
