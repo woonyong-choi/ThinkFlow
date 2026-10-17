@@ -1,11 +1,12 @@
 #!/usr/bin/env node
-// 사용: torso render|check|gallery|md … 명령과 결과 파일은 docs/design/playback.md 결과 파일 절이다.
+// 사용: torso render|check|gallery|md|import … 명령과 결과 파일은 docs/design/playback.md 결과 파일 절, import는 docs/design/import.md다.
 // stdout에는 만든 파일 경로(또는 --json 메시지)만, stderr에는 오류와 경고만 쓴다.
 import { readdirSync, readFileSync, realpathSync } from 'node:fs';
 import { basename, dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { BUDGET_NAMES, parseBudgetList } from './budget.js';
 import { buildReported, claimOutputs, commitReported, pickScene, readReported, report } from './build-reported.js';
+import { runImport } from './import-run.js';
 import { runMd } from './md-run.js';
 import { makeDiagnostic } from './source/problems.js';
 import { toSvg } from './svg.js';
@@ -16,6 +17,7 @@ const USAGE = [
   '  torso check <file.torso ...> [--strict] [--budget name=value ...] [--json]',
   '  torso gallery <dir> [--out dir] [--title "text"] [--strict] [--budget name=value ...]',
   '  torso md <file.md ...> [--check] [--out-dir dir] [--fold [--fold-title "text"] | --unfold] [--static] [--scene n|label] [--strict] [--budget name=value ...] [--json]',
+  '  torso import [mermaid|dbml|d2] <file|-> [--out file.torso] [--json]',
   `budget names: ${BUDGET_NAMES.join(', ')}`,
 ].join('\n');
 // gallery가 받는 옵션. --html은 gallery가 늘 HTML을 쓰므로 받기만 한다.
@@ -26,7 +28,7 @@ const FLAGS = ['--html', '--static', '--strict', '--json', '--check', '--fold', 
 const MD_REFUSED = ['out', 'title', 'html'];
 const MD_ONLY = ['check', 'out-dir', 'fold', 'unfold', 'fold-title'];
 // 나머지 명령이 받지 않는 옵션. check는 파일을 쓰지 않으니 쓰는 옵션을 모두 거절하고, 목록 제목은 gallery만 받는다.
-const OTHER_REFUSED = { check: ['out', 'html', 'static', 'scene', 'title'], render: ['title'], gallery: ['scene'] };
+const OTHER_REFUSED = { check: ['out', 'html', 'static', 'scene', 'title'], render: ['title'], gallery: ['scene'], import: ['html', 'static', 'scene', 'title', 'strict'] };
 // 원본 확장자. `.torso` 파일만 원본으로 읽는다.
 const SOURCE_EXT = /\.torso$/;
 // gallery가 목록과 문서 미리보기로 쓰는 쪽 이름(확장자 없이)
@@ -57,15 +59,16 @@ function foldOptionError({ flags, ...values }) {
 // vars: a = 인자 수
 // basis: estimate
 // 명령 인자를 읽는다. 틀리면 { error }다. 값을 받는 옵션은 비어 있거나 `--`로 시작하는 값, 같은 옵션을 두 번 쓰는 것이 오류다. 인자 `--` 뒤는 모두 파일 이름이다(`-`로 시작하는 파일도 쓸 수 있다).
+// `-` 하나는 늘 파일 이름이다(import가 표준 입력으로 읽는다).
 function parseArgs(argv) {
   const [command, ...rest] = argv;
-  if (!['render', 'check', 'gallery', 'md'].includes(command)) return { error: USAGE };
+  if (!['render', 'check', 'gallery', 'md', 'import'].includes(command)) return { error: USAGE };
   const args = { command, inputs: [], out: undefined, title: undefined, flags: new Set() };
   const budgetItems = [];
   let isOnlyFiles = false;
   for (let i = 0; i < rest.length; i++) {
     const arg = rest[i];
-    if (isOnlyFiles || !arg.startsWith('-')) {
+    if (isOnlyFiles || !arg.startsWith('-') || arg === '-') {
       if (arg === '') return { error: 'a file name cannot be empty' };
       args.inputs.push(arg);
     } else if (arg === '--') isOnlyFiles = true;
@@ -109,6 +112,13 @@ async function main(argv) {
   }
   if (args.command === 'gallery') return writeGallery(args);
   if (args.command === 'md') return runMd(args);
+  if (args.command === 'import') {
+    if (args.budget && Object.keys(args.budget).length) {
+      process.stderr.write(`--budget is not for import\n${USAGE}\n`);
+      return 2;
+    }
+    return runImport(args, USAGE);
+  }
   if (args.command === 'render' && !claimOutputs(renderOutputs(args), { json: args.flags.has('json') })) return 1;
   let failed = false;
   const writes = [];

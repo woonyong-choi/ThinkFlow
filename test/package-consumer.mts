@@ -1,5 +1,5 @@
-import { buildFigure, FigureError, toHtml, toSvg } from 'torso-diagram';
-import type { BuildOptions, BuiltFigure, FigureDiagnostic, SvgOptions } from 'torso-diagram';
+import { buildFigure, FigureError, importDiagram, IMPORT_FORMATS, toHtml, toSvg } from 'torso-diagram';
+import type { BuildOptions, BuiltFigure, FigureDiagnostic, ImportFormat, ImportResult, SvgOptions } from 'torso-diagram';
 
 const source = 'torso\nbox client "Client"\nbox server "Server"\nclient -> server\nscene "request"\n  client -> server "GET"\n';
 const options: BuildOptions = {
@@ -30,6 +30,13 @@ try {
   }
 }
 
+const format: ImportFormat = IMPORT_FORMATS[0] ?? 'mermaid';
+const imported: ImportResult = importDiagram(format, 'flowchart LR\n  a --> b\n');
+if (!imported.source.startsWith('torso\n') || imported.warnings.length) {
+  throw new Error('typed consumer did not import the Mermaid source');
+}
+await buildFigure(imported.source, { strict: true });
+
 // 컴파일만 하는 반례. 잘못된 호출을 허용하면 @ts-expect-error가 실패한다.
 function invalidCalls(figure: BuiltFigure) {
   // @ts-expect-error 원본은 문자열이다.
@@ -44,6 +51,8 @@ function invalidCalls(figure: BuiltFigure) {
   void toSvg(figure, { scene: true });
   // @ts-expect-error HTML의 두 번째 인자는 제목 문자열이다.
   void toHtml(figure, { name: 'request' });
+  // @ts-expect-error 가져오는 형식은 mermaid, dbml, d2뿐이다.
+  void importDiagram('plantuml', '');
   // @ts-expect-error 내부 그림 모형은 공개 계약이 아니다.
   void figure.figure;
 }
