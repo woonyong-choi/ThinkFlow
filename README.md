@@ -161,9 +161,19 @@ const html = await toHtml(result, 'Server');
 
 All three functions return promises. Pass the build result to the renderers unchanged and read `result.warnings` for diagnostics. Catch the exported `FigureError` and read its `problems` for source or layout errors. [The API guide](docs/usage.md#javascript에서-조립하기) defines options, diagnostic fields, and the opaque `BuiltFigure` type.
 
+### Import Mermaid, DBML, or D2
+
+```sh
+npx torso import flow.mmd --out flow.torso
+npx torso import schema.dbml > schema.torso
+cat arch.d2 | npx torso import d2 - --out arch.torso
+```
+
+`import` reads one source, takes the format from its extension (`.mmd`, `.mermaid`, `.dbml`, `.d2`) unless you name it, and prints the Torso source, or writes it to the `--out` file. It never replaces an existing file: an existing `--out` file is an error and nothing is written. `-` reads standard input and needs the format. Mermaid `flowchart`/`graph`, `sequenceDiagram`, `stateDiagram-v2`, `erDiagram`, and `pie`, DBML tables, refs, enums, and table groups, and D2 nodes, edges, containers, shapes, and `sql_table` become the same cards, edges, groups, tables, foreign keys, sequence views, and chart cards you would write by hand. A statement Torso has no grammar for (styles, notes on states, column defaults) is skipped with a warning on its source line, and a statement drawn differently (a thick edge, a hexagon) gets a warning too, so nothing is dropped silently. The command builds the imported source once; layout checks that need a hand edit are reported against the new file and do not stop it from being written. `importDiagram(format, text)` does the same in JavaScript. See [Import](docs/design/import.md) for every mapping.
+
 ### Source format
 
-A source must start with `torso`, and only `.torso` files are read. A file with a missing declaration or extra text after it is not read: the build stops with a diagnostic that names the line and column and writes nothing. Torso has no command that rewrites old files, so write them in the current grammar ([Figure syntax](docs/design/figure-syntax.md#시작-선언과-없앤-형태) lists the removed statements and their replacements).
+A source must start with `torso`, and only `.torso` files are read (`import` reads the other formats and writes a `.torso` file). A file with a missing declaration or extra text after it is not read: the build stops with a diagnostic that names the line and column and writes nothing. Torso has no command that rewrites old files, so write them in the current grammar ([Figure syntax](docs/design/figure-syntax.md#시작-선언과-없앤-형태) lists the removed statements and their replacements).
 
 ## Features
 
@@ -178,6 +188,7 @@ A source must start with `torso`, and only `.torso` files are read. A file with 
 - Figure check: overlaps, edges through nodes, crowded edges, aspect ratio, and readability.
 - Playback: an HTML player and an animated SVG from the same timeline.
 - Markdown: `torso md` renders the `torso` code blocks of a document and keeps the image lines below them up to date, and a GitHub Action checks them in CI.
+- Import: `torso import mermaid|dbml|d2` turns a Mermaid, DBML, or D2 file into a `.torso` source and reports what it skipped or drew differently, line by line.
 
 Not supported: 3D, maps, CAD, full BPMN, Gantt charts, CPU simulation, a real-time backend, executing API cards, and class members as edge ends. Sankey, flame graphs, and violin plots are deferred: they are not supported yet and need validation first. [Expression coverage](docs/design/expression-coverage.md) lists what each example covers, what it does not, and the known limits.
 

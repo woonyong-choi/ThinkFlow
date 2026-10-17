@@ -30,6 +30,7 @@ Torso는 텍스트로 문서용 그림을 만드는 도구입니다. 구성 요�
 | 장면 탭과 단계별 강조 추가 | [구조에 장면 추가하기](#구조에-장면-추가하기) |
 | 반복 요청·큐·조건·값 변화 표현 | [동시에 움직이는 트래픽과 큐](#동시에-움직이는-트래픽과-큐) |
 | SVG·HTML·갤러리 출력과 자동 검사 | [CLI 출력과 검사](#cli-출력과-검사) |
+| Mermaid·DBML·D2 원본 옮기기 | [다른 도구의 원본 가져오기](#다른-도구의-원본-가져오기) |
 | JavaScript·TypeScript 연동 | [JavaScript에서 조립하기](#javascript에서-조립하기) |
 | 오류 수정과 지원 범위 확인 | [문제가 있을 때](#문제가-있을-때) |
 
@@ -482,6 +483,7 @@ scene "접수가 더 빠를 때" mode=loop for=8s
 | 별도 폴더에 결과 쓰기 | `npx torso render request.torso --html --out figures` |
 | 폴더의 원본을 갤러리로 만들기 | `npx torso gallery . --out preview --title "설계 그림"` |
 | 진단을 JSON으로 받기 | `npx torso check request.torso --json` |
+| Mermaid·DBML·D2를 원본으로 옮기기 | `npx torso import flow.mmd --out flow.torso` |
 
 SVG의 `--scene` 번호는 1부터입니다. 생략하면 첫 장면이고 장면이 없는 그림에는 지정하지 않습니다(`torso md`는 장면이 둘 이상인 블록에 생략하면 모든 장면을 `.scene-2.svg`처럼 이름 붙여 쓰고 둘째 장면부터 `<details>`로 둡니다). HTML은 모든 장면을 포함하므로 `--static`이나 SVG의 선택 장면이 HTML의 장면 목록을 줄이지 않습니다. `gallery`는 지정한 폴더의 `.torso`를 읽고 목록·문서 미리보기·각 그림의 HTML과 SVG를 만듭니다. 하위 폴더를 재귀적으로 찾는 명령은 아닙니다. `--out`을 생략하면 입력 폴더 아래 `out`에 쓰고, `--title`을 생략하면 입력 폴더명을 목록 제목으로 사용합니다.
 
@@ -489,9 +491,20 @@ SVG의 `--scene` 번호는 1부터입니다. 생략하면 첫 장면이고 장�
 
 대규모 원본의 안전 한도는 `--budget 이름=값`으로 조정합니다. 여러 한도는 `--budget events=20000 --budget chain=200`처럼 옵션을 반복하며, 같은 이름은 마지막 값이 적용됩니다. 무조건 한도를 높이기 전에 그림을 설명 단위로 나눕니다. 시간 값에는 `ms` 또는 `s`를 붙이고 시작 시각 `at=0s`는 허용합니다. 이동 시간·반복 간격·대기 길이는 양수여야 합니다. 한 시간의 상한과 조건부 사건의 정밀도는 [재생 계약](design/playback.md#시간-상한)을 따릅니다.
 
+### 다른 도구의 원본 가져오기
+
+`torso import [mermaid|dbml|d2] <파일|-> [--out 파일.torso] [--json]`은 원본 하나를 옮겨 표준 출력에 씁니다. 형식을 적지 않으면 확장자(`.mmd`, `.mermaid`, `.dbml`, `.d2`)로 정합니다. `--out`을 주면 그 파일에 쓰고, 그 파일이 이미 있으면 바꾸지 않고 오류(종료 1)입니다. `-`는 표준 입력이고 형식을 적어야 합니다.
+
+```sh
+npx torso import flow.mmd --out flow.torso
+cat schema.dbml | npx torso import dbml - > schema.torso
+```
+
+옮기지 못한 문장은 `flow.mmd:12: warning: ...`처럼 원본 줄과 함께 알리고 건너뜁니다(code `import-skip`). 모양을 바꿔 옮긴 문장(굵은 선, 육각형, 빠진 사건 글)도 경고합니다(code `import-change`). 옮긴 원본은 한 번 빌드해 보고, 배치 검사가 손볼 곳을 찾으면 새 파일의 줄로 경고하되 파일은 씁니다. 그 경고를 고친 뒤 `render --strict`로 확인합니다. 형식별 대응과 건너뛰는 문장 목록은 [가져오기](design/import.md)에 있습니다. JavaScript에서는 `importDiagram(format, text)`가 `{ source, warnings }`를 돌려주고, 그림 종류를 모르거나 옮길 카드가 없으면 `FigureError`(code `import`)를 던집니다.
+
 ## JavaScript에서 조립하기
 
-공개 함수는 `buildFigure`, `toSvg`, `toHtml`입니다. 원본을 한 번 빌드하고 그 결과로 두 출력을 만듭니다. 오류 클래스 `FigureError`도 같은 진입점에서 가져옵니다. 아래 코드는 `.mjs` 파일이나 `package.json`에 `"type": "module"`이 있는 프로젝트에서 실행합니다.
+공개 함수는 `buildFigure`, `toSvg`, `toHtml`이고, 다른 도구의 원본을 옮기는 `importDiagram`이 있습니다. 원본을 한 번 빌드하고 그 결과로 두 출력을 만듭니다. 오류 클래스 `FigureError`도 같은 진입점에서 가져옵니다. 아래 코드는 `.mjs` 파일이나 `package.json`에 `"type": "module"`이 있는 프로젝트에서 실행합니다.
 
 ```js
 import { readFile, writeFile } from 'node:fs/promises';
@@ -532,7 +545,7 @@ try {
 
 `FigureError.name`은 `FigureError`이며 `problems`는 `FigureDiagnostic` 목록입니다. 각 진단은 `severity`(`error` 또는 `warning`), `code`, `line`, `column`, `message`를 가집니다. 줄과 열은 1부터 시작하며 원본 위치를 모르면 0입니다. `warnings`도 같은 형식을 사용합니다. `code`는 문자열이므로 연동 코드는 모르는 코드도 표시해야 합니다. 진단을 분류할 때 사람이 읽는 `message`를 파싱하지 않습니다. 잘못된 예산 옵션은 `TypeError`이고 그 밖의 실행 오류는 예시처럼 다시 던집니다.
 
-TypeScript에서는 `import type { BuildOptions, BuiltFigure, FigureDiagnostic, SvgOptions } from 'torso-diagram'`로 타입을 가져옵니다. Node.js 프로젝트는 `module: "NodeNext"` 설정으로 같은 ESM 진입점을 사용합니다. 타입의 정본은 [공개 선언](../src/index.d.ts)입니다. 내부 모듈 경로 대신 공개 진입점을 가져오고, 디자인을 맞추기 위해 결과 SVG나 HTML을 정규식으로 덮어쓰지 않습니다.
+TypeScript에서는 `import type { BuildOptions, BuiltFigure, FigureDiagnostic, ImportFormat, ImportResult, SvgOptions } from 'torso-diagram'`로 타입을 가져옵니다. Node.js 프로젝트는 `module: "NodeNext"` 설정으로 같은 ESM 진입점을 사용합니다. 타입의 정본은 [공개 선언](../src/index.d.ts)입니다. 내부 모듈 경로 대신 공개 진입점을 가져오고, 디자인을 맞추기 위해 결과 SVG나 HTML을 정규식으로 덮어쓰지 않습니다.
 
 ## 문제가 있을 때
 
