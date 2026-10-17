@@ -51,5 +51,5 @@ export function checkReadable({ figure, scene }, problems) {
 function readableFix({ figure, scene }) {
   if (figure.views.every((view) => view.strategy === 'sequence')) return 'Use fewer participants or shorter messages';
   if (figure.aspect !== undefined) return 'Remove the aspect line so the tool can turn or fold the figure to fit, or set a smaller aspect';
-  return scene.groups.length ? 'Make the figure narrower with group directions, or write the flow as down' : 'Write the flow as down, or shorten the labels';
+  return scene.groups.length ? 'Make the figure narrower with group directions, shorten the labels, or split it into an overview and a detail figure' : 'Shorten the labels, or split it into an overview and a detail figure';
 }

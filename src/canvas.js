@@ -1,7 +1,7 @@
-// 그림 폭 규칙. 그림 폭은 내용 폭이고 캔버스는 표시 폭의 상한이다. 배치는 본문 단 폭에 맞춘다(docs/design/layout.md 그림 비율).
+// 그림 폭 규칙. viewBox는 내용 폭이고 SVG와 HTML은 넣는 칸의 폭을 채운다. 캔버스는 배치 후보를 고르는 표시 상한이다. 배치는 본문 단 폭에 맞춘다(docs/design/layout.md 그림 비율).
 import { values } from '@woonyong-choi/design-tokens/tokens.js';
 
-/** 구조, 순서, 상태, 데이터 그림의 표시 폭 상한. 내용이 이보다 넓을 때만 줄여 보인다. */
+/** 구조, 순서, 상태, 데이터 그림의 표시 상한. 배치 후보를 고를 때와 그림 검사 9·10번이 이 폭으로 잰다. */
 export const CANVAS = values.spacing.figure["figure-canvas"];
 /** 그림 머리 `width wide`를 쓴 그림의 표시 폭 상한이자 배치 목표 폭 */
 const CANVAS_WIDE = values.spacing.figure["figure-canvas-wide"];
@@ -14,7 +14,7 @@ const COLUMN = values.spacing.figure.chart.width;
 export const FIGURE_PAD = values.spacing["4"];
 /**
  * 좁은 화면(`size.figure-compact-width`)에서 그림 컨테이너가 가지는 폭. 컨테이너는 화면 폭에서 좌우 바깥 여백(`spacing.6`)을 뺀 값이고 그림 안쪽에는 여백이 없다.
- * 좁은 배치의 그래프와 차트가 목표로 삼는 폭이다. 그래프가 이 폭을 넘으면 HTML은 자연 크기로 가로 스크롤한다.
+ * 좁은 배치의 그래프와 차트가 목표로 삼는 폭이다. 그래프가 이 폭을 넘으면 HTML은 틀 폭에 맞춰 줄여 보인다.
  */
 export const COMPACT_WIDTH = values.spacing.figure["figure-compact-width"] - values.spacing["6"] * 2;
 /** 보이는 가로세로 비율의 한도. 비율이 이 값이나 그 역수를 넘으면 그림이 읽히지 않는다. */
@@ -61,20 +61,4 @@ export const layoutWidthOf = (figure) => (figure?.width === 'wide' ? CANVAS_WIDE
  */
 export function displayRatio(width, height, column = COLUMN) {
   return Math.max(width, column) / height;
-}
-
-// cost: time O(1), heap O(1), stack O(1)
-// basis: estimate
-/**
- * 내용 크기에서 viewBox 폭과 표시 크기를 정한다. viewBox는 언제나 내용 폭이라 빈 캔버스가 없다.
- * 내용이 canvas보다 좁으면 자연 크기로 보이고, 넓으면 표시 폭만 canvas로 줄인다(글자도 같은 비율로 작아진다).
- * @param width 내용 너비
- * @param height 내용 높이
- * @param canvas 표시 폭 상한(canvasOf)
- * @returns { viewWidth, shownWidth, shownHeight, scale }. scale은 내용이 줄어드는 비율이고 1이면 줄지 않는다
- */
-export function fitCanvas(width, height, canvas = CANVAS) {
-  const shownWidth = Math.min(width, canvas);
-  const scale = shownWidth / width;
-  return { viewWidth: width, shownWidth, shownHeight: height * scale, scale };
 }

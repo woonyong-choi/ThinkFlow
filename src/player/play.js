@@ -21,7 +21,7 @@ function figurePlay(root, data) {
   if (data.segs.length) enterScene(player, 0);
 }
 
-// 본문에 삽입된 재생기(iframe)도 자연 크기를 유지한다. 판이 하나뿐인 그림은 둘레 여백을 걷은 보기 영역(tight)으로 맞춘다.
+// 본문에 삽입된 재생기(iframe)도 틀 폭을 채운다. 판이 하나뿐인 그림은 둘레 여백을 걷은 보기 영역(tight)으로 맞춘다.
 // 판이 여럿이면 판 상자가 서로 이어 붙어 있어 여백을 걷지 않고 장면 폭을 그대로 쓴다.
 function fitEmbedded(root, data) {
   const panels = root.querySelector('.dp-panels');
