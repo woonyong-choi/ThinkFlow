@@ -66,10 +66,11 @@ export function inkGroup(k, inner, i) {
 export function valueText({ x, cy }, text, className, mark) {
   const size = TEXT['11'];
   const width = measure(plainText(text), size, /ours|second/.test(className) ? 'numSemibold' : 'num');
-  const pad = SPACE["0-25"];
+  // 바탕 면은 위아래로 글자 높이에 꼭 맞고, 좌우로는 격자와 기준선이 글자 끝에 붙어 보이지 않도록 spacing.1만큼 넓다. 값 글자는 표식에서 spacing.1-5 떨어져 놓이므로 바탕 면이 표식을 덮지 않는다.
+  const [padX, padY] = [SPACE["1"], SPACE["0-25"]];
   const left = x - (className.includes('end') ? width : 0);
   const attrs = (suffix, isText) => (mark ? markAttrs(mark.chart, `${mark.id}${suffix}`, isText ? { isText } : { raw: mark.raw, paint: mark.paint }) : '');
-  const back = `<rect x="${r(left - pad)}" y="${r(cy - size / 2 - pad)}" width="${r(width + pad * 2)}" height="${size + pad * 2}" class="chart-text-bg${className.includes('late') ? ' late' : ''}"${attrs('.b', false)}/>`;
+  const back = `<rect x="${r(left - padX)}" y="${r(cy - size / 2 - padY)}" width="${r(width + padX * 2)}" height="${size + padY * 2}" class="chart-text-bg${className.includes('late') ? ' late' : ''}"${attrs('.b', false)}/>`;
   return back + `<text x="${r(x)}" y="${r(centerBaseline(cy, size))}" class="${className}"${attrs('.t', true)}>${escapeXml(text)}</text>`;
 }
 

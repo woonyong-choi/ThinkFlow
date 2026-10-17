@@ -4,7 +4,9 @@ import { values } from '@woonyong-choi/design-tokens/tokens.js';
 
 const SPACE = values.spacing;
 /** 통로 한 줄(선 하나가 지나는 줄) 사이 간격. 배치가 선 사이에 두는 간격(`elk.spacing.edgeEdge`)과 같은 값이다. */
-export const LANE_STEP =SPACE["2-5"];
+export const LANE_STEP = SPACE["2-5"];
+/** 바깥 행 식별자가 있는 칸으로 왼쪽에서 들어오는 선의 마지막 가로 구간 길이. 화살촉(관계선에서 약 6.8px)과 그 뒤 곧은 선이 들어가고, 식별자 글과 화살촉 사이가 비도록 식별자를 이만큼 더 왼쪽에 둔다. */
+export const KEY_ARROW_ROOM = SPACE["3"];
 // 제목 글 양옆으로 선이 비켜야 하는 여유
 const TITLE_CLEAR = SPACE["3"];
 const SIDES = { out: ['EAST', 'SOUTH'], in: ['WEST', 'NORTH'] };
@@ -31,7 +33,7 @@ function groupBy(list, keyOf) {
  * 선 끝은 칸이 걸친 면에서 바로 나가고, 걸치지 않은 안쪽 칸은 칸 아래 통로(행 사이 간격)로 돌아 격자 옆면으로 나간다. 통로는 칸 사이가 아니라 행 사이 빈 줄이라 이웃 칸 글을 가리지 않는다.
  * 통로는 가로 흐름(나가는 선 동쪽, 들어오는 선 서쪽)에서 직접 연결이 없는 선 끝마다 잡는다. 세로 흐름은 남쪽·북쪽이 걸쳐 있으면 거기로, 아니면 같은 동쪽·서쪽 직접 연결이나 통로를 쓰므로 이 통로가 모든 방향의 상한이다.
  * @param grid { rows, cols, cells, links }. links는 { index, way, cell, isInner }[]이고 index는 선 번호, isInner는 같은 격자의 두 칸을 잇는 선이다
- * @param geo { pad, keyWidth, keyPad, unitW, unitH, titleH, titleHalf, rightExtra?, noNorth? }. keyWidth는 칸 왼쪽 바깥 식별자의 예약 폭이다. titleHalf는 가장 긴 제목 줄 폭의 절반, rightExtra는 칸 묶음 오른쪽의 구간 괄호 폭이고, noNorth면 위 면에 눈금자가 있어 위 면으로 들어오지 않는다
+ * @param geo { pad, keyWidth, unitW, unitH, titleH, titleHalf, rightExtra?, noNorth? }. keyWidth는 칸 왼쪽 바깥 식별자의 예약 폭이다. titleHalf는 가장 긴 제목 줄 폭의 절반, rightExtra는 칸 묶음 오른쪽의 구간 괄호 폭이고, noNorth면 위 면에 눈금자가 있어 위 면으로 들어오지 않는다
  * @returns { w, h, rowTop, gutter, ends, inner }. rowTop은 행 번호 → 그 행 윗변의 y를 주는 함수다. ends는 `번호:way` → { LANE, EAST?, WEST?, SOUTH?, NORTH? }, 각 후보는 { side, port, lead }이고 lead는 칸 면에서 격자 테두리 위 port까지의 점이다. inner는 선 번호 → 점 목록이다
  */
 export function planGridLinks(grid, geo) {
@@ -149,7 +151,7 @@ function directCandidate(item, side, { box, frame }) {
     // 바깥 행 식별자는 칸 가운데에 있으므로 왼쪽 연결은 행 아래로 들어온다.
     if (side === 'WEST' && frame.geo.keyWidth) {
       const offset = (mates.length - 1 - mates.indexOf(item.link)) * LANE_STEP;
-      const turn = edge - frame.geo.keyPad / 2 - offset;
+      const turn = edge - KEY_ARROW_ROOM - offset;
       const bottom = box.y + box.h - offset;
       return { side, port: { x: exit, y: bottom }, lead: [{ x: edge, y }, { x: turn, y }, { x: turn, y: bottom }, { x: exit, y: bottom }] };
     }
