@@ -11,7 +11,7 @@ import { BADGE_STYLE, DECOR, STACK_STEP, groupDecor, nodeDecor } from './decor.j
 import { sizeClassifier } from './class.js';
 import { CONTENT, contentMinWidth, sizeContent } from './content.js';
 import { measure, wrap } from './fonts.js';
-import { LANE_STEP, planGridLinks } from './grid-links.js';
+import { KEY_ARROW_ROOM, LANE_STEP, planGridLinks } from './grid-links.js';
 import { queueSlots, sizeQueue } from './queue.js';
 import { STYLE, stackTexts, textAt, titleTexts } from './texts.js';
 
@@ -184,7 +184,9 @@ function sizeGrid(node, links = [], valueTexts) {
     incoming.set(link.cell, count);
     keyExtra = Math.max(keyExtra, (count - 1) * LANE_STEP);
   }
-  const keyWidth = keyBase + keyExtra;
+  // 들어오는 선이 있으면 식별자와 칸 사이에 마지막 가로 구간과 화살촉 자리(KEY_ARROW_ROOM)를 더 둔다. keyExtra는 여러 선의 세로 통로 몫이다.
+  const keyRoom = keyBase && incoming.size ? KEY_ARROW_ROOM : 0;
+  const keyWidth = keyBase + keyRoom + keyExtra;
   const titleH = titleLines.length * STYLE.label.line + GRID.titlePad * 2;
   const rulerH = ruler ? STYLE.item.line + GRID.cellPadY : 0;
   const unitH = lined.reduce((tallest, cell) => {
@@ -193,7 +195,7 @@ function sizeGrid(node, links = [], valueTexts) {
       : (cell.lines.length + cell.detailLines.length) * STYLE.item.line;
     return Math.max(tallest, Math.ceil((Math.max(textHeight, cell.keyLines.length * STYLE.item.line) + GRID.cellPadY * 2) / cell.rows));
   }, SIZE.grid.cell) + keyExtra * 2;
-  const plan = planGridLinks({ rows: node.rows, cols: node.cols, cells: node.cells, links }, { pad: GRID.pad, keyWidth, keyPad: GRID.cellPadX, unitW, unitH, titleH: titleH + rulerH, titleHalf: titleW / 2, rightExtra: regionW, noNorth: Boolean(ruler) });
+  const plan = planGridLinks({ rows: node.rows, cols: node.cols, cells: node.cells, links }, { pad: GRID.pad, keyWidth, unitW, unitH, titleH: titleH + rulerH, titleHalf: titleW / 2, rightExtra: regionW, noNorth: Boolean(ruler) });
   const box = ({ row, col, rows, cols }) => ({ x: GRID.pad + keyWidth + col * unitW, y: plan.rowTop(row), w: cols * unitW, h: rows * unitH + (rows - 1) * plan.gutter });
   const cells = lined.map(({ text, label, ...c }) => {
     const placed = { ...c, ...box(c) };
@@ -218,7 +220,7 @@ function sizeGrid(node, links = [], valueTexts) {
   const unit = { w: unitW, h: unitH, gutter: plan.gutter, x: GRID.pad + keyWidth, y: plan.rowTop(0) };
   const texts = titleTexts({ labelLines: titleLines }, { x: (plan.w - regionW + keyWidth) / 2, top: 0, height: titleH });
   for (const cell of cells) texts.push(...stackTexts(cell.keyLines.map(text => ({ role: 'item gap', text, style: STYLE.item })), {
-    x: cell.x - GRID.cellPadX - keyExtra, top: cell.y, height: cell.h, anchor: 'end',
+    x: cell.x - GRID.cellPadX - keyRoom - keyExtra, top: cell.y, height: cell.h, anchor: 'end',
   }), ...(cell.detailTexts ?? []));
   const extras = ruler ? rulerParts(node, { ruler, unit, rulerTop: titleH, rulerH }) : {};
   if (extras.texts) texts.push(...extras.texts);
